@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AgentTests</RootNamespace>
+    <AssemblyName>agentUnitTests</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nhinAgent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="nhinCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\nunit\bin\net-2.0\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AgentTester.cs" />
+    <Compile Include="BasicAgentTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Certificates\nhind\IncomingAnchors\cernerCA.cer" />
+    <None Include="Certificates\nhind\IncomingAnchors\hotmail.cer" />
+    <None Include="Certificates\nhind\IncomingAnchors\um-amalga1-vm1.cer" />
+    <None Include="Certificates\nhind\IncomingAnchors\umamalga1.cer" />
+    <None Include="Certificates\nhind\OutgoingAnchors\cernerCA.cer" />
+    <None Include="Certificates\nhind\OutgoingAnchors\hotmail.cer" />
+    <None Include="Certificates\nhind\OutgoingAnchors\um-amalga1-vm1.cer" />
+    <None Include="Certificates\nhind\OutgoingAnchors\umamalga1.cer" />
+    <None Include="Certificates\nhind\Private\nhind_umamalga1.pfx" />
+    <None Include="Certificates\nhind\Private\nhind_umamalga1_vm1.pfx" />
+    <None Include="Certificates\nhind\Public\cerner.pfx" />
+    <None Include="Certificates\nhind\Public\hotmail.cer" />
+    <None Include="Certificates\nhind\Public\nhind_umamalga1.pfx" />
+    <None Include="Certificates\nhind\Public\nhind_um_amalga1_vm1.pfx" />
+    <None Include="Certificates\nhind\Public\redmond.cer" />
+    <None Include="Certificates\nhind\Public\umesh.cer" />
+    <None Include="Certificates\redmond\IncomingAnchors\um-amalga1-vm1.cer" />
+    <None Include="Certificates\redmond\IncomingAnchors\umamalga1.cer" />
+    <None Include="Certificates\redmond\OutgoingAnchors\um-amalga1-vm1.cer" />
+    <None Include="Certificates\redmond\OutgoingAnchors2\umamalga1.cer" />
+    <None Include="Certificates\redmond\Private\redmond.pfx" />
+    <None Include="Certificates\redmond\Public\nhind_umamalga1.pfx" />
+    <None Include="Certificates\redmond\Public\nhind_um_amalga1_vm1.pfx" />
+    <None Include="Certificates\redmond\Public\redmond.cer" />
+    <None Include="Certificates\redmond\Public\umesh.cer" />
+    <None Include="CopyTestFiles.bat" />
+    <None Include="TestMessages\Outgoing\untrusted_1.eml" />
+    <None Include="TestMessages\Outgoing\fully_untrusted_1.eml" />
+    <None Include="TestMessages\envelopeSignature.eml" />
+    <None Include="TestMessages\multipart_2To.eml" />
+    <None Include="TestMessages\multipart_1To.eml" />
+    <None Include="TestMessages\simple.eml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="commandLine.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>cmd.exe /c $(ProjectDir)copytestfiles.bat $(OutDir)</PostBuildEvent>
+  </PropertyGroup>
+</Project>
