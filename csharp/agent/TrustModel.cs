@@ -211,6 +211,12 @@ namespace NHINDirect.Agent
                 MessageSignature signature = signatures[i];
                 if (m_certChainValidator.IsTrustedCertificate(signature.Certificate, anchors) && signature.CheckSignature())
                 {
+                    if (!sender.HasCertificates)
+                    {
+                        // Can't really check thumbprints etc. So, this is about as good as its going to get
+                        return signature;
+                    }
+                    
                     if (signature.CheckThumbprint(sender))
                     {
                         return signature;

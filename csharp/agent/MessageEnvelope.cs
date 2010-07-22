@@ -26,7 +26,7 @@ using NHINDirect.Collections;
 
 namespace NHINDirect.Agent
 {
-    public class NHINDMessage
+    public class MessageEnvelope
     {
         NHINDAgent m_agent;
         Message m_message;
@@ -39,7 +39,7 @@ namespace NHINDirect.Agent
         NHINDAddressCollection m_domainRecipients;
         MailAddressCollection m_otherRecipients;        
         
-        internal NHINDMessage(Message message)
+        internal MessageEnvelope(Message message)
         {
             this.Message = message;
             this.Recipients = this.CollectRecipients();
@@ -52,7 +52,7 @@ namespace NHINDirect.Agent
             this.Sender = new NHINDAddress(from.Value, AddressSource.From);
         }
         
-        internal NHINDMessage(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
+        internal MessageEnvelope(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
         {
             this.Message = message;
             this.Recipients = recipients;

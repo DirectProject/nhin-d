@@ -31,7 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nhinCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -41,13 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageEnvelope.cs" />
     <Compile Include="IncomingMessage.cs" />
     <Compile Include="MessageSignature.cs" />
     <Compile Include="MessageSignatureCollection.cs" />
     <Compile Include="NHINDAddress.cs" />
     <Compile Include="NHINDAddressCollection.cs" />
     <Compile Include="NHINDAgent.cs" />
-    <Compile Include="NHINDMessage.cs" />
     <Compile Include="NHINDStandard.cs" />
     <Compile Include="OutgoingMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -55,6 +54,12 @@
     <Compile Include="AgentException.cs" />
     <Compile Include="TrustChainValidator.cs" />
     <Compile Include="TrustModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\common\nhinCommon.csproj">
+      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
+      <Name>nhinCommon</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -117,7 +117,6 @@ namespace NHINDirect.Agent
             }
             
             return m_thumbprintVerified.Value;
-        }
-        
+        }        
     }    
 }

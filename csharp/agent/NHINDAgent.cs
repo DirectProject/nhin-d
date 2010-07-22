@@ -42,7 +42,8 @@ namespace NHINDirect.Agent
         bool m_encryptionEnabled = true;
         bool m_wrappingEnabled = true;
         bool m_allowNonWrappedIncoming = true;
-
+        bool m_fetchIncomingSenderCerts = false;
+        
         public NHINDAgent(string domain)
             : this(domain, SystemX509Store.OpenPrivate().Index(), 
                            SystemX509Store.OpenExternal().Index(),
@@ -141,6 +142,18 @@ namespace NHINDirect.Agent
             set
             {
                 m_allowNonWrappedIncoming = value;
+            }
+        }
+        
+        public bool FetchSenderCertsIncoming
+        {
+            get
+            {
+                return m_fetchIncomingSenderCerts;
+            }
+            set
+            {
+                m_fetchIncomingSenderCerts = value;
             }
         }
         
@@ -304,10 +317,13 @@ namespace NHINDirect.Agent
 
         void BindAddresses(IncomingMessage message)
         {
-            //
-            // Retrieving the sender's certificate is optional
-            //
-            message.Sender.Certificates = this.ResolvePublicCerts(message.Sender, false);
+            if (m_fetchIncomingSenderCerts)
+            {
+                //
+                // Retrieving the sender's certificate is optional
+                //
+                message.Sender.Certificates = this.ResolvePublicCerts(message.Sender, false);
+            }
             //
             // Bind each recpient's certs and trust settings
             //

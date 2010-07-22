@@ -25,7 +25,7 @@ using NHINDirect.Mime;
 
 namespace NHINDirect.Agent
 {
-    public class OutgoingMessage : NHINDMessage
+    public class OutgoingMessage : MessageEnvelope
     {        
         public OutgoingMessage(Message message)
             : base(message)

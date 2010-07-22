@@ -25,7 +25,7 @@ using NHINDirect.Mail;
 
 namespace NHINDirect.Agent
 {
-    public class IncomingMessage : NHINDMessage
+    public class IncomingMessage : MessageEnvelope
     {
         SignedCms m_signatures;                             // All signatures + info about the signed blob etc
         MessageSignatureCollection m_senderSignatures;      // The sender's signatures, which are a subset of m_signatures

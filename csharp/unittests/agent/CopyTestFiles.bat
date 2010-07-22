@@ -12,6 +12,7 @@ call :CopyFiles TestMessages
 call :CopyFiles Certificates force
 goto :Done
 
+@rem--------------------------------------------------
 :CopyFiles
 if "%2" == "force" (if exist %bin%\%1 rmdir /s /q %bin%\%1)
 if not exist %bin%\%1 md %bin%\%1
@@ -20,10 +21,12 @@ xcopy /s /y /d * %bin%%1\
 popd
 goto :EOF
 
+@rem--------------------------------------------------
 :Usage
 echo CopyTestFiles binPath
 goto :Done
 
+@rem--------------------------------------------------
 :Done
 endlocal
 exit /b %ERRORLEVEL%

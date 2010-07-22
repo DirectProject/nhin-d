@@ -43,6 +43,7 @@
     <Compile Include="Certificates\CertificateIndex.cs" />
     <Compile Include="Certificates\CertificateResolver.cs" />
     <Compile Include="Certificates\CertificateStore.cs" />
+    <Compile Include="Certificates\DnsCertResolver.cs" />
     <Compile Include="Certificates\Extensions.cs" />
     <Compile Include="Certificates\ICertificateResolver.cs" />
     <Compile Include="Certificates\ITrustAnchorResolver.cs" />
@@ -91,6 +92,12 @@
     <Compile Include="Mime\StringSegment.cs" />
     <Compile Include="NHINDException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\dns\dnsResolver.csproj">
+      <Project>{AE250214-0E85-4C28-90C9-A006440BCE97}</Project>
+      <Name>dnsResolver</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
