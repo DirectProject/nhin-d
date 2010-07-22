@@ -56,38 +56,99 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Certificates\nhind\IncomingAnchors\cernerCA.cer" />
-    <None Include="Certificates\nhind\IncomingAnchors\hotmail.cer" />
-    <None Include="Certificates\nhind\IncomingAnchors\um-amalga1-vm1.cer" />
-    <None Include="Certificates\nhind\IncomingAnchors\umamalga1.cer" />
-    <None Include="Certificates\nhind\OutgoingAnchors\cernerCA.cer" />
-    <None Include="Certificates\nhind\OutgoingAnchors\hotmail.cer" />
-    <None Include="Certificates\nhind\OutgoingAnchors\um-amalga1-vm1.cer" />
-    <None Include="Certificates\nhind\OutgoingAnchors\umamalga1.cer" />
-    <None Include="Certificates\nhind\Private\nhind_umamalga1.pfx" />
-    <None Include="Certificates\nhind\Private\nhind_umamalga1_vm1.pfx" />
-    <None Include="Certificates\nhind\Public\cerner.pfx" />
-    <None Include="Certificates\nhind\Public\hotmail.cer" />
-    <None Include="Certificates\nhind\Public\nhind_umamalga1.pfx" />
-    <None Include="Certificates\nhind\Public\nhind_um_amalga1_vm1.pfx" />
-    <None Include="Certificates\nhind\Public\redmond.cer" />
-    <None Include="Certificates\nhind\Public\umesh.cer" />
-    <None Include="Certificates\redmond\IncomingAnchors\um-amalga1-vm1.cer" />
-    <None Include="Certificates\redmond\IncomingAnchors\umamalga1.cer" />
-    <None Include="Certificates\redmond\OutgoingAnchors\um-amalga1-vm1.cer" />
-    <None Include="Certificates\redmond\OutgoingAnchors2\umamalga1.cer" />
-    <None Include="Certificates\redmond\Private\redmond.pfx" />
-    <None Include="Certificates\redmond\Public\nhind_umamalga1.pfx" />
-    <None Include="Certificates\redmond\Public\nhind_um_amalga1_vm1.pfx" />
-    <None Include="Certificates\redmond\Public\redmond.cer" />
-    <None Include="Certificates\redmond\Public\umesh.cer" />
-    <None Include="CopyTestFiles.bat" />
-    <None Include="TestMessages\Outgoing\untrusted_1.eml" />
-    <None Include="TestMessages\Outgoing\fully_untrusted_1.eml" />
-    <None Include="TestMessages\envelopeSignature.eml" />
-    <None Include="TestMessages\multipart_2To.eml" />
-    <None Include="TestMessages\multipart_1To.eml" />
-    <None Include="TestMessages\simple.eml" />
+    <None Include="Certificates\nhind\IncomingAnchors\cernerCA.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\IncomingAnchors\hotmail.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\IncomingAnchors\um-amalga1-vm1.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\IncomingAnchors\umamalga1.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\OutgoingAnchors\cernerCA.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\OutgoingAnchors\hotmail.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\OutgoingAnchors\um-amalga1-vm1.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\OutgoingAnchors\umamalga1.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Private\nhind_umamalga1.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Private\nhind_umamalga1_vm1.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Public\cerner.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Public\hotmail.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Public\nhind_umamalga1.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Public\nhind_um_amalga1_vm1.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Public\redmond.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Public\umesh.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\IncomingAnchors\um-amalga1-vm1.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\IncomingAnchors\umamalga1.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\OutgoingAnchors\um-amalga1-vm1.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\OutgoingAnchors2\umamalga1.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Private\redmond.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Public\nhind_umamalga1.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Public\nhind_um_amalga1_vm1.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Public\redmond.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Public\umesh.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestMessages\Outgoing\untrusted_1.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestMessages\Outgoing\fully_untrusted_1.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestMessages\envelopeSignature.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestMessages\multipart_2To.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestMessages\multipart_1To.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestMessages\simple.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="commandLine.txt" />
@@ -101,6 +162,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>cmd.exe /c $(ProjectDir)copytestfiles.bat $(OutDir)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
