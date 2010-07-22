@@ -8,7 +8,9 @@ syntax: glob
 
 # Ignore for Java
 *.class
-# ???
+tmp/
+target/
+NHINKeyStore
 
 # Ignore Visual Studio 2008 files
 *.obj
