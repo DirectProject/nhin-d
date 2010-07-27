@@ -25,7 +25,7 @@ namespace NHINDirect.Agent
 {
     public class NHINDAddress : MailAddress
     {
-        AddressSource m_source;
+        AddressSource m_source = AddressSource.Unknown;
         X509Certificate2Collection m_certificates;
         TrustEnforcementStatus m_trustStatus;
         X509Certificate2Collection m_trustAnchors;
@@ -109,6 +109,10 @@ namespace NHINDirect.Agent
             get
             {
                 return m_source;
+            }
+            set
+            {
+                m_source = value;
             }
         }
         

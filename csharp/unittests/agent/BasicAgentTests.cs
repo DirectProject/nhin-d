@@ -5,6 +5,8 @@ using System.Text;
 using NUnit.Framework;
 using NHINDirect.Agent;
 using NHINDirect.Cryptography;
+using NHINDirect.Mail;
+using NHINDirect.Mime;
 
 namespace AgentTests
 {
@@ -45,6 +47,10 @@ namespace AgentTests
             m_tester = AgentTester.CreateTest();
         }
         
+        /// <summary>
+        /// Basic End to End Test
+        ///  ProcessIncoming(ProcessOutgoing(...))
+        /// </summary>
         [Test]
         public void TestEndToTend()
         {
@@ -79,28 +85,36 @@ namespace AgentTests
 
             foreach (string fileName in IncomingFiles)
             {
-                Assert.DoesNotThrow(() => m_tester.TestIncomingFile(fileName), fileName);
+                Assert.DoesNotThrow(() => m_tester.ProcessIncomingFile(fileName), fileName);
             }
         }
         
+        /// <summary>
+        /// Outgoing messages with Untrusted Recipients
+        /// Test if the agent catches them
+        /// </summary>
         [Test]
         public void TestOutgoingUntrusted()
         {
             m_tester.AgentA.Cryptographer.EncryptionAlgorithm = EncryptionAlgorithm.AES128;
             m_tester.AgentA.Cryptographer.DigestAlgorithm = DigestAlgorithm.SHA1;
-
+            //
+            // All recipients are untrusted. The agent should reject the message completely
+            //
             foreach (string fileName in OutgoingUntrustedFully)
             {
-                Assert.Throws<AgentException>(() => m_tester.TestOutgoingFile(fileName), fileName);
+                Assert.Throws<AgentException>(() => m_tester.ProcessOutgoingFileToString(fileName), fileName);
             }
-
+            //
+            // Some recipients are untrusted. The agent should return > 1 rejected recipients
+            //
             OutgoingMessage outgoing;
             foreach (string fileName in OutgoingUntrusted)
             {
                 outgoing = null;
                 try
                 {
-                    outgoing = m_tester.CreateOutgoingFile(fileName);
+                    outgoing = m_tester.ProcessOutgoingFile(fileName);
                     Assert.True(outgoing.RejectedRecipients.Count > 0);
                 }
                 catch
@@ -108,6 +122,52 @@ namespace AgentTests
                     Assert.Fail(fileName);
                 }
             }            
+        }
+
+        /// <summary>
+        /// The Agent has methods that allow for you to construct OutgoingMessage/IncomingMessage directly
+        /// </summary>
+        [Test]
+        public void TestWithMessageObjects()
+        {
+            Message message = MimeSerializer.Default.Deserialize<Message>(m_tester.ReadMessageText("simple.eml"));
+            
+            OutgoingMessage outgoing = new OutgoingMessage(message);                        
+            outgoing = m_tester.AgentA.ProcessOutgoing(outgoing);
+            
+            Assert.IsTrue(SMIMEStandard.IsEncrypted(outgoing.Message));
+            this.VerifyTrusted(outgoing.Recipients, m_tester.AgentA.MinTrustRequirement);
+            Assert.IsTrue(outgoing.RejectedRecipients.Count == 0);
+            
+            IncomingMessage incoming = new IncomingMessage(outgoing.Message);
+            incoming = m_tester.AgentB.ProcessIncoming(incoming);
+            
+            Assert.IsTrue(!SMIMEStandard.IsEncrypted(incoming.Message));
+            Assert.IsTrue(!WrappedMessage.IsWrapped(incoming.Message));
+            this.VerifyTrusted(incoming.Recipients, m_tester.AgentB.MinTrustRequirement);
+            Assert.IsTrue(outgoing.RejectedRecipients.Count == 0);
+        }
+        
+        [Test]
+        public void TestIntegrations()
+        {
+            foreach(string fileName in EndToEndFiles)
+            {
+                bool isIncoming = false;
+                
+                MessageEnvelope envelope = m_tester.AgentA.Process(m_tester.ReadMessageText(fileName), ref isIncoming);
+                Assert.IsFalse(isIncoming);
+                this.VerifyTrusted(envelope.Recipients, m_tester.AgentA.MinTrustRequirement);
+                
+                string outgoingText = envelope.SerializeMessage();
+                envelope = m_tester.AgentB.Process(outgoingText, ref isIncoming);
+                Assert.IsTrue(isIncoming);
+                Assert.IsTrue(!SMIMEStandard.IsEncrypted(envelope.Message));
+                
+                this.VerifyTrusted(envelope.Recipients, m_tester.AgentB.MinTrustRequirement);
+                
+                string incomingText = envelope.SerializeMessage();
+            }
         }
         
         void TestEndToEnd(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
@@ -131,6 +191,19 @@ namespace AgentTests
             foreach (string fileName in EndToEndFiles)
             {
                 Assert.DoesNotThrow(() => m_tester.TestEndToEndFile(fileName), fileName);
+            }
+        }
+
+        void VerifyTrusted(NHINDAddress address, TrustEnforcementStatus minStatus)
+        {
+            Assert.IsTrue(address.IsTrusted(minStatus));
+        }
+
+        void VerifyTrusted(NHINDAddressCollection addresses, TrustEnforcementStatus minStatus)
+        {
+            foreach(NHINDAddress address in addresses)
+            {
+                this.VerifyTrusted(address, minStatus);
             }
         }
     }

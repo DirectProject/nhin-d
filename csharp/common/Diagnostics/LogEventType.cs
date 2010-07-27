@@ -17,24 +17,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
-namespace NHINDirect.Mime
+namespace NHINDirect.Diagnostics
 {
-    public enum MimeError
+    public enum LogEventType
     {
-        Unexpected = 0,
-        InvalidCRLF,
-        InvalidMimeEntity,
-        InvalidHeader,
-        InvalidBody,
-        InvalidBodySubpart,
-        MissingNameValueSeparator,
-        MissingHeaderValue,
-        MissingBody,
-        ContentTypeMismatch,
-        TransferEncodingMismatch,
-        Base64EncodingRequired,
-        NotMultipart,
-        MissingBoundarySeparator
+        Critical,
+        Error,
+        Warning,
+        Info,
+        Debug,
+        Report
     }
 }

@@ -28,6 +28,25 @@ namespace NHINDirect.Mime
         {
         }
 
+        public override string Serialize(MimeEntity entity)
+        {
+            Message message = entity as Message;
+            if (message != null)
+            {
+                //
+                // Already ASCII encoded. We can just serialize to text...
+                //
+                using(StringWriter writer = new StringWriter())
+                {
+                    this.Serialize(entity, writer);
+                    return writer.ToString();
+                }
+                
+            }
+            
+            return base.Serialize(entity);
+        }
+        
         public override void Serialize(MimeEntity entity, TextWriter writer)
         {
             if (entity == null)

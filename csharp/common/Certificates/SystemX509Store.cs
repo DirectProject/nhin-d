@@ -93,9 +93,32 @@ namespace NHINDirect.Certificates
             }
         }
         
+        /*
+            Names of the default NHIND Machine Certificate Stores
+        */        
         public const string AnchorCertsStoreName = "NHINDAnchors";
         public const string PrivateCertsStoreName = "NHINDPrivate";
         public const string ExternalCertsStoreName = "NHINDExternal";
+        /*
+            These methods work with the default NHIND Certificate Stores
+        */
+        
+        /// <summary>
+        /// Creates the default NHIND machine stores if they don't already exist
+        /// </summary>
+        public static void CreateAll()
+        {
+            SystemX509Store store;
+            
+            store = SystemX509Store.OpenAnchorEdit();
+            store.Dispose();
+            
+            store = SystemX509Store.OpenExternalEdit();
+            store.Dispose();
+            
+            store = SystemX509Store.OpenPrivateEdit();
+            store.Dispose();
+        }
         
         public static SystemX509Store OpenAnchor()
         {
@@ -122,6 +145,6 @@ namespace NHINDirect.Certificates
         public static SystemX509Store OpenExternalEdit()
         {
             return new SystemX509Store(Extensions.OpenStoreReadWrite(ExternalCertsStoreName, StoreLocation.LocalMachine), null);
-        }
+        }        
     }
 }

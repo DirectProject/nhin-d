@@ -155,6 +155,14 @@ namespace NHINDirect.Agent
             return this.ToMailAddressCollection().ToString();
         }
         
+        internal void SetSource(AddressSource source)
+        {
+            for (int i = 0, count = this.Count; i < count; ++i)
+            {
+                this[i].Source = source;
+            }
+        }
+        
         internal static NHINDAddressCollection Create(IEnumerable<NHINDAddress> source)
         {
             NHINDAddressCollection addresses = null;
@@ -182,6 +190,16 @@ namespace NHINDirect.Agent
         internal static NHINDAddressCollection Parse(string addresses, AddressSource source)
         {
             return MailParser.ParseAddressCollection<NHINDAddress, NHINDAddressCollection>(addresses, x => new NHINDAddress(x, source));
+        }
+
+        public static NHINDAddressCollection Parse(string addresses)
+        {
+            return MailParser.ParseAddressCollection<NHINDAddress, NHINDAddressCollection>(addresses, x => new NHINDAddress(x));
+        }
+
+        public static NHINDAddressCollection ParseSmtpServerEnvelope(string addresses)
+        {
+            return MailParser.ParseSMTPServerEnvelopeAddresses<NHINDAddress, NHINDAddressCollection>(addresses, x => new NHINDAddress(x, AddressSource.RcptTo));
         }
     }
 }

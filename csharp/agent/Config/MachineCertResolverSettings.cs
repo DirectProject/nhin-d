@@ -17,24 +17,47 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
+using System.Security.Cryptography.X509Certificates;
+using NHINDirect.Certificates;
 
-namespace NHINDirect.Mime
+namespace NHINDirect.Agent.Config
 {
-    public enum MimeError
+    [XmlType("SystemCertificateStore")]
+    public class MachineCertResolverSettings : CertResolverSettings
     {
-        Unexpected = 0,
-        InvalidCRLF,
-        InvalidMimeEntity,
-        InvalidHeader,
-        InvalidBody,
-        InvalidBodySubpart,
-        MissingNameValueSeparator,
-        MissingHeaderValue,
-        MissingBody,
-        ContentTypeMismatch,
-        TransferEncodingMismatch,
-        Base64EncodingRequired,
-        NotMultipart,
-        MissingBoundarySeparator
+        public MachineCertResolverSettings()
+        {
+            this.Location = StoreLocation.LocalMachine;
+        }
+        
+        [XmlElement]
+        public string Name {get;set;}
+        
+        [XmlElement]
+        public StoreLocation Location { get; set; }
+
+        public override void Validate()
+        {
+            if (string.IsNullOrEmpty(this.Name))
+            {
+                throw new ArgumentException("Name not specified");
+            }
+        }   
+                     
+        public override ICertificateResolver CreateResolver()
+        {
+            this.Validate();
+            
+            using(SystemX509Store store = this.OpenStore())
+            {
+                return store.Index();
+            }
+        }
+                
+        public SystemX509Store OpenStore()
+        {
+            return new SystemX509Store(Certificates.Extensions.OpenStoreRead(this.Name, this.Location), null);
+        }
     }
 }

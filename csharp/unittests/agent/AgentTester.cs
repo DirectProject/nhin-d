@@ -9,6 +9,9 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace AgentTests
 {
+    /// <summary>
+    /// Helper Class that does Chores needed by actual tests...
+    /// </summary>
     public class AgentTester
     {
         public const string DefaultDomainA = "redmond.hsgincubator.com";
@@ -70,47 +73,47 @@ namespace AgentTests
         
         public void TestEndToEndFile(string messageFilePath)
         {
-            this.TestEndToEnd(this.ReadMessageText(messageFilePath));
+            this.ProcessEndToEnd(this.ReadMessageText(messageFilePath));
         }
         
-        public string TestEndToEnd(string messageText)
+        public string ProcessEndToEnd(string messageText)
         {
-            string outgoingText = this.TestOutgoing(messageText);
-            string incomingText = this.TestIncoming(outgoingText);            
+            string outgoingText = this.ProcessOutgoingToString(messageText);
+            string incomingText = this.ProcessIncomingToString(outgoingText);            
             return incomingText;
         }
 
-        public void TestOutgoingFile(string messageFilePath)
+        public string ProcessOutgoingFileToString(string messageFilePath)
         {
-            this.TestOutgoing(this.ReadMessageText(messageFilePath));
+            return this.ProcessOutgoingToString(this.ReadMessageText(messageFilePath));
         }
 
-        public string TestOutgoing(string messageText)
+        public string ProcessOutgoingToString(string messageText)
         {
-            return this.CreateOutgoing(messageText).SerializeMessage();
+            return this.ProcessOutgoing(messageText).SerializeMessage();
         }
 
-        public OutgoingMessage CreateOutgoingFile(string messageFilePath)
+        public OutgoingMessage ProcessOutgoingFile(string messageFilePath)
         {
-            return this.CreateOutgoing(this.ReadMessageText(messageFilePath));
+            return this.ProcessOutgoing(this.ReadMessageText(messageFilePath));
         }
 
-        public OutgoingMessage CreateOutgoing(string messageText)
+        public OutgoingMessage ProcessOutgoing(string messageText)
         {
             return m_agentA.ProcessOutgoing(messageText);
         }
 
-        public void TestIncomingFile(string messageFilePath)
+        public void ProcessIncomingFile(string messageFilePath)
         {
-            this.TestIncoming(this.ReadMessageText(messageFilePath));
+            this.ProcessIncomingToString(this.ReadMessageText(messageFilePath));
         }
 
-        public string TestIncoming(string messageText)
+        public string ProcessIncomingToString(string messageText)
         {
             return m_agentB.ProcessIncoming(messageText).SerializeMessage();
         }
         
-        string ReadMessageText(string messageFilePath)
+        public string ReadMessageText(string messageFilePath)
         {
             if (!Path.IsPathRooted(messageFilePath))
             {
@@ -119,7 +122,7 @@ namespace AgentTests
             
             return File.ReadAllText(messageFilePath);
         }
-                
+        
         public static AgentTester CreateDefault()
         {
             NHINDAgent agentA = new NHINDAgent(AgentTester.DefaultDomainA);

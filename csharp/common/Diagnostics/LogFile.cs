@@ -17,53 +17,80 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Net.Mail;
-using System.Security.Cryptography.Pkcs;
-using System.Security.Cryptography.X509Certificates;
-using NHINDirect.Mail;
-using NHINDirect.Mime;
+using System.IO;
 
-namespace NHINDirect.Agent
+namespace NHINDirect.Diagnostics
 {
-    public class OutgoingMessage : MessageEnvelope
-    {        
-        string m_rawMessage;
-        
-        public OutgoingMessage(Message message)
-            : base(message)
-        {
-        }
-        
-        public OutgoingMessage(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
-            : base(message, recipients, sender)
-        {
-        }
+    /// <summary>
+    /// Thread safe Log File
+    /// </summary>
+    public class LogFile : IDisposable
+    {
+        LogWriter m_writer;
 
-        internal OutgoingMessage(Message message, string messageText)
-            : this(message)
+        public LogFile(LogWriter writer)
         {
-            m_rawMessage = messageText;
-        }
-
-        internal OutgoingMessage(Message message, string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
-            : this(message, recipients, sender)
-        {
-            m_rawMessage = messageText;
-        }
-        
-        internal bool HasRawMessage
-        {
-            get
+            if (writer == null)
             {
-                return (!string.IsNullOrEmpty(m_rawMessage));
+                throw new ArgumentNullException();
+            }
+            m_writer = writer;
+        }
+        
+        public void WriteError(Exception exception)
+        {
+            lock(m_writer)
+            {
+                m_writer.WriteError(exception);
+            }
+        }
+
+        public void WriteError(string message)
+        {
+            lock (m_writer)
+            {
+                m_writer.WriteLine(LogEventType.Error, message);
+            }
+        }
+
+        public void WriteLine(LogEventType type, object message)
+        {
+            lock(m_writer)
+            {
+                m_writer.WriteLine(type, message);
+            }
+        }
+
+        public void WriteLine(LogEventType type, string message)
+        {
+            lock(m_writer)
+            {
+                m_writer.WriteLine(type, message);
+            }
+        }
+
+        public void WriteLine(string type, string message)
+        {
+            lock (m_writer)
+            {
+                m_writer.WriteLine(type, message);
+            }
+        }
+
+        public void WriteLine(string message)
+        {
+            lock(m_writer)
+            {
+                m_writer.WriteLine(LogEventType.Info, message); 
             }
         }
         
-        internal string RawMessage
+        public void Dispose()
         {
-            get
+            if (m_writer != null)
             {
-                return m_rawMessage;
+                m_writer.Close();
+                m_writer = null;
             }
         }
     }

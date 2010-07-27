@@ -63,6 +63,9 @@
     <Compile Include="Cryptography\SignedEntity.cs" />
     <Compile Include="Cryptography\SMIMECryptographer.cs" />
     <Compile Include="Cryptography\SMIMEStandard.cs" />
+    <Compile Include="Diagnostics\LogEventType.cs" />
+    <Compile Include="Diagnostics\LogFile.cs" />
+    <Compile Include="Diagnostics\LogFileSettings.cs" />
     <Compile Include="Diagnostics\LogListener.cs" />
     <Compile Include="Diagnostics\LogWriter.cs" />
     <Compile Include="Extensions.cs" />

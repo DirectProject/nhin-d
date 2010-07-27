@@ -214,23 +214,53 @@ namespace NHINDirect.Agent
         public event Action<OutgoingMessage> PreProcessOutgoing;
         public event Action<OutgoingMessage> PostProcessOutgoing;
         public event Action<OutgoingMessage, Exception> ErrorOutgoing;
-                
+        
+        /// <summary>
+        /// If the message is encrypted, then treat it as an incoming message
+        /// Else treat it as an outgoing message
+        /// You'll need to cast MessageEnvelope to IncomingMessage/OutgoingMessage
+        /// </summary>
+        public MessageEnvelope Process(string messageText, ref bool isIncoming)
+        {
+            Message message = MimeSerializer.Default.Deserialize<Message>(messageText);
+            if (SMIMEStandard.IsEncrypted(message))
+            {
+                isIncoming = true;
+                IncomingMessage incoming = new IncomingMessage(message);
+                this.ProcessIncoming(incoming);
+                return incoming;
+            }
+
+            isIncoming = false;
+            OutgoingMessage outgoing = new OutgoingMessage(message, messageText);
+            this.ProcessOutgoing(outgoing);
+            return outgoing;
+        }
+        
+        public MessageEnvelope Process(string messageText, NHINDAddressCollection recipients, NHINDAddress sender, ref bool isIncoming)
+        {
+            this.CheckEnvelopeAddresses(recipients, sender);
+
+            Message message = MimeSerializer.Default.Deserialize<Message>(messageText);            
+            if (SMIMEStandard.IsEncrypted(message))
+            {
+                isIncoming = true;
+                IncomingMessage incoming = new IncomingMessage(message, recipients, sender);
+                this.ProcessIncoming(incoming);
+                return incoming;
+            }
+
+            isIncoming = false;
+            OutgoingMessage outgoing = new OutgoingMessage(message, messageText, recipients, sender);
+            this.ProcessOutgoing(outgoing);
+            return outgoing;
+        }
+                      
         //-------------------------------------------------------------------
         //
         // INCOMING MESSAGE
         //
         //-------------------------------------------------------------------
-        public IncomingMessage ProcessIncoming(string messageText, string recipients, string sender)
-        {
-            IncomingMessage message = new IncomingMessage(
-                                    MimeSerializer.Default.Deserialize<Message>(messageText),
-                                    NHINDAddressCollection.Parse(recipients, AddressSource.RcptTo),
-                                    new NHINDAddress(sender)
-                                    );
-
-            return this.ProcessIncoming(message);                    
-        }
-        
         public IncomingMessage ProcessIncoming(string messageText)
         {
             if (string.IsNullOrEmpty(messageText))
@@ -243,6 +273,19 @@ namespace NHINDirect.Agent
                                     );
         }
 
+        public IncomingMessage ProcessIncoming(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
+        {
+            this.CheckEnvelopeAddresses(recipients, sender);
+            
+            IncomingMessage message = new IncomingMessage(
+                                    MimeSerializer.Default.Deserialize<Message>(messageText),
+                                    recipients,
+                                    sender
+                                    );
+
+            return this.ProcessIncoming(message);                    
+        }
+        
         public IncomingMessage ProcessIncoming(IncomingMessage message)
         {
             if (message == null)
@@ -423,12 +466,14 @@ namespace NHINDirect.Agent
             return this.ProcessOutgoing(message);
         }
         
-        public OutgoingMessage ProcessOutgoing(string messageText, string recipients, string sender)
+        public OutgoingMessage ProcessOutgoing(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
         {
+            this.CheckEnvelopeAddresses(recipients, sender);
+
             OutgoingMessage message = new OutgoingMessage(
                                     this.WrapMessage(messageText),
-                                    NHINDAddressCollection.Parse(recipients, AddressSource.RcptTo),
-                                    new NHINDAddress(sender)
+                                    recipients,
+                                    sender
                                     );
             
             return this.ProcessOutgoing(message);            
@@ -463,16 +508,22 @@ namespace NHINDirect.Agent
 
         void ProcessMessage(OutgoingMessage message)
         {
+            if (!WrappedMessage.IsWrapped(message.Message))
+            {
+                message.Message = message.HasRawMessage ? this.WrapMessage(message.RawMessage) : message.Message;
+            }
+            
             if (message.Sender == null)
             {
                 throw new AgentException(AgentError.MissingFrom);
             }
-
+            
             this.BindAddresses(message);
             if (!message.HasRecipients)
             {
                 throw new AgentException(AgentError.MissingTo);
-            }
+            }            
+            message.CategorizeRecipients(m_domain);
             //
             // Enforce the trust model.
             //
@@ -521,6 +572,16 @@ namespace NHINDirect.Agent
             }
             
             return WrappedMessage.Create(messageText, NHINDStandard.MailHeadersUsed);            
+        }
+
+        Message WrapMessage(Message message)
+        {
+            if (!m_wrappingEnabled)
+            {
+                return message;
+            }
+
+            return WrappedMessage.Create(message, NHINDStandard.MailHeadersUsed);
         }
         
         Message UnwrapMessage(Message message)
@@ -607,6 +668,21 @@ namespace NHINDirect.Agent
             return cert;
         }
         
+        void CheckEnvelopeAddresses(NHINDAddressCollection recipients, NHINDAddress sender)
+        {
+            if (recipients == null || recipients.Count == 0)
+            {
+                throw new AgentException(AgentError.NoRecipients);
+            }
+            if (sender == null)
+            {
+                throw new AgentException(AgentError.NoSender);
+            }
+            
+            recipients.SetSource(AddressSource.RcptTo);
+            sender.Source = AddressSource.MailFrom;
+        }
+                
         void Notify(IncomingMessage message, Action<IncomingMessage> eventHandler)
         {
             //

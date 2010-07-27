@@ -26,6 +26,17 @@ namespace NHINDirect.Mail
 {
     public static class MailParser
     {
+        public static Message ParseMessage(string messageText)
+        {
+            return ParseMessage<Message>(messageText);
+        }
+        
+        public static T ParseMessage<T>(string messageText)
+            where T : Message, new()
+        {
+            return MimeSerializer.Default.Deserialize<T>(messageText);
+        }
+        
         public static ContentType ParseContentType(Header header)
         {
             if (header == null)
@@ -125,8 +136,41 @@ namespace NHINDirect.Mail
 
             foreach (StringSegment part in MimeSerializer.Default.SplitHeader(headerValue, MailStandard.MailAddressSeparator))
             {
-                collection.Add(constructor(MimeParser.SkipWhitespace(part).ToString()));
+                if (!part.IsEmpty)
+                {
+                    collection.Add(constructor(MimeParser.SkipWhitespace(part).ToString()));
+                }
             }
+        }
+        
+        /// <summary>
+        /// SMTP Server envelope recipient lists look like:
+        /// SMTP:example1@example.com;SMTP:example2@example.com;
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="headerValue"></param>
+        /// <param name="constructor"></param>
+        public static TCollection ParseSMTPServerEnvelopeAddresses<T, TCollection>(string recipients, Func<string, T> constructor)
+            where T : MailAddress
+            where TCollection : Collection<T>, new()
+        {
+            if (string.IsNullOrEmpty(recipients))
+            {
+                return null;
+            }
+            
+            recipients = recipients.Replace("SMTP:", string.Empty);
+
+            TCollection collection = new TCollection();
+            foreach (StringSegment part in MimeSerializer.Default.SplitHeader(recipients, ';'))
+            {
+                if (!part.IsEmpty)
+                {
+                    collection.Add(constructor(MimeParser.SkipWhitespace(part).ToString()));
+                }
+            }
+            
+            return collection;
         }
     }
 }

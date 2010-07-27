@@ -17,24 +17,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
+using System.Security.Cryptography.X509Certificates;
+using NHINDirect.Certificates;
+using System.Net;
 
-namespace NHINDirect.Mime
+namespace NHINDirect.Agent.Config
 {
-    public enum MimeError
+    [XmlType("DnsCertificateStore")]
+    public class DnsCertResolverSettings : CertResolverSettings
     {
-        Unexpected = 0,
-        InvalidCRLF,
-        InvalidMimeEntity,
-        InvalidHeader,
-        InvalidBody,
-        InvalidBodySubpart,
-        MissingNameValueSeparator,
-        MissingHeaderValue,
-        MissingBody,
-        ContentTypeMismatch,
-        TransferEncodingMismatch,
-        Base64EncodingRequired,
-        NotMultipart,
-        MissingBoundarySeparator
+        public DnsCertResolverSettings()
+        {
+        }
+        
+        [XmlElement]
+        public string ServerIP;
+        [XmlElement]
+        public int Timeout;
+        [XmlElement]
+        public string FallbackDomain;
+
+        public override void Validate()
+        {
+            if (string.IsNullOrEmpty(this.ServerIP))
+            {
+                throw new ArgumentException("Server IP not specified");
+            }
+        }
+        
+        public override ICertificateResolver CreateResolver()
+        {
+            this.Validate();
+            return new DnsCertResolver(IPAddress.Parse(this.ServerIP), this.Timeout, this.FallbackDomain);
+        }
     }
 }

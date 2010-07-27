@@ -104,7 +104,7 @@ namespace NHINDirect.Cryptography
         {
             return (SMIMEStandard.IsContentEncrypted(entity.ParsedContentType) && SMIMEStandard.VerifyEncoding(entity));
         }
-        
+                        
         public static bool IsSignedEnvelope(MimeEntity entity)
         {
             return (SMIMEStandard.IsContentEnvelopedSignature(entity.ParsedContentType) && SMIMEStandard.VerifyEncoding(entity));

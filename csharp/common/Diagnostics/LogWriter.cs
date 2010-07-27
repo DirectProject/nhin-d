@@ -22,31 +22,33 @@ using System.IO;
 namespace NHINDirect.Diagnostics
 {
     public class LogWriter : TextWriter, IDisposable
-    {
-        public enum EventType
-        {
-            Critical,
-            Error,
-            Warning,
-            Information
-        }
-        
+    {        
         string m_machineName;
         string m_directoryPath;
         string m_namePrefix;
         string m_ext;
-        int m_newFileIntervalHours = 24;
-        int m_fileIndex = -1;
+        int m_fileChangeFreqHours = 24;
+        int m_fileNumber = -1;
         StreamWriter m_writer;
+
+        public LogWriter(string directoryPath, string namePrefix)
+            : this(directoryPath, namePrefix, "log", 24)
+        {
+        }
         
         public LogWriter(string directoryPath, string namePrefix, string ext)
             : this(directoryPath, namePrefix, ext, 24)
         {
         }
-                
-        public LogWriter(string directoryPath, string namePrefix, string ext, int newFileIntervalHours)
+
+        public LogWriter(string directoryPath, string namePrefix, string ext, int fileChangeFreqHours)
+            : this(directoryPath, namePrefix, ext, fileChangeFreqHours, false)
         {
-            if (string.IsNullOrEmpty(directoryPath) || string.IsNullOrEmpty(namePrefix) || string.IsNullOrEmpty(ext) || newFileIntervalHours <= 0 || newFileIntervalHours > 24)
+        }
+                        
+        public LogWriter(string directoryPath, string namePrefix, string ext, int fileChangeFreqHours, bool useUTC)
+        {
+            if (string.IsNullOrEmpty(directoryPath) || string.IsNullOrEmpty(namePrefix) || string.IsNullOrEmpty(ext) || fileChangeFreqHours <= 0 || fileChangeFreqHours > 24)
             {
                 throw new ArgumentException();
             }
@@ -54,8 +56,8 @@ namespace NHINDirect.Diagnostics
             m_directoryPath = directoryPath;
             m_namePrefix = namePrefix;
             m_ext = ext;
-            m_newFileIntervalHours = newFileIntervalHours;
-            
+            m_fileChangeFreqHours = fileChangeFreqHours;
+            this.UTCTime = useUTC;
             m_machineName = this.GetMachineName();
         }
 
@@ -80,15 +82,15 @@ namespace NHINDirect.Diagnostics
 
         public void WriteError(Exception exception)
         {
-            this.WriteLine(EventType.Error, exception);
+            this.WriteLine(LogEventType.Error, exception);
         }
 
-        public void WriteLine(EventType type, object message)
+        public void WriteLine(LogEventType type, object message)
         {
             this.WriteLine(type, message.ToString());
         }
 
-        public void WriteLine(EventType type, string message)
+        public void WriteLine(LogEventType type, string message)
         {
             this.WriteLine(type.ToString(), message);
         }
@@ -104,8 +106,8 @@ namespace NHINDirect.Diagnostics
             {
                 log = string.Format("{0},{1},{2}", type, DateTime.UtcNow, message);
             }
-            
-            this.WriteLine(log);
+
+            this.WriteText(log);
         }
     
         public override void WriteLine(string message)
@@ -139,7 +141,7 @@ namespace NHINDirect.Diagnostics
         void EnsureWriter()
         {
             DateTime now = this.Now;
-            if (m_writer == null || (now.Hour / m_newFileIntervalHours) != m_fileIndex)
+            if (m_writer == null || (now.Hour / m_fileChangeFreqHours) != m_fileNumber)
             {
                 this.NewFile(now);
             }
@@ -151,15 +153,15 @@ namespace NHINDirect.Diagnostics
             this.Close();
             
             string fileName;
-            int fileIndex = now.Hour / m_newFileIntervalHours;
-            m_fileIndex = fileIndex;
+            int fileIndex = now.Hour / m_fileChangeFreqHours;
+            m_fileNumber = fileIndex;
 
             int id = -1;
             int maxid = 1024;
             do
             {
                 id++;
-                if (m_newFileIntervalHours < 24)
+                if (m_fileChangeFreqHours < 24)
                 {
                     fileName = this.CreateHourlyName(now, fileIndex, id);
                 }

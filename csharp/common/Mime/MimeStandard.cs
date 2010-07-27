@@ -53,6 +53,8 @@ namespace NHINDirect.Mime
         //
         // Content-Type
         //
+        public const string MediaType_TextPlain = "text/plain";
+        public const string MediaType_Default = MediaType_TextPlain;
         public const string MediaType_Multipart = "multipart";
         public const string MediaType_MultipartMixed = "multipart/mixed;";
         //

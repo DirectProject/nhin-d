@@ -26,6 +26,7 @@ namespace NHINDirect.Agent
     {
         public readonly static string[] MailHeadersUsed = new string[]
         {
+            MimeStandard.VersionHeader,
             MailStandard.FromHeader,
             MailStandard.ToHeader,
             MailStandard.CCHeader,

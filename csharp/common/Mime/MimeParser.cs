@@ -110,7 +110,7 @@ namespace NHINDirect.Mime
                     continue;
                 }
                 
-                yield return new StringSegment(source.Source, startAt, reader.Position); // STRUCTS - fast
+                yield return new StringSegment(source.Source, startAt, reader.Position - 1); // STRUCTS - fast
                 startAt = reader.Position + 1;
             }            
             
@@ -197,6 +197,11 @@ namespace NHINDirect.Mime
             if (bodyLines == null)
             {
                 throw new ArgumentNullException();
+            }
+            
+            if (string.IsNullOrEmpty(boundary))
+            {
+                throw new MimeException(MimeError.MissingBoundarySeparator);
             }
             
             IEnumerator<StringSegment> lineEnumerator = bodyLines.GetEnumerator();

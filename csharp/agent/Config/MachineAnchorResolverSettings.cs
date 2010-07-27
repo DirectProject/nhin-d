@@ -17,53 +17,71 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Net.Mail;
-using System.Security.Cryptography.Pkcs;
-using System.Security.Cryptography.X509Certificates;
-using NHINDirect.Mail;
-using NHINDirect.Mime;
+using System.Xml.Serialization;
+using NHINDirect.Certificates;
 
-namespace NHINDirect.Agent
+namespace NHINDirect.Agent.Config
 {
-    public class OutgoingMessage : MessageEnvelope
-    {        
-        string m_rawMessage;
-        
-        public OutgoingMessage(Message message)
-            : base(message)
+    [XmlType("MachineAnchorStore")]
+    public class MachineAnchorResolverSettings : TrustAnchorResolverSettings
+    {
+        public MachineAnchorResolverSettings()
         {
         }
         
-        public OutgoingMessage(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
-            : base(message, recipients, sender)
+        [XmlElement]
+        public MachineCertResolverSettings Incoming 
         {
+            get; 
+            set;
         }
 
-        internal OutgoingMessage(Message message, string messageText)
-            : this(message)
-        {
-            m_rawMessage = messageText;
+        [XmlElement]
+        public MachineCertResolverSettings Outgoing 
+        { 
+            get; 
+            set; 
         }
 
-        internal OutgoingMessage(Message message, string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
-            : this(message, recipients, sender)
+        public override void Validate()
         {
-            m_rawMessage = messageText;
-        }
-        
-        internal bool HasRawMessage
-        {
-            get
+            if (this.Incoming == null)
             {
-                return (!string.IsNullOrEmpty(m_rawMessage));
+                throw new ArgumentNullException("Incoming Anchors not specified");
             }
+            this.Incoming.Validate();
+            
+            if (this.Outgoing == null)
+            {
+                throw new ArgumentNullException("Outgoing Anchors not specified");
+            }
+            this.Outgoing.Validate();
         }
         
-        internal string RawMessage
+        public override ITrustAnchorResolver CreateResolver()
         {
-            get
+            this.Validate();
+
+            SystemX509Store outgoing = null;
+            SystemX509Store incoming = null;
+            
+            try
             {
-                return m_rawMessage;
+                outgoing = this.Outgoing.OpenStore();
+                incoming = this.Incoming.OpenStore();
+
+                return new TrustAnchorResolver((IX509CertificateStore)outgoing, (IX509CertificateStore) incoming);
+            }
+            finally
+            {
+                if (outgoing != null)
+                {
+                    outgoing.Dispose();
+                }
+                if (incoming != null)
+                {
+                    incoming.Dispose();
+                }
             }
         }
     }

@@ -61,7 +61,7 @@ namespace NHINDirect.Mime
                 this.Serialize(entity, writer);
             }
         }
-
+        
         public virtual string Serialize(MimeEntity entity)
         {
             byte[] asciiBytes = this.SerializeToBytes(entity);

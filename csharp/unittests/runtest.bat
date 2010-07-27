@@ -12,19 +12,29 @@ set this=%~p0
 set nunitbin=..\external\nunit\bin\net-2.0
 set bin=..\bin\Debug
 
-echo Running %2 from %1
+echo ************************************
+echo ====================================
+echo.
+echo %2 [%1]
+echo.
+echo ====================================
+echo ************************************
 
 %nunitbin%\nunit-console.exe /run:%testName% %bin%\%assembly%
+if %ERRORLEVEL% EQU 0 goto :Done
+
+echo ************************************
+echo ====================================
+echo ERROR: %ERRORLEVEL%
+echo ====================================
+echo ************************************
 
 goto :Done
-
-goto :EOF
 
 @rem--------------------------------------------------
 :Usage
 echo assembly testName 
 goto :Done
-
 
 @rem--------------------------------------------------
 :Done

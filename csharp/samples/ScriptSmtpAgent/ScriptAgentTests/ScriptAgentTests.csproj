@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</ProjectGuid>
+    <ProjectGuid>{621AF8E4-D022-4EE7-B136-D512523EF597}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect.Agent</RootNamespace>
-    <AssemblyName>nhinAgent</AssemblyName>
+    <RootNamespace>ScriptAgentTests</RootNamespace>
+    <AssemblyName>ScriptAgentUnitTests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,49 +25,38 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\Release\</OutputPath>
+    <OutputPath>..\..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\external\nunit\bin\net-2.0\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="ScriptSmtpAgent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
-    <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\AgentSettings.cs" />
-    <Compile Include="Config\CertResolverSettings.cs" />
-    <Compile Include="Config\CertificateSettings.cs" />
-    <Compile Include="Config\DnsCertResolverSettings.cs" />
-    <Compile Include="Config\MachineCertResolverSettings.cs" />
-    <Compile Include="Config\TrustAnchorSettings.cs" />
-    <Compile Include="Config\TrustAnchorResolverSettings.cs" />
-    <Compile Include="Config\MachineAnchorResolverSettings.cs" />
-    <Compile Include="MessageEnvelope.cs" />
-    <Compile Include="IncomingMessage.cs" />
-    <Compile Include="MessageSignature.cs" />
-    <Compile Include="MessageSignatureCollection.cs" />
-    <Compile Include="NHINDAddress.cs" />
-    <Compile Include="NHINDAddressCollection.cs" />
-    <Compile Include="NHINDAgent.cs" />
-    <Compile Include="NHINDStandard.cs" />
-    <Compile Include="OutgoingMessage.cs" />
+    <Compile Include="Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AgentError.cs" />
-    <Compile Include="AgentException.cs" />
-    <Compile Include="TrustChainValidator.cs" />
-    <Compile Include="TrustModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\common\nhinCommon.csproj">
-      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
-      <Name>nhinCommon</Name>
-    </ProjectReference>
+    <Content Include="ScriptAgentTestConfig.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -17,24 +17,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
+using NHINDirect.Certificates;
 
-namespace NHINDirect.Mime
+namespace NHINDirect.Agent.Config
 {
-    public enum MimeError
+    public abstract class CertResolverSettings
     {
-        Unexpected = 0,
-        InvalidCRLF,
-        InvalidMimeEntity,
-        InvalidHeader,
-        InvalidBody,
-        InvalidBodySubpart,
-        MissingNameValueSeparator,
-        MissingHeaderValue,
-        MissingBody,
-        ContentTypeMismatch,
-        TransferEncodingMismatch,
-        Base64EncodingRequired,
-        NotMultipart,
-        MissingBoundarySeparator
+        public abstract void Validate();
+        public abstract ICertificateResolver CreateResolver();
     }
 }

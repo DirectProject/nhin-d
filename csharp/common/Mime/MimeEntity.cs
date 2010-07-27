@@ -101,10 +101,12 @@ namespace NHINDirect.Mime
                 if (m_contentType == null)
                 {
                     string contentType = this.ContentType;
-                    if (!string.IsNullOrEmpty(contentType))
+                    if (string.IsNullOrEmpty(contentType))
                     {
-                        m_contentType = new ContentType(contentType);
+                        contentType = MimeStandard.MediaType_Default;
                     }
+                    
+                    m_contentType = new ContentType(contentType);
                 }
 
                 return m_contentType;
@@ -116,7 +118,7 @@ namespace NHINDirect.Mime
             get
             {
                 string contentType = this.ContentType;
-                if (contentType == null)
+                if (string.IsNullOrEmpty(contentType))
                 {
                     return false;
                 }
@@ -189,7 +191,7 @@ namespace NHINDirect.Mime
         {
             if (!this.IsMultiPart)
             {
-                throw new InvalidOperationException();
+                throw new MimeException(MimeError.NotMultipart);
             }
             
             foreach(MimePart part in this.GetAllParts())
@@ -201,8 +203,17 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Gets all body parts of a multipart message, including prologue & epilogue
+        /// </summary>
+        /// <returns></returns>
         public virtual IEnumerable<MimePart> GetAllParts()
         {
+            if (!this.IsMultiPart)
+            {
+                throw new MimeException(MimeError.NotMultipart);
+            }
+            
             return MimeParser.ReadBodyParts(m_body.SourceText, this.ParsedContentType.Boundary);
         }
         

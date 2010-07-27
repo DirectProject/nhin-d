@@ -31,6 +31,7 @@ namespace NHINDirect.Certificates
         IPAddress m_serverIP;
         string m_fallbackDomain = string.Empty;
         int m_timeout;
+       int m_maxRetries = 1;
         
         public DnsCertResolver(IPAddress serverIP)
             : this(serverIP, DnsCertResolver.DefaultTimeoutMs)
@@ -48,7 +49,10 @@ namespace NHINDirect.Certificates
             {
                 throw new ArgumentNullException();
             }
-            
+            if (timeoutMs < 0)
+            {
+                throw new ArgumentException();
+            }
             m_serverIP = serverIP;
             m_timeout = timeoutMs;
             m_fallbackDomain = fallbackDomain;
@@ -80,6 +84,23 @@ namespace NHINDirect.Certificates
             }
         }
         
+        public int MaxRetries
+        {
+            get
+            {
+                return m_maxRetries;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentException();
+                }
+                
+                m_maxRetries = value;
+            }
+        }
+        
         public bool AssumeWildcardSupport = true;
         
         public X509Certificate2Collection GetCertificates(MailAddress address)
@@ -92,6 +113,7 @@ namespace NHINDirect.Certificates
                 }
                 
                 client.UseUDP = false;
+                client.MaxRetries = m_maxRetries;
                 X509Certificate2Collection certs = null;
                 
                 certs = this.ResolveDomain(client, address.Address);
