@@ -6,6 +6,10 @@ syntax: glob
 # ignore for Mac OX
 .DS_Store
 
+# ignore for MonoDevelop
+*.pidb
+*.userprefs
+
 # Ignore for Java
 *.class
 tmp/

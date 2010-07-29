@@ -27,6 +27,47 @@ namespace DnsResolver
     //
     // Not thread safe
     //
+	/// <summary>
+	///   Basic DNS client resolver, handling a variety of DNS request types.
+    /// </summary>
+    /// 
+    /// <example>
+    ///   This example uses the shorthand methods to resolve CERT records
+    ///   <code>
+	///     const string LocalDnsIp = "127.0.0.1";
+	///     const string ExampleDomain = "bob.example.org"; // for bob@example.org
+	///     var client = new DnsClient(LocalDnsIp);
+	///     foreach (var certrec in client.ResolveCERT(ExampleDomain))
+	///     {
+	///         if (certrec.CertType == CertRecord.X509)
+	///         {
+	///             byte [] rawdata = certrec.Data;
+	///              // create X509 certificate from rawdata
+	///         }
+	///     }
+	///    </code>
+	///   </example
+    /// <example>
+    ///   This example uses the full power of the DnsClient library
+	///   <code>
+	///     const string LocalDnsIp = "127.0.0.1";
+	///     const string ExampleDomain = "bob.example.org"; // for bob@example.org
+	///     var client = new DnsClient(LocalDnsIp);
+	///     var req = new DnsRequest(Dns.RecordType.CERT, ExampleDomain);
+	///     var resp = client.Resolve(req);
+	///     if (resp != null && resp.HasAnswerRecords)
+	///     {
+	///         foreach (var certrec in response.AnswerRecords.CERT)
+	///         {
+	///             if (certrec.CertType == CertRecord.X509)
+	///             {
+	///                 byte [] rawdata = certrec.Data;
+	///                 // create X509 certificate from rawdata
+	///             }
+	///         }
+	///      }
+	///   </code> 
+	/// </example>
     public class DnsClient : IDisposable
     {
         public const int DefaultTimeoutMs = 2000; // 2 seconds
