@@ -3,6 +3,9 @@
 # use glob syntax
 syntax: glob
 
+# ignore for Mercurial
+*.orig
+
 # ignore for Mac OX
 .DS_Store
 
