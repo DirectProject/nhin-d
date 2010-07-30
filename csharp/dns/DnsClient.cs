@@ -37,7 +37,13 @@ namespace DnsResolver
 	///     const string LocalDnsIp = "127.0.0.1";
 	///     const string ExampleDomain = "bob.example.org"; // for bob@example.org
 	///     var client = new DnsClient(LocalDnsIp);
-	///     foreach (var certrec in client.ResolveCERT(ExampleDomain)) //should wrap in a try block to catch network exceptions
+	///     try { IEnumerable<CertRecord> certrecs = client.ResolveCERT(ExampleDomain); }
+	///     catch (DnsException error)
+	///     {
+	///         //handle error
+	///     }
+	///         
+	///     foreach (var certrec in certrecs) 
 	///     {
 	///         if (certrec.CertType == CertRecord.X509)
 	///         {
@@ -53,7 +59,11 @@ namespace DnsResolver
 	///     const string ExampleDomain = "bob.example.org"; // for bob@example.org
 	///     var client = new DnsClient(LocalDnsIp);
 	///     var req = new DnsRequest(Dns.RecordType.CERT, ExampleDomain); 
-	///     DnsResponse resp = client.Resolve(req); //should wrap in a try block to catch network exceptions
+	///     try { DnsResponse resp = client.Resolve(req); }
+	///     catch (DnsException error)
+	///     {
+	///         // handle error
+	///     }
 	///     if (resp != null && resp.HasAnswerRecords)
 	///     {
 	///         foreach (var certrec in response.AnswerRecords.CERT)
@@ -304,6 +314,15 @@ namespace DnsResolver
             throw new DnsProtocolException(DnsProtocolError.MaxAttemptsReached);
         }
         
+		/// <summary>
+		/// Convenience method resolving and returning A RRs. 
+		/// </summary>
+		/// <param name="domain">
+		/// The domain name to resolve.
+		/// </param>
+		/// <returns>
+		/// An enumeration of Address Records. See <see cref="AddressRecord"/>
+		/// </returns>
         public IEnumerable<AddressRecord> ResolveA(string domain)
         {
             DnsResponse response = this.Resolve(DnsRequest.CreateA(domain));
@@ -313,6 +332,16 @@ namespace DnsResolver
             }            
             return response.AnswerRecords.A;
         }
+
+		/// <summary>
+		/// Convenience method resolving and returning PTR RRs. 
+		/// </summary>
+		/// <param name="domain">
+		/// The domain name to resolve.
+		/// </param>
+		/// <returns>
+		/// An enumeration of PTR Records. See <see cref="PtrRecord"/>
+		/// </returns>
 
         public IEnumerable<PtrRecord> ResolvePTR(string domain)
         {
@@ -324,6 +353,15 @@ namespace DnsResolver
             return response.AnswerRecords.PTR;
         }
 
+		/// <summary>
+		/// Convenience method resolving and returning NS RRs. 
+		/// </summary>
+		/// <param name="domain">
+		/// The domain name to resolve.
+		/// </param>
+		/// <returns>
+		/// An enumeration of NS Records. See <see cref="NSRecord"/>
+		/// </returns>
         public IEnumerable<NSRecord> ResolveNS(string domain)
         {
             DnsResponse response = this.Resolve(DnsRequest.CreateNS(domain));
@@ -334,6 +372,15 @@ namespace DnsResolver
             return response.AnswerRecords.NS;
         }
           
+		/// <summary>
+		/// Convenience method resolving and returning MX RRs. 
+		/// </summary>
+		/// <param name="domain">
+		/// The domain name to resolve.
+		/// </param>
+		/// <returns>
+		/// An enumeration of MX Records. See <see cref="MXRecord"/>
+		/// </returns>
         public IEnumerable<MXRecord> ResolveMX(string emailDomain)
         {
             DnsResponse response = this.Resolve(DnsRequest.CreateMX(emailDomain));
@@ -344,6 +391,15 @@ namespace DnsResolver
             return response.AnswerRecords.MX;
         }
 
+		/// <summary>
+		/// Convenience method resolving and returning TXT RRs. 
+		/// </summary>
+		/// <param name="domain">
+		/// The domain name to resolve.
+		/// </param>
+		/// <returns>
+		/// An enumeration of TXT Records. See <see cref="TXTRecord"/>
+		/// </returns>
         public IEnumerable<TextRecord> ResolveTXT(string domain)
         {
             DnsResponse response = this.Resolve(DnsRequest.CreateTXT(domain));
@@ -354,6 +410,15 @@ namespace DnsResolver
             return response.AnswerRecords.TXT;
         }
                 
+		/// <summary>
+		/// Convenience method resolving and returning CERT RRs. 
+		/// </summary>
+		/// <param name="domain">
+		/// The domain name to resolve.
+		/// </param>
+		/// <returns>
+		/// An enumeration of CERT Records. See <see cref="CertRecord"/>
+		/// </returns>
         public IEnumerable<CertRecord> ResolveCERT(string domain)
         {
             DnsResponse response = this.Resolve(DnsRequest.CreateCERT(domain));
@@ -365,6 +430,15 @@ namespace DnsResolver
             return response.AnswerRecords.CERT;
         }
         
+		/// <summary>
+		/// Convenience method resolving and returning SOA RRs. 
+		/// </summary>
+		/// <param name="domain">
+		/// The domain name to resolve.
+		/// </param>
+		/// <returns>
+		/// An enumeration of SOA Records. See <see cref="SOARecord"/>
+		/// </returns>
         public IEnumerable<SOARecord> ResolveSOA(string domain)
         {
             DnsResponse response = this.Resolve(DnsRequest.CreateSOA(domain));
@@ -384,6 +458,15 @@ namespace DnsResolver
             return null;
         }
 
+		/// <summary>
+		/// Convenience method on top of ResolveA, returns IPAddress entries, rather than A records. 
+		/// </summary>
+		/// <param name="hostNameOrAddress">
+		/// The domain name to resolve (takes an string IP address as well and returns a parsed IPAddress entry).
+		/// </param>
+		/// <returns>
+		/// An enumeration of IPAddress instances. See <see cref="System.Net.IPAddress"/>
+		/// </returns>
         public IEnumerable<IPAddress> ResolveHostAddresses(string hostNameOrAddress)
         {
             IPAddress address = IPAddress.None;
@@ -402,6 +485,16 @@ namespace DnsResolver
             }
         }
         
+		/// <summary>
+		/// Convenience method on top of ResolveA, returns IPAddress entries, rather than A records, for an
+		/// enumeration of domain names.
+		/// </summary>
+		/// <param name="hostNamesOrAddresses">
+		/// An enumeration of domain name to resolve (takes string IP addresses as well and returns a parsed IPAddress entry).
+		/// </param>
+		/// <returns>
+		/// An enumeration of IPAddress instances. See <see cref="System.Net.IPAddress"/>
+		/// </returns>
         public IEnumerable<IPAddress> ResolveHostAddresses(IEnumerable<string> hostNamesOrAddresses)
         {
             if (hostNamesOrAddresses == null)
