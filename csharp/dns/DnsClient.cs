@@ -28,7 +28,7 @@ namespace DnsResolver
     // Not thread safe
     //
 	/// <summary>
-	///   Basic DNS client resolver, handling a variety of DNS request types and using TCP by default.
+	///   DNS client resolver, handling a variety of DNS request types and using TCP by default.
     /// </summary>
     /// 
     /// <example>
