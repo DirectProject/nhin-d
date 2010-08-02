@@ -32,6 +32,33 @@ namespace DnsResolver
     /// </summary>
     /// 
     /// <example>
+	///   This example demonstrates basic resolver features.
+	///   <code>
+	///     const string DnsServer = "8.8.8.8";
+	///     const string ExampleDomain = "example.org";
+	///     var client = new DnsClient(DnsServer);
+	///
+	///     System.Console.WriteLine("Host addresses for " + ExampleDomain);
+	///     foreach(IPAddress addr in client.GetHostAddresses(ExampleDomain)
+	///     {
+	///         System.Console.WriteLine(addr.ToString());
+	///     }
+	///
+	///     System.Console.WriteLine("Name Server addresses for " + ExampleDomain);
+	///     foreach(IPAddress addr in client.GetNameServers(ExampleDomain)
+	///     {
+	///         System.Console.WriteLine(addr.ToString());
+	///     }
+	///
+	///     System.Console.WriteLine("Authority Server addresses for " + ExampleDomain);
+	///     foreach(IPAddress addr in client.GetAuthorityServers(ExampleDomain)
+	///     {
+	///         System.Console.WriteLine(addr.ToString());
+	///     }
+	///   </code>
+	/// </example>
+    /// 
+    /// <example>
     ///   This example uses the shorthand methods to resolve CERT records
     ///   <code>
 	///     const string LocalDnsIp = "127.0.0.1";
@@ -342,7 +369,6 @@ namespace DnsResolver
 		/// <returns>
 		/// An enumeration of PTR Records. See <see cref="PtrRecord"/>
 		/// </returns>
-
         public IEnumerable<PtrRecord> ResolvePTR(string domain)
         {
             DnsResponse response = this.Resolve(DnsRequest.CreatePTR(domain));
@@ -459,7 +485,7 @@ namespace DnsResolver
         }
 
 		/// <summary>
-		/// Convenience method on top of ResolveA, returns IPAddress entries, rather than A records. 
+		/// Resolves a domain name. 
 		/// </summary>
 		/// <param name="hostNameOrAddress">
 		/// The domain name to resolve (takes an string IP address as well and returns a parsed IPAddress entry).
@@ -486,8 +512,7 @@ namespace DnsResolver
         }
         
 		/// <summary>
-		/// Convenience method on top of ResolveA, returns IPAddress entries, rather than A records, for an
-		/// enumeration of domain names.
+		/// Resolves an enumeration of domain names.
 		/// </summary>
 		/// <param name="hostNamesOrAddresses">
 		/// An enumeration of domain name to resolve (takes string IP addresses as well and returns a parsed IPAddress entry).
@@ -522,9 +547,16 @@ namespace DnsResolver
             }
         }
 
-        //
-        // Duplicates the behavior of System.Net.Dns.GetHostAddresses
-        //
+		/// <summary>
+		/// Duplicates the behavior of System.Net.Dns.GetHostAddresses.
+		/// </summary>
+		/// <param name="hostNameOrAddress">
+		/// A domain name to resolve (takes a string IP address as well and returns a parsed IPAddress entry).
+		/// </param>
+		/// <returns>
+		/// A array of IPAddress instances. See <see cref="System.Net.IPAddress"/>
+		/// </returns>
+
         public IPAddress[] GetHostAddresses(string hostNameOrAddress)
         {
             IEnumerable<IPAddress> addresses = this.ResolveHostAddresses(hostNameOrAddress);
@@ -536,6 +568,15 @@ namespace DnsResolver
             return null;
         }
                 
+		/// <summary>
+		/// Resolves authority servers for a domain name.
+		/// </summary>
+		/// <param name="domain">
+		/// A domain name to resolve.
+		/// </param>
+		/// <returns>
+		/// A array of IPAddress instances of authority servers for the domain. See <see cref="System.Net.IPAddress"/>
+		/// </returns>
         public IEnumerable<IPAddress> GetAuthorityServers(string domain)
         {
             IEnumerable<SOARecord> soaRecords = this.ResolveSOA(domain);
@@ -550,6 +591,15 @@ namespace DnsResolver
             return null;
         }
 
+		/// <summary>
+		/// Resolves name servers for a domain name.
+		/// </summary>
+		/// <param name="domain">
+		/// A domain name to resolve.
+		/// </param>
+		/// <returns>
+		/// A array of IPAddress instances of name servers for the domain. See <see cref="System.Net.IPAddress"/>
+		/// </returns>
         public IEnumerable<IPAddress> GetNameServers(string domain)
         {
             IEnumerable<NSRecord> nsRecords = this.ResolveNS(domain);
@@ -563,7 +613,10 @@ namespace DnsResolver
 
             return null;
         }
-                                
+		
+		/// <summary>
+		/// Closes network resources for this instance. 
+		/// </summary>
         public void Close()
         {
             if (m_udpSocket != null)
