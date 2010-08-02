@@ -12,6 +12,7 @@ syntax: glob
 # ignore for MonoDevelop
 *.pidb
 *.userprefs
+test-results/
 
 # Ignore for Java
 *.class
