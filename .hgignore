@@ -3,8 +3,16 @@
 # use glob syntax
 syntax: glob
 
+# ignore for Mercurial
+*.orig
+
 # ignore for Mac OX
 .DS_Store
+
+# ignore for MonoDevelop
+*.pidb
+*.userprefs
+test-results/
 
 # Ignore for Java
 *.class
