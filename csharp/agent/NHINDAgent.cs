@@ -214,7 +214,7 @@ namespace NHINDirect.Agent
         public event Action<OutgoingMessage> PreProcessOutgoing;
         public event Action<OutgoingMessage> PostProcessOutgoing;
         public event Action<OutgoingMessage, Exception> ErrorOutgoing;
-        
+                
         /// <summary>
         /// If the message is encrypted, then treat it as an incoming message
         /// Else treat it as an outgoing message
@@ -222,40 +222,41 @@ namespace NHINDirect.Agent
         /// </summary>
         public MessageEnvelope Process(string messageText, ref bool isIncoming)
         {
-            Message message = MimeSerializer.Default.Deserialize<Message>(messageText);
-            if (SMIMEStandard.IsEncrypted(message))
-            {
-                isIncoming = true;
-                IncomingMessage incoming = new IncomingMessage(message);
-                this.ProcessIncoming(incoming);
-                return incoming;
-            }
-
-            isIncoming = false;
-            OutgoingMessage outgoing = new OutgoingMessage(message, messageText);
-            this.ProcessOutgoing(outgoing);
-            return outgoing;
+            return this.Process(new MessageEnvelope(messageText), ref isIncoming);
         }
         
         public MessageEnvelope Process(string messageText, NHINDAddressCollection recipients, NHINDAddress sender, ref bool isIncoming)
         {
-            this.CheckEnvelopeAddresses(recipients, sender);
+            return this.Process(new MessageEnvelope(messageText, recipients, sender), ref isIncoming);
+        }
 
-            Message message = MimeSerializer.Default.Deserialize<Message>(messageText);            
-            if (SMIMEStandard.IsEncrypted(message))
+        public MessageEnvelope Process(MessageEnvelope envelope, ref bool isIncoming)
+        {
+            if (envelope == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            this.CheckEnvelopeAddresses(envelope);
+
+            if (SMIMEStandard.IsEncrypted(envelope.Message))
             {
                 isIncoming = true;
-                IncomingMessage incoming = new IncomingMessage(message, recipients, sender);
+                IncomingMessage incoming = new IncomingMessage(envelope);
+                envelope.Clear();
+                
                 this.ProcessIncoming(incoming);
                 return incoming;
             }
 
             isIncoming = false;
-            OutgoingMessage outgoing = new OutgoingMessage(message, messageText, recipients, sender);
+            OutgoingMessage outgoing = new OutgoingMessage(envelope);
+            envelope.Clear();
+            
             this.ProcessOutgoing(outgoing);
             return outgoing;
         }
-                      
+                              
         //-------------------------------------------------------------------
         //
         // INCOMING MESSAGE
@@ -268,22 +269,26 @@ namespace NHINDirect.Agent
                 throw new ArgumentException();
             }
 
-            return this.ProcessIncoming(new IncomingMessage(
-                                    MimeSerializer.Default.Deserialize<Message>(messageText))
-                                    );
+            return this.ProcessIncoming(new IncomingMessage(messageText));
         }
 
         public IncomingMessage ProcessIncoming(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
         {
             this.CheckEnvelopeAddresses(recipients, sender);
             
-            IncomingMessage message = new IncomingMessage(
-                                    MimeSerializer.Default.Deserialize<Message>(messageText),
-                                    recipients,
-                                    sender
-                                    );
-
+            IncomingMessage message = new IncomingMessage(messageText, recipients, sender);
             return this.ProcessIncoming(message);                    
+        }
+
+        public IncomingMessage ProcessIncoming(MessageEnvelope envelope)
+        {
+            if (envelope == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            this.CheckEnvelopeAddresses(envelope);
+            return this.ProcessIncoming(new IncomingMessage(envelope));
         }
         
         public IncomingMessage ProcessIncoming(IncomingMessage message)
@@ -470,13 +475,21 @@ namespace NHINDirect.Agent
         {
             this.CheckEnvelopeAddresses(recipients, sender);
 
-            OutgoingMessage message = new OutgoingMessage(
-                                    this.WrapMessage(messageText),
-                                    recipients,
-                                    sender
-                                    );
-            
+            OutgoingMessage message = new OutgoingMessage(this.WrapMessage(messageText), recipients, sender);            
             return this.ProcessOutgoing(message);            
+        }
+
+        public OutgoingMessage ProcessOutgoing(MessageEnvelope envelope)
+        {
+            if (envelope == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            this.CheckEnvelopeAddresses(envelope);
+
+            OutgoingMessage message = new OutgoingMessage(envelope);
+            return this.ProcessOutgoing(message);
         }
         
         public OutgoingMessage ProcessOutgoing(OutgoingMessage message)
@@ -510,7 +523,7 @@ namespace NHINDirect.Agent
         {
             if (!WrappedMessage.IsWrapped(message.Message))
             {
-                message.Message = message.HasRawMessage ? this.WrapMessage(message.RawMessage) : message.Message;
+                message.Message = message.HasRawMessage ? this.WrapMessage(message.RawMessage) : this.WrapMessage(message.Message);
             }
             
             if (message.Sender == null)
@@ -580,7 +593,12 @@ namespace NHINDirect.Agent
             {
                 return message;
             }
-
+            
+            if (WrappedMessage.IsWrapped(message))
+            {
+                return message;
+            }
+            
             return WrappedMessage.Create(message, NHINDStandard.MailHeadersUsed);
         }
         
@@ -666,6 +684,11 @@ namespace NHINDirect.Agent
             }
 
             return cert;
+        }
+        
+        void CheckEnvelopeAddresses(MessageEnvelope envelope)
+        {
+            this.CheckEnvelopeAddresses(envelope.Recipients, envelope.Sender);
         }
         
         void CheckEnvelopeAddresses(NHINDAddressCollection recipients, NHINDAddress sender)

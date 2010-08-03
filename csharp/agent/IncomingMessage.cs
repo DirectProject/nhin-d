@@ -29,7 +29,12 @@ namespace NHINDirect.Agent
     {
         SignedCms m_signatures;                             // All signatures + info about the signed blob etc
         MessageSignatureCollection m_senderSignatures;      // The sender's signatures, which are a subset of m_signatures
-
+        
+        public IncomingMessage(string messageText)
+            : base(messageText)
+        {
+        }
+        
         public IncomingMessage(Message message)
             : base(message)
         {
@@ -38,8 +43,18 @@ namespace NHINDirect.Agent
         public IncomingMessage(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
             : base(message, recipients, sender)
         {
+        }
+
+        public IncomingMessage(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
+            : base(messageText, recipients, sender)
+        {
         }        
-                
+         
+        internal IncomingMessage(MessageEnvelope envelope)
+            : base(envelope)
+        {
+        }
+               
         public SignedCms Signatures
         {
             get

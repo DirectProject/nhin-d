@@ -27,8 +27,6 @@ namespace NHINDirect.Agent
 {
     public class OutgoingMessage : MessageEnvelope
     {        
-        string m_rawMessage;
-        
         public OutgoingMessage(Message message)
             : base(message)
         {
@@ -39,32 +37,24 @@ namespace NHINDirect.Agent
         {
         }
 
-        internal OutgoingMessage(Message message, string messageText)
-            : this(message)
+        public OutgoingMessage(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
+            : base(messageText, recipients, sender)
         {
-            m_rawMessage = messageText;
+        }
+
+        internal OutgoingMessage(Message message, string messageText)
+            : base(message)
+        {
         }
 
         internal OutgoingMessage(Message message, string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
-            : this(message, recipients, sender)
+            : base(message, recipients, sender)
         {
-            m_rawMessage = messageText;
         }
         
-        internal bool HasRawMessage
+        internal OutgoingMessage(MessageEnvelope envelope)
+            : base(envelope)
         {
-            get
-            {
-                return (!string.IsNullOrEmpty(m_rawMessage));
-            }
-        }
-        
-        internal string RawMessage
-        {
-            get
-            {
-                return m_rawMessage;
-            }
         }
     }
 }

@@ -100,11 +100,11 @@ namespace NHINDirect.Diagnostics
             string log;            
             if (m_machineName != null)
             {
-                log = string.Format("{0},{1},{2},{3}", m_machineName, type, DateTime.UtcNow, message);
+                log = string.Format("{0},{1},{2},{3}", m_machineName, type, this.Now, message);
             }
             else
             {
-                log = string.Format("{0},{1},{2}", type, DateTime.UtcNow, message);
+                log = string.Format("{0},{1},{2}", type, this.Now, message);
             }
 
             this.WriteText(log);
@@ -115,11 +115,11 @@ namespace NHINDirect.Diagnostics
             string log;
             if (m_machineName != null)
             {
-                log = string.Format("{0},{1},{2}", m_machineName, DateTime.UtcNow, message);
+                log = string.Format("{0},{1},{2}", m_machineName, this.Now, message);
             }
             else
             {
-                log = string.Format("{0},{1}", DateTime.UtcNow, message);
+                log = string.Format("{0},{1}", this.Now, message);
             }
             
             this.WriteText(message);

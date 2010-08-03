@@ -37,9 +37,11 @@ namespace NHINDirect.Agent
         NHINDAddressCollection m_recipients;
         NHINDAddressCollection m_rejectedRecipients;
         NHINDAddressCollection m_domainRecipients;
-        MailAddressCollection m_otherRecipients;        
+        MailAddressCollection m_otherRecipients;
+
+        string m_rawMessage;
         
-        internal MessageEnvelope(Message message)
+        public MessageEnvelope(Message message)
         {
             this.Message = message;
             this.Recipients = this.CollectRecipients();
@@ -52,11 +54,38 @@ namespace NHINDirect.Agent
             this.Sender = new NHINDAddress(from.Value, AddressSource.From);
         }
         
-        internal MessageEnvelope(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
+        public MessageEnvelope(string messageText)
+            : this(MimeSerializer.Default.Deserialize<Message>(messageText))
+        {
+            this.RawMessage = messageText;
+        }
+                
+        public MessageEnvelope(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
         {
             this.Message = message;
             this.Recipients = recipients;
             this.Sender = sender;
+        }
+        
+        public MessageEnvelope(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
+            : this(MimeSerializer.Default.Deserialize<Message>(messageText), recipients, sender)
+        {
+            this.RawMessage = messageText;
+        }
+                
+        protected MessageEnvelope(Message message, string rawMessage, NHINDAddressCollection recipients, NHINDAddress sender)
+            : this(message, recipients, sender)
+        {
+            this.RawMessage = rawMessage;
+        }
+        
+        internal MessageEnvelope(MessageEnvelope envelope)
+        {
+            m_agent = envelope.m_agent;
+            m_rawMessage = envelope.m_rawMessage;
+            m_message = envelope.m_message;
+            m_recipients = envelope.m_recipients;
+            m_sender = envelope.m_sender;
         }
         
         public NHINDAgent Agent
@@ -85,6 +114,7 @@ namespace NHINDirect.Agent
                 }
                 
                 m_message = value;
+                this.RawMessage = null;
             }
         }
         
@@ -235,10 +265,47 @@ namespace NHINDirect.Agent
                 return m_bcc;
             }
         }
+
+        internal bool HasRawMessage
+        {
+            get
+            {
+                return (!string.IsNullOrEmpty(m_rawMessage));
+            }
+        }
+
+        internal string RawMessage
+        {
+            get
+            {
+                return m_rawMessage;
+            }
+            set
+            {
+                m_rawMessage = value;
+            }
+        }
         
         public string SerializeMessage()
         {
             return MimeSerializer.Default.Serialize(m_message);
+        }
+        
+        //
+        // Release buffers
+        //
+        internal void Clear()
+        {
+            m_rawMessage = null;
+            m_message = null;
+            m_sender = null;
+            m_to = null;
+            m_cc = null;
+            m_bcc = null;
+            m_recipients = null;
+            m_rejectedRecipients = null;
+            m_domainRecipients = null;
+            m_otherRecipients = null;
         }
         
         internal virtual void Validate()
@@ -275,20 +342,21 @@ namespace NHINDirect.Agent
             if (this.To != null)
             {
                 this.To.Remove(rejectedRecipients);
-                this.Message.To = new Header(MailStandard.ToHeader, this.To.ToString());
+                this.Message.To = (this.To.Count > 0) ? new Header(MailStandard.ToHeader, this.To.ToString()) : null;
             }
             if (this.CC != null)
             {
                 this.CC.Remove(rejectedRecipients);
-                this.Message.CC = new Header(MailStandard.CCHeader, this.CC.ToString());
+                this.Message.CC = (this.CC.Count > 0) ? new Header(MailStandard.CCHeader, this.CC.ToString()) : null;
             }
             if (this.BCC != null)
             {
                 this.BCC.Remove(rejectedRecipients);
-                this.Message.BCC = new Header(MailStandard.BCCHeader, this.BCC.ToString());
+                this.Message.BCC = (this.BCC.Count > 0) ? new Header(MailStandard.BCCHeader, this.BCC.ToString()) : null;
             }
         }
-
+        
+        
         internal void UpdateRoutingHeaders()
         {
             if (this.HasRejectedRecipients)
