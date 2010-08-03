@@ -76,7 +76,24 @@ namespace NHINDirect.Agent
                            TrustAnchorResolver.CreateDefault())
         {
         }
-                        
+		
+		/// <summary>
+		/// Creates an NHINDAgent instance, specifying private, external and trust anchor certificate stores.
+		/// </summary>
+		/// <param name="domain">
+		/// The local domain name managed by this agent.
+		/// </param>
+		/// <param name="privateCerts">
+		/// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
+		/// for senders of outgoing messages and receivers of incoming messages.
+		/// </param>
+		/// <param name="publicCerts">
+		/// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
+		/// for receivers of outgoing messages and senders of incoming messages. 
+		/// </param>
+		/// <param name="anchors">
+		/// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
+		/// </param>
         public NHINDAgent(string domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
             : this(domain, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default)
         {
