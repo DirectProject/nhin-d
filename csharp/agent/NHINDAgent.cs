@@ -65,7 +65,7 @@ namespace NHINDirect.Agent
         bool m_fetchIncomingSenderCerts = false;
         
 		/// <summary>
-		/// Creates an NHINDAgent instance using local certificate stores. 
+		/// Creates an NHINDAgent instance using local certificate stores and the standard trust and cryptography models.
 		/// </summary>
 		/// <param name="domain">
 		/// The local domain name managed by this agent.
@@ -78,7 +78,8 @@ namespace NHINDirect.Agent
         }
 		
 		/// <summary>
-		/// Creates an NHINDAgent instance, specifying private, external and trust anchor certificate stores.
+		/// Creates an NHINDAgent instance, specifying private, external and trust anchor certificate stores, and
+		/// and defaulting to the standard trust and cryptography models.
 		/// </summary>
 		/// <param name="domain">
 		/// The local domain name managed by this agent.
@@ -99,6 +100,30 @@ namespace NHINDirect.Agent
         {
         }
 
+		/// <summary>
+		/// Creates an NHINDAgent instance, specifying private, external and trust anchor certificate stores, and 
+		/// trust and cryptography models.
+		/// </summary>
+		/// <param name="domain">
+		/// The local domain name managed by this agent.
+		/// </param>
+		/// <param name="privateCerts">
+		/// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
+		/// for senders of outgoing messages and receivers of incoming messages.
+		/// </param>
+		/// <param name="publicCerts">
+		/// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
+		/// for receivers of outgoing messages and senders of incoming messages. 
+		/// </param>
+		/// <param name="anchors">
+		/// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
+		/// </param>
+		/// <param name="trustModel">
+		/// An instance or subclass of <see cref="NHINDirect.Agent.TrustModel"/> providing a custom trust model.
+		/// </param>
+		/// <param name="cryptographer">
+		/// An instance or subclass of <see cref="NHINDirect.Cryptography.SMIMECryptographer"/> providing a custom cryptography model.
+		/// </param>
         public NHINDAgent(string domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
         {
             if (string.IsNullOrEmpty(domain))
@@ -136,6 +161,10 @@ namespace NHINDirect.Agent
             this.m_minTrustRequirement = TrustEnforcementStatus.Success_Offline;
         }
 
+		/// <summary>
+		/// The domain this agent is managing.
+		/// </summary>
+		/// <value>A string value providing a fully qualified domain name.</value>
         public string Domain
         {
             get
@@ -144,6 +173,10 @@ namespace NHINDirect.Agent
             }
         }
 
+		/// <summary>
+		/// Gets the cryptographic model used by this agent.
+		/// </summary>
+		/// <value>The cryptographic model used by this agent.</value>
         public SMIMECryptographer Cryptographer
         {
             get
@@ -152,6 +185,10 @@ namespace NHINDirect.Agent
             }
         }
 
+		/// <summary>
+		/// Gets or sets whether this agent uses message encryption.
+		/// </summary>
+		/// <value><c>true</c> (default) if the agent encrypts, <c>false</c> if the agent does not.</value>
         public bool EncryptMessages
         {
             get
@@ -164,6 +201,11 @@ namespace NHINDirect.Agent
             }
         }
         
+		/// <summary>
+		/// Gets or sets whether this agent wraps the entire message or just the content package. 
+		/// </summary>
+		/// <value><c>true</c> if the agent wraps the entire message (including headers) prior to encryption; 
+		/// <c>false</c> if the agent just signs and encrypts the content package.</value>
         public bool WrapMessages
         {
             get
