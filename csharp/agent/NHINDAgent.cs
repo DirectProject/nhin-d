@@ -218,6 +218,11 @@ namespace NHINDirect.Agent
             }
         }
         
+		/// <summary>
+		/// Gets or sets whether this agent allows non-fully wrapped incoming messages
+		/// (e.g., where the content-type of the incoming message is not <c>message/rfc822</c> 
+		/// </summary>
+		/// <value><c>true</c> if this agent allows non-wrapped incoming messages; <c>false<c> if only wrapped messages are allowed</value>
         public bool AllowNonWrappedIncoming
         {
             get
@@ -242,6 +247,12 @@ namespace NHINDirect.Agent
             }
         }
         
+		/// <summary>
+		/// Gets the public certificate resolver (set in the constructor). 
+		/// </summary>
+		/// <value>
+		/// The <see cref="NHINDirect.Certificates.ICertificateResolver" instance used for resolving public certificates.
+		/// </value>
         public ICertificateResolver PublicCertResolver
         {
             get
@@ -250,6 +261,12 @@ namespace NHINDirect.Agent
             }
         }
 
+		/// <summary>
+		/// Gets the private certificate resolver (set in the constructor). 
+		/// </summary>
+		/// <value>
+		/// The <see cref="NHINDirect.Certificates.ICertificateResolver" instance used for resolving private certificates.
+		/// </value>
         public ICertificateResolver PrivateCertResolver
         {
             get
@@ -258,6 +275,12 @@ namespace NHINDirect.Agent
             }
         }
 
+		/// <summary>
+		/// Getst the trust anchor resolver (set in the constructor). 
+		/// </summary>
+		/// <value>
+		/// The <see cref="NHINDirect.Certificates.ITrustAnchorResolver" instance used for resolving trust anchors.
+		/// </value>		
         public ITrustAnchorResolver TrustAnchors
         {
             get
@@ -292,19 +315,53 @@ namespace NHINDirect.Agent
         //   - throwing exceptions
         // If you throw an exception, message processing is ABORTED
         //
+		/// <summary>
+		/// Subscribe to this event for notification when the Agent raises an exception. 
+		/// </summary>
         public event Action<NHINDAgent, Exception> Error;
+		/// <summary>
+		/// Subscribe to this event for pre-processing of the <see cref="IncomingMessage"/>, including adding or modifying headers.
+		/// Throwing an exception pre-process will abort message processing.
+		/// </summary>
         public event Action<IncomingMessage> PreProcessIncoming;
+		/// <summary>
+		/// Subscribe to this event for post-processing of the <see cref="IncomingMessage"/>, including adding or modifying headers.
+		/// Throwing an exception post-process will abort message processing.
+		/// </summary>
         public event Action<IncomingMessage> PostProcessIncoming;
+		/// <summary>
+		/// Subscribe to this event for notification when <see cref="IncomingMessage"/> processing raises an exception.
+		/// </summary>
         public event Action<IncomingMessage, Exception> ErrorIncoming;
+		/// <summary>
+		/// Subscribe to this event for pre-processing of the <see cref="OutgoingMessage"/>, including adding or modifying headers.
+		/// Throwing an exception pre-process will abort message processing.
+		/// </summary>
         public event Action<OutgoingMessage> PreProcessOutgoing;
+		/// <summary>
+		/// Subscribe to this event for post-processing of the <see cref="OutgoingMessage"/>, including adding or modifying headers.
+		/// Throwing an exception post-process will abort message processing.
+		/// </summary>
         public event Action<OutgoingMessage> PostProcessOutgoing;
+		/// <summary>
+		/// Subscribe to this event for notification when <see cref="OutgoingMessage"/> processing raises an exception.
+		/// </summary>
         public event Action<OutgoingMessage, Exception> ErrorOutgoing;
-                
-        /// <summary>
-        /// If the message is encrypted, then treat it as an incoming message
-        /// Else treat it as an outgoing message
-        /// You'll need to cast MessageEnvelope to IncomingMessage/OutgoingMessage
-        /// </summary>
+                		
+		/// <summary>
+		/// Generic message processing, autodetecting if message is incoming or outgoing
+		/// </summary>
+		/// <param name="messageText">
+		/// RFC 5322 formatted message string to process
+		/// </param>
+		/// <param name="isIncoming">
+		/// Reference boolean, will be set <c>true</c> if the message was detected as incoming,
+		/// <c>false</c> if the message was detected as outgoing.
+		/// </param>
+		/// <returns>
+		/// A <see cref="MessageEnvelope"/> instance; may be cast to <see cref="IncomingMessage"/> or
+		/// <see cref="OutgoingMessage"/> based on the value of <c>isIncoming</c>.
+		/// </returns>
         public MessageEnvelope Process(string messageText, ref bool isIncoming)
         {
             return this.Process(new MessageEnvelope(messageText), ref isIncoming);
