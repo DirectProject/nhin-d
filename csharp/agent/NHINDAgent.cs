@@ -43,7 +43,21 @@ namespace NHINDirect.Agent
 	/// var agent = NHINDAgent("hie.example.com", localcerts, dnsresolver, trustanchors);
 	/// 
 	/// IncomingMessage incoming = agent.ProcessIncoming(incomingmsg);
+	/// if (incoming.HasRejectedRecipients)
+	/// {
+	///     foreach(recipient in incoming.RejectedRecipients)
+	///     {
+	///         Console.WriteLine("Rejected {0}", recipient.Address);
+	///     }
+	/// }
 	/// OutgoingMessage outgoing = agent.ProcessOutgoing(outgoingmsg);
+	/// if (outgoing.HasRejectedRecipients)
+	/// {
+	///     foreach(recipient in outgoing.RejectedRecipeints)
+	///     {
+	///         Console.WriteLine("Rejected {0}", recipient.Address);
+	///     }
+	/// }
 	/// </code>
 	/// </example>
 	/// 
@@ -391,6 +405,16 @@ namespace NHINDirect.Agent
         // INCOMING MESSAGE
         //
         //-------------------------------------------------------------------
+		
+		/// <summary>
+		/// Decrypts and verifies trust in signed and encrypted RFC 5322 formatted message
+		/// </summary>
+		/// <param name="messageText">
+		/// An RFC 5322 formatted message string
+		/// </param>
+		/// <returns>
+		/// An <see cref="IncomingMessage"/> instance containing the decrypted message.
+		/// </returns>
         public IncomingMessage ProcessIncoming(string messageText)
         {
             if (string.IsNullOrEmpty(messageText))
@@ -401,6 +425,22 @@ namespace NHINDirect.Agent
             return this.ProcessIncoming(new IncomingMessage(messageText));
         }
 
+		/// <summary>
+		/// Decrypts and verifies trust in a signed and encrypted RFC 5322 formatted message, providing a sender and recipient addresses.
+		/// The provided sender and recipient addresses will be used instead of the header information in the <c>messageText</c>.
+		/// </summary>
+		/// <param name="messageText">
+		/// An RFC 5322 formatted message string.
+		/// </param>
+		/// <param name="recipients">
+		/// A <see cref="NHINDAddressCollection"/> instance representing recipient addresses.
+		/// </param>
+		/// <param name="sender">
+		/// An <see cref="NHINDAddress"/> instance representing the sender address
+		/// </param>
+		/// <returns>
+		/// An <see cref="IncomingMessage"/> instance with the trust verified decrypted and verified message.
+		/// </returns>
         public IncomingMessage ProcessIncoming(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
         {
             this.CheckEnvelopeAddresses(recipients, sender);
