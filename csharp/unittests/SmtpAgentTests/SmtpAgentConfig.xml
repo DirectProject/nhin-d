@@ -1,18 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <!--
-  SAMPLE
   Compliant with schema parsed by: NHINDirect.ScriptAgent.SmtpAgentSettings 
   Customize as per your needs
 -->
 <SmtpAgentConfig>
-  <Domain>nhind.hsgincubator.com</Domain>
-  <DomainPostmaster>postmaster@nhind.hsgincubator.com</DomainPostmaster>
-  <LocalPostmaster>postmaster@gateway.hsgincubator.com</LocalPostmaster>
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>smtpGateway</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
   </Log>
+  <Domain>nhind.hsgincubator.com</Domain>
   <PrivateCerts>
     <MachineResolver>
       <Name>NHINDPrivate</Name>

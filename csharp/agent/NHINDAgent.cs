@@ -27,26 +27,6 @@ using NHINDirect.Cryptography;
 
 namespace NHINDirect.Agent
 {
-	/// <summary>
-	/// Master client for mail encryption/decryption and signature management.
-	/// </summary>
-	/// 
-	/// <example>
-	/// This example demonstrates a typical use of the Agent, using local certificate management for private certificates,
-	/// DNS management for remote certificates, and a local store of trust anchors.
-	/// <code>
-	/// CertificateIndex localcerts = SystemX509Store.OpenPrivate().Index();
-	/// var dnsresolver = new DnsCertResolver("8.8.8.8");
-	/// var trustanchors = TrustAnchorResolver.CreateDefault();
-	/// var ougoingmsg = File.ReadAllText("outgoing.eml"); // plaintext RFC 5322 email message
-	/// var incomingmsg = File.ReadAllText("incoming.eml"); // signed and encrypted S/MIME message
-	/// var agent = NHINDAgent("hie.example.com", localcerts, dnsresolver, trustanchors);
-	/// 
-	/// IncomingMessage incoming = agent.ProcessIncoming(incomingmsg);
-	/// OutgoingMessage outgoing = agent.ProcessOutgoing(outgoingmsg);
-	/// </code>
-	/// </example>
-	/// 
     public class NHINDAgent
     {
         SMIMECryptographer m_cryptographer;
@@ -62,14 +42,7 @@ namespace NHINDirect.Agent
         bool m_encryptionEnabled = true;
         bool m_wrappingEnabled = true;
         bool m_allowNonWrappedIncoming = true;
-        bool m_fetchIncomingSenderCerts = false;
         
-		/// <summary>
-		/// Creates an NHINDAgent instance using local certificate stores. 
-		/// </summary>
-		/// <param name="domain">
-		/// The local domain name managed by this agent.
-		/// </param>
         public NHINDAgent(string domain)
             : this(domain, SystemX509Store.OpenPrivate().Index(), 
                            SystemX509Store.OpenExternal().Index(),
@@ -168,18 +141,6 @@ namespace NHINDirect.Agent
             set
             {
                 m_allowNonWrappedIncoming = value;
-            }
-        }
-        
-        public bool FetchSenderCertsIncoming
-        {
-            get
-            {
-                return m_fetchIncomingSenderCerts;
-            }
-            set
-            {
-                m_fetchIncomingSenderCerts = value;
             }
         }
         
@@ -391,13 +352,6 @@ namespace NHINDirect.Agent
 
         void BindAddresses(IncomingMessage message)
         {
-            if (m_fetchIncomingSenderCerts)
-            {
-                //
-                // Retrieving the sender's certificate is optional
-                //
-                message.Sender.Certificates = this.ResolvePublicCerts(message.Sender, false);
-            }
             //
             // Bind each recpient's certs and trust settings
             //

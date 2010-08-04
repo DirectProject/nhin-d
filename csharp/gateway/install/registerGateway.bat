@@ -28,10 +28,10 @@ goto :Done
 set /P gatewayName=Gateway Name [Return: default]
 if "%gatewayName%"=="" set gatewayName=NHINDGateway
 
-set /P serviceInstance=Service Instance Number [Return: default]
-if "%serviceInstance%"=="" SET serviceInstance=1
+@rem set /P serviceInstance=Service Instance Number [Return: default]
+if "%serviceInstance%"=="" set serviceInstance=1
 
-set /P filter=Mail filter [Return: default]
+@rem set /P filter=Mail filter [Return: default]
 if "%filter%"=="" set filter=mail from=*
 
 set /P configFilePath=Config file Path [Return: default]

@@ -50,7 +50,7 @@ goto :EOF
 set /P backup=Backup Current? [Y/N  Return: N]
 if "%backup%"=="" set backup=N
 
-set /P bin=Bin Path [Return: default]
+@rem set /P bin=Bin Path [Return: default]
 if "%bin%"=="" set bin=..\..\bin\debug
 
 set /P dest=Destination Path [Return: default]
@@ -80,7 +80,7 @@ exit /b %ERRORLEVEL%
 @rem -------------------------------
 :CopyInstall
 call :PrintHeading Copying INSTALL FILES
-call :CopyFiles regasm.bat regsvr.bat registerGateway.bat unregisterGateway.bat smtpreg.vbs
+call :CopyFiles regasm.bat regsvr.bat registerGateway.bat unregisterGateway.bat smtpreg.vbs adsutil.vbs
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------

@@ -112,7 +112,7 @@ namespace NHINDirect.Certificates
                     client.Timeout = m_timeout;
                 }
                 
-                client.UseUDP = false;
+                client.UseUDPFirst = false;
                 client.MaxRetries = m_maxRetries;
                 X509Certificate2Collection certs = null;
                 

@@ -190,7 +190,7 @@ namespace DnsResolver
             m_requestBuffer = new DnsBuffer(1024);
             m_responseBuffer = new DnsBuffer(maxBufferSize);
             this.Timeout = timeoutMillis;
-            this.UseUDP = true;
+            this.UseUDPFirst = true;
         }
         
 		/// <summary>
@@ -198,7 +198,7 @@ namespace DnsResolver
 		/// </summary>
 		/// <value>A boolean specifying if UDP should be tried first. Defaults to true. If the UDP attempt fails due 
 		/// to a truncated response, and there are more retries available, will always fail over to TCP.</value>
-        public bool UseUDP
+        public bool UseUDPFirst
         {
             get;
             set;
@@ -287,15 +287,16 @@ namespace DnsResolver
             
             request.RequestID = this.NextID();
             this.SerializeRequest(request);
-            
+
+            bool useUDPFirst = this.UseUDPFirst;
             int attempt = 0;
-            bool useUDP = this.UseUDP;
-            while (attempt < this.m_maxRetries)
+            int maxAttempts = this.m_maxRetries + 1;
+            while (attempt < maxAttempts)
             {
                 attempt++;
                 try
                 {
-                    if (useUDP)
+                    if (useUDPFirst)
                     {
                         this.ExecuteUDP();
                     }
@@ -320,8 +321,8 @@ namespace DnsResolver
                         return response;
                     }
                     
-                    useUDP = false;
-                    attempt = m_maxRetries - 1;
+                    useUDPFirst = false;
+                    attempt = maxAttempts - 1; // We're dropping to TCP, which is more robust...
                 }
                 catch(DnsException)
                 {
@@ -329,7 +330,10 @@ namespace DnsResolver
                 }
                 catch(Exception error)
                 {
-                    if (attempt >= m_maxRetries)
+                    //
+                    // Typically, a socket exception or network error...
+                    //
+                    if (attempt >= maxAttempts)
                     {
                         throw;
                     }
@@ -651,10 +655,6 @@ namespace DnsResolver
         // UDP Transport
         //
         //--------------------------------------------
-        void EnsureUDP()
-        {
-        }
-                
         void ExecuteUDP()
         {
             if (m_udpSocket == null)

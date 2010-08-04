@@ -10,8 +10,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smtpEventHandlerPS", "smtpE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpAgent", "smtpAgent\smtpAgent.csproj", "{A9B11AAD-3461-4DDB-A447-91779BD41A78}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "eventHandlerTest", "eventHandlerTest\eventHandlerTest.vcproj", "{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,20 +62,6 @@ Global
 		{A9B11AAD-3461-4DDB-A447-91779BD41A78}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A9B11AAD-3461-4DDB-A447-91779BD41A78}.Release|Win32.ActiveCfg = Release|Any CPU
 		{A9B11AAD-3461-4DDB-A447-91779BD41A78}.Release|x64.ActiveCfg = Release|x64
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Debug|Win32.Build.0 = Debug|Win32
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Debug|x64.ActiveCfg = Debug|x64
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Debug|x64.Build.0 = Debug|x64
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Release|Any CPU.ActiveCfg = Release|Win32
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Release|Win32.ActiveCfg = Release|Win32
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Release|Win32.Build.0 = Release|Win32
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Release|x64.ActiveCfg = Release|x64
-		{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
