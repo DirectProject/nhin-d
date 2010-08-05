@@ -1,15 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?> 
 <!--
-  SAMPLE
+  SAMPLE CONFIG FILE
   Compliant with schema parsed by: NHINDirect.ScriptAgent.SmtpAgentSettings 
   Customize as per your needs
 -->
 <SmtpAgentConfig>
-  <Domain>redmond.hsgincubator.com</Domain>
-  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>
+  <Domain>nhind.hsgincubator.com</Domain>
+  <Postmaster>postmaster@nhind.hsgincubator.com</Postmaster>
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
-    <NamePrefix>smtpGateway</NamePrefix>
+    <NamePrefix>nhindGateway</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
   </Log>
   <PrivateCerts>
@@ -39,15 +39,17 @@
     </MachineResolver>
   </Anchors>
   <RawMessage>
-    <CopyFolder>C:\inetpub\mailroot\raw</CopyFolder>
+    <CopyFolder>C:\inetpub\mailroot\nhind\raw</CopyFolder>
   </RawMessage>
   <BadMessage>
-    <CopyFolder>C:\inetpub\mailroot\badMail</CopyFolder>
+    <CopyFolder>C:\inetpub\mailroot\nhind\badMail</CopyFolder>
   </BadMessage>
   <ProcessIncoming>
-    <CopyFolder>C:\inetpub\mailroot\incoming</CopyFolder>
+    <CopyFolder>C:\inetpub\mailroot\nhind\incoming</CopyFolder>
+    <EnableRelay>false</EnableRelay>
   </ProcessIncoming>
   <ProcessOutgoing>
-    <CopyFolder>C:\inetpub\mailroot\outgoing</CopyFolder>
+    <CopyFolder>C:\inetpub\mailroot\nhind\outgoing</CopyFolder>
+    <EnableRelay>false</EnableRelay>
   </ProcessOutgoing>
 </SmtpAgentConfig>

@@ -27,8 +27,7 @@ namespace NHINDirect.SmtpAgent
     [XmlType("SmtpAgentConfig")]
     public class SmtpAgentSettings : AgentSettings
     {
-        string m_localPostmaster;
-        string m_domainPostmaster;
+        string m_postmasterAddress;
         RawMessageSettings m_rawMessageSettings;
         ProcessIncomingSettings m_incomingSettings;
         ProcessOutgoingSettings m_outgoingSettings;
@@ -45,32 +44,19 @@ namespace NHINDirect.SmtpAgent
             set;
         }
         
-        [XmlElement("LocalPostmaster")]
-        public string LocalPostmasterAddress
+        [XmlElement("Postmaster")]
+        public string PostmasterAddress
         {
             get
             {
-                return m_localPostmaster;
+                return m_postmasterAddress;
             }
             set
             {
-                m_localPostmaster = value;
+                m_postmasterAddress = value;
             }
         }
-        
-        [XmlElement("DomainPostmaster")]
-        public string DomainPostmasterAddress
-        {
-            get
-            {
-                return m_domainPostmaster;
-            }
-            set
-            {
-                m_domainPostmaster = value;
-            }
-        }
-        
+                 
         [XmlElement("RawMessage")]
         public RawMessageSettings RawMessage
         {
@@ -145,13 +131,9 @@ namespace NHINDirect.SmtpAgent
         
         public override void Validate()
         {
-            if (string.IsNullOrEmpty(m_localPostmaster))
+            if (string.IsNullOrEmpty(m_postmasterAddress))
             {
                 throw new ArgumentNullException("Local postmaster not specified");
-            }
-            if (string.IsNullOrEmpty(m_domainPostmaster))
-            {
-                throw new ArgumentNullException("Domain postmaster not specified");
             }
             if (this.LogSettings == null)
             {

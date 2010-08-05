@@ -6,9 +6,9 @@
 setlocal
 
 if "%1"=="script" (
-set bin=%1
-set dest=%2
-set backup=%3
+set bin=%2
+set dest=%3
+set backup=%4
 ) else (
 call :AskVariables
 )
@@ -74,13 +74,13 @@ goto :EOF
 @rem -------------------------------
 :CopyBins
 call :PrintHeading Copying BINS to "%dest%"
-call :CopyFiles dnsResolver.dll nhinCommon.dll nhinAgent.dll nhinSmtpAgent.dll Interop.ADODB.dll Interop.CDO.dll smtpEventHandler.dll SmtpAgentConfig.xml
+call :CopyFiles dnsResolver.dll nhinCommon.dll nhinAgent.dll nhinSmtpAgent.dll Interop.ADODB.dll Interop.CDO.dll smtpEventHandler.dll
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------
 :CopyInstall
 call :PrintHeading Copying INSTALL FILES
-call :CopyFiles regasm.bat regsvr.bat registerGateway.bat unregisterGateway.bat smtpreg.vbs adsutil.vbs
+call :CopyFiles regasm.bat registerGateway.bat unregisterGateway.bat smtpreg.vbs adsutil.vbs
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------
