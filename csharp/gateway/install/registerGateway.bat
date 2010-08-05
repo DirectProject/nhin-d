@@ -2,22 +2,20 @@
 setlocal
 
 if /I "%1"=="script" (
-set serviceInstance=%2
-set configFilePath=%3
-set restart=%4
+set gatewayName=%1
+set instanceNumber=%2
+set filter=%3
+set configFilePath=%4
 ) else (
 call :AskVariables
 )
-
-set gatewayName=NHINDGateway
-set filter=mail from=*
 
 if "%serviceInstance%"=="" goto :Usage
 if "%gatewayName%"=="" goto :Usage
 if "%filter%"=="" goto :Usage
 if "%configFilePath%"=="" goto :Usage
 
-if "%restart%" NEQ "N" call :RestartSMTP
+call :RestartSMTP
 if %ERRORLEVEL% NEQ 0 goto :Error
 call :Uninstall
 if %ERRORLEVEL% NEQ 0 goto :Error
@@ -27,8 +25,14 @@ goto :Done
 
 @rem -------------------------------
 :AskVariables
+set /P gatewayName=Gateway Name [Return: default]
+if "%gatewayName%"=="" set gatewayName=NHINDGateway
+
 @rem set /P serviceInstance=Service Instance Number [Return: default]
 if "%serviceInstance%"=="" set serviceInstance=1
+
+@rem set /P filter=Mail filter [Return: default]
+if "%filter%"=="" set filter=mail from=*
 
 set /P configFilePath=Config file Path [Return: default]
 if "%configFilePath%"=="" set configFilePath=%~dp0SmtpAgentConfig.xml
@@ -48,8 +52,7 @@ call :PrintHeading Installing
 echo Registering Dlls
 call regasm.bat nhinSmtpAgent.dll
 if %ERRORLEVEL% NEQ 0 goto :EOF
-echo Registering smtpEventHandler COM Dll
-call regsvr32 /s smtpEventHandler.dll
+call regsvr.bat smtpEventHandler.dll
 if %ERRORLEVEL% NEQ 0 goto :EOF
 
 echo Installing Event Handler
@@ -85,7 +88,7 @@ goto :Done
 
 @rem -------------------------------
 :Usage
-echo registerGateway "script" virtualServerInstanceNumber configFilePath [iisreset Y or N]
+echo registerGateway "script" gatewayName instanceNumber filter configFilePath
 goto :Done
 
 @rem -------------------------------

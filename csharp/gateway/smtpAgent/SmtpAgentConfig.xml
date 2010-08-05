@@ -1,15 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <!--
-  SAMPLE CONFIG FILE
+  SAMPLE
   Compliant with schema parsed by: NHINDirect.ScriptAgent.SmtpAgentSettings 
   Customize as per your needs
 -->
 <SmtpAgentConfig>
-  <Domain>redmond.hsgincubator.com</Domain>
-  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>
+  <Domain>nhind.hsgincubator.com</Domain>
+  <DomainPostmaster>postmaster@nhind.hsgincubator.com</DomainPostmaster>
+  <LocalPostmaster>postmaster@gateway.hsgincubator.com</LocalPostmaster>
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
-    <NamePrefix>redmondGateway</NamePrefix>
+    <NamePrefix>smtpGateway</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
   </Log>
   <PrivateCerts>
@@ -46,10 +47,8 @@
   </BadMessage>
   <ProcessIncoming>
     <CopyFolder>C:\inetpub\mailroot\incoming</CopyFolder>
-    <EnableRelay>false</EnableRelay>
   </ProcessIncoming>
   <ProcessOutgoing>
     <CopyFolder>C:\inetpub\mailroot\outgoing</CopyFolder>
-    <EnableRelay>false</EnableRelay>
   </ProcessOutgoing>
 </SmtpAgentConfig>

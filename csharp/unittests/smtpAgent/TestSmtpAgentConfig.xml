@@ -5,8 +5,9 @@
   Customize as per your needs
 -->
 <SmtpAgentConfig>
-  <Domain>redmond.hsgincubator.com</Domain>
-  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>
+  <Domain>nhind.hsgincubator.com</Domain>
+  <DomainPostmaster>postmaster@nhind.hsgincubator.com</DomainPostmaster>
+  <LocalPostmaster>postmaster@gateway.hsgincubator.com</LocalPostmaster>
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>smtpGateway</NamePrefix>

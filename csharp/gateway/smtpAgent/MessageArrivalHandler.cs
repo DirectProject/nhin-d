@@ -32,7 +32,7 @@ namespace NHINDirect.SmtpAgent
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IMessageArrivalEventHandler
     {
-        void InitFromConfigFile(string configFilePath);
+        void Init(string configFilePath);
         void ProcessCDOMessage(CDO.Message message);
         void WriteLog(string message);
         void WriteError(string message);
@@ -80,19 +80,18 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
-        public void InitFromConfigFile(string configFilePath)
-        {
-            SmtpAgentSettings settings = SmtpAgentSettings.LoadFile(configFilePath);
-            SmtpAgent agent = this.EnsureAgent(settings);
+        public void Init(string configFilePath)
+        {                    
+            SmtpAgent agent = this.EnsureAgent(configFilePath);
             System.Threading.Interlocked.Exchange<SmtpAgent>(ref m_agent, agent);
         }
 
-        SmtpAgent EnsureAgent(SmtpAgentSettings settings)
+        SmtpAgent EnsureAgent(string configFilePath)
         {
             lock (s_agents)
             {
                 SmtpAgent agent = null;
-                if (!s_agents.TryGetValue(settings.Domain, out agent))
+                if (!s_agents.TryGetValue(configFilePath, out agent))
                 {
                     agent = null;
                 }
@@ -101,8 +100,8 @@ namespace NHINDirect.SmtpAgent
                 {
                     try
                     {
-                        agent = new SmtpAgent(settings);
-                        s_agents[settings.Domain] = agent;
+                        agent = new SmtpAgent(configFilePath);
+                        s_agents[configFilePath] = agent;
                     }
                     catch
                     {

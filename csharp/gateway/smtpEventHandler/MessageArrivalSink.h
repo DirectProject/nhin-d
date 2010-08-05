@@ -81,9 +81,6 @@ public:
     STDMETHOD(Save)(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
 
 private:
-	HRESULT LoadFromConfigFile(CComVariant& filePath) throw(...);
-	
-private:
 	CComPtr<IMessageArrivalEventHandler> m_managedHandler;
 	BOOL m_initialized;
 };

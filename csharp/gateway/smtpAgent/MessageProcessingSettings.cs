@@ -28,10 +28,6 @@ namespace NHINDirect.SmtpAgent
         {
         }
 
-        /// <summary>
-        /// For debugging/diagnostics etc - vital especially as we develop and try to debug
-        // If a CopyFolder is defined, a copy of the message is saved in the folder
-        /// </summary>
         [XmlElement("CopyFolder")]
         public string CopyFolder
         {
@@ -76,56 +72,18 @@ namespace NHINDirect.SmtpAgent
     [XmlType("ProcessIncoming")]
     public class ProcessIncomingSettings : MessageProcessingSettings
     {
-        bool m_enableRelay = true;
-
         public ProcessIncomingSettings()
             : base()
         {
-        }
-
-        /// <summary>
-        /// Diagnostic/development tool. When false, the processed incoming message is never put on the
-        /// wire. If a CopyFolder is available, the message is copied into it. 
-        /// </summary>        
-        [XmlElement("EnableRelay")]
-        public bool EnableRelay
-        {
-            get
-            {
-                return m_enableRelay;
-            }
-            set
-            {
-                m_enableRelay = value;
-            }
         }
     }
 
     [XmlType("ProcessOutgoing")]
     public class ProcessOutgoingSettings : MessageProcessingSettings
     {
-        bool m_enableRelay = true;
-        
         public ProcessOutgoingSettings()
             : base()
         {
-        }
-        
-        /// <summary>
-        /// Diagnostic/development tool. When false, the outgoing message is never put on the
-        /// wire. If a CopyFolder is available, the message is copied into it. 
-        /// </summary>        
-        [XmlElement("EnableRelay")]
-        public bool EnableRelay
-        {
-            get
-            {
-                return m_enableRelay;
-            }
-            set
-            {
-                m_enableRelay = value;
-            }
         }
     }
 

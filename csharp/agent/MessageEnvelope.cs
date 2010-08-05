@@ -88,13 +88,13 @@ namespace NHINDirect.Agent
             m_sender = envelope.m_sender;
         }
         
-        internal NHINDAgent Agent
+        public NHINDAgent Agent
         {
             get
             {
                 return this.m_agent;
             }
-            set
+            internal set
             {
                 this.m_agent = value;
             }
@@ -355,7 +355,8 @@ namespace NHINDirect.Agent
                 this.Message.BCC = (this.BCC.Count > 0) ? new Header(MailStandard.BCCHeader, this.BCC.ToString()) : null;
             }
         }
-                
+        
+        
         internal void UpdateRoutingHeaders()
         {
             if (this.HasRejectedRecipients)
