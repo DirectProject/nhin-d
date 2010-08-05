@@ -31,7 +31,7 @@ namespace NHINDirect.Certificates
         IPAddress m_serverIP;
         string m_fallbackDomain = string.Empty;
         int m_timeout;
-       int m_maxRetries = 1;
+        int m_maxRetries = 1;
         
         public DnsCertResolver(IPAddress serverIP)
             : this(serverIP, DnsCertResolver.DefaultTimeoutMs)

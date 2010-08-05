@@ -11,26 +11,52 @@ import javax.mail.internet.MimeMultipart;
 
 import junit.framework.TestCase;
 
-import org.nhindirect.stagent.Cryptographer;
-import org.nhindirect.stagent.MimeEntity;
 import org.nhindirect.stagent.cert.X509CertificateEx;
+import org.nhindirect.stagent.cryptography.DigestAlgorithm;
+import org.nhindirect.stagent.cryptography.EncryptionAlgorithm;
+import org.nhindirect.stagent.cryptography.SMIMECryptographer;
+import org.nhindirect.stagent.cryptography.SignedEntity;
+import org.nhindirect.stagent.mail.MimeEntity;
+import org.nhindirect.stagent.mail.MimeStandard;
 import org.nhindirect.stagent.parser.EntitySerializer;
-import org.nhindirect.stagent.parser.Protocol;
 import org.nhindirect.stagent.utils.TestUtils;
 
 public class CryptographerTest extends TestCase
 {	
 	
-	public void testEncryptAndDecryptMimeEntity() throws Exception
+	public void testEncryptAndDecryptMimeEntityAES128() throws Exception
+	{
+		testEncryptAndDecryptMimeEntity(EncryptionAlgorithm.AES128);
+	}
+	
+	public void testEncryptAndDecryptMimeEntityAES256() throws Exception
+	{
+		testEncryptAndDecryptMimeEntity(EncryptionAlgorithm.AES256);
+	}	
+	
+	public void testEncryptAndDecryptMimeEntityRSA_3DES() throws Exception
+	{
+		testEncryptAndDecryptMimeEntity(EncryptionAlgorithm.RSA_3DES);
+	}		
+	
+	
+	public void testEncryptAndDecryptMimeEntityAES192() throws Exception
+	{
+		testEncryptAndDecryptMimeEntity(EncryptionAlgorithm.AES192);
+	}	
+	
+	
+	private void testEncryptAndDecryptMimeEntity(EncryptionAlgorithm encAlg) throws Exception
 	{
 		X509Certificate cert = TestUtils.getExternalCert("user1");
 		
-		Cryptographer cryptographer = new Cryptographer();
+		SMIMECryptographer cryptographer = new SMIMECryptographer();
+		cryptographer.setEncryptionAlgorithm(encAlg);
 		
 		MimeEntity entity = new MimeEntity();
 		entity.setText("Hello world.");
-		entity.setHeader(Protocol.ContentTypeHeader, "text/plain");
-		entity.setHeader(Protocol.ContentTransferEncodingHeader, "7bit");
+		entity.setHeader(MimeStandard.ContentTypeHeader, "text/plain");
+		entity.setHeader(MimeStandard.ContentTransferEncodingHeader, "7bit");
 		
 		
 		MimeEntity encEntity = cryptographer.encrypt(entity, cert);
@@ -50,20 +76,41 @@ public class CryptographerTest extends TestCase
 		
 	}
 	
-	public void testEncryptAndDecryptMultipartEntity() throws Exception
+	public void testEncryptAndDecryptMultipartEntityAES128() throws Exception
 	{
+		testEncryptAndDecryptMultipartEntity(EncryptionAlgorithm.AES128);
+	}
+	
+	public void testEncryptAndDecryptMultipartEntityAES192() throws Exception
+	{
+		testEncryptAndDecryptMultipartEntity(EncryptionAlgorithm.AES192);
+	}
+	
+	public void testEncryptAndDecryptMultipartEntityAES256() throws Exception
+	{
+		testEncryptAndDecryptMultipartEntity(EncryptionAlgorithm.AES256);
+	}	
+	
+	public void testEncryptAndDecryptMultipartEntityRSA_3DES() throws Exception
+	{
+		testEncryptAndDecryptMultipartEntity(EncryptionAlgorithm.RSA_3DES);
+	}
+	
+	private void testEncryptAndDecryptMultipartEntity(EncryptionAlgorithm encAlgo) throws Exception
+	{		
 		X509Certificate cert = TestUtils.getExternalCert("user1");
 		
-		Cryptographer cryptographer = new Cryptographer();
+		SMIMECryptographer cryptographer = new SMIMECryptographer();
+		cryptographer.setEncryptionAlgorithm(encAlgo);
 		
 		MimeEntity entityText = new MimeEntity();
 		entityText.setText("Hello world.");
-		entityText.setHeader(Protocol.ContentTypeHeader, "text/plain");
-		entityText.setHeader(Protocol.ContentTransferEncodingHeader, "7bit");
+		entityText.setHeader(MimeStandard.ContentTypeHeader, "text/plain");
+		entityText.setHeader(MimeStandard.ContentTransferEncodingHeader, "7bit");
 		
 		MimeEntity entityXML = new MimeEntity();
 		entityXML.setText("<Test></Test>");
-		entityXML.setHeader(Protocol.ContentTypeHeader, "text/xml");		
+		entityXML.setHeader(MimeStandard.ContentTypeHeader, "text/xml");		
 		
 		MimeMultipart mpEntity = new MimeMultipart();
 		
@@ -83,7 +130,7 @@ public class CryptographerTest extends TestCase
 		ByteArrayOutputStream oStream = new ByteArrayOutputStream();
 		mpEntity.writeTo(oStream);
 		InternetHeaders hdrs = new InternetHeaders();
-		hdrs.addHeader(Protocol.ContentTypeHeader, mpEntity.getContentType());
+		hdrs.addHeader(MimeStandard.ContentTypeHeader, mpEntity.getContentType());
 		MimeEntity orgEntity = new MimeEntity(hdrs, oStream.toByteArray());
 		
 		byte[] decryEntityBytes = EntitySerializer.Default.serializeToBytes(decryEntity);
@@ -98,16 +145,37 @@ public class CryptographerTest extends TestCase
 	
 	}	
 	
-	public void testSignMimeEntity() throws Exception
+	public void testSignMimeEntitySHA1() throws Exception
+	{
+		testSignMimeEntity(DigestAlgorithm.SHA1);
+	}
+	
+	public void testSignMimeEntitySHA256() throws Exception
+	{
+		testSignMimeEntity(DigestAlgorithm.SHA256);
+	}	
+	
+	public void testSignMimeEntitySHA384() throws Exception
+	{
+		testSignMimeEntity(DigestAlgorithm.SHA384);
+	}	
+	
+	public void testSignMimeEntitySHA512() throws Exception
+	{
+		testSignMimeEntity(DigestAlgorithm.SHA512);
+	}		
+	
+	private void testSignMimeEntity(DigestAlgorithm digAlg) throws Exception
 	{	
 		X509CertificateEx certex = TestUtils.getInternalCert("user1");
 		
-		Cryptographer cryptographer = new Cryptographer();
+		SMIMECryptographer cryptographer = new SMIMECryptographer();
+		cryptographer.setDigestAlgorithm(digAlg);
 		
 		MimeEntity entity = new MimeEntity();
 		entity.setText("Hello world.");
-		entity.setHeader(Protocol.ContentTypeHeader, "text/plain");
-		entity.setHeader(Protocol.ContentTransferEncodingHeader, "7bit");
+		entity.setHeader(MimeStandard.ContentTypeHeader, "text/plain");
+		entity.setHeader(MimeStandard.ContentTransferEncodingHeader, "7bit");
 		
 		SignedEntity signedEnt = cryptographer.sign(entity, certex);
 		
@@ -129,12 +197,12 @@ public class CryptographerTest extends TestCase
 	{	
 		X509Certificate cert = TestUtils.getExternalCert("user1");
 		
-		Cryptographer cryptographer = new Cryptographer();
+		SMIMECryptographer cryptographer = new SMIMECryptographer();
 		
 		MimeEntity entity = new MimeEntity();
 		entity.setText("Hello world.");
-		entity.setHeader(Protocol.ContentTypeHeader, "text/plain");
-		entity.setHeader(Protocol.ContentTransferEncodingHeader, "7bit");
+		entity.setHeader(MimeStandard.ContentTypeHeader, "text/plain");
+		entity.setHeader(MimeStandard.ContentTransferEncodingHeader, "7bit");
 
 		MimeEntity encEntity = cryptographer.encrypt(entity, cert);
 		

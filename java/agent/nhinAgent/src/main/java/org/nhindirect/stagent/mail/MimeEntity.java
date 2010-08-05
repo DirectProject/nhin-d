@@ -1,4 +1,26 @@
-package org.nhindirect.stagent;
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Umesh Madan     umeshma@microsoft.com
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+package org.nhindirect.stagent.mail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -8,9 +30,7 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 
-import org.nhindirect.stagent.ProtocolException.ProtocolError;
 import org.nhindirect.stagent.parser.EntitySerializer;
-import org.nhindirect.stagent.parser.Protocol;
 
 /**
  * Container for a complete MIME entity.  May consist of a complete MIME message or a MIME part of a message.
@@ -66,7 +86,7 @@ public class MimeEntity extends MimeBodyPart
         {
             return false;
         }
-        return Protocol.contains(contentType, Protocol.MediaType_Multipart);
+        return MimeStandard.contains(contentType, MimeStandard.MediaType_Multipart);
     }
 
             
@@ -75,20 +95,20 @@ public class MimeEntity extends MimeBodyPart
      * @param expectedType The content type of the entity that is expected.
      * @throws ProtocolException Thrown if the entity's content type does not match the expected type.
      */
-    public void verifyContentType(String expectedType) throws ProtocolException
+    public void verifyContentType(String expectedType) throws MimeException
     {
     	String parsedType;
     	try
     	{
     		parsedType = this.getContentType();
-    		if (parsedType == null || !Protocol.equals(parsedType, expectedType))
+    		if (parsedType == null || !MimeStandard.equals(parsedType, expectedType))
     		{
-    			throw new ProtocolException(ProtocolError.ContentTypeMismatch);
+    			throw new MimeException(MimeError.ContentTypeMismatch);
     		}
     	}
     	catch (MessagingException e)
     	{
-    		throw new ProtocolException(ProtocolError.ContentTypeMismatch);
+    		throw new MimeException(MimeError.ContentTypeMismatch);
     	}
     }
 
@@ -97,20 +117,20 @@ public class MimeEntity extends MimeBodyPart
      * @param expectedType The content type of the entity that is expected.
      * @throws ProtocolException Thrown if the entity's content type does not match the expected type.
      */    
-    public void verifyContentType(ContentType expectedType) throws ProtocolException
+    public void verifyContentType(ContentType expectedType) throws MimeException
     {
     	String parsedType;
     	try
     	{
     		parsedType = this.getContentType();
-    		if (parsedType == null || !Protocol.equals(parsedType, expectedType.toString()))
+    		if (parsedType == null || !MimeStandard.equals(parsedType, expectedType.toString()))
     		{
-    			throw new ProtocolException(ProtocolError.ContentTypeMismatch);
+    			throw new MimeException(MimeError.ContentTypeMismatch);
     		}
     	}
     	catch (MessagingException e)
     	{
-    		throw new ProtocolException(ProtocolError.ContentTypeMismatch);
+    		throw new MimeException(MimeError.ContentTypeMismatch);
     	}
     }
     
@@ -119,19 +139,19 @@ public class MimeEntity extends MimeBodyPart
      * @param expectedEncoding The transfer encoding  of the entity that is expected.
      * @throws ProtocolException Thrown if the entity's transfer encoding  does not match the expected encoding.
      */       
-    public void verifyTransferEncoding(String expectedEncoding) throws ProtocolException
+    public void verifyTransferEncoding(String expectedEncoding) throws MimeException
     {
     	try
     	{
 	        String transferEncodingHeader = this.getEncoding();
 	        if (transferEncodingHeader == null || transferEncodingHeader.compareToIgnoreCase((expectedEncoding)) != 0)
 	        {
-	            throw new ProtocolException(ProtocolError.TransferEncodingMismatch);
+	            throw new MimeException(MimeError.TransferEncodingMismatch);
 	        }
     	}
     	catch (MessagingException e)
     	{
-    		throw new ProtocolException(ProtocolError.TransferEncodingMismatch);
+    		throw new MimeException(MimeError.TransferEncodingMismatch);
     	}      	
     	
     }
@@ -164,7 +184,7 @@ public class MimeEntity extends MimeBodyPart
     	}
     	catch (Exception e)
     	{
-    		throw new ProtocolException(ProtocolError.InvalidBody, e);
+    		throw new MimeException(MimeError.InvalidBody, e);
     	}
     	
     	return retVal; 

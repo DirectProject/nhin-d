@@ -1,4 +1,26 @@
-package org.nhindirect.stagent;
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Umesh Madan     umeshma@microsoft.com
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+package org.nhindirect.stagent.mail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -7,35 +29,27 @@ import java.util.Enumeration;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 
-import org.nhindirect.stagent.ProtocolException.ProtocolError;
 import org.nhindirect.stagent.parser.EntitySerializer;
-import org.nhindirect.stagent.parser.Protocol;
 
 /**
- * A complete MIME message with NHIN direct trust and certificate logic.
  * @author Greg Meyer
  * @author Umesh Madan
  *
  */
 @SuppressWarnings("unchecked")
-public class NHINDMessage extends MimeMessage 
-{
-    NHINDAgent agent;
-    NHINDAddress sender;
-    
+public class Message extends MimeMessage 
+{    
     /**
      * Constructs an empty message.
      */
-    NHINDMessage()
+    Message()
     {
     	super((Session)null);
     }
- 
     
     /**
      * Constructs a message with the provided headers and message body.
@@ -43,7 +57,7 @@ public class NHINDMessage extends MimeMessage
      * @param content The message's body.
      * @throws MessagingException
      */
-    public NHINDMessage(InternetHeaders headers, byte[] content) throws MessagingException 
+    public Message(InternetHeaders headers, byte[] content) throws MessagingException 
     {
     	super(null, toInputStream(headers, content));
     }    
@@ -58,7 +72,7 @@ public class NHINDMessage extends MimeMessage
      * Constructs a message from an existing MimeMessage.
      * @param message The message that will make up the header and body of this message.
      */
-    public NHINDMessage(MimeMessage message) throws MessagingException 
+    public Message(MimeMessage message) throws MessagingException 
     {
     	super(message);    	    	
     }
@@ -67,79 +81,94 @@ public class NHINDMessage extends MimeMessage
      * Constructs a message from input stream containing the entire message.
      * @param inStream An input stream containing the entire content (headers and content) of the message.
      */
-    public NHINDMessage(InputStream inStream) throws MessagingException 
+    public Message(InputStream inStream) throws MessagingException 
     {
     	super(null, inStream);   	    	
-    }
-    
-    /**
-     * Gets the NHINDAgent instance that will be applied to this message. 
-     * @return The NHINDAgent instance that will be applied to this message. 
-     */
-    public NHINDAgent getAgent()
-    {
-    	return agent;
-    }
+    }            
 
-    /**
-     * Sets the NHINDAgent instance that will be applied to this message. 
-     * @param value The NHINDAgent instance that will be applied to this message. 
+    /*
+     * Utility function for retrieving raw headers.... raw headers information will be vital for proper message wrapping
      */
-    public void setAgent(NHINDAgent value)
-    {
-        agent = value;
-    }
-            
-
-    /**
-     * Gets the sender of this message.
-     * @return The sender of this message.
-     */
-    public NHINDAddress getSender()
+    private String getRawHeaderLine(String headerName)
     {
     	try
-    	{
-		    if (sender == null)
-		    {
-		    	if (getFrom().length > 0)
-		        sender = new NHINDAddress((InternetAddress)getFrom()[0]);
-		    }
+    	{    	
+	    	Enumeration headers = this.getMatchingHeaderLines(new String[] {headerName});
+	    	
+	    	if (headers != null && headers.hasMoreElements())
+	    		return (String)headers.nextElement();
     	}
     	catch (MessagingException e)
     	{
-    		return null;
+    		/* no-op */
     	}
-	    return sender;
+
+    	return null;
     }
     
     /**
-     * Validates if this message contains the required fields to be a complete NHINDMessage.
+     * Gets the raw to header.
+     * @return The raw to header of the message.
      */
-    public void validate()
-    {
-    	try
-    	{
-	        if (this.getAllRecipients().length == 0)
-	        {
-	            throw new ProtocolException(ProtocolError.MissingTo);
-	        }
-	
-	        if (this.getFrom().length == 0)
-	        {
-	            throw new ProtocolException(ProtocolError.MissingFrom);
-	        }
-    	}
-    	catch (MessagingException e)
-    	{
-    		throw new ProtocolException(ProtocolError.InvalidHeader);
-    	}
-    }    
+    public String getToHeader()
+    {    	
+    	return getRawHeaderLine(MailStandard.ToHeader);
+    }
     
-    /// <summary>
-    /// The source message has non-MIME headers
-    /// Takes the source and creates new Message that contains only items relevant to Mime
-    /// </summary>
-    /// <returns></returns>
+    /**
+     * Gets the raw cc header.
+     * @return The raw cc header of the message.
+     */    
+    public String getCCHeader()
+    {
+    	return getRawHeaderLine(MailStandard.CCHeader);
+    }     
+    
+    /**
+     * Gets the raw bcc header.
+     * @return The raw bcc header of the message.
+     */    
+    public String getBCCHeader()
+    {
+    	return getRawHeaderLine(MailStandard.BCCHeader);
+    }               
+    
+    /**
+     * Gets the raw from header.
+     * @return The raw from header of the message.
+     */    
+    public String getFromHeader()
+    {
+    	return getRawHeaderLine(MailStandard.FromHeader);
+    }         
+    
+    /**
+     * Gets the raw subject header.
+     * @return The raw subject header of the message.
+     */    
+    public String getSubjectHeader()
+    {
+    	return getRawHeaderLine(MailStandard.SubjectHeader);
+    }       
+    
+    /**
+     * Gets the raw message id header.
+     * @return The raw message id header of the message.
+     */    
+    public String getIDHeader()
+    {
+    	return getRawHeaderLine(MailStandard.MessageIDHeader);
+    }        
+    
+    /**
+     * Gets the raw date header.
+     * @return The raw date header of the message.
+     */    
+    public String getDateHeader()
+    {
+    	return getRawHeaderLine(MailStandard.DateHeader);
+    }      
+    
 	/**
 	 * Gets a copy of this message without any non-mime headers.
 	 * @returns A copy of this message without any non-mime headers.
@@ -158,13 +187,13 @@ public class NHINDMessage extends MimeMessage
 	        	while (hEnum.hasMoreElements())
 	        	{
 	        		javax.mail.Header hdr = (javax.mail.Header)hEnum.nextElement();
-	        		if (Protocol.startsWith(hdr.getName(), Protocol.MimeHeaderPrefix))
+	        		if (MimeStandard.startsWith(hdr.getName(), MimeStandard.HeaderPrefix))
 	        			headers.addHeader(hdr.getName(), hdr.getValue());
 	        	}
 	
 	            if (!headers.getAllHeaders().hasMoreElements())
 	            {                        	
-	                throw new ProtocolException(ProtocolError.InvalidMimeEntity);
+	                throw new MimeException(MimeError.InvalidMimeEntity);
 	            }
 	            
 	            retVal = new MimeEntity(headers, getContentAsBytes());
@@ -173,7 +202,7 @@ public class NHINDMessage extends MimeMessage
     	}
     	catch (MessagingException e)
     	{
-    		throw new ProtocolException(ProtocolError.InvalidMimeEntity, e);
+    		throw new MimeException(MimeError.InvalidMimeEntity, e);
     	}
     	
         return retVal;
@@ -242,7 +271,7 @@ public class NHINDMessage extends MimeMessage
     	}
     	catch (Exception e)
     	{
-    		throw new ProtocolException(ProtocolError.InvalidBody, e);
+    		throw new MimeException(MimeError.InvalidBody, e);
     	}
     	
     	return retVal; 
@@ -263,6 +292,6 @@ public class NHINDMessage extends MimeMessage
         {
             return false;
         }
-        return Protocol.contains(contentType, Protocol.MediaType_Multipart);
+        return MimeStandard.contains(contentType, MimeStandard.MediaType_Multipart);
     }         
 }

@@ -71,9 +71,10 @@ import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.bouncycastle.mail.smime.util.CRLFOutputStream;
 import org.bouncycastle.util.Strings;
 import org.bouncycastle.x509.X509Store;
-import org.nhindirect.stagent.MimeEntity;
 import org.nhindirect.stagent.OutgoingMessage;
 import org.nhindirect.stagent.cert.X509CertificateEx;
+import org.nhindirect.stagent.mail.Message;
+import org.nhindirect.stagent.mail.MimeEntity;
 import org.nhindirect.stagent.parser.EntitySerializer;
 import org.nhindirect.stagent.utils.TestUtils;
 
@@ -128,7 +129,7 @@ public class SigTest extends TestCase
 		String testMessage = readResource("MultipartMimeMessage.txt");
 		
         MimeMessage entity = EntitySerializer.Default.deserialize(testMessage);
-        OutgoingMessage message = new OutgoingMessage(entity);
+        Message message = new Message(entity);
         
         
         MimeEntity entityToSig = message.extractEntityForSignature(true);
