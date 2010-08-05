@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB9-8B4A-11D0-8D11-00A0C91BC942}") = "nunit-console.exe", "..\external\nunit\bin\net-2.0\nunit-console.exe", "{01D8A4D8-6FF3-447D-AFD1-F79AFDF99688}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "agentTests", "agent\agentTests.csproj", "{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnsResolverTests", "dns\dnsResolverTests.csproj", "{27B9597C-906C-4BED-BD4B-0734BF022D23}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{01D8A4D8-6FF3-447D-AFD1-F79AFDF99688}.Debug|Any CPU.ActiveCfg = Debug
+		{01D8A4D8-6FF3-447D-AFD1-F79AFDF99688}.Release|Any CPU.ActiveCfg = Debug
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

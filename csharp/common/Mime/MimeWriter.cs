@@ -1,0 +1,159 @@
+﻿/* 
+ Copyright (c) 2010, NHIN Direct Project
+ All rights reserved.
+
+ Authors:
+    Umesh Madan     umeshma@microsoft.com
+  
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.IO;
+
+namespace NHINDirect.Mime
+{
+    /// <summary>
+    /// A very basic mime/entity writer
+    /// The idea is that we are working off EXISTING WELL FORMED messages whose lexical structure we cannot change 
+    /// (esp because of cryptography). Therefore, the assumption is that the orginal authoring application had done 
+    /// the needful with canonicalization etc. 
+    /// </summary>
+    public class MimeWriter : IDisposable
+    {        
+        TextWriter m_writer;
+        
+        public MimeWriter(TextWriter writer)
+        {
+            this.SetWriter(writer);
+        }
+        
+        public void SetWriter(TextWriter writer)
+        {
+            if (writer == null)
+            {
+                throw new ArgumentNullException();
+            }
+            this.Close();
+            m_writer = writer;
+        }
+
+        public void Write(HeaderCollection headers)
+        {
+            if (headers == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            foreach(Header header in headers)
+            {
+                this.Write(header);
+            }
+        }
+        
+        public void Write(Header header)
+        {
+            if (header == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            this.WriteLine(header.SourceText);
+        }
+        
+        public void Write(Body body)
+        {
+            if (body == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            this.Write(body.SourceText);
+        }
+        
+        public void WriteHeader(string name, string value)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException();
+            }
+            
+            m_writer.Write(name);
+            if (!string.IsNullOrEmpty(value))
+            {
+                m_writer.Write(MimeStandard.NameValueSeparator);
+                m_writer.Write(value);
+            }
+            
+            this.WriteCRLF();
+        }
+                
+        public void WriteMimeBoundary(string boundary, bool isLast)
+        {
+            //
+            // As per MIME spec, boundaries START with a CRLF
+            //
+            this.WriteCRLF();
+            if (isLast)
+            {
+                this.WriteLine(MimeStandard.BoundarySeparator + boundary + MimeStandard.BoundarySeparator);
+            }
+            else
+            {
+                this.WriteLine(MimeStandard.BoundarySeparator + boundary);
+            }
+        }
+        
+        public void Write(StringSegment text)
+        {
+            string source = text.Source;
+            for(int i = text.StartIndex, max = text.EndIndex; i <= max; ++i)
+            {
+                m_writer.Write(source[i]);
+            }
+        }
+                
+        public void WriteLine(StringSegment text)
+        {
+            this.Write(text);
+            this.WriteCRLF();
+        }
+        
+        public void WriteLine(string text)
+        {
+            m_writer.Write(text);
+            this.WriteCRLF();
+        }
+        
+        public void WriteCRLF()
+        {
+            m_writer.Write(MimeStandard.CRLF);
+        }        
+        
+        public void Close()
+        {
+            if (m_writer != null)
+            {
+                m_writer.Close();
+                m_writer = null;
+            }        
+        }
+        
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            this.Close();
+        }
+
+        #endregion
+    }
+}
