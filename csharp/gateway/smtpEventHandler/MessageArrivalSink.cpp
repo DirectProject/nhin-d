@@ -62,29 +62,20 @@ STDMETHODIMP CMessageArrivalSink::Load(IPropertyBag* pBag, IErrorLog* pErrorLog)
 	HRESULT hr = E_FAIL;
 	CComVariant varVal;
     
-    if (FAILED(hr = pBag->Read(L"ConfigFilePath", &varVal,pErrorLog)))
+    if (SUCCEEDED(hr = pBag->Read(L"ConfigFilePath", &varVal,pErrorLog)))
     {
-		LogError(hr, L"Could not read config file path");
+		hr = this->LoadFromConfigFile(varVal);
 		goto LBail;
     }
 	
-	if (varVal.vt != VT_BSTR)
-	{
-		hr = E_INVALIDARG;
-		LogError(hr, L"Invalid config file path");
-		goto LBail;
-	}
+	LogError(hr, L"No configuration associated with sink");	
 	
-	if (FAILED(hr = m_managedHandler->Init(varVal.bstrVal)))
-	{
-		LogError(hr, L"Could not Init managed handler");
-		goto LBail;
-	}
-	
-	m_initialized = TRUE;
-	
-	hr = S_OK;
 LBail:
+	if (SUCCEEDED(hr))
+	{
+		m_initialized = TRUE;
+	}
+	
 	return hr;	
 }
 
@@ -122,3 +113,28 @@ STDMETHODIMP CMessageArrivalSink::OnArrival(IMessage *pMsg, CdoEventStatus *pEvS
 LBail:	
 	return hr;
 }
+
+HRESULT CMessageArrivalSink::LoadFromConfigFile(CComVariant &filePath) throw(...)
+{
+	HRESULT hr = E_FAIL;
+	
+	Log(L"Initializing sink using config file");		
+	if (filePath.vt != VT_BSTR)
+	{
+		hr = E_INVALIDARG;
+		LogError(hr, L"Invalid config file path");
+		goto LBail;
+	}
+	
+	if (FAILED(hr = m_managedHandler->InitFromConfigFile(filePath.bstrVal)))
+	{
+		LogError(hr, L"Could not Init managed handler");
+		goto LBail;
+	}
+	
+	hr = S_OK;
+	
+LBail:
+	return hr;	
+}
+
