@@ -260,7 +260,49 @@ namespace NHINDirect.Agent
         public event Action<OutgoingMessage> PreProcessOutgoing;
         public event Action<OutgoingMessage> PostProcessOutgoing;
         public event Action<OutgoingMessage, Exception> ErrorOutgoing;
+                
+        /// <summary>
+        /// If the message is encrypted, then treat it as an incoming message
+        /// Else treat it as an outgoing message
+        /// You'll need to cast MessageEnvelope to IncomingMessage/OutgoingMessage
+        /// </summary>
+        public MessageEnvelope Process(string messageText, ref bool isIncoming)
+        {
+            return this.Process(new MessageEnvelope(messageText), ref isIncoming);
+        }
+        
+        public MessageEnvelope Process(string messageText, NHINDAddressCollection recipients, NHINDAddress sender, ref bool isIncoming)
+        {
+            return this.Process(new MessageEnvelope(messageText, recipients, sender), ref isIncoming);
+        }
 
+        public MessageEnvelope Process(MessageEnvelope envelope, ref bool isIncoming)
+        {
+            if (envelope == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            this.CheckEnvelopeAddresses(envelope);
+
+            if (SMIMEStandard.IsEncrypted(envelope.Message))
+            {
+                isIncoming = true;
+                IncomingMessage incoming = new IncomingMessage(envelope);
+                envelope.Clear();
+                
+                this.ProcessIncoming(incoming);
+                return incoming;
+            }
+
+            isIncoming = false;
+            OutgoingMessage outgoing = new OutgoingMessage(envelope);
+            envelope.Clear();
+            
+            this.ProcessOutgoing(outgoing);
+            return outgoing;
+        }
+                              
         //-------------------------------------------------------------------
         //
         // INCOMING MESSAGE
