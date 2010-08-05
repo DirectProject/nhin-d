@@ -1,3 +1,25 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Umesh Madan     umeshma@microsoft.com
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.stagent.cert.impl;
 
 import java.io.File;
@@ -36,7 +58,7 @@ import org.xbill.DNS.security.CERTConverter;
  * @author Greg Meyer
  *
  */
-public class DNSCertificateService extends CertificateStore 
+public class DNSCertificateStore extends CertificateStore 
 {
 	private CertificateStore localStoreDelegate;
 	private List<String> servers = new ArrayList<String>();
@@ -46,7 +68,7 @@ public class DNSCertificateService extends CertificateStore
 	 * Constructs a service using the machines local DNS server configuration and a default key store implementation for
 	 * local lookups.
 	 */
-	public DNSCertificateService()
+	public DNSCertificateStore()
 	{
 		String[] configedServers = ResolverConfig.getCurrentConfig().servers();
 		
@@ -63,7 +85,7 @@ public class DNSCertificateService extends CertificateStore
 	 * local lookups.
 	 * @param servers The DNS users to use for initial certificate resolution.
 	 */
-	public DNSCertificateService(Collection<String> servers)
+	public DNSCertificateStore(Collection<String> servers)
 	{
 		if (servers == null || servers.size() == 0)
 		{
@@ -80,7 +102,7 @@ public class DNSCertificateService extends CertificateStore
 	 * @param servers The DNS users to use for initial certificate resolution.
 	 * @param localStoreDelegate The certificate store used for local (cached) lookups.
 	 */
-	public DNSCertificateService(Collection<String> servers, CertificateStore localStoreDelegate)
+	public DNSCertificateStore(Collection<String> servers, CertificateStore localStoreDelegate)
 	{
 		if (servers == null || servers.size() == 0 || localStoreDelegate == null)
 		{
@@ -88,7 +110,7 @@ public class DNSCertificateService extends CertificateStore
 		}
 		
 		this.servers.addAll(servers);
-		localStoreDelegate = createDefaultLocalStore();		
+		this.localStoreDelegate = localStoreDelegate;	
 	}	
 	
 	/*
@@ -96,7 +118,7 @@ public class DNSCertificateService extends CertificateStore
 	 */
 	private CertificateStore createDefaultLocalStore()
 	{
-		KeyStoreCertificateService retVal = new KeyStoreCertificateService(new File("NHINKeyStore"), "nH!NdK3yStor3", "31visl!v3s");
+		KeyStoreCertificateStore retVal = new KeyStoreCertificateStore(new File("NHINKeyStore"), "nH!NdK3yStor3", "31visl!v3s");
 		
 		return retVal;
 	}
@@ -129,7 +151,7 @@ public class DNSCertificateService extends CertificateStore
 		{
 			throw new IllegalArgumentException();
 		}
-		localStoreDelegate = createDefaultLocalStore();
+		this.localStoreDelegate = localStoreDelegate;
 	}
 	
 	/**
@@ -202,9 +224,9 @@ public class DNSCertificateService extends CertificateStore
 	 * {@inheritDoc}
 	 */
     @Override
-    public Collection<X509Certificate> getCertificates()
+    public Collection<X509Certificate> getAllCertificates()
     {
-    	return (localStoreDelegate == null) ? null : localStoreDelegate.getCertificates(); 
+    	return (localStoreDelegate == null) ? null : localStoreDelegate.getAllCertificates(); 
     }    
     
 	private Collection<X509Certificate> lookupDNS(String name)

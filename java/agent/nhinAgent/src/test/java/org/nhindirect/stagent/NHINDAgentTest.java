@@ -14,8 +14,9 @@ import java.util.Map.Entry;
 import javax.mail.internet.MimeMessage;
 
 import org.nhindirect.stagent.NHINDAgent;
-import org.nhindirect.stagent.cert.impl.KeyStoreCertificateService;
-import org.nhindirect.stagent.trust.impl.UniformTrustSettings;
+import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
+import org.nhindirect.stagent.cert.impl.UniformCertificateStore;
+import org.nhindirect.stagent.trust.TrustAnchorResolver;
 import org.nhindirect.stagent.utils.TestUtils;
 
 import junit.framework.TestCase;
@@ -86,7 +87,7 @@ public class NHINDAgentTest extends TestCase
 		
 		File internalKeystoreFile = new File(path + "src/test/resources/keystores/internalKeystore");		
 		
-		KeyStoreCertificateService service = new KeyStoreCertificateService(internalKeystoreFile, 
+		KeyStoreCertificateStore service = new KeyStoreCertificateStore(internalKeystoreFile, 
 				internalStorePassword, pkPassword);
 		
 		X509Certificate caCert = TestUtils.getExternalCert("cacert");
@@ -100,29 +101,30 @@ public class NHINDAgentTest extends TestCase
 		anchors.add(secureHealthEmailCACert);
 		
 		NHINDAgent agent = new NHINDAgent("cerner.com", service, 
-				service, new UniformTrustSettings(anchors));
+				service, new TrustAnchorResolver(anchors));
 		
 		String testMessage = readResource("MultipartMimeMessage.txt");
 		MimeMessage originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
 
 		
-		String SMIMEenvMessage = agent.processOutgoing(testMessage);
+		OutgoingMessage SMIMEenvMessage = agent.processOutgoing(testMessage);
 		
 		assertNotNull(SMIMEenvMessage);
-		assertTrue(SMIMEenvMessage.length() > 0);
+		assertTrue(SMIMEenvMessage.getMessage().toString().length() > 0);
 
 		
 		// verify the message
 		// need a new agent because this is a different domain
 		agent = new NHINDAgent("starugh-stateline.com", service, 
-				service, new UniformTrustSettings(anchors));
-		String strippedAndVerifiesMessage = agent.processIncoming(SMIMEenvMessage);
+				service, new TrustAnchorResolver(anchors));
+		IncomingMessage strippedAndVerifiesMessage = agent.processIncoming(SMIMEenvMessage.getMessage().toString());
 		
 		
 		assertNotNull(strippedAndVerifiesMessage);
-		assertTrue(strippedAndVerifiesMessage.length() > 0);
+		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);
 		
-		MimeMessage processedMsg = new MimeMessage(null, new ByteArrayInputStream(strippedAndVerifiesMessage.getBytes("ASCII")));
+		MimeMessage processedMsg = new MimeMessage(null, 
+				new ByteArrayInputStream(strippedAndVerifiesMessage.getMessage().toString().getBytes("ASCII")));
 		
 		assertNotNull(processedMsg);
 		
@@ -154,7 +156,7 @@ public class NHINDAgentTest extends TestCase
 		
 		// now do a large message with some attachments
 		agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new UniformTrustSettings(anchors));
+				service, new TrustAnchorResolver(anchors));
 		
 		testMessage = readResource("LargeMsgWithAttachments.txt");
 		originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
@@ -166,19 +168,20 @@ public class NHINDAgentTest extends TestCase
 		//ouStream.write(SMIMEenvMessage.getBytes());
 		
 		assertNotNull(SMIMEenvMessage);
-		assertTrue(SMIMEenvMessage.length() > 0);
+		assertTrue(SMIMEenvMessage.getMessage().toString().length() > 0);
 
 		
 		// verify the message
 		agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new UniformTrustSettings(anchors));
+				service, new TrustAnchorResolver(anchors));
 		strippedAndVerifiesMessage = agent.processIncoming(SMIMEenvMessage);
 		
 		
 		assertNotNull(strippedAndVerifiesMessage);
-		assertTrue(strippedAndVerifiesMessage.length() > 0);
+		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);
 		
-		processedMsg = new MimeMessage(null, new ByteArrayInputStream(strippedAndVerifiesMessage.getBytes("ASCII")));
+		processedMsg = new MimeMessage(null, new ByteArrayInputStream(strippedAndVerifiesMessage.
+				getMessage().toString().getBytes("ASCII")));
 		
 		assertNotNull(processedMsg);
 		
@@ -224,7 +227,7 @@ public class NHINDAgentTest extends TestCase
 		
 		File internalKeystoreFile = new File(path + "src/test/resources/keystores/internalKeystore");		
 		
-		KeyStoreCertificateService service = new KeyStoreCertificateService(internalKeystoreFile, 
+		KeyStoreCertificateStore service = new KeyStoreCertificateStore(internalKeystoreFile, 
 				internalStorePassword, pkPassword);
 		
 		X509Certificate caCert = TestUtils.getExternalCert("cacert");
@@ -240,7 +243,7 @@ public class NHINDAgentTest extends TestCase
 		anchors.add(msCACert);
 		
 		NHINDAgent agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new UniformTrustSettings(anchors));
+				service, new TrustAnchorResolver(anchors));
 		
 		String testMessage = readResource("EncryptedMessage2.txt");
 		MimeMessage originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
@@ -248,11 +251,11 @@ public class NHINDAgentTest extends TestCase
 		
 		// verify the message
 		// need a new agent because this is a different domain);
-		String strippedAndVerifiesMessage = agent.processIncoming(originalMsg);
+		IncomingMessage strippedAndVerifiesMessage = agent.processIncoming(originalMsg);
 		
 		
 		assertNotNull(strippedAndVerifiesMessage);
-		assertTrue(strippedAndVerifiesMessage.length() > 0);
+		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);
 		
 		/*
 		 * EncryptedMessage3
@@ -268,7 +271,7 @@ public class NHINDAgentTest extends TestCase
 		
 		
 		assertNotNull(strippedAndVerifiesMessage);
-		assertTrue(strippedAndVerifiesMessage.length() > 0);
+		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);
 	}
 	
 	
@@ -284,7 +287,7 @@ public class NHINDAgentTest extends TestCase
 		
 		File internalKeystoreFile = new File(path + "src/test/resources/keystores/internalKeystore");		
 		
-		KeyStoreCertificateService service = new KeyStoreCertificateService(internalKeystoreFile, 
+		KeyStoreCertificateStore service = new KeyStoreCertificateStore(internalKeystoreFile, 
 				internalStorePassword, pkPassword);
 		
 		X509Certificate caCert = TestUtils.getExternalCert("cacert");
@@ -300,7 +303,7 @@ public class NHINDAgentTest extends TestCase
 		anchors.add(msCACert);
 		
 		NHINDAgent agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new UniformTrustSettings(anchors));
+				service, new TrustAnchorResolver(anchors));
 		
 		String testMessage = readResource("EncAttachment.txt");
 		MimeMessage originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
@@ -308,18 +311,18 @@ public class NHINDAgentTest extends TestCase
 		
 		// verify the message
 		// need a new agent because this is a different domain);
-		String strippedAndVerifiesMessage = agent.processIncoming(originalMsg);
+		IncomingMessage strippedAndVerifiesMessage = agent.processIncoming(originalMsg);
 		
 		
 		assertNotNull(strippedAndVerifiesMessage);
-		assertTrue(strippedAndVerifiesMessage.length() > 0);	
+		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);	
 				
 		/*
 		 * EncAttachment2.txt
 		 */		
 		
 		agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new UniformTrustSettings(anchors));
+				service, new TrustAnchorResolver(anchors));
 		
 		testMessage = readResource("EncAttachment2.txt");
 		originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
@@ -330,13 +333,13 @@ public class NHINDAgentTest extends TestCase
 		
 		
 		assertNotNull(strippedAndVerifiesMessage);
-		assertTrue(strippedAndVerifiesMessage.length() > 0);	
+		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);	
 
 		/*
 		 * LargeEncAttachment.txt
 		 */		
 		agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new UniformTrustSettings(anchors));
+				service, new TrustAnchorResolver(anchors));
 		
 		testMessage = readResource("LargeEncAttachment.txt");
 		originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
@@ -347,7 +350,7 @@ public class NHINDAgentTest extends TestCase
 		
 		
 		assertNotNull(strippedAndVerifiesMessage);
-		assertTrue(strippedAndVerifiesMessage.length() > 0);	
+		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);	
 	}	
 	
 	
@@ -361,7 +364,7 @@ public class NHINDAgentTest extends TestCase
 		
 		File internalKeystoreFile = new File(path + "src/test/resources/keystores/internalKeystore");		
 		
-		KeyStoreCertificateService service = new KeyStoreCertificateService(internalKeystoreFile, 
+		KeyStoreCertificateStore service = new KeyStoreCertificateStore(internalKeystoreFile, 
 				internalStorePassword, pkPassword);
 		
 		X509Certificate caCert = TestUtils.getExternalCert("cacert");
@@ -377,28 +380,29 @@ public class NHINDAgentTest extends TestCase
 		anchors.add(cernerDemos);
 
 		NHINDAgent agent = new NHINDAgent("messaging.cernerdemos.com", service, 
-				service, new UniformTrustSettings(anchors));
+				service, new TrustAnchorResolver(anchors));
 		
 		String testMessage = readResource("raw2.txt");
 		MimeMessage originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));		
 		
-		String SMIMEenvMessage = agent.processOutgoing(testMessage);
+		OutgoingMessage SMIMEenvMessage = agent.processOutgoing(testMessage);
 		
 		assertNotNull(SMIMEenvMessage);
-		assertTrue(SMIMEenvMessage.length() > 0);
+		assertTrue(SMIMEenvMessage.getMessage().toString().length() > 0);
 
 		
 		// verify the message
 		// need a new agent because this is a different domain
 		agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new UniformTrustSettings(anchors));
-		String strippedAndVerifiesMessage = agent.processIncoming(SMIMEenvMessage);
+				service, new TrustAnchorResolver(anchors));
+		IncomingMessage strippedAndVerifiesMessage = agent.processIncoming(SMIMEenvMessage);
 		
 		
 		assertNotNull(strippedAndVerifiesMessage);
-		assertTrue(strippedAndVerifiesMessage.length() > 0);
+		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);
 		
-		MimeMessage processedMsg = new MimeMessage(null, new ByteArrayInputStream(strippedAndVerifiesMessage.getBytes("ASCII")));
+		MimeMessage processedMsg = new MimeMessage(null, 
+				new ByteArrayInputStream(strippedAndVerifiesMessage.getMessage().toString().getBytes("ASCII")));
 		
 		assertNotNull(processedMsg);
 		

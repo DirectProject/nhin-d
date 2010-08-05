@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using NUnit.Framework;
 using NHINDirect.Agent;
 using NHINDirect.Cryptography;
@@ -27,12 +28,12 @@ namespace AgentTests
 
         static string[] OutgoingUntrusted = new string[]
         {
-            "Outgoing\\untrusted_1.eml",
+            Path.Combine("Outgoing","untrusted_1.eml"),
         };
 
         static string[] OutgoingUntrustedFully = new string[]
         {
-            "Outgoing\\fully_untrusted_1.eml",
+            Path.Combine("Outgoing", "fully_untrusted_1.eml"),
         };
         
         AgentTester m_tester;
@@ -147,29 +148,7 @@ namespace AgentTests
             this.VerifyTrusted(incoming.Recipients, m_tester.AgentB.MinTrustRequirement);
             Assert.IsTrue(outgoing.RejectedRecipients.Count == 0);
         }
-        
-        [Test]
-        public void TestIntegrations()
-        {
-            foreach(string fileName in EndToEndFiles)
-            {
-                bool isIncoming = false;
-                
-                MessageEnvelope envelope = m_tester.AgentA.Process(m_tester.ReadMessageText(fileName), ref isIncoming);
-                Assert.IsFalse(isIncoming);
-                this.VerifyTrusted(envelope.Recipients, m_tester.AgentA.MinTrustRequirement);
-                
-                string outgoingText = envelope.SerializeMessage();
-                envelope = m_tester.AgentB.Process(outgoingText, ref isIncoming);
-                Assert.IsTrue(isIncoming);
-                Assert.IsTrue(!SMIMEStandard.IsEncrypted(envelope.Message));
-                
-                this.VerifyTrusted(envelope.Recipients, m_tester.AgentB.MinTrustRequirement);
-                
-                string incomingText = envelope.SerializeMessage();
-            }
-        }
-        
+
         void TestEndToEnd(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
         {
             m_tester.AgentA.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;

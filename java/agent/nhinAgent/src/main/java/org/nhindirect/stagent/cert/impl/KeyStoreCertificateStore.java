@@ -1,3 +1,25 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Umesh Madan     umeshma@microsoft.com
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.stagent.cert.impl;
 
 import java.io.File;
@@ -21,11 +43,11 @@ import org.nhindirect.stagent.cert.X509CertificateEx;
 /**
  * Certificate storage using a Java keystore file.  If the keystore file does not exist, the service will automatically
  * generate a new file using the private keystore password.  After a KeyStoreCertificateService object is created, it
- * is initialized by calling {@link KeyStoreCertificateService#loadKeyStore()}
+ * is initialized by calling {@link KeyStoreCertificateStore#loadKeyStore()}
  * @author Greg Meyer
  *
  */
-public class KeyStoreCertificateService extends CertificateStore 
+public class KeyStoreCertificateStore extends CertificateStore 
 {
 	private Set<X509Certificate> certs = new HashSet<X509Certificate>();
 	
@@ -40,7 +62,7 @@ public class KeyStoreCertificateService extends CertificateStore
 	/**
 	 * Constructs an uninitialized key store 
 	 */
-	public KeyStoreCertificateService()
+	public KeyStoreCertificateStore()
 	{
 	}
 
@@ -48,7 +70,7 @@ public class KeyStoreCertificateService extends CertificateStore
 	 * Constructs a keystore using the provided file.
 	 * @param keyStoreFile The file that contains the keystore.   
 	 */
-	public KeyStoreCertificateService(File keyStoreFile)
+	public KeyStoreCertificateStore(File keyStoreFile)
 	{
 		this(keyStoreFile, null, null);
 	}
@@ -58,7 +80,7 @@ public class KeyStoreCertificateService extends CertificateStore
 	 * @param keyStoreFile The file that contains the keystore.
 	 * @param keyStorePassword The password that protects the keystores contents.    
 	 */	
-	public KeyStoreCertificateService(File keyStoreFile, String keyStorePassword)
+	public KeyStoreCertificateStore(File keyStoreFile, String keyStorePassword)
 	{
 		this(keyStoreFile, keyStorePassword, null);
 	}
@@ -69,7 +91,7 @@ public class KeyStoreCertificateService extends CertificateStore
 	 * @param keyStorePassword The password that protects the keystores contents.
 	 * @param privateKeyPassword The password used to retrive privates keys within the keystore.
 	 */		
-	public KeyStoreCertificateService(File keyStoreFile, String keyStorePassword, String privateKeyPassword)
+	public KeyStoreCertificateStore(File keyStoreFile, String keyStorePassword, String privateKeyPassword)
 	{
 		this.keyStoreFile = keyStoreFile;
 		this.keyStorePassword = keyStorePassword;
@@ -247,7 +269,7 @@ public class KeyStoreCertificateService extends CertificateStore
 	/**
 	 * {@inheritDoc}
 	 */
-    public Collection<X509Certificate> getCertificates()
+    public Collection<X509Certificate> getAllCertificates()
     {
     	// internal operations may iterate the returned collection for modifiable operations, so create a copy of the list
     	// instead of an unmodifiable collection backed by the set

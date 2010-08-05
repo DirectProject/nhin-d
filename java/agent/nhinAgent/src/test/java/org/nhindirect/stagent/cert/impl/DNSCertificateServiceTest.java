@@ -31,7 +31,7 @@ public class DNSCertificateServiceTest extends TestCase
 			return;
 		}
 		
-		DNSCertificateService service = new DNSCertificateService();
+		DNSCertificateStore service = new DNSCertificateStore();
 		service.setLocalPriority(false);
 		
 		Collection<X509Certificate> certs =  service.getCertificates("biff@nhind.hsgincubator.com");

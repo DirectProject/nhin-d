@@ -34,7 +34,9 @@ public class TestUtils
 			
 			FileInputStream inStream = new FileInputStream(internalKeystoreFile);
 			
-			keyStore.load(inStream, internalStorePassword.toCharArray());			
+			keyStore.load(inStream, internalStorePassword.toCharArray());	
+			
+			inStream.close();
 		}
 		catch (Exception e)
 		{

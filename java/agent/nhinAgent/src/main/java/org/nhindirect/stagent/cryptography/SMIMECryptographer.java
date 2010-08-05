@@ -1,4 +1,26 @@
-package org.nhindirect.stagent;
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Umesh Madan     umeshma@microsoft.com
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+package org.nhindirect.stagent.cryptography;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,14 +45,10 @@ import javax.mail.internet.ParseException;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.cryptopro.CryptoProObjectIdentifiers;
-import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
-import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.smime.SMIMECapabilitiesAttribute;
 import org.bouncycastle.asn1.smime.SMIMECapability;
 import org.bouncycastle.asn1.smime.SMIMECapabilityVector;
-import org.bouncycastle.asn1.teletrust.TeleTrusTObjectIdentifiers;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.cms.RecipientId;
@@ -40,10 +58,15 @@ import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.mail.smime.CMSProcessableBodyPart;
 import org.bouncycastle.mail.smime.SMIMEEnveloped;
 import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
-import org.nhindirect.stagent.ProtocolException.ProtocolError;
+import org.nhindirect.stagent.NHINDException;
+import org.nhindirect.stagent.SignatureValidationException;
 import org.nhindirect.stagent.cert.X509CertificateEx;
+import org.nhindirect.stagent.mail.Message;
+import org.nhindirect.stagent.mail.MimeEntity;
+import org.nhindirect.stagent.mail.MimeError;
+import org.nhindirect.stagent.mail.MimeException;
+import org.nhindirect.stagent.mail.MimeStandard;
 import org.nhindirect.stagent.parser.EntitySerializer;
-import org.nhindirect.stagent.parser.Protocol;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
@@ -56,23 +79,12 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 @SuppressWarnings("unchecked")
-public class Cryptographer 
+public class SMIMECryptographer 
 {
 
-	private static final Log LOGGER = LogFactory.getFactory().getInstance(Cryptographer.class);
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(SMIMECryptographer.class);
 	
-    public static final String  DIGEST_SHA1 = OIWObjectIdentifiers.idSHA1.getId();
-    public static final String  DIGEST_MD5 = PKCSObjectIdentifiers.md5.getId();
-    public static final String  DIGEST_SHA224 = NISTObjectIdentifiers.id_sha224.getId();
-    public static final String  DIGEST_SHA256 = NISTObjectIdentifiers.id_sha256.getId();
-    public static final String  DIGEST_SHA384 = NISTObjectIdentifiers.id_sha384.getId();
-    public static final String  DIGEST_SHA512 = NISTObjectIdentifiers.id_sha512.getId();
-    public static final String  DIGEST_GOST3411 = CryptoProObjectIdentifiers.gostR3411.getId();
-    public static final String  DIGEST_RIPEMD128 = TeleTrusTObjectIdentifiers.ripemd128.getId();
-    public static final String  DIGEST_RIPEMD160 = TeleTrusTObjectIdentifiers.ripemd160.getId();
-    public static final String  DIGEST_RIPEMD256 = TeleTrusTObjectIdentifiers.ripemd256.getId();	
-	
-    public final static Cryptographer Default = new Cryptographer();
+    public final static SMIMECryptographer Default = new SMIMECryptographer();
     
     private EncryptionAlgorithm m_encryptionAlgorithm;
     private DigestAlgorithm m_digestAlgorithm;
@@ -81,9 +93,9 @@ public class Cryptographer
     /**
      * Constructs a Cryptographer with a default EncryptionAlgorithm and DigestAlgorithm.
      */
-    public Cryptographer()
+    public SMIMECryptographer()
     {
-        this.m_encryptionAlgorithm = EncryptionAlgorithm.RSA_3DES;
+        this.m_encryptionAlgorithm = EncryptionAlgorithm.AES128;
         this.m_digestAlgorithm = DigestAlgorithm.SHA1;
     }
 
@@ -92,7 +104,7 @@ public class Cryptographer
      * @param encryptionAlgorithm The encryption algorithm used to encrypt the message.
      * @param digestAlgorithm The digest algorithm used to generate the message digest stored in the message signature.
      */    
-    public Cryptographer(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
+    public SMIMECryptographer(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
     {
         this.m_encryptionAlgorithm = encryptionAlgorithm;
         this.m_digestAlgorithm = digestAlgorithm;
@@ -187,7 +199,7 @@ public class Cryptographer
 	    	mmEntity.writeTo(oStream);
 	    	oStream.flush();
 	    	InternetHeaders headers = new InternetHeaders();
-	    	headers.addHeader(Protocol.ContentTypeHeader, mmEntity.getContentType());
+	    	headers.addHeader(MimeStandard.ContentTypeHeader, mmEntity.getContentType());
 	    	
 	    	
 	    	entToEncrypt = new MimeEntity(headers, oStream.toByteArray());
@@ -195,7 +207,7 @@ public class Cryptographer
     	}    	
     	catch (Exception e)
     	{
-    		throw new ProtocolException(ProtocolError.InvalidMimeEntity, e);
+    		throw new MimeException(MimeError.InvalidMimeEntity, e);
     	}
         
     	return this.encrypt(entToEncrypt, encryptingCertificates);
@@ -243,12 +255,12 @@ public class Cryptographer
             	writePostEncypt(encBytes);
             }        
 
-            encryptedEntity.setHeader(Protocol.ContentTypeHeader, Protocol.EncryptedContentTypeHeaderValue);
+            encryptedEntity.setHeader(MimeStandard.ContentTypeHeader, SMIMEStandard.EncryptedContentTypeHeaderValue);
             
         }
         catch (Exception e)
         {
-        	throw new ProtocolException(ProtocolError.Unexpected, e);
+        	throw new MimeException(MimeError.Unexpected, e);
         }
 
         return encryptedEntity;
@@ -284,7 +296,7 @@ public class Cryptographer
         }
         catch (Exception e)
         {
-        	throw new ProtocolException(ProtocolError.Unexpected, e);
+        	throw new MimeException(MimeError.Unexpected, e);
         }
         
         return retVal;
@@ -302,7 +314,7 @@ public class Cryptographer
      * @param decryptingCertificate The certificate whose private key will be used to decrypt the message.
      * @return A MimeEntity containing the decrypted part.
      */    
-    public MimeEntity decrypt(NHINDMessage message, X509CertificateEx decryptingCertificate)
+    public MimeEntity decrypt(Message message, X509CertificateEx decryptingCertificate)
     {
         return this.decrypt(message.extractMimeEntity(), decryptingCertificate);
     }
@@ -324,9 +336,9 @@ public class Cryptographer
         {
             throw new IllegalArgumentException("Certificate has no private key");
         }
-        
-        encryptedEntity.verifyContentType(Protocol.EncryptedContentTypeHeaderValue);
-        encryptedEntity.verifyTransferEncoding(Protocol.TransferEncodingBase64);
+        											   
+        encryptedEntity.verifyContentType(SMIMEStandard.EncryptedContentTypeHeaderValue);
+        encryptedEntity.verifyTransferEncoding(MimeStandard.TransferEncodingBase64);
         
     	Collection<X509CertificateEx> certs = new ArrayList<X509CertificateEx>();
     		certs.add(decryptingCertificate);
@@ -387,11 +399,11 @@ public class Cryptographer
         }
         catch (MessagingException e)
         {
-        	throw new ProtocolException(ProtocolError.InvalidMimeEntity, e);
+        	throw new MimeException(MimeError.InvalidMimeEntity, e);
         }
         catch (Exception e)
         {
-        	throw new ProtocolException(ProtocolError.Unexpected, e);
+        	throw new MimeException(MimeError.Unexpected, e);
         }
 
         return retEntity;
@@ -403,10 +415,16 @@ public class Cryptographer
      * @param signingCertificate The certificate used to sign the message.
      * @return A signed entity that consists of a multipart/signed entity containing the original entity and a message signature. 
      */    
-    public SignedEntity sign(NHINDMessage message, X509CertificateEx signingCertificate)
+    public SignedEntity sign(Message message, X509Certificate signingCertificate)
     {
         return this.sign(message.extractEntityForSignature(this.m_includeEpilogue), signingCertificate);
     }
+    
+      
+    public SignedEntity sign(Message message, Collection<X509Certificate> signingCertificates)
+    {
+        return this.sign(message.extractEntityForSignature(this.m_includeEpilogue), signingCertificates);
+    }    
     
     /**
      * Signs an entity with the provided certificate.
@@ -414,9 +432,9 @@ public class Cryptographer
      * @param signingCertificate The certificate used to sign the message.
      * @return A signed entity that consists of a multipart/signed entity containing the original entity and a message signature. 
      */  
-    public SignedEntity sign(MimeEntity entity, X509CertificateEx signingCertificate)        
+    public SignedEntity sign(MimeEntity entity, X509Certificate signingCertificate)        
     {
-    	Collection<X509CertificateEx> certs = new ArrayList<X509CertificateEx>();
+    	Collection<X509Certificate> certs = new ArrayList<X509Certificate>();
     	certs.add(signingCertificate);
     	
         return this.sign(entity, certs);
@@ -428,7 +446,7 @@ public class Cryptographer
      * @param signingCertificates The certificates used to sign the message.
      * @return A signed entity that consists of a multipart/signed entity containing the original entity and a message signature. 
      */ 
-    public SignedEntity sign(MimeEntity entity, Collection<X509CertificateEx> signingCertificates)
+    public SignedEntity sign(MimeEntity entity, Collection<X509Certificate> signingCertificates)
     {
         if (entity == null)
         {
@@ -447,13 +465,13 @@ public class Cryptographer
         }
         catch (ParseException e)
         {
-        	throw new ProtocolException(ProtocolError.InvalidHeader, e);
+        	throw new MimeException(MimeError.InvalidHeader, e);
         }
         
         return retVal;
     }
 
-    private MimeMultipart createSignatureEntity(byte[] entity, Collection<X509CertificateEx> signingCertificates)
+    private MimeMultipart createSignatureEntity(byte[] entity, Collection<X509Certificate> signingCertificates)
     {    	
     	MimeMultipart retVal = null;
     	try
@@ -472,11 +490,14 @@ public class Cryptographer
 	    	
 	    	List  certList = new ArrayList();
 	    	CMSSignedDataGenerator generator = new CMSSignedDataGenerator();
-	    	for (X509CertificateEx signer : signingCertificates)
+	    	for (X509Certificate signer : signingCertificates)
 	    	{
-	        	generator.addSigner(signer.getPrivateKey(), signer,
-	          	      CMSSignedDataGenerator.DIGEST_SHA1, new AttributeTable(signedAttrs), null);
-	        	certList.add(signer);
+	    		if (signer instanceof X509CertificateEx)
+	    		{	    			
+	    			generator.addSigner(((X509CertificateEx)signer).getPrivateKey(), signer,
+	    					toDigestAlgorithmOid(this.m_digestAlgorithm), new AttributeTable(signedAttrs), null);
+	    			certList.add(signer);
+	    		}
 	    	}    	  	    		    	
 	    	
 	    	CertStore certsAndcrls = CertStore.getInstance("Collection", new CollectionCertStoreParameters(certList), "BC");   
@@ -485,7 +506,7 @@ public class Cryptographer
 	    	
 	    	CMSSignedData signedData = generator.generate(content, false, "BC");
 	    	  	    	
-	        String  header = "signed; protocol=\"application/pkcs7-signature\"; micalg=sha1";           
+	        String  header = "signed; protocol=\"application/pkcs7-signature\"; micalg=" + toDigestAlgorithmMicalg(this.m_digestAlgorithm);           
 	        
 	        String encodedSig = Base64.encodeBase64String(signedData.getEncoded());
 	        
@@ -503,15 +524,15 @@ public class Cryptographer
     	}   
     	catch (MessagingException e)
     	{
-    		throw new ProtocolException(ProtocolError.InvalidMimeEntity, e);  		
+    		throw new MimeException(MimeError.InvalidMimeEntity, e);  		
     	}    	
     	catch (IOException e)
     	{
-    		throw new ProtocolException(ProtocolError.InvalidSignatureMimeParts, e);  		
+    		throw new SignatureException(SignatureError.InvalidMultipartSigned, e);  		
     	}   
     	catch (Exception e)
     	{
-    		throw new NHINDException(ProtocolError.Unexpected, e);   		
+    		throw new NHINDException(MimeError.Unexpected, e);   		
     	} 	
     	return retVal;  
   	
@@ -579,22 +600,47 @@ public class Cryptographer
     	catch (Exception e)
     	{
     		e.printStackTrace();
-        	throw new ProtocolException(ProtocolError.Unexpected, e);
+        	throw new MimeException(MimeError.Unexpected, e);
     	}
     	
     	return signed;
     }
 
-    //
-    // OIDs
-    //
-    static final String Oid_SHA1 = "1.3.14.3.2.26";
-    static final String Oid_SHA256 = "2.16.840.1.101.3.4.2.1";
-    static final String Oid_SHA512 = "2.16.840.1.101.3.4.2.3";
-    static final String Oid_RSA_ThreeDES = "1.2.840.113549.3.7";
-    static final String Oid_ContentType_Data = "1.2.840.113549.1.7.1";
+    
+    public CMSSignedData deserializeEnvelopedSignature(MimeEntity envelopeEntity)
+    {
+        if (envelopeEntity == null)
+        {
+            throw new SignatureException(SignatureError.NullEntity);
+        }
 
+        if (!SMIMEStandard.isSignedEnvelope(envelopeEntity))
+        {
+            throw new SignatureException(SignatureError.NotSignatureEnvelope);
+        }
 
+        byte[] envelopeBytes = EntitySerializer.Default.serializeToBytes(envelopeEntity);
+
+        return this.deserializeEnvelopedSignature(envelopeBytes);
+    }
+
+    public CMSSignedData deserializeEnvelopedSignature(byte[] messageBytes)
+    {
+    	CMSSignedData signed = null;
+    	
+    	try
+    	{                     
+           	signed = new CMSSignedData(messageBytes);           	
+    	}
+    	catch (Exception e)
+    	{
+    		e.printStackTrace();
+        	throw new MimeException(MimeError.Unexpected, e);
+    	}
+    	
+    	return signed;
+    }    
+    
 
     private String toDigestAlgorithmOid(DigestAlgorithm type)
     {
@@ -604,10 +650,40 @@ public class Cryptographer
                 throw new IllegalArgumentException();
 
             case SHA1:
-                return Cryptographer.Oid_SHA1;
+                return CMSSignedDataGenerator.DIGEST_SHA1;
+                
+            case SHA256:
+            	return CMSSignedDataGenerator.DIGEST_SHA256;
+            	
+            case SHA384:
+            	return CMSSignedDataGenerator.DIGEST_SHA384;   
+            	
+            case SHA512:
+            	return CMSSignedDataGenerator.DIGEST_SHA512;   
         }
     }
 
+    private String toDigestAlgorithmMicalg(DigestAlgorithm type)
+    {
+        switch (type)
+        {
+            default:
+                throw new IllegalArgumentException();
+
+            case SHA1:
+                return "sha1";
+                
+            case SHA256:
+            	return "sha256";
+            	
+            case SHA384:
+            	return "sha384"; 
+            	
+            case SHA512:
+            	return "sha512";           	
+        }
+    }    
+    
     private String toEncyAlgorithmOid(EncryptionAlgorithm type)
     {
         switch (type)
@@ -617,8 +693,18 @@ public class Cryptographer
 
             case RSA_3DES:
                 return SMIMEEnvelopedGenerator.DES_EDE3_CBC;
+                
+            case AES128:
+            	return SMIMEEnvelopedGenerator.AES128_CBC;
+            	
+            case AES192: 
+            	return SMIMEEnvelopedGenerator.AES192_CBC;
+            	
+            case AES256: 
+            	return SMIMEEnvelopedGenerator.AES256_CBC;            	
         }
     }
+    
     
     private void writePreEncypt(byte message[])
     {

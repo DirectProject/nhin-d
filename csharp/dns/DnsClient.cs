@@ -459,6 +459,45 @@ namespace DnsResolver
                                 
             return response.AnswerRecords.CERT;
         }
+
+        public IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain)
+        {
+            IEnumerable<IPAddress> nameServers = this.GetNameServers(domain);
+            if (nameServers != null)
+            {
+                foreach (IPAddress nameserver in nameServers)
+                {
+                    try
+                    {
+                        IEnumerable<CertRecord> certs = this.ResolveCERTFromNameServer(domain, nameserver);
+                        if (certs != null)
+                        {
+                            return certs;
+                        }
+                    }
+                    catch (DnsException)
+                    {
+                        throw;
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        public IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain, IPAddress nameserver)
+        {
+            if (string.IsNullOrEmpty(domain) || nameserver == null)
+            {
+                throw new ArgumentException();
+            }
+            
+            using (DnsClient client = new DnsClient(nameserver))
+            {
+                client.UseUDPFirst = false;
+                return client.ResolveCERT(domain);                
+            }
+        }
         
 		/// <summary>
 		/// Convenience method resolving and returning SOA RRs. 
@@ -602,20 +641,49 @@ namespace DnsResolver
 		/// A domain name to resolve.
 		/// </param>
 		/// <returns>
-		/// A array of IPAddress instances of name servers for the domain. See <see cref="System.Net.IPAddress"/>
+		/// An enumeration of IPAddress instances of name servers for the domain. See <see cref="System.Net.IPAddress"/>
 		/// </returns>
         public IEnumerable<IPAddress> GetNameServers(string domain)
         {
-            IEnumerable<NSRecord> nsRecords = this.ResolveNS(domain);
-            if (nsRecords != null)
+            return this.ResolveHostAddresses(this.GetNameServerNames(domain));
+        }
+        
+        /// <summary>
+        /// Resolves all the name server names for a given domain
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <returns>An enumeration of name server names</returns>
+        public IEnumerable<string> GetNameServerNames(string domain)
+        {
+            DnsResponse response = this.Resolve(DnsRequest.CreateNS(domain));
+            if (response == null || !response.HasNameServerRecords)
             {
-                return this.ResolveHostAddresses(
-                    from record in nsRecords
-                    select record.NameServer
-                );
+                yield break;
             }
+            
+            string serverName = null;
+            foreach (DnsResourceRecord record in response.NameServerRecords)
+            {
+                serverName = null;
+                switch (record.Type)
+                {
+                    default:
+                        break;
 
-            return null;
+                    case Dns.RecordType.NS:
+                        serverName = ((NSRecord)record).NameServer;
+                        break;
+
+                    case Dns.RecordType.SOA:
+                        serverName = ((SOARecord)record).DomainName;
+                        break;
+                }
+
+                if (serverName != null)
+                {
+                    yield return serverName;
+                }
+            }
         }
 		
 		/// <summary>
