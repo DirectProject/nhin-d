@@ -53,7 +53,7 @@ namespace NHINDirect.Agent
     /// OutgoingMessage outgoing = agent.ProcessOutgoing(outgoingmsg); 
     /// if (outgoing.HasRejectedRecipients) 
     /// { 
-    ///     foreach(recipient in outgoing.RejectedRecipeints) 
+    ///     foreach(recipient in outgoing.RejectedRecipients) 
     ///     { 
     ///         Console.WriteLine("Rejected {0}", recipient.Address); 
     ///     } 
@@ -348,6 +348,7 @@ namespace NHINDirect.Agent
         // INCOMING MESSAGE
         //
         //-------------------------------------------------------------------
+
         /// <summary> 
         /// Decrypts and verifies trust in signed and encrypted RFC 5322 formatted message 
         /// </summary> 
@@ -391,6 +392,15 @@ namespace NHINDirect.Agent
             return this.ProcessIncoming(message);                    
         }
 
+		/// <summary>
+		/// Decrypts and verifies trust in a MessageEnvelope instance with signed and encrypted message content.
+		/// </summary>
+		/// <param name="envelope">
+		/// A <see cref="MessageEnvelope"/> instance with signed and encrypted content for decryption and trust verification.
+		/// </param>
+		/// <returns>
+        /// An <see cref="IncomingMessage"/> instance with the trust verified decrypted and verified message. 
+		/// </returns>
         public IncomingMessage ProcessIncoming(MessageEnvelope envelope)
         {
             if (envelope == null)
@@ -402,6 +412,15 @@ namespace NHINDirect.Agent
             return this.ProcessIncoming(new IncomingMessage(envelope));
         }
         
+		/// <summary>
+		/// Decrypts and verifies trust in an IncomingMessage instance with signed and encrypted message content.
+		/// </summary>
+		/// <param name="envelope">
+		/// A <see cref="IncomingMessage"/> instance with signed and encrypted content for decryption and trust verification.
+		/// </param>
+		/// <returns>
+        /// An <see cref="IncomingMessage"/> instance with the trust verified decrypted and verified message. 
+		/// </returns>
         public IncomingMessage ProcessIncoming(IncomingMessage message)
         {
             if (message == null)
@@ -562,7 +581,17 @@ namespace NHINDirect.Agent
         //
         // OUTGOING MESSAGE
         //
-        //-------------------------------------------------------------------        
+        //------------------------------------------------------------------- 
+		
+		/// <summary> 
+        /// Encrypts, verifies recipient trust, and signs an RFC 5322 formatted message 
+        /// </summary> 
+        /// <param name="messageText"> 
+        /// An RFC 5322 formatted message string 
+        /// </param> 
+        /// <returns> 
+        /// An <see cref="OutgoingMessage"/> instance containing the encrypted and trust verified message. 
+        /// </returns> 
         public OutgoingMessage ProcessOutgoing(string messageText)
         {
             if (string.IsNullOrEmpty(messageText))
@@ -575,6 +604,22 @@ namespace NHINDirect.Agent
             return this.ProcessOutgoing(message);
         }
         
+		/// <summary>
+        /// Encrypts, verifies recipient trust, and signs an RFC 5322 formatted message 
+        /// The provided sender and recipient addresses will be used instead of the header information in the <c>messageText</c>. 
+		/// </summary>
+		/// <param name="messageText">
+        /// An RFC 5322 formatted message string 
+		/// </param>
+		/// <param name="recipients">
+		/// An <see cref="NHINDAddressCollection"/> instance specifying message recipients.
+		/// </param>
+		/// <param name="sender">
+		/// An <see cref="NHINDAddress"/> instance specifying message sender
+		/// </param>
+		/// <returns>
+		/// An <see cref="OutgoingMessage"/> instance containing the encrypted and trust verified message.
+		/// </returns>
         public OutgoingMessage ProcessOutgoing(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
         {
             this.CheckEnvelopeAddresses(recipients, sender);
@@ -583,6 +628,15 @@ namespace NHINDirect.Agent
             return this.ProcessOutgoing(message);            
         }
 
+		/// <summary>
+        /// Encrypts, verifies recipient trust, and signs a MessageEnvelope containing a message to prepare for send.
+		/// </summary>
+		/// <param name="envelope">
+        /// A <see cref="MessageEnvelope"/> instance containing the message to prepare for send.
+		/// </param>
+		/// <returns>
+		/// An <see cref="OutgoingMessage"/> instance containing the encrypted and trust verified message.
+		/// </returns>
         public OutgoingMessage ProcessOutgoing(MessageEnvelope envelope)
         {
             if (envelope == null)
@@ -596,6 +650,15 @@ namespace NHINDirect.Agent
             return this.ProcessOutgoing(message);
         }
         
+		/// <summary>
+        /// Encrypts, verifies recipient trust, and signs an OutgoingMessage containing a message to prepare for send.
+		/// </summary>
+		/// <param name="envelope">
+        /// An <see cref="OutgoingMessage"/> instance containing the message to prepare for send.
+		/// </param>
+		/// <returns>
+		/// An <see cref="OutgoingMessage"/> instance containing the encrypted and trust verified message.
+		/// </returns>
         public OutgoingMessage ProcessOutgoing(OutgoingMessage message)
         {
             if (message == null)
