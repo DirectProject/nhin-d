@@ -138,8 +138,8 @@ namespace AgentTests
         
         public static AgentTester CreateTest(string basePath)
         {
-            NHINDAgent agentA = CreateAgent(AgentTester.DefaultDomainA, Path.Combine(basePath, @"Certificates\redmond"));
-            NHINDAgent agentB = CreateAgent(AgentTester.DefaultDomainB, Path.Combine(basePath, @"Certificates\nhind"));
+            NHINDAgent agentA = CreateAgent(AgentTester.DefaultDomainA, Path.Combine(basePath, Path.Combine("Certificates","redmond")));
+            NHINDAgent agentB = CreateAgent(AgentTester.DefaultDomainB, Path.Combine(basePath, Path.Combine("Certificates","nhind")));
             return new AgentTester(agentA, agentB);
         }
         
@@ -163,7 +163,7 @@ namespace AgentTests
             
             if (!Directory.Exists(folderPath))
             {
-                throw new DirectoryNotFoundException();
+                throw new DirectoryNotFoundException("Directory not found: " + folderPath);
             }
             
             MemoryX509Store certStore = new MemoryX509Store();

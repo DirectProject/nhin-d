@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using NUnit.Framework;
 using NHINDirect.Agent;
 using NHINDirect.Cryptography;
@@ -27,12 +28,12 @@ namespace AgentTests
 
         static string[] OutgoingUntrusted = new string[]
         {
-            "Outgoing\\untrusted_1.eml",
+            Path.Combine("Outgoing","untrusted_1.eml"),
         };
 
         static string[] OutgoingUntrustedFully = new string[]
         {
-            "Outgoing\\fully_untrusted_1.eml",
+            Path.Combine("Outgoing", "fully_untrusted_1.eml"),
         };
         
         AgentTester m_tester;
