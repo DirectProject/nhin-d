@@ -20,36 +20,26 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.stagent.trust;
+package org.nhindirect.stagent.cert;
 
-import org.nhindirect.stagent.NHINDException;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
+
+import javax.mail.internet.InternetAddress;
 
 /**
- * Exception thrown when during trust enforcement operations.
+ * Certificate resolver implementations are responsible for retrieving public X509Certificates from a 
+ * certificate repository.  Repositories may include a simple keystore file, a machine cert store,
+ * a URI, or a DNS cert implementation.    
  * @author Greg Meyer
  * @author Umesh Madan
- *
  */
-public class TrustException extends NHINDException 
-{    
-	static final long serialVersionUID = -2194790485513875172L;	
-	
+public interface ICertificateResolver
+{
 	/**
-	 * Constructs an exception with the trust error.
-	 * @param error The trust error.
-	 */    
-    public TrustException(TrustError error)
-    {
-    	super(error);
-    }
- 
-	/**
-	 * Constructs an exception with the trust error and the exception that caused the error.
-	 * @param error The trust error.
-	 * @param innerException The exception that caused the error.
-	 */       
-    public TrustException(TrustError error, Exception innerException)
-    {
-    	super(error, innerException);
-    }
+	 * Retrieves a certificate for a given InternetAddress.
+	 * @param address  The InternetAddress used to lookup the certificate.
+	 * @return An X509Certificate containing the address in its E or CN field.
+	 */
+	public Collection<X509Certificate> getCertificates(InternetAddress address);
 }

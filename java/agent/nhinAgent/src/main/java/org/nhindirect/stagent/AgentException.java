@@ -20,36 +20,52 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.stagent.trust;
+package org.nhindirect.stagent;
 
-import org.nhindirect.stagent.NHINDException;
 
 /**
- * Exception thrown when during trust enforcement operations.
+ * Exception thrown in the agent's operational flow.
  * @author Greg Meyer
  * @author Umesh Madan
  *
  */
-public class TrustException extends NHINDException 
-{    
-	static final long serialVersionUID = -2194790485513875172L;	
+public class AgentException extends NHINDException
+{
+	static final long serialVersionUID = 3498045976415463115L;	
 	
-	/**
-	 * Constructs an exception with the trust error.
-	 * @param error The trust error.
-	 */    
-    public TrustException(TrustError error)
+    public AgentException(AgentError error)
     {
     	super(error);
     }
- 
+    
 	/**
-	 * Constructs an exception with the trust error and the exception that caused the error.
-	 * @param error The trust error.
+	 * Constructs an exception with a message and the agent error.
+	 * @param error The agent error
+	 * @param msg The exception message.
+	 */    
+    public AgentException(AgentError error, String message)
+    {
+    	super(error, message);
+    }
+       
+	/**
+	 * Constructs an exception with the agent error and the exception that caused the error.
+	 * @param error The atent error.
 	 * @param innerException The exception that caused the error.
-	 */       
-    public TrustException(TrustError error, Exception innerException)
+	 */     
+    public AgentException(AgentError error, Exception innerException)
     {
     	super(error, innerException);
+    }
+    
+	/**
+	 * Constructs an exception with the agent error, a message, and the exception that caused the error.
+	 * @param error The agent error.
+	 * @param msg The exception message.
+	 * @param innerException The exception that caused the error.
+	 */      
+    public AgentException(AgentError error, String message, Exception innerException)
+    {
+    	super(error, message, innerException);
     }
 }

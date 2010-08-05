@@ -20,36 +20,40 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.stagent.trust;
-
-import org.nhindirect.stagent.NHINDException;
+package org.nhindirect.stagent.mail;
 
 /**
- * Exception thrown when during trust enforcement operations.
+ * Common RFC822/5322 headers and common header collections. 
  * @author Greg Meyer
  * @author Umesh Madan
  *
  */
-public class TrustException extends NHINDException 
-{    
-	static final long serialVersionUID = -2194790485513875172L;	
-	
-	/**
-	 * Constructs an exception with the trust error.
-	 * @param error The trust error.
-	 */    
-    public TrustException(TrustError error)
-    {
-    	super(error);
-    }
- 
-	/**
-	 * Constructs an exception with the trust error and the exception that caused the error.
-	 * @param error The trust error.
-	 * @param innerException The exception that caused the error.
-	 */       
-    public TrustException(TrustError error, Exception innerException)
-    {
-    	super(error, innerException);
-    }
+public class MailStandard 
+{
+    public static final String ToHeader = "to";
+    public static final String CCHeader = "cc";
+    public static final String BCCHeader = "bcc";
+    public static final String FromHeader = "from";
+    public static final String SenderHeader = "sender";
+    public static final String MessageIDHeader = "message-id";
+    public static final String SubjectHeader = "subject";
+    public static final String DateHeader = "date";
+    public static final String OrigDateHeader = "orig-date";
+    public static final String InReplyToHeader = "in-reply-to";
+    public static final String ReferencesHeader = "references";
+    public static final String ContentTypeHeader = "content-type";
+    
+    public static final String[] DestinationHeaders = new String[] {
+    	ToHeader, 
+        FromHeader,
+        CCHeader,
+        BCCHeader};
+    
+    public static final String[] OriginHeaders = new String[] {
+    	FromHeader, 
+    	SenderHeader};    
+    
+    public static final char MailAddressSeparator = ',';
+    
+    public static final String MediaType_WrappedMessage = "message/rfc822";
 }

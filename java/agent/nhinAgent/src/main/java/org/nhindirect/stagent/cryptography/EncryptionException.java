@@ -20,36 +20,45 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.stagent.trust;
+package org.nhindirect.stagent.cryptography;
 
-import org.nhindirect.stagent.NHINDException;
-
-/**
- * Exception thrown when during trust enforcement operations.
- * @author Greg Meyer
- * @author Umesh Madan
- *
- */
-public class TrustException extends NHINDException 
-{    
-	static final long serialVersionUID = -2194790485513875172L;	
+public class EncryptionException extends CryptographicException
+{
+	static final long serialVersionUID = -8428293362849886044L;	
 	
+	public EncryptionException(EncryptionError error)
+	{
+	   super(error);
+	}
+		    
 	/**
-	 * Constructs an exception with the trust error.
-	 * @param error The trust error.
+	 * Constructs an exception with a message and the encryption error.
+	 * @param error The encryption error
+	 * @param msg The exception message.
 	 */    
-    public TrustException(TrustError error)
+    public EncryptionException(EncryptionError error, String message)
     {
-    	super(error);
+    	super(error, message);
     }
- 
+	       
 	/**
-	 * Constructs an exception with the trust error and the exception that caused the error.
-	 * @param error The trust error.
+	 * Constructs an exception with the encryption error and the exception that caused the error.
+	 * @param error The encryption error.
 	 * @param innerException The exception that caused the error.
-	 */       
-    public TrustException(TrustError error, Exception innerException)
+	 */     
+    public EncryptionException(EncryptionError error, Exception innerException)
     {
     	super(error, innerException);
+    }
+	    
+	/**
+	 * Constructs an exception with the encryption error, a message, and the exception that caused the error.
+	 * @param error The encryption error.
+	 * @param msg The exception message.
+	 * @param innerException The exception that caused the error.
+	 */      
+    public EncryptionException(EncryptionError error, String message, Exception innerException)
+    {
+    	super(error, message, innerException);
     }
 }
