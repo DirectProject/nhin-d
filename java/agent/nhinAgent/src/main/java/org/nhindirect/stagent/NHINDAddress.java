@@ -224,4 +224,13 @@ public class NHINDAddress extends InternetAddress
     {
     	return getHost().equalsIgnoreCase(domain);
     }
+	
+	public boolean isInDomain(Collection<String> domains)
+	{
+		for (String domain : domains)
+			if (domainEquals(domain))
+				return true;
+		
+		return false;
+	}
 }

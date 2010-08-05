@@ -28,9 +28,19 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+
+import org.apache.jcs.JCS;
+import org.apache.jcs.access.exception.CacheException;
+import org.apache.jcs.engine.behavior.ICompositeCacheAttributes;
+import org.apache.jcs.engine.behavior.IElementAttributes;
 import org.nhindirect.stagent.NHINDException;
+import org.nhindirect.stagent.cert.CacheableCertStore;
+import org.nhindirect.stagent.cert.CertStoreCachePolicy;
 import org.nhindirect.stagent.cert.CertificateStore;
 import org.xbill.DNS.CERTRecord;
 import org.xbill.DNS.CNAMERecord;
@@ -52,18 +62,22 @@ import org.xbill.DNS.security.CERTConverter;
  * Depending the OS TCP implementation, lookups may be cached in native DNS resolvers resulting in optimized lookups.  
  * However this may not always in line with HIPS policies.  Refer to you OS DNS implementation for more details.
  * <br>
- * This service implementation is configurable to prefer local cached certs (and CLRs)
- * or delegate to DNS lookups first.  
+ * This service caches DNS entries independently of OS resolver.  Caching can be tuned using the {@link CacheableCertStore} interface.
+ * By default, the time to live of a subjects DNS certs is one day and the maximum number of entries is 1000 before the cache
+ * is pruned to make room for new entries.  Pruning by default uses a least recently used algorithm.
  * 
  * @author Greg Meyer
  *
  */
-public class DNSCertificateStore extends CertificateStore 
+public class DNSCertificateStore extends CertificateStore implements CacheableCertStore
 {
+	private static final String CACHE_NAME = "DNS_REMOTE_CERT_CACHE";
+	
 	private CertificateStore localStoreDelegate;
 	private List<String> servers = new ArrayList<String>();
-	private boolean localPriority = true;
-	
+	private JCS cache;
+	private CertStoreCachePolicy cachePolicy;
+
 	/**
 	 * Constructs a service using the machines local DNS server configuration and a default key store implementation for
 	 * local lookups.
@@ -78,6 +92,7 @@ public class DNSCertificateStore extends CertificateStore
 		}
 		
 		localStoreDelegate = createDefaultLocalStore();
+		loadBootStrap();
 	}
 	
 	/**
@@ -92,26 +107,85 @@ public class DNSCertificateStore extends CertificateStore
 			throw new IllegalArgumentException();
 		}
 		
-		this.servers.addAll(servers);
+		this.servers.addAll(servers);		
+		
 		localStoreDelegate = createDefaultLocalStore();		
+		loadBootStrap();
 	}
 	
 	/**
 	 * Constructs a service using the server list for DNS lookups and a key store implementation for
 	 * local lookups.
 	 * @param servers The DNS users to use for initial certificate resolution.
-	 * @param localStoreDelegate The certificate store used for local (cached) lookups.
+	 * @param localStoreDelegate The certificate store used for local lookups.  This store is also the boot strap store.
 	 */
-	public DNSCertificateStore(Collection<String> servers, CertificateStore localStoreDelegate)
+	public DNSCertificateStore(Collection<String> servers, CertificateStore bootstrapStore, CertStoreCachePolicy policy)
 	{
-		if (servers == null || servers.size() == 0 || localStoreDelegate == null)
+		if (servers == null || servers.size() == 0 || bootstrapStore == null)
 		{
 			throw new IllegalArgumentException();
 		}
 		
-		this.servers.addAll(servers);
-		this.localStoreDelegate = localStoreDelegate;	
+		this.servers.addAll(servers);		
+		this.cachePolicy = policy;			
+		this.localStoreDelegate = bootstrapStore;			
+		loadBootStrap();
 	}	
+	
+	private synchronized JCS getCache()
+	{
+		if (cache == null)
+			createCache();
+		
+		return cache;
+	}
+	
+	private void createCache()
+	{
+		try
+		{
+			// create instance
+			cache = JCS.getInstance(CACHE_NAME);		
+			applyCachePolicy(cachePolicy == null ? getDefaultPolicy() : cachePolicy);
+					
+		}
+		catch (CacheException e)
+		{
+			// TODO: log error
+		}
+	}
+	
+	private void applyCachePolicy(CertStoreCachePolicy policy)
+	{
+		if (getCache() != null)
+		{
+			try
+			{
+				ICompositeCacheAttributes attributes = cache.getCacheAttributes();
+				attributes.setMaxObjects(policy.getMaxItems());
+				attributes.setUseLateral(false);
+				attributes.setUseRemote(false);
+				cache.setCacheAttributes(attributes);
+				
+				IElementAttributes eattributes = cache.getDefaultElementAttributes();
+				eattributes.setMaxLifeSeconds(policy.getSubjectTTL());
+				eattributes.setIsEternal(false);
+				eattributes.setIsLateral(false);
+				eattributes.setIsRemote(false);		
+				
+				cache.setDefaultElementAttributes(eattributes);
+			}
+			catch (CacheException e)
+			{
+				// TODO: Handle exception
+			}
+		}
+	}
+	
+	private CertStoreCachePolicy getDefaultPolicy()
+	{
+		return new DefaultDNSCachePolity();
+	}
 	
 	/*
 	 * Create the default local key store service.
@@ -121,37 +195,6 @@ public class DNSCertificateStore extends CertificateStore
 		KeyStoreCertificateStore retVal = new KeyStoreCertificateStore(new File("NHINKeyStore"), "nH!NdK3yStor3", "31visl!v3s");
 		
 		return retVal;
-	}
-	
-	/**
-	 * Indicates if local certificate lookups take precedence over remote DNS lookups.
-	 * @return True if the service is set to use local over remote lookups.
-	 */
-	public boolean isLocalPriority()
-	{
-		return localPriority;
-	}
-	
-	/**
-	 * Sets the service to use local certificate lookups over remote DNS lookups.
-	 * @param useLocalPriority True if the service should use local cert lookups before remote DNS lookups. False otherwise.
-	 */
-	public void setLocalPriority(boolean useLocalPriority)
-	{
-		localPriority = useLocalPriority;
-	}	
-	
-	/**
-	 * Sets the key store implementation local lookups.
-	 * @param localStoreDelegate The key store implementation local lookups.
-	 */
-	public void setLocalStoreService(CertificateStore localStoreDelegate)
-	{
-		if (localStoreDelegate == null)
-		{
-			throw new IllegalArgumentException();
-		}
-		this.localStoreDelegate = localStoreDelegate;
 	}
 	
 	/**
@@ -200,21 +243,25 @@ public class DNSCertificateStore extends CertificateStore
 	/**
 	 * {@inheritDoc}
 	 */  
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<X509Certificate> getCertificates(String subjectName)
     {
     	Collection<X509Certificate> retVal;
-    	if (localPriority && localStoreDelegate != null)
+    	
+    	JCS cache = getCache();
+    	
+    	if (cache != null)
     	{
-    		retVal = localStoreDelegate.getCertificates(subjectName);
-    		if (retVal.size() == 0)
+    		retVal = (Collection<X509Certificate>)cache.get(subjectName);//localStoreDelegate.getCertificates(subjectName);
+    		if (retVal == null || retVal.size() == 0)
     			retVal = this.lookupDNS(subjectName);
     	}
-    	else
+    	else // cache miss
     	{
     		retVal = this.lookupDNS(subjectName);
     		if (retVal.size() == 0 && localStoreDelegate != null)
-    			retVal = localStoreDelegate.getCertificates(subjectName);
+    			retVal = localStoreDelegate.getCertificates(subjectName); // last ditch effort is to go to the bootstrap cache
     	}
     	
     	return retVal;
@@ -322,6 +369,18 @@ public class DNSCertificateStore extends CertificateStore
 		if (retVal != null && retVal.size() > 0 && localStoreDelegate != null)
 			for (X509Certificate cert : retVal)
 			{
+				try
+				{
+					if (cache != null)
+						cache.put(name, retVal);
+				}
+				catch (CacheException e)
+				{
+					/*
+					 * TODO: handle exception
+					 */
+				}
+				
 				if (localStoreDelegate.contains(cert)) 
 					localStoreDelegate.update(cert);
 				else
@@ -330,5 +389,100 @@ public class DNSCertificateStore extends CertificateStore
 		
 		return retVal;
 	}
+
+	
+	public void flush(boolean purgeBootStrap) 
+	{
+		if (cache != null)
+		{
+			try
+			{
+				cache.clear();
+			}
+			catch (CacheException e)
+			{
+				/**
+				 * TODO: handle exception
+				 */
+			}
 		
+			if (purgeBootStrap && this.localStoreDelegate != null)
+			{
+				localStoreDelegate.remove(localStoreDelegate.getAllCertificates());
+			}
+		}
+	}
+
+	public void loadBootStrap() 
+	{
+		if (localStoreDelegate == null)
+			throw new IllegalStateException("The boot strap store has not been set.");
+		
+
+		JCS cache = null;
+		if ((cache = getCache()) != null)
+		{
+			Map<String, Collection<X509Certificate>> cacheBuilderMap = new HashMap<String, Collection<X509Certificate>>();
+			for (X509Certificate cert : localStoreDelegate.getAllCertificates())
+			{
+				/*
+				 * TODO: need to decide how the entries/subjects will be indexed and named
+				 */
+			}
+			
+			for (Entry<String, Collection<X509Certificate>> entry : cacheBuilderMap.entrySet())
+			{
+				try
+				{
+					cache.put(entry.getKey(), entry.getValue());
+				}
+				catch (CacheException e)
+				{
+					/*
+					 * TODO: handle exception
+					 */
+				}
+			}
+		}
+	}
+
+	public void loadBootStrap(CertificateStore bootstrapStore) 
+	{
+		if (localStoreDelegate == null)
+		{
+			throw new IllegalArgumentException();
+		}
+		this.localStoreDelegate = bootstrapStore;
+		loadBootStrap();
+	}
+
+	public void setBootStrap(CertificateStore bootstrapStore) 
+	{
+		if (localStoreDelegate == null)
+		{
+			throw new IllegalArgumentException();
+		}
+		this.localStoreDelegate = bootstrapStore;		
+	}
+
+	public void setCachePolicy(CertStoreCachePolicy policy) 
+	{		
+		this.cachePolicy = policy;
+		applyCachePolicy(policy);
+	}
+	
+	private static class DefaultDNSCachePolity implements CertStoreCachePolicy
+	{
+
+		public int getMaxItems() 
+		{
+			return 1000; 
+		}
+
+		public int getSubjectTTL() 
+		{
+			return 3600 * 24; // 1 day
+		}
+		
+	}
 }

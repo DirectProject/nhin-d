@@ -200,7 +200,7 @@ public class MessageEnvelope
 	{
         if (this.domainRecipients == null)
         {
-            categorizeRecipients(getAgent().getDomain());
+            categorizeRecipients(getAgent().getDomains());
         }
 
         return domainRecipients;		
@@ -224,7 +224,7 @@ public class MessageEnvelope
 	{
         if (this.otherRecipients == null)
         {
-            categorizeRecipients(getAgent().getDomain());
+            categorizeRecipients(getAgent().getDomains());
         }
 
         return this.otherRecipients;		
@@ -357,9 +357,9 @@ public class MessageEnvelope
     /**
      * Splits recipients into domain recipients and external recipients.  The agent's domain is used to determine a recipients category.
      */
-	protected void categorizeRecipients(String domain)
+	protected void categorizeRecipients(Collection<String> domains)
 	{
-        if (domain == null || domain.length() == 0)
+        if (domains == null || domains.size() == 0)
         {
             throw new IllegalArgumentException();
         }
@@ -370,7 +370,7 @@ public class MessageEnvelope
 
         for (NHINDAddress address : recipients)
         {
-            if (address.domainEquals(domain))
+            if (address.isInDomain(domains))
             {
                 this.domainRecipients.add(address);
             }

@@ -26,7 +26,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.Security;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 
 import javax.mail.Header;
@@ -80,7 +82,7 @@ public class NHINDAgent
     private ITrustAnchorResolver trustAnchors;
     private TrustModel trustModel;
     private TrustEnforcementStatus minTrustRequirement;
-    private String m_domain;
+    private Collection<String> domains;
     private NHINDAgentEventListener m_listener = null;
     
     private boolean encryptionEnabled = true;
@@ -104,11 +106,17 @@ public class NHINDAgent
      */
     public NHINDAgent(String domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
     {
-
     	
     	this(domain, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default);
     }
 
+    public NHINDAgent(Collection<String> domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
+    {
+
+    	
+    	this(domains, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default);
+    }    
+    
     /**
      * Constructs an agent with domain, certificate services, and trust anchor store.
      * @param domain The domain that this agent will be serving.
@@ -122,29 +130,38 @@ public class NHINDAgent
      */    
     public NHINDAgent(String domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
     {            	
-    	if (domain == null || domain.length() == 0 || privateCerts == null || publicCerts == null || anchors == null || trustModel == null || cryptographer == null)
+    	this(Arrays.asList(new String[] {domain}), privateCerts, publicCerts, anchors, trustModel, cryptographer);    	
+    }
+
+    public NHINDAgent(Collection<String> domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
+    {            	
+    	if (domains == null || domains.size() == 0 || privateCerts == null || publicCerts == null || anchors == null || trustModel == null || cryptographer == null)
         {
             throw new IllegalArgumentException();
         }
 
-    	LOGGER.info("Initializing NHINDAgent\r\n\tDomain: " + domain + "\r\n");
+    	StringBuilder domainLogInfo = new StringBuilder("Initializing NHINDAgent\r\nLocal domains:");
+    	for (String domain : domains)
+    		domainLogInfo.append("\r\n\t" + domain);
     	
-        this.m_domain = domain;
+    	LOGGER.info(domainLogInfo);
+    	
+        this.domains = domains;
         this.privateCertResolver = privateCerts;
         this.publicCertResolver = publicCerts;
         this.cryptographer = cryptographer;
         this.trustAnchors = anchors;
         this.trustModel = trustModel;
         this.minTrustRequirement = TrustEnforcementStatus.Success_Offline;
-    }
-
+    }    
+    
     /**
      * Gets the domain that the agent is serving.
      * @return The domain that the agent is serving.
      */
-    public String getDomain()
+    public Collection<String> getDomains()
     {
-        return this.m_domain;
+        return Collections.unmodifiableCollection(domains);
     }
 
     /**
@@ -411,7 +428,7 @@ public class NHINDAgent
             throw new TrustException(TrustError.UntrustedSender);
         }
 
-        message.categorizeRecipients(this.getDomain());
+        message.categorizeRecipients(this.getDomains());
         if (!message.hasDomainRecipients())
         {
         	throw new AgentException(AgentError.NoTrustedRecipients);
@@ -693,7 +710,7 @@ public class NHINDAgent
         }
         
 
-        message.categorizeRecipients(this.m_domain);
+        message.categorizeRecipients(this.getDomains());
         
         //
         // Enforce the trust model.
