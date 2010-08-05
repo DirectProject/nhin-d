@@ -1,6 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?> 
 <!--
-  SAMPLE
+  SAMPLE CONFIG FILE
   Compliant with schema parsed by: NHINDirect.ScriptAgent.SmtpAgentSettings 
   Customize as per your needs
 -->
@@ -9,7 +9,7 @@
   <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
-    <NamePrefix>smtpGateway</NamePrefix>
+    <NamePrefix>redmondGateway</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
   </Log>
   <PrivateCerts>
@@ -39,15 +39,17 @@
     </MachineResolver>
   </Anchors>
   <RawMessage>
-    <CopyFolder>C:\inetpub\mailroot\raw</CopyFolder>
+    <CopyFolder>C:\inetpub\mailroot\redmond\raw</CopyFolder>
   </RawMessage>
   <BadMessage>
-    <CopyFolder>C:\inetpub\mailroot\badMail</CopyFolder>
+    <CopyFolder>C:\inetpub\mailroot\redmond\badMail</CopyFolder>
   </BadMessage>
   <ProcessIncoming>
-    <CopyFolder>C:\inetpub\mailroot\incoming</CopyFolder>
+    <CopyFolder>C:\inetpub\mailroot\redmond\incoming</CopyFolder>
+    <EnableRelay>true</EnableRelay>
   </ProcessIncoming>
   <ProcessOutgoing>
-    <CopyFolder>C:\inetpub\mailroot\outgoing</CopyFolder>
+    <CopyFolder>C:\inetpub\mailroot\redmond\outgoing</CopyFolder>
+    <EnableRelay>false</EnableRelay>
   </ProcessOutgoing>
 </SmtpAgentConfig>
