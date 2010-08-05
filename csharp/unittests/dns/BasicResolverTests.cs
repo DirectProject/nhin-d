@@ -12,6 +12,7 @@ namespace DnsResolverTests
     public class BasicResolverTests
     {
         const string PublicDns = "8.8.8.8";
+        const string SubnetDns = "192.168.0.1";
         //const string PublicDns = "4.2.2.1";
         const string LocalDns = "127.0.0.1";
         
@@ -39,7 +40,7 @@ namespace DnsResolverTests
                         );
         }
 
-        //[Test]
+        [Test]
         public void TestCert()
         {
             this.Resolve(PublicDns,
@@ -52,6 +53,20 @@ namespace DnsResolverTests
                     "nhin.whinit.org.hsgincubator.com"
             );
             
+        }
+
+        //[Test]
+        public void TestCert2()
+        {
+            this.ResolveCert(PublicDns,
+                    "nhind.hsgincubator.com",
+                    "redmond.hsgincubator.com",
+                    "gm2552.securehealthemail.com.hsgincubator.com",
+                    "ses.testaccount.yahoo.com.hsgincubator.com",
+                    "nhin1.rwmn.org.hsgincubator.com",
+                    "nhin.whinit.org.hsgincubator.com"
+            );
+
         }
 
         [Test]
@@ -99,6 +114,26 @@ namespace DnsResolverTests
             }
         }
 
+        void ResolveCert(string server, params string[] domains)
+        {
+            DnsClient client = this.CreateClient(server);
+            foreach (string domain in domains)
+            {
+                try
+                {
+                    IEnumerable<CertRecord> certs = client.ResolveCERTFromNameServer(domain);
+                    if (certs == null || certs.First<CertRecord>() == null)
+                    {
+                        Assert.Fail(domain);
+                    }
+                }
+                catch (DnsException)
+                {
+                    Assert.Fail(domain);
+                }
+            }
+        }
+        
         DnsClient CreateClient(string server)
         {
             DnsClient client = new DnsClient(server);
