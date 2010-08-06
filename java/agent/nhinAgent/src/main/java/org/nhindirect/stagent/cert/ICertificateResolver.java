@@ -37,9 +37,9 @@ import javax.mail.internet.InternetAddress;
 public interface ICertificateResolver
 {
 	/**
-	 * Retrieves a certificate for a given InternetAddress.
+	 * Retrieves a collection of certificates for a given InternetAddress.
 	 * @param address  The InternetAddress used to lookup the certificate.
-	 * @return An X509Certificate containing the address in its E or CN field.
+	 * @return An X509Certificate collection containing the address in its E or CN field.
 	 */
 	public Collection<X509Certificate> getCertificates(InternetAddress address);
 }

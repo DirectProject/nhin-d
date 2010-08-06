@@ -22,6 +22,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.cryptography;
 
+/**
+ * Enumeration of message signature errors.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public enum SignatureError 
 {
     NullEntity,

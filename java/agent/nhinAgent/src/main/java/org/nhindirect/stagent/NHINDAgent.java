@@ -66,6 +66,7 @@ import org.nhindirect.stagent.trust.TrustModel;
  * email client, or other message handling agent) instantiates an instance of the agent with configurable certificates storage implementations and trust anchor
  * stores.  The agent then applies S/MIME logic to the messages and asserts that the messages are being routed to and from trusted addresses.
  * <p>
+ * The agent can support multiple local domains within one instance. 
  * @author Greg Meyer
  * @author Umesh Madan
  *
@@ -87,8 +88,6 @@ public class NHINDAgent
     
     private boolean encryptionEnabled = true;
     private boolean wrappingEnabled = true;
-    private boolean allowNonWrappedIncoming = true;
-    private boolean fetchIncomingSenderCerts = false;    
     
     static
     {
@@ -96,13 +95,13 @@ public class NHINDAgent
     }
     
     /**
-     * Constructs an agent with domain, certificate services, and trust anchor store.
+     * Constructs an agent with a domain, certificate stores, and a trust anchor store.
      * @param domain The domain that this agent will be serving.
      * @param internalCerts A certificate store for messages originating internally.  The store contains certificates that have access to private keys for decryption and 
      * signing messages.
-     * @param externalCerts A certificate store for incoming messages.  The store contains public certificates for message signature validation and encyprtion. 
+     * @param externalCerts A certificate store for incoming messages.  The store contains public certificates for message signature validation and encryption. 
      * @param trustSettings A certificate store for certificate anchors.  Certificate anchors are certificates that can validate the authenticity of
-     * a certificate.  They are used by the agent to determine if a certificate is trusted by the system.
+     * a certificate.  They are also used by the agent to determine if a certificate is trusted by the system.
      */
     public NHINDAgent(String domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
     {
@@ -110,6 +109,15 @@ public class NHINDAgent
     	this(domain, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default);
     }
 
+    /**
+     * Constructs an agent with a list of domains, certificate stores, and a trust anchor store.
+     * @param domain A list of domains that this agent will be serving.
+     * @param internalCerts A certificate store for messages originating internally.  The store contains certificates that have access to private keys for decryption and 
+     * signing messages.
+     * @param externalCerts A certificate store for incoming messages.  The store contains public certificates for message signature validation and encryption. 
+     * @param trustSettings A certificate store for certificate anchors.  Certificate anchors are certificates that can validate the authenticity of
+     * a certificate.  They are also used by the agent to determine if a certificate is trusted by the system.
+     */    
     public NHINDAgent(Collection<String> domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
     {
 
@@ -124,7 +132,7 @@ public class NHINDAgent
      * signing messages.
      * @param externalCerts A certificate store for incoming messages.  The store contains public certificates for message signature validation and encyprtion. 
      * @param trustSettings A certificate store for certificate anchors.  Certificate anchors are certificates that can validate the authenticity of
-     * a certificate.  They are used by the agent to determine if a certificate is trusted by the system.
+     * a certificate.  They are also used by the agent to determine if a certificate is trusted by the system.
      * @param A trust model implementation that asserts the if a message is trusted.
      * @param A cryptography implementation used to sign, encrypt, and decrypt messages.
      */    
@@ -133,6 +141,17 @@ public class NHINDAgent
     	this(Arrays.asList(new String[] {domain}), privateCerts, publicCerts, anchors, trustModel, cryptographer);    	
     }
 
+    /**
+     * Constructs an agent with a list of domain, certificate services, and trust anchor store.
+     * @param domain A list of domains that this agent will be serving.
+     * @param internalCerts A certificate store for messages originating internally.  The store contains certificates that have access to private keys for decryption and 
+     * signing messages.
+     * @param externalCerts A certificate store for incoming messages.  The store contains public certificates for message signature validation and encyprtion. 
+     * @param trustSettings A certificate store for certificate anchors.  Certificate anchors are certificates that can validate the authenticity of
+     * a certificate.  They are also used by the agent to determine if a certificate is trusted by the system.
+     * @param A trust model implementation that asserts the if a message is trusted.
+     * @param A cryptography implementation used to sign, encrypt, and decrypt messages.
+     */        
     public NHINDAgent(Collection<String> domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
     {            	
     	if (domains == null || domains.size() == 0 || privateCerts == null || publicCerts == null || anchors == null || trustModel == null || cryptographer == null)
@@ -156,8 +175,8 @@ public class NHINDAgent
     }    
     
     /**
-     * Gets the domain that the agent is serving.
-     * @return The domain that the agent is serving.
+     * Gets the list of domains that the agent is serving.
+     * @return The domains that the agent is serving.
      */
     public Collection<String> getDomains()
     {
@@ -192,35 +211,25 @@ public class NHINDAgent
         this.encryptionEnabled = value;
     }
 
+    /**
+     * Indicates if the agent automatically wraps messages into RFC822 envelopes for hiding headers.
+     * @return True if the agent automatically wraps messages.
+     */
     public boolean isWrappingEnabled() 
     {
 		return wrappingEnabled;
 	}
 
+    /**
+     * Sets the auto message wrapping feature of the agent.  Message wrapping takes the original message and wraps it into a message of type RFC822 pushing all headers
+     * into the message body.  Only routing information is propagated up from the original message.
+     * @param wrappingEnabled
+     */
 	public void setWrappingEnabled(boolean wrappingEnabled) 
 	{
 		this.wrappingEnabled = wrappingEnabled;
 	}
 
-	public boolean isAllowNonWrappedIncoming() 
-	{
-		return allowNonWrappedIncoming;
-	}
-
-	public void setAllowNonWrappedIncoming(boolean allowNonWrappedIncoming) 
-	{
-		this.allowNonWrappedIncoming = allowNonWrappedIncoming;
-	}
-
-	public boolean isFetchIncomingSenderCerts() 
-	{
-		return fetchIncomingSenderCerts;
-	}
-
-	public void setFetchIncomingSenderCerts(boolean fetchIncomingSenderCerts)
-	{
-		this.fetchIncomingSenderCerts = fetchIncomingSenderCerts;
-	}
 
 	/**
      * Gets the certificate store used to encrypt messages and validate signatures.  This store generally contains only public certificates
@@ -281,47 +290,10 @@ public class NHINDAgent
     }
 
     
-    public MessageEnvelope process(String messageText, boolean isIncoming)
-    {
-        return this.process(new MessageEnvelope(messageText), isIncoming);
-    }
-    
-    public MessageEnvelope process(String messageText, NHINDAddressCollection recipients, NHINDAddress sender, boolean isIncoming)
-    {
-        return this.process(new MessageEnvelope(messageText, recipients, sender), isIncoming);
-    }
-
-    public MessageEnvelope process(MessageEnvelope envelope, boolean isIncoming)
-    {
-        if (envelope == null)
-        {
-            throw new IllegalArgumentException();
-        }
-        
-        this.checkEnvelopeAddresses(envelope);
-
-        if (SMIMEStandard.isEncrypted(envelope.getMessage()))
-        {
-            isIncoming = true;
-            IncomingMessage incoming = new IncomingMessage(envelope);
-            envelope.clear();
-            
-            this.processIncoming(incoming);
-            return incoming;
-        }
-
-        isIncoming = false;
-        OutgoingMessage outgoing = new OutgoingMessage(envelope);
-        envelope.clear();
-        
-        this.processOutgoing(outgoing);
-        return outgoing;
-    }    
-
 	/**
-	 * Processes an incoming message.  The message will be decrypted and validated that it meets trust assertions.
+	 * Processes an incoming message represented by a raw string.  The message will be decrypted and validated that it meets trust assertions.
 	 * @param messageText The raw contents of the incoming message that will be processed.
-	 * @return A string that contains the raw contents of the processed message.
+	 * @return An incoming messaging object that contains the unwrapped and decrypted message. 
 	 */    
     public IncomingMessage processIncoming(String messageText)
     {
@@ -333,6 +305,13 @@ public class NHINDAgent
         return processIncoming(new IncomingMessage(messageText));
     }    
     
+	/**
+	 * Processes an incoming message represented by a raw string.  The message will be decrypted and validated that it meets trust assertions.
+	 * @param messageText The raw contents of the incoming message that will be processed.
+	 * @param recipients The recipients of the message.  This overrides the routing headers in the message.
+	 * @param sender The sender of the message.  This overrides the to FROM routing header in the message.
+	 * @return An incoming messaging object that contains the unwrapped and decrypted message. 
+	 */       
     public IncomingMessage processIncoming(String messageText, NHINDAddressCollection recipients, NHINDAddress sender)
     {
         this.checkEnvelopeAddresses(recipients, sender);
@@ -341,6 +320,12 @@ public class NHINDAgent
         return this.processIncoming(message);                    
     }    
     
+    
+	/**
+	 * Processes a pre-enveloped message.  The message will be decrypted and validated that it meets trust assertions.
+	 * @param envelope A message envelope containing the incoming message.
+	 * @return An incoming messaging object that contains the unwrapped and decrypted message. 
+	 */      
     public IncomingMessage processIncoming(MessageEnvelope envelope)
     {
         if (envelope == null)
@@ -354,10 +339,10 @@ public class NHINDAgent
     
     
 	/**
-	 * Processes an incoming MimeMessage.  The message will be decrypted and validated that it meets trust assertions.
-	 * @param msg The message to be processed.
-	 * @return A string that contains the raw contents of the processed message.
-	 */
+	 * Processes an incoming mime message.  The message will be decrypted and validated that it meets trust assertions.
+	 * @param msg The incoming mime message. 
+	 * @return An incoming messaging object that contains the unwrapped and decrypted message. 
+	 */ 
     public IncomingMessage processIncoming(MimeMessage msg)
     {
     	IncomingMessage inMsg = null;
@@ -377,10 +362,10 @@ public class NHINDAgent
 
     
 	/**
-	 * Processes an incoming message.  The message will be decrypted and validated that it meets trust assertions.
-	 * @param message The message to be processed.
-	 * @return A string that contains the raw contents of the processed message.
-	 */
+	 * Processes a pre-enveloped message.  The message will be decrypted and validated that it meets trust assertions.
+	 * @param envelope A message envelope containing the incoming message.
+	 * @return An incoming messaging object that contains the unwrapped and decrypted message. 
+	 */  
     public IncomingMessage processIncoming(IncomingMessage message)
     {          
     	if (message == null)
@@ -421,6 +406,10 @@ public class NHINDAgent
         }
     }
 
+    /*
+     * Process the incoming message by apply the security and trust algorithms. 
+     *
+     */
     private void processMessage(IncomingMessage message)
     {    	
         if (message.getSender() == null)
@@ -466,12 +455,13 @@ public class NHINDAgent
         message.updateRoutingHeaders();        
     }
 
+    /*
+     * Binds the addresses with certificates and trust anchors
+     */
     private void bindAddresses(IncomingMessage message)
     {
-    	if (fetchIncomingSenderCerts)
-    	{
-    		message.getSender().setCertificates(this.resolvePublicCerts(message.getSender(), false));
-    	}
+
+   		message.getSender().setCertificates(this.resolvePublicCerts(message.getSender(), false));
     	
         //
         // Bind each recpient's certs and trust settings
@@ -484,6 +474,9 @@ public class NHINDAgent
         }
     }
 
+    /*
+     * Decrypts the signed message
+     */
     @SuppressWarnings("unchecked")
     private void decryptSignedContent(IncomingMessage message)
     {
@@ -555,6 +548,9 @@ public class NHINDAgent
         }        
     }
 
+    /*
+     * Decrypts the message content.
+     */
     private MimeEntity decryptMessage(IncomingMessage message)
     {
         MimeEntity decryptedEntity = null;
@@ -604,6 +600,11 @@ public class NHINDAgent
         return decryptedEntity;
     }    
     
+	/**
+	 * Processes an outgoing message represented by a raw string.  The message will be wrapped, encrypted, and signed.
+	 * @param messageText The raw contents of the incoming message that will be processed.
+	 * @return An outoing messaging object that contains the wrapped message that is and encrypted and signed. 
+	 */      
     public OutgoingMessage processOutgoing(String messageText)
     {
     	if (messageText == null || messageText.length() == 0)
@@ -614,6 +615,13 @@ public class NHINDAgent
         return this.processOutgoing(message);
     }
     
+	/**
+	 * Processes an outgoing message represented by a raw string.  The message will be wrapped, encrypted, and signed.
+	 * @param messageText The raw contents of the incoming message that will be processed.
+	 * @param recipients The recipients of the message.  This overrides the routing headers in the message.
+	 * @param sender The sender of the message.  This overrides the to FROM routing header in the message.
+	 * @return An outoing messaging object that contains the wrapped message that is and encrypted and signed. 
+	 */        
     public OutgoingMessage processOutgoing(String messageText, NHINDAddressCollection recipients, NHINDAddress sender)
     {
         this.checkEnvelopeAddresses(recipients, sender);
@@ -622,6 +630,11 @@ public class NHINDAgent
         return this.processOutgoing(message);            
     }    
     
+	/**
+	 * Processes an outgoing pre-enveloped message.  The message will be wrapped, encrypted, and signed.
+	 * @param envelope A message envelope containing the outgoing message.
+	 * @return An outoing messaging object that contains the wrapped message that is and encrypted and signed. 
+	 */    
     public OutgoingMessage processOutgoing(MessageEnvelope envelope)
     {
         if (envelope == null)
@@ -634,10 +647,10 @@ public class NHINDAgent
     }    
     
 	/**
-	 * Processes an outgoing message.  The message will be singed, encrypted, and validated that it meets trust assertions.
-	 * @param messageText The raw contents of the incoming message that will be processed.
-	 * @return A string that contains the raw contents of the processed message.
-	 */
+	 * Processes an outgoing pre-enveloped message.  The message will be wrapped, encrypted, and signed.
+	 * @param message A message envelope containing the incoming message.
+	 * @return An outoing messaging object that contains the wrapped message that is and encrypted and signed. 
+	 */ 
     public OutgoingMessage processOutgoing(OutgoingMessage message)
     {
         if (message == null)
@@ -677,10 +690,9 @@ public class NHINDAgent
         return message;
     }
 
-	/**
+	/*
 	 * Processes an outgoing message.  The message will be singed, encrypted, and validated that it meets trust assertions.
-	 * @param message The message to be processed.
-	 * @return A string that contains the raw contents of the processed message.
+	 * 
 	 */    
     private void processMessage(OutgoingMessage message)
     {
@@ -735,6 +747,9 @@ public class NHINDAgent
         message.updateRoutingHeaders();        
     }
 
+    /*
+     * Associate certificates with addresses.
+     */
     private void bindAddresses(OutgoingMessage message)
     {
         //
@@ -750,6 +765,9 @@ public class NHINDAgent
             recipient.setCertificates(this.resolvePublicCerts(recipient, false));
     }
 
+    /*
+     * Wrap the message in an RFC 822 message.
+     */
     private Message wrapMessage(String messageText)
     {
     	Message retVal = null;
@@ -770,6 +788,9 @@ public class NHINDAgent
     	return retVal;
     }
 
+    /*
+     * Wrap the message in an RFC 822 message.
+     */
     private Message wrapMessage(Message message)
     {
     	
@@ -796,6 +817,9 @@ public class NHINDAgent
     	return retVal;
     }
     
+    /*
+     * Unwrap the message from an RFC 822 message.
+     */
     private Message unwrapMessage(Message message)
     {
         if (!wrappingEnabled)
@@ -808,7 +832,7 @@ public class NHINDAgent
         try
         {
 
-            if (allowNonWrappedIncoming && !WrappedMessage.isWrapped(message))
+            if (!WrappedMessage.isWrapped(message))
             {
                 return message;
             }
@@ -881,6 +905,9 @@ public class NHINDAgent
         }
     }
 
+    /*
+     * Get the private certificates for the address
+     */
     private Collection<X509Certificate> resolvePrivateCerts(InternetAddress address, boolean required)
     {
     	Collection<X509Certificate> certs = null;
@@ -904,6 +931,9 @@ public class NHINDAgent
         return certs;
     }
 
+    /*
+     * Get the public certificates for the address
+     */
     private Collection<X509Certificate> resolvePublicCerts(InternetAddress address, boolean required) throws NHINDException
     {
     	Collection<X509Certificate> certs = null;
@@ -928,12 +958,12 @@ public class NHINDAgent
     }
 
     
-    void checkEnvelopeAddresses(MessageEnvelope envelope)
+    private void checkEnvelopeAddresses(MessageEnvelope envelope)
     {
         this.checkEnvelopeAddresses(envelope.getRecipients(), envelope.getSender());
     }
     
-    void checkEnvelopeAddresses(NHINDAddressCollection recipients, NHINDAddress sender)
+    private void checkEnvelopeAddresses(NHINDAddressCollection recipients, NHINDAddress sender)
     {
         if (recipients == null || recipients.size() == 0)
         {
