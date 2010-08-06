@@ -4,7 +4,6 @@
  */
 package org.nhind.xdr;
 
-
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -47,7 +46,7 @@ public class XDRTest extends TestCase {
         try {
             String request = getTestRequest();
             JAXBElement jb = (JAXBElement) unmarshalRequest(qname, request);
-             body = (ProvideAndRegisterDocumentSetRequestType) jb.getValue();
+            body = (ProvideAndRegisterDocumentSetRequestType) jb.getValue();
         } catch (Exception x) {
             x.printStackTrace();
             fail("Failed unmarshalling request");
@@ -55,22 +54,22 @@ public class XDRTest extends TestCase {
         XDR instance = new XDR();
 
         RegistryResponseType result = instance.documentRepositoryProvideAndRegisterDocumentSetB(body);
-        String expResponse = null;
+
         String sresult = null;
 
         try {
-             expResponse= getTestResponse();
-             qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0", "RegistryResponseType");
 
-             sresult  =  marshalResponse(qname, result);
+            qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0", "RegistryResponseType");
+
+            sresult = marshalResponse(qname, result);
         } catch (Exception x) {
             x.printStackTrace();
             fail("Failed unmarshalling response");
         }
-       // System.out.println(expResponse);
+        // System.out.println(expResponse);
         //  System.out.println(sresult);
-        assertEquals(expResponse, sresult);
-   
+        assertTrue(sresult.indexOf("ResponseStatusType:Success") >= 0);
+
     }
 
     public Object unmarshalRequest(QName altName, String xml) {
@@ -94,7 +93,7 @@ public class XDRTest extends TestCase {
         return ret;
     }
 
-         protected String marshalResponse(QName altName, Object jaxb) {
+    protected String marshalResponse(QName altName, Object jaxb) {
 
         String ret = null;
         try {
@@ -117,13 +116,6 @@ public class XDRTest extends TestCase {
 
     private String getTestRequest() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/request.xml");
-        byte[] theBytes = new byte[is.available()];
-        is.read(theBytes);
-        return new String(theBytes);
-
-    }
-     private String getTestResponse() throws Exception {
-        InputStream is = this.getClass().getResourceAsStream("/response.xml");
         byte[] theBytes = new byte[is.available()];
         is.read(theBytes);
         return new String(theBytes);

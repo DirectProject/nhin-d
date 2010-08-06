@@ -31,11 +31,16 @@ public class DNSCertificateServiceTest extends TestCase
 			return;
 		}
 		
-		DNSCertificateService service = new DNSCertificateService();
-		service.setLocalPriority(false);
+		DNSCertificateStore service = new DNSCertificateStore();
 		
 		Collection<X509Certificate> certs =  service.getCertificates("biff@nhind.hsgincubator.com");
 	
+		assertTrue(certs.size() > 0);
+		assertTrue(service.contains(certs.iterator().next()));
+		
+		
+		certs =  service.getCertificates("nhind.hsgincubator.com");
+		
 		assertTrue(certs.size() > 0);
 		assertTrue(service.contains(certs.iterator().next()));
 		
