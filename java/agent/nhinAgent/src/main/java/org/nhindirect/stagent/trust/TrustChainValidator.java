@@ -35,10 +35,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Validates the trust chain of a certificate with a set of anchors.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public class TrustChainValidator 
 {
 
-	
+	/**
+	 * Indicates if a certificate is considered to be trusted by resolving a valid certificate trust chain with the provided anchors.
+	 * @param certificate The certificate to check.
+	 * @param anchors A list of trust anchors used to check the trust chain.
+	 * @return Returns true if the certificate can find a valid trust chain in the collection of anchors.  False otherwise.
+	 */
     public boolean isTrusted(X509Certificate certificate, Collection<X509Certificate> anchors)
     {    	
     	if (certificate == null)

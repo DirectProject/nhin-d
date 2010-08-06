@@ -22,6 +22,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent;
 
+/**
+ * Enumeration of security and trust agent errors.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public enum AgentError 
 {
     Unexpected,
