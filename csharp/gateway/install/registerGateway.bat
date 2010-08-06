@@ -45,17 +45,22 @@ goto :EOF
 :Install
 call :PrintHeading Installing
 
-echo Registering Dlls
+call :PrintBold Registering Dlls
 call regasm.bat nhinSmtpAgent.dll
 if %ERRORLEVEL% NEQ 0 goto :EOF
-echo Registering smtpEventHandler COM Dll
+
+call :PrintBold Registering smtpEventHandler COM Dll
 call regsvr32 /s smtpEventHandler.dll
 if %ERRORLEVEL% NEQ 0 goto :EOF
 
-echo Installing Event Handler
-cscript smtpreg.vbs /add %serviceInstance% onArrival %gatewayName% NHINDirectGateway.MessageArrivalSink "%filter%"
+call :PrintBold Ensuring Machine Stores
+cscript /nologo agentsetup.vbs
 if %ERRORLEVEL% NEQ 0 goto :EOF
-cscript smtpreg.vbs /setprop %serviceInstance% onArrival %gatewayName% Sink ConfigFilePath "%configFilePath%"
+
+call :PrintBold Installing Event Handler
+cscript /nologo smtpreg.vbs /add %serviceInstance% onArrival %gatewayName% NHINDirectGateway.MessageArrivalSink "%filter%"
+if %ERRORLEVEL% NEQ 0 goto :EOF
+cscript /nologo smtpreg.vbs /setprop %serviceInstance% onArrival %gatewayName% Sink ConfigFilePath "%configFilePath%"
 if %ERRORLEVEL% NEQ 0 goto :EOF
 
 goto :EOF
@@ -63,7 +68,7 @@ goto :EOF
 @rem -------------------------------
 :Uninstall
 call :PrintHeading Uninstalling Previous
-cscript smtpreg.vbs /remove %serviceInstance% onArrival %gatewayName%
+cscript /nologo smtpreg.vbs /remove %serviceInstance% onArrival %gatewayName%
 if %ERRORLEVEL% NEQ 0 goto :EOF
 goto :EOF
 
@@ -76,6 +81,15 @@ echo.
 echo %*
 echo.
 echo ==============================
+goto :EOF
+
+@rem -------------------------------
+:PrintBold
+shift
+echo.
+echo ###########
+echo %*
+echo ###########
 goto :EOF
 
 @rem -------------------------------

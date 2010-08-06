@@ -1,5 +1,5 @@
 @rem SAMPLE SCRIPT
-@rem This installs 2 gateways on an internal Microsoft Test machine
+@rem This installs gateways on an internal Microsoft Test machine
 @rem 
 @echo off
 setlocal

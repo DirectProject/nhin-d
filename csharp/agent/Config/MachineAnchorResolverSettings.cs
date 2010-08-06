@@ -47,13 +47,13 @@ namespace NHINDirect.Agent.Config
         {
             if (this.Incoming == null)
             {
-                throw new ArgumentNullException("Incoming Anchors not specified");
+                throw new AgentConfigException(AgentConfigError.MissingIncomingAnchors);
             }
             this.Incoming.Validate();
             
             if (this.Outgoing == null)
             {
-                throw new ArgumentNullException("Outgoing Anchors not specified");
+                throw new AgentConfigException(AgentConfigError.MissingOutgoingAnchors);
             }
             this.Outgoing.Validate();
         }

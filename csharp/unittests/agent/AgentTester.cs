@@ -64,7 +64,7 @@ namespace AgentTests
                 
                 if (!Directory.Exists(value))
                 {
-                    throw new DirectoryNotFoundException();
+                    throw new DirectoryNotFoundException(value);
                 }
                 
                 m_messageFolder = value;
@@ -138,22 +138,47 @@ namespace AgentTests
         
         public static AgentTester CreateTest(string basePath)
         {
-            NHINDAgent agentA = CreateAgent(AgentTester.DefaultDomainA, Path.Combine(basePath, @"Certificates\redmond"));
-            NHINDAgent agentB = CreateAgent(AgentTester.DefaultDomainB, Path.Combine(basePath, @"Certificates\nhind"));
+            NHINDAgent agentA = CreateAgent(AgentTester.DefaultDomainA, MakeCertificatesPath(basePath, "redmond"));
+            NHINDAgent agentB = CreateAgent(AgentTester.DefaultDomainB, MakeCertificatesPath(basePath, "nhind"));
             return new AgentTester(agentA, agentB);
         }
         
-        public static NHINDAgent CreateAgent(string domain, string agentBasePath)
+        public static NHINDAgent CreateAgent(string domain, string certsBasePath)
         {
-            MemoryX509Store privateCerts = LoadCertificates(Path.Combine(agentBasePath, "Private"));
-            MemoryX509Store publicCerts = LoadCertificates(Path.Combine(agentBasePath, @"Public"));
+            MemoryX509Store privateCerts = LoadPrivateCerts(certsBasePath);
+            MemoryX509Store publicCerts = LoadPublicCerts(certsBasePath);
             TrustAnchorResolver anchors = new TrustAnchorResolver(
-                                                (IX509CertificateStore) LoadCertificates(Path.Combine(agentBasePath, @"IncomingAnchors")),
-                                                (IX509CertificateStore) LoadCertificates(Path.Combine(agentBasePath, @"OutgoingAnchors")));
+                                                (IX509CertificateStore) LoadIncomingAnchors(certsBasePath),
+                                                (IX509CertificateStore) LoadOutgoingAnchors(certsBasePath));
 
             return new NHINDAgent(domain, privateCerts.Index(), publicCerts.Index(), anchors);
         }
-                
+        
+        static string MakeCertificatesPath(string basePath, string agentFolder)
+        {
+            return Path.Combine(basePath, Path.Combine("Certificates", agentFolder));
+        }
+        
+        static MemoryX509Store LoadPrivateCerts(string certsBasePath)
+        {
+            return LoadCertificates(Path.Combine(certsBasePath, "Private"));
+        }
+
+        static MemoryX509Store LoadPublicCerts(string certsBasePath)
+        {
+            return LoadCertificates(Path.Combine(certsBasePath, "Public"));
+        }
+        
+        static MemoryX509Store LoadIncomingAnchors(string certsBasePath)
+        {
+            return LoadCertificates(Path.Combine(certsBasePath, "IncomingAnchors"));
+        }
+
+        static MemoryX509Store LoadOutgoingAnchors(string certsBasePath)
+        {
+            return LoadCertificates(Path.Combine(certsBasePath, "OutgoingAnchors"));
+        }
+        
         public static MemoryX509Store LoadCertificates(string folderPath)
         {
             if (string.IsNullOrEmpty(folderPath))
@@ -163,7 +188,7 @@ namespace AgentTests
             
             if (!Directory.Exists(folderPath))
             {
-                throw new DirectoryNotFoundException();
+                throw new DirectoryNotFoundException("Directory not found: " + folderPath);
             }
             
             MemoryX509Store certStore = new MemoryX509Store();
@@ -188,6 +213,52 @@ namespace AgentTests
             } 
             
             return certStore;           
+        }
+        
+        /// <summary>
+        /// Sets up standard stores for Testing
+        /// WARNING: This may require elevated permissions
+        /// </summary>
+        public static void EnsureStandardMachineStores()
+        {
+            SystemX509Store.CreateAll();
+            
+            string basePath = Directory.GetCurrentDirectory();
+            string redmondCertsPath = MakeCertificatesPath(basePath, "redmond");
+            string nhindCertsPath = MakeCertificatesPath(basePath, "nhind");
+            
+            SystemX509Store store;
+            using(store = SystemX509Store.OpenPrivateEdit())
+            {
+                InstallCerts(store, LoadPrivateCerts(redmondCertsPath));
+                InstallCerts(store, LoadPrivateCerts(nhindCertsPath));
+            }
+
+            using (store = SystemX509Store.OpenExternalEdit())
+            {
+                InstallCerts(store, LoadPublicCerts(redmondCertsPath));
+                InstallCerts(store, LoadPublicCerts(nhindCertsPath));
+            }
+
+            using (store = SystemX509Store.OpenAnchorEdit())
+            {
+                InstallCerts(store, LoadIncomingAnchors(redmondCertsPath));
+                InstallCerts(store, LoadOutgoingAnchors(redmondCertsPath));
+
+                InstallCerts(store, LoadIncomingAnchors(nhindCertsPath));
+                InstallCerts(store, LoadOutgoingAnchors(nhindCertsPath));
+            }
+        }        
+                
+        static void InstallCerts(IX509CertificateStore store, IEnumerable<X509Certificate2> certs)
+        {
+            foreach(X509Certificate2 cert in certs)
+            {
+                if (!store.Contains(cert))
+                {
+                    store.Add(cert);
+                }
+            }
         }
     }
 }

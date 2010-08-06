@@ -69,7 +69,7 @@ namespace NHINDirect.Agent
         ITrustAnchorResolver m_trustAnchors;
         TrustModel m_trustModel;
         TrustEnforcementStatus m_minTrustRequirement;
-        string m_domain;
+        AgentDomains m_managedDomains;         
         //
         // Options
         //
@@ -109,7 +109,12 @@ namespace NHINDirect.Agent
 		/// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
 		/// </param>
         public NHINDAgent(string domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
-            : this(domain, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default)
+            : this(new string[] {domain}, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default)
+        {
+        }
+
+        public NHINDAgent(string[] domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
+            : this(domains, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default)
         {
         }
 
@@ -138,12 +143,14 @@ namespace NHINDirect.Agent
 		/// An instance or subclass of <see cref="NHINDirect.Cryptography.SMIMECryptographer"/> providing a custom cryptography model.
 		/// </param>
         public NHINDAgent(string domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
+            : this(new string[] {domain}, privateCerts, publicCerts, anchors, trustModel, cryptographer)
         {
-            if (string.IsNullOrEmpty(domain))
-            {
-                throw new ArgumentException("domain");
-            }
-            
+        }
+
+        public NHINDAgent(string[] domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
+        {
+            m_managedDomains = new AgentDomains(domains);
+
             if (privateCerts == null)
             {
                 throw new ArgumentNullException("privateCerts");
@@ -164,25 +171,24 @@ namespace NHINDirect.Agent
             {
                 throw new ArgumentNullException("cryptographer");
             }
-            
-            this.m_domain = domain;
+
             this.m_privateCertResolver = privateCerts;
             this.m_publicCertResolver = publicCerts;
             this.m_cryptographer = cryptographer;
             this.m_trustAnchors = anchors;
             this.m_trustModel = trustModel;
-            this.m_minTrustRequirement = TrustEnforcementStatus.Success_Offline;
+            this.m_minTrustRequirement = TrustEnforcementStatus.Success;
         }
-
+        
 		/// <summary>
-		/// The domain this agent is managing.
+		/// The domainS this agent is managing.
 		/// </summary>
-		/// <value>A string value providing a fully qualified domain name.</value>
-        public string Domain
+		/// <value>An enumeration of string values, each providing a fully qualified domain name.</value>
+        public AgentDomains Domains
         {
             get
             {
-                return this.m_domain;
+                return this.m_managedDomains;
             }
         }
 
@@ -295,7 +301,7 @@ namespace NHINDirect.Agent
             }
             set
             {
-                if (value < TrustEnforcementStatus.Success_Offline)
+                if (value < TrustEnforcementStatus.Success)
                 {
                     throw new ArgumentException();
                 }
@@ -385,8 +391,6 @@ namespace NHINDirect.Agent
         /// </returns> 
         public IncomingMessage ProcessIncoming(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
         {
-            this.CheckEnvelopeAddresses(recipients, sender);
-            
             IncomingMessage message = new IncomingMessage(messageText, recipients, sender);
             return this.ProcessIncoming(message);                    
         }
@@ -398,7 +402,6 @@ namespace NHINDirect.Agent
                 throw new ArgumentNullException();
             }
             
-            this.CheckEnvelopeAddresses(envelope);
             return this.ProcessIncoming(new IncomingMessage(envelope));
         }
         
@@ -409,7 +412,6 @@ namespace NHINDirect.Agent
                 throw new ArgumentException();
             }
 
-            message.Agent = this;
             try
             {
                 message.Validate();
@@ -436,7 +438,7 @@ namespace NHINDirect.Agent
                 throw new AgentException(AgentError.UntrustedSender);
             }
 
-            message.CategorizeRecipients(this.Domain);
+            message.CategorizeRecipientsByDomain(m_managedDomains);
             if (!message.HasDomainRecipients)
             {
                 throw new AgentException(AgentError.NoTrustedRecipients);
@@ -462,7 +464,7 @@ namespace NHINDirect.Agent
             //
             if (message.HasDomainRecipients)
             {
-                message.CategorizeRecipients(this.m_minTrustRequirement);
+                message.CategorizeRecipientsByTrust(this.m_minTrustRequirement);
             }
             if (!message.HasDomainRecipients)
             {
@@ -577,8 +579,6 @@ namespace NHINDirect.Agent
         
         public OutgoingMessage ProcessOutgoing(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
         {
-            this.CheckEnvelopeAddresses(recipients, sender);
-
             OutgoingMessage message = new OutgoingMessage(this.WrapMessage(messageText), recipients, sender);            
             return this.ProcessOutgoing(message);            
         }
@@ -590,8 +590,6 @@ namespace NHINDirect.Agent
                 throw new ArgumentNullException();
             }
             
-            this.CheckEnvelopeAddresses(envelope);
-
             OutgoingMessage message = new OutgoingMessage(envelope);
             return this.ProcessOutgoing(message);
         }
@@ -603,7 +601,6 @@ namespace NHINDirect.Agent
                 throw new ArgumentException();
             }
 
-            message.Agent = this;            
             try
             {
                 message.Validate();
@@ -634,13 +631,25 @@ namespace NHINDirect.Agent
             {
                 throw new AgentException(AgentError.MissingFrom);
             }
-            
+            //
+            // Ensure we support this sender's domain
+            //
+            if (!m_managedDomains.IsManaged(message.Sender))
+            {
+                throw new AgentException(AgentError.UntrustedSender);
+            }
+            //
+            // Categorize recipients as local/external
+            //
+            message.CategorizeRecipientsByDomain(m_managedDomains);
+            //
+            // Bind addresses to Certs etc
+            //
             this.BindAddresses(message);
             if (!message.HasRecipients)
             {
                 throw new AgentException(AgentError.MissingTo);
             }            
-            message.CategorizeRecipients(m_domain);
             //
             // Enforce the trust model.
             //
@@ -648,7 +657,7 @@ namespace NHINDirect.Agent
             //
             // Remove any non-trusted recipients
             //
-            message.CategorizeRecipients(this.m_minTrustRequirement);
+            message.CategorizeRecipientsByTrust(this.m_minTrustRequirement);
             if (!message.HasRecipients)
             {
                 throw new AgentException(AgentError.NoTrustedRecipients);
@@ -790,26 +799,11 @@ namespace NHINDirect.Agent
             return cert;
         }
         
-        void CheckEnvelopeAddresses(MessageEnvelope envelope)
-        {
-            this.CheckEnvelopeAddresses(envelope.Recipients, envelope.Sender);
-        }
-        
-        void CheckEnvelopeAddresses(NHINDAddressCollection recipients, NHINDAddress sender)
-        {
-            if (recipients == null || recipients.Count == 0)
-            {
-                throw new AgentException(AgentError.NoRecipients);
-            }
-            if (sender == null)
-            {
-                throw new AgentException(AgentError.NoSender);
-            }
-            
-            recipients.SetSource(AddressSource.RcptTo);
-            sender.Source = AddressSource.MailFrom;
-        }
-                
+        //-----------------------------
+        //
+        // Events
+        //
+        //-----------------------------                
         void Notify(IncomingMessage message, Action<IncomingMessage> eventHandler)
         {
             //

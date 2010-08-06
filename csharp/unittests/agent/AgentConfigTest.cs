@@ -38,6 +38,12 @@ namespace AgentTests
             </AgentSettings>
         ";
         
+        [SetUp]
+        public void Init()
+        {
+            AgentTester.EnsureStandardMachineStores();
+        }
+           
         [Test]
         public void TestConfig()
         {

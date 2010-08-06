@@ -28,8 +28,8 @@ namespace NHINDirect.Agent
     {
         Failed = -1,
         Unknown = 0,
-        Success_Offline = 1,            // Signature valid, signing cert is trusted, but could not retrieve cert directly from source
-        Success_ThumbprintMismatch = 2, // Signature valid, signing cert is trusted, but the signing cert and the source cert did not match
+        //Success_Offline = 1,            // Signature valid, signing cert is trusted, but could not retrieve cert directly from source
+        //Success_ThumbprintMismatch = 2, // Signature valid, signing cert is trusted, but the signing cert and the source cert did not match
         Success= 3,                     // Signature valid, siging cert trusted, and certs match perfectly
     }
         
@@ -99,14 +99,7 @@ namespace NHINDirect.Agent
                 //
                 if (trustedSignature != null)
                 {
-                    if (trustedSignature.IsThumbprintVerified != null)
-                    {
-                        recipient.Status = (trustedSignature.IsThumbprintVerified.Value) ? TrustEnforcementStatus.Success : TrustEnforcementStatus.Success_ThumbprintMismatch;
-                    }
-                    else
-                    {
-                        recipient.Status = TrustEnforcementStatus.Success_Offline;
-                    }
+                    recipient.Status = TrustEnforcementStatus.Success;
                 } 
             }            
         }

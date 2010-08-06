@@ -80,7 +80,7 @@ exit /b %ERRORLEVEL%
 @rem -------------------------------
 :CopyInstall
 call :PrintHeading Copying INSTALL FILES
-call :CopyFiles regasm.bat registerGateway.bat unregisterGateway.bat smtpreg.vbs adsutil.vbs
+call :CopyFiles regasm.bat registerGateway.bat unregisterGateway.bat smtpreg.vbs agentsetup.vbs adsutil.vbs
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------

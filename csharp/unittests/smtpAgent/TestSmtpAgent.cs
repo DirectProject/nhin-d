@@ -42,6 +42,7 @@ Bad message?";
         [SetUp]
         public void Init()
         {
+            AgentTests.AgentTester.EnsureStandardMachineStores();
             m_handler = new MessageArrivalEventHandler();
             m_handler.InitFromConfigFile(Path.Combine(Directory.GetCurrentDirectory(), "TestSmtpAgentConfig.xml"));
         }
@@ -51,6 +52,20 @@ Bad message?";
         {
             Assert.DoesNotThrow(() => m_handler.ProcessCDOMessage(this.LoadMessage(TestMessage)));
             Assert.Throws<AgentException>(() => m_handler.ProcessCDOMessage(this.LoadMessage(BadMessage)));
+        }
+        
+        [Test]
+        public void TestEndToEnd()
+        {
+            CDO.Message message = this.LoadMessage(TestMessage);
+            //
+            // Outgoing
+            //
+            Assert.DoesNotThrow(() => m_handler.ProcessCDOMessage(message));
+            //
+            // Incoming
+            //
+            Assert.DoesNotThrow(() => m_handler.ProcessCDOMessage(message));   
         }
         
         [Test]

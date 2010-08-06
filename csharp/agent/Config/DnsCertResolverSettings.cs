@@ -32,17 +32,31 @@ namespace NHINDirect.Agent.Config
         }
         
         [XmlElement]
-        public string ServerIP;
+        public string ServerIP
+        {
+            get;
+            set;
+        }
+        
         [XmlElement]
-        public int Timeout;
+        public int Timeout
+        {
+            get;
+            set;
+        }
+        
         [XmlElement]
-        public string FallbackDomain;
+        public string FallbackDomain
+        {
+            get;
+            set;
+        }
 
         public override void Validate()
         {
             if (string.IsNullOrEmpty(this.ServerIP))
             {
-                throw new ArgumentException("Server IP not specified");
+                throw new AgentConfigException(AgentConfigError.MissingDnsServerIP);
             }
         }
         

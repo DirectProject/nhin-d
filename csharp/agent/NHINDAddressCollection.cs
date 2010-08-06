@@ -29,7 +29,7 @@ namespace NHINDirect.Agent
 {
     public class NHINDAddressCollection : ObjectCollection<NHINDAddress>
     {
-        public const TrustEnforcementStatus DefaultMinTrustStatus = TrustEnforcementStatus.Success_Offline;
+        const TrustEnforcementStatus DefaultMinTrustStatus = TrustEnforcementStatus.Success;
         
         public NHINDAddressCollection()
         {
@@ -155,14 +155,6 @@ namespace NHINDirect.Agent
             return this.ToMailAddressCollection().ToString();
         }
         
-        internal void SetSource(AddressSource source)
-        {
-            for (int i = 0, count = this.Count; i < count; ++i)
-            {
-                this[i].Source = source;
-            }
-        }
-        
         internal static NHINDAddressCollection Create(IEnumerable<NHINDAddress> source)
         {
             NHINDAddressCollection addresses = null;
@@ -178,20 +170,15 @@ namespace NHINDirect.Agent
             return addresses;
         }
 
-        internal static NHINDAddressCollection Parse(Header addresses, AddressSource source)
+        internal static NHINDAddressCollection Parse(Header addresses)
         {
             if (addresses == null)
             {
                 return null;
             }
-            return NHINDAddressCollection.Parse(addresses.Value, source);
+            return NHINDAddressCollection.Parse(addresses.Value);
         }
         
-        internal static NHINDAddressCollection Parse(string addresses, AddressSource source)
-        {
-            return MailParser.ParseAddressCollection<NHINDAddress, NHINDAddressCollection>(addresses, x => new NHINDAddress(x, source));
-        }
-
         public static NHINDAddressCollection Parse(string addresses)
         {
             return MailParser.ParseAddressCollection<NHINDAddress, NHINDAddressCollection>(addresses, x => new NHINDAddress(x));
@@ -199,7 +186,7 @@ namespace NHINDirect.Agent
 
         public static NHINDAddressCollection ParseSmtpServerEnvelope(string addresses)
         {
-            return MailParser.ParseSMTPServerEnvelopeAddresses<NHINDAddress, NHINDAddressCollection>(addresses, x => new NHINDAddress(x, AddressSource.RcptTo));
+            return MailParser.ParseSMTPServerEnvelopeAddresses<NHINDAddress, NHINDAddressCollection>(addresses, x => new NHINDAddress(x));
         }
     }
 }

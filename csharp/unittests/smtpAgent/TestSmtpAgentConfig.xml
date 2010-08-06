@@ -6,10 +6,11 @@
 -->
 <SmtpAgentConfig>
   <Domain>redmond.hsgincubator.com</Domain>
-  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>
+  <Domain>nhind.hsgincubator.com</Domain>
+  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>  
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
-    <NamePrefix>smtpGateway</NamePrefix>
+    <NamePrefix>testSmtpAgent</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
   </Log>
   <PrivateCerts>

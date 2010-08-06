@@ -40,9 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AgentDomains.cs" />
     <Compile Include="Config\AgentSettings.cs" />
     <Compile Include="Config\CertResolverSettings.cs" />
     <Compile Include="Config\CertificateSettings.cs" />
+    <Compile Include="Config\AgentConfigException.cs" />
     <Compile Include="Config\DnsCertResolverSettings.cs" />
     <Compile Include="Config\MachineCertResolverSettings.cs" />
     <Compile Include="Config\TrustAnchorSettings.cs" />
