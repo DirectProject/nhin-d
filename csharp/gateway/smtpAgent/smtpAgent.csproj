@@ -66,7 +66,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AgentSetup.cs" />
+    <Compile Include="BounceMessageCreator.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="MessageBounceSettings.cs" />
     <Compile Include="MessageProcessingSettings.cs" />
     <Compile Include="DomainPostmasters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

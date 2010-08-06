@@ -121,6 +121,7 @@ namespace NHINDirect.SmtpAgent
             if (field != null)
             {
                 field.Value = value;
+                fields.Update();
             }
         }
         

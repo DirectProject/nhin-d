@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Net.Mail;
+using System.IO;
 using NHINDirect.Agent;
 using NHINDirect.Agent.Config;
 using NHINDirect.Certificates;
@@ -36,8 +37,11 @@ namespace NHINDirect.SmtpAgent
         SmtpAgentSettings m_settings;
         NHINDAgent m_agent;
         LogFile m_log;
+        bool m_logVerbose = true;
         DomainPostmasters m_postmasters;
-                
+        BounceMessageCreator m_outgoingBounceFactory;
+        BounceMessageCreator m_incomingBounceFactory;
+        
         public SmtpAgent(SmtpAgentSettings settings)
         {
             if (settings == null)
@@ -64,14 +68,38 @@ namespace NHINDirect.SmtpAgent
                 return m_log;
             }
         }
-
+        
+        public bool LogVerbose
+        {
+            get
+            {
+                return m_logVerbose;
+            }
+            set
+            {
+                m_logVerbose = value;
+            }
+        }
+        
         void VerifyInitialized()
         {
             if (m_agent == null)
             {
                 throw new InvalidOperationException("Not initialized");
             }
-        }        
+        }
+
+        /// <summary>
+        /// Write an informational line to the log
+        /// </summary>
+        public void LogStatus(string message)
+        {
+            if (this.m_logVerbose)
+            {
+                m_log.WriteLine(message);
+            }
+        }
+
         //---------------------------------------------------
         //
         //  Agent Initialization
@@ -84,16 +112,26 @@ namespace NHINDirect.SmtpAgent
             
             m_log = new LogFile(m_settings.LogSettings.CreateWriter());
             
-            m_log.WriteLine("Init_Begin");
+            this.LogStatus("Init_Begin");
             try
             {
+                this.LogStatus("InitPostmasters_Begin");
+                m_postmasters = new DomainPostmasters();
+                m_postmasters.Init(m_settings.Domains, m_settings.Postmasters);
+                this.LogStatus("InitPostmasters_End");
+
+                this.InitFolders();
+                this.InitBounceFactories();
+
                 this.InitAgent();
-                
-                m_log.WriteLine("Init_End");
+
+                this.SubscribeToAgentEvents();
+     
+                this.LogStatus("Init_End");
             }
             catch (Exception error)
             {
-                m_log.WriteLine("Init_Failed");
+                this.LogStatus("Init_Failed");
                 m_log.WriteError(error);
                 throw;
             }
@@ -101,43 +139,52 @@ namespace NHINDirect.SmtpAgent
         
         void InitAgent()
         {
-            m_log.WriteLine("InitPostmasters_Begin");
-            m_postmasters = new DomainPostmasters();
-            m_postmasters.Init(m_settings.Domains, m_settings.Postmasters);
-            m_log.WriteLine("InitPostmasters_End");
-
-            this.InitFolders();            
-
-            m_log.WriteLine("CreateAgent_Begin");
-            m_agent = m_settings.CreateAgent();
-            m_log.WriteLine("CreateAgent_End");
-
-            this.SubscribeToAgentEvents();
+            this.LogStatus("CreateAgent_Begin");
+            
+            m_agent = m_settings.CreateAgent();            
+            this.LogStatus("CreateAgent_End");            
         }
                 
         void InitFolders()
         {
-            m_log.WriteLine("InitFolder_Begin");
+            this.LogStatus("InitFolder_Begin");
 
             m_settings.RawMessage.EnsureFolders();
             m_settings.Incoming.EnsureFolders();
             m_settings.Outgoing.EnsureFolders();
             m_settings.BadMessage.EnsureFolders();
 
-            m_log.WriteLine("InitFolder_End");        
+            this.LogStatus("InitFolder_End");        
         }
         
         void SubscribeToAgentEvents()
         {
-            m_log.WriteLine("SubscribingToEvents_Begin");
-
+            this.LogStatus("SubscribingToEvents_Begin");
+            
             DnsCertResolver dnsResolver = m_agent.PublicCertResolver as DnsCertResolver;
             if (dnsResolver != null)
             {
                 dnsResolver.Error += this.WriteDnsError;
             }
 
-            m_log.WriteLine("SubscribingToEvents_End");
+            this.LogStatus("SubscribingToEvents_End");
+        }
+        
+        void InitBounceFactories()
+        {
+            if (!m_settings.HasMessageBounceSettings)
+            {
+                return;
+            }
+
+            if (m_settings.MessageBounce.EnableForOutgoing)
+            {
+                m_outgoingBounceFactory = new BounceMessageCreator(m_settings.MessageBounce.OutgoingTemplate);
+            }
+            if (m_settings.MessageBounce.EnableForIncoming)
+            {
+                m_incomingBounceFactory = new BounceMessageCreator(m_settings.MessageBounce.IncomingTemplate);
+            }
         }
                 
         //---------------------------------------------------
@@ -175,9 +222,9 @@ namespace NHINDirect.SmtpAgent
                     this.UpdateMessageText(message, envelope);
                 }
                 //
-                // We did good...
+                // We did well...
                 //
-                message.SetMessageStatus(CdoMessageStat.cdoStatSuccess);
+                this.AcceptMessage(message);
                 //
                 // We may want want to update logs and do some final post processing
                 //
@@ -193,7 +240,7 @@ namespace NHINDirect.SmtpAgent
 
         protected virtual void PreProcessMessage(CDO.Message message)
         {
-            m_log.WriteLine("Message Received");
+            this.LogStatus("Message Received from: " + message.From);
             this.CopyMessage(message, m_settings.RawMessage);
         }
                                 
@@ -204,22 +251,67 @@ namespace NHINDirect.SmtpAgent
             // All messages sent by sources OUTSIDE the domain are always treated as INCOMING
             //
             bool isOutgoing = this.Agent.Domains.IsManaged(envelope.Sender);
-            if (isOutgoing)
+            AgentException noTrustException = null;
+            try
             {
-                envelope = this.Agent.ProcessOutgoing(envelope);
+                if (isOutgoing)
+                {
+                    envelope = this.Agent.ProcessOutgoing(envelope);
+                }
+                else
+                {
+                    envelope = this.Agent.ProcessIncoming(envelope);
+                }                
+                if (envelope == null)
+                {
+                    throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
+                }
+                
+                if (envelope.HasRejectedRecipients)
+                {
+                    this.GenerateBounces(envelope);
+                }
+                
+                this.LogStatus(isOutgoing ? "ProcessedOutgoing" : "ProcessedIncoming");
+                
+                return envelope;
+            }
+            catch(AgentException agentEx)
+            {
+                if (agentEx.Error != AgentError.NoTrustedRecipients)
+                {
+                    throw;
+                }
+                
+                noTrustException = agentEx;
+            }
+            
+            if (noTrustException != null)
+            {
+                this.GenerateBounces(envelope, isOutgoing);                
+                throw noTrustException; // Rethrow...
+            }
+            
+            return null;     
+        }
+
+        MessageEnvelope CreateEnvelope(CDO.Message message)
+        {
+            NHINDAddressCollection recipientAddresses = null;
+            NHINDAddress senderAddress = null;
+            MessageEnvelope envelope;
+
+            string messageText = message.GetMessageText();
+
+            if (this.ExtractEnvelopeFields(message, ref recipientAddresses, ref senderAddress))
+            {
+                envelope = new MessageEnvelope(messageText, recipientAddresses, senderAddress);
             }
             else
             {
-                envelope = this.Agent.ProcessIncoming(envelope);
+                envelope = new MessageEnvelope(messageText);
             }
-            
-            if (envelope == null)
-            {
-                throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
-            }
-            
-            m_log.WriteLine(isOutgoing ? "ProcessedOutgoing": "ProcessedIncoming");
-                        
+
             return envelope;
         }
         
@@ -232,7 +324,7 @@ namespace NHINDirect.SmtpAgent
             }
             message.SetMessageText(messageText, true);
         }
-                
+
         protected virtual void PostProcessMessage(CDO.Message message, MessageEnvelope envelope)
         {
             bool relay = true;
@@ -253,18 +345,23 @@ namespace NHINDirect.SmtpAgent
                 //
                 // Turn relay off for debugging and diagnostics
                 //
-                m_log.WriteLine(isOutgoing ? "Outoing Relay disabled" : "Incoming Relay Disabled");
+                m_log.WriteLine(isOutgoing ? "Outgoing Relay disabled" : "Incoming Relay Disabled");
                 message.AbortMessage();
                 return;
             }
         }
-
+        
+        protected virtual void AcceptMessage(CDO.Message message)
+        {
+            message.SetMessageStatus(CdoMessageStat.cdoStatSuccess);
+        }
+        
         protected virtual void RejectMessage(CDO.Message message)
         {
             try
             {
                 message.AbortMessage();
-                m_log.WriteLine("Rejected Message");
+                this.LogStatus("Rejected Message");
 
                 this.CopyMessage(message, m_settings.BadMessage);
             }
@@ -273,96 +370,75 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
-        void GenerateBounces(CDO.Message message, MessageEnvelope envelope)
+        void GenerateBounces(MessageEnvelope envelope)
         {
-            if (envelope is OutgoingMessage)
+            this.GenerateBounces(envelope, (envelope is OutgoingMessage));
+        }
+        
+        void GenerateBounces(MessageEnvelope envelope, bool isOutgoing)
+        {
+            envelope.EnsureRecipientsCategorizedByDomain(this.Agent.Domains);
+
+            if (isOutgoing)
             {
-                this.GenerateBouncesForOutoing(message, envelope);
+                this.GenerateBouncesForOutgoing(envelope);
             }
             else
             {
-                this.GenerateBouncesForIncoming(message, envelope);
+                this.GenerateBouncesForIncoming(envelope);
             }
-        }
+        }                
 
-        protected virtual void GenerateBouncesForOutoing(CDO.Message message, MessageEnvelope envelope)
+        protected virtual void GenerateBouncesForOutgoing(MessageEnvelope envelope)
         {
-            //
-            // TODO
-            //
-        }
-
-        protected virtual void GenerateBouncesForIncoming(CDO.Message message, MessageEnvelope envelope)
-        {
-            //
-            // TODO
-            //
-        }
-        
-        MessageEnvelope CreateEnvelope(CDO.Message message)
-        {
-            NHINDAddressCollection recipientAddresses = null;
-            NHINDAddress senderAddress = null;
-            MessageEnvelope envelope;
-
-            string messageText = message.GetMessageText();
-
-            if (this.ExtractEnvelopeFields(message, ref recipientAddresses, ref senderAddress))
-            {
-                envelope = new MessageEnvelope(messageText, recipientAddresses, senderAddress);
-            }
-            else
-            {
-                envelope = new MessageEnvelope(messageText);
-            }
-            
-            return envelope;
-        }
-        
-        bool IsInternalPostmasterMessage(MessageEnvelope envelope)
-        {
-            if (!m_postmasters.IsPostmaster(envelope.Sender))
-            {
-                return false;
-            }
-            
-            return (envelope.DomainRecipients.Count == envelope.Recipients.Count);
-        }
-        
-        bool IsSenderPostmaster(CDO.Message message)
-        {
-            string sender = this.GetEnvelopeSender(message);
-            if (string.IsNullOrEmpty(sender))
-            {
-                return false;
-            }
-            
-            return (this.IsSenderLocalPostmaster(sender) ||  m_postmasters.IsPostmaster(sender));
-        }
-        
-        void CopyMessage(CDO.Message message, MessageProcessingSettings settings)
-        {
-            if (!settings.HasCopyFolder)
+            if (m_outgoingBounceFactory == null)
             {
                 return;
             }
 
-            this.CopyMessage(message, settings.CopyFolder);
-        }
-
-        void CopyMessage(CDO.Message message, string folderPath)
-        {
             try
-            {
-                string fileName = Guid.NewGuid().ToString("D") + ".eml";
-                message.SaveToFile(System.IO.Path.Combine(folderPath, fileName));
+            {                
+                MailMessage bounceMessage = m_outgoingBounceFactory.Create(envelope, m_postmasters[envelope.Sender]);
+                if (bounceMessage != null)
+                {
+                    this.LogStatus("Bounced Outgoing");
+                    bounceMessage.SendToFolder(m_settings.MessageBounce.MailPickupFolder);
+                }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 m_log.WriteError(ex);
             }
         }
-                                        
+
+        protected virtual void GenerateBouncesForIncoming(MessageEnvelope envelope)
+        {
+            if (m_incomingBounceFactory == null)
+            {
+                return;
+            }
+        
+            try
+            {                
+                if (!envelope.HasDomainRecipients)
+                {
+                    return;
+                }
+                
+                MailAddress firstDomainRecipient = envelope.DomainRecipients[0];
+                MailMessage bounceMessage = m_incomingBounceFactory.Create(envelope, m_postmasters[firstDomainRecipient]);
+                if (bounceMessage != null)
+                {
+                    this.LogStatus("Bounced Incoming");
+                    bounceMessage.SendToFolder(m_settings.MessageBounce.MailPickupFolder);
+                }
+            }
+            catch(Exception ex)
+            {
+                m_log.WriteError(ex);
+            }
+        }
+                                                
         //---------------------------------------------------
         //
         //  Helpers
@@ -441,6 +517,55 @@ namespace NHINDirect.SmtpAgent
             return fields.GetStringValue(name);
         }
 
+        bool IsInternalPostmasterMessage(MessageEnvelope envelope)
+        {
+            if (!m_postmasters.IsPostmaster(envelope.Sender))
+            {
+                return false;
+            }
+
+            return (envelope.DomainRecipients.Count == envelope.Recipients.Count);
+        }
+
+        bool IsSenderPostmaster(CDO.Message message)
+        {
+            string sender = this.GetEnvelopeSender(message);
+            if (string.IsNullOrEmpty(sender))
+            {
+                return false;
+            }
+
+            return (this.IsSenderLocalPostmaster(sender) || m_postmasters.IsPostmaster(sender));
+        }
+
+        void CopyMessage(CDO.Message message, MessageProcessingSettings settings)
+        {
+            if (!settings.HasCopyFolder)
+            {
+                return;
+            }
+
+            this.CopyMessage(message, settings.CopyFolder);
+        }
+
+        void CopyMessage(CDO.Message message, string folderPath)
+        {
+            try
+            {
+                string fileName = this.CreateUniqueFileName();
+                message.SaveToFile(Path.Combine(folderPath, fileName));
+            }
+            catch (Exception ex)
+            {
+                m_log.WriteError(ex);
+            }
+        }
+        
+        string CreateUniqueFileName()
+        {
+            return Guid.NewGuid().ToString("D") + ".eml";
+        }
+        
         void WriteDnsError(DnsCertResolver service, Exception error)
         {
             m_log.WriteError(error);

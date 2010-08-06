@@ -13,7 +13,12 @@ namespace NHINDirect.SmtpAgent
         MissingPostmaster,
         MissingLogSettings,
         InvalidEnvelopeFromAgent,
-        EmptyResultFromAgent
+        EmptyResultFromAgent,
+        MissingMailPickupFolder,
+        MailPickupFolderDoesNotExist,
+        MissingBounceTemplateOutgoing,
+        MissingBounceTemplateIncoming,
+        InvalidBounceMessageTemplate
     }
     
     public class SmtpAgentException : NHINDException<SmtpAgentError>

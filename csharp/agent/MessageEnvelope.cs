@@ -84,7 +84,12 @@ namespace NHINDirect.Agent
             m_agent = envelope.m_agent;
             m_rawMessage = envelope.m_rawMessage;
             m_message = envelope.m_message;
-            m_recipients = envelope.m_recipients;
+            if (envelope.m_recipients != null)
+            {
+                m_recipients = new NHINDAddressCollection();
+                m_recipients.Add(envelope.m_recipients);
+            }
+            
             m_sender = envelope.m_sender;
         }
         
@@ -347,7 +352,17 @@ namespace NHINDirect.Agent
                 this.UpdateRoutingHeaders(this.RejectedRecipients);
             }
         }
-
+        
+        public void EnsureRecipientsCategorizedByDomain(AgentDomains domains)
+        {
+            if (this.HasDomainRecipients || this.HasOtherRecipients)
+            {
+                return;
+            }
+            
+            this.CategorizeRecipientsByDomain(domains);
+        }
+        
         /// <summary>
         /// Categorize recipients as follows:
         /// - are they in the local domain or are they external
