@@ -27,6 +27,13 @@ import java.security.cert.X509Certificate;
 import org.bouncycastle.cms.SignerInformation;
 import org.nhindirect.stagent.cert.Thumbprint;
 
+/**
+ * Contains information specific to a discrete signer of a message.  Includes the singer information and the certificate used to sign the message (optimally
+ * extracted from the signature).  This is a subset of the CMS signed data.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public class MessageSignature 
 {
 	private boolean signatureValid;
@@ -35,6 +42,12 @@ public class MessageSignature
 	private boolean thumbprintVerified;
 	private X509Certificate signerCert;
 	
+	/**
+	 * Constructs a message signature from the singer info and the certificate used to sign the message.
+	 * @param signer Information about the individual signature such as the signers id and algorithms used to sign.
+	 * @param useOrgCert Indicates if the certificate used is a org level or individual level certificate
+	 * @param cert The public certificate used to sign the message for this signer.
+	 */
 	public MessageSignature(SignerInformation signer, boolean useOrgCert, X509Certificate cert)
 	{
 		if (signer == null)
@@ -47,31 +60,56 @@ public class MessageSignature
 		this.signerCert = cert;
 	}
 
+	/**
+	 * Get the certificate used to sign the message for this specific signer.
+	 * @return The certificate used to sign the message.
+	 */
 	public X509Certificate getSignerCert() 
 	{
 		return signerCert;
 	}
 
+	/**
+	 * Indicate if the signature has been validated for authenticity and consistency.
+	 * @return True if the signature is valid.  False otherwise.
+	 */
 	public boolean isSignatureValid() 
 	{
 		return signatureValid;
 	}
 
+	/**
+	 * Gets the signer information for this specific signature.
+	 * @return The signer information for this specific signature.
+	 */
 	public SignerInformation getSigner() 
 	{
 		return signer;
 	}
 
+	/**
+	 * Indicate if the certificate used to sign the message for this signer is an org level or individual level cert.
+	 * @return True if the certificate is an org level cert.  False otherwise.
+	 */
 	public boolean isUseOrgCertificate() 
 	{
 		return useOrgCertificate;
 	}
 
+	/**
+	 * Indicates if the signature certificate has been verified against a senders certificate. 
+	 * @return True if the thumb print has been verified.  False otherwise.  checkThumbprint should be
+	 * called first before calling this method.
+	 */
 	public boolean isThumbprintVerified() 
 	{
 		return thumbprintVerified;
 	}
 	
+	/**
+	 * Verifies if the signature is valid using the signature certificate.
+	 * @return True if the signature is valid.  False otherwise.
+	 */
 	public boolean checkSignature()
 	{		
         try
@@ -87,6 +125,11 @@ public class MessageSignature
         return signatureValid;
 	}
 	
+	/**
+	 * Validates if the senders certificate matches the signature certificate using certificate thumb printing.
+	 * @param messageSender The senders address.  The address should contain the senders public certificate.
+	 * @return True if the thumb print of the signature matches the senders certificate thumb print.  False otherwise.
+	 */
 	public boolean checkThumbprint(NHINDAddress messageSender)
 	{				
 		thumbprintVerified = false;

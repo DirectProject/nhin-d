@@ -35,28 +35,50 @@ import org.nhindirect.stagent.mail.Message;
  */
 public class OutgoingMessage extends MessageEnvelope
 {
+	/**
+	 * Create an outgoing message from a mime message.
+	 * @param message The message to be enveloped.
+	 */
     public OutgoingMessage(Message message)
     {
     	super(message);
     }
 
-    
+    /**
+     * Create an outgoing message from a mime message overriding the routing headers.
+     * @param message The message to be enveloped.
+     * @param recipients The message recipients.
+     * @param sender The message sender.
+     */
     public OutgoingMessage(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
     {
     	super(message, recipients, sender);
     }		    
     
+	/**
+	 * Create an outgoing message from a raw string.
+	 * @param message The raw string representation of the message to be enveloped.
+	 */    
     public OutgoingMessage(String message)
     {
     	super(message);
     }
 
-    
+    /**
+     * Create an outgoing message from a raw string. overriding the routing headers.
+     * @param message The raw string representation of the message to be enveloped.
+     * @param recipients The message recipients.
+     * @param sender The message sender.
+     */
     public OutgoingMessage(String message, NHINDAddressCollection recipients, NHINDAddress sender)
     {
     	super(message, recipients, sender);
     }	    
     
+	/**
+	 * Create an outgoing message from a pre-eveloped message.
+	 * @param message The raw string representation of the message to be enveloped.
+	 */   
     public OutgoingMessage(MessageEnvelope envelope)
     {
     	super(envelope);

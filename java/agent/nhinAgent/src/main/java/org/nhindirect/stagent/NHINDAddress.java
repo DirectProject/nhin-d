@@ -90,10 +90,10 @@ public class NHINDAddress extends InternetAddress
 
     
     /**
-     * Constructs an address from a string representation and associates an X509Certificate with the address.
+     * Constructs an address from a string representation and associates a collection X509Certificates with the address.
      * The address must be parsable into an {@link InternetAddress}.
      * @param address String representation of an address.
-     * @param certificate The certificate to be associated with the address.
+     * @param certificates The certificates to be associated with the address.
      */      
     public NHINDAddress(String address, Collection<X509Certificate> certificates)
     {            
@@ -103,7 +103,7 @@ public class NHINDAddress extends InternetAddress
     }
     
     /**
-     * Gets the host associated with the address.
+     * Gets the domain host associated with the address.
      * @return The host associated with the address.
      */
     public String getHost()
@@ -127,8 +127,8 @@ public class NHINDAddress extends InternetAddress
     }
     
     /**
-     * Gets the X509 certificate associated with the address.
-     * @return The X509 certificate associated with the address.  Returns null if a certificate is not associated.
+     * Gets the X509 certificates associated with the address.
+     * @return The X509 certificates associated with the address.  Returns null if no certificates is not associated.
      */
     public Collection<X509Certificate> getCertificates()
     {
@@ -164,12 +164,12 @@ public class NHINDAddress extends InternetAddress
     }            
     
     /**
-     * Gets all certificate anchors that this address trusts.  The returned collection is unmodifiable.
-     * @return A collection of certificate anchors that are trusted by this address.
+     * Sets all certificate anchors that this address trusts.
+     * @param certs A collection of certificate anchors that are trusted by this address.
      */    
-    public void setTrustAnchors(Collection<X509Certificate> value)
+    public void setTrustAnchors(Collection<X509Certificate> certs)
     {
-        this.m_trustAnchors = value;
+        this.m_trustAnchors = certs;
     }
     
     /**
@@ -210,21 +210,39 @@ public class NHINDAddress extends InternetAddress
         return (this.m_trustStatus.compareTo(minTrustStatus) >= 0);
     }   
     
+    /**
+     * Gets the source type of the address such as TO, CC, and BCC.
+     * @return The source type of the address
+     */
     public AddressSource getSource() 
     {
 		return source;
 	}
 
+    /**
+     * Sets the source type of the address.
+     * @param source The source type of the address.
+     */
 	public void setSource(AddressSource source) 
 	{
 		this.source = source;
 	}
 
+	/**
+	 * Indicates if the address's domain matches the provided domain.  The domain check is case insensitive.
+	 * @param domain The domain to match.
+	 * @return True if the address's domain matches the provided domain. False otherwise.
+	 */
 	public boolean domainEquals(String domain)
     {
     	return getHost().equalsIgnoreCase(domain);
     }
 	
+	/**
+	 * Indicates if the the address's domain is in the list of domains.  The domain check is case insensitive.
+	 * @param domains The domain to check.
+	 * @return True if the address's domain is in the list of provided domains.  False otherwise.
+	 */
 	public boolean isInDomain(Collection<String> domains)
 	{
 		for (String domain : domains)

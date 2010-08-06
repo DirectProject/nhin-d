@@ -57,25 +57,33 @@ public class TrustModel
     private final TrustChainValidator certChainValidator;
     
     /**
-     * Constructor
+     * Constructs a model with a default validator.
      */
     public TrustModel()
     {
     	certChainValidator = new TrustChainValidator();
     }
 
+    /**
+     * Constructs a model with a provided chain validator.
+     * @param validator The trust validator used to valid trust of a certificate with trust anchors.
+     */
     public TrustModel(TrustChainValidator validator)
     {
     	certChainValidator = validator;
     }    
     
+    /**
+     * Gets the chain validator associated with this model.
+     * @return The chain validator associated with this model.
+     */
     public TrustChainValidator getCertChainValidator()
     {
     	return certChainValidator;
     }
            
     /**
-     * {@inheritDoc}}
+     * Enforces the trust policy an incoming message.  Each domain recipient's trust status is set according the models trust policy. 
      */
     public void enforce(IncomingMessage message)
     {

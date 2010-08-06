@@ -25,6 +25,12 @@ package org.nhindirect.stagent;
 import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.mail.MimeStandard;
 
+/**
+ * Standard headers for message wrapping
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public class NHINDStandard 
 {
     public final static String[] MailHeadersUsed = new String[]
