@@ -28,9 +28,7 @@ namespace NHINDirect.Agent
     {
         Failed = -1,
         Unknown = 0,
-        //Success_Offline = 1,            // Signature valid, signing cert is trusted, but could not retrieve cert directly from source
-        //Success_ThumbprintMismatch = 2, // Signature valid, signing cert is trusted, but the signing cert and the source cert did not match
-        Success= 3,                     // Signature valid, siging cert trusted, and certs match perfectly
+        Success= 1,                     // Signature valid, siging cert trusted, and certs match perfectly
     }
         
     public class TrustModel
