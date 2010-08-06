@@ -1,3 +1,25 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Umesh Madan     umeshma@microsoft.com
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.stagent.bridge.james.mailet;
 
 import java.io.ByteArrayInputStream;
@@ -21,12 +43,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.base.GenericMailet;
+import org.nhindirect.stagent.IncomingMessage;
 import org.nhindirect.stagent.NHINDAgent;
-import org.nhindirect.stagent.cert.ICertificateService;
-import org.nhindirect.stagent.cert.impl.KeyStoreCertificateService;
+import org.nhindirect.stagent.OutgoingMessage;
+import org.nhindirect.stagent.cert.ICertificateResolver;
+import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
+import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.parser.EntitySerializer;
-import org.nhindirect.stagent.parser.Protocol;
-import org.nhindirect.stagent.trust.impl.UniformTrustSettings;
+import org.nhindirect.stagent.trust.TrustAnchorResolver;
 
 
 /** 
@@ -46,7 +70,7 @@ public class PostfixNHINDFilter extends GenericMailet
 	private String incomingPort;
 	private String outgoingHost;
 	private String outgoingPort;
-	private boolean passThroughLocalRecips = true;
+	//private boolean passThroughLocalRecips = true;
 	
 	public void init() throws ParseException
 	{
@@ -80,7 +104,7 @@ public class PostfixNHINDFilter extends GenericMailet
 				LOGGER.debug("IncomingPort: " + incomingPort);
 			}
 			
-			ICertificateService certService = null;
+			ICertificateResolver certService = null;
 			
 			String certStoreClassName = getInitParameter("CertStoreImpl");
 			
@@ -88,9 +112,9 @@ public class PostfixNHINDFilter extends GenericMailet
 			
 			Class<?> certStoreClass = Class.forName(certStoreClassName);
 			Object certStoreImpl = certStoreClass.newInstance();
-			if (certStoreImpl instanceof KeyStoreCertificateService)
+			if (certStoreImpl instanceof KeyStoreCertificateStore)
 			{
-				KeyStoreCertificateService certServiceHolder = (KeyStoreCertificateService)certStoreImpl;
+				KeyStoreCertificateStore certServiceHolder = (KeyStoreCertificateStore)certStoreImpl;
 				certServiceHolder.setKeyStoreFile(getInitParameter("KeyStoreFile"));
 				certServiceHolder.setKeyStorePassword(getInitParameter("KeyStorePW"));	
 				certServiceHolder.setPrivateKeyPassword(getInitParameter("KeyStorePKPW"));
@@ -119,7 +143,7 @@ public class PostfixNHINDFilter extends GenericMailet
 			// hard coded to use the uniform trust settings
 			
 			agent = new NHINDAgent(internalHISPDomains.iterator().next(),  certService, 
-					certService, new UniformTrustSettings(archorCerts));					
+					certService, new TrustAnchorResolver(archorCerts));					
 			
 			LOGGER.debug("Successfully create NHIND agent");
 			
@@ -157,18 +181,18 @@ public class PostfixNHINDFilter extends GenericMailet
 			try
 			{
 			
-				if (msg.getContentType().contains("multipart/signed") || msg.getContentType().contains(Protocol.EncryptedContentMediaTypeAlternative) || 
-						msg.getContentType().contains(Protocol.EncryptedContentMediaType))
+				if (msg.getContentType().contains("multipart/signed") || msg.getContentType().contains(SMIMEStandard.EncryptedContentMediaTypeAlternative) || 
+						msg.getContentType().contains(SMIMEStandard.EncryptedContentMediaType))
 				{
 					LOGGER.debug("Processing incoming message from external HISP.");					
 					//System.out.println("Incoming message content:\r\n" +  mimeMessageToString(msg));
 					
 					
-					String strippedMessage = agent.processIncoming(msg);
+					IncomingMessage strippedMessage = agent.processIncoming(msg);
 					
 					LOGGER.debug("Message stripped.  Sending to forwarding service.");
 					
-					forwardMessageToSMTP(strippedMessage, false);
+					forwardMessageToSMTP(strippedMessage.getMessage().toString(), false);
 				}
 				else
 				{
@@ -187,16 +211,16 @@ public class PostfixNHINDFilter extends GenericMailet
 			// mail is originating from inside the HISP
 			try
 			{
-				if (msg.getContentType().contains("multipart/signed") || msg.getContentType().contains(Protocol.EncryptedContentMediaTypeAlternative) || 
-						msg.getContentType().contains(Protocol.EncryptedContentMediaType))
+				if (msg.getContentType().contains("multipart/signed") || msg.getContentType().contains(SMIMEStandard.EncryptedContentMediaTypeAlternative) || 
+						msg.getContentType().contains(SMIMEStandard.EncryptedContentMediaType))
 				{
 					// this is a signed message originating from our HISP
 					// decrypt it and move it on
 					LOGGER.debug("Processing signed message from internal HISP.");
 
-					String strippedMessage = agent.processIncoming(msg);
+					IncomingMessage strippedMessage = agent.processIncoming(msg);
 					
-					forwardMessageToSMTP(strippedMessage, false);
+					forwardMessageToSMTP(strippedMessage.getMessage().toString(), false);
 					
 				}
 				else
@@ -208,9 +232,9 @@ public class PostfixNHINDFilter extends GenericMailet
 					 */
 					LOGGER.debug("Processing outgoing message.  Sign and encrypt.");					
 					
-					String encryptedAndSignedMessage = agent.processOutgoing(mimeMessageToString(msg));		
+					OutgoingMessage encryptedAndSignedMessage = agent.processOutgoing(mimeMessageToString(msg));		
 					//System.out.println("\r\n\r\n\r\n" + encryptedAndSignedMessage);
-					forwardMessageToSMTP(encryptedAndSignedMessage, true);
+					forwardMessageToSMTP(encryptedAndSignedMessage.getMessage().toString(), true);
 				}
 			}
 			catch (Exception e)

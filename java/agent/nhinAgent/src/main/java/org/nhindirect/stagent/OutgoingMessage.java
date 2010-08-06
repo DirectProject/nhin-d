@@ -1,17 +1,28 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Umesh Madan     umeshma@microsoft.com
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.stagent;
 
-import java.io.InputStream;
-import java.util.Collection;
-
-import javax.mail.Address;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeMessage;
-
-import org.nhindirect.stagent.ProtocolException.ProtocolError;
-import org.nhindirect.stagent.parser.Protocol;
-import org.nhindirect.stagent.trust.TrustEnforcementStatus;
+import org.nhindirect.stagent.mail.Message;
 
 /**
  * Outgoing messages are specific types of NHINDMessage that need to been signed and encrypted.  
@@ -22,135 +33,32 @@ import org.nhindirect.stagent.trust.TrustEnforcementStatus;
  * @author Umesh Madan
  *
  */
-public class OutgoingMessage extends NHINDMessage 
+public class OutgoingMessage extends MessageEnvelope
 {
-    NHINDAddressCollection recipients;
-    NHINDAddressCollection rejectedRecipients;
-
-    /**
-     * Constructs an empty message.
-     */
-    public OutgoingMessage()
+    public OutgoingMessage(Message message)
     {
-    	super();
+    	super(message);
     }
 
-    /**
-     * {@inheritDoc}}
-     */    
-    public OutgoingMessage(InternetHeaders headers, byte[] content) throws MessagingException 
+    
+    public OutgoingMessage(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
     {
-    	super(headers, content);
-    }      
+    	super(message, recipients, sender);
+    }		    
     
-    /**
-     * {@inheritDoc}}
-     */ 
-    public OutgoingMessage(MimeMessage msg) throws MessagingException
+    public OutgoingMessage(String message)
     {
-    	super(msg);
-    }    
-    
-    /**
-     * {@inheritDoc}}
-     */    
-    public OutgoingMessage(InputStream inStream) throws MessagingException 
-    {
-    	super(inStream);    	    	
-    }    
-    
-    
-    /**
-     * Gets a collection of all recipients as NHINDAddresses.
-     * @return A collection of all recipients as NHINDAddresses.
-     */
-    public NHINDAddressCollection getRecipients()
-    { 	
-        if (recipients == null)
-        {
-        	recipients = new NHINDAddressCollection();
-        	
-        	try
-        	{
-	        	for (Address addr : getAllRecipients())
-	        	{
-	        		
-	        		recipients.add(new NHINDAddress((InternetAddress)addr));
-	        	}
-        	}
-        	catch (MessagingException e)
-        	{
-        		throw new ProtocolException(ProtocolError.InvalidHeader, e);
-        	}
-        }
-        
-        return recipients;
-    }
-    
-    /**
-     * Indicates if the message has valid recipients.
-     * @return True if the message has valid recipeints.  False otherwise.
-     */
-    public boolean hasRecipients()
-    {
-
-    	Collection<NHINDAddress>recipients = getRecipients();
-            
-    	return (recipients != null && recipients.size() > 0);
-    }
-    
-    /**
-     * Gets a collection of recipients in the message that are not trusted by the address.
-     * @return A list of collection in the message that are not trusted by the address.
-     */    
-    public NHINDAddressCollection getRejectedRecipients()
-    {
-        if (rejectedRecipients == null)
-        {
-            rejectedRecipients = new NHINDAddressCollection();
-        }
-        
-        return rejectedRecipients;
-    }
-    
-    /**
-     * Indicates if the message has recipients that are not trusted by the address.
-     * @return True if the message has recipients that are not trusted by the address.  False otherwise. 
-     */  
-    public boolean hasRejectedRecipients()
-    {
-
-        return (rejectedRecipients != null && rejectedRecipients.size() > 0);
+    	super(message);
     }
 
-    /**
-     * Categorizes recipients as either trusted or untrusted (rejected).
-     * @param minTrustStatus The minimum level of trust a recipient must have in order to be considered trusted.
-     */
-    public void categorizeRecipients(TrustEnforcementStatus minTrustStatus)
-    {
-        rejectedRecipients = NHINDAddressCollection.create(getRecipients().getUntrusted(minTrustStatus));
-        getRecipients().removeUntrusted(minTrustStatus);            
-    }
     
-    /**
-     * Updates the valid trusted recipients.
-     */
-    public void updateTo()
+    public OutgoingMessage(String message, NHINDAddressCollection recipients, NHINDAddress sender)
     {
-
-        Collection<InternetAddress> recipients = getRecipients().toInternetAddressCollection();
-        
-        String header = InternetAddress.toString(recipients.toArray(new InternetAddress[recipients.size()]));
-
-        try
-        {
-        	setHeader(Protocol.ToHeader, header);
-        }
-        catch (MessagingException e)
-        {
-        	throw new ProtocolException(ProtocolError.InvalidHeader, e);
-        }
+    	super(message, recipients, sender);
+    }	    
+    
+    public OutgoingMessage(MessageEnvelope envelope)
+    {
+    	super(envelope);
     }
-
 }

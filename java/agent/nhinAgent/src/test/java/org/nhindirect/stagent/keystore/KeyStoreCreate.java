@@ -13,7 +13,7 @@ import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 import org.nhindirect.stagent.cert.X509CertificateEx;
-import org.nhindirect.stagent.cert.impl.KeyStoreCertificateService;
+import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 
 public class KeyStoreCreate 
 {
@@ -21,7 +21,7 @@ public class KeyStoreCreate
 	private static final String pkPassword = "pKpa$$wd";
 	
 	private static final String certsBasePath;
-	private static final KeyStoreCertificateService service;
+	private static final KeyStoreCertificateStore service;
 	
 	static 
 	{
@@ -32,7 +32,7 @@ public class KeyStoreCreate
 		
 		File internalKeystoreFile = new File(path + "src/test/resources/keystores/internalKeystore");
 		
-		service = new KeyStoreCertificateService(internalKeystoreFile, internalStorePassword, pkPassword);
+		service = new KeyStoreCertificateStore(internalKeystoreFile, internalStorePassword, pkPassword);
 		
 		certsBasePath = path + "src/test/resources/certs/" ;
 		
