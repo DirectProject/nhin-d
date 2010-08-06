@@ -185,6 +185,10 @@ public class NHINDAddressCollection extends ArrayList<NHINDAddress>
     	
     }
     
+    /**
+     * Sets the address source type of all addresses in the collection.
+     * @param source The address source type to apply to all addresses in the collection. 
+     */
     public void setSource(AddressSource source)
     {
     	for (NHINDAddress addr : this)
@@ -193,6 +197,10 @@ public class NHINDAddressCollection extends ArrayList<NHINDAddress>
     }
     
     @Override
+    /**
+     * Converts the collection to a list of addresses compatible with an message routing header message (including the standard delimiter).
+     * @return The collection as an RFC compliant message routing header. 
+     */
     public String toString()
     {
     	return InternetAddress.toString(this.toArray(new InternetAddress[this.size()]));
@@ -211,6 +219,13 @@ public class NHINDAddressCollection extends ArrayList<NHINDAddress>
         return addresses;
     }   
     
+    /**
+     * Parses an message router header to a collection of address.  The addressline may or may not include the header name.
+     * @param addressesLine The raw message header.  The header name does not need to be included, but should use the proper header delimiter
+     * if it is included.
+     * @param source The address source type of the address line.
+     * @return A collection of addresses parsed from the address line.
+     */
     public static NHINDAddressCollection parse(String addressesLine, AddressSource source)
     {
     	

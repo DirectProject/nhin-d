@@ -36,8 +36,15 @@ import org.nhindirect.stagent.cert.ICertificateResolver;
  */
 public interface ITrustAnchorResolver 
 {
-
+	/**
+	 * Gets the certificate resolver for outgoing messages.
+	 * @return The certificate resolver for outgoing messages.
+	 */
 	ICertificateResolver getOutgoingAnchors();
 
+	/**
+	 * Gets the certificate resolver for incoming messages.
+	 * @return The certificate resolver for incoming messages.
+	 */	
 	ICertificateResolver getIncomingAnchors();
 }

@@ -30,6 +30,12 @@ import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.mail.MimeEntity;
 import org.nhindirect.stagent.mail.MimeStandard;
 
+/**
+ * Standard SMIM headers and utility methods
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public class SMIMEStandard extends MailStandard
 {
     //

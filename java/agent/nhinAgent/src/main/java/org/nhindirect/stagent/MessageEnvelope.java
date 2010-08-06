@@ -35,6 +35,12 @@ import org.nhindirect.stagent.mail.MimeException;
 import org.nhindirect.stagent.parser.EntitySerializer;
 import org.nhindirect.stagent.trust.TrustEnforcementStatus;
 
+/**
+ * A wrapper around a MimeMessage that categorizes routing headers such as trusted and non trusted recipients.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public class MessageEnvelope 
 {
 	protected NHINDAgent agent;
@@ -48,6 +54,10 @@ public class MessageEnvelope
 	protected NHINDAddressCollection domainRecipients;
 	protected Collection<NHINDAddress> otherRecipients;     
 	
+	/**
+	 * Constructs an envelope from a message. 
+	 * @param message The mime message.
+	 */	
 	public MessageEnvelope(Message message)
 	{
 		if (message == null)
@@ -69,11 +79,23 @@ public class MessageEnvelope
 		}		
 	}
 	
+	/**
+	 * Constructs an envelope from a message represented by a raw string.. 
+	 * @param rawMessage The mime message.
+	 */ 
 	public MessageEnvelope(String rawMessage)
 	{
 		this(fromStringToMessage(rawMessage));
 	}
 	
+	
+	/**
+	 * Constructs an envelope from a message, a list of recipients, and a sender.  This is intended to override the standard to and from headers
+	 * in the incoming message.
+	 * @param message The mime message.
+	 * @param recipients A collection of addresses that denote the recipients of the message.
+	 * @param sender The original sender of the message.
+	 */   
 	public MessageEnvelope(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
 	{
 		if (message == null)
@@ -84,11 +106,22 @@ public class MessageEnvelope
 		this.setSender(sender);		
 	}		
 	
+	/**
+	 * Constructs an envelope from a message represented as a raw string, a list of recipients, and a sender.  
+	 * This is intended to override the standard to and from headers in the incoming message.
+	 * @param message The incoming message.
+	 * @param recipients A collection of addresses that denote the recipients of the message.
+	 * @param sender The original sender of the message.
+	 */ 	
 	public MessageEnvelope(String rawMessage, NHINDAddressCollection recipients, NHINDAddress sender)
 	{
 		this(fromStringToMessage(rawMessage), recipients, sender);
 	}	
 	
+	/**
+	 * Constructs an envelope from another envelope.
+	 * @param message The message envelope.
+	 */   	
 	protected MessageEnvelope(MessageEnvelope envelope)
 	{
 		agent = envelope.agent;
@@ -97,6 +130,9 @@ public class MessageEnvelope
 		sender = envelope.sender;
 	}	
 	
+	/*
+	 * Creates a mime message from a raw string.
+	 */
 	private static Message fromStringToMessage(String rawMessage)
 	{
 		try
@@ -108,21 +144,37 @@ public class MessageEnvelope
 		return null;
 	}
 	
+	/**
+	 * Gets the agent associated with the message.
+	 * @return The security and trust agent.
+	 */
 	public NHINDAgent getAgent()
 	{
 		return this.agent;
 	}
 	
+	/**
+	 * Associates the security and trust agent with the message.
+	 * @param agent The security and trust agent.
+	 */
 	protected void setAgent(NHINDAgent agent)
 	{
 		this.agent = agent;
 	}
 	
+	/**
+	 * Gets the mime message wrapped in the envelope.
+	 * @return the mime message wrapped in the envelope.
+	 */
 	public Message getMessage()
 	{
 		return this.message;
 	}
 	
+	/**
+	 * Sets the mime message wrapped in the envelope.
+	 * @param message The mime message wrapped in the envelope.
+	 */
 	protected void setMessage(Message message)
 	{
         if (message == null)
@@ -131,11 +183,19 @@ public class MessageEnvelope
         this.message = message;
 	}
 	
+	/**
+	 * Gets the sender of the message.
+	 * @return The sender of the message.
+	 */
 	public NHINDAddress getSender()
 	{
 		return this.sender;
 	}
 	
+	/**
+	 * Sets the sender of the message.
+	 * @param sender The sender of the message.
+	 */
 	protected void setSender(NHINDAddress sender)
 	{
         if (sender == null)
@@ -145,6 +205,10 @@ public class MessageEnvelope
         this.sender = sender;		
 	}	
 	
+	/**
+	 * The collection of message recipients.
+	 * @return Collection of message recipients.
+	 */
 	public NHINDAddressCollection getRecipients()
 	{
 		if (this.recipients == null)
@@ -155,6 +219,10 @@ public class MessageEnvelope
 		return recipients;
 	}
 	
+	/**
+	 * Sets the collection of message recipients.
+	 * @param recipients The collection of message recipients.
+	 */
 	protected void setRecipients(NHINDAddressCollection recipients)
 	{
 		if (recipients == null || recipients.size() == 0)
@@ -163,6 +231,10 @@ public class MessageEnvelope
 		this.recipients = recipients;
 	}
 	
+	/**
+	 * Indicates if the message has any recipients.
+	 * @return True if the message has recipients.  False otherwise.
+	 */
 	public boolean hasRecipients()
 	{
 		return (recipients != null && recipients.size() > 0);
@@ -240,6 +312,10 @@ public class MessageEnvelope
         return (oRecipients != null && oRecipients.size() > 0);
 	}	
 	
+	/**
+	 * Gets a collection of addresses specified in the message's TO header.
+	 * @return Addresses specified in the message's TO header.
+	 */
 	protected NHINDAddressCollection getTo()
 	{
 		if (to == null)
@@ -250,6 +326,10 @@ public class MessageEnvelope
 		return to;
 	}
 	
+	/**
+	 * Gets a collection of addresses specified in the message's CC header.
+	 * @return Addresses specified in the message's CC header.
+	 */
 	protected NHINDAddressCollection getCC()
 	{
 		if (cc == null)
@@ -260,6 +340,10 @@ public class MessageEnvelope
 		return cc;
 	}
 	
+	/**
+	 * Gets a collection of addresses specified in the message's BCC header.
+	 * @return Addresses specified in the message's BCC header.
+	 */	
 	protected NHINDAddressCollection getBCC()
 	{
 		if (bcc == null)
@@ -270,11 +354,18 @@ public class MessageEnvelope
 		return bcc;
 	}	
 	
+	/**
+	 * Serializes the wrapped message to a raw string representation.
+	 * @return The wrapped message to as a raw string representation.
+	 */
     public String serializeMessage()
     {
         return EntitySerializer.Default.serialize(this.getMessage());
     }
 
+    /**
+     * Clears all attributes of the envelope essentially creating an empty envelope.
+     */
     protected void clear()
     {
     	message = null;
@@ -288,6 +379,10 @@ public class MessageEnvelope
     	otherRecipients = null;    
     }
 	
+    /**
+     * Creates a collection of recipients based on the TO, CC, and BCC headers in the wrapped message.
+     * @return A collection of recipients.
+     */
 	protected NHINDAddressCollection collectRecipients()
 	{
         NHINDAddressCollection addresses = new NHINDAddressCollection();
@@ -307,7 +402,8 @@ public class MessageEnvelope
 	}
 
     /**
-     * Updates the valid domain recipients & other recipients.
+     * Updates the valid domain recipients & other recipients removing all reject recipients.
+     * @param rejectedRecipients A collection of recipients that should be removed from the routing headers.
      */	
 	protected void updateRoutingHeaders(NHINDAddressCollection rejectedRecipients)
 	{
@@ -343,6 +439,9 @@ public class MessageEnvelope
         }
     }
 	
+    /**
+     * Updates the valid domain recipients & other recipients.
+     */		
 	protected void updateRoutingHeaders()
 	{
 		if (hasRejectedRecipients())
@@ -355,7 +454,8 @@ public class MessageEnvelope
 	}
 	
     /**
-     * Splits recipients into domain recipients and external recipients.  The agent's domain is used to determine a recipients category.
+     * Splits recipients into domain recipients and external recipients.  The agent's domains are used to determine a recipients category.
+     * @param domain A collection of local domains supported by the agent.
      */
 	protected void categorizeRecipients(Collection<String> domains)
 	{
