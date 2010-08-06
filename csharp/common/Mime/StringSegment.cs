@@ -149,7 +149,7 @@ namespace NHINDirect.Mime
         {
             if (segment.m_source == null)
             {
-                throw new ArgumentNullException("Cannot union with null segment");
+                throw new ArgumentNullException("segment", "Cannot union with null segment");
             }
             
             if (m_source == null)
