@@ -36,7 +36,7 @@ namespace NHINDirect.SmtpAgent
         SmtpAgentSettings m_settings;
         NHINDAgent m_agent;
         LogFile m_log;
-        MailAddress m_postmaster;
+        DomainPostmasters m_postmasters;
                 
         public SmtpAgent(SmtpAgentSettings settings)
         {
@@ -44,6 +44,7 @@ namespace NHINDirect.SmtpAgent
             {
                 throw new ArgumentNullException();
             }
+            
             this.Init(settings);
         }
         
@@ -100,7 +101,11 @@ namespace NHINDirect.SmtpAgent
         
         void InitAgent()
         {
-            m_postmaster = new MailAddress(m_settings.PostmasterAddress);
+            m_log.WriteLine("InitPostmasters_Begin");
+            m_postmasters = new DomainPostmasters();
+            m_postmasters.Init(m_settings.Domains, m_settings.Postmasters);
+            m_log.WriteLine("InitPostmasters_End");
+
             this.InitFolders();            
 
             m_log.WriteLine("CreateAgent_Begin");
@@ -109,7 +114,7 @@ namespace NHINDirect.SmtpAgent
 
             this.SubscribeToAgentEvents();
         }
-        
+                
         void InitFolders()
         {
             m_log.WriteLine("InitFolder_Begin");
@@ -146,43 +151,37 @@ namespace NHINDirect.SmtpAgent
             {
                 this.VerifyInitialized();
                 //
-                // Currently, postmaster generated messages go through
+                // Preprocessing may involve housekeeping like logging message arrival
                 //
-                if (this.IsSenderPostmaster(message))
+                this.PreProcessMessage(message);
+                //
+                // Let the agent do its thing
+                //
+                MessageEnvelope envelope = this.CreateEnvelope(message);
+                envelope = this.ProcessEnvelope(envelope);
+                if (envelope == null)
                 {
-                    message.SetMessageStatus(CdoMessageStat.cdoStatSuccess);
-                    return;
-                }   
-                
-                this.CopyMessage(message, m_settings.RawMessage);
-                                
-                bool isOutgoing = false;
-
-                MessageEnvelope envelope = this.ProcessMessage(message, out isOutgoing);                
-                bool relay = true;
-                if (isOutgoing)
-                {
-                    this.CopyMessage(message, m_settings.Outgoing);
-                    relay = m_settings.Outgoing.EnableRelay;
+                    throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
                 }
-                else
-                {
-                    this.CopyMessage(message, m_settings.Incoming);
-                    relay = m_settings.Incoming.EnableRelay;
-                }
-
-                if (!relay)
+                //
+                // Internal only messages from the postmaster can be passed through in the clear
+                // They are invariably local delivery notification errors
+                //
+                if (!this.IsInternalPostmasterMessage(envelope))
                 {
                     //
-                    // Turn relay off for debugging and diagnostics
+                    // Replace the contents of the original message with what the agent gave us
                     //
-                    m_log.WriteLine("Relay disabled");
-                    message.AbortMessage();
+                    this.UpdateMessageText(message, envelope);
                 }
                 //
-                // Generate Bounces
+                // We did good...
                 //
-                this.GenerateBounces(envelope);                
+                message.SetMessageStatus(CdoMessageStat.cdoStatSuccess);
+                //
+                // We may want want to update logs and do some final post processing
+                //
+                this.PostProcessMessage(message, envelope);
             }
             catch (Exception ex)
             {
@@ -191,30 +190,20 @@ namespace NHINDirect.SmtpAgent
                 throw;
             }
         }
-        
-        MessageEnvelope ProcessMessage(CDO.Message message, out bool isOutgoing)
-        {
-            MessageEnvelope envelope = this.CreateEnvelope(message);
 
-            string messageText = this.ProcessEnvelope(envelope, out isOutgoing);
-            if (string.IsNullOrEmpty(messageText))
-            {
-                throw new InvalidOperationException("Agent returned empty message");
-            }
-            
-            message.SetMessageText(messageText, true);
-            message.SetMessageStatus(CdoMessageStat.cdoStatSuccess);
-            
-            return envelope;
+        protected virtual void PreProcessMessage(CDO.Message message)
+        {
+            m_log.WriteLine("Message Received");
+            this.CopyMessage(message, m_settings.RawMessage);
         }
-                
-        string ProcessEnvelope(MessageEnvelope envelope, out bool isOutgoing)
+                                
+        protected virtual MessageEnvelope ProcessEnvelope(MessageEnvelope envelope)
         {
             //
             // Messages from within the domain are always treated as OUTGOING
             // All messages sent by sources OUTSIDE the domain are always treated as INCOMING
             //
-            isOutgoing = envelope.Sender.DomainEquals(this.Agent.Domain);
+            bool isOutgoing = this.Agent.Domains.IsManaged(envelope.Sender);
             if (isOutgoing)
             {
                 envelope = this.Agent.ProcessOutgoing(envelope);
@@ -226,14 +215,90 @@ namespace NHINDirect.SmtpAgent
             
             if (envelope == null)
             {
-                throw new InvalidOperationException("Agent returned null envelope");
+                throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
             }
             
             m_log.WriteLine(isOutgoing ? "ProcessedOutgoing": "ProcessedIncoming");
-            
-            return envelope.SerializeMessage();
+                        
+            return envelope;
+        }
+        
+        protected virtual void UpdateMessageText(CDO.Message message, MessageEnvelope envelope)
+        {
+            string messageText = envelope.SerializeMessage();
+            if (string.IsNullOrEmpty(messageText))
+            {
+                throw new SmtpAgentException(SmtpAgentError.EmptyResultFromAgent);
+            }
+            message.SetMessageText(messageText, true);
+        }
+                
+        protected virtual void PostProcessMessage(CDO.Message message, MessageEnvelope envelope)
+        {
+            bool relay = true;
+            bool isOutgoing = envelope is OutgoingMessage;
+            if (isOutgoing)
+            {
+                this.CopyMessage(message, m_settings.Outgoing);
+                relay = m_settings.Outgoing.EnableRelay;
+            }
+            else
+            {
+                this.CopyMessage(message, m_settings.Incoming);
+                relay = m_settings.Incoming.EnableRelay;
+            }
+
+            if (!relay)
+            {
+                //
+                // Turn relay off for debugging and diagnostics
+                //
+                m_log.WriteLine(isOutgoing ? "Outoing Relay disabled" : "Incoming Relay Disabled");
+                message.AbortMessage();
+                return;
+            }
         }
 
+        protected virtual void RejectMessage(CDO.Message message)
+        {
+            try
+            {
+                message.AbortMessage();
+                m_log.WriteLine("Rejected Message");
+
+                this.CopyMessage(message, m_settings.BadMessage);
+            }
+            catch
+            {
+            }
+        }
+        
+        void GenerateBounces(CDO.Message message, MessageEnvelope envelope)
+        {
+            if (envelope is OutgoingMessage)
+            {
+                this.GenerateBouncesForOutoing(message, envelope);
+            }
+            else
+            {
+                this.GenerateBouncesForIncoming(message, envelope);
+            }
+        }
+
+        protected virtual void GenerateBouncesForOutoing(CDO.Message message, MessageEnvelope envelope)
+        {
+            //
+            // TODO
+            //
+        }
+
+        protected virtual void GenerateBouncesForIncoming(CDO.Message message, MessageEnvelope envelope)
+        {
+            //
+            // TODO
+            //
+        }
+        
         MessageEnvelope CreateEnvelope(CDO.Message message)
         {
             NHINDAddressCollection recipientAddresses = null;
@@ -254,6 +319,16 @@ namespace NHINDirect.SmtpAgent
             return envelope;
         }
         
+        bool IsInternalPostmasterMessage(MessageEnvelope envelope)
+        {
+            if (!m_postmasters.IsPostmaster(envelope.Sender))
+            {
+                return false;
+            }
+            
+            return (envelope.DomainRecipients.Count == envelope.Recipients.Count);
+        }
+        
         bool IsSenderPostmaster(CDO.Message message)
         {
             string sender = this.GetEnvelopeSender(message);
@@ -262,23 +337,9 @@ namespace NHINDirect.SmtpAgent
                 return false;
             }
             
-            return (this.IsSenderLocalPostmaster(sender) ||  MailStandard.Equals(m_postmaster.Address, sender));
+            return (this.IsSenderLocalPostmaster(sender) ||  m_postmasters.IsPostmaster(sender));
         }
         
-        void RejectMessage(CDO.Message message)
-        {
-            try
-            {
-                message.AbortMessage();
-                m_log.WriteLine("Rejected Message");
-
-                this.CopyMessage(message, m_settings.BadMessage);
-            }
-            catch
-            {
-            }
-        }
-
         void CopyMessage(CDO.Message message, MessageProcessingSettings settings)
         {
             if (!settings.HasCopyFolder)
@@ -301,14 +362,7 @@ namespace NHINDirect.SmtpAgent
                 m_log.WriteError(ex);
             }
         }
-
-        void GenerateBounces(MessageEnvelope envelope)
-        {
-            //
-            // TODO
-            //
-        }
-                                
+                                        
         //---------------------------------------------------
         //
         //  Helpers
@@ -339,7 +393,8 @@ namespace NHINDirect.SmtpAgent
                 throw new NotSupportedException("Sender required");
             }
             //
-            // In SMTP Server, the sender address can be empty if the message is from the server postmaster 
+            // In SMTP Server, the MAIL TO (sender) in the envelope can be empty if the message is from the server postmaster 
+            // The actual postmaster address is found in the message itself
             //
             if (this.IsSenderLocalPostmaster(sender))
             {

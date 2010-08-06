@@ -51,7 +51,7 @@ namespace NHINDirect.Agent
             {
                 throw new AgentException(AgentError.MissingFrom);
             }            
-            this.Sender = new NHINDAddress(from.Value, AddressSource.From);
+            this.Sender = new NHINDAddress(from.Value);
         }
         
         public MessageEnvelope(string messageText)
@@ -86,18 +86,6 @@ namespace NHINDirect.Agent
             m_message = envelope.m_message;
             m_recipients = envelope.m_recipients;
             m_sender = envelope.m_sender;
-        }
-        
-        internal NHINDAgent Agent
-        {
-            get
-            {
-                return this.m_agent;
-            }
-            set
-            {
-                this.m_agent = value;
-            }
         }
         
         public Message Message
@@ -187,12 +175,11 @@ namespace NHINDirect.Agent
         {
             get
             {
-                if (this.m_domainRecipients == null)
-                {
-                    this.CategorizeRecipients(this.Agent.Domain);
-                }
-
                 return this.m_domainRecipients;
+            }
+            internal set
+            {
+                m_domainRecipients = value;
             }
         }
 
@@ -200,8 +187,7 @@ namespace NHINDirect.Agent
         {
             get
             {
-                NHINDAddressCollection recipients = this.DomainRecipients;
-                return (recipients != null && recipients.Count > 0);
+                return (m_domainRecipients != null && m_domainRecipients.Count > 0);
             }
         }
 
@@ -209,12 +195,11 @@ namespace NHINDirect.Agent
         {
             get
             {
-                if (this.m_otherRecipients == null)
-                {
-                    this.CategorizeRecipients(this.Agent.Domain);
-                }
-
                 return this.m_otherRecipients;
+            }
+            set
+            {
+                m_otherRecipients = value;
             }
         }
 
@@ -222,8 +207,7 @@ namespace NHINDirect.Agent
         {
             get
             {
-                MailAddressCollection recipients = this.OtherRecipients;
-                return (recipients != null && recipients.Count > 0);
+                return (m_otherRecipients != null && m_otherRecipients.Count > 0);
             }
         }
         
@@ -233,7 +217,7 @@ namespace NHINDirect.Agent
             {
                 if (m_to == null)
                 {
-                    m_to = NHINDAddressCollection.Parse(m_message.To, AddressSource.To);
+                    m_to = NHINDAddressCollection.Parse(m_message.To);
                 }
                 
                 return m_to;
@@ -246,7 +230,7 @@ namespace NHINDirect.Agent
             {
                 if (m_cc == null)
                 {
-                    m_cc = NHINDAddressCollection.Parse(m_message.CC, AddressSource.CC);
+                    m_cc = NHINDAddressCollection.Parse(m_message.CC);
                 }
 
                 return m_cc;
@@ -259,7 +243,7 @@ namespace NHINDirect.Agent
             {
                 if (m_bcc == null)
                 {
-                    m_bcc = NHINDAddressCollection.Parse(m_message.BCC, AddressSource.BCC);
+                    m_bcc = NHINDAddressCollection.Parse(m_message.BCC);
                 }
 
                 return m_bcc;
@@ -365,35 +349,42 @@ namespace NHINDirect.Agent
         }
 
         /// <summary>
-        /// Split recipients - are they in the local domain or are they external
+        /// Categorize recipients as follows:
+        /// - are they in the local domain or are they external
         /// </summary>
         /// <param name="domain"></param>
-        internal void CategorizeRecipients(string domain)
+        internal virtual void CategorizeRecipientsByDomain(AgentDomains domains)
         {
-            if (string.IsNullOrEmpty(domain))
-            {
-                throw new ArgumentException();
-            }
-
             NHINDAddressCollection recipients = this.Recipients;
-            this.m_domainRecipients = new NHINDAddressCollection();
-            this.m_otherRecipients = new MailAddressCollection();
+            NHINDAddressCollection domainRecipients = null;
+            MailAddressCollection otherRecipients = null;
 
             for (int i = 0, count = recipients.Count; i < count; ++i)
             {
                 NHINDAddress address = recipients[i];
-                if (address.DomainEquals(domain))
+                if (domains.IsManaged(address))
                 {
-                    this.m_domainRecipients.Add(address);
+                    if (domainRecipients == null)
+                    {
+                        domainRecipients = new NHINDAddressCollection();
+                    }
+                    domainRecipients.Add(address);
                 }
                 else
                 {
-                    this.m_otherRecipients.Add(address);
+                    if (otherRecipients == null)
+                    {
+                        otherRecipients = new MailAddressCollection();
+                    }
+                    otherRecipients.Add(address);
                 }
             }
+
+            this.DomainRecipients = domainRecipients;
+            this.OtherRecipients = otherRecipients;
         }
 
-        internal virtual void CategorizeRecipients(TrustEnforcementStatus minTrustStatus)
+        internal virtual void CategorizeRecipientsByTrust(TrustEnforcementStatus minTrustStatus)
         {
             this.m_rejectedRecipients = NHINDAddressCollection.Create(this.Recipients.GetUntrusted(minTrustStatus));
             this.Recipients.RemoveUntrusted(minTrustStatus);

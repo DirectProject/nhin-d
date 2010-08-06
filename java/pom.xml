@@ -5,11 +5,12 @@
     <artifactId>nhind-java-reference-implementation</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>NHIND Direct reference implementation components</name>
+    <name>NHIN Direct reference implementation components</name>
     <description>NHIN Direct parent project for java reference implementation components.</description>
     <modules>
         <module>./agent/nhinAgent</module>
-    </modules>	
+        <module>./gateway</module>        
+    </modules>	    
     <developers>
         <developer>
             <name>Greg Meyer</name>

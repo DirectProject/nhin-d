@@ -95,9 +95,9 @@ namespace NHINDirect.Agent
             }
         }
         
-        internal override void CategorizeRecipients(TrustEnforcementStatus minTrustStatus)
+        internal override void CategorizeRecipientsByTrust(TrustEnforcementStatus minTrustStatus)
         {
-            base.CategorizeRecipients(minTrustStatus);
+            base.CategorizeRecipientsByTrust(minTrustStatus);
             this.DomainRecipients.RemoveUntrusted(minTrustStatus);
         }
     }

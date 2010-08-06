@@ -36,7 +36,7 @@ namespace NHINDirect.Agent.Config
         {
             if (this.Resolver == null)
             {
-                throw new ArgumentNullException("Anchor resolver not specified");
+                throw new AgentConfigException(AgentConfigError.MissingAnchorResolverSettings);
             }
             this.Resolver.Validate();
         }

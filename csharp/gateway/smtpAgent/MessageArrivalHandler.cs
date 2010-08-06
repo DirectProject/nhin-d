@@ -82,17 +82,16 @@ namespace NHINDirect.SmtpAgent
         
         public void InitFromConfigFile(string configFilePath)
         {
-            SmtpAgentSettings settings = SmtpAgentSettings.LoadFile(configFilePath);
-            SmtpAgent agent = this.EnsureAgent(settings);
+            SmtpAgent agent = this.EnsureAgent(configFilePath);
             System.Threading.Interlocked.Exchange<SmtpAgent>(ref m_agent, agent);
         }
 
-        SmtpAgent EnsureAgent(SmtpAgentSettings settings)
+        SmtpAgent EnsureAgent(string configFilePath)
         {
             lock (s_agents)
             {
                 SmtpAgent agent = null;
-                if (!s_agents.TryGetValue(settings.Domain, out agent))
+                if (!s_agents.TryGetValue(configFilePath, out agent))
                 {
                     agent = null;
                 }
@@ -101,8 +100,8 @@ namespace NHINDirect.SmtpAgent
                 {
                     try
                     {
-                        agent = new SmtpAgent(settings);
-                        s_agents[settings.Domain] = agent;
+                        agent = this.CreateAgent(configFilePath);
+                        s_agents[configFilePath] = agent;
                     }
                     catch
                     {
@@ -126,6 +125,20 @@ namespace NHINDirect.SmtpAgent
         public void WriteError(string message)
         {
             this.Agent.Log.WriteError(message);
+        }
+        
+        SmtpAgent CreateAgent(string configFilePath)
+        {
+            try
+            {
+                SmtpAgentSettings settings = SmtpAgentSettings.LoadFile(configFilePath);
+                return new SmtpAgent(settings);
+            }
+            catch(Exception error)
+            {
+                this.Agent.Log.WriteError(error);
+                throw;
+            }
         }
     }    
 }

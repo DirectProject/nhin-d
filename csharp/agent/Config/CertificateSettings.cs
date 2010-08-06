@@ -39,9 +39,14 @@ namespace NHINDirect.Agent.Config
         
         public void Validate()
         {
+            this.Validate(AgentConfigError.MissingResolver);
+        }
+        
+        internal void Validate(AgentConfigError error)
+        {
             if (this.Resolver == null)
             {
-                throw new ArgumentNullException("Resolver not specified");
+                throw new AgentConfigException(error);
             }
             this.Resolver.Validate();
         }

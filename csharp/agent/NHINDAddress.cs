@@ -25,17 +25,10 @@ namespace NHINDirect.Agent
 {
     public class NHINDAddress : MailAddress
     {
-        AddressSource m_source = AddressSource.Unknown;
         X509Certificate2Collection m_certificates;
         TrustEnforcementStatus m_trustStatus;
         X509Certificate2Collection m_trustAnchors;
         
-        internal NHINDAddress(string address, AddressSource source)
-            : this(address)
-        {
-            m_source = source;
-        }
-                
         public NHINDAddress(string address)
             : this(address, null)
         {
@@ -103,33 +96,10 @@ namespace NHINDirect.Agent
                 this.m_trustStatus = value;
             }
         }
-
-        internal AddressSource Source
-        {
-            get
-            {
-                return m_source;
-            }
-            set
-            {
-                m_source = value;
-            }
-        }
         
         public bool IsTrusted(TrustEnforcementStatus minTrustStatus)
         {
             return (this.m_trustStatus >= minTrustStatus);
         }        
-    }
-    
-    internal enum AddressSource
-    {
-        Unknown,
-        RcptTo,
-        MailFrom,
-        To,
-        CC,
-        BCC,
-        From
-    }
+    }    
 }

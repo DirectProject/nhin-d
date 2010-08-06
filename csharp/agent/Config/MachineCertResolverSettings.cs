@@ -23,7 +23,7 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Agent.Config
 {
-    [XmlType("SystemCertificateStore")]
+    [XmlType("MachineCertificateStore")]
     public class MachineCertResolverSettings : CertResolverSettings
     {
         public MachineCertResolverSettings()
@@ -32,16 +32,24 @@ namespace NHINDirect.Agent.Config
         }
         
         [XmlElement]
-        public string Name {get;set;}
+        public string Name 
+        {   
+            get;
+            set;
+        }
         
         [XmlElement]
-        public StoreLocation Location { get; set; }
+        public StoreLocation Location 
+        { 
+            get; 
+            set; 
+        }
 
         public override void Validate()
         {
             if (string.IsNullOrEmpty(this.Name))
             {
-                throw new ArgumentException("Name not specified");
+                throw new AgentConfigException(AgentConfigError.MissingMachineStoreName);
             }
         }   
                      

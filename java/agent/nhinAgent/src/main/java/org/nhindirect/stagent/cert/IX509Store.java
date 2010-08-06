@@ -34,7 +34,7 @@ import java.util.Collection;
 public interface IX509Store 
 {
 	/**
-	 * Gets a certificate where the cert's E or CN field match the subject name.
+	 * Gets a collection of certificates where the cert's E or CN field match the subject name.
 	 * @param subjectName The subject name to search for.
 	 * @return A collection of certificates matching the subject name. 
 	 */

@@ -28,12 +28,12 @@ namespace AgentTests
 
         static string[] OutgoingUntrusted = new string[]
         {
-            Path.Combine("Outgoing","untrusted_1.eml"),
+            Path.Combine("Outgoing","untrusted_1.eml")
         };
 
         static string[] OutgoingUntrustedFully = new string[]
         {
-            Path.Combine("Outgoing", "fully_untrusted_1.eml"),
+            Path.Combine("Outgoing", "fully_untrusted_1.eml")
         };
         
         AgentTester m_tester;

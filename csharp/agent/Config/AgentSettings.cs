@@ -30,8 +30,8 @@ namespace NHINDirect.Agent.Config
         {
         }
         
-        [XmlElement]
-        public string Domain
+        [XmlElement("Domain", typeof(string))]
+        public string[] Domains
         {
             get;
             set;
@@ -60,25 +60,26 @@ namespace NHINDirect.Agent.Config
         
         public virtual void Validate()
         {
-            if (string.IsNullOrEmpty(this.Domain))
+            if (!AgentDomains.Validate(this.Domains))
             {
-                throw new ArgumentException("Domain not specified");
+                throw new AgentConfigException(AgentConfigError.InvalidDomainList);
             }
+                        
             if (this.PrivateCerts == null)
             {
-                throw new ArgumentException("Private Certificates not specified");
+                throw new AgentConfigException(AgentConfigError.MissingPrivateCertSettings);
             }
-            this.PrivateCerts.Validate();
+            this.PrivateCerts.Validate(AgentConfigError.MissingPrivateCertResolver);
             
             if (this.PublicCerts == null)
             {
-                throw new ArgumentException("Public Certificates not specified");
+                throw new AgentConfigException(AgentConfigError.MissingPublicCertSettings);
             }
-            this.PublicCerts.Validate();
+            this.PublicCerts.Validate(AgentConfigError.MissingPublicCertResolver);
             
             if (this.Anchors == null)
             {
-                throw new ArgumentException("Trust Anchors not specified");
+                throw new AgentConfigException(AgentConfigError.MissingAnchorSettings);
             }
             this.Anchors.Validate();
         }
@@ -91,7 +92,7 @@ namespace NHINDirect.Agent.Config
             ICertificateResolver publicCerts = this.PublicCerts.Resolver.CreateResolver();
             ITrustAnchorResolver trustAnchors = this.Anchors.Resolver.CreateResolver();
 
-            return new NHINDAgent(this.Domain, privateCerts, publicCerts, trustAnchors);
+            return new NHINDAgent(this.Domains, privateCerts, publicCerts, trustAnchors);
         }
         
         public static AgentSettings Load(string configXml)
