@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpagenttests", "smtpagenttests.csproj", "{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}"
+EndProject
+Project("{8BC9CEB9-8B4A-11D0-8D11-00A0C91BC942}") = "nunit-console.exe", "..\..\external\nunit\bin\net-2.0\nunit-console.exe", "{DC947E25-88BE-423C-A00E-E623B9B6650C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8113D414-08DC-4648-950B-EFBE90DAF3CB}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\authors.txt = ..\..\authors.txt
+		..\..\license.txt = ..\..\license.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}.Release|Win32.ActiveCfg = Release|Any CPU
+		{DC947E25-88BE-423C-A00E-E623B9B6650C}.Debug|Any CPU.ActiveCfg = Debug
+		{DC947E25-88BE-423C-A00E-E623B9B6650C}.Debug|Mixed Platforms.ActiveCfg = Debug
+		{DC947E25-88BE-423C-A00E-E623B9B6650C}.Debug|Win32.ActiveCfg = Debug
+		{DC947E25-88BE-423C-A00E-E623B9B6650C}.Release|Any CPU.ActiveCfg = Debug
+		{DC947E25-88BE-423C-A00E-E623B9B6650C}.Release|Mixed Platforms.ActiveCfg = Debug
+		{DC947E25-88BE-423C-A00E-E623B9B6650C}.Release|Win32.ActiveCfg = Debug
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
