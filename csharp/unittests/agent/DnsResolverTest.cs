@@ -13,7 +13,8 @@ namespace AgentTests
     //
     // Commented out since this currently requires BIND running on localhost
     //
-    //[TestFixture]
+    [TestFixture]
+	[Category("Integration")]
     public class DnsResolverTest
     {
         public const string ServerIP = "127.0.0.1";

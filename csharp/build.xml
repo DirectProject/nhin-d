@@ -11,10 +11,12 @@
 	</ItemGroup>
 	
 	<!-- Requires external\Tigris\MSBuildTasks.msi be installed http://msbuildtasks.tigris.org/ -->
+	<!-- After installation the help file is at [Program Files]\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.chm -->
 	<Target Name="Test" DependsOnTargets="Build">
   		<NUnit Assemblies="@(TestAssembly)"
         	WorkingDirectory="."
          	ToolPath="external\nunit\bin\net-2.0"
+         	ExcludeCategory="Integration"
          	/>
 	</Target>
 </Project>
