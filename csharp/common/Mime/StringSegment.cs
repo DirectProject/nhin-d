@@ -27,8 +27,8 @@ namespace NHINDirect.Mime
         string m_source;
         int m_startIndex;
         int m_endIndex;
-        
-        public StringSegment(string source)
+
+    	public StringSegment(string source)
         {
             m_source = source;
             m_startIndex = 0;
@@ -46,15 +46,15 @@ namespace NHINDirect.Mime
         {
             if (source == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("source");
             }
             if (startIndex < 0 || startIndex > source.Length)
             {
-                throw new ArgumentException("startIndex");
+                throw new ArgumentException("startIndex less than 0 or greater than length of source", "startIndex");
             }
             if (endIndex < -1 || endIndex >= source.Length)
             {
-                throw new ArgumentException("endIndex");
+                throw new ArgumentException("endIndex less than -1 or greater than equal to length of source", "endIndex");
             }
 
             m_source = source;
@@ -82,7 +82,7 @@ namespace NHINDirect.Mime
         {
             get
             {
-                return (m_endIndex - m_startIndex + 1);
+                return string.IsNullOrEmpty(m_source)? 0 : m_endIndex - m_startIndex + 1;
             }
         }
         

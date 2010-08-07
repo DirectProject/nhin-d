@@ -6,17 +6,22 @@
 	<Target Name="Build">
 		<MSBuild Projects=".\build\build.sln" Properties="Configuration=Debug" />
 	</Target>
+
 	<ItemGroup>
-  		<TestAssembly Include="bin\debug\*UnitTests.dll" />
+  		<NUnitAssembly Include="bin\debug\*UnitTests.dll" Exclude="bin\debug\*XUnitTests.dll" />
+	</ItemGroup>
+	<ItemGroup>
+  		<XUnitAssembly Include="bin\debug\*XUnitTests.dll" />
 	</ItemGroup>
 	
 	<!-- Requires external\Tigris\MSBuildTasks.msi be installed http://msbuildtasks.tigris.org/ -->
 	<!-- After installation the help file is at [Program Files]\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.chm -->
 	<Target Name="Test" DependsOnTargets="Build">
-  		<NUnit Assemblies="@(TestAssembly)"
+  		<NUnit Assemblies="@(NUnitAssembly)"
         	WorkingDirectory="."
          	ToolPath="external\nunit\bin\net-2.0"
          	ExcludeCategory="Integration"
          	/>
+        <!-- TODO: work in xunit console here -->
 	</Target>
 </Project>
