@@ -438,8 +438,7 @@ namespace NHINDirect.Mime
             char ch;
             while ((ch = reader.Read()) != char.MinValue && MimeStandard.IsWhitespace(ch));
             
-            text.StartIndex = reader.Position;
-            return text;  // StringSegment is a struct, so this will return a copy
+            return new StringSegment(text.Source, reader.Position, text.EndIndex);
         }
         
         public static int IndexOfChar(StringSegment text, char ch)
