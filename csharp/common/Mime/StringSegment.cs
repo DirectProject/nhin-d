@@ -14,13 +14,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NHINDirect.Mime
 {
-    public struct StringSegment
+    public struct StringSegment : IEquatable<StringSegment>
     {
         public static readonly StringSegment Null = new StringSegment(null);
         
@@ -108,15 +105,6 @@ namespace NHINDirect.Mime
             {
                 return m_startIndex;
             }
-            internal set
-            {
-                if (value > m_endIndex)
-                {
-                    throw new ArgumentException();
-                }
-                
-                m_startIndex = value;
-            }
         }
 
         public int EndIndex
@@ -189,7 +177,7 @@ namespace NHINDirect.Mime
         public string Substring(int startAt, int length)
         {
             int endIndex = startAt + length;
-            if (endIndex < m_startIndex || endIndex > m_endIndex)
+            if (endIndex < m_startIndex || endIndex-1 > m_endIndex)
             {
                 throw new IndexOutOfRangeException();
             }
@@ -233,7 +221,7 @@ namespace NHINDirect.Mime
                 return -1;
             }
             
-            return m_source.IndexOf(other, m_startIndex, length);
+            return m_source.IndexOf(other, m_startIndex, length, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
