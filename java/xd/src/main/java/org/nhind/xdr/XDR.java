@@ -20,9 +20,13 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
  *
  * @author vlewis
  */
-@WebService(serviceName = "DocumentRepository_Service", portName = "DocumentRepository_Port_Soap12", endpointInterface = "ihe.iti.xds_b._2007.DocumentRepositoryPortType", targetNamespace = "urn:ihe:iti:xds-b:2007", wsdlLocation = "WEB-INF/wsdl/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl")
+@WebService(serviceName = "DocumentRepository_Service",
+portName = "DocumentRepository_Port_Soap12",
+        endpointInterface = "ihe.iti.xds_b._2007.DocumentRepositoryPortType",
+        targetNamespace = "urn:ihe:iti:xds-b:2007",
+        wsdlLocation = "WEB-INF/wsdl/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl")
 @BindingType(SOAPBinding.SOAP12HTTP_BINDING)
-@HandlerChain(file = "DocumentRepository_Service_handler.xml")
+@HandlerChain(file = "/DocumentRepository_Service_handler.xml")
 public class XDR extends DocumentRepositoryAbstract{
 
     public RegistryResponseType documentRepositoryProvideAndRegisterDocumentSetB(ProvideAndRegisterDocumentSetRequestType body) {

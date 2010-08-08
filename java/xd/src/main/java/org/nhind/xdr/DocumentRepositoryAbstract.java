@@ -26,7 +26,7 @@ import javax.mail.util.ByteArrayDataSource;
 
 import javax.xml.ws.soap.SOAPBinding;
 import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
@@ -57,7 +57,7 @@ public class DocumentRepositoryAbstract {
     protected String suffix = null;
     private String docObjectId = null;
     private String replyEmail = null;
-    protected EntityManager em;
+
     String thincoid = "2.16.840.1.113883.3.402";
 
     public RegistryResponseType provideAndRegisterDocumentSet(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
