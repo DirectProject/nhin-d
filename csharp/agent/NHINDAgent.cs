@@ -458,10 +458,6 @@ namespace NHINDirect.Agent
             }
 
             message.CategorizeRecipientsByDomain(m_managedDomains);
-            if (!message.HasDomainRecipients)
-            {
-                throw new AgentException(AgentError.NoTrustedRecipients);
-            }
             //
             // Map each address to its certificates/trust settings
             //

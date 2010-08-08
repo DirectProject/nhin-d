@@ -14,21 +14,18 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NHINDirect.Mime
 {
-    public struct StringSegment
+    public struct StringSegment : IEquatable<StringSegment>
     {
         public static readonly StringSegment Null = new StringSegment(null);
         
         string m_source;
         int m_startIndex;
         int m_endIndex;
-        
-        public StringSegment(string source)
+
+    	public StringSegment(string source)
         {
             m_source = source;
             m_startIndex = 0;
@@ -46,15 +43,15 @@ namespace NHINDirect.Mime
         {
             if (source == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("source");
             }
             if (startIndex < 0 || startIndex > source.Length)
             {
-                throw new ArgumentException("startIndex");
+                throw new ArgumentException("startIndex less than 0 or greater than length of source", "startIndex");
             }
             if (endIndex < -1 || endIndex >= source.Length)
             {
-                throw new ArgumentException("endIndex");
+                throw new ArgumentException("endIndex less than -1 or greater than equal to length of source", "endIndex");
             }
 
             m_source = source;
@@ -82,7 +79,7 @@ namespace NHINDirect.Mime
         {
             get
             {
-                return (m_endIndex - m_startIndex + 1);
+                return string.IsNullOrEmpty(m_source)? 0 : m_endIndex - m_startIndex + 1;
             }
         }
         
@@ -107,15 +104,6 @@ namespace NHINDirect.Mime
             get
             {
                 return m_startIndex;
-            }
-            internal set
-            {
-                if (value > m_endIndex)
-                {
-                    throw new ArgumentException();
-                }
-                
-                m_startIndex = value;
             }
         }
 
@@ -189,7 +177,7 @@ namespace NHINDirect.Mime
         public string Substring(int startAt, int length)
         {
             int endIndex = startAt + length;
-            if (endIndex < m_startIndex || endIndex > m_endIndex)
+            if (endIndex < m_startIndex || endIndex-1 > m_endIndex)
             {
                 throw new IndexOutOfRangeException();
             }
@@ -233,7 +221,7 @@ namespace NHINDirect.Mime
                 return -1;
             }
             
-            return m_source.IndexOf(other, m_startIndex, length);
+            return m_source.IndexOf(other, m_startIndex, length, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

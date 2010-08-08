@@ -38,6 +38,15 @@
       </Outgoing>
     </MachineResolver>
   </Anchors>
+  <MessageBounce>
+    <MailPickupFolder>C:\inetpub\mailroot\pickup</MailPickupFolder>
+    <EnableForOutgoing>true</EnableForOutgoing>
+    <EnableForIncoming>false</EnableForIncoming>
+    <OutgoingTemplate>
+      <Subject>Message Delivery Failure</Subject>
+      <Body>The following recipients are not trusted: </Body>
+    </OutgoingTemplate>
+  </MessageBounce>
   <RawMessage>
     <CopyFolder>C:\inetpub\mailroot\redmond\raw</CopyFolder>
   </RawMessage>

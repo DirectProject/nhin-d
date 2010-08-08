@@ -18,40 +18,63 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Mail;
+using NHINDirect.Agent;
 
-namespace NHINDirect.Mail
+namespace NHINDirect.SmtpAgent
 {
-    public static class Extensions
+    public class BounceMessageCreator
     {
-        public static bool DomainEquals(this MailAddress address, string domain)
-        {
-            if (string.IsNullOrEmpty(domain))
-            {
-                throw new ArgumentException();
-            }
-
-            return MailStandard.Equals(address.Host, domain);
-        }
+        BounceMessageTemplate m_template;
         
-        public static void Add(this MailAddressCollection addresses, IEnumerable<MailAddress> newAddresses)
+        public BounceMessageCreator(BounceMessageTemplate template)
         {
-            foreach (MailAddress address in newAddresses)
+            if (template == null)
             {
-                addresses.Add(address);
-            }
-        }
-        
-        public static void SendToFolder(this MailMessage message, string folderPath)
-        {
-            if (string.IsNullOrEmpty(folderPath))
-            {
-                throw new ArgumentException();
+                throw new ArgumentNullException();
             }
             
-            SmtpClient smtpClient = new SmtpClient();
-            smtpClient.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
-            smtpClient.PickupDirectoryLocation = folderPath;            
-            smtpClient.Send(message);
+            m_template = template;
         }
+
+        public MailMessage Create(MessageEnvelope envelope, MailAddress postmaster)
+        {
+            string body = this.BuildBounceMessageBody(envelope);
+            if (string.IsNullOrEmpty(body))
+            {
+                return null;
+            }
+            MailMessage bounceMessage = new MailMessage(
+                                                postmaster.ToString(),
+                                                envelope.Sender.ToString());
+            bounceMessage.Subject = m_template.Subject;
+            bounceMessage.BodyEncoding = Encoding.ASCII;
+            bounceMessage.Body = body;                                                
+            bounceMessage.DeliveryNotificationOptions = DeliveryNotificationOptions.None;
+            return bounceMessage;            
+        }
+
+        string BuildBounceMessageBody(MessageEnvelope envelope)
+        {
+            NHINDAddressCollection rejections;
+            if (envelope.HasRejectedRecipients)
+            {
+                rejections = envelope.RejectedRecipients;
+            }
+            else
+            {
+                rejections = envelope.Recipients;
+            }
+            
+            if (rejections == null || rejections.Count == 0)
+            {
+                return null;
+            }
+            
+            StringBuilder bounceMessage = new StringBuilder();
+            bounceMessage.Append(m_template.Body);            
+            bounceMessage.Append(rejections.ToString());
+
+            return bounceMessage.ToString();
+        }        
     }
 }

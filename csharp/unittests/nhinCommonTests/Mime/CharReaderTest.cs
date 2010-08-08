@@ -1,9 +1,9 @@
-﻿/* 
+/* 
  Copyright (c) 2010, NHIN Direct Project
  All rights reserved.
 
  Authors:
-    Umesh Madan     umeshma@microsoft.com
+    John Theisen     john.theisen@kryptiq.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -14,29 +14,33 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
-using NHINDirect.Certificates;
 
-namespace NHINDirect.SmtpAgent
+using NHINDirect.Mime;
+
+using Xunit;
+using Xunit.Extensions;
+
+namespace NHINDirect.Tests.Mime
 {
-    /// <summary>
-    /// COM object used by scripting components. Aids in Agent setup
-    /// </summary>
-    [ComVisible(true)]
-    [Guid("A1F86888-959C-49e1-B786-C17465668972")]
-    [ClassInterface(ClassInterfaceType.AutoDispatch)]
-    public class AgentSetup
-    {
-        public AgentSetup()
-        {
-        }
-        
-        public void EnsureStandardMachineStores()
-        {
-            SystemX509Store.CreateAll();
-        }
-    }
+	public class CharReaderTest
+	{
+		private const string TestContent = "the quick brown fox";
+
+		[Fact]
+		public void CharReaderFromSegment()
+		{
+			var segment = new StringSegment(TestContent);
+			var reader = new CharReader(segment);
+			Assert.False(reader.IsDone);
+			Assert.Equal(-1, reader.Position);
+		}
+
+		[Theory]
+		[InlineData(null)]
+		[InlineData("")]
+		public void CharReaderNullOrEmptySource(string source)
+		{
+			Assert.Throws<ArgumentException>(() => new CharReader(source));
+		}
+	}
 }

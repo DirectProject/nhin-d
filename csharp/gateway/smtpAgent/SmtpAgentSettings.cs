@@ -56,7 +56,23 @@ namespace NHINDirect.SmtpAgent
                 m_postmasters = value;
             }
         }
-                 
+        
+        [XmlElement("MessageBounce")]
+        public MessageBounceSettings MessageBounce
+        {
+            get;
+            set;
+        }
+        
+        [XmlIgnore]
+        public bool HasMessageBounceSettings
+        {
+            get
+            {
+                return (this.MessageBounce != null);
+            }
+        }
+        
         [XmlElement("RawMessage")]
         public RawMessageSettings RawMessage
         {
@@ -135,7 +151,14 @@ namespace NHINDirect.SmtpAgent
             {
                 throw new SmtpAgentException(SmtpAgentError.MissingLogSettings);
             }
-            this.LogSettings.Validate();            
+            
+            this.LogSettings.Validate();      
+                  
+            if (this.HasMessageBounceSettings)
+            {
+                this.MessageBounce.Validate();
+            }
+            
             this.RawMessage.Validate();            
             this.BadMessage.Validate();
             this.Incoming.Validate();

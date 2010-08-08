@@ -15,12 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mime;
-using System.Security.Cryptography.Pkcs;
+
 using NHINDirect.Mime;
-using NHINDirect.Cryptography;
 
 namespace NHINDirect.Cryptography
 {
@@ -37,8 +34,8 @@ namespace NHINDirect.Cryptography
                 throw new ArgumentNullException();
             }
             
-            this.Content = content;
-            this.Signature = signature;
+            Content = content;
+            Signature = signature;
         }
         
         public SignedEntity(ContentType contentType, IEnumerable<MimeEntity> parts)
@@ -58,11 +55,11 @@ namespace NHINDirect.Cryptography
                         throw new SignatureException(SignatureError.InvalidSignedEntity);
                     
                     case 0:
-                        this.Content = part;
+                        Content = part;
                         break;
                     
                     case 1:
-                        this.Signature = part;
+                        Signature = part;
                         break;
                 }                
                 ++count;
@@ -73,7 +70,7 @@ namespace NHINDirect.Cryptography
         {
             get
             {
-                return this.m_content;
+                return m_content;
             }
             set
             {
@@ -82,7 +79,7 @@ namespace NHINDirect.Cryptography
                     throw new ArgumentNullException();
                 }
                 
-                this.m_content = value;
+                m_content = value;
             }
         }
         
@@ -90,7 +87,7 @@ namespace NHINDirect.Cryptography
         {
             get
             {
-                return this.m_signature;
+                return m_signature;
             }
             set
             {
@@ -103,14 +100,14 @@ namespace NHINDirect.Cryptography
                 {
                     throw new SignatureException(SignatureError.NotDetachedSignature);
                 }
-                this.m_signature = value;
+                m_signature = value;
             }
         }
                 
         public override IEnumerator<MimeEntity> GetEnumerator()
         {
-            yield return this.m_content;
-            yield return this.m_signature;
+            yield return m_content;
+            yield return m_signature;
         }
         
         public static SignedEntity Load(MimeEntity source)
@@ -130,9 +127,9 @@ namespace NHINDirect.Cryptography
         
         static ContentType CreateContentType(DigestAlgorithm digestAlgorithm)
         {
-            ContentType contentType = new ContentType(SMIMEStandard.MultiPartType_Signed);
+            var contentType = new ContentType(SMIMEStandard.MultiPartTypeSigned);
             contentType.Parameters.Add(SMIMEStandard.ProtocolParameterKey, SMIMEStandard.SignatureProtocol);
-            contentType.Parameters.Add(SMIMEStandard.MICAlgorithmKey, SMIMEStandard.ToString(digestAlgorithm));
+			contentType.Parameters.Add(SMIMEStandard.MICAlgorithmKey, digestAlgorithm.AsString());
             return contentType;
         }
     }
