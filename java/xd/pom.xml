@@ -7,20 +7,40 @@
     <version>1.0-SNAPSHOT</version>
     <name>xd Java EE 6 Webapp</name>
     <url>http://maven.apache.org</url>
-    <repositories>
-        <repository>
-            <id>java.net2</id>
-            <name>Repository hosting the jee6 artifacts</name>
-            <url>http://download.java.net/maven/2</url>
-        </repository>
-    </repositories>
+
+<repositories>
+    <repository>
+        <id>java.net2</id>
+        <name>Repository hosting the jee6 artifacts</name>
+        <url>http://download.java.net/maven/2</url>
+    </repository>
+</repositories>
     <dependencies>
-        <dependency>
+       
+ <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>6.0</version>
             <scope>provided</scope>
         </dependency>
+       
+	<dependency>
+		<groupId>org.apache.cxf</groupId>
+		<artifactId>cxf-rt-frontend-jaxws</artifactId>
+		<version>2.2.9</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.cxf</groupId>
+		<artifactId>cxf-rt-transports-http</artifactId>
+		<version>2.2.9</version>
+	</dependency>
+        <!-- Jetty is needed if you're are not using the CXFServlet -->
+	<dependency>
+		<groupId>org.apache.cxf</groupId>
+		<artifactId>cxf-rt-transports-http-jetty</artifactId>
+		<version>2.2.9</version>
+	</dependency>
+
 
         <dependency>
             <groupId>junit</groupId>
@@ -68,6 +88,16 @@
                     </webResources>
                 </configuration>
             </plugin>
+         <plugin><!--use mvn tomcat:deploy or mvn tomcat:undeploy -->
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>tomcat-maven-plugin</artifactId>
+            <version>1.0-beta-1</version>
+            <configuration>
+               <server>myTomcat</server>
+               <path>C:\\apache-tomcat-6.0.29\\webapps</path>
+            </configuration>
+         </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
