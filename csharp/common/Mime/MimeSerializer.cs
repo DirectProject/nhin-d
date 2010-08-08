@@ -15,7 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 
@@ -24,12 +23,8 @@ namespace NHINDirect.Mime
     public abstract class MimeSerializer
     {
         public static MimeSerializer s_default = new DefaultSerializer();
-        
-        public MimeSerializer()
-        {
-        }
 
-        public static MimeSerializer Default
+    	public static MimeSerializer Default
         {
             get
             {
@@ -42,7 +37,7 @@ namespace NHINDirect.Mime
                     throw new ArgumentNullException();
                 }
 
-                System.Threading.Interlocked.Exchange<MimeSerializer>(ref s_default, value);
+                System.Threading.Interlocked.Exchange(ref s_default, value);
             }
         }
                 
@@ -50,29 +45,29 @@ namespace NHINDirect.Mime
         {
             using(Stream stream = File.OpenWrite(filePath))
             {
-                this.Serialize(entity, stream);
+                Serialize(entity, stream);
             }
         }
 
         public virtual void Serialize(MimeEntity entity, Stream stream)
         {
-            using (StreamWriter writer = new StreamWriter(stream, Encoding.ASCII))
+            using (var writer = new StreamWriter(stream, Encoding.ASCII))
             {
-                this.Serialize(entity, writer);
+                Serialize(entity, writer);
             }
         }
         
         public virtual string Serialize(MimeEntity entity)
         {
-            byte[] asciiBytes = this.SerializeToBytes(entity);
+            byte[] asciiBytes = SerializeToBytes(entity);
             return Encoding.ASCII.GetString(asciiBytes);
         }
 
         public virtual byte[] SerializeToBytes(MimeEntity entity)
         {
-            using (MemoryStream stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
-                this.Serialize(entity, stream);
+                Serialize(entity, stream);
                 return stream.ToArray();
             }
         }
@@ -82,23 +77,23 @@ namespace NHINDirect.Mime
 
         public virtual string Serialize(IEnumerable<MimeEntity> entities, string boundary)
         {
-            byte[] asciiBytes = this.SerializeToBytes(entities, boundary);
+            byte[] asciiBytes = SerializeToBytes(entities, boundary);
             return Encoding.ASCII.GetString(asciiBytes);
         }
 
         public virtual void Serialize(IEnumerable<MimeEntity> entities, string boundary, Stream stream)
         {
-            using (StreamWriter writer = new StreamWriter(stream, Encoding.ASCII))
+            using (var writer = new StreamWriter(stream, Encoding.ASCII))
             {
-                this.Serialize(entities, boundary, writer);
+                Serialize(entities, boundary, writer);
             }
         }
 
         public virtual byte[] SerializeToBytes(IEnumerable<MimeEntity> entities, string boundary)
         {
-            using (MemoryStream stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
-                this.Serialize(entities, boundary, stream);
+                Serialize(entities, boundary, stream);
                 return stream.ToArray();
             }
         }
@@ -108,12 +103,12 @@ namespace NHINDirect.Mime
         {
             if (stream == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("stream");
             }
 
-            using (StreamReader reader = new StreamReader(stream, Encoding.ASCII))
+            using (var reader = new StreamReader(stream, Encoding.ASCII))
             {
-                return this.Deserialize<T>(reader);
+                return Deserialize<T>(reader);
             }
         }
         
@@ -122,10 +117,10 @@ namespace NHINDirect.Mime
         {
             if (reader == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("reader");
             }
             
-            return this.Deserialize<T>(reader.ReadToEnd());
+            return Deserialize<T>(reader.ReadToEnd());
         }
 
         public virtual T Deserialize<T>(string messageText)
@@ -133,23 +128,27 @@ namespace NHINDirect.Mime
         {
             if (string.IsNullOrEmpty(messageText))
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("messageText");
             }
             
-            return this.Deserialize<T>(new StringSegment(messageText));
+            return Deserialize<T>(new StringSegment(messageText));
         }
         
         public virtual T Deserialize<T>(byte[] messageBytes)
             where T : MimeEntity, new()
         {
-            if (messageBytes == null || messageBytes.Length == 0)
+            if (messageBytes == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("messageBytes");
             }
+			if (messageBytes.Length == 0)
+			{
+				throw new ArgumentException("messageBytes contained was empty", "messageBytes");
+			}
             
-            using (MemoryStream stream = new MemoryStream(messageBytes))
+            using (var stream = new MemoryStream(messageBytes))
             {
-                return this.Deserialize<T>(stream);
+                return Deserialize<T>(stream);
             }            
         }
 

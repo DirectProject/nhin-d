@@ -54,6 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mime\CharReaderTest.cs" />
+    <Compile Include="Mime\DefaultSerializerTest.cs" />
+    <Compile Include="Mime\MimeSerializerTests.cs" />
     <Compile Include="Mime\StringSegmentTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -14,99 +14,103 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel;
 
 namespace NHINDirect.Mime
 {
-    public class EntityPart<T>
-    {
-        T m_type;
-        StringSegment m_sourceText; // Text from the source message string: VERBATIM. Necessary for signatures etc.
-        string m_text;
+	public class EntityPart<T>
+	{
+		StringSegment m_sourceText; // Text from the source message string: VERBATIM. Necessary for signatures etc.
+		string m_text;
 
-        public EntityPart(T type)
-        {
-            m_type = type;
+		protected event PropertyChangedEventHandler TextChanged;
+
+		private void InvokeTextChanged(PropertyChangedEventArgs e)
+		{
+			PropertyChangedEventHandler changed = TextChanged;
+			if (changed != null) changed(this, e);
+		}
+
+		public EntityPart(T type)
+		{
+            Type = type;
             m_sourceText = StringSegment.Null;
-        }
+		}
 
-        public EntityPart(T type, StringSegment segment)
-        {
-            m_type = type;
+		protected EntityPart(T type, string text)
+			: this(type)
+		{
+			Text = text;
+		}
+
+		protected EntityPart(T type, StringSegment segment)
+		{
+            Type = type;
             m_sourceText = segment;
-        }
+		}
 
-        public T Type
-        {
-            get
-            {
-                return m_type;
-            }
-            internal set
-            {
-                m_type = value;
-            }
-        }
+		public T Type { get; internal set; }
 
-        public StringSegment SourceText
+		public StringSegment SourceText
         {
             get
             {
                 return m_sourceText;
             }
-            protected set
-            {
-                m_sourceText = value;
-            }
         }
-
-        public virtual string Text
-        {
-            get
-            {
-                if (m_text == null)
-                {
+		public string Text
+		{
+			get
+			{
+				if (m_text == null)
+				{
                     m_text = m_sourceText.ToString();
-                }
+					InvokeTextChanged(new PropertyChangedEventArgs("Text"));
+				}
 
-                return m_text;
-            }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException();
-                }
+				return m_text;
+			}
+			private set
+			{
+				if (value == null)
+				{
+                    throw new ArgumentNullException("value");
+				}
                 m_sourceText = new StringSegment(value);
-            }
-        }
+				m_text = null; // let the lazy getter fire the property changed event
+			}
+		}
 
-        public override string ToString()
-        {
-            return this.Text;
-        }
-        
-        internal void AppendText(string text)
-        {
-            m_text = this.Text + text;
-        }
-        
-        internal virtual void AppendSourceText(StringSegment segment)
-        {
+		public override string ToString()
+		{
+            return Text;
+		}
+
+		internal void AppendText(string text)
+		{
+            m_text = Text + text;
+		}
+
+		internal virtual void AppendSourceText(StringSegment segment)
+		{
             m_sourceText.Union(segment);
-        }
-    }
+		}
+	}
 
-    public class MimePart : EntityPart<MimePartType>
+
+	public class MimePart : EntityPart<MimePartType>
     {
-        public MimePart(MimePartType type)
+		protected MimePart(MimePartType type)
             : base(type)
         {
         }
-        
-        public MimePart(MimePartType type, StringSegment segment)
+
+		protected MimePart(MimePartType type, string text)
+			: base(type, text)
+		{
+		}
+
+		internal MimePart(MimePartType type, StringSegment segment)
             : base(type, segment)
         {
         }

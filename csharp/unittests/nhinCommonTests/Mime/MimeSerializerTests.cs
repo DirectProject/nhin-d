@@ -1,9 +1,9 @@
-﻿/* 
+/* 
  Copyright (c) 2010, NHIN Direct Project
  All rights reserved.
 
  Authors:
-    Umesh Madan     umeshma@microsoft.com
+    John Theisen     john.theisen@kryptiq.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -15,40 +15,54 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-namespace NHINDirect.Mime
+using NHINDirect.Mime;
+
+using Xunit;
+
+namespace NHINDirect.Tests.Mime
 {
-    public class Body : MimePart
-    {
-        public Body()
-            : base(MimePartType.Body)
-        {
-        }
+	public class BodyFacts
+	{
+		[Fact]
+		public void DefaultConstructor()
+		{
+			var body = new Body();
+			Assert.Equal(MimePartType.Body, body.Type);
+			Assert.Equal(0, body.SourceText.Length);
+			Assert.Equal("", body.Text);
+		}
+	}
 
-        public Body(StringSegment body)
-            : base(MimePartType.Body, body)
-        {
-        }
-        
-        public Body(string body)
-            : base(MimePartType.Body, body)
-        {
-        }
+	public class EntityPartFacts
+	{
+		[Fact]
+		public void CallingEntityPartyWithNullTextThrowsArgumentNullException()
+		{
+			Assert.Throws<ArgumentNullException>(() => new Body((string) null));
+		}
 
-		// jjt - apparently unused
-		//public Body(byte[] body)
-		//    : base(MimePartType.Body, Convert.ToBase64String(body, Base64FormattingOptions.InsertLineBreaks))
-		//{
-		//}
-        
-        internal Body(EntityPart<MimePartType> body)
-            : base(MimePartType.Body, body.SourceText)
-        {
-        }
-        
-		// jjt - apparently unused
-		//public Body Clone()
-		//{
-		//    return new Body(SourceText);
-		//}
-    }
+		[Fact]
+		public void InsureToStringReturnsTheText()
+		{
+			const string text = "the quick brown fox";
+			Assert.Equal(text, new Body(text).ToString());
+		}
+	}
+
+	public class MimeSerializerTests
+	{
+		[Fact]
+		public void SetDefaultToNullThrowsArgumentNullException()
+		{
+			Assert.Throws<ArgumentNullException>(() => MimeSerializer.Default = null);
+		}
+
+		[Fact]
+		public void SetDefault()
+		{
+			var serializer = new DefaultSerializer();
+			MimeSerializer.Default = serializer;
+			Assert.Same(serializer, MimeSerializer.Default);
+		}
+	}
 }

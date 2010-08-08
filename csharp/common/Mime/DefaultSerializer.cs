@@ -15,30 +15,26 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
+
 using NHINDirect.Mail;
 
 namespace NHINDirect.Mime
 {
     public class DefaultSerializer : MimeSerializer
     {
-        public DefaultSerializer()
+    	public override string Serialize(MimeEntity entity)
         {
-        }
-
-        public override string Serialize(MimeEntity entity)
-        {
-            Message message = entity as Message;
+            var message = entity as Message;
             if (message != null)
             {
                 //
                 // Already ASCII encoded. We can just serialize to text...
                 //
-                using(StringWriter writer = new StringWriter())
+                using(var writer = new StringWriter())
                 {
-                    this.Serialize(entity, writer);
+                    Serialize(entity, writer);
                     return writer.ToString();
                 }
                 
@@ -51,18 +47,23 @@ namespace NHINDirect.Mime
         {
             if (entity == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("entity");
             }
 
-            MimeWriter entityWriter = new MimeWriter(writer);
-            this.Serialize(entity, entityWriter);
+            var entityWriter = new MimeWriter(writer);
+            Serialize(entity, entityWriter);
         }
 
         public void Serialize(MimeEntity entity, MimeWriter entityWriter)
         {
-            if (entity == null || entityWriter == null)
+            if (entity == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("entity");
+            }
+
+            if (entityWriter == null)
+            {
+                throw new ArgumentNullException("entityWriter");
             }
 
             if (entity.HasHeaders)
@@ -70,6 +71,7 @@ namespace NHINDirect.Mime
                 entityWriter.Write(entity.Headers);
                 entityWriter.WriteCRLF();
             }
+
             if (entity.HasBody)
             {
                 entityWriter.Write(entity.Body);
@@ -84,14 +86,14 @@ namespace NHINDirect.Mime
         {
             if (entities == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("entities");
             }
 
-            MimeWriter entityWriter = new MimeWriter(writer);
+            var entityWriter = new MimeWriter(writer);
             foreach (MimeEntity entity in entities)
             {
                 entityWriter.WriteMimeBoundary(boundary, false);
-                this.Serialize(entity, entityWriter);
+                Serialize(entity, entityWriter);
             }
             entityWriter.WriteMimeBoundary(boundary, true);
         }
@@ -120,14 +122,14 @@ namespace NHINDirect.Mime
         {
             if (string.IsNullOrEmpty(headerText.Key))
             {
-                throw new ArgumentException("name");
+                throw new ArgumentException("headerText.Key was null or empty");
             }
             if (string.IsNullOrEmpty(headerText.Value))
             {
-                throw new ArgumentException("value");
-            }
+				throw new ArgumentException("headerText.Value was null or empty");
+			}
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             builder.Append(headerText.Key);
             builder.Append(MimeStandard.NameValueSeparator);
             builder.Append(headerText.Value);

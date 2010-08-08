@@ -14,40 +14,6 @@ namespace AgentTests
 {
     public class BasicAgentTests
     {
-        private static IEnumerable<string> EndToEndFiles
-        {
-			get
-			{
-				yield return "simple.eml";
-				yield return "multipart_1to.eml";
-				yield return "multipart_2to.eml";
-			}
-        }
-        
-        public static IEnumerable<object[]> IncomingFiles
-        {
-			get
-			{
-				yield return new[] {"envelopeSignature.eml"};
-			}
-        }
-
-        public static IEnumerable<object[]> OutgoingUntrustedFiles
-        {
-			get
-			{
-				yield return new[] {Path.Combine("Outgoing", "untrusted_1.eml")};
-			}
-        }
-
-        public static IEnumerable<object[]> OutgoingUntrustedFullyFiles
-        {
-			get
-			{
-				yield return new[] {Path.Combine("Outgoing", "fully_untrusted_1.eml")};
-			}
-        }
-
     	readonly AgentTester m_tester;
 
 		public BasicAgentTests()
@@ -174,6 +140,40 @@ namespace AgentTests
                 VerifyTrusted(address, minStatus);
             }
         }
+
+		private static IEnumerable<string> EndToEndFiles
+		{
+			get
+			{
+				yield return "simple.eml";
+				yield return "multipart_1to.eml";
+				yield return "multipart_2to.eml";
+			}
+		}
+
+		public static IEnumerable<object[]> IncomingFiles
+		{
+			get
+			{
+				yield return new[] { "envelopeSignature.eml" };
+			}
+		}
+
+		public static IEnumerable<object[]> OutgoingUntrustedFiles
+		{
+			get
+			{
+				yield return new[] { Path.Combine("Outgoing", "untrusted_1.eml") };
+			}
+		}
+
+		public static IEnumerable<object[]> OutgoingUntrustedFullyFiles
+		{
+			get
+			{
+				yield return new[] { Path.Combine("Outgoing", "fully_untrusted_1.eml") };
+			}
+		}
     }
 
     /*
