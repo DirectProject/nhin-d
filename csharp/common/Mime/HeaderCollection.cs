@@ -38,7 +38,7 @@ namespace NHINDirect.Mime
                     //
                     // Not found. New Header
                     //
-                    this.VerifyName(name, value);
+                    VerifyName(name, value);
                     this.Add(value);
                     return;
                 }
@@ -52,7 +52,7 @@ namespace NHINDirect.Mime
                 }
                 else
                 {
-                    this.VerifyName(name, value);
+                    VerifyName(name, value);
                     this[currentIndex] = value;
                 }
             }          
@@ -248,8 +248,8 @@ namespace NHINDirect.Mime
         {
             return new HeaderCollection(this.NonMimeHeaders);
         }
-        
-        void VerifyName(string name, Header header)
+
+    	static void VerifyName(string name, Header header)
         {
             if (!MimeStandard.Equals(name, header.Name))
             {

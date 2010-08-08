@@ -14,9 +14,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mime;
 
 namespace NHINDirect.Mime
@@ -51,12 +48,15 @@ namespace NHINDirect.Mime
         public const string TransferEncoding7Bit = "7bit";
         public const string TransferEncodingQuoted = "quoted-printable";
         //
-        // Content-Type
+        // Mime/Content-Type
         //
-        public const string MediaType_TextPlain = "text/plain";
-        public const string MediaType_Default = MediaType_TextPlain;
-        public const string MediaType_Multipart = "multipart";
-        public const string MediaType_MultipartMixed = "multipart/mixed;";
+		public class MediaType
+		{
+			public const string TextPlain = "text/plain";
+			public const string Default = TextPlain;
+			public const string Multipart = "multipart";
+			public const string MultipartMixed = "multipart/mixed;";
+		}
         //
         // Used to implement Parsing Operations
         //
@@ -92,35 +92,17 @@ namespace NHINDirect.Mime
         
         public static bool Equals(string x, string y)
         {
-            return string.Equals(x, y, MimeStandard.Comparison);
+            return string.Equals(x, y, Comparison);
         }
 
         public static bool StartsWith(string x, string y)
         {
-            return x.StartsWith(y, MimeStandard.Comparison);
+            return x.StartsWith(y, Comparison);
         }
 
         public static bool Contains(string x, string y)
         {
-            return (x.IndexOf(y, MimeStandard.Comparison) >= 0);
-        }
-
-        public static string ToString(TransferEncoding encoding)
-        {
-            switch (encoding)
-            {
-                default:
-                    throw new NotSupportedException();
-
-                case TransferEncoding.Base64:
-                    return MimeStandard.TransferEncodingBase64;
-
-                case TransferEncoding.SevenBit:
-                    return MimeStandard.TransferEncoding7Bit;
-
-                case TransferEncoding.QuotedPrintable:
-                    return MimeStandard.TransferEncodingQuoted;
-            }
+            return (x.IndexOf(y, Comparison) >= 0);
         }
     }
 }

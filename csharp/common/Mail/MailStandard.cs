@@ -13,11 +13,6 @@ Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Mime;
 using NHINDirect.Mime;
 
 namespace NHINDirect.Mail
@@ -28,8 +23,8 @@ namespace NHINDirect.Mail
         // Common RFC822/5322 Headers
         //
         public const string ToHeader = "to";
-        public const string CCHeader = "cc";
-        public const string BCCHeader = "bcc";
+        public const string CcHeader = "cc";
+        public const string BccHeader = "bcc";
         public const string FromHeader = "from";
         public const string SenderHeader = "sender";
         public const string MessageIDHeader = "message-id";
@@ -39,24 +34,27 @@ namespace NHINDirect.Mail
         public const string InReplyToHeader = "in-reply-to";
         public const string ReferencesHeader = "references";
         
-        public static readonly string[] DestinationHeaders = new string[]
+        public static readonly string[] DestinationHeaders = new[]
         {
-            MailStandard.ToHeader, 
-            MailStandard.FromHeader,
-            MailStandard.CCHeader,
-            MailStandard.BCCHeader
+            ToHeader, 
+            FromHeader,
+            CcHeader,
+            BccHeader
         };
 
-        public static readonly string[] OriginHeaders = new string[]
+        public static readonly string[] OriginHeaders = new[]
         {
-            MailStandard.FromHeader, 
-            MailStandard.SenderHeader,
+            FromHeader, 
+            SenderHeader,
         };
 
         public const char MailAddressSeparator = ',';
         //
         // MIME Types
         //
-        public const string MediaType_WrappedMessage = "message/rfc822";
+		public new class MediaType : MimeStandard.MediaType
+		{
+			public const string WrappedMessage = "message/rfc822";
+		}
     }
 }

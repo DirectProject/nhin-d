@@ -14,9 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using NHINDirect.Mime;
 
 namespace NHINDirect.Mail
@@ -30,13 +28,13 @@ namespace NHINDirect.Mail
                 throw new ArgumentNullException();
             }
             
-            Message wrappedMessage = new Message();
+            var wrappedMessage = new Message();
             if (message.HasHeaders)
             {
                 wrappedMessage.Headers.CopyFrom(message.Headers, headersToCopy);
             }            
             wrappedMessage.Body = new Body(MimeSerializer.Default.Serialize(message));
-            wrappedMessage.ContentType = MailStandard.MediaType_WrappedMessage;
+            wrappedMessage.ContentType = MailStandard.MediaType.WrappedMessage;
             
             return wrappedMessage;
         }
@@ -48,10 +46,10 @@ namespace NHINDirect.Mail
                 throw new ArgumentException();
             }
             
-            Message wrappedMessage = new Message();
+            var wrappedMessage = new Message();
             wrappedMessage.Headers.CopyFrom(MimeSerializer.Default.DeserializeHeaders(message), headersToCopy);
             wrappedMessage.Body = new Body(message);
-            wrappedMessage.ContentType = MailStandard.MediaType_WrappedMessage;
+            wrappedMessage.ContentType = MailStandard.MediaType.WrappedMessage;
 
             return wrappedMessage;
         }
@@ -64,7 +62,7 @@ namespace NHINDirect.Mail
             }
             
             string contentType = message.ContentType;
-            return (!string.IsNullOrEmpty(contentType) && MailStandard.Equals(contentType, MailStandard.MediaType_WrappedMessage));            
+            return (!string.IsNullOrEmpty(contentType) && MimeStandard.Equals(contentType, MailStandard.MediaType.WrappedMessage));            
         }
         
         public static Message ExtractInner(Message message)

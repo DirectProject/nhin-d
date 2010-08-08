@@ -103,7 +103,7 @@ namespace NHINDirect.Mime
                     string contentType = this.ContentType;
                     if (string.IsNullOrEmpty(contentType))
                     {
-                        contentType = MimeStandard.MediaType_Default;
+                        contentType = MimeStandard.MediaType.Default;
                     }
                     
                     m_contentType = new ContentType(contentType);
@@ -122,7 +122,7 @@ namespace NHINDirect.Mime
                 {
                     return false;
                 }
-                return MimeStandard.Contains(contentType, MimeStandard.MediaType_Multipart);
+                return MimeStandard.Contains(contentType, MimeStandard.MediaType.Multipart);
             }
         }
 
@@ -245,7 +245,7 @@ namespace NHINDirect.Mime
 
             if (string.IsNullOrEmpty(contentType))
             {
-                contentType = MimeStandard.MediaType_MultipartMixed;
+                contentType = MimeStandard.MediaType.MultipartMixed;
             }
             this.ContentType = contentType;
             this.Body = new Body(serializer.Serialize(entities, this.ParsedContentType.Boundary));
