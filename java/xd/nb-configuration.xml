@@ -13,6 +13,5 @@ You can copy and paste the single properties, into the pom.xml file and the IDE 
 That way multiple projects can share the same settings (useful for formatting rules for example).
 Any value defined here will override the pom.xml file value but is only applicable to the current project.
 -->
-        <org-netbeans-modules-maven-jaxws._5f_S_5f_XDS_2e_b_5f_DocumentRepositoryWSDLSynchMTOM>file:/C:/NBProjects/WebServices/PIXXDS/wsdl/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl</org-netbeans-modules-maven-jaxws._5f_S_5f_XDS_2e_b_5f_DocumentRepositoryWSDLSynchMTOM>
     </properties>
 </project-shared-configuration>

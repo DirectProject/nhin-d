@@ -71,11 +71,11 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
             first = false;
             Properties properties = new Properties();
             try {
-                loadProperties("system.properties", properties);
-                Properties sysprop = System.getProperties();
-                sysprop.putAll(properties);
-                Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,properties.toString());
-            } catch (IOException exception) {
+               // loadProperties("system.properties", properties);
+               // Properties sysprop = System.getProperties();
+               // sysprop.putAll(properties);
+              //  Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,properties.toString());
+            } catch (Exception exception) {
                 Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"Problem with properties file");
             }
         }
