@@ -15,13 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Net.Mail;
-using System.Net.Mime;
-using System.IO;
-using NHINDirect.Collections;
+
 using NHINDirect.Mime;
 
 namespace NHINDirect.Mail
@@ -54,27 +48,27 @@ namespace NHINDirect.Mail
             }
         }
 
-        public Header CC
+        public Header Cc
         {
             get
             {
-                return this.Headers[MailStandard.CCHeader];
+                return this.Headers[MailStandard.CcHeader];
             }
             set
             {
-                this.Headers[MailStandard.CCHeader] = value;
+                this.Headers[MailStandard.CcHeader] = value;
             }
         }
 
-        public Header BCC
+        public Header Bcc
         {
             get
             {
-                return this.Headers[MailStandard.BCCHeader];
+                return this.Headers[MailStandard.BccHeader];
             }
             set
             {
-                this.Headers[MailStandard.BCCHeader] = value;
+                this.Headers[MailStandard.BccHeader] = value;
             }
         }
                 

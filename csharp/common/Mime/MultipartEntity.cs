@@ -26,7 +26,7 @@ namespace NHINDirect.Mime
         ContentType m_contentType;
 
         public MultipartEntity()
-            : this(MimeStandard.MediaType_MultipartMixed)
+            : this(MimeStandard.MediaType.MultipartMixed)
         {
         }
         

@@ -36,7 +36,7 @@ namespace NHINDirect.Mime
         }
 
         public CharReader(string source)
-			: this(source, 0, source.Length)
+			: this(source, 0, (source ?? "").Length)
         {
         }
 
@@ -73,15 +73,12 @@ namespace NHINDirect.Mime
         	return IsDone ? EOF : m_source[m_position++];
         }
 
-		public bool ReadTo(char chTo)
-		{
-			return ReadTo(chTo, false);
-		}
 
-		public bool ReadTo(char chTo, bool ignoreEscape)
+		public bool ReadTo(char chTo)
         {
             char ch;
 			bool escaped = false;
+			bool ignoreEscape = (chTo == MimeStandard.NameValueSeparator);
             while ((ch = Read()) != EOF)
             {
                 if (!escaped && ch == chTo)
@@ -89,7 +86,7 @@ namespace NHINDirect.Mime
                     return true;
                 }
 
-            	escaped = (ch == MimeStandard.Escape) && !ignoreEscape;
+            	escaped = ignoreEscape && (ch == MimeStandard.Escape);
             }
             
             return false;

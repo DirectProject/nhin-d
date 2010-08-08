@@ -14,10 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mime;
+
 using NHINDirect.Mail;
 using NHINDirect.Mime;
 
@@ -28,7 +26,7 @@ namespace NHINDirect.Cryptography
         //
         // MIME Types
         //
-        public const string MultiPartType_Signed = "multipart/signed";
+        public const string MultiPartTypeSigned = "multipart/signed";
         public const string ProtocolParameterKey = "protocol";
         public const string SignatureProtocol = "application/pkcs7-signature";
         public const string MICAlgorithmKey = "micalg"; // Message Integrity Check Protocol        
@@ -58,8 +56,8 @@ namespace NHINDirect.Cryptography
                 throw new ArgumentNullException();
             }
 
-            return (   contentType.IsMediaType(SMIMEStandard.CmsEnvelopeMediaType) 
-                    || contentType.IsMediaType(SMIMEStandard.CmsEnvelopeMediaTypeAlt));
+            return (   contentType.IsMediaType(CmsEnvelopeMediaType) 
+                    || contentType.IsMediaType(CmsEnvelopeMediaTypeAlt));
         }
         
         public static bool IsContentEncrypted(ContentType contentType)
@@ -69,8 +67,8 @@ namespace NHINDirect.Cryptography
                 throw new ArgumentNullException();
             }
             
-            return (    SMIMEStandard.IsContentCms(contentType)
-                    &&  contentType.IsParameter(SMIMEStandard.SmimeTypeParameterKey, SMIMEStandard.EnvelopedDataSmimeType));
+            return (IsContentCms(contentType)
+                    &&  contentType.IsParameter(SmimeTypeParameterKey, EnvelopedDataSmimeType));
         }
         
         public static bool IsContentEnvelopedSignature(ContentType contentType)
@@ -80,8 +78,8 @@ namespace NHINDirect.Cryptography
                 throw new ArgumentNullException();
             }
 
-            return (    SMIMEStandard.IsContentCms(contentType)
-                    &&  contentType.IsParameter(SMIMEStandard.SmimeTypeParameterKey, SMIMEStandard.SignedDataSmimeType));
+            return (IsContentCms(contentType)
+                    &&  contentType.IsParameter(SmimeTypeParameterKey, SignedDataSmimeType));
         }
         
         public static bool IsContentMultipartSignature(ContentType contentType)
@@ -91,53 +89,33 @@ namespace NHINDirect.Cryptography
                 throw new ArgumentNullException();
             }
 
-            return (contentType.IsMediaType(SMIMEStandard.MultiPartType_Signed));
+            return (contentType.IsMediaType(MultiPartTypeSigned));
         }
         
         public static bool IsContentDetachedSignature(ContentType contentType)
         {
-            return (    contentType.IsMediaType(SMIMEStandard.SignatureContentMediaType) 
-                    ||  contentType.IsMediaType(SMIMEStandard.SignatureContentMediaTypeAlternative));
+            return (    contentType.IsMediaType(SignatureContentMediaType) 
+                    ||  contentType.IsMediaType(SignatureContentMediaTypeAlternative));
         }
         
         public static bool IsEncrypted(MimeEntity entity)
         {
-            return (SMIMEStandard.IsContentEncrypted(entity.ParsedContentType) && SMIMEStandard.VerifyEncoding(entity));
+            return (IsContentEncrypted(entity.ParsedContentType) && VerifyEncoding(entity));
         }
                         
         public static bool IsSignedEnvelope(MimeEntity entity)
         {
-            return (SMIMEStandard.IsContentEnvelopedSignature(entity.ParsedContentType) && SMIMEStandard.VerifyEncoding(entity));
+            return (IsContentEnvelopedSignature(entity.ParsedContentType) && VerifyEncoding(entity));
         }
 
         public static bool IsDetachedSignature(MimeEntity entity)
         {
-            return (SMIMEStandard.IsContentDetachedSignature(entity.ParsedContentType) && SMIMEStandard.VerifyEncoding(entity));
+            return (IsContentDetachedSignature(entity.ParsedContentType) && VerifyEncoding(entity));
         }
                 
         static bool VerifyEncoding(MimeEntity entity)
         {
-            return entity.HasHeader(MimeStandard.ContentTransferEncodingHeader, MimeStandard.TransferEncodingBase64);
-        }    
-        public static string ToString(DigestAlgorithm algorithm)
-        {
-            switch(algorithm)
-            {
-                default:
-                    throw new NotSupportedException();                
-                
-                case DigestAlgorithm.SHA1:
-                    return "sha1";
-
-                case DigestAlgorithm.SHA256:
-                    return "sha256";
-
-                case DigestAlgorithm.SHA384:
-                    return "sha384";
-
-                case DigestAlgorithm.SHA512:
-                    return "sha512";
-            }
+            return entity.HasHeader(ContentTransferEncodingHeader, TransferEncodingBase64);
         }
     }
 }

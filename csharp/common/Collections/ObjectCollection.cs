@@ -54,7 +54,7 @@ namespace NHINDirect.Collections
             
             foreach(T item in items)
             {
-                this.Add(item);
+                Add(item);
             }
         }
         

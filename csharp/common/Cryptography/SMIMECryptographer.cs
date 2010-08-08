@@ -14,14 +14,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mime;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
-using NHINDirect.Certificates;
+
 using NHINDirect.Mail;
 using NHINDirect.Mime;
 
@@ -46,19 +43,19 @@ namespace NHINDirect.Cryptography
 
         public SMIMECryptographer(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
         {
-            this.m_encryptionAlgorithm = encryptionAlgorithm;
-            this.m_digestAlgorithm = digestAlgorithm;
+            m_encryptionAlgorithm = encryptionAlgorithm;
+            m_digestAlgorithm = digestAlgorithm;
         }
 
         public EncryptionAlgorithm EncryptionAlgorithm
         {
             get
             {
-                return this.m_encryptionAlgorithm;
+                return m_encryptionAlgorithm;
             }
             set
             {
-                this.m_encryptionAlgorithm = value;
+                m_encryptionAlgorithm = value;
             }
         }
 
@@ -66,11 +63,11 @@ namespace NHINDirect.Cryptography
         {
             get
             {
-                return this.m_digestAlgorithm;
+                return m_digestAlgorithm;
             }
             set
             {
-                this.m_digestAlgorithm = value;
+                m_digestAlgorithm = value;
             }
         }
 
@@ -81,11 +78,11 @@ namespace NHINDirect.Cryptography
         {
             get
             {
-                return this.m_includeEpilogue;
+                return m_includeEpilogue;
             }
             set
             {
-                this.m_includeEpilogue = value;
+                m_includeEpilogue = value;
             }
         }
 
@@ -108,17 +105,17 @@ namespace NHINDirect.Cryptography
         //-----------------------------------------------------
         public MimeEntity Encrypt(MultipartEntity entity, X509Certificate2 encryptingCertificate)
         {
-            return this.Encrypt(entity.ToEntity(), encryptingCertificate);
+            return Encrypt(entity.ToEntity(), encryptingCertificate);
         }
 
         public MimeEntity Encrypt(MultipartEntity entity, X509Certificate2Collection encryptingCertificates)
         {
-            return this.Encrypt(entity.ToEntity(), encryptingCertificates);
+            return Encrypt(entity.ToEntity(), encryptingCertificates);
         }
 
         public MimeEntity Encrypt(MimeEntity entity, X509Certificate2 encryptingCertificate)
         {
-            return this.Encrypt(entity, new X509Certificate2Collection(encryptingCertificate));
+            return Encrypt(entity, new X509Certificate2Collection(encryptingCertificate));
         }
 
         public MimeEntity Encrypt(MimeEntity entity, X509Certificate2Collection encryptingCertificates)
@@ -130,27 +127,27 @@ namespace NHINDirect.Cryptography
 
             byte[] messageBytes = DefaultSerializer.Default.SerializeToBytes(entity);     // Serialize message out as ASCII encoded...
 
-            byte[] encryptedBytes = this.Encrypt(messageBytes, encryptingCertificates);
+            byte[] encryptedBytes = Encrypt(messageBytes, encryptingCertificates);
 
-            messageBytes = null;
+        	var encryptedEntity = new MimeEntity
+        	                      	{
+        	                      		ContentType = SMIMEStandard.EncryptedEnvelopeContentTypeHeaderValue,
+        	                      		ContentTransferEncoding = TransferEncoding.Base64.AsString(),
+        	                      		Body = new Body(Convert.ToBase64String(encryptedBytes,
+        	                      		                                       Base64FormattingOptions.InsertLineBreaks))
+        	                      	};
 
-            MimeEntity encryptedEntity = new MimeEntity();
-            encryptedEntity.ContentType = SMIMEStandard.EncryptedEnvelopeContentTypeHeaderValue;
-            encryptedEntity.ContentTransferEncoding = SMIMEStandard.ToString(TransferEncoding.Base64);
-
-            encryptedEntity.Body = new Body(Convert.ToBase64String(encryptedBytes, Base64FormattingOptions.InsertLineBreaks));
-
-            return encryptedEntity;
+        	return encryptedEntity;
         }
 
         public byte[] Encrypt(byte[] content, X509Certificate2 encryptingCertificate)
         {
-            return this.Encrypt(content, new X509Certificate2Collection(encryptingCertificate));
+            return Encrypt(content, new X509Certificate2Collection(encryptingCertificate));
         }
 
         public byte[] Encrypt(byte[] content, X509Certificate2Collection encryptingCertificates)
         {
-            EnvelopedCms envelope = this.CreateEncryptedEnvelope(content, encryptingCertificates);
+            EnvelopedCms envelope = CreateEncryptedEnvelope(content, encryptingCertificates);
             return envelope.Encode();
         }
 
@@ -165,8 +162,8 @@ namespace NHINDirect.Cryptography
                 throw new EncryptionException(EncryptionError.NoCertificates);
             }
 
-            CmsRecipientCollection recipients = new CmsRecipientCollection(SubjectIdentifierType.IssuerAndSerialNumber, encryptingCertificates);
-            EnvelopedCms dataEnvelope = new EnvelopedCms(CreateDataContainer(content), this.ToAlgorithmID(this.m_encryptionAlgorithm));
+            var recipients = new CmsRecipientCollection(SubjectIdentifierType.IssuerAndSerialNumber, encryptingCertificates);
+            var dataEnvelope = new EnvelopedCms(CreateDataContainer(content), ToAlgorithmID(m_encryptionAlgorithm));
             dataEnvelope.Encrypt(recipients);
 
             return dataEnvelope;
@@ -182,7 +179,7 @@ namespace NHINDirect.Cryptography
         //
         public MimeEntity Decrypt(Message message, X509Certificate2 decryptingCertificate)
         {
-            return this.Decrypt(message.ExtractMimeEntity(), decryptingCertificate);
+            return Decrypt(message.ExtractMimeEntity(), decryptingCertificate);
         }
 
         public MimeEntity Decrypt(MimeEntity encryptedEntity, X509Certificate2 decryptingCertificate)
@@ -206,9 +203,9 @@ namespace NHINDirect.Cryptography
             }
 
             byte[] encryptedBytes = Convert.FromBase64String(encryptedEntity.Body.Text);
-            byte[] decryptedBytes = this.Decrypt(encryptedBytes, decryptingCertificate);
-            encryptedBytes = null;
-            //
+            byte[] decryptedBytes = Decrypt(encryptedBytes, decryptingCertificate);
+
+			//
             // And turn the encrypted bytes back into an entity
             //
             return DefaultSerializer.Default.Deserialize<MimeEntity>(decryptedBytes);
@@ -216,7 +213,7 @@ namespace NHINDirect.Cryptography
 
         public byte[] Decrypt(byte[] encryptedContent, X509Certificate2 decryptingCertificate)
         {
-            return this.Decrypt(encryptedContent, new X509Certificate2Collection(decryptingCertificate));
+            return Decrypt(encryptedContent, new X509Certificate2Collection(decryptingCertificate));
         }
 
         public byte[] Decrypt(byte[] encryptedContent, X509Certificate2Collection decryptingCertificates)
@@ -226,12 +223,12 @@ namespace NHINDirect.Cryptography
                 throw new EncryptionException(EncryptionError.NoCertificates);
             }
 
-            EnvelopedCms dataEnvelope = this.DeserializeEncryptionEnvelope(encryptedContent);
+            EnvelopedCms dataEnvelope = DeserializeEncryptionEnvelope(encryptedContent);
 
             dataEnvelope.Decrypt(decryptingCertificates);
 
             ContentInfo contentInfo = dataEnvelope.ContentInfo;
-            if (!this.IsDataContainer(contentInfo))
+            if (!IsDataContainer(contentInfo))
             {
                 throw new EncryptionException(EncryptionError.ContentNotDataContainer);
             }
@@ -246,19 +243,19 @@ namespace NHINDirect.Cryptography
                 throw new EncryptionException(EncryptionError.NullContent);
             }
 
-            EnvelopedCms dataEnvelope = new EnvelopedCms();
+            var dataEnvelope = new EnvelopedCms();
             dataEnvelope.Decode(encryptedContent);
             return dataEnvelope;
         }
 
         internal ContentInfo CreateDataContainer(byte[] content)
         {
-            return new ContentInfo(SMIMECryptographer.Oid_ContentType_Data, content);
+            return new ContentInfo(CryptoOids.ContentType_Data, content);
         }
 
         internal bool IsDataContainer(ContentInfo contentInfo)
         {
-            return (contentInfo.ContentType.Value == SMIMECryptographer.Oid_ContentType_Data.Value);
+			return (contentInfo.ContentType.Value == CryptoOids.ContentType_Data.Value);
         }
 
         //-----------------------------------------------------
@@ -272,17 +269,17 @@ namespace NHINDirect.Cryptography
         //
         public SignedEntity Sign(Message message, X509Certificate2 signingCertificate)
         {
-            return this.Sign(message.ExtractEntityForSignature(this.m_includeEpilogue), signingCertificate);
+            return Sign(message.ExtractEntityForSignature(m_includeEpilogue), signingCertificate);
         }
 
         public SignedEntity Sign(Message message, X509Certificate2Collection signingCertificates)
         {
-            return this.Sign(message.ExtractEntityForSignature(this.m_includeEpilogue), signingCertificates);
+            return Sign(message.ExtractEntityForSignature(m_includeEpilogue), signingCertificates);
         }
 
         public SignedEntity Sign(MimeEntity entity, X509Certificate2 signingCertificate)
         {
-            return this.Sign(entity, new X509Certificate2Collection(signingCertificate));
+            return Sign(entity, new X509Certificate2Collection(signingCertificate));
         }
 
         public SignedEntity Sign(MimeEntity entity, X509Certificate2Collection signingCertificates)
@@ -293,36 +290,37 @@ namespace NHINDirect.Cryptography
             }
 
             byte[] entityBytes = DefaultSerializer.Default.SerializeToBytes(entity);
-            MimeEntity signature = this.CreateSignatureEntity(entityBytes, signingCertificates);
+            MimeEntity signature = CreateSignatureEntity(entityBytes, signingCertificates);
 
-            return new SignedEntity(this.m_digestAlgorithm, entity, signature);
+            return new SignedEntity(m_digestAlgorithm, entity, signature);
         }
 
         public byte[] Sign(byte[] content, X509Certificate2 signingCertificate)
         {
-            SignedCms signature = this.CreateSignature(content, signingCertificate);
+            SignedCms signature = CreateSignature(content, signingCertificate);
             return signature.Encode();
         }
 
         public byte[] Sign(byte[] content, X509Certificate2Collection signingCertificates)
         {
-            SignedCms signature = this.CreateSignature(content, signingCertificates);
+            SignedCms signature = CreateSignature(content, signingCertificates);
             return signature.Encode();
         }
 
         public MimeEntity CreateSignatureEntity(byte[] content, X509Certificate2Collection signingCertificates)
         {
-            byte[] signatureBytes = this.Sign(content, signingCertificates);
+            byte[] signatureBytes = Sign(content, signingCertificates);
             //
             // We create an entity to hold a detached signature
             //
-            MimeEntity signature = new MimeEntity();
-            signature.ContentType = SMIMEStandard.SignatureContentTypeHeaderValue;
-            signature.ContentTransferEncoding = SMIMEStandard.ToString(TransferEncoding.Base64);
+        	var signature = new MimeEntity
+        	                	{
+        	                		ContentType = SMIMEStandard.SignatureContentTypeHeaderValue,
+        	                		ContentTransferEncoding = TransferEncoding.Base64.AsString(),
+        	                		Body = new Body(Convert.ToBase64String(signatureBytes))
+        	                	};
 
-            signature.Body = new Body(Convert.ToBase64String(signatureBytes));
-
-            return signature;
+        	return signature;
         }
 
         public SignedCms CreateSignature(byte[] content, X509Certificate2 signingCertificate)
@@ -336,8 +334,8 @@ namespace NHINDirect.Cryptography
                 throw new SignatureException(SignatureError.NoCertificates);
             }
 
-            CmsSigner signer = this.CreateSigner(signingCertificate);
-            SignedCms signature = new SignedCms(CreateDataContainer(content), true); // true: Detached Signature            
+            CmsSigner signer = CreateSigner(signingCertificate);
+            var signature = new SignedCms(CreateDataContainer(content), true); // true: Detached Signature            
             signature.ComputeSignature(signer, true);   // true: don't prompt the user
 
             return signature;
@@ -355,10 +353,10 @@ namespace NHINDirect.Cryptography
                 throw new SignatureException(SignatureError.NoCertificates);
             }
 
-            SignedCms signature = new SignedCms(CreateDataContainer(content), true); // true: Detached Signature            
+            var signature = new SignedCms(CreateDataContainer(content), true); // true: Detached Signature            
             for (int i = 0, count = signingCertificates.Count; i < count; ++i)
             {
-                CmsSigner signer = this.CreateSigner(signingCertificates[i]);
+                CmsSigner signer = CreateSigner(signingCertificates[i]);
                 signature.ComputeSignature(signer, true);  // true: don't prompt the user
             }
 
@@ -374,7 +372,7 @@ namespace NHINDirect.Cryptography
         public void CheckSignature(SignedEntity signedEntity, X509Certificate2 signerCertificate)
         {
             SignedCms signatureEnvelope = DeserializeDetachedSignature(signedEntity);
-            this.CheckSignature(signatureEnvelope.SignerInfos, signerCertificate);
+            CheckSignature(signatureEnvelope.SignerInfos, signerCertificate);
         }
 
         public void CheckSignature(SignerInfoCollection signers, X509Certificate2 signerCertificate)
@@ -390,7 +388,6 @@ namespace NHINDirect.Cryptography
             //
             // Find the signer
             //
-            string expectedThumbprint = signerCertificate.Thumbprint;
             SignerInfo signer = signers.FindByThumbprint(signerCertificate.Thumbprint);
             if (signer == null)
             {
@@ -411,12 +408,12 @@ namespace NHINDirect.Cryptography
             byte[] contentBytes = DefaultSerializer.Default.SerializeToBytes(entity.Content);
             byte[] signatureBytes = Convert.FromBase64String(entity.Signature.Body.Text);
 
-            return this.DeserializeDetachedSignature(contentBytes, signatureBytes);
+            return DeserializeDetachedSignature(contentBytes, signatureBytes);
         }
 
         public SignedCms DeserializeDetachedSignature(byte[] content, byte[] signatureBytes)
         {
-            SignedCms signature = new SignedCms(this.CreateDataContainer(content), true);
+            var signature = new SignedCms(CreateDataContainer(content), true);
             signature.Decode(signatureBytes);
 
             return signature;
@@ -436,15 +433,15 @@ namespace NHINDirect.Cryptography
 
             byte[] envelopeBytes = Convert.FromBase64String(envelopeEntity.Body.Text);
 
-            return this.DeserializeEnvelopedSignature(envelopeBytes);
+            return DeserializeEnvelopedSignature(envelopeBytes);
         }
 
         public SignedCms DeserializeEnvelopedSignature(byte[] envelopeBytes)
         {
-            SignedCms signature = new SignedCms();
+            var signature = new SignedCms();
             signature.Decode(envelopeBytes);
 
-            if (!this.IsDataContainer(signature.ContentInfo))
+            if (!IsDataContainer(signature.ContentInfo))
             {
                 throw new SignatureException(SignatureError.ContentNotDataContainer);
             }
@@ -454,12 +451,13 @@ namespace NHINDirect.Cryptography
 
         CmsSigner CreateSigner(X509Certificate2 cert)
         {
-            CmsSigner signer = new CmsSigner(cert);
+            var signer = new CmsSigner(cert)
+                         	{
+                         		IncludeOption = m_certChainInclude,
+                         		DigestAlgorithm = ToDigestAlgorithmOid(m_digestAlgorithm)
+                         	};
 
-            signer.IncludeOption = m_certChainInclude;
-            signer.DigestAlgorithm = this.ToDigestAlgorithmOid(this.m_digestAlgorithm);
-
-            Pkcs9SigningTime signingTime = new Pkcs9SigningTime();
+        	var signingTime = new Pkcs9SigningTime();
             signer.SignedAttributes.Add(signingTime);
 
             return signer;
@@ -470,30 +468,33 @@ namespace NHINDirect.Cryptography
         //
         // Hash Algorithms
         //
-        static Oid Oid_SHA1 = new Oid("1.3.14.3.2.26");
-        static Oid Oid_SHA256 = new Oid("2.16.840.1.101.3.4.2.1");
-        static Oid Oid_SHA384 = new Oid("2.16.840.1.101.3.4.2.2");
-        static Oid Oid_SHA512 = new Oid("2.16.840.1.101.3.4.2.3");
-        //
-        // Encryption
-        //
-        static Oid Oid_RSA_ThreeDES = new Oid("1.2.840.113549.3.7");
-        static Oid Oid_AES128_ECB = new Oid("2.16.840.1.101.3.4.1.1");
-        static Oid Oid_AES128_CBC = new Oid("2.16.840.1.101.3.4.1.2");
-        static Oid Oid_AES128_OFB = new Oid("2.16.840.1.101.3.4.1.3");
-        static Oid Oid_AES128_CFB = new Oid("2.16.840.1.101.3.4.1.4");
-        static Oid Oid_AES192_ECB = new Oid("2.16.840.1.101.3.4.1.21");
-        static Oid Oid_AES192_CBC = new Oid("2.16.840.1.101.3.4.1.22");
-        static Oid Oid_AES192_OFB = new Oid("2.16.840.1.101.3.4.1.23");
-        static Oid Oid_AES192_CFB = new Oid("2.16.840.1.101.3.4.1.24");
-        static Oid Oid_AES256_ECB = new Oid("2.16.840.1.101.3.4.1.41");
-        static Oid Oid_AES256_CBC = new Oid("2.16.840.1.101.3.4.1.42");
-        static Oid Oid_AES256_OFB = new Oid("2.16.840.1.101.3.4.1.43");
-        static Oid Oid_AES256_CFB = new Oid("2.16.840.1.101.3.4.1.44");
+		public static class CryptoOids
+		{
+			public static readonly Oid SHA1 = new Oid("1.3.14.3.2.26");
+			public static readonly Oid SHA256 = new Oid("2.16.840.1.101.3.4.2.1");
+			public static readonly Oid SHA384 = new Oid("2.16.840.1.101.3.4.2.2");
+			public static readonly Oid SHA512 = new Oid("2.16.840.1.101.3.4.2.3");
+			//
+			// Encryption
+			//
+			public static readonly Oid RSA_ThreeDES = new Oid("1.2.840.113549.3.7");
+			public static readonly Oid AES128_ECB = new Oid("2.16.840.1.101.3.4.1.1");
+			public static readonly Oid AES128_CBC = new Oid("2.16.840.1.101.3.4.1.2");
+			public static readonly Oid AES128_OFB = new Oid("2.16.840.1.101.3.4.1.3");
+			public static readonly Oid AES128_CFB = new Oid("2.16.840.1.101.3.4.1.4");
+			public static readonly Oid AES192_ECB = new Oid("2.16.840.1.101.3.4.1.21");
+			static public readonly Oid AES192_CBC = new Oid("2.16.840.1.101.3.4.1.22");
+			public static readonly Oid AES192_OFB = new Oid("2.16.840.1.101.3.4.1.23");
+			public static readonly Oid AES192_CFB = new Oid("2.16.840.1.101.3.4.1.24");
+			public static readonly Oid AES256_ECB = new Oid("2.16.840.1.101.3.4.1.41");
+			public static readonly Oid AES256_CBC = new Oid("2.16.840.1.101.3.4.1.42");
+			public static readonly Oid AES256_OFB = new Oid("2.16.840.1.101.3.4.1.43");
+			public static readonly Oid AES256_CFB = new Oid("2.16.840.1.101.3.4.1.44");
 
-        static Oid Oid_ContentType_Data = new Oid("1.2.840.113549.1.7.1");
+			public static readonly Oid ContentType_Data = new Oid("1.2.840.113549.1.7.1");
+		}
 
-        Oid ToDigestAlgorithmOid(DigestAlgorithm type)
+    	static Oid ToDigestAlgorithmOid(DigestAlgorithm type)
         {
             switch (type)
             {
@@ -501,20 +502,20 @@ namespace NHINDirect.Cryptography
                     throw new NotSupportedException();
 
                 case DigestAlgorithm.SHA1:
-                    return SMIMECryptographer.Oid_SHA1;
+                    return CryptoOids.SHA1;
 
                 case DigestAlgorithm.SHA256:
-                    return SMIMECryptographer.Oid_SHA256;
+					return CryptoOids.SHA256;
 
                 case DigestAlgorithm.SHA384:
-                    return SMIMECryptographer.Oid_SHA384;
+					return CryptoOids.SHA384;
 
                 case DigestAlgorithm.SHA512:
-                    return SMIMECryptographer.Oid_SHA512;
+					return CryptoOids.SHA512;
             }
         }
 
-        AlgorithmIdentifier ToAlgorithmID(EncryptionAlgorithm type)
+    	static AlgorithmIdentifier ToAlgorithmID(EncryptionAlgorithm type)
         {
             switch (type)
             {
@@ -522,16 +523,16 @@ namespace NHINDirect.Cryptography
                     throw new NotSupportedException();
 
                 case EncryptionAlgorithm.RSA_3DES:
-                    return new AlgorithmIdentifier(SMIMECryptographer.Oid_RSA_ThreeDES);
+					return new AlgorithmIdentifier(CryptoOids.RSA_ThreeDES);
 
                 case EncryptionAlgorithm.AES128:
-                    return new AlgorithmIdentifier(SMIMECryptographer.Oid_AES128_CBC);
+					return new AlgorithmIdentifier(CryptoOids.AES128_CBC);
 
                 case EncryptionAlgorithm.AES192:
-                    return new AlgorithmIdentifier(SMIMECryptographer.Oid_AES192_CBC);
+					return new AlgorithmIdentifier(CryptoOids.AES192_CBC);
 
                 case EncryptionAlgorithm.AES256:
-                    return new AlgorithmIdentifier(SMIMECryptographer.Oid_AES256_CBC);
+					return new AlgorithmIdentifier(CryptoOids.AES256_CBC);
             }
         }
     }

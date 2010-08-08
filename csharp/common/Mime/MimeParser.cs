@@ -43,10 +43,11 @@ namespace NHINDirect.Mime
         public static T Read<T>(StringSegment entityText)
             where T : MimeEntity, new()
         {
-            T entity = new T();
-            foreach(MimePart part in ReadMimeParts(entityText))
+            var entity = new T();
+
+            foreach (MimePart part in ReadMimeParts(entityText))
             {
-                switch(part.Type)
+                switch (part.Type)
                 {
                     default:
                         break;
@@ -70,7 +71,7 @@ namespace NHINDirect.Mime
 
         public static KeyValuePair<string, string> ReadNameValue(string headerText)
         {
-            int separatorPosition = IndexOf(headerText, MimeStandard.NameValueSeparator, true);
+            int separatorPosition = IndexOf(headerText, MimeStandard.NameValueSeparator);
             if (separatorPosition < 0)
             {
                 throw new MimeException(MimeError.MissingNameValueSeparator);
@@ -100,14 +101,14 @@ namespace NHINDirect.Mime
         public static IEnumerable<StringSegment> ReadHeaderParts(StringSegment source, char separator)
         {
             int startAt = source.StartIndex;
-            CharReader reader = new CharReader(source);
+            var reader = new CharReader(source);
             while (reader.ReadTo(separator))
             {
                 yield return new StringSegment(source.Source, startAt, reader.Position - 1); // STRUCTS - fast
                 startAt = reader.Position + 1;
             }            
             
-            StringSegment last = new StringSegment(source.Source, startAt, reader.Position);
+            var last = new StringSegment(source.Source, startAt, reader.Position);
             if (!last.IsEmpty)
             {
                 yield return last;
@@ -384,39 +385,40 @@ namespace NHINDirect.Mime
         
         public static IEnumerable<StringSegment> ReadLines(StringSegment entity)
         {
-            CharReader reader = new CharReader(entity);
+            var reader = new CharReader(entity);
             int startIndex = reader.Position + 1;
-            int endIndex = startIndex - 1;            
+            int endIndex = startIndex - 1;
             char ch;
-            
+
             while ((ch = reader.Read()) != CharReader.EOF)
             {
                 switch (ch)
-                {
+            	{
                     default:
                         endIndex = reader.Position;
                         break;
 
                     case MimeStandard.CR:
-                        //
+            		//
                         // RFC 2822 mandates that CRLF be together always
-                        //
+            		//
                         if (reader.Read() != MimeStandard.LF)
-                        {
-                            throw new MimeException(MimeError.InvalidCRLF);
-                        }
-                        yield return reader.GetSegment(startIndex, endIndex);
-                        
-                        startIndex = reader.Position + 1;
-                        endIndex = reader.Position;
+            		{
+            			throw new MimeException(MimeError.InvalidCRLF);
+            		}
+
+            		yield return reader.GetSegment(startIndex, endIndex);
+
+					startIndex = reader.Position + 1;
+            		endIndex = reader.Position;
                         break;
                         
                     case MimeStandard.LF:
-                        //
+					//
                         // No standalone LF allowed
-                        //
-                        throw new MimeException(MimeError.InvalidCRLF);
-                }
+					//
+            			throw new MimeException(MimeError.InvalidCRLF);
+            		}
             }
         
             if (endIndex >= 0)
@@ -427,21 +429,21 @@ namespace NHINDirect.Mime
         
         public static StringSegment SkipWhitespace(StringSegment text)
         {
-            CharReader reader = new CharReader(text);
+            var reader = new CharReader(text);
             char ch;
             while ((ch = reader.Read()) != CharReader.EOF && MimeStandard.IsWhitespace(ch))
-            {
+			{
 				// quick skip
-            }
+			}
 
         	return new StringSegment(text.Source, reader.Position, text.EndIndex);
         }
 
-		public static int IndexOf(string text, char ch, bool isSpecialChar)
+		public static int IndexOf(string text, char ch)
 		{
 			var reader = new CharReader(text);
 
-			if (reader.ReadTo(ch, isSpecialChar))
+			if (reader.ReadTo(ch))
 			{
 				return reader.Position;
 			}
