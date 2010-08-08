@@ -69,7 +69,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         if (first) {
 
             first = false;
-            Properties properties = new Properties();
+         //   Properties properties = new Properties();
             try {
                // loadProperties("system.properties", properties);
                // Properties sysprop = System.getProperties();
