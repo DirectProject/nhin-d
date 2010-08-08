@@ -1,149 +1,91 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using NUnit.Framework;
+
 using DnsResolver;
-using System.Net;
+
+using Xunit;
+using Xunit.Extensions;
 
 namespace DnsResolverTests
 {
-    [TestFixture]
-    public class BasicResolverTests
+    public class BasicResolverTests : IDisposable
     {
-        const string PublicDns = "8.8.8.8";
-        const string SubnetDns = "192.168.0.1";
+    	private readonly DnsClient m_client;
+
+    	const string PublicDns = "8.8.8.8";
+        //const string SubnetDns = "192.168.0.1";
         //const string PublicDns = "4.2.2.1";
-        const string LocalDns = "127.0.0.1";
+        //const string LocalDns = "127.0.0.1";
         
-        public BasicResolverTests()
+		public BasicResolverTests()
+		{
+			m_client = new DnsClient(PublicDns) {Timeout = 10000};
+		}
+
+		public void Dispose()
+		{
+			m_client.Dispose();
+		}
+
+    	[Theory]
+		[InlineData("www.microsoft.com")]
+		[InlineData("www.yahoo.com")]
+		[InlineData("www.google.com")]
+		[InlineData("www.apple.com")]
+		[InlineData("nhind.hsgincubator.com")]
+		[InlineData("hvnhind.hsgincubator.com")]
+		[InlineData("dns.hsgincubator.com")]
+        public void TestA(string domain)
         {
-        }
-        
-        [SetUp]
-        public void Init()
-        {
-        }
-        
-        [Test]
-        public void TestA()
-        {
-            this.Resolve(PublicDns, 
-                        DnsRequest.CreateA,
-                        "www.microsoft.com",
-                        "www.yahoo.com",
-                        "www.google.com",
-                        "www.apple.com",
-                        "nhind.hsgincubator.com",
-                        "hvnhind.hsgincubator.com",
-                        "dns.hsgincubator.com"
-                        );
+            Resolve(DnsRequest.CreateA(domain));
         }
 
-        [Test]
-        public void TestCert()
+		// we're able to resuse these names in TestCert and ResolveCert
+		public static IEnumerable<object[]> CertDomainNames
+		{
+			get
+			{
+				yield return new[] { "nhind.hsgincubator.com" };
+				yield return new[] { "redmond.hsgincubator.com" };
+				yield return new[] { "gm2552.securehealthemail.com.hsgincubator.com" };
+				yield return new[] { "ses.testaccount.yahoo.com.hsgincubator.com" };
+				yield return new[] { "nhin1.rwmn.org.hsgincubator.com" };
+				yield return new[] { "nhin.whinit.org.hsgincubator.com" };
+			}
+		}
+
+		[Theory]
+		[PropertyData("CertDomainNames")]
+		public void TestCert(string domain)
         {
-            this.Resolve(PublicDns,
-                    DnsRequest.CreateCERT,
-                    "nhind.hsgincubator.com",
-                    "redmond.hsgincubator.com",
-                    "gm2552.securehealthemail.com.hsgincubator.com",
-                    "ses.testaccount.yahoo.com.hsgincubator.com",
-                    "nhin1.rwmn.org.hsgincubator.com",
-                    "nhin.whinit.org.hsgincubator.com"
-            );
-            
+			Resolve(DnsRequest.CreateCERT(domain));
         }
 
-        //[Test]
-        public void TestCert2()
+        [Theory]
+		[PropertyData("CertDomainNames")]
+        public void ResolveCert(string domain)
         {
-            this.ResolveCert(PublicDns,
-                    "nhind.hsgincubator.com",
-                    "redmond.hsgincubator.com",
-                    "gm2552.securehealthemail.com.hsgincubator.com",
-                    "ses.testaccount.yahoo.com.hsgincubator.com",
-                    "nhin1.rwmn.org.hsgincubator.com",
-                    "nhin.whinit.org.hsgincubator.com"
-            );
-
+        	IEnumerable<CertRecord> certs = m_client.ResolveCERTFromNameServer(domain);
+        	Assert.NotNull(certs);
+        	Assert.NotNull(certs.FirstOrDefault());
         }
 
-        [Test]
-        public void TestMX()
+        [Theory]
+		[InlineData("nhind.hsgincubator.com")]
+		[InlineData("redmond.hsgincubator.com")]
+		[InlineData("www.microsoft.com")]
+        public void TestMX(string domain)
         {
-            this.Resolve(PublicDns,
-                        DnsRequest.CreateMX,
-                        "nhind.hsgincubator.com",
-                        "redmond.hsgincubator.com",
-                        "www.microsoft.com"
-                        );
+            Resolve(DnsRequest.CreateMX(domain));
         }
 
+    	private void Resolve(DnsRequest request)
+    	{
+    		DnsResponse matches = m_client.Resolve(request);
 
-        IEnumerable<DnsRequest> CreateRequests(Func<string, DnsRequest> constructor, params string[] domains)
-        {
-            foreach (string domain in domains)
-            {
-                yield return constructor(domain);
-            }
-        }
-
-        void Resolve(string server, Func<string, DnsRequest> constructor, params string[] domains)
-        {
-            this.Resolve(server, this.CreateRequests(constructor, domains));
-        }
-
-        void Resolve(string server, IEnumerable<DnsRequest> requests)
-        {
-            DnsClient client = this.CreateClient(server);
-            foreach (DnsRequest request in requests)
-            {
-                try
-                {
-                    DnsResponse matches = client.Resolve(request);
-                    if (matches == null || !matches.HasAnswerRecords)
-                    {
-                        this.DoAssert(request);
-                    }
-                }
-                catch (DnsException)
-                {
-                    this.DoAssert(request);
-                }
-            }
-        }
-
-        void ResolveCert(string server, params string[] domains)
-        {
-            DnsClient client = this.CreateClient(server);
-            foreach (string domain in domains)
-            {
-                try
-                {
-                    IEnumerable<CertRecord> certs = client.ResolveCERTFromNameServer(domain);
-                    if (certs == null || certs.First<CertRecord>() == null)
-                    {
-                        Assert.Fail(domain);
-                    }
-                }
-                catch (DnsException)
-                {
-                    Assert.Fail(domain);
-                }
-            }
-        }
-        
-        DnsClient CreateClient(string server)
-        {
-            DnsClient client = new DnsClient(server);
-            client.Timeout = 10000;
-            return client;
-        }
-        
-        void DoAssert(DnsRequest request)
-        {
-            Assert.Fail("{0}:{1}", request.Question.QType, request.Question.QName);
-        }
+			Assert.NotNull(matches);
+			Assert.True(matches.HasAnswerRecords, string.Format("{0}:{1}", request.Question.QType, request.Question.QName));
+    	}
     }
 }

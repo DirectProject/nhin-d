@@ -1,43 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
-using NUnit.Framework;
+
 using NHINDirect.Certificates;
+
+using Xunit;
+using Xunit.Extensions;
 
 namespace AgentTests
 {
-    //
-    // Commented out since this currently requires BIND running on localhost
-    //
-    [TestFixture]
-	[Category("Integration")]
     public class DnsResolverTest
     {
         public const string ServerIP = "127.0.0.1";
         
-        static string[] GoodAddresses = new string[]
+        public static IEnumerable<object[]> GoodAddresses
         {
-            "bob@nhind.hsgincubator.com",
-            "biff@nhind.hsgincubator.com",
-            "gatewaytest@hotmail.com",
-        };
+			get
+			{
+				yield return new[] {"bob@nhind.hsgincubator.com"};
+				yield return new[] {"biff@nhind.hsgincubator.com"};
+				yield return new[] {"gatewaytest@hotmail.com"};
+			}
+        }
         
-        [Test]  
-        public void Test()
+        [Theory(Skip = "Requires Bind Server to be running on the local server")]
+		[PropertyData("GoodAddresses")]
+        public void GetCertificateWithGoodAddress(string address)
         {
-            DnsCertResolver resolver = new DnsCertResolver(IPAddress.Parse(DnsResolverTest.ServerIP), 5000, "hsgincubator.com");
-            resolver.AssumeWildcardSupport = false;
-            
-            foreach(string address in GoodAddresses)
-            {
-                MailAddress mailAddress = new MailAddress(address);
-                X509Certificate2Collection certs = resolver.GetCertificates(mailAddress);
-                Assert.True(certs.Count > 0);
-            }
+        	var resolver
+        		= new DnsCertResolver(IPAddress.Parse(ServerIP), 5000, "hsgincubator.com")
+        		  	{
+        		  		AssumeWildcardSupport = false
+        		  	};
+
+        	X509Certificate2Collection certs = resolver.GetCertificates(new MailAddress(address));
+        	Assert.True(certs.Count > 0);
         }
     }
 }

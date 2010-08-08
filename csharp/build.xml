@@ -2,29 +2,18 @@
 	
 	<!-- MSBuild documentation found at http://msdn.microsoft.com/en-us/library/0k6kkbsd.aspx -->
 	
-	<Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
+	<!-- <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/> -->
 	
-	<UsingTask AssemblyFile="external\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit" />
+	<UsingTask AssemblyFile="external\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunitproject" />
 
 	<Target Name="Build">
 		<MSBuild Projects=".\build\build.sln" Properties="Configuration=Debug" />
 	</Target>
 
-	<ItemGroup>
-  		<NUnitAssemblies Include="bin\debug\*UnitTests.dll" Exclude="bin\debug\*XUnitTests.dll" />
-	</ItemGroup>
-	<ItemGroup>
-  		<XUnitAssemblies Include="bin\debug\*XUnitTests.dll" />
-	</ItemGroup>
-	
+	<!-- WITH THE USE of xUnit this is no longer required however, we may want to use some of the tasks in the future -->
 	<!-- Requires external\Tigris\MSBuildTasks.msi be installed http://msbuildtasks.tigris.org/ -->
 	<!-- After installation the help file is at [Program Files]\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.chm -->
 	<Target Name="Test" DependsOnTargets="Build">
-  		<NUnit Assemblies="@(NUnitAssemblies)"
-        	WorkingDirectory="."
-         	ToolPath="external\nunit\bin\net-2.0"
-         	ExcludeCategory="Integration"
-         	/>
-         <xunit Assembly="@(XUnitAssemblies)" />
+         <xunitproject ProjectFile="unittests\all.xunit" />
 	</Target>
 </Project>

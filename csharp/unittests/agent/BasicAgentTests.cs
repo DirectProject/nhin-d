@@ -1,191 +1,181 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using NUnit.Framework;
+
 using NHINDirect.Agent;
 using NHINDirect.Cryptography;
 using NHINDirect.Mail;
 using NHINDirect.Mime;
 
+using Xunit;
+using Xunit.Extensions;
+
 namespace AgentTests
 {
-    [TestFixture]
     public class BasicAgentTests
     {
-        static string[] EndToEndFiles = new string[]
+        private static IEnumerable<string> EndToEndFiles
         {
-            "simple.eml",
-            "multipart_1to.eml",
-            "multipart_2to.eml",
-        };
-        
-        static string[] IncomingFiles = new string[]
-        {
-            "envelopeSignature.eml"
-        };
-
-        static string[] OutgoingUntrusted = new string[]
-        {
-            Path.Combine("Outgoing","untrusted_1.eml")
-        };
-
-        static string[] OutgoingUntrustedFully = new string[]
-        {
-            Path.Combine("Outgoing", "fully_untrusted_1.eml")
-        };
-        
-        AgentTester m_tester;
-        
-        public BasicAgentTests()
-        {
+			get
+			{
+				yield return "simple.eml";
+				yield return "multipart_1to.eml";
+				yield return "multipart_2to.eml";
+			}
         }
         
-        [SetUp]
-        public void Init()
+        public static IEnumerable<object[]> IncomingFiles
+        {
+			get
+			{
+				yield return new[] {"envelopeSignature.eml"};
+			}
+        }
+
+        public static IEnumerable<object[]> OutgoingUntrustedFiles
+        {
+			get
+			{
+				yield return new[] {Path.Combine("Outgoing", "untrusted_1.eml")};
+			}
+        }
+
+        public static IEnumerable<object[]> OutgoingUntrustedFullyFiles
+        {
+			get
+			{
+				yield return new[] {Path.Combine("Outgoing", "fully_untrusted_1.eml")};
+			}
+        }
+
+    	readonly AgentTester m_tester;
+
+		public BasicAgentTests()
         {
             m_tester = AgentTester.CreateTest();
         }
         
-        /// <summary>
-        /// Basic End to End Test
-        ///  ProcessIncoming(ProcessOutgoing(...))
-        /// </summary>
-        [Test]
-        public void TestEndToTend()
+        [Theory]
+		[PropertyData("IncomingFiles")]
+        public void TestIncoming(string fileName)
         {
-            TestEndToEnd(EncryptionAlgorithm.RSA_3DES, DigestAlgorithm.SHA1);
-            TestEndToEnd(EncryptionAlgorithm.RSA_3DES, DigestAlgorithm.SHA256);
-            TestEndToEnd(EncryptionAlgorithm.RSA_3DES, DigestAlgorithm.SHA512);
-
-            TestEndToEnd(EncryptionAlgorithm.AES128, DigestAlgorithm.SHA1);
-            TestEndToEnd(EncryptionAlgorithm.AES128, DigestAlgorithm.SHA256);
-            TestEndToEnd(EncryptionAlgorithm.AES128, DigestAlgorithm.SHA512);
-
-            TestEndToEnd(EncryptionAlgorithm.AES192, DigestAlgorithm.SHA1);
-            TestEndToEnd(EncryptionAlgorithm.AES192, DigestAlgorithm.SHA256);
-            TestEndToEnd(EncryptionAlgorithm.AES192, DigestAlgorithm.SHA512);
-
-            TestEndToEnd(EncryptionAlgorithm.AES256, DigestAlgorithm.SHA1);
-            TestEndToEnd(EncryptionAlgorithm.AES256, DigestAlgorithm.SHA256);
-            TestEndToEnd(EncryptionAlgorithm.AES256, DigestAlgorithm.SHA512);
+        	m_tester.AgentA.Cryptographer.EncryptionAlgorithm = EncryptionAlgorithm.AES128;
+        	m_tester.AgentA.Cryptographer.DigestAlgorithm = DigestAlgorithm.SHA1;
+        	m_tester.ProcessIncomingFile(fileName);
         }
 
-        [Test]
-        public void TestEndToEndDefault()
-        {
-            TestEndToEnd(EncryptionAlgorithm.AES128, DigestAlgorithm.SHA1);
-        }
-        
-        [Test]
-        public void TestIncoming()
-        {
-            m_tester.AgentA.Cryptographer.EncryptionAlgorithm = EncryptionAlgorithm.AES128;
-            m_tester.AgentA.Cryptographer.DigestAlgorithm = DigestAlgorithm.SHA1;
-
-            foreach (string fileName in IncomingFiles)
-            {
-                Assert.DoesNotThrow(() => m_tester.ProcessIncomingFile(fileName), fileName);
-            }
-        }
-        
-        /// <summary>
+    	/// <summary>
         /// Outgoing messages with Untrusted Recipients
         /// Test if the agent catches them
         /// </summary>
-        [Test]
-        public void TestOutgoingUntrusted()
-        {
-            m_tester.AgentA.Cryptographer.EncryptionAlgorithm = EncryptionAlgorithm.AES128;
-            m_tester.AgentA.Cryptographer.DigestAlgorithm = DigestAlgorithm.SHA1;
-            //
-            // All recipients are untrusted. The agent should reject the message completely
-            //
-            foreach (string fileName in OutgoingUntrustedFully)
-            {
-                Assert.Throws<AgentException>(() => m_tester.ProcessOutgoingFileToString(fileName), fileName);
-            }
-            //
-            // Some recipients are untrusted. The agent should return > 1 rejected recipients
-            //
-            OutgoingMessage outgoing;
-            foreach (string fileName in OutgoingUntrusted)
-            {
-                outgoing = null;
-                try
-                {
-                    outgoing = m_tester.ProcessOutgoingFile(fileName);
-                    Assert.True(outgoing.RejectedRecipients.Count > 0);
-                }
-                catch
-                {
-                    Assert.Fail(fileName);
-                }
-            }            
-        }
+        [Theory]
+		[PropertyData("OutgoingUntrustedFullyFiles")]
+        public void TestOutgoingUntrustedFully(string fileName)
+    	{
+    		m_tester.AgentA.Cryptographer.EncryptionAlgorithm = EncryptionAlgorithm.AES128;
+    		m_tester.AgentA.Cryptographer.DigestAlgorithm = DigestAlgorithm.SHA1;
 
-        /// <summary>
+    		//
+    		// All recipients are untrusted. The agent should reject the message completely
+    		//
+    		Assert.Throws<AgentException>(() => m_tester.ProcessOutgoingFileToString(fileName));
+    	}
+
+
+    	//
+   		// Some recipients are untrusted. The agent should return > 1 rejected recipients
+   		//
+		[Theory]
+		[PropertyData("OutgoingUntrustedFiles")]
+		public void OutgoingUntrusted(string fileName)
+		{
+			OutgoingMessage outgoing = m_tester.ProcessOutgoingFile(fileName);
+			Assert.True(outgoing.RejectedRecipients.Count > 0);
+		}
+
+    	/// <summary>
         /// The Agent has methods that allow for you to construct OutgoingMessage/IncomingMessage directly
         /// </summary>
-        [Test]
+        [Fact]
         public void TestWithMessageObjects()
         {
-            Message message = MimeSerializer.Default.Deserialize<Message>(m_tester.ReadMessageText("simple.eml"));
+            var message = MimeSerializer.Default.Deserialize<Message>(m_tester.ReadMessageText("simple.eml"));
             
-            OutgoingMessage outgoing = new OutgoingMessage(message);                        
+            var outgoing = new OutgoingMessage(message);                        
             outgoing = m_tester.AgentA.ProcessOutgoing(outgoing);
             
-            Assert.IsTrue(SMIMEStandard.IsEncrypted(outgoing.Message));
-            this.VerifyTrusted(outgoing.Recipients, m_tester.AgentA.MinTrustRequirement);
-            Assert.IsTrue(outgoing.RejectedRecipients.Count == 0);
+            Assert.True(SMIMEStandard.IsEncrypted(outgoing.Message));
+            VerifyTrusted(outgoing.Recipients, m_tester.AgentA.MinTrustRequirement);
+            Assert.True(outgoing.RejectedRecipients.Count == 0);
             
-            IncomingMessage incoming = new IncomingMessage(outgoing.Message);
+            var incoming = new IncomingMessage(outgoing.Message);
             incoming = m_tester.AgentB.ProcessIncoming(incoming);
             
-            Assert.IsTrue(!SMIMEStandard.IsEncrypted(incoming.Message));
-            Assert.IsTrue(!WrappedMessage.IsWrapped(incoming.Message));
-            this.VerifyTrusted(incoming.Recipients, m_tester.AgentB.MinTrustRequirement);
-            Assert.IsTrue(outgoing.RejectedRecipients.Count == 0);
+            Assert.False(SMIMEStandard.IsEncrypted(incoming.Message));
+            Assert.False(WrappedMessage.IsWrapped(incoming.Message));
+
+            VerifyTrusted(incoming.Recipients, m_tester.AgentB.MinTrustRequirement);
+            Assert.True(outgoing.RejectedRecipients.Count == 0);
         }
 
-        void TestEndToEnd(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
+
+		// this allows us to easily iterate over the cross product between
+		// EncryptionAlgorithm x DigestAlgorithm x EndToEndFiles
+    	public static IEnumerable<object[]> EndToEndParameters
+    	{
+    		get
+    		{
+				foreach (string fileName in EndToEndFiles)
+				{
+					foreach (EncryptionAlgorithm encAlgo in Enum.GetValues(typeof(EncryptionAlgorithm)))
+					{
+						foreach (DigestAlgorithm digAlgo in Enum.GetValues(typeof(DigestAlgorithm)))
+						{
+							yield return new object[] {fileName, encAlgo, digAlgo};
+						}
+					}
+				}
+    		}
+    	}
+
+		[Theory]
+		[PropertyData("EndToEndParameters")]
+        public void TestEndToEnd(string fileName, EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
+		{
+			m_tester.AgentA.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
+			m_tester.AgentA.Cryptographer.DigestAlgorithm = digestAlgorithm;
+			m_tester.AgentB.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
+			m_tester.AgentB.Cryptographer.DigestAlgorithm = digestAlgorithm;
+			m_tester.TestEndToEndFile(fileName);
+		}
+
+		//void TestEndToEndFail(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
+		//{
+		//    m_tester.AgentA.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
+		//    m_tester.AgentA.Cryptographer.DigestAlgorithm = digestAlgorithm;
+		//    m_tester.AgentB.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
+		//    m_tester.AgentB.Cryptographer.DigestAlgorithm = digestAlgorithm;
+
+		//    foreach (string fileName in EndToEndFiles)
+		//    {
+		//        m_tester.TestEndToEndFile(fileName);
+		//    }
+		//}
+
+    	static void VerifyTrusted(NHINDAddress address, TrustEnforcementStatus minStatus)
         {
-            m_tester.AgentA.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
-            m_tester.AgentA.Cryptographer.DigestAlgorithm = digestAlgorithm;
-            m_tester.AgentB.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
-            m_tester.AgentB.Cryptographer.DigestAlgorithm = digestAlgorithm;
-            foreach (string fileName in EndToEndFiles)
+            Assert.True(address.IsTrusted(minStatus));
+        }
+
+    	static void VerifyTrusted(IEnumerable<NHINDAddress> addresses, TrustEnforcementStatus minStatus)
+        {
+            foreach (NHINDAddress address in addresses)
             {
-                Assert.DoesNotThrow(() => m_tester.TestEndToEndFile(fileName), fileName);
-            }
-        }
-
-        void TestEndToEndFail(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
-        {
-            m_tester.AgentA.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
-            m_tester.AgentA.Cryptographer.DigestAlgorithm = digestAlgorithm;
-            m_tester.AgentB.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
-            m_tester.AgentB.Cryptographer.DigestAlgorithm = digestAlgorithm;
-            foreach (string fileName in EndToEndFiles)
-            {
-                Assert.DoesNotThrow(() => m_tester.TestEndToEndFile(fileName), fileName);
-            }
-        }
-
-        void VerifyTrusted(NHINDAddress address, TrustEnforcementStatus minStatus)
-        {
-            Assert.IsTrue(address.IsTrusted(minStatus));
-        }
-
-        void VerifyTrusted(NHINDAddressCollection addresses, TrustEnforcementStatus minStatus)
-        {
-            foreach(NHINDAddress address in addresses)
-            {
-                this.VerifyTrusted(address, minStatus);
+                VerifyTrusted(address, minStatus);
             }
         }
     }
+
     /*
     [TestFixture]
     public class DebugTest

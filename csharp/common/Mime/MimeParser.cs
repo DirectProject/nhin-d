@@ -15,8 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NHINDirect.Mime
 {   
@@ -39,14 +37,14 @@ namespace NHINDirect.Mime
         public static T Read<T>(string entityText)
             where T : MimeEntity, new()
         {
-            return MimeParser.Read<T>(new StringSegment(entityText));
+            return Read<T>(new StringSegment(entityText));
         }
         
         public static T Read<T>(StringSegment entityText)
             where T : MimeEntity, new()
         {
             T entity = new T();
-            foreach(MimePart part in MimeParser.ReadMimeParts(entityText))
+            foreach(MimePart part in ReadMimeParts(entityText))
             {
                 switch(part.Type)
                 {
@@ -72,7 +70,7 @@ namespace NHINDirect.Mime
 
         public static KeyValuePair<string, string> ReadNameValue(string headerText)
         {
-            int separatorPosition = MimeParser.IndexOf(headerText, MimeStandard.NameValueSeparator, true);
+            int separatorPosition = IndexOf(headerText, MimeStandard.NameValueSeparator, true);
             if (separatorPosition < 0)
             {
                 throw new MimeException(MimeError.MissingNameValueSeparator);
@@ -105,11 +103,6 @@ namespace NHINDirect.Mime
             CharReader reader = new CharReader(source);
             while (reader.ReadTo(separator))
             {
-                if (reader.IsPrev(MimeStandard.Escape))
-                {
-                    continue;
-                }
-                
                 yield return new StringSegment(source.Source, startAt, reader.Position - 1); // STRUCTS - fast
                 startAt = reader.Position + 1;
             }            
@@ -123,12 +116,12 @@ namespace NHINDirect.Mime
 
         public static IEnumerable<Header> ReadHeaders(string entity)
         {
-            return MimeParser.ReadHeaders(new StringSegment(entity));
+            return ReadHeaders(new StringSegment(entity));
         }
 
         public static IEnumerable<Header> ReadHeaders(StringSegment entity)
         {
-            return MimeParser.ReadHeaders(MimeParser.ReadLines(entity));
+            return ReadHeaders(ReadLines(entity));
         }
 
         public static IEnumerable<Header> ReadHeaders(IEnumerable<StringSegment> lines)
@@ -184,12 +177,12 @@ namespace NHINDirect.Mime
         
         public static IEnumerable<MimePart> ReadBodyParts(string entity, string boundary)
         {
-            return MimeParser.ReadBodyParts(new StringSegment(entity), boundary);
+            return ReadBodyParts(new StringSegment(entity), boundary);
         }
 
         public static IEnumerable<MimePart> ReadBodyParts(StringSegment entity, string boundary)
         {
-            return MimeParser.ReadBodyParts(MimeParser.ReadLines(entity), boundary);
+            return ReadBodyParts(ReadLines(entity), boundary);
         }
         
         public static IEnumerable<MimePart> ReadBodyParts(IEnumerable<StringSegment> bodyLines, string boundary)
@@ -300,12 +293,12 @@ namespace NHINDirect.Mime
         
         public static IEnumerable<MimePart> ReadMimeParts(string entity)
         {
-            return MimeParser.ReadMimeParts(new StringSegment(entity));
+            return ReadMimeParts(new StringSegment(entity));
         }
 
         public static IEnumerable<MimePart> ReadMimeParts(StringSegment entity)
         {
-            return MimeParser.ReadMimeParts(MimeParser.ReadLines(entity));
+            return ReadMimeParts(ReadLines(entity));
         }
         
         public static IEnumerable<MimePart> ReadMimeParts(IEnumerable<StringSegment> lines)
@@ -386,7 +379,7 @@ namespace NHINDirect.Mime
         
         public static IEnumerable<StringSegment> ReadLines(string entity)
         {
-            return MimeParser.ReadLines(new StringSegment(entity));
+            return ReadLines(new StringSegment(entity));
         }
         
         public static IEnumerable<StringSegment> ReadLines(StringSegment entity)
@@ -396,7 +389,7 @@ namespace NHINDirect.Mime
             int endIndex = startIndex - 1;            
             char ch;
             
-            while ((ch = reader.Read()) != char.MinValue)
+            while ((ch = reader.Read()) != CharReader.EOF)
             {
                 switch (ch)
                 {
@@ -412,7 +405,7 @@ namespace NHINDirect.Mime
                         {
                             throw new MimeException(MimeError.InvalidCRLF);
                         }
-                        yield return new StringSegment(reader.Source, startIndex, endIndex);
+                        yield return reader.GetSegment(startIndex, endIndex);
                         
                         startIndex = reader.Position + 1;
                         endIndex = reader.Position;
@@ -428,52 +421,32 @@ namespace NHINDirect.Mime
         
             if (endIndex >= 0)
             {
-                yield return new StringSegment(reader.Source, startIndex, endIndex);                
+                yield return reader.GetSegment(startIndex, endIndex);                
             }
         }
         
         public static StringSegment SkipWhitespace(StringSegment text)
         {
-            CharReader reader = new CharReader(text); // Struct. Typically created on stack, so pretty efficient
+            CharReader reader = new CharReader(text);
             char ch;
-            while ((ch = reader.Read()) != char.MinValue && MimeStandard.IsWhitespace(ch));
-            
-            return new StringSegment(text.Source, reader.Position, text.EndIndex);
-        }
-        
-        public static int IndexOfChar(StringSegment text, char ch)
-        {
-            CharReader reader = new CharReader(text);
-            if (reader.ReadTo(ch))
+            while ((ch = reader.Read()) != CharReader.EOF && MimeStandard.IsWhitespace(ch))
             {
-                return reader.Position;
+				// quick skip
             }
 
-            return -1;
+        	return new StringSegment(text.Source, reader.Position, text.EndIndex);
         }
 
-        public static int IndexOf(string text, char ch)
-        {
-            return IndexOfChar(new StringSegment(text), ch);
-        }
-        
-        public static int IndexOf(string text, char ch, bool isSpecialChar)
-        {
-            return IndexOf(new StringSegment(text), ch, isSpecialChar);
-        }
-        
-        public static int IndexOf(StringSegment text, char ch, bool isSpecialChar)
-        {
-            CharReader reader = new CharReader(text);
-            while (reader.ReadTo(ch))
-            {
-                if (!isSpecialChar || !reader.IsPrev(MimeStandard.Escape))
-                {
-                    return reader.Position;
-                }
-            }
-            
-            return -1;
-        }
+		public static int IndexOf(string text, char ch, bool isSpecialChar)
+		{
+			var reader = new CharReader(text);
+
+			if (reader.ReadTo(ch, isSpecialChar))
+			{
+				return reader.Position;
+			}
+
+			return -1;
+		}
     }
 }

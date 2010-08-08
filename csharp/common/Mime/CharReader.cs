@@ -14,44 +14,43 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NHINDirect.Mime
 {
-    public struct CharReader
+	// 
+    //public struct CharReader - john.theisen - recommend against using structs for mutable types, when passed
+	// around to functions, the state can change and upon return it may be expected that the values have changed,
+	// thus creates issues for some one that was expecting this to be pass by reference and not by value.
+	//
+	public class CharReader
     {
-        string m_source;
-        int m_position;
-        int m_maxPosition;
+		public const char EOF = char.MinValue;
+		private readonly string m_source;
+		private readonly int m_maxPosition;
+
+		private int m_position;
         
         public CharReader(StringSegment source)
+			: this(source.Source, source.StartIndex, source.StartIndex + source.Length)
         {
-            m_source = source.Source;
-            m_position = source.StartIndex;
-            m_maxPosition = m_position + source.Length;
         }
 
         public CharReader(string source)
+			: this(source, 0, source.Length)
         {
-            if (string.IsNullOrEmpty(source))
-            {
-                throw new ArgumentException();
-            }
+        }
 
-            m_source = source;
-            m_position = 0;
-            m_maxPosition = m_position + source.Length;
-        }
-        
-        public string Source
-        {
-            get
-            {
-                return m_source;
-            }
-        }
+    	private CharReader(string source, int position, int maxPosition)
+    	{
+			if (string.IsNullOrEmpty(source))
+			{
+				throw new ArgumentException("source was null or empty", "source");
+			}
+
+			m_source = source;
+    		m_position = position;
+    		m_maxPosition = maxPosition;
+    	}
 
         public int Position
         {
@@ -65,64 +64,40 @@ namespace NHINDirect.Mime
         {
             get
             {
-                return (m_position == m_maxPosition);
+                return (m_position >= m_maxPosition);
             }
         }
         
         public char Read()
         {
-            if (m_position == m_maxPosition)
-            {
-                return char.MinValue;
-            }
-
-            return m_source[m_position++];
+        	return IsDone ? EOF : m_source[m_position++];
         }
-        
-        public bool ReadTo(char chTo)
+
+		public bool ReadTo(char chTo)
+		{
+			return ReadTo(chTo, false);
+		}
+
+		public bool ReadTo(char chTo, bool ignoreEscape)
         {
             char ch;
-            while ((ch = this.Read()) != char.MinValue)
+			bool escaped = false;
+            while ((ch = Read()) != EOF)
             {
-                if (ch == chTo)
+                if (!escaped && ch == chTo)
                 {
                     return true;
                 }
+
+            	escaped = (ch == MimeStandard.Escape) && !ignoreEscape;
             }
             
             return false;
         }
         
-        public char Peek()
-        {
-            int next = m_position + 1;
-            if (next >= m_maxPosition)
-            {
-                return char.MinValue;
-            }
-            
-            return m_source[next];
-        }
-        
-        public bool IsNext(char ch)
-        {
-            return (this.Peek() == ch);
-        }
-        
-        public char PeekPrev()
-        {
-            int prev = m_position - 1;
-            if (prev < 0)
-            {
-                return char.MinValue;
-            }
-            
-            return m_source[prev];
-        }
-        
-        public bool IsPrev(char ch)
-        {
-            return (this.PeekPrev() == ch);
-        }
+		public StringSegment GetSegment(int startIndex, int endIndex)
+		{
+			return new StringSegment(m_source, startIndex, endIndex);
+		}
     }
 }
