@@ -5,6 +5,6 @@
     <system systemId="file:/C:/NBProjects/WebServices/PIXXDS/schema/ebRS/rs.xsd" uri="schema/ebRS/rs.xsd"/>
     <system systemId="file:/C:/NBProjects/WebServices/PIXXDS/schema/ebRS/rim.xsd" uri="schema/ebRS/rim.xsd"/>
     <system systemId="file:/C:/NBProjects/WebServices/PIXXDS/schema/ebRS/lcm.xsd" uri="schema/ebRS/lcm.xsd"/>
-    <system systemId="file:/C:/NBProjects/WebServices/PIXXDS/schema/ebRS/query.xsd" uri="schema/ebRS/query.xsd"/>
+    <system systemId="file:/C:/NBProjects/WebServices/PIXXDS/schema/ebRS/query.xsd" uri="schema/ebRS/query.xsd" />
     <system systemId="http://www.w3.org/2001/xml.xsd" uri="wsdl/www.w3.org/2001/xml.xsd"/>
 </catalog>

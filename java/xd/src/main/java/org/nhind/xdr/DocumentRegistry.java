@@ -4,12 +4,7 @@
  */
 package org.nhind.xdr;
 
-import ihe.iti.xds_b._2007.ObjectFactory;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.FileWriter;
-import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,10 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
-import javax.persistence.EntityManager;
+
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceContext;
 import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
@@ -42,7 +35,7 @@ public class DocumentRegistry {
     @Resource
     protected SessionContext sessionContext;
     protected WebServiceContext mywscontext;
-    protected EntityManager em;
+
     String euid = null;
     String ssn = null;
     String orgId = null;
@@ -381,7 +374,7 @@ public class DocumentRegistry {
 
         } catch (Exception x) {
             x.printStackTrace();
-            em.close();
+         
             throw (x);
         }
 
