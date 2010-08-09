@@ -50,8 +50,10 @@ namespace NHINDirect.Mime
                 throw new ArgumentNullException("entity");
             }
 
-            var entityWriter = new MimeWriter(writer);
-            Serialize(entity, entityWriter);
+			using (var entityWriter = new MimeWriter(writer))
+			{
+				Serialize(entity, entityWriter);
+			}
         }
 
         public void Serialize(MimeEntity entity, MimeWriter entityWriter)
@@ -89,13 +91,15 @@ namespace NHINDirect.Mime
                 throw new ArgumentNullException("entities");
             }
 
-            var entityWriter = new MimeWriter(writer);
-            foreach (MimeEntity entity in entities)
-            {
-                entityWriter.WriteMimeBoundary(boundary, false);
-                Serialize(entity, entityWriter);
-            }
-            entityWriter.WriteMimeBoundary(boundary, true);
+			using (var entityWriter = new MimeWriter(writer))
+			{
+				foreach (MimeEntity entity in entities)
+				{
+					entityWriter.WriteMimeBoundary(boundary, false);
+					Serialize(entity, entityWriter);
+				}
+				entityWriter.WriteMimeBoundary(boundary, true);
+			}
         }
 
         public override T Deserialize<T>(StringSegment messageText)

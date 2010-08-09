@@ -18,51 +18,29 @@ using System;
 using NHINDirect.Mime;
 
 using Xunit;
+using Xunit.Extensions;
 
 namespace NHINDirect.Tests.Mime
 {
-	public class BodyFacts
+	public class CharReaderFacts
 	{
-		[Fact]
-		public void DefaultConstructor()
-		{
-			var body = new Body();
-			Assert.Equal(MimePartType.Body, body.Type);
-			Assert.Equal(0, body.SourceText.Length);
-			Assert.Equal("", body.Text);
-		}
-	}
-
-	public class EntityPartFacts
-	{
-		[Fact]
-		public void CallingEntityPartyWithNullTextThrowsArgumentNullException()
-		{
-			Assert.Throws<ArgumentNullException>(() => new Body((string) null));
-		}
+		private const string TestContent = "the quick brown fox";
 
 		[Fact]
-		public void InsureToStringReturnsTheText()
+		public void CharReaderFromSegment()
 		{
-			const string text = "the quick brown fox";
-			Assert.Equal(text, new Body(text).ToString());
-		}
-	}
-
-	public class MimeSerializerTests
-	{
-		[Fact]
-		public void SetDefaultToNullThrowsArgumentNullException()
-		{
-			Assert.Throws<ArgumentNullException>(() => MimeSerializer.Default = null);
+			var segment = new StringSegment(TestContent);
+			var reader = new CharReader(segment);
+			Assert.False(reader.IsDone);
+			Assert.Equal(-1, reader.Position);
 		}
 
-		[Fact]
-		public void SetDefault()
+		[Theory]
+		[InlineData(null)]
+		[InlineData("")]
+		public void CharReaderNullOrEmptySource(string source)
 		{
-			var serializer = new DefaultSerializer();
-			MimeSerializer.Default = serializer;
-			Assert.Same(serializer, MimeSerializer.Default);
+			Assert.Throws<ArgumentException>(() => new CharReader(source));
 		}
 	}
 }

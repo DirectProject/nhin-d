@@ -22,7 +22,7 @@ using Xunit.Extensions;
 
 namespace NHINDirect.Tests.Mime
 {
-	public class StringSegmentTest
+	public class StringSegmentFacts
 	{
 		[Fact]
 		public void DefaultConstructor()

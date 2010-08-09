@@ -14,9 +14,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 namespace NHINDirect.Mime
@@ -33,16 +30,16 @@ namespace NHINDirect.Mime
         
         public MimeWriter(TextWriter writer)
         {
-            this.SetWriter(writer);
+            SetWriter(writer);
         }
         
         public void SetWriter(TextWriter writer)
         {
             if (writer == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("writer");
             }
-            this.Close();
+            Close();
             m_writer = writer;
         }
 
@@ -50,12 +47,12 @@ namespace NHINDirect.Mime
         {
             if (headers == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("headers");
             }
             
             foreach(Header header in headers)
             {
-                this.Write(header);
+                Write(header);
             }
         }
         
@@ -63,52 +60,53 @@ namespace NHINDirect.Mime
         {
             if (header == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("header");
             }
             
-            this.WriteLine(header.SourceText);
+            WriteLine(header.SourceText);
         }
         
         public void Write(Body body)
         {
             if (body == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("body");
             }
             
-            this.Write(body.SourceText);
+            Write(body.SourceText);
         }
         
-        public void WriteHeader(string name, string value)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException();
-            }
+		// not referenced in any current code...
+		//public void WriteHeader(string name, string value)
+		//{
+		//    if (string.IsNullOrEmpty(name))
+		//    {
+		//        throw new ArgumentException("name was null or empty", "name");
+		//    }
             
-            m_writer.Write(name);
-            if (!string.IsNullOrEmpty(value))
-            {
-                m_writer.Write(MimeStandard.NameValueSeparator);
-                m_writer.Write(value);
-            }
+		//    m_writer.Write(name);
+		//    if (!string.IsNullOrEmpty(value))
+		//    {
+		//        m_writer.Write(MimeStandard.NameValueSeparator);
+		//        m_writer.Write(value);
+		//    }
             
-            this.WriteCRLF();
-        }
+		//    WriteCRLF();
+		//}
                 
         public void WriteMimeBoundary(string boundary, bool isLast)
         {
             //
             // As per MIME spec, boundaries START with a CRLF
             //
-            this.WriteCRLF();
+            WriteCRLF();
             if (isLast)
             {
-                this.WriteLine(MimeStandard.BoundarySeparator + boundary + MimeStandard.BoundarySeparator);
+                WriteLine(MimeStandard.BoundarySeparator + boundary + MimeStandard.BoundarySeparator);
             }
             else
             {
-                this.WriteLine(MimeStandard.BoundarySeparator + boundary);
+                WriteLine(MimeStandard.BoundarySeparator + boundary);
             }
         }
         
@@ -123,14 +121,14 @@ namespace NHINDirect.Mime
                 
         public void WriteLine(StringSegment text)
         {
-            this.Write(text);
-            this.WriteCRLF();
+            Write(text);
+            WriteCRLF();
         }
         
         public void WriteLine(string text)
         {
             m_writer.Write(text);
-            this.WriteCRLF();
+            WriteCRLF();
         }
         
         public void WriteCRLF()
@@ -151,7 +149,7 @@ namespace NHINDirect.Mime
 
         public void Dispose()
         {
-            this.Close();
+            Close();
         }
 
         #endregion

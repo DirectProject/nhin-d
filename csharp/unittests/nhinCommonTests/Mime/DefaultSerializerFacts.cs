@@ -23,11 +23,11 @@ using Xunit;
 
 namespace NHINDirect.Tests.Mime
 {
-	public class DefaultSerializerTest
+	public class DefaultSerializerFacts
 	{
 		private readonly DefaultSerializer m_serializer;
 
-		public DefaultSerializerTest()
+		public DefaultSerializerFacts()
 		{
 			m_serializer = new DefaultSerializer();
 		}

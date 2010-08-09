@@ -18,29 +18,23 @@ using System;
 using NHINDirect.Mime;
 
 using Xunit;
-using Xunit.Extensions;
 
 namespace NHINDirect.Tests.Mime
 {
-	public class CharReaderTest
+	public class MimeSerializerFacts
 	{
-		private const string TestContent = "the quick brown fox";
-
 		[Fact]
-		public void CharReaderFromSegment()
+		public void SetDefaultToNullThrowsArgumentNullException()
 		{
-			var segment = new StringSegment(TestContent);
-			var reader = new CharReader(segment);
-			Assert.False(reader.IsDone);
-			Assert.Equal(-1, reader.Position);
+			Assert.Throws<ArgumentNullException>(() => MimeSerializer.Default = null);
 		}
 
-		[Theory]
-		[InlineData(null)]
-		[InlineData("")]
-		public void CharReaderNullOrEmptySource(string source)
+		[Fact]
+		public void SetDefault()
 		{
-			Assert.Throws<ArgumentException>(() => new CharReader(source));
+			var serializer = new DefaultSerializer();
+			MimeSerializer.Default = serializer;
+			Assert.Same(serializer, MimeSerializer.Default);
 		}
 	}
 }
