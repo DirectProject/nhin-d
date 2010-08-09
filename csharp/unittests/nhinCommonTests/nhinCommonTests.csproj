@@ -53,10 +53,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Mime\CharReaderTest.cs" />
-    <Compile Include="Mime\DefaultSerializerTest.cs" />
-    <Compile Include="Mime\MimeSerializerTests.cs" />
-    <Compile Include="Mime\StringSegmentTest.cs" />
+    <Compile Include="Mime\BodyFacts.cs" />
+    <Compile Include="Mime\CharReaderFacts.cs" />
+    <Compile Include="Mime\DefaultSerializerFacts.cs" />
+    <Compile Include="Mime\EntityPartFacts.cs" />
+    <Compile Include="Mime\HeaderFacts.cs" />
+    <Compile Include="Mime\MimeSerializerFacts.cs" />
+    <Compile Include="Mime\MimeWriterFacts.cs" />
+    <Compile Include="Mime\StringSegmentFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
