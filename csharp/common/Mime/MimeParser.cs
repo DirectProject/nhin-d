@@ -102,7 +102,7 @@ namespace NHINDirect.Mime
         {
             int startAt = source.StartIndex;
             var reader = new CharReader(source);
-            while (reader.ReadTo(separator))
+            while (reader.ReadTo(separator, true))
             {
                 yield return new StringSegment(source.Source, startAt, reader.Position - 1); // STRUCTS - fast
                 startAt = reader.Position + 1;
@@ -443,7 +443,7 @@ namespace NHINDirect.Mime
 		{
 			var reader = new CharReader(text);
 
-			if (reader.ReadTo(ch))
+			if (reader.ReadTo(ch, false))
 			{
 				return reader.Position;
 			}
