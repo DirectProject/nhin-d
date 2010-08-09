@@ -57,6 +57,7 @@
     <Compile Include="Mime\CharReaderFacts.cs" />
     <Compile Include="Mime\DefaultSerializerFacts.cs" />
     <Compile Include="Mime\EntityPartFacts.cs" />
+    <Compile Include="Mime\HeaderCollectionFacts.cs" />
     <Compile Include="Mime\HeaderFacts.cs" />
     <Compile Include="Mime\MimeSerializerFacts.cs" />
     <Compile Include="Mime\MimeWriterFacts.cs" />
