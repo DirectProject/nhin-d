@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
+
 using NHINDirect.Collections;
 
 namespace NHINDirect.Mime
@@ -22,7 +21,7 @@ namespace NHINDirect.Mime
         {
             get
             {
-                int i = this.IndexOf(name);
+                int i = IndexOf(name);
                 if (i < 0)
                 {
                     return null;
@@ -32,14 +31,14 @@ namespace NHINDirect.Mime
             }  
             set
             {
-                int currentIndex = this.IndexOf(name);
+                int currentIndex = IndexOf(name);
                 if (currentIndex < 0)
                 {
                     //
                     // Not found. New Header
                     //
                     VerifyName(name, value);
-                    this.Add(value);
+                    Add(value);
                     return;
                 }
                 
@@ -48,7 +47,7 @@ namespace NHINDirect.Mime
                     //
                     // Null value means remove existing header
                     //
-                    this.RemoveAt(currentIndex);
+                    RemoveAt(currentIndex);
                 }
                 else
                 {
@@ -82,10 +81,10 @@ namespace NHINDirect.Mime
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("name was null or empty", "name");
             }
             
-            for (int i = 0, count = this.Count; i < count; ++i)
+            for (int i = 0, count = Count; i < count; ++i)
             {
                 if (MimeStandard.Equals(this[i].Name, name))
                 {
@@ -98,24 +97,24 @@ namespace NHINDirect.Mime
         
         public void Add(string name, string value)
         {
-            this.Add(new Header(name, value));
+            Add(new Header(name, value));
         }
 
         public void Add(KeyValuePair<string, string> value)
         {
-            this.Add(value.Key, value.Value);
+            Add(value.Key, value.Value);
         }
         
         public void Add(IEnumerable<KeyValuePair<string, string>> headers)
         {
             if (headers == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("headers");
             }
 
             foreach (KeyValuePair<string, string> pair in headers)
             {
-                this.Add(pair);
+                Add(pair);
             }
         }
                 
@@ -128,10 +127,10 @@ namespace NHINDirect.Mime
         {
             if (headers == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("headers");
             }
             
-            foreach(Header header in headers)
+            foreach (Header header in headers)
             {
                 this[header.Name] = header;
             }
@@ -141,7 +140,7 @@ namespace NHINDirect.Mime
         {
             if (headers == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("headers");
             }
 
             foreach (KeyValuePair<string, string> header in headers)
@@ -154,14 +153,14 @@ namespace NHINDirect.Mime
         {
             if (source == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("source");
             }
 
             foreach (Header header in source)
             {
                 if (filter == null || filter(header))
                 {
-                    this.Add(header);
+                    Add(header);
                 }
             }
         }
@@ -170,14 +169,14 @@ namespace NHINDirect.Mime
         {
             if (source == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("source");
             }
 
             foreach (Header header in source)
             {
-                if (headerNames == null || headerNames.Contains<string>(header.Name, MimeStandard.Comparer))
+                if (headerNames == null || headerNames.Contains(header.Name, MimeStandard.Comparer))
                 {
-                    this.Add(header);
+                    Add(header);
                 }
             }
         }
@@ -186,7 +185,7 @@ namespace NHINDirect.Mime
         {
             if (header == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("header");
             }
             
             this[header.Name] = header;
@@ -209,10 +208,10 @@ namespace NHINDirect.Mime
         
         public void SetValue(string name, string value)
         {
-            int index = this.IndexOf(name);
+            int index = IndexOf(name);
             if (index < 0)
             {
-                this.Add(name, value);
+                Add(name, value);
                 return;
             }
 
@@ -230,10 +229,10 @@ namespace NHINDirect.Mime
         /// <returns></returns>
         public HeaderCollection DeepClone()
         {
-            HeaderCollection copy = new HeaderCollection();
-            for (int i = 0, count = this.Count; i < count; ++i)
+            var copy = new HeaderCollection();
+			foreach (var header in this)
             {
-                copy.Add(this[i].Clone());
+                copy.Add(header.Clone());
             }
             
             return copy;
@@ -241,12 +240,12 @@ namespace NHINDirect.Mime
         
         public HeaderCollection SelectMimeHeaders()
         {
-            return new HeaderCollection(this.MimeHeaders);
+            return new HeaderCollection(MimeHeaders);
         }
 
         public HeaderCollection SelectNonMimeHeaders()
         {
-            return new HeaderCollection(this.NonMimeHeaders);
+            return new HeaderCollection(NonMimeHeaders);
         }
 
     	static void VerifyName(string name, Header header)
