@@ -9,6 +9,13 @@ namespace NHINDirect.Tests.Mime
 {
 	public class HeaderCollectionFacts
 	{
+		private readonly HeaderCollection m_headers;
+
+		public HeaderCollectionFacts()
+		{
+			m_headers = new HeaderCollection(new[] {new Header("key", "value")});
+		}
+
 		[Fact]
 		public void IndexOfThrowsArgumentException()
 		{
@@ -63,6 +70,22 @@ namespace NHINDirect.Tests.Mime
 			var headers = new HeaderCollection();
 			var ex = Assert.Throws<ArgumentNullException>(() => headers.Set(null));
 			Assert.Equal("header", ex.ParamName);
+		}
+
+		[Fact]
+		public void ItemSetWithNullRemovesHeader()
+		{
+			Assert.NotNull(m_headers["key"]);
+			Assert.Equal("value", m_headers["key"].Value);
+
+			m_headers["key"] = null;
+			Assert.Null(m_headers["key"]);
+		}
+
+		[Fact]
+		public void GetValueReturnsNullWhenHeaderNotFound()
+		{
+			Assert.Null(m_headers.GetValue("unknown"));
 		}
 	}
 }
