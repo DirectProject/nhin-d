@@ -17,34 +17,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NHINDirect;
 
-namespace NHINDirect.Mime
+namespace NHINDirect.ConfigStore
 {
-    public class Body : MimePart
+    public enum ConfigStoreError
     {
-        public Body()
-            : base(MimePartType.Body)
-        {
-        }
-        public Body(StringSegment body)
-            : base(MimePartType.Body, body)
-        {
-        }
-        
-        public Body(string body)
-            : base(MimePartType.Body)
-        {
-            this.Text = body;
-        }        
-        
-        public Body(byte[] body)
-            : base(MimePartType.Body)
-        {
-            this.Text = Convert.ToBase64String(body, Base64FormattingOptions.InsertLineBreaks);
-        }
-        
-        internal Body(Body body)
-            : base(MimePartType.Body, body.SourceText)
+        Unknown,
+        OwnerLength,
+        AccountNameLength,
+        DomainNameLength,
+        EndpointNameLength,
+        DisplayNameLength,
+    }
+    
+    public class ConfigStoreException : NHINDException<ConfigStoreError>
+    {
+        public ConfigStoreException(ConfigStoreError error)
+            : base(error)
         {
         }
     }

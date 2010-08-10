@@ -13,8 +13,10 @@ Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace NHINDirect.Mime
 {
@@ -28,33 +30,44 @@ namespace NHINDirect.Mime
             : base(MimePartType.Header, segment)
         {
             m_parsed = false;
-			TextChanged += Header_TextChanged;
         }
-
+        
         public Header(string name, string value)
-            : base(MimePartType.Header, MimeSerializer.Default.JoinHeader(name, value))
+            : base(MimePartType.Header)
         {
+            this.Text = MimeSerializer.Default.JoinHeader(name, value);
             m_name = name;
             m_value = value;
             m_parsed = true;
-        	TextChanged += Header_TextChanged;
         }
         
         public Header(KeyValuePair<string, string> value)
             : this(value.Key, value.Value)
         {        
         }
-
-		void Header_TextChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			m_parsed = false;
-		}
+        
+        /// <summary>
+        /// The Text should contain a ':' separator
+        /// Assumes that the text is otherwise well formed. 
+        /// </summary>
+        public override string Text
+        {
+            get
+            {
+                return base.Text;
+            }
+            protected set 
+            {
+                base.Text = value;
+                m_parsed = false;
+            }
+        }
 
         public string Name
         {
             get
             {
-                EnsureNameValue();
+                this.EnsureNameValue();
                 return m_name;
             }
         }
@@ -63,7 +76,7 @@ namespace NHINDirect.Mime
         {
             get
             {
-                EnsureNameValue();
+                this.EnsureNameValue();
                 return m_value;    
             }
         }
@@ -74,29 +87,36 @@ namespace NHINDirect.Mime
             {
                 return false;
             }
-            return MimeStandard.Equals(Name, name);
+            return MimeStandard.Equals(this.Name, name);
         }
         
         public bool IsHeaderNameOneOf(string[] names)
         {
-            if (names == null)            
+            if (names == null || names.Length == 0)            
             {
                 return false;
             }
-
-        	return (from name in names
-        	        where IsHeaderName(name)
-        	        select name).Any();
+            
+            string name = this.Name;
+            for (int i = 0; i < names.Length; ++i)
+            {
+                if (MimeStandard.Equals(names[i], name))
+                {
+                    return true;
+                }
+            }
+            
+            return false;
         }
         
         public Header Clone()
         {
-            return new Header(SourceText);
+            return new Header(this.SourceText);
         }
         
         internal override void AppendSourceText(StringSegment segment)
         {
-            if (!SourceText.IsNull)
+            if (!this.SourceText.IsNull)
             {
                 //
                 // Header already has text. We need to unfold the new text in...
@@ -106,7 +126,7 @@ namespace NHINDirect.Mime
                 {
                     throw new MimeException(MimeError.InvalidHeader);
                 }
-                AppendText(unfoldedLine.ToString());
+                base.AppendText(unfoldedLine.ToString());
             }
 
             base.AppendSourceText(segment);
@@ -119,7 +139,7 @@ namespace NHINDirect.Mime
                 return;
             }
             
-            KeyValuePair<string, string> split = MimeSerializer.Default.SplitHeader(Text);
+            KeyValuePair<string, string> split = MimeSerializer.Default.SplitHeader(this.Text);
             m_name = split.Key;
             m_value = split.Value;
             m_parsed = true;

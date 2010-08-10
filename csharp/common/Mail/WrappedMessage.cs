@@ -28,7 +28,7 @@ namespace NHINDirect.Mail
                 throw new ArgumentNullException();
             }
             
-            var wrappedMessage = new Message();
+            Message wrappedMessage = new Message();
             if (message.HasHeaders)
             {
                 wrappedMessage.Headers.CopyFrom(message.Headers, headersToCopy);
@@ -46,7 +46,7 @@ namespace NHINDirect.Mail
                 throw new ArgumentException();
             }
             
-            var wrappedMessage = new Message();
+            Message wrappedMessage = new Message();
             wrappedMessage.Headers.CopyFrom(MimeSerializer.Default.DeserializeHeaders(message), headersToCopy);
             wrappedMessage.Body = new Body(message);
             wrappedMessage.ContentType = MailStandard.MediaType.WrappedMessage;
