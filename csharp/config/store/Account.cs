@@ -17,35 +17,49 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data.SqlTypes;
+using System.Data.Linq;
+using System.Data.Linq.Mapping;
 
-namespace NHINDirect.Mime
+namespace NHINDirect.ConfigStore
 {
-    public class Body : MimePart
+    [Table(Name = "Accounts")]
+    public class Account
     {
-        public Body()
-            : base(MimePartType.Body)
-        {
-        }
-        public Body(StringSegment body)
-            : base(MimePartType.Body, body)
-        {
-        }
+        public const int MaxAccountNameLength = 255;
         
-        public Body(string body)
-            : base(MimePartType.Body)
-        {
-            this.Text = body;
-        }        
+        string m_name;
         
-        public Body(byte[] body)
-            : base(MimePartType.Body)
+        [Column(Name="AccountID", IsDbGenerated=true, IsPrimaryKey=true)]
+        public long ID
         {
-            this.Text = Convert.ToBase64String(body, Base64FormattingOptions.InsertLineBreaks);
+            get;
+            set;
         }
         
-        internal Body(Body body)
-            : base(MimePartType.Body, body.SourceText)
+        [Column(Name="AccountName", DbType="nvarchar(255)", CanBeNull=false)]
+        public string Name
         {
+            get
+            {
+                return m_name;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || value.Length > MaxAccountNameLength)
+                {
+                    throw new ConfigStoreException(ConfigStoreError.AccountNameLength);
+                }
+                
+                m_name = value;
+            }
+        }
+        
+        [Column(Name="CreateDate", CanBeNull=false)]
+        public DateTime CreateDate
+        {
+            get;
+            set;
         }
     }
 }

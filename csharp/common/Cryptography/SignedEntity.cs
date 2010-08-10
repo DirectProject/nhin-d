@@ -127,7 +127,7 @@ namespace NHINDirect.Cryptography
         
         static ContentType CreateContentType(DigestAlgorithm digestAlgorithm)
         {
-            var contentType = new ContentType(SMIMEStandard.MultiPartTypeSigned);
+            ContentType contentType = new ContentType(SMIMEStandard.MultiPartTypeSigned);
             contentType.Parameters.Add(SMIMEStandard.ProtocolParameterKey, SMIMEStandard.SignatureProtocol);
 			contentType.Parameters.Add(SMIMEStandard.MICAlgorithmKey, digestAlgorithm.AsString());
             return contentType;

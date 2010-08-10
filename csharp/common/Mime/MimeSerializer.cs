@@ -51,7 +51,7 @@ namespace NHINDirect.Mime
 
         public virtual void Serialize(MimeEntity entity, Stream stream)
         {
-            using (var writer = new StreamWriter(stream, Encoding.ASCII))
+            using (StreamWriter writer = new StreamWriter(stream, Encoding.ASCII))
             {
                 Serialize(entity, writer);
             }
@@ -65,7 +65,7 @@ namespace NHINDirect.Mime
 
         public virtual byte[] SerializeToBytes(MimeEntity entity)
         {
-            using (var stream = new MemoryStream())
+            using (MemoryStream stream = new MemoryStream())
             {
                 Serialize(entity, stream);
                 return stream.ToArray();
@@ -83,7 +83,7 @@ namespace NHINDirect.Mime
 
         public virtual void Serialize(IEnumerable<MimeEntity> entities, string boundary, Stream stream)
         {
-            using (var writer = new StreamWriter(stream, Encoding.ASCII))
+            using (StreamWriter writer = new StreamWriter(stream, Encoding.ASCII))
             {
                 Serialize(entities, boundary, writer);
             }
@@ -91,7 +91,7 @@ namespace NHINDirect.Mime
 
         public virtual byte[] SerializeToBytes(IEnumerable<MimeEntity> entities, string boundary)
         {
-            using (var stream = new MemoryStream())
+            using (MemoryStream stream = new MemoryStream())
             {
                 Serialize(entities, boundary, stream);
                 return stream.ToArray();
@@ -106,7 +106,7 @@ namespace NHINDirect.Mime
                 throw new ArgumentNullException("stream");
             }
 
-            using (var reader = new StreamReader(stream, Encoding.ASCII))
+            using (StreamReader reader = new StreamReader(stream, Encoding.ASCII))
             {
                 return Deserialize<T>(reader);
             }
@@ -146,7 +146,7 @@ namespace NHINDirect.Mime
 				throw new ArgumentException("messageBytes contained was empty", "messageBytes");
 			}
             
-            using (var stream = new MemoryStream(messageBytes))
+            using (MemoryStream stream = new MemoryStream(messageBytes))
             {
                 return Deserialize<T>(stream);
             }            

@@ -18,34 +18,50 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NHINDirect.Mime
+namespace NHINDirect.ConfigStore
 {
-    public class Body : MimePart
+    public class ConfigStore
     {
-        public Body()
-            : base(MimePartType.Body)
-        {
-        }
-        public Body(StringSegment body)
-            : base(MimePartType.Body, body)
-        {
-        }
+        string m_connectString;
+        DomainManager m_domains;
+        CertificateManager m_certificates;
+        AnchorManager m_anchors;
         
-        public Body(string body)
-            : base(MimePartType.Body)
+        public ConfigStore(string connectString)
         {
-            this.Text = body;
+            m_connectString = connectString;
+            m_domains = new DomainManager(this);
+            m_certificates = new CertificateManager(this);
+            m_anchors = new AnchorManager(this);
         }        
         
-        public Body(byte[] body)
-            : base(MimePartType.Body)
+        public DomainManager Domains
         {
-            this.Text = Convert.ToBase64String(body, Base64FormattingOptions.InsertLineBreaks);
+            get
+            {
+                return m_domains;
+            }
         }
         
-        internal Body(Body body)
-            : base(MimePartType.Body, body.SourceText)
+        public CertificateManager Certificates
         {
+            get
+            {
+                return m_certificates;
+            }
+        }        
+        
+        public AnchorManager Anchors
+        {
+            get
+            {
+                return m_anchors;
+            }
+        }
+                                
+        public ConfigDatabase CreateContext()
+        {
+            return new ConfigDatabase(m_connectString);
         }
     }
 }

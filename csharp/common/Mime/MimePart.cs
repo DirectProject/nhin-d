@@ -23,14 +23,6 @@ namespace NHINDirect.Mime
 		StringSegment m_sourceText; // Text from the source message string: VERBATIM. Necessary for signatures etc.
 		string m_text;
 
-		protected event PropertyChangedEventHandler TextChanged;
-
-		private void InvokeTextChanged(PropertyChangedEventArgs e)
-		{
-			PropertyChangedEventHandler changed = TextChanged;
-			if (changed != null) changed(this, e);
-		}
-
 		public EntityPart(T type)
 		{
             Type = type;
@@ -58,26 +50,27 @@ namespace NHINDirect.Mime
                 return m_sourceText;
             }
         }
-		public string Text
+        
+		public virtual string Text
 		{
 			get
 			{
 				if (m_text == null)
 				{
                     m_text = m_sourceText.ToString();
-					InvokeTextChanged(new PropertyChangedEventArgs("Text"));
 				}
 
 				return m_text;
 			}
-			private set
+			protected set
 			{
 				if (value == null)
 				{
                     throw new ArgumentNullException("value");
 				}
+            
                 m_sourceText = new StringSegment(value);
-				m_text = null; // let the lazy getter fire the property changed event
+				m_text = null; 
 			}
 		}
 
