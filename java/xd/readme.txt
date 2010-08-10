@@ -38,6 +38,9 @@ The deployment has been tested using apache-tomcat-6.0.29 . This can be download
 is installed and running, the xd.war file can be copied from the hg\java\xd\target directory to the TOMCAT_HOME\webapps directory where it will 
 hot-deploy automatically. This deployment runs on port 8080 as is. 
 
-This implementation can be tested out using the SOAP-UI test dirctory \hg\java\xd\soapui.  Currently only the ccd test is working (not the pdf) . 
+This implementation can be tested out using the SOAP-UI test dirctory \hg\java\xd\soapui.  Currently only the ccd test is working (not the pdf) .
+
+the endpoint for testing in standard tomcat is http://localhost:8080/xd/services/DocumentRepository_Service
+ 
 
 Vince Lewis
