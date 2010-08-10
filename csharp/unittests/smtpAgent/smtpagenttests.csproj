@@ -31,7 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="agentUnitTests, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="agentXUnitTests, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="nhinAgent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="nhinCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="nhinSmtpAgent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
