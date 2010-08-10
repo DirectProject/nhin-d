@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SmtpAgentTests")]
+[assembly: AssemblyTitle("configSystem")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("NHIN Direct Project")]
-[assembly: AssemblyProduct("SmtpAgentTests")]
+[assembly: AssemblyProduct("configSystem")]
 [assembly: AssemblyCopyright("Copyright © NHIN Direct Project")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0bf7baba-2b43-43b5-a5e3-128005e5ad91")]
+[assembly: Guid("596c0748-f8ac-406d-ba74-c9cbd10f7f9b")]
 
 // Version information for an assembly consists of the following four values:
 //

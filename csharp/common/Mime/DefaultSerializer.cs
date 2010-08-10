@@ -26,13 +26,13 @@ namespace NHINDirect.Mime
     {
     	public override string Serialize(MimeEntity entity)
         {
-            var message = entity as Message;
+            Message message = entity as Message;
             if (message != null)
             {
                 //
                 // Already ASCII encoded. We can just serialize to text...
                 //
-                using(var writer = new StringWriter())
+                using(StringWriter writer = new StringWriter())
                 {
                     Serialize(entity, writer);
                     return writer.ToString();
@@ -50,7 +50,7 @@ namespace NHINDirect.Mime
                 throw new ArgumentNullException("entity");
             }
 
-			using (var entityWriter = new MimeWriter(writer))
+			using (MimeWriter entityWriter = new MimeWriter(writer))
 			{
 				Serialize(entity, entityWriter);
 			}
@@ -91,7 +91,7 @@ namespace NHINDirect.Mime
                 throw new ArgumentNullException("entities");
             }
 
-			using (var entityWriter = new MimeWriter(writer))
+			using (MimeWriter entityWriter = new MimeWriter(writer))
 			{
 				foreach (MimeEntity entity in entities)
 				{
@@ -133,7 +133,7 @@ namespace NHINDirect.Mime
 				throw new ArgumentException("headerText.Value was null or empty");
 			}
 
-            var builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             builder.Append(headerText.Key);
             builder.Append(MimeStandard.NameValueSeparator);
             builder.Append(headerText.Value);

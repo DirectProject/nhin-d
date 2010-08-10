@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}</ProjectGuid>
+    <ProjectGuid>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmtpAgentTests</RootNamespace>
-    <AssemblyName>SmtpAgentUnitTests</AssemblyName>
+    <RootNamespace>NHINDirect.ConfigStore</RootNamespace>
+    <AssemblyName>nhinConfigStore</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,47 +31,51 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nhinAgent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="nhinCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="nhinSmtpAgent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+    <Reference Include="nhinCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\external\nunit\bin\net-2.0\nunit.framework.dll</HintPath>
+      <HintPath>..\..\bin\$(Configuration)\nhinCommon.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddressManager.cs" />
+    <Compile Include="AnchorManager.cs" />
+    <Compile Include="CertificateManager.cs" />
+    <Compile Include="Account.cs" />
+    <Compile Include="Address.cs" />
+    <Compile Include="Anchor.cs" />
+    <Compile Include="Certificate.cs" />
+    <Compile Include="ConfigStore.cs" />
+    <Compile Include="ConfigDatabase.cs" />
+    <Compile Include="ConfigStoreException.cs" />
+    <Compile Include="Domain.cs" />
+    <Compile Include="DomainManager.cs" />
+    <Compile Include="Queries.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestSmtpAgent.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SmtpAgentConfig.xml" />
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="ADODB">
-      <Guid>{B691E011-1797-432E-907A-4D8C69339129}</Guid>
-      <VersionMajor>6</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-    <COMReference Include="CDO">
-      <Guid>{CD000000-8B95-11D1-82DB-00C04FB1625D}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
+    <Content Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Schema.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -129,7 +129,7 @@ namespace NHINDirect.Cryptography
 
             byte[] encryptedBytes = Encrypt(messageBytes, encryptingCertificates);
 
-        	var encryptedEntity = new MimeEntity
+        	MimeEntity encryptedEntity = new MimeEntity
         	                      	{
         	                      		ContentType = SMIMEStandard.EncryptedEnvelopeContentTypeHeaderValue,
         	                      		ContentTransferEncoding = TransferEncoding.Base64.AsString(),
@@ -162,8 +162,8 @@ namespace NHINDirect.Cryptography
                 throw new EncryptionException(EncryptionError.NoCertificates);
             }
 
-            var recipients = new CmsRecipientCollection(SubjectIdentifierType.IssuerAndSerialNumber, encryptingCertificates);
-            var dataEnvelope = new EnvelopedCms(CreateDataContainer(content), ToAlgorithmID(m_encryptionAlgorithm));
+            CmsRecipientCollection recipients = new CmsRecipientCollection(SubjectIdentifierType.IssuerAndSerialNumber, encryptingCertificates);
+            EnvelopedCms dataEnvelope = new EnvelopedCms(CreateDataContainer(content), ToAlgorithmID(m_encryptionAlgorithm));
             dataEnvelope.Encrypt(recipients);
 
             return dataEnvelope;
@@ -243,7 +243,7 @@ namespace NHINDirect.Cryptography
                 throw new EncryptionException(EncryptionError.NullContent);
             }
 
-            var dataEnvelope = new EnvelopedCms();
+            EnvelopedCms dataEnvelope = new EnvelopedCms();
             dataEnvelope.Decode(encryptedContent);
             return dataEnvelope;
         }
@@ -313,7 +313,7 @@ namespace NHINDirect.Cryptography
             //
             // We create an entity to hold a detached signature
             //
-        	var signature = new MimeEntity
+        	MimeEntity signature = new MimeEntity
         	                	{
         	                		ContentType = SMIMEStandard.SignatureContentTypeHeaderValue,
         	                		ContentTransferEncoding = TransferEncoding.Base64.AsString(),
@@ -335,7 +335,7 @@ namespace NHINDirect.Cryptography
             }
 
             CmsSigner signer = CreateSigner(signingCertificate);
-            var signature = new SignedCms(CreateDataContainer(content), true); // true: Detached Signature            
+            SignedCms signature = new SignedCms(CreateDataContainer(content), true); // true: Detached Signature            
             signature.ComputeSignature(signer, true);   // true: don't prompt the user
 
             return signature;
@@ -353,7 +353,7 @@ namespace NHINDirect.Cryptography
                 throw new SignatureException(SignatureError.NoCertificates);
             }
 
-            var signature = new SignedCms(CreateDataContainer(content), true); // true: Detached Signature            
+            SignedCms signature = new SignedCms(CreateDataContainer(content), true); // true: Detached Signature            
             for (int i = 0, count = signingCertificates.Count; i < count; ++i)
             {
                 CmsSigner signer = CreateSigner(signingCertificates[i]);
@@ -413,7 +413,7 @@ namespace NHINDirect.Cryptography
 
         public SignedCms DeserializeDetachedSignature(byte[] content, byte[] signatureBytes)
         {
-            var signature = new SignedCms(CreateDataContainer(content), true);
+            SignedCms signature = new SignedCms(CreateDataContainer(content), true);
             signature.Decode(signatureBytes);
 
             return signature;
@@ -438,7 +438,7 @@ namespace NHINDirect.Cryptography
 
         public SignedCms DeserializeEnvelopedSignature(byte[] envelopeBytes)
         {
-            var signature = new SignedCms();
+            SignedCms signature = new SignedCms();
             signature.Decode(envelopeBytes);
 
             if (!IsDataContainer(signature.ContentInfo))
@@ -451,13 +451,13 @@ namespace NHINDirect.Cryptography
 
         CmsSigner CreateSigner(X509Certificate2 cert)
         {
-            var signer = new CmsSigner(cert)
+            CmsSigner signer = new CmsSigner(cert)
                          	{
                          		IncludeOption = m_certChainInclude,
                          		DigestAlgorithm = ToDigestAlgorithmOid(m_digestAlgorithm)
                          	};
 
-        	var signingTime = new Pkcs9SigningTime();
+            Pkcs9SigningTime signingTime = new Pkcs9SigningTime();
             signer.SignedAttributes.Add(signingTime);
 
             return signer;

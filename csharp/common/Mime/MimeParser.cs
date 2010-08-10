@@ -43,7 +43,7 @@ namespace NHINDirect.Mime
         public static T Read<T>(StringSegment entityText)
             where T : MimeEntity, new()
         {
-            var entity = new T();
+            T entity = new T();
 
             foreach (MimePart part in ReadMimeParts(entityText))
             {
@@ -101,14 +101,14 @@ namespace NHINDirect.Mime
         public static IEnumerable<StringSegment> ReadHeaderParts(StringSegment source, char separator)
         {
             int startAt = source.StartIndex;
-            var reader = new CharReader(source);
-            while (reader.ReadTo(separator))
+            CharReader reader = new CharReader(source);
+            while (reader.ReadTo(separator, true))
             {
                 yield return new StringSegment(source.Source, startAt, reader.Position - 1); // STRUCTS - fast
                 startAt = reader.Position + 1;
             }            
             
-            var last = new StringSegment(source.Source, startAt, reader.Position);
+            StringSegment last = new StringSegment(source.Source, startAt, reader.Position);
             if (!last.IsEmpty)
             {
                 yield return last;
@@ -385,7 +385,7 @@ namespace NHINDirect.Mime
         
         public static IEnumerable<StringSegment> ReadLines(StringSegment entity)
         {
-            var reader = new CharReader(entity);
+            CharReader reader = new CharReader(entity);
             int startIndex = reader.Position + 1;
             int endIndex = startIndex - 1;
             char ch;
@@ -429,7 +429,7 @@ namespace NHINDirect.Mime
         
         public static StringSegment SkipWhitespace(StringSegment text)
         {
-            var reader = new CharReader(text);
+            CharReader reader = new CharReader(text);
             char ch;
             while ((ch = reader.Read()) != CharReader.EOF && MimeStandard.IsWhitespace(ch))
 			{
@@ -441,9 +441,9 @@ namespace NHINDirect.Mime
 
 		public static int IndexOf(string text, char ch)
 		{
-			var reader = new CharReader(text);
+			CharReader reader = new CharReader(text);
 
-			if (reader.ReadTo(ch))
+			if (reader.ReadTo(ch, false))
 			{
 				return reader.Position;
 			}
