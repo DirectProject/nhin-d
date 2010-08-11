@@ -39,7 +39,14 @@
 
 	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
 	<Target Name="test-agent" DependsOnTargets="build-agent">
-   <xunitproject ProjectFile="unittests\agent.xunit" />
+		<xunitproject ProjectFile="unittests\agent.xunit" />
+	</Target>
+	
+	<Target Name="test-gateway" DependsOnTargets="build-gateway">
+		<Warning Text="The gateway tests are integration tests and require the gateway/agent to be installed" />
+		<!-- these are require external processes to be running - commented out for now
+		<xunitproject ProjectFile="unittests\gateway.xunit" />
+		-->
 	</Target>
 	
 </Project>
