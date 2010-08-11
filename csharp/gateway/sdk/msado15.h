@@ -3,18 +3,18 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 7.00.0486 */
-/* at Thu Jul 29 15:33:12 2010
+ /* File created by MIDL compiler version 7.00.0555 */
+/* at Tue Aug 10 21:55:51 2010
  */
 /* Compiler settings for C:\Program Files\Microsoft SDKs\Windows\v6.0A\Include\msado15.idl:
-    Oicf, W1, Zp8, env=Win32 (32b run)
+    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 7.00.0555 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
          DECLSPEC_UUID(), MIDL_INTERFACE()
 */
-//@@MIDL_FILE_HEADING(  )
+/* @@MIDL_FILE_HEADING(  ) */
 
 #pragma warning( disable: 4049 )  /* more than 64k source lines */
 
@@ -1057,7 +1057,7 @@ EXTERN_C const IID IID__Collection;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             _Collection * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1194,7 +1194,7 @@ EXTERN_C const IID IID__DynaCollection;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             _DynaCollection * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1343,7 +1343,7 @@ EXTERN_C const IID IID__ADO;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             _ADO * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1465,7 +1465,7 @@ EXTERN_C const IID IID_Properties;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Properties * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1623,7 +1623,7 @@ EXTERN_C const IID IID_Property;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Property * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1797,7 +1797,7 @@ EXTERN_C const IID IID_Error;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Error * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1963,7 +1963,7 @@ EXTERN_C const IID IID_Errors;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Errors * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2165,7 +2165,7 @@ EXTERN_C const IID IID_Command15;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Command15 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2409,7 +2409,7 @@ EXTERN_C const IID IID_Command25;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Command25 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2680,7 +2680,7 @@ EXTERN_C const IID IID__Command;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             _Command * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -3066,7 +3066,7 @@ EXTERN_C const IID IID_Connection15;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Connection15 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -3389,7 +3389,7 @@ EXTERN_C const IID IID__Connection;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             _Connection * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -3908,7 +3908,7 @@ EXTERN_C const IID IID_Recordset15;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Recordset15 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -4506,7 +4506,7 @@ EXTERN_C const IID IID_Recordset20;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Recordset20 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -5167,7 +5167,7 @@ EXTERN_C const IID IID_Recordset21;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Recordset21 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -5845,7 +5845,7 @@ EXTERN_C const IID IID__Recordset;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             _Recordset * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -6532,7 +6532,7 @@ EXTERN_C const IID IID_Fields15;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Fields15 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -6681,7 +6681,7 @@ EXTERN_C const IID IID_Fields20;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Fields20 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -6853,7 +6853,7 @@ EXTERN_C const IID IID_Fields;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Fields * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -7082,7 +7082,7 @@ EXTERN_C const IID IID_Field15;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Field15 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -7354,7 +7354,7 @@ EXTERN_C const IID IID_Field20;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Field20 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -7617,7 +7617,7 @@ EXTERN_C const IID IID_Field;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Field * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -7936,7 +7936,7 @@ EXTERN_C const IID IID__Parameter;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             _Parameter * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -8178,7 +8178,7 @@ EXTERN_C const IID IID_Parameters;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             Parameters * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -8407,7 +8407,7 @@ EXTERN_C const IID IID__Record;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             _Record * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -8758,7 +8758,7 @@ EXTERN_C const IID IID__Stream;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             _Stream * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -9062,7 +9062,7 @@ EXTERN_C const IID IID_ADODebugging;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ADODebugging * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -9202,7 +9202,7 @@ EXTERN_C const IID IID_ConnectionEventsVt;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ConnectionEventsVt * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -9427,7 +9427,7 @@ EXTERN_C const IID IID_RecordsetEventsVt;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             RecordsetEventsVt * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -9614,7 +9614,7 @@ EXTERN_C const IID IID_ADOConnectionConstruction15;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ADOConnectionConstruction15 * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -9705,7 +9705,7 @@ EXTERN_C const IID IID_ADOConnectionConstruction;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ADOConnectionConstruction * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -9815,7 +9815,7 @@ EXTERN_C const IID IID_ADORecordsetConstruction;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ADORecordsetConstruction * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -9974,7 +9974,7 @@ EXTERN_C const IID IID_ADOCommandConstruction;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ADOCommandConstruction * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -10066,7 +10066,7 @@ EXTERN_C const IID IID_ADORecordConstruction;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ADORecordConstruction * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -10204,7 +10204,7 @@ EXTERN_C const IID IID_ADOStreamConstruction;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ADOStreamConstruction * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 

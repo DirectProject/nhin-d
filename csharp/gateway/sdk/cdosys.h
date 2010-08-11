@@ -3,18 +3,18 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 7.00.0486 */
-/* at Thu Jul 29 15:33:13 2010
+ /* File created by MIDL compiler version 7.00.0555 */
+/* at Tue Aug 10 21:55:52 2010
  */
 /* Compiler settings for C:\Program Files\Microsoft SDKs\Windows\v6.0A\Include\cdosys.idl:
-    Oicf, W1, Zp8, env=Win32 (32b run)
+    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 7.00.0555 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
          DECLSPEC_UUID(), MIDL_INTERFACE()
 */
-//@@MIDL_FILE_HEADING(  )
+/* @@MIDL_FILE_HEADING(  ) */
 
 #pragma warning( disable: 4049 )  /* more than 64k source lines */
 
@@ -502,7 +502,7 @@ EXTERN_C const IID IID_IDataSource;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IDataSource * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -897,7 +897,7 @@ EXTERN_C const IID IID_IMessage;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IMessage * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1487,7 +1487,7 @@ EXTERN_C const IID IID_IBodyPart;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IBodyPart * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1767,7 +1767,7 @@ EXTERN_C const IID IID_IConfiguration;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IConfiguration * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1920,7 +1920,7 @@ EXTERN_C const IID IID_IMessages;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IMessages * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2078,7 +2078,7 @@ EXTERN_C const IID IID_IDropDirectory;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IDropDirectory * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2216,7 +2216,7 @@ EXTERN_C const IID IID_IBodyParts;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IBodyParts * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2370,7 +2370,7 @@ EXTERN_C const IID IID_ISMTPScriptConnector;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISMTPScriptConnector * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2481,7 +2481,7 @@ EXTERN_C const IID IID_INNTPEarlyScriptConnector;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             INNTPEarlyScriptConnector * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2592,7 +2592,7 @@ EXTERN_C const IID IID_INNTPPostScriptConnector;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             INNTPPostScriptConnector * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2703,7 +2703,7 @@ EXTERN_C const IID IID_INNTPFinalScriptConnector;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             INNTPFinalScriptConnector * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2818,7 +2818,7 @@ EXTERN_C const IID IID_ISMTPOnArrival;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISMTPOnArrival * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2941,7 +2941,7 @@ EXTERN_C const IID IID_INNTPOnPostEarly;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             INNTPOnPostEarly * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -3064,7 +3064,7 @@ EXTERN_C const IID IID_INNTPOnPost;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             INNTPOnPost * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -3187,7 +3187,7 @@ EXTERN_C const IID IID_INNTPOnPostFinal;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             INNTPOnPostFinal * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -3928,7 +3928,7 @@ EXTERN_C const IID IID_IGetInterface;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IGetInterface * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 

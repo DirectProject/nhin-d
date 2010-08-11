@@ -3,18 +3,18 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 7.00.0486 */
-/* at Thu Jul 29 15:33:13 2010
+ /* File created by MIDL compiler version 7.00.0555 */
+/* at Tue Aug 10 21:55:53 2010
  */
 /* Compiler settings for C:\Program Files\Microsoft SDKs\Windows\v6.0A\Include\seo.idl:
-    Oicf, W1, Zp8, env=Win32 (32b run)
+    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 7.00.0555 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
          DECLSPEC_UUID(), MIDL_INTERFACE()
 */
-//@@MIDL_FILE_HEADING(  )
+/* @@MIDL_FILE_HEADING(  ) */
 
 #pragma warning( disable: 4049 )  /* more than 64k source lines */
 
@@ -825,7 +825,7 @@ EXTERN_C const IID IID_ISEODictionaryItem;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISEODictionaryItem * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1081,7 +1081,7 @@ EXTERN_C const IID IID_ISEODictionary;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISEODictionary * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1359,7 +1359,7 @@ EXTERN_C const IID IID_IEventLock;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventLock * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1522,7 +1522,7 @@ EXTERN_C const IID IID_ISEORouter;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISEORouter * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1650,7 +1650,7 @@ EXTERN_C const IID IID_IMCISMessageFilter;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IMCISMessageFilter * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1732,7 +1732,7 @@ EXTERN_C const IID IID_ISEOBindingRuleEngine;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISEOBindingRuleEngine * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1811,7 +1811,7 @@ EXTERN_C const IID IID_ISEOEventSink;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISEOEventSink * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -1894,7 +1894,7 @@ EXTERN_C const IID IID_ISEORegDictionary;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISEORegDictionary * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2177,7 +2177,7 @@ EXTERN_C const IID IID_ISEOBindingConverter;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISEOBindingConverter * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2258,7 +2258,7 @@ EXTERN_C const IID IID_ISEODispatcher;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISEODispatcher * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2335,7 +2335,7 @@ EXTERN_C const IID IID_IEventDeliveryOptions;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventDeliveryOptions * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2462,7 +2462,7 @@ EXTERN_C const IID IID_IEventTypeSinks;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventTypeSinks * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2618,7 +2618,7 @@ EXTERN_C const IID IID_IEventType;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventType * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2771,7 +2771,7 @@ EXTERN_C const IID IID_IEventPropertyBag;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventPropertyBag * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -2986,7 +2986,7 @@ EXTERN_C const IID IID_IEventBinding;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventBinding * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -3253,7 +3253,7 @@ EXTERN_C const IID IID_IEventBindings;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventBindings * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -3417,7 +3417,7 @@ EXTERN_C const IID IID_IEventTypes;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventTypes * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -3571,7 +3571,7 @@ EXTERN_C const IID IID_IEventBindingManager;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventBindingManager * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -3704,7 +3704,7 @@ EXTERN_C const IID IID_IEventBindingManagerCopier;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventBindingManagerCopier * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -3866,7 +3866,7 @@ EXTERN_C const IID IID_IEventRouter;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventRouter * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -3991,7 +3991,7 @@ EXTERN_C const IID IID_IEventDispatcher;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventDispatcher * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -4107,7 +4107,7 @@ EXTERN_C const IID IID_IEventSource;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventSource * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -4304,7 +4304,7 @@ EXTERN_C const IID IID_IEventSources;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventSources * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -4472,7 +4472,7 @@ EXTERN_C const IID IID_IEventSourceType;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventSourceType * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -4648,7 +4648,7 @@ EXTERN_C const IID IID_IEventSourceTypes;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventSourceTypes * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -4804,7 +4804,7 @@ EXTERN_C const IID IID_IEventManager;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventManager * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -4958,7 +4958,7 @@ EXTERN_C const IID IID_IEventDatabasePlugin;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventDatabasePlugin * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -5108,7 +5108,7 @@ EXTERN_C const IID IID_IEventDatabaseManager;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventDatabaseManager * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -5295,7 +5295,7 @@ EXTERN_C const IID IID_IEventUtil;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventUtil * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -5516,7 +5516,7 @@ EXTERN_C const IID IID_IEventComCat;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventComCat * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -5693,7 +5693,7 @@ EXTERN_C const IID IID_IEventNotifyBindingChange;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventNotifyBindingChange * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -5770,7 +5770,7 @@ EXTERN_C const IID IID_IEventNotifyBindingChangeDisp;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventNotifyBindingChangeDisp * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -5887,7 +5887,7 @@ EXTERN_C const IID IID_ISEOInitObject;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISEOInitObject * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -5991,7 +5991,7 @@ EXTERN_C const IID IID_IEventRuleEngine;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventRuleEngine * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -6076,7 +6076,7 @@ EXTERN_C const IID IID_IEventPersistBinding;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventPersistBinding * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -6176,7 +6176,7 @@ EXTERN_C const IID IID_IEventSinkNotify;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventSinkNotify * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -6253,7 +6253,7 @@ EXTERN_C const IID IID_IEventSinkNotifyDisp;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventSinkNotifyDisp * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -6372,7 +6372,7 @@ EXTERN_C const IID IID_IEventIsCacheable;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventIsCacheable * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -6477,7 +6477,7 @@ EXTERN_C const IID IID_IEventCreateOptions;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventCreateOptions * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
@@ -6643,7 +6643,7 @@ EXTERN_C const IID IID_IEventDispatcherChain;
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IEventDispatcherChain * This,
             /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
+            /* [annotation][iid_is][out] */ 
             __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 

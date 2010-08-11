@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="build-all" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	
 	<!-- MSBuild documentation found at http://msdn.microsoft.com/en-us/library/0k6kkbsd.aspx -->
 	
@@ -6,14 +6,21 @@
 	
 	<UsingTask AssemblyFile="external\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunitproject" />
 
-	<Target Name="Build">
+	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway" />
+
+	<Target Name="build-agent">
 		<MSBuild Projects=".\build\build.sln" Properties="Configuration=Debug" />
+	</Target>
+
+	<Target Name="build-gateway">
+		<MSBuild Projects=".\gateway\gateway.sln" Properties="Configuration=Debug" />
 	</Target>
 
 	<!-- WITH THE USE of xUnit this is no longer required however, we may want to use some of the tasks in the future -->
 	<!-- Requires external\Tigris\MSBuildTasks.msi be installed http://msbuildtasks.tigris.org/ -->
 	<!-- After installation the help file is at [Program Files]\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.chm -->
-	<Target Name="Test" DependsOnTargets="Build">
+	<Target Name="test" DependsOnTargets="build-all">
          <xunitproject ProjectFile="unittests\all.xunit" />
 	</Target>
+	
 </Project>
