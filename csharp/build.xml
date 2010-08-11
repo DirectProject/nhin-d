@@ -2,8 +2,11 @@
 	
 	<!-- MSBuild documentation found at http://msdn.microsoft.com/en-us/library/0k6kkbsd.aspx -->
 	
+	<!-- Tigris - external\Tigris\MSBuildTasks.msi be installed http://msbuildtasks.tigris.org/ -->
+	<!-- After installation the help file is at [Program Files]\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.chm -->
 	<!-- <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/> -->
 	
+	<!-- this imports the xunit and xunitproject tasks -->
 	<UsingTask AssemblyFile="external\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunitproject" />
 
 	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway" />
@@ -27,11 +30,9 @@
 		 -->
 	</Target>
 
-	<!-- WITH THE USE of xUnit this is no longer required however, we may want to use some of the tasks in the future -->
-	<!-- Requires external\Tigris\MSBuildTasks.msi be installed http://msbuildtasks.tigris.org/ -->
-	<!-- After installation the help file is at [Program Files]\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.chm -->
+	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
 	<Target Name="test" DependsOnTargets="build-all">
-         <xunitproject ProjectFile="unittests\all.xunit" />
+   <xunitproject ProjectFile="unittests\all.xunit" />
 	</Target>
 	
 </Project>
