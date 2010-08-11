@@ -7,13 +7,24 @@
 	<UsingTask AssemblyFile="external\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunitproject" />
 
 	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway" />
+	<Target Name="clean-all" DependsOnTargets="clean-agent;clean-gateway" />
 
 	<Target Name="build-agent">
-		<MSBuild Projects=".\build\build.sln" Properties="Configuration=Debug" />
+		<MSBuild Projects=".\build\build.sln" Targets="Build" Properties="Configuration=Debug" />
+	</Target>
+
+	<Target Name="clean-agent">
+		<MSBuild Projects=".\build\build.sln" Targets="Clean" />
 	</Target>
 
 	<Target Name="build-gateway">
-		<MSBuild Projects=".\gateway\gateway.sln" Properties="Configuration=Debug" />
+		<MSBuild Projects=".\gateway\gateway.sln" Targets="Build" Properties="Configuration=Debug" />
+	</Target>
+
+	<Target Name="clean-gateway">
+		<!-- taken out for now due to failure
+		<MSBuild Projects=".\gateway\gateway.sln" Targets="Clean" />
+		 -->
 	</Target>
 
 	<!-- WITH THE USE of xUnit this is no longer required however, we may want to use some of the tasks in the future -->
