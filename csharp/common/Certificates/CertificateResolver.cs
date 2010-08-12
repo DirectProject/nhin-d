@@ -63,9 +63,5 @@ namespace NHINDirect.Certificates
             return matches;            
         }
         
-        public static bool IsNullOrEmpty(X509Certificate2Collection certs)
-        {
-            return (certs == null || certs.Count == 0);
-        }
     }
 }

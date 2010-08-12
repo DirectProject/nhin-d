@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Security.Cryptography.X509Certificates;
 
 namespace NHINDirect
 {
@@ -25,6 +26,11 @@ namespace NHINDirect
         public static bool Contains(this string x, string y, StringComparison comparison)
         {
             return (x.IndexOf(y, comparison) >= 0);
+        }
+
+         public static bool IsNullOrEmpty(this X509Certificate2Collection certs)
+        {
+            return (certs == null || certs.Count == 0);
         }
     }
 }
