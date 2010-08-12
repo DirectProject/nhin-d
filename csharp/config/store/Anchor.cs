@@ -24,7 +24,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using NHINDirect.Certificates;
 
-namespace NHINDirect.ConfigStore
+namespace NHINDirect.Config.Store
 {
     [Table(Name = "Anchors")]
     public class Anchor
@@ -32,6 +32,7 @@ namespace NHINDirect.ConfigStore
         public const int MaxOwnerLength = 400;
         
         string m_owner;
+        byte[] m_data;
         
         public Anchor()
         {
@@ -44,9 +45,9 @@ namespace NHINDirect.ConfigStore
         
         public Anchor(string owner, X509Certificate2 certificate, bool forIncoming, bool forOutgoing)
         {
-            if (string.IsNullOrEmpty(owner) || certificate == null)
+            if (certificate == null)
             {
-                throw new ArgumentException();
+                throw new ConfigStoreException(ConfigStoreError.InvalidCertificate);
             }
             
             this.Owner = owner;
@@ -68,7 +69,12 @@ namespace NHINDirect.ConfigStore
             }
             set
             {
-                if (string.IsNullOrEmpty(value) || value.Length > MaxOwnerLength)
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+                }
+                
+                if (value.Length > MaxOwnerLength)
                 {
                     throw new ConfigStoreException(ConfigStoreError.OwnerLength);
                 }
@@ -94,8 +100,19 @@ namespace NHINDirect.ConfigStore
         [Column(Name = "CertificateData", DbType = "varbinary(MAX)", CanBeNull = false)]
         public byte[] Data
         {
-            get;
-            set;
+            get
+            {
+                return m_data;
+            }
+            set
+            {
+                if (value == null || value.Length == 0)
+                {
+                    throw new ConfigStoreException(ConfigStoreError.MissingCertificateData);
+                }
+
+                m_data = value;
+            }
         }
 
         [Column(Name = "CreateDate", CanBeNull = false)]

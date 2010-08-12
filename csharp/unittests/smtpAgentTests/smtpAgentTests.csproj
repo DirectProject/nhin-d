@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}</ProjectGuid>
+    <ProjectGuid>{70519D25-E470-4792-AEA8-3D8BF0792B8E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmtpAgentTests</RootNamespace>
+    <RootNamespace>smtpAgentTests</RootNamespace>
     <AssemblyName>smtpAgentXUnitTests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -25,20 +25,21 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="agentXUnitTests, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="nhinAgent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="nhinCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="nhinSmtpAgent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
@@ -54,36 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestSmtpAgent.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="TestSmtpAgentConfig.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="ADODB">
-      <Guid>{B691E011-1797-432E-907A-4D8C69339129}</Guid>
-      <VersionMajor>6</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-    <COMReference Include="CDO">
-      <Guid>{CD000000-8B95-11D1-82DB-00C04FB1625D}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\gateway\smtpAgent\smtpAgent.csproj">
-      <Project>{A9B11AAD-3461-4DDB-A447-91779BD41A78}</Project>
-      <Name>smtpAgent</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
