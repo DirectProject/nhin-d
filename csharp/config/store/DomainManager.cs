@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NHINDirect.ConfigStore
+namespace NHINDirect.Config.Store
 {
     public class DomainManager : IEnumerable<Domain>
     {
@@ -83,7 +83,7 @@ namespace NHINDirect.ConfigStore
                 throw new ArgumentException();
             }
 
-            return db.Domains.Find(name);
+            return db.Domains.GetDomain(name);
         }
 
         public bool Contains(string name)
@@ -101,7 +101,7 @@ namespace NHINDirect.ConfigStore
                 throw new ArgumentException();
             }
             
-            return (db.Domains.Find(name) != null);
+            return (db.Domains.GetDomain(name) != null);
         }
         
         public void Remove(string name)
