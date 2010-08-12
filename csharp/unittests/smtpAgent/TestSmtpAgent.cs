@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using NUnit.Framework;
-using NHINDirect.Mail;
+﻿using System.IO;
+
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
 
+using Xunit;
+
 namespace SmtpAgentTests
 {    
-    [TestFixture]
     public class TestSmtpAgent
     {
-        public TestSmtpAgent()
-        {
-        }
-        
         const string TestMessage = 
 @"From: <toby@redmond.hsgincubator.com>
 To: <biff@nhind.hsgincubator.com>
@@ -39,22 +31,21 @@ Bad message?";
         
         MessageArrivalEventHandler m_handler;
         
-        [SetUp]
-        public void Init()
+        public TestSmtpAgent()
         {
             AgentTests.AgentTester.EnsureStandardMachineStores();
             m_handler = new MessageArrivalEventHandler();
             m_handler.InitFromConfigFile(Path.Combine(Directory.GetCurrentDirectory(), "TestSmtpAgentConfig.xml"));
         }
         
-        [Test]
+        [Fact]
         public void Test()
         {
             Assert.DoesNotThrow(() => m_handler.ProcessCDOMessage(this.LoadMessage(TestMessage)));
             Assert.Throws<AgentException>(() => m_handler.ProcessCDOMessage(this.LoadMessage(BadMessage)));
         }
         
-        [Test]
+        [Fact]
         public void TestEndToEnd()
         {
             CDO.Message message = this.LoadMessage(TestMessage);
@@ -68,7 +59,7 @@ Bad message?";
             Assert.DoesNotThrow(() => m_handler.ProcessCDOMessage(message));   
         }
         
-        [Test]
+        [Fact]
         public void TestUntrusted()
         {   
             SmtpAgentSettings settings =  SmtpAgentSettings.LoadFile(Path.Combine(Directory.GetCurrentDirectory(), "TestSmtpAgentConfig.xml"));      

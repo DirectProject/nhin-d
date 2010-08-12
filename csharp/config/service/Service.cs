@@ -16,74 +16,41 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Runtime.Serialization;
-using NHINDirect;
+using System.Web;
+using System.Configuration;
+using NHINDirect.Config.Store;
 
-namespace NHINDirect.Config.Store
+namespace NHINDirect.Config.Service
 {
-    public enum ConfigStoreError
+    public class Service
     {
-        None = 0,
-        Unknown,
-        Unexpected,
-        InvalidCertificate,
-        InvalidX509Certificate,
-        InvalidOwnerName,
-        InvalidThumbprint,
-        InvalidAnchor,
-        OwnerLength,
-        AccountNameLength,
-        DomainNameLength,
-        EndpointNameLength,
-        DisplayNameLength,
-        MissingCertificateData
-    }
+        public static Service Current = new Service();
         
-    public class ConfigStoreException : NHINDException<ConfigStoreError>
-    {
-        public ConfigStoreException()
-            : base(ConfigStoreError.Unknown)
-        {
-        }
-        
-        public ConfigStoreException(ConfigStoreError error)
-            : base(error)
-        {
-        }
-        
-        public ConfigStoreFault ToFault()
-        {
-            return new ConfigStoreFault(this.Error);
-        }
-    }
-    
-    /// <summary>
-    /// Serializable - used for web services
-    /// </summary>
-    [DataContract(Namespace = ConfigStore.Namespace)]
-    public class ConfigStoreFault
-    {
-        public ConfigStoreFault()
-            : this(ConfigStoreError.Unknown)
-        {
-        }
-        
-        public ConfigStoreFault(ConfigStoreError error)
-        {
-            this.Error = error;
-        }
+        public const string Namespace = ConfigStore.Namespace;
 
-        public ConfigStoreFault(ConfigStoreException ex)
-            : this(ex.Error)
+        ServiceSettings m_settings;
+        ConfigStore m_store;
+                
+        public Service()
         {
+            m_settings = new ServiceSettings();
+            m_store = new ConfigStore(m_settings.StoreConnectString);
         }
         
-        [DataMember]
-        public ConfigStoreError Error
+        public ServiceSettings Settings
         {
-            get;
-            set;
+            get
+            {
+                return m_settings;
+            }
+        }
+        
+        public ConfigStore Store
+        {
+            get
+            {
+                return m_store;
+            }
         }
     }
 }

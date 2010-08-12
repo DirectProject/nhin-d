@@ -12,9 +12,12 @@
 	<!-- Aliases -->
 	<Target Name="build" DependsOnTargets="build-all" />
 	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway" />
+
 	<Target Name="clean" DependsOnTargets="clean-all" />
 	<Target Name="clean-all" DependsOnTargets="clean-agent;clean-gateway" />
+
 	<Target Name="test" DependsOnTargets="test-all" />
+	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway" />
 
 	<Target Name="build-agent">
 		<MSBuild Projects=".\build\build.sln" Targets="Build" Properties="Configuration=Debug" />
@@ -35,8 +38,15 @@
 	</Target>
 
 	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
-	<Target Name="test-all" DependsOnTargets="build-all">
-   <xunitproject ProjectFile="unittests\all.xunit" />
+	<Target Name="test-agent" DependsOnTargets="build-agent">
+		<xunitproject ProjectFile="unittests\agent.xunit" />
+	</Target>
+	
+	<Target Name="test-gateway" DependsOnTargets="build-gateway">
+		<Warning Text="The gateway tests are integration tests and require the gateway/agent to be installed" />
+		<!-- these are require external processes to be running - commented out for now
+		<xunitproject ProjectFile="unittests\gateway.xunit" />
+		-->
 	</Target>
 	
 </Project>

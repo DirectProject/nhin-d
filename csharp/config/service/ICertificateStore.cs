@@ -16,74 +16,43 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
-using NHINDirect;
+using System.ServiceModel;
+using System.Text;
+using NHINDirect.Config.Store;
 
-namespace NHINDirect.Config.Store
+namespace NHINDirect.Config.Service
 {
-    public enum ConfigStoreError
+    // NOTE: If you change the interface name "ICertificateStore" here, you must also update the reference to "ICertificateStore" in Web.config.
+    [ServiceContract(Namespace = Service.Namespace)]
+    public interface ICertificateStore
     {
-        None = 0,
-        Unknown,
-        Unexpected,
-        InvalidCertificate,
-        InvalidX509Certificate,
-        InvalidOwnerName,
-        InvalidThumbprint,
-        InvalidAnchor,
-        OwnerLength,
-        AccountNameLength,
-        DomainNameLength,
-        EndpointNameLength,
-        DisplayNameLength,
-        MissingCertificateData
-    }
-        
-    public class ConfigStoreException : NHINDException<ConfigStoreError>
-    {
-        public ConfigStoreException()
-            : base(ConfigStoreError.Unknown)
-        {
-        }
-        
-        public ConfigStoreException(ConfigStoreError error)
-            : base(error)
-        {
-        }
-        
-        public ConfigStoreFault ToFault()
-        {
-            return new ConfigStoreFault(this.Error);
-        }
-    }
-    
-    /// <summary>
-    /// Serializable - used for web services
-    /// </summary>
-    [DataContract(Namespace = ConfigStore.Namespace)]
-    public class ConfigStoreFault
-    {
-        public ConfigStoreFault()
-            : this(ConfigStoreError.Unknown)
-        {
-        }
-        
-        public ConfigStoreFault(ConfigStoreError error)
-        {
-            this.Error = error;
-        }
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void AddCertificate(Certificate certificate);
 
-        public ConfigStoreFault(ConfigStoreException ex)
-            : this(ex.Error)
-        {
-        }
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void AddCertificates(Certificate[] certificate);
         
-        [DataMember]
-        public ConfigStoreError Error
-        {
-            get;
-            set;
-        }
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void RemoveCertificate(string owner, string thumbprint);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void RemoveCertificates(string owner);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Certificate GetCertificate(string owner, string thumbprint);
+        
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Certificate[] GetCertificates(string owner);
+        
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Certificate[] EnumerateCertificates(long lastCertificateID, int maxResults);
     }
 }
