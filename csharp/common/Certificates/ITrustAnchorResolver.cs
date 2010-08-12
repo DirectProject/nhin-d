@@ -20,9 +20,19 @@ using System.Text;
 
 namespace NHINDirect.Certificates
 {
+	/// <summary>
+	/// Supports creation of certificate resolvers defining trust anchors. 
+	/// </summary>
     public interface ITrustAnchorResolver
     {
+		/// <summary>
+		/// Factory providing certificate resolver for outgoing messages. 
+		/// </summary>
         ICertificateResolver OutgoingAnchors {get;}
+		
+		/// <summary>
+		/// Factory providing certificate resolver for incoming messages. 
+		/// </summary>
         ICertificateResolver IncomingAnchors {get;}
     }
 }
