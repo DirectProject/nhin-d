@@ -71,6 +71,10 @@ namespace NHINDirect
             {
                 return m_error;
             }
+            set
+            {
+                m_error = value;
+            }
         }
 
         public override string ToString()

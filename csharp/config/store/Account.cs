@@ -21,7 +21,7 @@ using System.Data.SqlTypes;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 
-namespace NHINDirect.ConfigStore
+namespace NHINDirect.Config.Store
 {
     [Table(Name = "Accounts")]
     public class Account

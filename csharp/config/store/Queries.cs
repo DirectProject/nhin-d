@@ -20,7 +20,7 @@ using System.Text;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 
-namespace NHINDirect.ConfigStore
+namespace NHINDirect.Config.Store
 {
     public static class Queries
     {
@@ -43,14 +43,9 @@ namespace NHINDirect.ConfigStore
             return (ConfigDatabase)table.Context;
         }
 
-        public static IEnumerable<Domain> Enumerate(this Table<Domain> table, string domainName)
+        public static Domain GetDomain(this Table<Domain> table, string domainName)
         {
-            return Queries.DomainsByName(table.GetDB(), domainName);
-        }
-
-        public static Domain Find(this Table<Domain> table, string domainName)
-        {
-            return table.Enumerate(domainName).SingleOrDefault();
+            return Queries.DomainsByName(table.GetDB(), domainName).SingleOrDefault();
         }
         
         public static void Delete(this Table<Domain> table, string domainName)
@@ -85,17 +80,12 @@ namespace NHINDirect.ConfigStore
             return (ConfigDatabase)table.Context;
         }
 
-        public static IEnumerable<Address> Enumerate(this Table<Address> table, long domainID)
+        public static IQueryable<Address> GetAddresses(this Table<Address> table, long domainID)
         {
             return Queries.AddressesByDomain(table.GetDB(), domainID);
         }
 
-        public static Address Find(this Table<Address> table, long domainID)
-        {
-            return table.Enumerate(domainID).SingleOrDefault();
-        }
-
-        public static Address Find(this Table<Address> table, long domainID, string endpointName)
+        public static Address GetAddress(this Table<Address> table, long domainID, string endpointName)
         {
             return Queries.AddressesByName(table.GetDB(), domainID, endpointName).SingleOrDefault();
         }
@@ -124,6 +114,13 @@ namespace NHINDirect.ConfigStore
                 where cert.Owner == owner
                 select cert
         );
+        static readonly Func<ConfigDatabase, long, int, IQueryable<Certificate>> AllCertsPaged = CompiledQuery.Compile(
+            (ConfigDatabase db, long lastCertID, int maxResults) =>
+                (from cert in db.Certificates
+                where cert.CertificateID > lastCertID
+                select cert).Take(maxResults)
+        );
+        
         static readonly Func<ConfigDatabase, string, string, IQueryable<Certificate>> CertsByThumbprint = CompiledQuery.Compile(
             (ConfigDatabase db, string owner, string thumbprint) =>
                 from cert in db.Certificates
@@ -135,20 +132,20 @@ namespace NHINDirect.ConfigStore
         {
             return (ConfigDatabase) table.Context;
         }
-            
-        public static IEnumerable<Certificate> Enumerate(this Table<Certificate> table, string owner)
+        
+        public static IQueryable<Certificate> Get(this Table<Certificate> table, long lastCertID, int maxResults)
+        {
+            return Queries.AllCertsPaged(table.GetDB(), lastCertID, maxResults);
+        }
+             
+        public static IQueryable<Certificate> Get(this Table<Certificate> table, string owner)
         {
             return Queries.CertsByOwner(table.GetDB(), owner);
         }
 
-        public static IEnumerable<Certificate> Enumerate(this Table<Certificate> table, string owner, string thumbprint)
+        public static Certificate Get(this Table<Certificate> table, string owner, string thumbprint)
         {
-            return Queries.CertsByThumbprint(table.GetDB(), owner, thumbprint);
-        }
-
-        public static Certificate Find(this Table<Certificate> table, string owner, string thumbprint)
-        {
-            return table.Enumerate(owner, thumbprint).SingleOrDefault();
+            return Queries.CertsByThumbprint(table.GetDB(), owner, thumbprint).SingleOrDefault();
         }
 
         public static void ExecDelete(this Table<Certificate> table, string owner)
@@ -175,6 +172,13 @@ namespace NHINDirect.ConfigStore
                 where anchor.Owner == owner
                 select anchor
         );
+        static readonly Func<ConfigDatabase, long, int, IQueryable<Anchor>> AllAnchorsPaged = CompiledQuery.Compile(
+            (ConfigDatabase db, long lastCertID, int maxResults) =>
+                (from cert in db.Anchors
+                 where cert.CertificateID > lastCertID
+                 select cert).Take(maxResults)
+        );
+
         static readonly Func<ConfigDatabase, string, string, IQueryable<Anchor>> AnchorsByThumbprint = CompiledQuery.Compile(
             (ConfigDatabase db, string owner, string thumbprint) =>
                 from cert in db.Anchors
@@ -195,25 +199,29 @@ namespace NHINDirect.ConfigStore
                 select anchor
         );
 
-
         public static ConfigDatabase GetDB(this Table<Anchor> table)
         {
             return (ConfigDatabase)table.Context;
         }
 
-        public static IEnumerable<Anchor> Enumerate(this Table<Anchor> table, string owner)
+        public static IQueryable<Anchor> Get(this Table<Anchor> table, long lastCertID, int maxResults)
+        {
+            return Queries.AllAnchorsPaged(table.GetDB(), lastCertID, maxResults);
+        }
+
+        public static IQueryable<Anchor> Get(this Table<Anchor> table, string owner)
         {
             return Queries.AnchorsByOwner(table.GetDB(), owner);
         }
 
-        public static IEnumerable<Anchor> Enumerate(this Table<Anchor> table, string owner, string thumbprint)
+        public static IQueryable<Anchor> Get(this Table<Anchor> table, string owner, string thumbprint)
         {
             return Queries.AnchorsByThumbprint(table.GetDB(), owner, thumbprint);
         }
 
         public static Anchor Find(this Table<Anchor> table, string owner, string thumbprint)
         {
-            return table.Enumerate(owner, thumbprint).SingleOrDefault();
+            return table.Get(owner, thumbprint).SingleOrDefault();
         }
 
         public static void ExecDelete(this Table<Anchor> table, string owner)
@@ -226,12 +234,12 @@ namespace NHINDirect.ConfigStore
             table.Context.ExecuteCommand(Sql_DeleteAnchorByThumbprint, owner, thumbprint);
         }
         
-        public static IEnumerable<Anchor> EnumerateIncoming(this Table<Anchor> table, string owner)
+        public static IEnumerable<Anchor> GetIncoming(this Table<Anchor> table, string owner)
         {
             return Queries.IncomingAnchors(table.GetDB(), owner);
         }
 
-        public static IEnumerable<Anchor> EnumerateOutgoing(this Table<Anchor> table, string owner)
+        public static IEnumerable<Anchor> GetOutgoing(this Table<Anchor> table, string owner)
         {
             return Queries.OutgoingAnchors(table.GetDB(), owner);
         }
