@@ -23,15 +23,18 @@ using System.Data.Linq.Mapping;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using NHINDirect.Certificates;
+using System.Runtime.Serialization;
 
-namespace NHINDirect.ConfigStore
+namespace NHINDirect.Config.Store
 {
     [Table(Name="Certificates")]
+    [DataContract(Namespace = ConfigStore.Namespace)]
     public class Certificate
     {
         public const int MaxOwnerLength = 400;
         
         string m_owner;
+        byte[] m_data;
                 
         public Certificate()
         {
@@ -39,9 +42,9 @@ namespace NHINDirect.ConfigStore
 
         public Certificate(string owner, X509Certificate2 certificate)
         {
-            if (string.IsNullOrEmpty(owner) || certificate == null)
+            if (certificate == null)
             {
-                throw new ArgumentException();
+                throw new ConfigStoreException(ConfigStoreError.InvalidX509Certificate);
             }
             
             this.Owner = owner;
@@ -53,6 +56,7 @@ namespace NHINDirect.ConfigStore
         }
 
         [Column(Name = "Owner", CanBeNull = false, IsPrimaryKey = true)]
+        [DataMember(IsRequired=true)]
         public string Owner
         {
             get
@@ -61,15 +65,22 @@ namespace NHINDirect.ConfigStore
             }
             set
             {
-                if (string.IsNullOrEmpty(value) || value.Length > MaxOwnerLength)
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+                }
+
+                if (value.Length > MaxOwnerLength)
                 {
                     throw new ConfigStoreException(ConfigStoreError.OwnerLength);
                 }
+                
                 m_owner = value;
             }
         }
 
         [Column(Name = "Thumbprint", CanBeNull = false, IsPrimaryKey = true)]
+        [DataMember(IsRequired = true)]
         public string Thumbprint
         {
             get;
@@ -84,6 +95,7 @@ namespace NHINDirect.ConfigStore
         }
 
         [Column(Name = "CreateDate", CanBeNull = false)]
+        [DataMember(IsRequired = true)]
         public DateTime CreateDate
         {
             get;
@@ -91,13 +103,26 @@ namespace NHINDirect.ConfigStore
         }
 
         [Column(Name = "CertificateData", DbType = "varbinary(MAX)", CanBeNull = false)]
+        [DataMember(IsRequired = true)]
         public byte[] Data
         {
-            get;
-            set;
+            get
+            {
+                return m_data;
+            }
+            set
+            {
+                if (value == null || value.Length == 0)
+                {
+                    throw new ConfigStoreException(ConfigStoreError.MissingCertificateData);
+                }
+                
+                m_data = value;
+            }
         }
         
         [Column(Name = "ValidStartDate", CanBeNull = false)]
+        [DataMember(IsRequired = true)]
         public DateTime ValidStartDate
         {
             get;
@@ -105,6 +130,7 @@ namespace NHINDirect.ConfigStore
         }
 
         [Column(Name = "ValidEndDate", CanBeNull = false)]
+        [DataMember(IsRequired = true)]
         public DateTime ValidEndDate
         {
             get;
