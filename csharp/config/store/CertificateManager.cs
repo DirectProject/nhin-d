@@ -25,7 +25,7 @@ using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using NHINDirect.Certificates;
 
-namespace NHINDirect.ConfigStore
+namespace NHINDirect.Config.Store
 {
     public class CertificateManager : IX509CertificateIndex
     {
@@ -48,7 +48,7 @@ namespace NHINDirect.ConfigStore
         {
             get 
             { 
-                return this.Get(owner);
+                return this.GetX509Certificates(owner);
             }
         }
         
@@ -63,47 +63,136 @@ namespace NHINDirect.ConfigStore
 
         public void Add(ConfigDatabase db, string owner, X509Certificate2 cert)
         {
-            if (cert == null || string.IsNullOrEmpty(owner) || db == null)
-            {
-                throw new ArgumentException();
-            }
-
-            db.Certificates.InsertOnSubmit(new Certificate(owner, cert));
+            this.Add(db, new Certificate(owner, cert));
         }
         
-        public bool Contains(string owner, string thumbprint)
-        {                        
+        public void Add(Certificate cert)
+        {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
-                return this.Contains(db, owner, thumbprint);
-            }        
+                this.Add(db, cert);
+                db.SubmitChanges();
+            }                        
         }
 
-        public bool Contains(ConfigDatabase db, string owner, string thumbprint)
+        public void Add(IEnumerable<Certificate> certs)
         {
-            if (db == null || string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(thumbprint))
+            if (certs == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException();
+            }            
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                foreach(Certificate cert in certs)
+                {
+                    this.Add(db, cert);
+                }
+                db.SubmitChanges();
+            }
+        }
+        
+        public void Add(ConfigDatabase db, Certificate cert)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
             }
             
-            return (db.Certificates.Find(owner, thumbprint) != null);
+            if (cert == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidCertificate);
+            }
+            
+            db.Certificates.InsertOnSubmit(cert);
         }
-        
-        public X509Certificate2Collection Get(string owner)
+
+        public Certificate[] Get(long lastCertID, int maxResults)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
-                return this.Get(db, owner);
+                return this.Get(db, lastCertID, maxResults).ToArray();
             }
         }
 
-        public X509Certificate2Collection Get(ConfigDatabase db, string owner)
+        public IEnumerable<Certificate> Get(ConfigDatabase db, long lastCertID, int maxResults)
         {
-            if (db == null || string.IsNullOrEmpty(owner))
+            if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException();
             }
-            return this.Collect(db.Certificates.Enumerate(owner));
+
+            return db.Certificates.Get(lastCertID, maxResults).ToArray();
+        }
+
+        public Certificate Get(string owner, string thumbprint)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                return this.Get(db, owner, thumbprint);
+            }
+        }
+
+        public Certificate Get(ConfigDatabase db, string owner, string thumbprint)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (string.IsNullOrEmpty(owner))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+            }
+            if (string.IsNullOrEmpty(thumbprint))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidThumbprint);
+            }
+
+            return db.Certificates.Get(owner, thumbprint);
+        }
+        
+        public X509Certificate2Collection GetX509Certificates(string owner)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                return this.GetX509Certificates(db, owner);
+            }
+        }
+
+        public X509Certificate2Collection GetX509Certificates(ConfigDatabase db, string owner)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (string.IsNullOrEmpty(owner))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+            }
+            
+            return this.Collect(db.Certificates.Get(owner));
+        }
+
+        public Certificate[] Get(string owner)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {                
+                return this.Get(db, owner).ToArray();
+            }
+        }
+
+        public IEnumerable<Certificate> Get(ConfigDatabase db, string owner)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            if (string.IsNullOrEmpty(owner))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+            }
+            
+            return db.Certificates.Get(owner);
         }
         
         public void Remove(string owner, string thumbprint)
@@ -116,9 +205,18 @@ namespace NHINDirect.ConfigStore
 
         public void Remove(ConfigDatabase db, string owner, string thumbprint)
         {
-            if (db == null || string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(thumbprint))
+            if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException();
+            }
+
+            if (string.IsNullOrEmpty(owner))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+            }
+            if (string.IsNullOrEmpty(thumbprint))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidThumbprint);
             }
             
             db.Certificates.ExecDelete(owner, thumbprint);
@@ -134,11 +232,16 @@ namespace NHINDirect.ConfigStore
 
         public void Remove(ConfigDatabase db, string ownerName)
         {
-            if (db == null || string.IsNullOrEmpty(ownerName))
+            if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException();
             }
-
+            
+            if (string.IsNullOrEmpty(ownerName))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+            }
+            
             db.Certificates.ExecDelete(ownerName);
         }
         

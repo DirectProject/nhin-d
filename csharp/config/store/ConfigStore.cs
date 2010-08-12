@@ -18,17 +18,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NHINDirect.ConfigStore
+namespace NHINDirect.Config.Store
 {
     public class ConfigStore
     {
+        public const string Namespace = "http://www.nhindirect.org/config/store/082010";
+        
+        public static int DefaultTimeoutSeconds = 5;
+        
         string m_connectString;
+        int m_timeout;
         DomainManager m_domains;
         CertificateManager m_certificates;
         AnchorManager m_anchors;
         
         public ConfigStore(string connectString)
+            : this(connectString, DefaultTimeoutSeconds)
         {
+        }
+        
+        public ConfigStore(string connectString, int timeout)
+        {
+            if (string.IsNullOrEmpty(connectString))
+            {
+                throw new ArgumentException("connectString");
+            }
+            if (timeout <= 0)
+            {
+                throw new ArgumentException("timeout");
+            }
+            m_timeout = timeout;
             m_connectString = connectString;
             m_domains = new DomainManager(this);
             m_certificates = new CertificateManager(this);
@@ -61,7 +80,9 @@ namespace NHINDirect.ConfigStore
                                 
         public ConfigDatabase CreateContext()
         {
-            return new ConfigDatabase(m_connectString);
+            ConfigDatabase db = new ConfigDatabase(m_connectString);
+            db.CommandTimeout = m_timeout;
+            return db;
         }
     }
 }
