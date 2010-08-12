@@ -22,10 +22,19 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace NHINDirect.Certificates
 {
+	/// <summary>
+	/// Supports resolution of certificates by address.
+	/// </summary>
     public class CertificateResolver : ICertificateResolver
     {
         IX509CertificateIndex m_certIndex;
         
+		/// <summary>
+		/// Creates a certificate resolver from a certificate index instance. 
+		/// </summary>
+		/// <param name="index">
+		/// An index instance providing <see cref="IX509CertificateIndex"/>
+		/// </param>
         public CertificateResolver(IX509CertificateIndex index)
         {
             if (index == null)
@@ -36,6 +45,15 @@ namespace NHINDirect.Certificates
             m_certIndex = index;
         }
         
+		/// <summary>
+		/// Gets a collection of certificates by mail address. 
+		/// </summary>
+		/// <param name="address">
+		/// The <see cref="MailAddress"/> for which to retrieve certificates.
+		/// </param>
+		/// <returns>
+		/// The <see cref="X509Certificate2Collection"/> of certificates for the requested address.
+		/// </returns>
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
             if (address == null)
