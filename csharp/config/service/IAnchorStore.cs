@@ -16,74 +16,47 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
-using NHINDirect;
+using System.ServiceModel;
+using System.Text;
+using NHINDirect.Config.Store;
 
-namespace NHINDirect.Config.Store
+namespace NHINDirect.Config.Service
 {
-    public enum ConfigStoreError
+    // NOTE: If you change the interface name "IAnchorStore" here, you must also update the reference to "IAnchorStore" in Web.config.
+    [ServiceContract(Namespace = Service.Namespace)]
+    public interface IAnchorStore
     {
-        None = 0,
-        Unknown,
-        Unexpected,
-        InvalidCertificate,
-        InvalidX509Certificate,
-        InvalidOwnerName,
-        InvalidThumbprint,
-        InvalidAnchor,
-        OwnerLength,
-        AccountNameLength,
-        DomainNameLength,
-        EndpointNameLength,
-        DisplayNameLength,
-        MissingCertificateData
-    }
-        
-    public class ConfigStoreException : NHINDException<ConfigStoreError>
-    {
-        public ConfigStoreException()
-            : base(ConfigStoreError.Unknown)
-        {
-        }
-        
-        public ConfigStoreException(ConfigStoreError error)
-            : base(error)
-        {
-        }
-        
-        public ConfigStoreFault ToFault()
-        {
-            return new ConfigStoreFault(this.Error);
-        }
-    }
-    
-    /// <summary>
-    /// Serializable - used for web services
-    /// </summary>
-    [DataContract(Namespace = ConfigStore.Namespace)]
-    public class ConfigStoreFault
-    {
-        public ConfigStoreFault()
-            : this(ConfigStoreError.Unknown)
-        {
-        }
-        
-        public ConfigStoreFault(ConfigStoreError error)
-        {
-            this.Error = error;
-        }
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void AddAnchor(Anchor anchor);
 
-        public ConfigStoreFault(ConfigStoreException ex)
-            : this(ex.Error)
-        {
-        }
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void AddAnchors(Anchor[] anchors);
         
-        [DataMember]
-        public ConfigStoreError Error
-        {
-            get;
-            set;
-        }
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void RemoveAnchor(string owner, string thumbprint);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void RemoveAnchors(string owner);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Anchor[] GetAnchors(string owner);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Anchor[] GetIncomingAnchors(string owner);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Anchor[] GetOutgoingAnchors(string owner);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Anchor[] EnumerateAnchors(long lastAnchorID, int maxResults);        
     }
 }

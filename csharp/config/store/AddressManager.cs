@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NHINDirect.ConfigStore
+namespace NHINDirect.Config.Store
 {
     public class AddressManager : IEnumerable<Address>
     {
@@ -98,7 +98,7 @@ namespace NHINDirect.ConfigStore
                 throw new ArgumentException();
             }
             
-            return db.Addresses.Find(m_domainID, endpointName);
+            return db.Addresses.GetAddress(m_domainID, endpointName);
         }
         
         public bool Contains(string endpointName)
@@ -116,7 +116,7 @@ namespace NHINDirect.ConfigStore
                 throw new ArgumentException();
             }
             
-            return (db.Addresses.Find(m_domainID, endpointName) != null);
+            return (db.Addresses.GetAddress(m_domainID, endpointName) != null);
         }
         
         public void Remove(string endpointName)
@@ -154,7 +154,7 @@ namespace NHINDirect.ConfigStore
         {
             using(ConfigDatabase db = this.Store.CreateContext())
             {
-                foreach(Address address in db.Addresses.Enumerate(m_domainID))
+                foreach(Address address in db.Addresses.GetAddresses(m_domainID))
                 {
                     yield return address;
                 }

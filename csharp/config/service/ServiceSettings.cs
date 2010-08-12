@@ -16,92 +16,49 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Data.Linq;
-using System.Data.Linq.Mapping;
-using System.Security.Cryptography.X509Certificates;
+using System.Web;
+using System.Configuration;
 
-namespace NHINDirect.Config.Store
+namespace NHINDirect.Config.Service
 {
-    [Database(Name="NHINDConfig")]
-    public class ConfigDatabase : DataContext
+    public class ServiceSettings
     {
-        Table<Certificate> m_certs;
-        Table<Anchor> m_anchors;
-        Table<Domain> m_domains;
-        Table<Address> m_addresses;
-        Table<Account> m_accounts;
-                          
-        public ConfigDatabase(string connectString)
-            : base(connectString)
+        public const string ConfigConnectString = "configStoreConnectString";
+        
+        string m_connectString;
+        
+        public ServiceSettings()
         {
+            this.Load(); 
         }
-
-
-        public Table<Account> Accounts
+        
+        public string StoreConnectString
         {
             get
             {
-                if (m_accounts == null)
-                {
-                    m_accounts = this.GetTable<Account>();
-                }
-
-                return m_accounts;
-            }
-        }
-
-        public Table<Domain> Domains
-        {
-            get
-            {
-                if (m_domains == null)
-                {
-                    m_domains = this.GetTable<Domain>();
-                }
-
-                return m_domains;
-            }
-        }
-
-
-        public Table<Address> Addresses
-        {
-            get
-            {
-                if (m_addresses == null)
-                {
-                    m_addresses = this.GetTable<Address>();
-                }
-
-                return m_addresses;
+                return m_connectString;
             }
         }
         
-        public Table<Certificate> Certificates
+        public string GetSetting(string name)
         {
-            get
+            string value = ConfigurationSettings.AppSettings[name];
+            if (string.IsNullOrEmpty(value))
             {
-                if (m_certs == null)
-                {
-                    m_certs = this.GetTable<Certificate>();
-                }
-                
-                return m_certs;
+                throw new ConfigurationErrorsException(string.Format("Service Setting {0} not found", name));
             }
+            
+            return value;
         }
         
-        public Table<Anchor> Anchors
+        public T GetSetting<T>(string name)
         {
-            get
-            {
-                if (m_anchors == null)
-                {
-                    m_anchors = this.GetTable<Anchor>();
-                }
-                
-                return m_anchors;
-            }
+            return (T) Convert.ChangeType(this.GetSetting(name), typeof(T));
+        }
+        
+        void Load()
+        {
+            m_connectString = this.GetSetting(ServiceSettings.ConfigConnectString);
         }
     }
 }
