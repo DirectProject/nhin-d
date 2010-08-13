@@ -117,7 +117,7 @@ namespace NHINDirect.Certificates
                 X509Certificate2Collection certs = null;
                 
                 certs = this.ResolveDomain(client, address.Address);
-                if (!CertificateResolver.IsNullOrEmpty(certs))
+                if (!certs.IsNullOrEmpty())
                 {
                     return certs;
                 }
@@ -125,7 +125,7 @@ namespace NHINDirect.Certificates
                 if (!this.AssumeWildcardSupport)
                 {
                     certs = this.ResolveDomain(client, address.Host);
-                    if (!CertificateResolver.IsNullOrEmpty(certs))
+                    if (!certs.IsNullOrEmpty())
                     {
                         return certs;
                     }
@@ -134,7 +134,7 @@ namespace NHINDirect.Certificates
                 if (this.HasFallbackDomain)
                 {
                     certs = this.ResolveExtendedDomain(client, address.Address);
-                    if (!CertificateResolver.IsNullOrEmpty(certs))
+                    if (!certs.IsNullOrEmpty())
                     {
                         return certs;
                     }
@@ -142,7 +142,7 @@ namespace NHINDirect.Certificates
                     if (!this.AssumeWildcardSupport)
                     {
                         certs = this.ResolveExtendedDomain(client, address.Host);
-                        if (!CertificateResolver.IsNullOrEmpty(certs))
+                        if (!certs.IsNullOrEmpty())
                         {
                             return certs;
                         }
