@@ -65,6 +65,27 @@ namespace NHINDirect.Diagnostics
                 throw new ArgumentException("FileIntervalHours not specified");
             }
         }
+
+        public void SetDefaults()
+        {           
+            if (string.IsNullOrEmpty(this.NamePrefix))
+            {
+                this.NamePrefix = this.GetProcessName();
+            }
+            
+            if (string.IsNullOrEmpty(this.DirectoryPath))
+            {
+                this.DirectoryPath = System.IO.Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.System), "System32\\LogFiles");
+            }
+        }
+        
+        string GetProcessName()
+        {
+            using (System.Diagnostics.Process process = System.Diagnostics.Process.GetCurrentProcess())
+            {
+                return System.IO.Path.GetFileNameWithoutExtension(process.MainModule.ModuleName);
+            }
+        }
         
         public LogWriter CreateWriter()
         {

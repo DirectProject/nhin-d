@@ -101,7 +101,7 @@ namespace NHINDirect.Certificates
             }
         }
         
-        public bool AssumeWildcardSupport = true;
+        public bool AssumeWildcardSupport = false;
         
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {

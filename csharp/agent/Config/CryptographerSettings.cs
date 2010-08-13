@@ -18,68 +18,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
-using System.Security.Cryptography.X509Certificates;
-using NHINDirect.Certificates;
-using System.Net;
+using NHINDirect.Cryptography;
 
 namespace NHINDirect.Agent.Config
 {
-    [XmlType("DnsCertificateStore")]
-    public class DnsCertResolverSettings : CertResolverSettings
-    {
-        bool m_assumeWildcard = false;
+    [XmlType("CryptographerSettings")]
+    public class CryptographerSettings
+    {        
+        EncryptionAlgorithm m_defaultEncryption = EncryptionAlgorithm.AES128;
+        DigestAlgorithm m_defaultDigest = DigestAlgorithm.SHA1;
         
-        public DnsCertResolverSettings()
+        public CryptographerSettings()
         {
         }
         
         [XmlElement]
-        public string ServerIP
-        {
-            get;
-            set;
-        }
-        
-        [XmlElement]
-        public int Timeout
-        {
-            get;
-            set;
-        }
-        
-        [XmlElement]
-        public string FallbackDomain
-        {
-            get;
-            set;
-        }
-
-        public bool AssumeWildcardSupport
+        public EncryptionAlgorithm DefaultEncryption
         {
             get
             {
-                return m_assumeWildcard;
+                return m_defaultEncryption;
             }
             set
             {
-                m_assumeWildcard = value;
+                m_defaultEncryption = value;
             }
         }
         
-        public override void Validate()
+        [XmlElement]
+        public DigestAlgorithm DefaultDigest
         {
-            if (string.IsNullOrEmpty(this.ServerIP))
+            get
             {
-                throw new AgentConfigException(AgentConfigError.MissingDnsServerIP);
+                return m_defaultDigest;
+            }
+            set
+            {
+                m_defaultDigest = value;
             }
         }
         
-        public override ICertificateResolver CreateResolver()
+        public SMIMECryptographer Create()
         {
-            this.Validate();
-            DnsCertResolver resolver = new DnsCertResolver(IPAddress.Parse(this.ServerIP), this.Timeout, this.FallbackDomain);
-            resolver.AssumeWildcardSupport = m_assumeWildcard;
-            return resolver;
+            return new SMIMECryptographer(m_defaultEncryption, m_defaultDigest);
         }
     }
 }

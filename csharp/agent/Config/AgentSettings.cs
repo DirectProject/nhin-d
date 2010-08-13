@@ -26,6 +26,8 @@ namespace NHINDirect.Agent.Config
     [XmlType("AgentSettings")]
     public class AgentSettings
     {
+        CryptographerSettings m_cryptographerSettings;
+        
         public AgentSettings()
         {
         }
@@ -57,6 +59,24 @@ namespace NHINDirect.Agent.Config
             get;
             set;
         }   
+        
+        [XmlElement("Cryptographer")]
+        public CryptographerSettings Cryptographer
+        {
+            get
+            {
+                if (m_cryptographerSettings == null)
+                {
+                    m_cryptographerSettings = new CryptographerSettings();
+                }
+                
+                return m_cryptographerSettings;
+            }
+            set
+            {
+                m_cryptographerSettings = value;
+            }
+        }
         
         public virtual void Validate()
         {
@@ -92,7 +112,7 @@ namespace NHINDirect.Agent.Config
             ICertificateResolver publicCerts = this.PublicCerts.Resolver.CreateResolver();
             ITrustAnchorResolver trustAnchors = this.Anchors.Resolver.CreateResolver();
 
-            return new NHINDAgent(this.Domains, privateCerts, publicCerts, trustAnchors);
+            return new NHINDAgent(this.Domains, privateCerts, publicCerts, trustAnchors, TrustModel.Default, this.Cryptographer.Create());
         }
         
         public static AgentSettings Load(string configXml)

@@ -32,6 +32,7 @@ namespace NHINDirect.SmtpAgent
         ProcessIncomingSettings m_incomingSettings;
         ProcessOutgoingSettings m_outgoingSettings;
         ProcessBadMessageSettings m_badMessageSettings;
+        bool m_logVerbose = true;
         
         public SmtpAgentSettings()
         {
@@ -42,6 +43,18 @@ namespace NHINDirect.SmtpAgent
         {
             get;
             set;
+        }
+        
+        public bool LogVerbose
+        {
+            get
+            {
+                return m_logVerbose;
+            }
+            set
+            {
+                m_logVerbose = value;
+            }
         }
         
         [XmlElement("Postmaster")]

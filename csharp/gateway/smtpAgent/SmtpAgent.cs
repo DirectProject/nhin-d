@@ -37,7 +37,6 @@ namespace NHINDirect.SmtpAgent
         SmtpAgentSettings m_settings;
         NHINDAgent m_agent;
         LogFile m_log;
-        bool m_logVerbose = true;
         DomainPostmasters m_postmasters;
         BounceMessageCreator m_outgoingBounceFactory;
         BounceMessageCreator m_incomingBounceFactory;
@@ -69,18 +68,6 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
-        public bool LogVerbose
-        {
-            get
-            {
-                return m_logVerbose;
-            }
-            set
-            {
-                m_logVerbose = value;
-            }
-        }
-        
         void VerifyInitialized()
         {
             if (m_agent == null)
@@ -94,7 +81,7 @@ namespace NHINDirect.SmtpAgent
         /// </summary>
         public void LogStatus(string message)
         {
-            if (this.m_logVerbose)
+            if (m_settings.LogVerbose)
             {
                 m_log.WriteLine(message);
             }
@@ -160,11 +147,14 @@ namespace NHINDirect.SmtpAgent
         void SubscribeToAgentEvents()
         {
             this.LogStatus("SubscribingToEvents_Begin");
+
+            m_agent.ErrorIncoming += this.OnIncomingError;
+            m_agent.ErrorOutgoing += this.OnOutgoingError;
             
             DnsCertResolver dnsResolver = m_agent.PublicCertResolver as DnsCertResolver;
             if (dnsResolver != null)
             {
-                dnsResolver.Error += this.WriteDnsError;
+                dnsResolver.Error += this.OnDnsError;
             }
 
             this.LogStatus("SubscribingToEvents_End");
@@ -565,10 +555,67 @@ namespace NHINDirect.SmtpAgent
         {
             return Guid.NewGuid().ToString("D") + ".eml";
         }
+
+        void OnOutgoingError(OutgoingMessage message, Exception error)
+        {            
+            if (m_settings.LogVerbose)
+            {
+                m_log.WriteError(this.BuildVerboseErrorMessage("OUTGOING", message, error));
+            }
+            else
+            {
+                m_log.WriteError(error);            
+            }
+        }
+
+        void OnIncomingError(IncomingMessage message, Exception error)
+        {
+            if (m_settings.LogVerbose)
+            {
+                m_log.WriteError(this.BuildVerboseErrorMessage("INCOMING", message, error));
+            }
+            else
+            {
+                m_log.WriteError(error);
+            }
+        }
         
-        void WriteDnsError(DnsCertResolver service, Exception error)
+        void OnDnsError(DnsCertResolver service, Exception error)
         {
             m_log.WriteError(error);
+        }
+        
+        string BuildVerboseErrorMessage(string message, MessageEnvelope envelope, Exception ex)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine(message);
+            this.SummarizeHeaders(builder, envelope);
+            builder.AppendLine(ex.ToString());            
+            return builder.ToString();
+        }
+        
+        void SummarizeHeaders(StringBuilder builder, MessageEnvelope envelope)
+        {
+            if (envelope.HasRecipients)
+            {
+                builder.AppendFormat("RECIPIENTS={0}", envelope.Recipients.ToString());
+                builder.AppendLine();
+            }
+            if (envelope.HasDomainRecipients)
+            {
+                builder.AppendFormat("DOMAIN RECIPIENTS={0}", envelope.DomainRecipients.ToString());
+                builder.AppendLine();
+            }
+            if (envelope.HasRejectedRecipients)
+            {
+                builder.AppendFormat("REJECTED RECIPIENTS={0}", envelope.RejectedRecipients.ToString());
+                builder.AppendLine();
+            }
+            if (envelope.HasRejectedRecipients)
+            {
+                builder.AppendFormat("OTHER RECIPIENTS={0}", envelope.OtherRecipients.ToString());
+                builder.AppendLine();
+            }
         }
     }
 }
