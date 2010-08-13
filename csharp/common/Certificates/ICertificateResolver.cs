@@ -22,12 +22,16 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace NHINDirect.Certificates
 {
+	/// <summary>
+	/// Supports resolution of certificates by address.
+	/// </summary>
     public interface ICertificateResolver
     {
         //
         // If no certificate for address, return null
         // Throw exceptions if there was an error during retrieval, such as network issues
         //
+		
 		/// <summary>
 		/// Returns the valid certficates for a mail address.
 		/// Implementations representing remote certificate stores (e.g., DNS) may throw network exceptions.
