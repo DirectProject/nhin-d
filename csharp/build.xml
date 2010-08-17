@@ -1,0 +1,52 @@
+<Project DefaultTargets="build-all" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<!-- MSBuild documentation found at http://msdn.microsoft.com/en-us/library/0k6kkbsd.aspx -->
+	
+	<!-- Tigris - external\Tigris\MSBuildTasks.msi be installed http://msbuildtasks.tigris.org/ -->
+	<!-- After installation the help file is at [Program Files]\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.chm -->
+	<!-- <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/> -->
+	
+	<!-- this imports the xunit and xunitproject tasks -->
+	<UsingTask AssemblyFile="external\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunitproject" />
+
+	<!-- Aliases -->
+	<Target Name="build" DependsOnTargets="build-all" />
+	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway" />
+
+	<Target Name="clean" DependsOnTargets="clean-all" />
+	<Target Name="clean-all" DependsOnTargets="clean-agent;clean-gateway" />
+
+	<Target Name="test" DependsOnTargets="test-all" />
+	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway" />
+
+	<Target Name="build-agent">
+		<MSBuild Projects=".\build\build.sln" Targets="Build" Properties="Configuration=Debug" />
+	</Target>
+
+	<Target Name="clean-agent">
+		<MSBuild Projects=".\build\build.sln" Targets="Clean" />
+	</Target>
+
+	<Target Name="build-gateway">
+		<MSBuild Projects=".\gateway\gateway.sln" Targets="Build" Properties="Configuration=Debug" />
+	</Target>
+
+	<Target Name="clean-gateway">
+		<!-- taken out for now due to failure
+		<MSBuild Projects=".\gateway\gateway.sln" Targets="Clean" />
+		 -->
+	</Target>
+
+	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
+	<Target Name="test-agent" DependsOnTargets="build-agent">
+		<xunitproject ProjectFile="unittests\agent.xunit" />
+	</Target>
+	
+	<Target Name="test-gateway" DependsOnTargets="build-gateway">
+		<Warning Text="The gateway tests are integration tests and require the gateway/agent to be installed" />
+		<!-- these are require external processes to be running - commented out for now
+		<xunitproject ProjectFile="unittests\gateway.xunit" />
+		-->
+	</Target>
+	
+</Project>
