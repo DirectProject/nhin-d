@@ -81,7 +81,7 @@ namespace DnsResolver
                 }
 
                 m_cert = value;
-                m_name = this.ExtractEmailNameOrName(value);
+                m_name = m_cert.ExtractEmailNameOrName();
                 if (string.IsNullOrEmpty(m_name))
                 {
                     throw new NotSupportedException();
@@ -119,6 +119,7 @@ namespace DnsResolver
             }
         }
 
+        //TODO: Needs to be extracted. Extension method?
         public static string MakeExtendedDomainName(string dnsDomain, string name)
         {
             if (string.IsNullOrEmpty(dnsDomain) || string.IsNullOrEmpty(name))
@@ -154,6 +155,11 @@ namespace DnsResolver
             return extendedName;
         }
         
+        /// <summary>
+        /// Exports this record as a DNS CERT RR.
+        /// </summary>
+        /// <param name="dnsDomain">The domain name to use for the address.</param>
+        /// <returns>A string representation of the DNS CERT RR.</returns>
         public string Export(string dnsDomain)
         {
             StringWriter writer = new StringWriter();
@@ -161,6 +167,11 @@ namespace DnsResolver
             return writer.ToString();
         }
 
+        /// <summary>
+        /// Exports this record as a DNS CERT RR
+        /// </summary>
+        /// <param name="writer">The writer to which to export the RR.</param>
+        /// <param name="dnsDomain">The domain name to use for the address.</param>
         public void Export(TextWriter writer, string dnsDomain)
         {
             if (writer == null || string.IsNullOrEmpty(dnsDomain))
@@ -233,30 +244,5 @@ namespace DnsResolver
             return builder.ToString();
         }
 
-        const string SubjectNamePrefix = "CN=";
-        const string EmailNamePrefix = "E=";
-        string ExtractEmailNameOrName(X509Certificate2 cert)
-        {
-            string[] parts = cert.Subject.Split(',');
-            if (parts != null)
-            {
-                for (int i = 0; i < parts.Length; ++i)
-                {
-                    string prefix = EmailNamePrefix;
-                    int index = parts[i].IndexOf(prefix);
-                    if (index < 0)
-                    {
-                        prefix = SubjectNamePrefix;
-                        index = parts[i].IndexOf(prefix);
-                    }
-                    if (index >= 0)
-                    {
-                        return parts[i].Substring(index + prefix.Length).Trim();
-                    }
-                }
-            }
-
-            return null;
-        }
     }
 }
