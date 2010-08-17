@@ -24,6 +24,9 @@ using DnsResolver;
 
 namespace NHINDirect.Certificates
 {
+    /// <summary>
+    /// Implements a certificate resolver using DNS CERT records
+    /// </summary>
     public class DnsCertResolver : ICertificateResolver
     {
         public const int DefaultTimeoutMs = 5000; // Milliseconds
@@ -33,11 +36,20 @@ namespace NHINDirect.Certificates
         int m_timeout;
         int m_maxRetries = 1;
         
+        /// <summary>
+        /// Create a DNS certificate resolver, using default timeout
+        /// </summary>
+        /// <param name="serverIP">An <see cref="IPAddress"/> instance providing the IP address of the DNS server</param>
         public DnsCertResolver(IPAddress serverIP)
             : this(serverIP, DnsCertResolver.DefaultTimeoutMs)
         {
         }
-        
+
+        /// <summary>
+        /// Create a DNS certificate resolver.
+        /// </summary>
+        /// <param name="serverIP">An <see cref="IPAddress"/> instance providing the IP address of the DNS server</param>
+        /// <param name="timeoutMs">Timeout in milliseconds</param>
         public DnsCertResolver(IPAddress serverIP, int timeoutMs)
             : this(serverIP, timeoutMs, null)
         {
