@@ -11,6 +11,48 @@ namespace DnsResolver
     /// </summary>
     public static class Extensions
     {
+
+        /// <summary>
+        /// Creates a dotted domain name from a domain name and an email localPart for use in DNS queries.
+        /// </summary>
+        /// <param name="dnsDomain">The domain name to construct the DNS domain name from</param>
+        /// <param name="localPart">The local part of the email address</param>
+        /// <returns>The dotted domain name representing the email address for lookup</returns>
+        public static string ConstructEmailDnsDomainName(this string dnsDomain, string localPart)
+        {
+            if (string.IsNullOrEmpty(dnsDomain) || string.IsNullOrEmpty(localPart))
+            {
+                throw new ArgumentException();
+            }
+
+            string extendedName;
+
+            if (dnsDomain[0] == '.')
+            {
+                if (localPart[localPart.Length - 1] != '.')
+                {
+                    extendedName = localPart + dnsDomain;
+                }
+                else
+                {
+                    extendedName = localPart + dnsDomain.Substring(1);
+                }
+            }
+            else
+            {
+                if (localPart[localPart.Length - 1] != '.')
+                {
+                    extendedName = localPart + '.' + dnsDomain;
+                }
+                else
+                {
+                    extendedName = localPart + dnsDomain;
+                }
+            }
+
+            return extendedName;
+        }
+
         const string SubjectNamePrefix = "CN=";
         const string EmailNamePrefix = "E=";
 

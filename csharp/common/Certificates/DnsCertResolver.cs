@@ -232,7 +232,7 @@ namespace NHINDirect.Certificates
         X509Certificate2Collection ResolveExtendedDomain(DnsClient client, string name)
         {
             name = name.Replace('@', '.');
-            string extendedName = DNSCert.MakeExtendedDomainName(m_fallbackDomain, name);
+            string extendedName = m_fallbackDomain.ConstructEmailDnsDomainName(name);
             return this.ResolveDomain(client, extendedName);
         }
         

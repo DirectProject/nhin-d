@@ -118,42 +118,6 @@ namespace DnsResolver
                 m_ttl = value;
             }
         }
-
-        //TODO: Needs to be extracted. Extension method?
-        public static string MakeExtendedDomainName(string dnsDomain, string name)
-        {
-            if (string.IsNullOrEmpty(dnsDomain) || string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException();
-            }
-            
-            string extendedName;
-            
-            if (dnsDomain[0] == '.')
-            {
-                if (name[name.Length - 1] != '.')
-                {
-                    extendedName = name + dnsDomain;
-                }
-                else
-                {
-                    extendedName = name + dnsDomain.Substring(1);
-                }
-            }
-            else
-            {
-                if (name[name.Length - 1] != '.')
-                {
-                    extendedName = name + '.' + dnsDomain;
-                }
-                else
-                {
-                    extendedName = name + dnsDomain;
-                }
-            }
-            
-            return extendedName;
-        }
         
         /// <summary>
         /// Exports this record as a DNS CERT RR.
@@ -183,7 +147,7 @@ namespace DnsResolver
             string certName = m_name;
             if (!certName.EndsWith(dnsDomain))
             {
-                certName = MakeExtendedDomainName(dnsDomain, m_name);
+                certName = dnsDomain.ConstructEmailDnsDomainName(m_name);
             }
             
             if (m_ttl > 0)
