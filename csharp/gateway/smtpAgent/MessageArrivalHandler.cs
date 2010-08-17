@@ -114,7 +114,18 @@ namespace NHINDirect.SmtpAgent
         
         public void ProcessCDOMessage(CDO.Message message)
         {
-            this.Agent.ProcessMessage(message);
+            try
+            {
+                this.Agent.ProcessMessage(message);
+            }
+            catch
+            {
+                //
+                // Paranoia of last resort. A malconfigured or malfunctioning agent should NEVER let ANY messages through
+                //
+                message.AbortMessage();
+                throw;
+            }
         }
                 
         public void WriteLog(string message)

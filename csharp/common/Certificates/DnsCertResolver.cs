@@ -24,6 +24,10 @@ using DnsResolver;
 
 namespace NHINDirect.Certificates
 {
+    /// <summary>
+    /// Implements a certificate resolver using DNS CERT records. Supports the concept of a fallback
+    /// domain.
+    /// </summary>
     public class DnsCertResolver : ICertificateResolver
     {
         public const int DefaultTimeoutMs = 5000; // Milliseconds
@@ -33,16 +37,31 @@ namespace NHINDirect.Certificates
         int m_timeout;
         int m_maxRetries = 1;
         
+        /// <summary>
+        /// Create a DNS certificate resolver, using default timeout
+        /// </summary>
+        /// <param name="serverIP">An <see cref="IPAddress"/> instance providing the IP address of the DNS server</param>
         public DnsCertResolver(IPAddress serverIP)
             : this(serverIP, DnsCertResolver.DefaultTimeoutMs)
         {
         }
-        
+
+        /// <summary>
+        /// Create a DNS certificate resolver.
+        /// </summary>
+        /// <param name="serverIP">An <see cref="IPAddress"/> instance providing the IP address of the DNS server</param>
+        /// <param name="timeoutMs">Timeout in milliseconds</param>
         public DnsCertResolver(IPAddress serverIP, int timeoutMs)
             : this(serverIP, timeoutMs, null)
         {
         }
         
+        /// <summary>
+        /// Creates a DNS certificate resolver with a custom timeout and a fallback domain.
+        /// </summary>
+        /// <param name="serverIP">An <see cref="IPAddress"/> instance providing the IP address of the DNS server</param>
+        /// <param name="timeoutMs">Timeout in milliseconds</param>
+        /// <param name="fallbackDomain">A fallback domain name to try if the main domain name is not resolved.</param>
         public DnsCertResolver(IPAddress serverIP, int timeoutMs, string fallbackDomain)
         {
             if (serverIP == null)
@@ -60,6 +79,9 @@ namespace NHINDirect.Certificates
 
         public event Action<DnsCertResolver, Exception> Error;
         
+        /// <summary>
+        /// The DNS <see cref="IPAddress"/> resolved against.
+        /// </summary>
         public IPAddress Server
         {
             get
@@ -68,6 +90,9 @@ namespace NHINDirect.Certificates
             }
         }
         
+        /// <summary>
+        /// Gets if this instance has a fallback domain.
+        /// </summary>
         public bool HasFallbackDomain
         {
             get
@@ -76,6 +101,9 @@ namespace NHINDirect.Certificates
             }            
         }
         
+        /// <summary>
+        /// Timeout in milliseconds.
+        /// </summary>
         public int Timeout
         {
             get
@@ -84,6 +112,9 @@ namespace NHINDirect.Certificates
             }
         }
         
+        /// <summary>
+        /// Number of retries to attempt.
+        /// </summary>
         public int MaxRetries
         {
             get
@@ -100,9 +131,27 @@ namespace NHINDirect.Certificates
                 m_maxRetries = value;
             }
         }
+
+        /// <summary>
+        /// Fallback domain for this resolver instance.
+        /// </summary>
+        public string FallbackDomain
+        {
+            get
+            {
+                return m_fallbackDomain;
+            }
+        }
         
-        public bool AssumeWildcardSupport = true;
+        public bool AssumeWildcardSupport = false;
         
+        /// <summary>
+        /// Resolves X509 certificates for a mail address.
+        /// </summary>
+        /// <param name="address">The <see cref="MailAddress"/> instance to resolve. Will try the
+        /// fallback domain if this address does not resolve.</param>
+        /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
+        /// or <c>null</c> if no certificates are found.</returns>
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
             using(DnsClient client = new DnsClient(m_serverIP))

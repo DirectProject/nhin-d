@@ -13,6 +13,10 @@
     <NamePrefix>testSmtpAgent</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
   </Log>
+  <Cryptographer>
+    <DefaultEncryption>RSA_3DES</DefaultEncryption>
+    <DefaultDigest>SHA1</DefaultDigest>
+  </Cryptographer>
   <PrivateCerts>
     <MachineResolver>
       <Name>NHINDPrivate</Name>
