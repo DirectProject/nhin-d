@@ -19,14 +19,8 @@ namespace NHINDirect.XDS
             Message msgResponse = null;
             XmlDocument xmlDocRequest = null;
             XmlDocument xmlDocResponse = null;
-            XmlNode nodeRegistryError = null;
-            string errorCode = null;
             XDSHelper xdsHelper = null;
             StringDictionary stringDictionary = null;
-            string eventOutcomeIndicator = "0";
-            string submissionSetUniqueID = string.Empty;
-            string sourceUserID = string.Empty;
-            string destinationUserID = string.Empty;
 
             ILog logger = LogManager.GetLogger("XDS");
 
