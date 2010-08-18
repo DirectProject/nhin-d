@@ -67,7 +67,7 @@ namespace DnsResolverTests
         public void ResolveCert(string domain)
         {
         	IEnumerable<CertRecord> certs = m_client.ResolveCERTFromNameServer(domain);
-        	Assert.NotNull(certs);
+        	Assert.True(certs != null, domain);
         	Assert.NotNull(certs.FirstOrDefault());
         }
 
