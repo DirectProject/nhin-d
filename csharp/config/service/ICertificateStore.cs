@@ -29,30 +29,38 @@ namespace NHINDirect.Config.Service
     {
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void AddCertificate(Certificate certificate);
+        void AddCertificates(Certificate[] certificates);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void AddCertificates(Certificate[] certificate);
-        
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveCertificate(string owner, string thumbprint);
+        Certificate GetCertificate(string owner, string thumbprint, CertificateGetOptions options);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveCertificates(string owner);
+        Certificate[] GetCertificates(long[] certificateIDs, CertificateGetOptions options);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Certificate GetCertificate(string owner, string thumbprint);
+        Certificate[] GetCertificatesForOwner(string owner, CertificateGetOptions options);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void SetCertificateStatus(long[] certificateIDs, EntityStatus status);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void SetCertificateStatusForOwner(string owner, EntityStatus status);
         
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Certificate[] GetCertificates(string owner);
-        
+        void RemoveCertificates(long[] certificateIDs);
+
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Certificate[] EnumerateCertificates(long lastCertificateID, int maxResults);
+        void RemoveCertificatesForOwner(string owner);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Certificate[] EnumerateCertificates(long lastCertificateID, int maxResults, CertificateGetOptions options);
     }
 }

@@ -23,13 +23,6 @@ using System.Data.Linq.Mapping;
 
 namespace NHINDirect.Config.Store
 {
-    public enum DomainStatus : byte
-    {
-        Reserved = 0,
-        Enabled = 1,
-        Disabled = 2
-    }
-
     [Table(Name="Domains")]
     public class Domain
     {
@@ -46,7 +39,7 @@ namespace NHINDirect.Config.Store
             this.Name = name;
             this.CreateDate = DateTime.Now;
             this.UpdateDate = this.CreateDate;
-            this.Status = DomainStatus.Reserved;
+            this.Status = EntityStatus.New;
         }
            
         [Column(Name="DomainID", IsPrimaryKey=true, IsDbGenerated=true)]
@@ -56,7 +49,7 @@ namespace NHINDirect.Config.Store
             set;
         }
         
-        [Column(Name="DomainName", DbType="varchar(255)", CanBeNull=false)]
+        [Column(Name="DomainName", DbType="varchar(255)", CanBeNull=false, IsPrimaryKey = true)]
         public string Name
         {
             get
@@ -65,41 +58,53 @@ namespace NHINDirect.Config.Store
             }
             set
             {
-                if (string.IsNullOrEmpty(value) || value.Length > MaxDomainNameLength)
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
+                }
+                
+                if (value.Length > MaxDomainNameLength)
                 {
                     throw new ConfigStoreException(ConfigStoreError.DomainNameLength);
                 }
-                
                 m_name = value;
             }
         }
-        
-        [Column(Name="AccountID", CanBeNull=false)]
+        /*
+        [Column(Name="AccountID", CanBeNull=true, UpdateCheck = UpdateCheck.WhenChanged)]
         public long AccountID
         {
             get;
             set;
         }
-
-        [Column(Name = "CreateDate", CanBeNull = false)]
+        */
+        
+        [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         public DateTime CreateDate
         {
             get;
             set;
         }
 
-        [Column(Name = "UpdateDate", CanBeNull = false)]
+        [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Always)]
         public DateTime UpdateDate
         {
             get;
             set;
         }
 
-        [Column(Name = "Status", DbType="tinyint", CanBeNull = false)]
-        public DomainStatus Status
+        [Column(Name = "Status", DbType="tinyint", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        public EntityStatus Status
         {
             get;
             set;
         }        
+        
+        [Column(Name = "PostmasterAddressID", CanBeNull=true, UpdateCheck = UpdateCheck.WhenChanged)]
+        public long PostmasterID
+        {
+            get;
+            set;
+        }
     }
 }

@@ -17,77 +17,81 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Configuration;
-using NHINDirect.Diagnostics;
+using System.Runtime.Serialization;
+using NHINDirect.Config.Store;
 
 namespace NHINDirect.Config.Service
 {
-    public class ServiceSettings
+    [DataContract(Namespace = Service.Namespace)]
+    public class CertificateGetOptions
     {
-        public const string ConfigConnectString = "configStoreConnectString";
-        public const string LogDirectory = "logDirectory";
-        
-        string m_connectString;
-        LogFileSettings m_logSettings;
-        
-        
-        public ServiceSettings()
+        internal static CertificateGetOptions Default = new CertificateGetOptions();
+
+        bool m_includeData = false;
+        bool m_includePrivateKey = false;
+
+        public CertificateGetOptions()
         {
-            this.Load(); 
         }
-        
-        public string StoreConnectString
+
+        [DataMember]
+        public bool IncludeData
         {
             get
             {
-                return m_connectString;
+                return m_includeData;
+            }
+            set
+            {
+                m_includeData = value;
             }
         }
-        
-        public LogFileSettings LogSettings
+
+        [DataMember]
+        public bool IncludePrivateKey
         {
             get
             {
-                return m_logSettings;
+                return m_includePrivateKey;
+            }
+            set
+            {
+                m_includePrivateKey = value;
             }
         }
         
-        public string GetSetting(string name)
+        internal Certificate ApplyTo(Certificate cert)
         {
-            string value = ConfigurationSettings.AppSettings[name];
-            if (string.IsNullOrEmpty(value))
+            if (cert == null)
             {
-                throw new ConfigurationErrorsException(string.Format("Service Setting {0} not found", name));
+                return cert;
             }
-            
-            return value;
-        }
-        
-        public T GetSetting<T>(string name)
-        {
-            return (T) Convert.ChangeType(this.GetSetting(name), typeof(T));
-        }
-        
-        public T GetSetting<T>(string name, T defaultValue)
-        {
-            try
+
+            if (!this.IncludeData)
             {
-                return this.GetSetting<T>(name);
+                cert.ClearData();
             }
-            catch
+            else if (!this.IncludePrivateKey)
             {
+                cert.ExcludePrivateKey();
             }
-            
-            return defaultValue;
+
+            return cert;
         }
-                
-        void Load()
+
+        internal Anchor ApplyTo(Anchor anchor)
         {
-            m_connectString = this.GetSetting(ServiceSettings.ConfigConnectString);
-            
-            m_logSettings = new LogFileSettings();
-            m_logSettings.SetDefaults();
-            m_logSettings.DirectoryPath = this.GetSetting<string>(LogDirectory, m_logSettings.DirectoryPath);
+            if (anchor == null)
+            {
+                return anchor;
+            }
+
+            if (!this.IncludeData)
+            {
+                anchor.ClearData();
+            }
+
+            return anchor;
         }
     }
 }

@@ -26,7 +26,7 @@ using NHINDirect.Certificates;
 using System.Runtime.Serialization;
 
 namespace NHINDirect.Config.Store
-{
+{    
     [Table(Name="Certificates")]
     [DataContract(Namespace = ConfigStore.Namespace)]
     public class Certificate
@@ -39,7 +39,12 @@ namespace NHINDirect.Config.Store
         public Certificate()
         {
         }
-
+        
+        public Certificate(string owner, byte[] sourceFileBytes, string password)
+            : this(owner, Import(sourceFileBytes, password))
+        {
+        }
+        
         public Certificate(string owner, X509Certificate2 certificate)
         {
             if (certificate == null)
@@ -48,11 +53,7 @@ namespace NHINDirect.Config.Store
             }
             
             this.Owner = owner;
-            this.Thumbprint = certificate.Thumbprint;
-            this.Data = certificate.Export(X509ContentType.Pfx, string.Empty);
-            this.CreateDate = DateTime.Now;
-            this.ValidStartDate = certificate.NotBefore;
-            this.ValidEndDate = certificate.NotAfter;
+            this.SetX509Certificate(certificate);
         }
 
         [Column(Name = "Owner", CanBeNull = false, IsPrimaryKey = true)]
@@ -87,14 +88,15 @@ namespace NHINDirect.Config.Store
             set;
         }
 
-        [Column(Name = "CertificateID", CanBeNull = false, IsDbGenerated=true)]
-        public long CertificateID
+        [Column(Name = "CertificateID", CanBeNull = false, IsDbGenerated=true, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = true)]
+        public long ID
         {
             get;
             set;
         }
 
-        [Column(Name = "CreateDate", CanBeNull = false)]
+        [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         [DataMember(IsRequired = true)]
         public DateTime CreateDate
         {
@@ -102,7 +104,7 @@ namespace NHINDirect.Config.Store
             set;
         }
 
-        [Column(Name = "CertificateData", DbType = "varbinary(MAX)", CanBeNull = false)]
+        [Column(Name = "CertificateData", DbType = "varbinary(MAX)", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         [DataMember(IsRequired = true)]
         public byte[] Data
         {
@@ -111,17 +113,12 @@ namespace NHINDirect.Config.Store
                 return m_data;
             }
             set
-            {
-                if (value == null || value.Length == 0)
-                {
-                    throw new ConfigStoreException(ConfigStoreError.MissingCertificateData);
-                }
-                
+            {                
                 m_data = value;
             }
         }
-        
-        [Column(Name = "ValidStartDate", CanBeNull = false)]
+
+        [Column(Name = "ValidStartDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         [DataMember(IsRequired = true)]
         public DateTime ValidStartDate
         {
@@ -129,17 +126,90 @@ namespace NHINDirect.Config.Store
             set;
         }
 
-        [Column(Name = "ValidEndDate", CanBeNull = false)]
+        [Column(Name = "ValidEndDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         [DataMember(IsRequired = true)]
         public DateTime ValidEndDate
         {
             get;
             set;
         }
-                        
-        public X509Certificate2 ToCertificate()
+
+        [Column(Name = "Status", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
+        public EntityStatus Status
+        {
+            get;
+            set;
+        }
+        
+        public bool HasData
+        {
+            get
+            {
+                return (this.Data != null && this.Data.Length > 0);
+            }
+        }                              
+        
+        public bool IsValid(DateTime testDate)
+        {
+            return (this.ValidStartDate <= testDate && testDate <= this.ValidEndDate);
+        }
+        
+        public void ClearData()
+        {
+            m_data = null;
+        }
+        
+        public void ValidateHasData()
+        {
+            if (m_data == null || m_data.Length == 0)
+            {
+                throw new ConfigStoreException(ConfigStoreError.MissingCertificateData);
+            }        
+        }
+        
+        public void ExcludePrivateKey()
+        {
+            if (this.HasData)
+            {
+                this.SetX509Certificate(this.ToPublicX509Certificate());
+            }
+        }
+        
+        public X509Certificate2 ToX509Certificate()
         {
             return new X509Certificate2(this.Data);
+        }
+
+        public X509Certificate2 ToPublicX509Certificate()
+        {
+            X509Certificate2 cert = this.ToX509Certificate();
+            if (cert.HasPrivateKey)
+            {
+                byte[] certBytes = cert.Export(X509ContentType.Cert);
+                cert = new X509Certificate2(certBytes);
+            }            
+            
+            return cert;
+        }
+        
+        void SetX509Certificate(X509Certificate2 certificate)
+        {
+            this.Thumbprint = certificate.Thumbprint;
+            this.Data = certificate.Export(X509ContentType.Pfx, string.Empty);
+            this.CreateDate = DateTime.Now;
+            this.ValidStartDate = certificate.NotBefore;
+            this.ValidEndDate = certificate.NotAfter;
+        }
+        
+        internal static X509Certificate2 Import(byte[] sourceFileBytes, string password)
+        {
+            if (sourceFileBytes == null || sourceFileBytes.Length == 0)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidX509Certificate);
+            }
+
+            return new X509Certificate2(sourceFileBytes, password ?? string.Empty, X509KeyStorageFlags.Exportable);
         }
     }
 }

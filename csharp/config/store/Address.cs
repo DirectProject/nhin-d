@@ -23,69 +23,67 @@ using System.Data.Linq.Mapping;
 
 namespace NHINDirect.Config.Store
 {
-    public enum AddressStatus : byte
-    {
-        Reserved = 0,
-        Enabled = 1,
-        Disabled = 2
-    }
-
     [Table(Name = "Addresses")]
     public class Address
     {
-        public const int MaxEndpointNameLength = 64;
+        public const int MaxAddressLength = 400;
         public const int MaxDisplayNameLength = 64;
         
-        string m_endpointName;
+        string m_address;
         string m_displayName;
         
         public Address()
         {
         }
         
-        public Address(long domainID, string endpoint, string displayName)
+        public Address(long domainID, string address)
+            : this(domainID, address, string.Empty)
+        {
+        }
+        
+        public Address(long domainID, string address, string displayName)
         {
             this.DomainID = domainID;
-            this.EndpointName = endpoint;
+            this.EmailAddress = address;
             this.DisplayName = displayName;
             this.CreateDate = DateTime.Now;
             this.UpdateDate = this.CreateDate;
-            this.Status = AddressStatus.Reserved;
+            this.Status = EntityStatus.New;
+        }
+
+        [Column(Name = "EmailAddress", CanBeNull = false, IsPrimaryKey=true)]
+        public string EmailAddress
+        {
+            get
+            {
+                return m_address;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value) || value.Length > MaxAddressLength)
+                {
+                    throw new ConfigStoreException(ConfigStoreError.AddressLength);
+                }
+
+                m_address = value;
+            }
         }
         
-        [Column(Name="AddressID", IsDbGenerated=true, IsPrimaryKey=true)]
+        [Column(Name="AddressID", IsDbGenerated=true)]
         public long ID
         {
             get;
             set;
         }
         
-        [Column(Name="DomainID", CanBeNull=false)]
+        [Column(Name="DomainID", CanBeNull=false, UpdateCheck = UpdateCheck.WhenChanged)]
         public long DomainID
         {
             get;
             set;
         }
         
-        [Column(Name="EndpointName", CanBeNull=false)]
-        public string EndpointName
-        {
-            get
-            {
-                return m_endpointName;
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value) || value.Length > MaxEndpointNameLength)
-                {
-                    throw new ConfigStoreException(ConfigStoreError.EndpointNameLength);
-                }
-                
-                m_endpointName = value;
-            }
-        }
-        
-        [Column(Name="DisplayName", CanBeNull=false)]
+        [Column(Name="DisplayName", CanBeNull=false, UpdateCheck = UpdateCheck.WhenChanged)]
         public string DisplayName
         {
             get
@@ -103,25 +101,40 @@ namespace NHINDirect.Config.Store
             }
         }
 
-        [Column(Name = "CreateDate", CanBeNull = false)]
+        [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         public DateTime CreateDate
         {
             get;
             set;
         }
 
-        [Column(Name = "UpdateDate", CanBeNull = false)]
+        [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Always)]
         public DateTime UpdateDate
         {
             get;
             set;
         }
 
-        [Column(Name = "Status", DbType = "tinyint", CanBeNull = false)]
-        public AddressStatus Status
+        [Column(Name = "Status", DbType = "tinyint", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        public EntityStatus Status
         {
             get;
             set;
+        }
+        
+        [Column(Name = "Type", DbType = "nvarchar(64)", CanBeNull = true, UpdateCheck = UpdateCheck.WhenChanged)]
+        public string Type
+        {
+            get;
+            set;
+        }
+        
+        public bool HasType
+        {
+            get
+            {
+                return (!string.IsNullOrEmpty(this.Type));
+            }            
         }
     }
 }

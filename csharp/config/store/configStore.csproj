@@ -8,7 +8,7 @@
     <ProjectGuid>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect.ConfigStore</RootNamespace>
+    <RootNamespace>NHINDirect.Config.Store</RootNamespace>
     <AssemblyName>nhinConfigStore</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -54,17 +54,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddressManager.cs" />
+    <Compile Include="AddressQueries.cs" />
     <Compile Include="AnchorManager.cs" />
+    <Compile Include="AnchorQueries.cs" />
     <Compile Include="CertificateManager.cs" />
     <Compile Include="Account.cs" />
     <Compile Include="Address.cs" />
     <Compile Include="Anchor.cs" />
     <Compile Include="Certificate.cs" />
+    <Compile Include="CertificateQueries.cs" />
     <Compile Include="ConfigStore.cs" />
     <Compile Include="ConfigDatabase.cs" />
     <Compile Include="ConfigStoreException.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="DomainManager.cs" />
+    <Compile Include="DomainQueries.cs" />
+    <Compile Include="EntityStatus.cs" />
     <Compile Include="Queries.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

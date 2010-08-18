@@ -8,7 +8,7 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect.Config</RootNamespace>
+    <RootNamespace>NHINDirect.Config.Service</RootNamespace>
     <AssemblyName>nhinConfigService</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -67,13 +67,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DomainManagerService.svc" />
     <Content Include="CertificateService.svc" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CertificateGetOptions.cs" />
+    <Compile Include="DomainManagerService.svc.cs">
+      <DependentUpon>DomainManagerService.svc</DependentUpon>
+    </Compile>
     <Compile Include="CertificateService.svc.cs">
       <DependentUpon>CertificateService.svc</DependentUpon>
     </Compile>
+    <Compile Include="IAddressManager.cs" />
+    <Compile Include="IDomainManager.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="IAnchorStore.cs" />
     <Compile Include="ICertificateStore.cs" />

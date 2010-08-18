@@ -17,26 +17,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net.Mail;
 
 namespace NHINDirect.Config.Store
 {
     public class AddressManager : IEnumerable<Address>
     {
         ConfigStore m_store;
-        long m_domainID;
         
-        internal AddressManager(ConfigStore store, long domainID)
+        internal AddressManager(ConfigStore store)
         {
             m_store = store;
-            m_domainID = domainID;
-        }
-        
-        public long DomainID
-        {
-            get
-            {
-                return m_domainID;
-            }
         }
         
         internal ConfigStore Store
@@ -47,119 +38,257 @@ namespace NHINDirect.Config.Store
             }
         }
         
-        public void Add(string endpointName)
+        public void Add(long domainID, string emailAddress)
         {
-            this.Add(endpointName, string.Empty);
+            this.Add(new Address(domainID, emailAddress));
         }
         
-        public void Add(string endpointName, string displayName)
+        public void Add(Address address)
         {
-            using(ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
-                this.Add(db, endpointName, displayName);
+                this.Add(db, address);
                 db.SubmitChanges();
             }
         }
         
-        public void Add(ConfigDatabase db, string endpointName, string displayName)
+        public void Add(IEnumerable<Address> addresses)
         {
-            if (db == null || string.IsNullOrEmpty(endpointName))
+            if (addresses == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException();
             }
             
-            db.Addresses.InsertOnSubmit(new Address(m_domainID, endpointName, displayName));
-        }
-        
-        public void Ensure(string endpointName, string displayName)
-        {
-            using(ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
-                if (!this.Contains(db, endpointName))
+                foreach(Address address in addresses)
                 {
-                    this.Add(db, endpointName, displayName);
-                    db.SubmitChanges();
+                    this.Add(db, address);
                 }
-            }
-        }        
-        
-        public Address Get(string endpointName)
-        {
-            using(ConfigDatabase db = this.Store.CreateContext())
-            {
-                return this.Get(db, endpointName);
-            }
+                
+                db.SubmitChanges();
+            }            
         }
         
-        public Address Get(ConfigDatabase db, string endpointName)
+        public void Add(ConfigDatabase db, Address address)
         {
-            if (db == null || string.IsNullOrEmpty(endpointName))
+            if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException();
             }
             
-            return db.Addresses.GetAddress(m_domainID, endpointName);
-        }
-        
-        public bool Contains(string endpointName)
-        {
-            using(ConfigDatabase db = this.Store.CreateContext())
+            if (address == null)
             {
-                return this.Contains(db, endpointName);
-            }
-        }
-
-        public bool Contains(ConfigDatabase db, string endpointName)
-        {
-            if (db == null || string.IsNullOrEmpty(endpointName))
-            {
-                throw new ArgumentException();
+                throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
             }
             
-            return (db.Addresses.GetAddress(m_domainID, endpointName) != null);
+            db.Addresses.InsertOnSubmit(address);
         }
         
-        public void Remove(string endpointName)
-        {
-            using(ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, endpointName);
-            }
-        }
-        
-        public void Remove(ConfigDatabase db, string endpointName)
-        {
-            if (string.IsNullOrEmpty(endpointName))
-            {
-                throw new ArgumentException();
-            }
-            
-            db.Addresses.Delete(m_domainID, endpointName);
-        }
-
-        public void RemoveAll()
+        public void Update(Address address)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
-                this.RemoveAll(db);
+                this.Update(db, address);
+                db.SubmitChanges();
             }
         }
 
-        public void RemoveAll(ConfigDatabase db)
+        public void Update(IEnumerable<Address> addresses)
         {
-            db.Addresses.Delete(m_domainID);
+            if (addresses == null)
+            {
+                throw new ArgumentNullException();
+            }
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                foreach(Address address in addresses)
+                {
+                    this.Update(db, address);
+                }
+                db.SubmitChanges();
+            }
+        }
+        
+        public void Update(ConfigDatabase db, Address address)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (address == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
+            }
+
+            Address current = this.Get(db, address.EmailAddress);
+            if (current == null)
+            {
+                this.Add(db, address);
+            }
+            else
+            {
+                address.UpdateDate = DateTime.Now;
+                db.Addresses.Attach(address, current);
+            }
+        }
+               
+        public Address Get(string emailAddress)
+        {
+            using(ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, emailAddress);
+            }
+        }
+        
+        public Address Get(ConfigDatabase db, string emailAddress)
+        {
+            if (db == null)
+            {
+                throw new ArgumentException();
+            }
+            
+            return db.Addresses.Get(emailAddress);
+        }
+
+        public Address[] Get(string[] emailAddresses)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, emailAddresses).ToArray();
+            }
+        }
+
+        public IEnumerable<Address> Get(ConfigDatabase db, string[] emailAddresses)
+        {
+            if (db == null)
+            {
+                throw new ArgumentException();
+            }
+            
+            this.VerifyEmailAddresses(emailAddresses);
+            return db.Addresses.Get(emailAddresses);
+        }
+
+        public Address[] Get(long domainID, long lastAddressID, int maxResults)
+        {
+            using(ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, domainID, lastAddressID, maxResults).ToArray();
+            }
+        }
+
+        public IEnumerable<Address> Get(ConfigDatabase db, long domainID, long lastAddressID, int maxResults)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            return db.Addresses.Get(domainID, lastAddressID, maxResults);
+        }
+
+        public Address[] Get(long lastAddressID, int maxResults)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, lastAddressID, maxResults).ToArray();
+            }
+        }
+
+        public IEnumerable<Address> Get(ConfigDatabase db, long lastAddressID, int maxResults)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            return db.Addresses.Get(lastAddressID, maxResults);
+        }
+        
+        public void Remove(string emailAddress)
+        {
+            using(ConfigDatabase db = this.Store.CreateContext())
+            {
+                this.Remove(db, emailAddress);
+            }
+        }
+        
+        public void Remove(ConfigDatabase db, string emailAddress)
+        {
+            if (string.IsNullOrEmpty(emailAddress))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidEmailAddress);
+            }
+            
+            db.Addresses.ExecDelete(emailAddress);
+        }
+
+        public void Remove(IEnumerable<string> emailAddresses)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                foreach(string emailAddress in emailAddresses)
+                {
+                    this.Remove(db, emailAddress);
+                }
+            }
+        }
+        
+        public void RemoveDomain(long domainID)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                this.RemoveDomain(db, domainID);
+            }
+        }
+
+        public void RemoveDomain(ConfigDatabase db, long domainID)
+        {
+            db.Addresses.ExecDeleteDomain(domainID);
+        }
+        
+        public void SetStatus(string[] emailAddresses, EntityStatus status)
+        {
+        }
+        
+        public void SetStatus(ConfigDatabase db, string[] emailAddresses, EntityStatus status)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            this.VerifyEmailAddresses(emailAddresses);
+            db.Addresses.ExecSetStatus(emailAddresses, status);
+        }
+        
+        void VerifyEmailAddresses(string[] emailAddresses)
+        {
+            if (emailAddresses == null || emailAddresses.Length == 0)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidEmailAddress);
+            }
+            for (int i = 0; i < emailAddresses.Length; ++i)
+            {
+                if (string.IsNullOrEmpty(emailAddresses[i]))
+                {
+                    throw new ConfigStoreException(ConfigStoreError.InvalidEmailAddress);
+                }
+            }
         }
 
         public IEnumerator<Address> GetEnumerator()
         {
-            using(ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
-                foreach(Address address in db.Addresses.GetAddresses(m_domainID))
+                foreach (Address address in db.Addresses)
                 {
                     yield return address;
                 }
             }
         }
+
 
         #region IEnumerable Members
 
