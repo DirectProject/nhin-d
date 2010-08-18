@@ -28,12 +28,12 @@
 	</Target>
 
 	<Target Name="build-gateway">
-		<MSBuild Projects=".\gateway\gateway.sln" Targets="Build" Properties="Configuration=Debug" />
+		<MSBuild Projects=".\build\buildGateway.sln" Targets="Build" Properties="Configuration=Debug" />
 	</Target>
 
 	<Target Name="clean-gateway">
 		<!-- taken out for now due to failure
-		<MSBuild Projects=".\gateway\gateway.sln" Targets="Clean" />
+		<MSBuild Projects=".\build\buildGateway.sln" Targets="Clean" />
 		 -->
 	</Target>
 
