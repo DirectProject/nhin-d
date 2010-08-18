@@ -37,6 +37,12 @@ namespace NHINDirect.Config.Store
         public Anchor()
         {
         }
+
+        public Anchor(string owner, byte[] sourceFileBytes, string password)
+            : this(owner, Certificate.Import(sourceFileBytes, password))
+        {
+        }
+        
         
         public Anchor(string owner, X509Certificate2 certificate)
             : this(owner, certificate, true, true)
@@ -90,14 +96,14 @@ namespace NHINDirect.Config.Store
             set;
         }
 
-        [Column(Name = "CertificateID", CanBeNull = false, IsDbGenerated=true)]
-        public long CertificateID
+        [Column(Name = "CertificateID", CanBeNull = false, IsDbGenerated=true, UpdateCheck = UpdateCheck.Never)]
+        public long ID
         {
             get;
             set;
         }
         
-        [Column(Name = "CertificateData", DbType = "varbinary(MAX)", CanBeNull = false)]
+        [Column(Name = "CertificateData", DbType = "varbinary(MAX)", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         public byte[] Data
         {
             get
@@ -106,51 +112,72 @@ namespace NHINDirect.Config.Store
             }
             set
             {
-                if (value == null || value.Length == 0)
-                {
-                    throw new ConfigStoreException(ConfigStoreError.MissingCertificateData);
-                }
-
                 m_data = value;
             }
         }
 
-        [Column(Name = "CreateDate", CanBeNull = false)]
+        [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         public DateTime CreateDate
         {
             get;
             set;
         }
-        
-        [Column(Name = "ValidStartDate", CanBeNull = false)]
+
+        [Column(Name = "ValidStartDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         public DateTime ValidStartDate
         {
             get;
             set;
         }
 
-        [Column(Name = "ValidEndDate", CanBeNull = false)]
+        [Column(Name = "ValidEndDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         public DateTime ValidEndDate
         {
             get;
             set;
         }
 
-        [Column(Name = "ForIncoming", CanBeNull = false)]
+        [Column(Name = "ForIncoming", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         public bool ForIncoming
         {
             get;
             set;
         }
 
-        [Column(Name = "ForOutgoing", CanBeNull = false)]
+        [Column(Name = "ForOutgoing", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         public bool ForOutgoing
         {
             get;
             set;
         }
+
+        public bool HasData
+        {
+            get
+            {
+                return (this.Data != null && this.Data.Length > 0);
+            }
+        }                              
+
+        public bool IsValid(DateTime testDate)
+        {
+            return (this.ValidStartDate <= testDate && testDate <= this.ValidEndDate);
+        }
+
+        public void ClearData()
+        {
+            m_data = null;
+        }
+
+        public void ValidateHasData()
+        {
+            if (m_data == null || m_data.Length == 0)
+            {
+                throw new ConfigStoreException(ConfigStoreError.MissingCertificateData);
+            }
+        }
         
-        public X509Certificate2 ToCertificate()
+        public X509Certificate2 ToX509Certificate()
         {
             return new X509Certificate2(this.Data);
         }

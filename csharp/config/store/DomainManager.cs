@@ -48,29 +48,40 @@ namespace NHINDirect.Config.Store
         
         public void Add(ConfigDatabase db, string name)
         {
-            if (db == null || string.IsNullOrEmpty(name))
+            if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException();
             }
             
             db.Domains.InsertOnSubmit(new Domain(name));
         }
-        
-        public void Ensure(string name)
+
+        public void Add(Domain domain)
         {
-            using(ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
-                if (!this.Contains(db, name))
-                {
-                    this.Add(db, name);
-                    db.SubmitChanges();
-                }
+                this.Add(db, domain);
+                db.SubmitChanges();
             }
         }
 
+        public void Add(ConfigDatabase db, Domain domain)
+        {
+            if (db == null)
+            {
+                throw new ArgumentException();
+            }
+            if (domain == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
+            }
+            
+            db.Domains.InsertOnSubmit(domain);
+        }
+        
         public Domain Get(string name)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateReadContext())
             {
                 return this.Get(db, name);
             }
@@ -78,32 +89,68 @@ namespace NHINDirect.Config.Store
 
         public Domain Get(ConfigDatabase db, string name)
         {
-            if (db == null || string.IsNullOrEmpty(name))
+            if (db == null)
             {
                 throw new ArgumentException();
             }
-
-            return db.Domains.GetDomain(name);
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
+            }
+            
+            return db.Domains.Get(name);
+        }
+        
+        public Domain[] Get(long lastDomainID, int maxResults)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(lastDomainID, maxResults).ToArray();
+            }
+        }
+        
+        public IEnumerable<Domain> Get(ConfigDatabase db, long lastDomainID, int maxResults)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException();
+            }   
+            
+            return db.Domains.Get(lastDomainID, maxResults);
         }
 
-        public bool Contains(string name)
+        public void Update(Domain domain)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
-                return this.Contains(db, name);
-            }        
+                this.Update(db, domain);
+                db.SubmitChanges();
+            }
         }
-        
-        public bool Contains(ConfigDatabase db, string name)
+
+        public void Update(ConfigDatabase db, Domain domain)
         {
-            if (db == null || string.IsNullOrEmpty(name))
+            if (db == null)
             {
                 throw new ArgumentException();
             }
-            
-            return (db.Domains.GetDomain(name) != null);
+            if (domain == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
+            }
+
+            Domain current = this.Get(db, domain.Name);
+            if (current == null)
+            {
+                this.Add(db, domain);
+            }
+            else
+            {
+                domain.UpdateDate = DateTime.Now;
+                db.Domains.Attach(domain, current);
+            }
         }
-        
+                
         public void Remove(string name)
         {
             using(ConfigDatabase db = this.Store.CreateContext())
@@ -114,20 +161,17 @@ namespace NHINDirect.Config.Store
 
         public void Remove(ConfigDatabase db, string name)
         {
-            if (db == null || string.IsNullOrEmpty(name))
+            if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException();
             }
             
-            db.Domains.Delete(name);
-        }
-        
-        public AddressManager GetAddressManager(long domainID)
-        {
-            //
-            // TODO: Cache these in an LRU memorycache
-            //
-            return new AddressManager(this.Store, domainID);
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
+            }
+            
+            db.Domains.ExecDelete(name);
         }
 
         public IEnumerator<Domain> GetEnumerator()

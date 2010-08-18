@@ -23,30 +23,41 @@ using System.Net.Mail;
 
 namespace NHINDirect.Config.Store
 {
-    public static class Queries
+    public static class DomainQueries
     {
-        internal static string ToIn(this string[] array)
+        const string Sql_DeleteDomain = "DELETE from Domains where DomainName = {0}";
+
+        static readonly Func<ConfigDatabase, string, IQueryable<Domain>> Domain = CompiledQuery.Compile(
+            (ConfigDatabase db, string owner) =>
+                from domain in db.Domains
+                where domain.Name == owner
+                select domain
+        );
+        static readonly Func<ConfigDatabase, long, int, IQueryable<Domain>> Domains = CompiledQuery.Compile(
+            (ConfigDatabase db, long lastDomainID, int maxResults) =>
+                (from domain in db.Domains
+                 where domain.ID > lastDomainID
+                 select domain).Take(maxResults)
+        );
+
+        public static ConfigDatabase GetDB(this Table<Domain> table)
         {
-            if (array == null || array.Length == 0)
-            {
-                throw new ArgumentException();
-            }
-            return string.Join(",", array);
+            return (ConfigDatabase)table.Context;
         }
-        
-        internal static string ToIn(this long[] array)
+
+        public static Domain Get(this Table<Domain> table, string domainName)
         {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < array.Length; ++i)
-            {
-                if (i > 0)
-                {
-                    builder.Append(',');
-                }
-                builder.Append(array[i]);
-            }
-            
-            return builder.ToString();
+            return Domain(table.GetDB(), domainName).SingleOrDefault();
+        }
+
+        public static IQueryable<Domain> Get(this Table<Domain> table, long lastDomainID, int maxResults)
+        {
+            return Domains(table.GetDB(), lastDomainID, maxResults);
+        }
+
+        public static void ExecDelete(this Table<Domain> table, string domainName)
+        {
+            table.Context.ExecuteCommand(Sql_DeleteDomain, domainName);
         }
     }
 }

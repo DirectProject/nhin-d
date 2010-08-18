@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Configuration;
+using System.ServiceModel;
+using NHINDirect.Diagnostics;
 using NHINDirect.Config.Store;
 
 namespace NHINDirect.Config.Service
@@ -30,10 +32,12 @@ namespace NHINDirect.Config.Service
 
         ServiceSettings m_settings;
         ConfigStore m_store;
+        LogFile m_log;
                 
         public Service()
         {
             m_settings = new ServiceSettings();
+            m_log = new LogFile(m_settings.LogSettings.CreateWriter());
             m_store = new ConfigStore(m_settings.StoreConnectString);
         }
         
@@ -45,12 +49,27 @@ namespace NHINDirect.Config.Service
             }
         }
         
+        public LogFile Log
+        {
+            get
+            {
+                return m_log;
+            }
+        }
+        
         public ConfigStore Store
         {
             get
             {
                 return m_store;
             }
+        }
+
+        public static FaultException<ConfigStoreFault> CreateFault(Exception ex)
+        {
+            Service.Current.Log.WriteError(ex);
+            ConfigStoreFault fault = ConfigStoreFault.ToFault(ex);
+            return new FaultException<ConfigStoreFault>(fault, new FaultReason(fault.ToString()));
         }
     }
 }

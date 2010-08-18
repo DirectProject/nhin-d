@@ -29,6 +29,7 @@ namespace NHINDirect.Config.Store
         string m_connectString;
         int m_timeout;
         DomainManager m_domains;
+        AddressManager m_addresses;
         CertificateManager m_certificates;
         AnchorManager m_anchors;
         
@@ -50,15 +51,24 @@ namespace NHINDirect.Config.Store
             m_timeout = timeout;
             m_connectString = connectString;
             m_domains = new DomainManager(this);
+            m_addresses = new AddressManager(this);
             m_certificates = new CertificateManager(this);
             m_anchors = new AnchorManager(this);
         }        
-        
+                
         public DomainManager Domains
         {
             get
             {
                 return m_domains;
+            }
+        }
+
+        public AddressManager Addresses
+        {
+            get
+            {
+                return m_addresses;
             }
         }
         
@@ -82,6 +92,14 @@ namespace NHINDirect.Config.Store
         {
             ConfigDatabase db = new ConfigDatabase(m_connectString);
             db.CommandTimeout = m_timeout;
+            return db;
+        }
+
+        public ConfigDatabase CreateReadContext()
+        {
+            ConfigDatabase db = new ConfigDatabase(m_connectString);
+            db.CommandTimeout = m_timeout;
+            db.ObjectTrackingEnabled = false;            
             return db;
         }
     }

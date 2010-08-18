@@ -27,17 +27,13 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Config.Store
 {
-    public class AnchorManager : IEnumerable<X509Certificate2>
+    public class AnchorManager
     {
         ConfigStore m_store;
-        AnchorIndex m_incomingAnchors;
-        AnchorIndex m_outgoingAnchors;
         
         internal AnchorManager(ConfigStore store)
         {
             m_store = store;
-            m_incomingAnchors = new AnchorIndex(this, true);
-            m_outgoingAnchors = new AnchorIndex(this, false);
         }
 
         internal ConfigStore Store
@@ -46,62 +42,6 @@ namespace NHINDirect.Config.Store
             {
                 return m_store;
             }
-        }
-        
-        public X509Certificate2Collection this[string ownerName]
-        {
-            get 
-            {
-                return this.GetX509Certificates(ownerName);
-            }
-        }
-        
-        public IX509CertificateIndex IncomingAnchors
-        {
-            get
-            {
-                return m_incomingAnchors;
-            }
-        }
-        
-        public IX509CertificateIndex OutgoingAnchors
-        {
-            get
-            {
-                return m_outgoingAnchors;
-            }
-        }
-        
-        public void Add(string owner, X509Certificate2 cert)
-        {
-            this.Add(owner, cert, true, true);
-        }
-        
-        public void Add(string owner, X509Certificate2 cert, bool forIncoming, bool forOutgoing)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, owner, cert, forIncoming, forOutgoing);
-                db.SubmitChanges();
-            }
-        }
-
-        public void Add(ConfigDatabase db, string owner, X509Certificate2 cert, bool forIncoming, bool forOutgoing)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException();
-            }
-            if (string.IsNullOrEmpty(owner))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-            if (cert == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidX509Certificate);
-            }
-            
-            db.Anchors.InsertOnSubmit(new Anchor(owner, cert, forIncoming, forOutgoing));
         }
         
         public void Add(Anchor anchor)
@@ -143,9 +83,22 @@ namespace NHINDirect.Config.Store
             db.Anchors.InsertOnSubmit(anchor);
         }
 
+        public Anchor[] Get(long[] certIDs)
+        {
+            if (certIDs == null || certIDs.Length == 0)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+            }
+
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return db.Anchors.Get(certIDs).ToArray();
+            }
+        }
+
         public Anchor[] Get(long lastCertID, int maxResults)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateReadContext())
             {
                 return this.Get(db, lastCertID, maxResults).ToArray();
             }
@@ -203,7 +156,7 @@ namespace NHINDirect.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
 
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateReadContext())
             {
                 return db.Anchors.GetOutgoing(ownerName).ToArray();
             }
@@ -211,7 +164,7 @@ namespace NHINDirect.Config.Store
 
         public Anchor Get(string owner, string thumbprint)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateReadContext())
             {
                 return this.Get(db, owner, thumbprint);
             }
@@ -231,30 +184,36 @@ namespace NHINDirect.Config.Store
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidThumbprint);
             }
-            return db.Anchors.Find(owner, thumbprint);
+            return db.Anchors.Get(owner, thumbprint);
         }
-                
-        public X509Certificate2Collection GetX509Certificates(string owner)
+
+        public void Remove(long[] certificateIDs)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
-                return this.GetX509Certificates(db, owner);
+                this.Remove(db, certificateIDs);
+
+                // We don't commit, because we execute deletes directly
             }
         }
-        
-        public X509Certificate2Collection GetX509Certificates(ConfigDatabase db, string owner)
+
+        public void Remove(ConfigDatabase db, long[] certificateIDs)
         {
             if (db == null)
             {
                 throw new ArgumentNullException();
             }
-            
-            if (string.IsNullOrEmpty(owner))
+            if (certificateIDs == null || certificateIDs.Length == 0)
             {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
             }
-            
-            return Collect(db.Anchors.Get(owner));
+            //
+            // Todo: this in a single query
+            //
+            for (int i = 0; i < certificateIDs.Length; ++i)
+            {
+                db.Anchors.ExecDelete(certificateIDs[i]);
+            }
         }
 
         public void Remove(string owner, string thumbprint)
@@ -287,7 +246,7 @@ namespace NHINDirect.Config.Store
         {
             if (string.IsNullOrEmpty(ownerName))
             {
-                throw new ArgumentException();
+                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
 
             using (ConfigDatabase db = this.Store.CreateContext())
@@ -309,85 +268,5 @@ namespace NHINDirect.Config.Store
 
             db.Anchors.ExecDelete(ownerName);
         }
-
-        public IEnumerator<X509Certificate2> GetEnumerator()
-        {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                foreach (Anchor cert in db.Anchors)
-                {
-                    yield return cert.ToCertificate();
-                }
-            }
-        }
-
-        internal static X509Certificate2Collection Collect(IEnumerable<Anchor> certs)
-        {
-            if (certs == null)
-            {
-                return null;
-            }
-            
-            X509Certificate2Collection collection = new X509Certificate2Collection();
-            foreach (Anchor cert in certs)
-            {
-                collection.Add(cert.ToCertificate());
-            }
-            return collection;
-        }
-
-        #region IEnumerable Members
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
-        #endregion
     }
-    
-    internal class AnchorIndex : IX509CertificateIndex
-    {
-        AnchorManager m_anchors;
-        bool m_forIncoming;
-        
-        internal AnchorIndex(AnchorManager anchors, bool forIncoming)
-        {
-            m_anchors = anchors;
-            m_forIncoming = forIncoming;
-        }
-        
-        public X509Certificate2Collection this[string owner]
-        {
-            get 
-            { 
-                using(ConfigDatabase db = m_anchors.Store.CreateContext())
-                {
-                    IEnumerable<Anchor> matches = m_forIncoming ? db.Anchors.GetIncoming(owner) 
-                                                                : db.Anchors.GetOutgoing(owner);
-                    return AnchorManager.Collect(matches);
-                }
-            }
-        }
-                
-        public IEnumerator<X509Certificate2> GetEnumerator()
-        {
-            using (ConfigDatabase db = m_anchors.Store.CreateContext())
-            {
-                foreach (Anchor cert in db.Anchors)
-                {
-                    yield return cert.ToCertificate();
-                }
-            }
-        }
-
-        #region IEnumerable Members
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
-        #endregion
-    }
-}
+ }

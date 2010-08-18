@@ -24,21 +24,11 @@ using System.Data.Linq.Mapping;
 using NHINDirect.Config.Store;
 
 namespace NHINDirect.Config.Service
-{
+{    
     // NOTE: If you change the class name "CertificateStore" here, you must also update the reference to "CertificateStore" in Web.config.
     public class CertificateService : ICertificateStore, IAnchorStore
-    {               
-        public void AddCertificate(Certificate certificate)
-        {
-            try
-            {
-                Service.Current.Store.Certificates.Add(certificate);
-            }
-            catch(ConfigStoreException ex)
-            {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
-            }
-        }
+    {        
+        #region ICertificateStore
         
         public void AddCertificates(Certificate[] certificates)
         {
@@ -51,168 +41,260 @@ namespace NHINDirect.Config.Service
             {
                 Service.Current.Store.Certificates.Add(certificates);
             }
-            catch(ConfigStoreException ex)
+            catch (Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
+                throw Service.CreateFault(ex);
             }
         }
 
-        public Certificate GetCertificate(string owner, string thumbprint)
+        public Certificate GetCertificate(string owner, string thumbprint, CertificateGetOptions options)
         {
             try
             {
-                return Service.Current.Store.Certificates.Get(owner, thumbprint);
+                return this.ApplyGetOptions(Service.Current.Store.Certificates.Get(owner, thumbprint), options);
             }
-            catch (ConfigStoreException ex)
+            catch (Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
+                throw Service.CreateFault(ex);
             }
         }
 
-        public Certificate[] GetCertificates(string owner)
+        public Certificate[] GetCertificates(long[] certificateIDs, CertificateGetOptions options)
         {
             try
             {
-                return Service.Current.Store.Certificates.Get(owner);
+                Certificate[] certs = this.ApplyGetOptions(Service.Current.Store.Certificates.Get(certificateIDs), options);
+                return certs;
             }
-            catch (ConfigStoreException ex)
+            catch (Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
-            }            
+                throw Service.CreateFault(ex);
+            }
         }
-        
-        public Certificate[] EnumerateCertificates(long lastCertificateID, int maxResults)
+
+        public Certificate[] GetCertificatesForOwner(string owner, CertificateGetOptions options)
+        {
+            try
+            {
+                return this.ApplyGetOptions(Service.Current.Store.Certificates.Get(owner), options);
+            }
+            catch (Exception ex)
+            {
+                throw Service.CreateFault(ex);
+            }
+        }
+
+        public Certificate[] EnumerateCertificates(long lastCertificateID, int maxResults, CertificateGetOptions options)
         {
             try
             {
                 IEnumerable<Certificate> certs = Service.Current.Store.Certificates.Get(lastCertificateID, maxResults);
-                return certs.ToArray();
+                return this.ApplyGetOptions(certs.ToArray(), options);
             }
-            catch (ConfigStoreException ex)
+            catch (Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
-            }            
+                throw Service.CreateFault(ex);
+            }
         }
 
-
-        public void RemoveCertificate(string owner, string thumbprint)
+        public void SetCertificateStatus(long[] certificateIDs, EntityStatus status)
         {
             try
             {
-                Service.Current.Store.Certificates.Remove(owner, thumbprint);
+                Service.Current.Store.Certificates.SetStatus(certificateIDs, status);
             }
-            catch (ConfigStoreException ex)
+            catch (Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
+                throw Service.CreateFault(ex);
             }
         }
 
-        public void RemoveCertificates(string owner)
+        public void SetCertificateStatusForOwner(string owner, EntityStatus status)
+        {
+            try
+            {
+                Service.Current.Store.Certificates.SetStatus(owner, status);
+            }
+            catch (Exception ex)
+            {
+                throw Service.CreateFault(ex);
+            }
+        }
+
+        public void RemoveCertificates(long[] certificateIDs)
+        {
+            try
+            {
+                Service.Current.Store.Certificates.Remove(certificateIDs);
+            }
+            catch (Exception ex)
+            {
+                throw Service.CreateFault(ex);
+            }
+        }
+
+        public void RemoveCertificatesForOwner(string owner)
         {
             try
             {
                 Service.Current.Store.Certificates.Remove(owner);
             }
-            catch (ConfigStoreException ex)
+            catch (Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
+                throw Service.CreateFault(ex);
             }
         }
         
-        public void AddAnchor(Anchor anchor)
-        {
-            try
-            {
-                Service.Current.Store.Anchors.Add(anchor);
-            }
-            catch (ConfigStoreException ex)
-            {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
-            }
-        }
-
+        #endregion
+        
+        #region IAnchorStore
+        
         public void AddAnchors(Anchor[] anchors)
         {
             try
             {
                 Service.Current.Store.Anchors.Add(anchors);
             }
-            catch (ConfigStoreException ex)
+            catch (Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
-            }            
+                throw Service.CreateFault(ex);
+            }
         }
-
-        public Anchor[] GetAnchors(string owner)
+        
+        public Anchor[] GetAnchors(long[] anchorIDs, CertificateGetOptions options)
         {
             try
             {
-                return Service.Current.Store.Anchors.Get(owner).ToArray();
+                return this.ApplyGetOptions(Service.Current.Store.Anchors.Get(anchorIDs), options);
             }
-            catch (ConfigStoreException ex)
+            catch(Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
-            }            
+                throw Service.CreateFault(ex);
+            }
         }
 
-        public Anchor[] GetIncomingAnchors(string owner)
+        public Anchor[] GetAnchorsForOwner(string owner, CertificateGetOptions options)
         {
             try
             {
-                return Service.Current.Store.Anchors.GetIncoming(owner);
+                return this.ApplyGetOptions(Service.Current.Store.Anchors.Get(owner), options);
             }
-            catch (ConfigStoreException ex)
+            catch (Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
-            }            
+                throw Service.CreateFault(ex);
+            }
         }
 
-        public Anchor[] GetOutgoingAnchors(string owner)
+        public Anchor[] GetIncomingAnchors(string owner, CertificateGetOptions options)
         {
             try
             {
-                return Service.Current.Store.Anchors.GetOutgoing(owner);
+                return this.ApplyGetOptions(Service.Current.Store.Anchors.GetIncoming(owner), options);
             }
-            catch (ConfigStoreException ex)
+            catch (Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
+                throw Service.CreateFault(ex);
             }
         }
 
-        public Anchor[] EnumerateAnchors(long lastAnchorID, int maxResults)
+        public Anchor[] GetOutgoingAnchors(string owner, CertificateGetOptions options)
         {
             try
             {
-                return Service.Current.Store.Anchors.Get(lastAnchorID, maxResults);
+                return this.ApplyGetOptions(Service.Current.Store.Anchors.GetOutgoing(owner), options);
             }
-            catch (ConfigStoreException ex)
+            catch (Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
+                throw Service.CreateFault(ex);
             }
         }
 
-        public void RemoveAnchor(string owner, string thumbprint)
+        public Anchor[] EnumerateAnchors(long lastAnchorID, int maxResults, CertificateGetOptions options)
         {
             try
             {
-                Service.Current.Store.Anchors.Remove(owner, thumbprint);
+                return this.ApplyGetOptions(Service.Current.Store.Anchors.Get(lastAnchorID, maxResults), options);
             }
-            catch (ConfigStoreException ex)
+            catch (Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
+                throw Service.CreateFault(ex);
             }
         }
 
-        public void RemoveAnchors(string owner)
+        public void RemoveAnchors(long[] anchorIDs)
+        {
+            try
+            {
+                Service.Current.Store.Anchors.Remove(anchorIDs);
+            }
+            catch (Exception ex)
+            {
+                throw Service.CreateFault(ex);
+            }
+        }
+
+        public void RemoveAnchorsForOwner(string owner)
         {
             try
             {
                 Service.Current.Store.Anchors.Remove(owner);
             }
-            catch (ConfigStoreException ex)
+            catch (Exception ex)
             {
-                throw new FaultException<ConfigStoreFault>(ex.ToFault());
+                throw Service.CreateFault(ex);
             }
+        }
+        
+        #endregion
+        
+        Certificate[] ApplyGetOptions(Certificate[] certs, CertificateGetOptions options)
+        {
+            if (certs == null)
+            {
+                return null;
+            }
+            
+            return (from cert in (from cert in certs
+                                where cert != null
+                                select ApplyGetOptions(cert, options)
+                                )
+                   where cert != null
+                   select cert).ToArray();
+        }
+        
+        Certificate ApplyGetOptions(Certificate cert, CertificateGetOptions options)
+        {
+            if (options == null)
+            {
+                options = CertificateGetOptions.Default;
+            }
+            
+            return options.ApplyTo(cert);
+        }
+
+        Anchor[] ApplyGetOptions(Anchor[] anchors, CertificateGetOptions options)
+        {
+            if (anchors == null)
+            {
+                return null;
+            }
+
+            return (from anchor in
+                        (from anchor in anchors
+                         select ApplyGetOptions(anchor, options)
+                         )
+                    where anchor != null
+                    select anchor).ToArray();
+        }
+
+        Anchor ApplyGetOptions(Anchor anchor, CertificateGetOptions options)
+        {
+            if (options == null)
+            {
+                options = CertificateGetOptions.Default;
+            }
+
+            return options.ApplyTo(anchor);
         }
     }
 }

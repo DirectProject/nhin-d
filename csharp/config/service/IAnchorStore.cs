@@ -29,34 +29,34 @@ namespace NHINDirect.Config.Service
     {
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void AddAnchor(Anchor anchor);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
         void AddAnchors(Anchor[] anchors);
-        
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveAnchor(string owner, string thumbprint);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveAnchors(string owner);
+        Anchor[] GetAnchors(long[] anchorIDs, CertificateGetOptions options);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Anchor[] GetAnchors(string owner);
+        Anchor[] GetAnchorsForOwner(string owner, CertificateGetOptions options);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Anchor[] GetIncomingAnchors(string owner);
+        Anchor[] GetIncomingAnchors(string owner, CertificateGetOptions options);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Anchor[] GetOutgoingAnchors(string owner);
+        Anchor[] GetOutgoingAnchors(string owner, CertificateGetOptions options);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Anchor[] EnumerateAnchors(long lastAnchorID, int maxResults);        
+        Anchor[] EnumerateAnchors(long lastAnchorID, int maxResults, CertificateGetOptions options);        
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void RemoveAnchors(long[] anchorIDs);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void RemoveAnchorsForOwner(string owner);
     }
 }

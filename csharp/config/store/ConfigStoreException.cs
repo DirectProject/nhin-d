@@ -18,6 +18,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Data.Common;
+using System.Data.Linq;
+using System.Data.SqlClient;
 using NHINDirect;
 
 namespace NHINDirect.Config.Store
@@ -27,17 +30,27 @@ namespace NHINDirect.Config.Store
         None = 0,
         Unknown,
         Unexpected,
+        Conflict,
+        DatabaseError,
+        UniqueConstraint,
+        ForeignKeyConstraint,
+        InvalidIDs,
+        InvalidDomain,
+        InvalidDomainName,
+        DomainNameLength,
+        InvalidDomainID,
+        InvalidAddress,
+        AddressLength,
+        DisplayNameLength,
+        InvalidEmailAddress,
         InvalidCertificate,
         InvalidX509Certificate,
+        MissingCertificateData,
         InvalidOwnerName,
+        OwnerLength,
         InvalidThumbprint,
         InvalidAnchor,
-        OwnerLength,
         AccountNameLength,
-        DomainNameLength,
-        EndpointNameLength,
-        DisplayNameLength,
-        MissingCertificateData
     }
         
     public class ConfigStoreException : NHINDException<ConfigStoreError>
@@ -64,18 +77,26 @@ namespace NHINDirect.Config.Store
     [DataContract(Namespace = ConfigStore.Namespace)]
     public class ConfigStoreFault
     {
+        string m_message;
+        
         public ConfigStoreFault()
             : this(ConfigStoreError.Unknown)
         {
         }
         
         public ConfigStoreFault(ConfigStoreError error)
+            : this(error, null)
+        {
+        }
+
+        public ConfigStoreFault(ConfigStoreError error, string message)
         {
             this.Error = error;
+            this.Message = message;
         }
 
         public ConfigStoreFault(ConfigStoreException ex)
-            : this(ex.Error)
+            : this(ex.Error, ex.Message)
         {
         }
         
@@ -85,5 +106,86 @@ namespace NHINDirect.Config.Store
             get;
             set;
         }
+        
+        //
+        // Optional
+        //
+        [DataMember]
+        public string Message
+        {
+            get
+            {
+                return m_message ?? string.Empty;
+            }
+            set
+            {
+                m_message = value;
+            }
+        }
+        
+        public static ConfigStoreFault ToFault(Exception ex)
+        {
+            ConfigStoreException ce = ex as ConfigStoreException;
+            if (ce != null)
+            {
+                return ce.ToFault();
+            }
+            
+            ChangeConflictException conflict = ex as ChangeConflictException;
+            if (conflict != null)
+            {
+                return new ConfigStoreFault(ConfigStoreError.Conflict);
+            }
+            
+            SqlException sqlex = ex as SqlException;
+            if (sqlex != null)
+            {
+                ConfigStoreError errorCode = ConfigStoreError.DatabaseError;
+                switch (sqlex.Number)
+                {
+                    default:
+                        break;
+                    
+                    case (int) SqlErrorCodes.DuplicatePrimaryKey:
+                    case (int) SqlErrorCodes.UniqueConstraintViolation:
+                        errorCode = ConfigStoreError.UniqueConstraint;
+                        break;    
+                    
+                    case (int) SqlErrorCodes.ForeignKeyViolation:
+                        errorCode = ConfigStoreError.ForeignKeyConstraint;
+                        break;                                                               
+                }
+                
+                return new ConfigStoreFault(errorCode, sqlex.Message);
+            }
+            
+            DbException dbex = ex as DbException;
+            if (dbex != null)
+            {
+                return new ConfigStoreFault(ConfigStoreError.DatabaseError, dbex.Message);
+            }
+            
+            return new ConfigStoreFault(ConfigStoreError.Unknown);
+        }
+
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(m_message))
+            {
+                return this.Error.ToString();
+            }
+            
+            return string.Format("ERROR={0};{1}", this.Error, m_message);
+        }
+    }
+    
+    /// <summary>
+    /// Can't believe we have to do this...
+    /// </summary>
+    internal enum SqlErrorCodes : int
+    {
+        ForeignKeyViolation = 547,
+        UniqueConstraintViolation = 2601,
+        DuplicatePrimaryKey = 2627,
     }
 }
