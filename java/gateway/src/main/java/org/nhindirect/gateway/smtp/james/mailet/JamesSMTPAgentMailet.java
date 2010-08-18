@@ -44,13 +44,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.base.GenericMailet;
 import org.nhindirect.stagent.IncomingMessage;
-import org.nhindirect.stagent.NHINDAgent;
+import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.OutgoingMessage;
-import org.nhindirect.stagent.cert.ICertificateResolver;
+import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.parser.EntitySerializer;
-import org.nhindirect.stagent.trust.TrustAnchorResolver;
+import org.nhindirect.stagent.trust.DefaultTrustAnchorResolver;
 
 
 /** 
@@ -63,7 +63,7 @@ public class JamesSMTPAgentMailet extends GenericMailet
 {
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(JamesSMTPAgentMailet.class);	
 	
-	private NHINDAgent agent;
+	private DefaultNHINDAgent agent;
 	private Set<String> internalHISPDomains = new HashSet<String>();
 	
 	private String incomingHost;
@@ -104,7 +104,7 @@ public class JamesSMTPAgentMailet extends GenericMailet
 				LOGGER.debug("IncomingPort: " + incomingPort);
 			}
 			
-			ICertificateResolver certService = null;
+			CertificateResolver certService = null;
 			
 			String certStoreClassName = getInitParameter("CertStoreImpl");
 			
@@ -142,8 +142,8 @@ public class JamesSMTPAgentMailet extends GenericMailet
 			
 			// hard coded to use the uniform trust settings
 			
-			agent = new NHINDAgent(internalHISPDomains,  certService, 
-					certService, new TrustAnchorResolver(archorCerts));					
+			agent = new DefaultNHINDAgent(internalHISPDomains,  certService, 
+					certService, new DefaultTrustAnchorResolver(archorCerts));					
 			
 			LOGGER.debug("Successfully create NHIND agent");
 			

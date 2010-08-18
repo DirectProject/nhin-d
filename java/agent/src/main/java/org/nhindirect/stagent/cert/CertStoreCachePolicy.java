@@ -22,11 +22,14 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.cert;
 
+import com.google.inject.ImplementedBy;
+
 /**
  * Cache policy setting for a cacheable cert store.
  * @author Greg Meyer
  *
  */
+@ImplementedBy(DefaultCertStoreCachePolicy.class)
 public interface CertStoreCachePolicy 
 {
 	/**
