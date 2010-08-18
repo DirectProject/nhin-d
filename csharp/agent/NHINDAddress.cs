@@ -23,28 +23,50 @@ using NHINDirect;
 
 namespace NHINDirect.Agent
 {
+    /// <summary>
+    /// Represents a Direct address (a <see cref="MailAddress"/> with an associated set of certificates.
+    /// </summary>
     public class NHINDAddress : MailAddress
     {
         X509Certificate2Collection m_certificates;
         TrustEnforcementStatus m_trustStatus;
         X509Certificate2Collection m_trustAnchors;
         
+        /// <summary>
+        /// Creates a Direct address without associated certificates. (The associated certificates
+        /// and trust anchors must be later set from, e.g., an external store or source).
+        /// </summary>
+        /// <param name="address">The <c>string</c> representation of the address.</param>
         public NHINDAddress(string address)
             : this(address, null)
         {
         }
 
+        /// <summary>
+        /// Creates a Direct address without associated certificates. (The associated certificates
+        /// and trust anchors must be later set from, e.g., an external store or source).
+        /// </summary>
+        /// <param name="address">The <see cref="MailAddress"/> representation of the address.</param>
         public NHINDAddress(MailAddress address)
             : this(address.ToString())
         {
         }
         
+        /// <summary>
+        /// Creates a Direct address with associated certificates.
+        /// </summary>
+        /// <param name="address">The <c>string</c> representation of the address.</param>
+        /// <param name="certificates">The certificates to associate with the address.</param>
         public NHINDAddress(string address, X509Certificate2Collection certificates)
             : base(address)
         {            
             this.m_certificates = certificates;
         }
                 
+        /// <summary>
+        /// Gets and sets the certificates associated with this address
+        /// </summary>
+        /// <value>An <see cref="X509Certificate2Collection"/> of certficates for this address</value>
         public X509Certificate2Collection Certificates
         {
             get
@@ -56,7 +78,11 @@ namespace NHINDirect.Agent
                 this.m_certificates = value;
             }
         }
-                
+        
+        /// <summary>
+        /// Gets if this address has associated certificates
+        /// </summary>
+        /// <value><c>true</c> if this address has certificates, <c>false</c> if not</value>
         public bool HasCertificates
         {
             get
@@ -65,6 +91,9 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Gets and sets the trust anchors for this address
+        /// </summary>
         public X509Certificate2Collection TrustAnchors
         {
             get
@@ -76,7 +105,11 @@ namespace NHINDirect.Agent
                 this.m_trustAnchors = value;
             }
         }
-        
+
+        /// <summary>
+        /// Gets if this address has associated trust anchors
+        /// </summary>
+        /// <value><c>true</c> if this address has trust anchors, <c>false</c> if not</value>
         public bool HasTrustAnchors
         {
             get
