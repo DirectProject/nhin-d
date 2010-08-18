@@ -25,6 +25,9 @@ using System.Net;
 
 namespace DnsResolver
 {
+    /// <summary>
+    /// Representation of a DNS CERT RR. Only handles X509 certificates.
+    /// </summary>
     public class DNSCert
     {
         X509Certificate2 m_cert;
@@ -32,6 +35,11 @@ namespace DnsResolver
         string m_name;
         int m_ttl;
 
+        /// <summary>
+        /// Creates a DNSCert instance for a X509 certificate.
+        /// </summary>
+        /// <param name="keyTag"></param>
+        /// <param name="certificate"></param>
         public DNSCert(ushort keyTag, string certificate)
         {
             if (string.IsNullOrEmpty(certificate))

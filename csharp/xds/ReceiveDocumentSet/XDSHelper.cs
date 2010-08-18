@@ -283,59 +283,6 @@ namespace NHINDirect.XDS
             return isMissingDocumentMetadata;
         }
 
-        public string GetHashCode(XmlDocument xmlDocRequest, string documentUniqueId)
-        {
-
-            string documentData = null;
-            string hash = null;
-            byte[] auditMessageStream = null;
-            byte[] hashValue = null;
-            string hashAlgorithmName = "SHA1";
-            HashAlgorithm hashAlgorithm = null;
-            StringBuilder sbHashValue = null;
-
-            XmlElement eltRoot = null;
-            XmlNodeList nodeListDocument = null;
-
-            try
-            {
-                sbHashValue = new StringBuilder();
-
-
-                if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["HASH_ALGORITHM"]))
-                    hashAlgorithmName = ConfigurationManager.AppSettings["HASH_ALGORITHM"];
-
-                eltRoot = xmlDocRequest.DocumentElement;
-                nodeListDocument = eltRoot.SelectNodes(@"//*[local-name()='Document']");
-
-                foreach (XmlNode nodeDocument in nodeListDocument)
-                {
-                    if (nodeDocument.Attributes["id"].Value == documentUniqueId)
-                    {
-                        documentData = nodeDocument.InnerText;
-                        break;
-                    }
-
-                }
-
-                //Convert Document Data to Byte Array
-                auditMessageStream = Convert.FromBase64String(documentData);
-                hashAlgorithm = HashAlgorithm.Create(hashAlgorithmName);
-                hashValue = hashAlgorithm.ComputeHash(auditMessageStream);
-
-                foreach (byte byt in hashValue)
-                    sbHashValue.Append(byt.ToString("X2"));
-
-                hash = sbHashValue.ToString();
-            }
-            catch (Exception ex)
-            {
-                logger.Error("Error computing hash of document", ex);
-                throw;
-            }
-
-            return hash;
-        }
 
     }
 }
