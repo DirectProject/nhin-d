@@ -23,12 +23,19 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace NHINDirect.Certificates
 {    
+    /// <summary>
+    /// Represents an index of certificates by subject.
+    /// </summary>
     public class CertificateIndex : IX509CertificateIndex, ICertificateResolver
     {
         IX509CertificateStore m_store;
         CertificateDictionary m_certIndex;
         CertificateResolver m_resolver;
         
+        /// <summary>
+        /// Creates an instance of an index initialized from an <see cref="IX509CertificateStore"/>
+        /// </summary>
+        /// <param name="store">The <see cref="IX509CertificateStore"/> instance to intialize the index from</param>
         public CertificateIndex(IX509CertificateStore store)
         {
             if (store == null)
@@ -42,6 +49,12 @@ namespace NHINDirect.Certificates
             m_resolver = new CertificateResolver(this);
         }
         
+        /// <summary>
+        /// Retrns the certificates for a subjectName.
+        /// </summary>
+        /// <param name="subjectName">The subject name to lookup for certificates</param>
+        /// <returns>The <see cref="X509Certificate2Collection"/> for the subject, or <c>null</c>
+        /// if none are found.</returns>
         public X509Certificate2Collection this[string subjectName]
         {
             get
@@ -57,6 +70,9 @@ namespace NHINDirect.Certificates
             }
         }
         
+        /// <summary>
+        /// Gets the subjectNames indexed by this index
+        /// </summary>
         public IEnumerable<string> Keys
         {
             get
@@ -66,16 +82,39 @@ namespace NHINDirect.Certificates
             }
         }
 
+        /// <summary>
+        /// Returns the valid certficates for a mail address.
+        /// Implementations representing remote certificate stores (e.g., DNS) may throw network exceptions.
+        /// </summary>
+        /// <param name="address">
+        /// A <see cref="MailAddress"/>
+        /// </param>
+        /// <returns>
+        /// A <see cref="X509Certificate2Collection"/ or null if there are no addresses.>
+        /// </returns>
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
             return m_resolver.GetCertificates(address);
         }
 
+        /// <summary>
+        /// Returns the valid certficates for a mail address.
+        /// Implementations representing remote certificate stores (e.g., DNS) may throw network exceptions.
+        /// </summary>
+        /// <param name="address">
+        /// A <c>string</c> representation an email address.
+        /// </param>
+        /// <returns>
+        /// A <see cref="X509Certificate2Collection"/> or <c>null</c> if there are no addresses.
+        /// </returns>
         public X509Certificate2Collection GetCertificates(string address)
         {
             return this.GetCertificates(new MailAddress(address));
         }
 
+        /// <summary>
+        /// Refreshes the index (if the underlying store has changed).
+        /// </summary>
         public void Refresh()
         {
             CertificateDictionary newIndex = this.Load(m_store);
