@@ -28,7 +28,7 @@ namespace DnsResolver
     /// <summary>
     /// Representation of an X509 cert in a DNS CERT RR.
     /// </summary>
-    public class DNSCert
+    public class DnsX509Cert
     {
         X509Certificate2 m_cert;
         ushort m_keyTag;
@@ -36,11 +36,11 @@ namespace DnsResolver
         int m_ttl;
 
         /// <summary>
-        /// Creates a DNSCert instance for an X509 certificate.
+        /// Creates a DnsX509Cert instance for an X509 certificate.
         /// </summary>
         /// <param name="keyTag">The key tag for this certificate. See RFC 2535 for details.</param>
         /// <param name="certificate">A Base64 encoded DER representation of the certificate.</param>
-        public DNSCert(ushort keyTag, string certificate)
+        public DnsX509Cert(ushort keyTag, string certificate)
         {
             if (string.IsNullOrEmpty(certificate))
             {
@@ -56,11 +56,11 @@ namespace DnsResolver
         }
 
         /// <summary>
-        /// Creates a DNSCert instance for an X509 certificate.
+        /// Creates a DnsX509Cert instance for an X509 certificate.
         /// </summary>
         /// <param name="keyTag">The key tag for this certificate. See RFC 2535 for details.</param>
         /// <param name="certificate">A byte array providing a DER representation of an X509 certificate.</param>
-        public DNSCert(ushort keyTag, byte[] certificate)
+        public DnsX509Cert(ushort keyTag, byte[] certificate)
         {
             if (certificate == null || certificate.Length == 0)
             {
@@ -76,10 +76,10 @@ namespace DnsResolver
         }
 
         /// <summary>
-        /// Creates a DNSCert instance for an X509 certificate.
+        /// Creates a DnsX509Cert instance for an X509 certificate.
         /// </summary>
         /// <param name="cert">The <see cref="X509Certificate2"/> certificate instance.</param>
-        public DNSCert(X509Certificate2 cert)
+        public DnsX509Cert(X509Certificate2 cert)
         {
             this.Certificate = cert;
         }

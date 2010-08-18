@@ -56,7 +56,7 @@ namespace DnsResolver
         ushort m_keyTag;
         byte m_algorithm;
         byte[] m_certData;
-        DNSCert m_cert;
+        DnsX509Cert m_cert;
         
         internal CertRecord()
         {
@@ -127,8 +127,8 @@ namespace DnsResolver
         /// <summary>
         /// Gets/sets the X509 DNS Cert instance associated with this record.
         /// </summary>
-        /// <value>A <see cref="DNSCert"/> instance, will be null if this is not an X509 RR</value>
-        public DNSCert Cert
+        /// <value>A <see cref="DnsX509Cert"/> instance, will be null if this is not an X509 RR</value>
+        public DnsX509Cert Cert
         {
             get
             {
@@ -145,7 +145,7 @@ namespace DnsResolver
         {
             if (m_cert == null && m_certType == CertificateType.X509)
             {
-                m_cert = new DNSCert(m_keyTag, m_certData);
+                m_cert = new DnsX509Cert(m_keyTag, m_certData);
             }
         }
         
