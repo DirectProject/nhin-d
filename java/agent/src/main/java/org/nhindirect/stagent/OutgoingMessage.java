@@ -33,7 +33,7 @@ import org.nhindirect.stagent.mail.Message;
  * @author Umesh Madan
  *
  */
-public class OutgoingMessage extends MessageEnvelope
+public class OutgoingMessage extends DefaultMessageEnvelope
 {
 	/**
 	 * Create an outgoing message from a mime message.

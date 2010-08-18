@@ -30,6 +30,9 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.trust.TrustEnforcementStatus;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 /**
  * Incoming messages are specific types of MessageEnvelope that have been signed and encrypted.  
  * <p>
@@ -37,11 +40,11 @@ import org.nhindirect.stagent.trust.TrustEnforcementStatus;
  * @author Umesh Madan
  *
  */
-public class IncomingMessage extends MessageEnvelope
+public class IncomingMessage extends DefaultMessageEnvelope
 {
 	
 	private CMSSignedData signature;
-	private Collection<MessageSignature> senderSignatures;
+	private Collection<DefaultMessageSignatureImpl> senderSignatures;
 	
 	/**
 	 * Constructs an incoming envelope from a message. 
@@ -68,7 +71,8 @@ public class IncomingMessage extends MessageEnvelope
 	 * @param recipients A collection of addresses that denote the recipients of the message.
 	 * @param sender The original sender of the message.
 	 */     
-    public IncomingMessage(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
+    @Inject
+    public IncomingMessage(@Named("Message") Message message, @Named("Recipients") NHINDAddressCollection recipients, @Named("Sender") NHINDAddress sender)
     {
     	super(message, recipients, sender);
     }       
@@ -127,7 +131,7 @@ public class IncomingMessage extends MessageEnvelope
      * additional information such as the singers certificate and validation flags.
      * @return The collection of signers.
      */
-    public Collection<MessageSignature> getSenderSignatures()
+    public Collection<DefaultMessageSignatureImpl> getSenderSignatures()
     {
     	return Collections.unmodifiableCollection(senderSignatures);
     }
@@ -136,7 +140,7 @@ public class IncomingMessage extends MessageEnvelope
      * Sets the collection of signers of a message.
      * @param senderSignatures The collection of signers of a message.
      */
-    public void setSenderSignatures(Collection<MessageSignature> senderSignatures)
+    public void setSenderSignatures(Collection<DefaultMessageSignatureImpl> senderSignatures)
     {
     	this.senderSignatures = senderSignatures;
     }

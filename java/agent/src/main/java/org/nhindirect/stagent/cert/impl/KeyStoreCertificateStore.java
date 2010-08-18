@@ -39,6 +39,12 @@ import java.util.Set;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.CertificateStore;
 import org.nhindirect.stagent.cert.X509CertificateEx;
+import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFile;
+import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFilePassword;
+import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFilePrivKeyPassword;
+
+import com.google.inject.Inject;
+import com.google.inject.internal.Nullable;
 
 /**
  * Certificate storage using a Java keystore file.  If the keystore file does not exist, the service will automatically
@@ -86,12 +92,32 @@ public class KeyStoreCertificateStore extends CertificateStore
 	}
 
 	/**
+	 * Constructs a keystore using the provided file name, file password, and private key password.
+	 * @param keyStoreFile The file name that contains the keystore.
+	 * @param keyStorePassword The password that protects the keystores contents.
+	 * @param privateKeyPassword The password used to retrive privates keys within the keystore.
+	 */		
+	@Inject
+	public KeyStoreCertificateStore(@CertStoreKeyFile String keyStoreFileName, 
+			@Nullable @CertStoreKeyFilePassword String keyStorePassword, @Nullable @CertStoreKeyFilePrivKeyPassword String privateKeyPassword)
+	{
+		this.keyStoreFile = new File(keyStoreFileName);
+		this.keyStorePassword = keyStorePassword;
+		this.privateKeyPassword = privateKeyPassword;
+		
+		if (keyStoreFile == null)
+    		throw new IllegalArgumentException();
+
+		bootstrapFromFile();
+	}	
+	
+	/**
 	 * Constructs a keystore using the provided file, file password, and private key password.
 	 * @param keyStoreFile The file that contains the keystore.
 	 * @param keyStorePassword The password that protects the keystores contents.
 	 * @param privateKeyPassword The password used to retrive privates keys within the keystore.
 	 */		
-	public KeyStoreCertificateStore(File keyStoreFile, String keyStorePassword, String privateKeyPassword)
+	public KeyStoreCertificateStore(File keyStoreFile, String keyStorePassword,  String privateKeyPassword)
 	{
 		this.keyStoreFile = keyStoreFile;
 		this.keyStorePassword = keyStorePassword;
@@ -352,6 +378,5 @@ public class KeyStoreCertificateStore extends CertificateStore
     	}
     	
     	return retVal;
-    }
-
+    }  
 }

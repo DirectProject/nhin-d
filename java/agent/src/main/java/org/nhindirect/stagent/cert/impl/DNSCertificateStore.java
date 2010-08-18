@@ -42,6 +42,9 @@ import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.CacheableCertStore;
 import org.nhindirect.stagent.cert.CertStoreCachePolicy;
 import org.nhindirect.stagent.cert.CertificateStore;
+import org.nhindirect.stagent.cert.impl.annotation.DNSCertStoreBootstrap;
+import org.nhindirect.stagent.cert.impl.annotation.DNSCertStoreCachePolicy;
+import org.nhindirect.stagent.cert.impl.annotation.DNSCertStoreServers;
 import org.xbill.DNS.CERTRecord;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.ExtendedResolver;
@@ -52,6 +55,8 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.ResolverConfig;
 import org.xbill.DNS.Type;
 import org.xbill.DNS.security.CERTConverter;
+
+import com.google.inject.Inject;
 
 /**
  * Certificate store backed by DNS CERT records (RFC 4398) for dynamic lookup and a configurable local cache of off line lookup. 
@@ -84,13 +89,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	 */
 	public DNSCertificateStore()
 	{
-		String[] configedServers = ResolverConfig.getCurrentConfig().servers();
-		
-		if (configedServers != null)
-		{
-			servers.addAll(Arrays.asList(configedServers));
-		}
-		
+		setServers(null);		
 		localStoreDelegate = createDefaultLocalStore();
 		loadBootStrap();
 	}
@@ -102,13 +101,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	 */
 	public DNSCertificateStore(Collection<String> servers)
 	{
-		if (servers == null || servers.size() == 0)
-		{
-			throw new IllegalArgumentException();
-		}
-		
-		this.servers.addAll(servers);		
-		
+		setServers(servers);
 		localStoreDelegate = createDefaultLocalStore();		
 		loadBootStrap();
 	}
@@ -119,19 +112,20 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	 * @param servers The DNS users to use for initial certificate resolution.
 	 * @param localStoreDelegate The certificate store used for local lookups.  This store is also the boot strap store.
 	 */
-	public DNSCertificateStore(Collection<String> servers, CertificateStore bootstrapStore, CertStoreCachePolicy policy)
+	@Inject 
+	public DNSCertificateStore(@DNSCertStoreServers Collection<String> servers, 
+			@DNSCertStoreBootstrap CertificateStore bootstrapStore, @DNSCertStoreCachePolicy CertStoreCachePolicy policy)
 	{
-		if (servers == null || servers.size() == 0 || bootstrapStore == null)
-		{
+		if (bootstrapStore == null)
 			throw new IllegalArgumentException();
-		}
 		
-		this.servers.addAll(servers);		
+		setServers(servers);
+		
 		this.cachePolicy = policy;			
 		this.localStoreDelegate = bootstrapStore;			
 		loadBootStrap();
 	}	
-	
+		
 	private synchronized JCS getCache()
 	{
 		if (cache == null)
@@ -206,11 +200,18 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	{
 		if (servers == null || servers.size() == 0)
 		{
-			throw new IllegalArgumentException();
+			String[] configedServers = ResolverConfig.getCurrentConfig().servers();
+			
+			if (configedServers != null)
+			{
+				this.servers.addAll(Arrays.asList(configedServers));
+			}		
 		}		
-		
-		this.servers.clear();
-		this.servers.addAll(servers);
+		else
+		{
+			this.servers.clear();
+			this.servers.addAll(servers);
+		}
 	}
 	
 	/**

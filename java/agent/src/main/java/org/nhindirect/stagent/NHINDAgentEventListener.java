@@ -23,7 +23,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.stagent;
 
 /**
- * Callback interface for custom processing of a message in the {@link NHINDAgent}.  Implementations of this interface can be used to execute custom logic
+ * Callback interface for custom processing of a message in the {@link DefaultNHINDAgent}.  Implementations of this interface can be used to execute custom logic
  * during the processing stages of a message.  
  * @author Greg Meyer
  * @author Umesh Madan

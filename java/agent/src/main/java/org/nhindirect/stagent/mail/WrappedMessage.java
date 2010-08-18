@@ -97,7 +97,7 @@ public class WrappedMessage
      * @return Returns true if the message is determined to be a wrapped message.  The wrapped message can be objected from the wrapper using
      * the {@link #extract(Message)}} operation.
      */
-    public static boolean isWrapped(Message message) throws MessagingException
+    public static boolean isWrapped(Message message)
     {
     	if (message == null)
     		return false; 	

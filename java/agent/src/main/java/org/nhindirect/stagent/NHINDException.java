@@ -23,7 +23,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.stagent;
 
 /**
- * Generic exceptions thrown by the {@link NHINDAgent}
+ * Generic exceptions thrown by the {@link DefaultNHINDAgent}
  * @author Greg Meyer
  * @author Umesh Madan
  *
