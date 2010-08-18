@@ -3,6 +3,6 @@
   <assemblies>
     <assembly filename="..\bin\Debug\agentXUnitTests.dll" shadow-copy="true" />
     <assembly filename="..\bin\Debug\dnsResolverXUnitTests.dll" shadow-copy="true" />
-    <assembly filename="..\bin\Debug\nhinCommonXUnitTests.dll" shadow-copy="true" />
+    <assembly filename="..\bin\Debug\commonXUnitTests.dll" shadow-copy="true" />
   </assemblies>
 </xunit>

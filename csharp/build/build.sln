@@ -27,7 +27,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnsResolverTests", "..\unit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnsResolver", "..\dns\dnsResolver.csproj", "{AE250214-0E85-4C28-90C9-A006440BCE97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nhinCommonTests", "..\unittests\nhinCommonTests\nhinCommonTests.csproj", "{7E1FA376-3372-4DF4-8AED-4DEE68A20152}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "commonTests", "..\unittests\common\commonTests.csproj", "{7E1FA376-3372-4DF4-8AED-4DEE68A20152}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
