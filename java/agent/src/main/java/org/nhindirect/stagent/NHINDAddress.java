@@ -251,4 +251,29 @@ public class NHINDAddress extends InternetAddress
 		
 		return false;
 	}
+	
+    /**
+     * Gets the domain host associated with the address.
+     * @param theAddress The address to get the host from.
+     * @return The host associated with the address.
+     */
+	public static String getHost(InternetAddress theAddress)
+	{
+    	String retVal = "";
+    	
+    	// remove any extra information such as < and >
+    	String address = theAddress.getAddress();
+    	int index;
+    	if ((index = address.indexOf('<')) > -1)
+    		address = address.substring(index + 1);
+    	
+    	if ((index = address.indexOf('>')) > -1)
+    		address = address.substring(0, index); 
+    	
+    	index = address.indexOf("@");
+    	if (index >= 0)
+    		retVal = address.substring(index + 1);
+    	
+    	return retVal;
+	}
 }

@@ -111,13 +111,11 @@ namespace NHINDirect.XDS
         // Process the document set that was received
         private XmlDocument ProcessReceiveDocumentSet(XmlDocument xmlDocRequest, System.Xml.UniqueId messageID, MessageVersion msgVersion, out StringDictionary atnaParameterValues)
         {
-            XmlDocument xmlDocRegistryRequest = null;
             XmlDocument xmlDocResponse = null;
             Message registryMessage = null;
             XmlDocument xmlDocRegistryResponse = null;
             XDSHelper xdsHelper = null;
             XmlElement eltProvideAndRegDocSet = null;
-            XmlNode nodeSubmitObjectsRequest = null;
             XmlNodeList nodeListExtrinsicObject = null;
             XmlNodeList nodeListDocument = null;
             XmlNode nodeSubmissionSet = null;
@@ -229,9 +227,6 @@ namespace NHINDirect.XDS
 
  //                       lstDocumentEntry.Add(objDocumentEntry);
 
-                        sbMetaData.Append(node.OuterXml);
-
-                        loopCount++;
                     }
 
                 }
@@ -252,7 +247,7 @@ namespace NHINDirect.XDS
 
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
