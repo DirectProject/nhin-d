@@ -11,10 +11,10 @@
 
 	<!-- Aliases -->
 	<Target Name="build" DependsOnTargets="build-all" />
-	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway" />
+	<Target Name="build-all" DependsOnTargets="build-xds;build-agent;build-gateway" />
 
 	<Target Name="clean" DependsOnTargets="clean-all" />
-	<Target Name="clean-all" DependsOnTargets="clean-agent;clean-gateway" />
+	<Target Name="clean-all" DependsOnTargets="clean-xds;clean-agent;clean-gateway" />
 
 	<Target Name="test" DependsOnTargets="test-all" />
 	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway" />
@@ -35,6 +35,14 @@
 		<!-- taken out for now due to failure
 		<MSBuild Projects=".\build\buildGateway.sln" Targets="Clean" />
 		 -->
+	</Target>
+	
+	<Target Name="clean-xds">
+		<MSBuild Projects=".\xds\ReceiveDocumentSet\ReceiveDocumentSet.sln" Targets="Clean" />
+	</Target>
+	
+	<Target Name="build-xds">
+		<MSBuild Projects=".\xds\ReceiveDocumentSet\ReceiveDocumentSet.sln" Targets="Build" Properties="Configuration=Debug" />
 	</Target>
 
 	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
