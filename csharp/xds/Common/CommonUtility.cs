@@ -8,17 +8,6 @@ namespace NHINDirect.XDS.Common
 {
     public static class CommonUtility
     {
-        static string XDSREGISTRY_ENDPOINT_NAME = null;
-        static string XDSREGISTRY_ENDPOINT_NAME_KEY = "XDSREGISTRY_ENDPOINT_NAME";
-
-        public static string GetXDSRegistryEndpointName()
-        {
-            XDSREGISTRY_ENDPOINT_NAME = ConfigurationManager.AppSettings[XDSREGISTRY_ENDPOINT_NAME_KEY];
-
-            return XDSREGISTRY_ENDPOINT_NAME;
-        }
-
-
         public static XmlDocument ConstructRegistryErrorResponse(string status, string requestId, string codeContext, string errorCode, string severity, string location)
         {
             XmlDocument xmlDocRegistryResponse = null;

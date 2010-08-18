@@ -38,7 +38,7 @@ import javax.mail.internet.InternetAddress;
  * @author Umesh Madan
  *
  */
-public abstract class CertificateStore implements IX509Store, ICertificateResolver
+public abstract class CertificateStore implements X509Store, CertificateResolver
 {	
 	/**
 	 * {@inheritDoc}
