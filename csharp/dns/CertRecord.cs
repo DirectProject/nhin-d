@@ -21,20 +21,24 @@ using System.Text;
 
 namespace DnsResolver
 {
-    //                 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
-    // 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    // |             type              |             key tag           |
-    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    // |   algorithm   |                                               /
-    // +---------------+            certificate or CRL                 /
-    // /                                                               /
-    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|
+    /// <summary>A representation of a CERT RR</summary>
+    /// <remarks>
+    ///                     1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
+    /// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    /// |             type              |             key tag           |
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    /// |   algorithm   |                                               /
+    /// +---------------+            certificate or CRL                 /
+    /// /                                                               /
+    /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|
+    /// </remarks>
     public class CertRecord : DnsResourceRecord
     {
-        //
-        // For Cert Records
-        //
+
+        /// <summary>
+        /// Enumeration of the CERT RR supported certificate types
+        /// </summary>
         public enum CertificateType
         {
             Reserved = 0,
@@ -58,6 +62,10 @@ namespace DnsResolver
         {
         }
         
+        /// <summary>
+        /// Gets and sets the certificate type
+        /// </summary>
+        /// <value>The CERT RR type of this certificate</value>
         public CertificateType CertType
         {
             get
@@ -70,6 +78,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets/sets the keyTag (see RFC 2535)
+        /// </summary>
         public ushort KeyTag
         {
             get
@@ -82,6 +93,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets/sets the certificate algorithm (see RFC 4034, Appendix 1)
+        /// </summary>
         public byte Algorithm
         {
             get
@@ -94,6 +108,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets/sets the raw certificate RDATA.
+        /// </summary>
         public byte[] Data
         {
             get
@@ -107,6 +124,10 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets/sets the X509 DNS Cert instance associated with this record.
+        /// </summary>
+        /// <value>A <see cref="DNSCert"/> instance, will be null if this is not an X509 RR</value>
         public DNSCert Cert
         {
             get

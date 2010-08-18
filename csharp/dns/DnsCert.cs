@@ -26,7 +26,7 @@ using System.Net;
 namespace DnsResolver
 {
     /// <summary>
-    /// Representation of a DNS CERT RR. Only handles X509 certificates.
+    /// Representation of an X509 cert in a DNS CERT RR.
     /// </summary>
     public class DNSCert
     {
