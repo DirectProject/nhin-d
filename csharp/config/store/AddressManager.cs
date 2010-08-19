@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Mail;
+using NHINDirect;
 
 namespace NHINDirect.Config.Store
 {
@@ -265,10 +266,11 @@ namespace NHINDirect.Config.Store
         
         void VerifyEmailAddresses(string[] emailAddresses)
         {
-            if (emailAddresses == null || emailAddresses.Length == 0)
+            if (emailAddresses.IsNullOrEmpty())
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidEmailAddress);
             }
+            
             for (int i = 0; i < emailAddresses.Length; ++i)
             {
                 if (string.IsNullOrEmpty(emailAddresses[i]))

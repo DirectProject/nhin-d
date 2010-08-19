@@ -20,26 +20,16 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.stagent.cert;
+package org.nhindirect.stagent.cert.impl.annotation;
 
-import java.security.cert.X509Certificate;
-import java.util.Collection;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.mail.internet.InternetAddress;
+import com.google.inject.BindingAnnotation;
 
-/**
- * Certificate resolver implementations are responsible for retrieving public X509Certificates from a 
- * certificate repository.  Repositories may include a simple keystore file, a machine cert store,
- * a URI, or a DNS cert implementation.    
- * @author Greg Meyer
- * @author Umesh Madan
- */
-public interface ICertificateResolver
-{
-	/**
-	 * Retrieves a collection of certificates for a given InternetAddress.
-	 * @param address  The InternetAddress used to lookup the certificate.
-	 * @return An X509Certificate collection containing the address in its E or CN field.
-	 */
-	public Collection<X509Certificate> getCertificates(InternetAddress address);
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target( {ElementType.FIELD, ElementType.PARAMETER})
+@BindingAnnotation
+public @interface OutgoingTrustAnchorCerts {}

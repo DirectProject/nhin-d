@@ -36,14 +36,7 @@ namespace NHINDirect.Config.Store
                 where anchor.ID == id
                 select anchor
         );
-/*
-        static readonly Func<ConfigDatabase, long[], IQueryable<Anchor>> AnchorByIDs = CompiledQuery.Compile(
-            (ConfigDatabase db, long[] ids) =>
-                from anchor in db.Anchors
-                where ids.Contains(anchor.ID)
-                select anchor
-        );
-*/
+
         static readonly Func<ConfigDatabase, string, IQueryable<Anchor>> AnchorsByOwner = CompiledQuery.Compile(
             (ConfigDatabase db, string owner) =>
                 from anchor in db.Anchors
@@ -78,6 +71,18 @@ namespace NHINDirect.Config.Store
                 where anchor.Owner == owner && anchor.ForOutgoing == true
                 select anchor
         );
+        static readonly Func<ConfigDatabase, IQueryable<Anchor>> AllIncomingAnchors = CompiledQuery.Compile(
+            (ConfigDatabase db) =>
+                from anchor in db.Anchors
+                where anchor.ForIncoming == true
+                select anchor
+        );
+        static readonly Func<ConfigDatabase, IQueryable<Anchor>> AllOutgoingAnchors = CompiledQuery.Compile(
+            (ConfigDatabase db) =>
+                from anchor in db.Anchors
+                where anchor.ForOutgoing == true
+                select anchor
+        );
 
         public static ConfigDatabase GetDB(this Table<Anchor> table)
         {
@@ -91,7 +96,6 @@ namespace NHINDirect.Config.Store
 
         public static IEnumerable<Anchor> Get(this Table<Anchor> table, long[] certIDs)
         {
-            //return AnchorByIDs(table.GetDB(), certIDs);
             return table.GetDB().ExecuteQuery<Anchor>(Sql_AnchorsByByID, certIDs.ToIn());
         }
         
@@ -115,11 +119,21 @@ namespace NHINDirect.Config.Store
             return IncomingAnchors(table.GetDB(), owner);
         }
 
+        public static IEnumerable<Anchor> GetAllIncoming(this Table<Anchor> table)
+        {
+            return AllIncomingAnchors(table.GetDB());
+        }
+
         public static IEnumerable<Anchor> GetOutgoing(this Table<Anchor> table, string owner)
         {
             return OutgoingAnchors(table.GetDB(), owner);
         }
-        
+
+        public static IEnumerable<Anchor> GetAllOutgoing(this Table<Anchor> table)
+        {
+            return AllOutgoingAnchors(table.GetDB());
+        }
+                
         public static void ExecDelete(this Table<Anchor> table, string owner)
         {
             table.Context.ExecuteCommand(Sql_DeleteAnchorByOwner, owner);
