@@ -1,12 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configService", "configService.csproj", "{83C99331-F451-4175-943D-12FCF17B636E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configStore", "store\configStore.csproj", "{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configClient", "..\client\configClient.csproj", "{2EA3D265-4E39-4631-85F3-1DC6B5103C71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configService", "service\configService.csproj", "{83C99331-F451-4175-943D-12FCF17B636E}"
 	ProjectSection(ProjectDependencies) = postProject
-		{83C99331-F451-4175-943D-12FCF17B636E} = {83C99331-F451-4175-943D-12FCF17B636E}
+		{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11} = {8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configClient", "client\configClient.csproj", "{2EA3D265-4E39-4631-85F3-1DC6B5103C71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,6 +16,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}.Release|Any CPU.Build.0 = Release|Any CPU
 		{83C99331-F451-4175-943D-12FCF17B636E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{83C99331-F451-4175-943D-12FCF17B636E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83C99331-F451-4175-943D-12FCF17B636E}.Release|Any CPU.ActiveCfg = Release|Any CPU

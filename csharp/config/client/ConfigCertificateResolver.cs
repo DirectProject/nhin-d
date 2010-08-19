@@ -17,32 +17,41 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.ServiceModel;
+using System.Net.Mail;
+using System.Security.Cryptography.X509Certificates;
 using NHINDirect.Config.Store;
+using NHINDirect.Certificates;
+using NHINDirect.Config.Client.CertificateService;
 
-namespace NHINDirect.Config.Service
+namespace NHINDirect.Config.Client
 {
-    [ServiceContract(Namespace = Service.Namespace)]
-    public interface IDomainManager
+    public class ConfigCertificateResolver : ICertificateResolver, IX509CertificateIndex
     {
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void AddDomain(Domain domain);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void UpdateDomain(Domain domain);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain GetDomain(string domainName);
+        CertificateStoreClient m_client;
+        NHINDirect.Certificates.CertificateResolver m_resolver;
         
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveDomain(string domainName);
+        public ConfigCertificateResolver(CertificateStoreClient store)
+        {
+            if (store == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            m_client = store;
+            m_resolver = new NHINDirect.Certificates.CertificateResolver(this);
+        }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain[] EnumerateDomains(long lastDomainID, int maxResults);
+        public X509Certificate2Collection GetCertificates(MailAddress address)
+        {
+            return m_resolver.GetCertificates(address);
+        }
+
+        public X509Certificate2Collection this[string subjectName]
+        {
+            get 
+            { 
+                return Certificate.ToX509Collection(m_client.GetCertificatesForOwner(subjectName));
+            }
+        }
     }
 }

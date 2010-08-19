@@ -28,9 +28,19 @@ namespace NHINDirect
             return (x.IndexOf(y, comparison) >= 0);
         }
 
-         public static bool IsNullOrEmpty(this X509Certificate2Collection certs)
+        public static bool IsNullOrEmpty(this X509Certificate2Collection certs)
         {
             return (certs == null || certs.Count == 0);
+        }
+        
+        public static bool IsNullOrEmpty(this Array array)
+        {
+            return (array == null || array.Length == 0);
+        }
+        
+        public static bool IsNullOrEmpty(this System.Collections.ICollection collection)
+        {
+            return (collection == null || collection.Count == 0);
         }
     }
 }

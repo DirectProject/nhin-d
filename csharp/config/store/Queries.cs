@@ -27,7 +27,7 @@ namespace NHINDirect.Config.Store
     {
         internal static string ToIn(this string[] array)
         {
-            if (array == null || array.Length == 0)
+            if (array.IsNullOrEmpty())
             {
                 throw new ArgumentException();
             }

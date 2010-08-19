@@ -17,32 +17,56 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.ServiceModel;
+using System.Net.Mail;
 using NHINDirect.Config.Store;
 
-namespace NHINDirect.Config.Service
+namespace NHINDirect.Config.Client.DomainManager
 {
-    [ServiceContract(Namespace = Service.Namespace)]
-    public interface IDomainManager
+    public static class DomainManagerExtensions
     {
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void AddDomain(Domain domain);
+        public static Domain GetDomain(this DomainManagerClient client, MailAddress address)
+        {
+            if (address == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            return client.GetDomain(address.Host);
+        }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void UpdateDomain(Domain domain);
+        public static void RemoveDomain(this DomainManagerClient client, MailAddress address)
+        {
+            if (address == null)
+            {
+                throw new ArgumentNullException();
+            }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain GetDomain(string domainName);
+            client.RemoveDomain(address.Host);
+        }
         
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveDomain(string domainName);
+        public static IEnumerable<Domain> EnumerateDomains(this DomainManagerClient client, int chunkSize)
+        {
+            if (chunkSize <= 0)
+            {
+                throw new ArgumentException();
+            }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain[] EnumerateDomains(long lastDomainID, int maxResults);
+            long lastID = -1;
+
+            Domain[] domains;
+            while (true)
+            {
+                domains = client.EnumerateDomains(lastID, chunkSize);
+                if (domains.IsNullOrEmpty())
+                {
+                    yield break;
+                }
+                for (int i = 0; i < domains.Length; ++i)
+                {
+                    yield return domains[i];
+                }
+                lastID = domains[domains.Length - 1].ID;
+            }
+        }
     }
 }

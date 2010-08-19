@@ -22,6 +22,7 @@ using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using NHINDirect;
 using NHINDirect.Certificates;
 
 namespace NHINDirect.Config.Store
@@ -171,7 +172,7 @@ namespace NHINDirect.Config.Store
 
         public void ValidateHasData()
         {
-            if (m_data == null || m_data.Length == 0)
+            if (m_data.IsNullOrEmpty())
             {
                 throw new ConfigStoreException(ConfigStoreError.MissingCertificateData);
             }
@@ -180,6 +181,24 @@ namespace NHINDirect.Config.Store
         public X509Certificate2 ToX509Certificate()
         {
             return new X509Certificate2(this.Data);
+        }
+        
+        public static X509Certificate2Collection ToX509Collection(Anchor[] anchors)
+        {
+            if (anchors.IsNullOrEmpty())
+            {
+                return null;
+            }
+            
+            X509Certificate2Collection x509Collection = new X509Certificate2Collection();
+            if (anchors != null)
+            {
+                for (int i = 0; i < anchors.Length; ++i)
+                {
+                    x509Collection.Add(anchors[0].ToX509Certificate());
+                }
+            }            
+            return x509Collection;
         }
     }
 }

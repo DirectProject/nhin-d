@@ -23,17 +23,26 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
+using System.Net.Mail;
 using NHINDirect.Certificates;
 
 namespace NHINDirect.Config.Store
 {
-    public class AnchorManager
+    public class AnchorManager : ITrustAnchorResolver
     {
         ConfigStore m_store;
+        AnchorIndex m_incomingIndex;
+        AnchorIndex m_outgoingIndex;
+        CertificateResolver m_incomingResolver;
+        CertificateResolver m_outgoingResolver;
         
         internal AnchorManager(ConfigStore store)
         {
             m_store = store;
+            m_incomingIndex = new AnchorIndex(this, true);
+            m_outgoingIndex = new AnchorIndex(this, false);
+            m_incomingResolver = new CertificateResolver(m_incomingIndex);
+            m_outgoingResolver = new CertificateResolver(m_outgoingIndex);
         }
 
         internal ConfigStore Store
@@ -41,6 +50,39 @@ namespace NHINDirect.Config.Store
             get
             {
                 return m_store;
+            }
+        }
+        
+        public IX509CertificateIndex IncomingIndex
+        {
+            get
+            {
+                return m_incomingIndex;
+            }
+        }
+        
+        
+        public IX509CertificateIndex OutgoingIndex
+        {
+            get
+            {
+                return m_outgoingIndex;
+            }
+        }
+        
+        public ICertificateResolver IncomingAnchors
+        {
+            get 
+            { 
+                return m_incomingResolver;
+            }
+        }
+
+        public ICertificateResolver OutgoingAnchors
+        {
+            get 
+            { 
+                return m_outgoingResolver;
             }
         }
         
@@ -83,16 +125,16 @@ namespace NHINDirect.Config.Store
             db.Anchors.InsertOnSubmit(anchor);
         }
 
-        public Anchor[] Get(long[] certIDs)
+        public Anchor[] Get(long[] certificateIDs)
         {
-            if (certIDs == null || certIDs.Length == 0)
+            if (certificateIDs.IsNullOrEmpty())
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
             }
 
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                return db.Anchors.Get(certIDs).ToArray();
+                return db.Anchors.Get(certificateIDs).ToArray();
             }
         }
 
@@ -203,7 +245,7 @@ namespace NHINDirect.Config.Store
             {
                 throw new ArgumentNullException();
             }
-            if (certificateIDs == null || certificateIDs.Length == 0)
+            if (certificateIDs.IsNullOrEmpty())
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
             }
@@ -267,6 +309,27 @@ namespace NHINDirect.Config.Store
             }
 
             db.Anchors.ExecDelete(ownerName);
+        }
+        
+        internal class AnchorIndex : IX509CertificateIndex
+        {
+            AnchorManager m_anchorManager;       
+            bool m_incoming;
+            
+            internal AnchorIndex(AnchorManager anchors, bool incoming)
+            {
+                m_anchorManager = anchors;
+                m_incoming = incoming;
+            }
+
+            public X509Certificate2Collection this[string subjectName]
+            {
+                get 
+                { 
+                    Anchor[] anchors = (m_incoming) ? m_anchorManager.GetIncoming(subjectName) : m_anchorManager.GetOutgoing(subjectName);
+                    return Anchor.ToX509Collection(anchors);
+                }
+            }
         }
     }
  }

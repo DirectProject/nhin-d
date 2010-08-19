@@ -57,6 +57,7 @@
     <Compile Include="AddressQueries.cs" />
     <Compile Include="AnchorManager.cs" />
     <Compile Include="AnchorQueries.cs" />
+    <Compile Include="AnchorResolver.cs" />
     <Compile Include="CertificateManager.cs" />
     <Compile Include="Account.cs" />
     <Compile Include="Address.cs" />

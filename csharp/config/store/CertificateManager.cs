@@ -21,19 +21,22 @@ using System.Data;
 using System.Data.Sql;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Net.Mail;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using NHINDirect.Certificates;
 
 namespace NHINDirect.Config.Store
 {
-    public class CertificateManager
+    public class CertificateManager : IX509CertificateIndex, ICertificateResolver
     {
         ConfigStore m_store;
+        CertificateResolver m_resolver;
 
         internal CertificateManager(ConfigStore store)
         {
             m_store = store;
+            m_resolver = new CertificateResolver(this);
         }
 
         internal ConfigStore Store
@@ -95,7 +98,7 @@ namespace NHINDirect.Config.Store
 
         public Certificate[] Get(long[] certIDs)
         {
-            if (certIDs == null || certIDs.Length == 0)
+            if (certIDs.IsNullOrEmpty())
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
             }
@@ -177,7 +180,7 @@ namespace NHINDirect.Config.Store
                 
         public void SetStatus(long[] certificateIDs, EntityStatus status)
         {
-            if (certificateIDs == null || certificateIDs.Length == 0)
+            if (certificateIDs.IsNullOrEmpty())
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
             }
@@ -267,7 +270,7 @@ namespace NHINDirect.Config.Store
             {
                 throw new ArgumentNullException();
             }
-            if (certificateIDs == null || certificateIDs.Length == 0)
+            if (certificateIDs.IsNullOrEmpty())
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
             }
@@ -301,6 +304,30 @@ namespace NHINDirect.Config.Store
             }
             
             db.Certificates.ExecDelete(ownerName);
+        }
+        
+        X509Certificate2Collection Collect(IEnumerable<Certificate> source)
+        {
+            X509Certificate2Collection x509Coll = new X509Certificate2Collection();
+            foreach(Certificate cert in source)
+            {
+                x509Coll.Add(cert.ToX509Certificate());
+            }
+            
+            return x509Coll;
+        }
+
+        public X509Certificate2Collection GetCertificates(MailAddress address)
+        {
+            return m_resolver.GetCertificates(address);
+        }
+        
+        public X509Certificate2Collection this[string subjectName]
+        {
+            get 
+            { 
+                return Certificate.ToX509Collection(this.Get(subjectName));
+            }
         }
     }
 }
