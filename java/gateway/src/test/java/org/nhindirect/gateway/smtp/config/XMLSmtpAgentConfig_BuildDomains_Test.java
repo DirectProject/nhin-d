@@ -1,6 +1,7 @@
 package org.nhindirect.gateway.smtp.config;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import org.nhindirect.gateway.smtp.DomainPostmaster;
@@ -61,7 +62,7 @@ public class XMLSmtpAgentConfig_BuildDomains_Test extends TestCase
 				boolean secureHealthconfigured = false;
 				for (Entry<String, DomainPostmaster> entry : settings.getDomainPostmasters().entrySet())
 				{
-					assertEquals(entry.getKey(), entry.getValue().getDomain());
+					assertEquals(entry.getKey(), entry.getValue().getDomain().toUpperCase(Locale.getDefault()));
 					if (entry.getKey().equalsIgnoreCase("cerner.com") && 
 							entry.getValue().getPostmaster().getAddress().equalsIgnoreCase("postmaster@cerner.com"))
 						cernerConfigured = true;

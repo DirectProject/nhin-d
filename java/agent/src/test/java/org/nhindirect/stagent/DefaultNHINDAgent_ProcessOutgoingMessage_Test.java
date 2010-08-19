@@ -13,6 +13,7 @@ import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.trust.DefaultTrustAnchorResolver;
 import org.nhindirect.stagent.trust.TrustEnforcementStatus;
 import org.nhindirect.stagent.trust.TrustModel;
+import org.nhindirect.stagent.utils.BaseTestPlan;
 import org.nhindirect.stagent.utils.SecondaryMimeMessage;
 
 /**

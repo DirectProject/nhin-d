@@ -1,4 +1,4 @@
-package org.nhindirect.stagent;
+package org.nhindirect.stagent.cryptography;
 
 import java.io.ByteArrayOutputStream;
 import java.security.cert.X509Certificate;

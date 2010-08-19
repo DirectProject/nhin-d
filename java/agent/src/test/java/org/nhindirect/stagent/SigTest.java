@@ -187,7 +187,7 @@ public class SigTest extends TestCase
 	    		  Iterator        certIt = certCollection.iterator();
 	    		  try
 	    		  {
-	    			  signer.verify(internalCert, "BC");
+	    			  assertTrue(signer.verify(internalCert, "BC"));
 	    		  }
 	    		  catch (Exception e) {e.printStackTrace();}
 	    		  

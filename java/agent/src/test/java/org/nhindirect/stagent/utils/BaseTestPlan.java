@@ -1,4 +1,4 @@
-package org.nhindirect.stagent;
+package org.nhindirect.stagent.utils;
 
 /**
  * Base class for creating junit test plans

@@ -47,7 +47,7 @@ public interface MessageEnvelope {
 	 * Gets the agent associated with the message.
 	 * @return The security and trust agent.
 	 */
-	public DefaultNHINDAgent getAgent();
+	public NHINDAgent getAgent();
 		
 	/**
 	 * Gets the mime message wrapped in the envelope.

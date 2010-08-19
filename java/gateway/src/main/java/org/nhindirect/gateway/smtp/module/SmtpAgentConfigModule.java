@@ -32,23 +32,25 @@ import com.google.inject.Provider;
 public class SmtpAgentConfigModule extends AbstractModule 
 {
 	private final String configurationFile;
-	private Provider<SmtpAgentConfig> provider;
-	private Provider<NHINDAgent> agentProvider;
+	private final Provider<SmtpAgentConfig> smtpAgentprovider;
+	private final Provider<NHINDAgent> agentProvider;
 	
-	public static SmtpAgentConfigModule create(String configurationFile,  Provider<SmtpAgentConfig> provider, Provider<NHINDAgent> agentProvider)
+	public static SmtpAgentConfigModule create(String configurationFile,  Provider<SmtpAgentConfig> smtpAgentprovider, Provider<NHINDAgent> agentProvider)
 	{
-		return new SmtpAgentConfigModule(configurationFile, provider, agentProvider);
+		return new SmtpAgentConfigModule(configurationFile, smtpAgentprovider, agentProvider);
 	}
 	
-	private SmtpAgentConfigModule(String configurationFile, Provider<SmtpAgentConfig> provider, Provider<NHINDAgent> agentProvider)
+	private SmtpAgentConfigModule(String configurationFile, Provider<SmtpAgentConfig> smtpAgentprovider, Provider<NHINDAgent> agentProvider)
 	{
 		this.configurationFile = configurationFile;
-		this.provider = provider;
+		this.smtpAgentprovider = smtpAgentprovider;
 		this.agentProvider = agentProvider;
 	}
 	
 	protected void configure()
 	{	
+		Provider<SmtpAgentConfig> provider = smtpAgentprovider;
+		
 		if (provider == null) // use the default XML configuration 
 			provider = new XMLSmtpAgentConfigProvider(configurationFile, agentProvider);
 

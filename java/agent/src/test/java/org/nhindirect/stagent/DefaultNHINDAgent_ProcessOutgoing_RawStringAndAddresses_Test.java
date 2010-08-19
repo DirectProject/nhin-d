@@ -1,26 +1,29 @@
 package org.nhindirect.stagent;
 
+import javax.mail.Message.RecipientType;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import junit.framework.TestCase;
 import org.nhindirect.stagent.DefaultNHINDAgent;
-import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
+import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.trust.DefaultTrustAnchorResolver;
-import org.nhindirect.stagent.trust.TrustAnchorResolver;
 import org.nhindirect.stagent.utils.BaseTestPlan;
+import org.nhindirect.stagent.utils.SecondaryMimeMessage;
 
 /**
  * Generated test case.
  * @author junit_generate
  */
-public class DefaultNHINDAgent_ProcessIncoming_RawStringAndAddresses_Test extends TestCase {
+public class DefaultNHINDAgent_ProcessOutgoing_RawStringAndAddresses_Test extends TestCase {
 	abstract class TestPlan extends BaseTestPlan {
 		@Override
 		protected void performInner() throws Exception {
 			DefaultNHINDAgent impl = createDefaultNHINDAgent();
-			IncomingMessage processIncoming = impl.processIncoming(
+			OutgoingMessage processOutgoing = impl.processOutgoing(
 					createMessageText(), createRecipients(), createSender());
-			doAssertions(processIncoming);
+			doAssertions(processOutgoing);
 		}
 
 		protected DefaultNHINDAgent createDefaultNHINDAgent() throws Exception {
@@ -32,12 +35,18 @@ public class DefaultNHINDAgent_ProcessIncoming_RawStringAndAddresses_Test extend
 					checkEnvelopeAddressesCalls++;
 					checkEnvelopeAddresses_Internal(recipients, sender);
 				}
-				
+
 				@Override
-				public IncomingMessage processIncoming(IncomingMessage message) {
-					processIncomingCalls++;
-					return processIncoming_Internal(message);
+				protected Message wrapMessage(String messageText) {
+					wrapMessageCalls++;
+					return wrapMessage_Internal(messageText);
 				}
+				
+				@Override 
+				public OutgoingMessage processOutgoing(OutgoingMessage message){
+					  processOutgoingCalls++;
+					  return processOutgoing_Internal(message);
+					}
 			};
 		}
 
@@ -46,14 +55,31 @@ public class DefaultNHINDAgent_ProcessIncoming_RawStringAndAddresses_Test extend
 		protected void checkEnvelopeAddresses_Internal(
 				NHINDAddressCollection recipients, NHINDAddress sender) {
 		}
-		
-		protected IncomingMessage theProcessIncoming;
-		protected int processIncomingCalls = 0;
 
-		protected IncomingMessage processIncoming_Internal(
-				IncomingMessage message) {
-			theProcessIncoming = message;
-			return theProcessIncoming;
+		protected Message theWrapMessage;
+		protected int wrapMessageCalls = 0;
+
+		protected Message wrapMessage_Internal(String messageText) {
+			try {
+				MimeMessage mimeMsg = new SecondaryMimeMessage();
+				mimeMsg.setText("");
+				mimeMsg.setRecipients(RecipientType.TO, "some");
+				mimeMsg.setSender(new InternetAddress());
+				Message msg = new Message(mimeMsg);
+				theWrapMessage = msg;
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+					fail();
+				}
+				return theWrapMessage;
+		}
+		
+		protected OutgoingMessage theProcessOutgoing;
+		protected int processOutgoingCalls=0;
+		protected OutgoingMessage processOutgoing_Internal(OutgoingMessage message){
+		  theProcessOutgoing=message;
+		  return theProcessOutgoing;
 		}
 
 		protected String theCreateMessageText;
@@ -78,7 +104,7 @@ public class DefaultNHINDAgent_ProcessIncoming_RawStringAndAddresses_Test extend
 			return theCreateSender;
 		}
 
-		protected void doAssertions(IncomingMessage processIncoming)
+		protected void doAssertions(OutgoingMessage processOutgoing)
 				throws Exception {
 		}
 	}
@@ -94,7 +120,7 @@ public class DefaultNHINDAgent_ProcessIncoming_RawStringAndAddresses_Test extend
 				assertEquals(theCreateRecipients, recipients);
 			}
 			
-			protected void doAssertions(IncomingMessage processIncoming)
+			protected void doAssertions(OutgoingMessage processOutgoing)
 				throws Exception {
 				assertEquals(1, checkEnvelopeAddressesCalls);
 			}
@@ -112,7 +138,7 @@ public class DefaultNHINDAgent_ProcessIncoming_RawStringAndAddresses_Test extend
 				assertEquals(theCreateSender, sender);
 			}
 			
-			protected void doAssertions(IncomingMessage processIncoming)
+			protected void doAssertions(OutgoingMessage processOutgoing)
 				throws Exception {
 				assertEquals(1, checkEnvelopeAddressesCalls);
 			}
@@ -123,13 +149,33 @@ public class DefaultNHINDAgent_ProcessIncoming_RawStringAndAddresses_Test extend
 	 * 
 	 * @throws Exception
 	 */
-	public void testProcessIncomingMethodIsCalled() throws Exception {
+	public void testCorrectMessageTxtParamIsPassedToWrapMessage() throws Exception {
 		new TestPlan() {
 			
-			protected void doAssertions(IncomingMessage processIncoming)
+			protected Message wrapMessage_Internal(String messageText) {
+				assertEquals(theCreateMessageText, messageText);
+				return super.wrapMessage_Internal(messageText);
+			}
+			
+			protected void doAssertions(OutgoingMessage processOutgoing)
+					throws Exception {
+				assertEquals(1, wrapMessageCalls);
+			}
+
+		}.perform();
+	}
+	
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	public void testProcessOutgoingMethodIsCalled() throws Exception {
+		new TestPlan() {
+			
+			protected void doAssertions(OutgoingMessage processOutgoing)
 				throws Exception {
-				assertEquals(1, processIncomingCalls);
-				assertEquals(theProcessIncoming, processIncoming);
+				assertEquals(1, processOutgoingCalls);
+				assertEquals(theProcessOutgoing, processOutgoing);
 			}
 		}.perform();
 	}

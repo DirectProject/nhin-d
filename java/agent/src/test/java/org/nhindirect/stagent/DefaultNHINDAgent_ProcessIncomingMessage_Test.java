@@ -15,6 +15,7 @@ import org.nhindirect.stagent.trust.TrustEnforcementStatus;
 import org.nhindirect.stagent.trust.TrustError;
 import org.nhindirect.stagent.trust.TrustException;
 import org.nhindirect.stagent.trust.TrustModel;
+import org.nhindirect.stagent.utils.BaseTestPlan;
 import org.nhindirect.stagent.utils.SecondaryMimeMessage;
 
 

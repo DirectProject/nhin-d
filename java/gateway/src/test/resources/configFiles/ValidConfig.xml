@@ -40,7 +40,7 @@
    <OutgoingMessagesSettings saveFolder="OutgoingMsgFolder"/>
    <IncomingMessagesSettings saveFolder="IncomingMsgFolder"/>
    <BadMessagesSettings saveFolder="BadMsgFolder"/>
-   <OutgoingBounceMessage>
+   <OutgoingBounceMessage encrypt="true">
       <Subject><![CDATA[This is a CDATA subject]]></Subject>
       <Body><![CDATA[This is a CDATA body]]></Body>>
    </OutgoingBounceMessage>	

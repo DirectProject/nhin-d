@@ -7,6 +7,7 @@ import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.trust.DefaultTrustAnchorResolver;
+import org.nhindirect.stagent.utils.BaseTestPlan;
 import org.nhindirect.stagent.utils.SecondaryMimeMessage;
 
 /**

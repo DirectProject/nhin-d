@@ -145,15 +145,19 @@ public class DefaultSmtpAgent implements SmtpAgent
 
 		try
 		{
-			MessageEnvelope envelopeToProcess = new DefaultMessageEnvelope(new Message(message), recipients, sender);
+			DefaultMessageEnvelope envelopeToProcess = new DefaultMessageEnvelope(new Message(message), recipients, sender);			
+			envelopeToProcess.setAgent(agent);
 			
+			// should always result in either a non null object or an exception
 			retVal = processEnvelope(envelopeToProcess);
-			
-			if (retVal == null)
-				throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
 			
 			if (retVal.getProcessedMessage() != null)
 				postProcessMessage(retVal.getProcessedMessage());						
+		}
+		catch (SmtpAgentException e)
+		{
+			// rethrow
+			throw e;
 		}
 		catch (Exception e)
 		{
@@ -166,7 +170,7 @@ public class DefaultSmtpAgent implements SmtpAgent
 	private void verifyInitialized()
 	{
 		if (agent == null)
-			throw new IllegalStateException("SmtpAgent not fully initialized: Security and Trust agent is null");
+			throw new SmtpAgentException(SmtpAgentError.Uninitialized, "SmtpAgent not fully initialized: Security and Trust agent is null");
 	}
 	
 	private void preProcessMessage(MimeMessage message, NHINDAddress sender)
@@ -183,7 +187,7 @@ public class DefaultSmtpAgent implements SmtpAgent
     	boolean isOutgoing = envelope.getSender().isInDomain(agent.getDomains());
     	
     	try
-    	{
+    	{    		    		
     		processedMessage = (isOutgoing) ? agent.processOutgoing(envelope) : agent.processIncoming(envelope);
     		if  (processedMessage == null)
     			throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
@@ -239,16 +243,19 @@ public class DefaultSmtpAgent implements SmtpAgent
 
         try
         {                
-            MimeMessage bounceMessage = outgoingBounceFactory.create(envelope, 
-            		settings.getDomainPostmasters().get(envelope.getSender().getHost().toUpperCase(Locale.getDefault())).getPostmaster());
-            if (bounceMessage != null)
-            {
-                this.logStatus("Bounced Outgoing");
-                retVal = new DefaultMessageEnvelope(new Message(bounceMessage));              
-            }
-            
-            if (outgoingBounceFactory.getMessageTemplate().isEncryptionRequired())
-            	retVal = this.processBounceMessage(retVal);
+        	DomainPostmaster postmaster = settings.getDomainPostmasters().get(envelope.getSender().getHost().toUpperCase(Locale.getDefault()));
+        	if (postmaster != null)
+        	{	        	
+	            MimeMessage bounceMessage = outgoingBounceFactory.create(envelope, postmaster.getPostmaster());
+	            if (bounceMessage != null)
+	            {
+	                this.logStatus("Bounced Outgoing");
+	                retVal = new DefaultMessageEnvelope(new Message(bounceMessage));              
+	            }
+	            
+	            if (outgoingBounceFactory.getMessageTemplate().isEncryptionRequired())
+	            	retVal = this.processBounceMessage(retVal);
+        	}
         }
         catch(Exception ex)
         {
@@ -337,7 +344,7 @@ public class DefaultSmtpAgent implements SmtpAgent
 		}
 		catch (Throwable t)
 		{
-			 
+			 return null;  // don't send a non-encrypted message or else we could get caught in bounce ping-pong
 		}
 		
 		return retVal;

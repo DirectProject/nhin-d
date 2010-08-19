@@ -1,4 +1,4 @@
-To: externUser1@starugh-stateline.com
+To: externUser1@starugh-stateline.com, someotherrecip@nontrustedomain.org
 From: user1@cerner.com
 Subject: I-D ACTION:draft-ietf-mailext-pipeline-01.txt
 Date: Thu, 05 Jan 95 10:53:24 -0500

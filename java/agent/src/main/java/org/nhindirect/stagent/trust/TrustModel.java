@@ -145,7 +145,7 @@ public class TrustModel
         }
     }
            
-    private Collection<X509Certificate> findTrustedCerts(Collection<X509Certificate> certs, Collection<X509Certificate> anchors)
+    protected Collection<X509Certificate> findTrustedCerts(Collection<X509Certificate> certs, Collection<X509Certificate> anchors)
     {
         if (certs == null)
         {
@@ -168,7 +168,7 @@ public class TrustModel
         return trustedCerts;
     }
     
-    private void findSenderSignatures(IncomingMessage message)
+    protected void findSenderSignatures(IncomingMessage message)
     {
     	message.setSenderSignatures(null);
     	
@@ -192,7 +192,7 @@ public class TrustModel
     	message.setSenderSignatures(senderSignatures);
     }
     
-    private DefaultMessageSignatureImpl findTrustedSignature(IncomingMessage message, Collection<X509Certificate> anchors)    
+    protected DefaultMessageSignatureImpl findTrustedSignature(IncomingMessage message, Collection<X509Certificate> anchors)    
     {
     	NHINDAddress sender = message.getSender();
     	

@@ -34,6 +34,7 @@ import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.mail.MimeEntity;
 import org.nhindirect.stagent.parser.EntitySerializer;
+import org.nhindirect.stagent.utils.BaseTestPlan;
 import org.nhindirect.stagent.utils.TestUtils;
 
 /**

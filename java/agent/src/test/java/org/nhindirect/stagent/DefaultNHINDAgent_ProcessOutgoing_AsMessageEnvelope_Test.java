@@ -4,6 +4,7 @@ import javax.mail.internet.MimeMessage;
 
 import junit.framework.TestCase;
 import org.nhindirect.stagent.DefaultNHINDAgent;
+import org.nhindirect.stagent.DefaultNHINDAgent_ProcessIncoming_AsMessageEnvelope_Test.TestPlan;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.trust.DefaultTrustAnchorResolver;
@@ -14,14 +15,14 @@ import org.nhindirect.stagent.utils.SecondaryMimeMessage;
  * Generated test case.
  * @author junit_generate
  */
-public class DefaultNHINDAgent_ProcessIncoming_AsMessageEnvelope_Test extends TestCase {
+public class DefaultNHINDAgent_ProcessOutgoing_AsMessageEnvelope_Test extends TestCase {
 	abstract class TestPlan extends BaseTestPlan {
 		@Override
 		protected void performInner() throws Exception {
 			DefaultNHINDAgent impl = createDefaultNHINDAgent();
-			IncomingMessage processIncoming = impl
-					.processIncoming(createEnvelope());
-			doAssertions(processIncoming);
+			OutgoingMessage processOutgoing = impl
+					.processOutgoing(createEnvelope());
+			doAssertions(processOutgoing);
 		}
 
 		protected DefaultNHINDAgent createDefaultNHINDAgent() throws Exception {
@@ -33,23 +34,14 @@ public class DefaultNHINDAgent_ProcessIncoming_AsMessageEnvelope_Test extends Te
 					checkEnvelopeAddresses_Internal(envelope);
 				}
 				
-				@Override
-				public IncomingMessage processIncoming(IncomingMessage message) {
-					processIncomingCalls++;
-					return processIncoming_Internal(message);
-				}
+				@Override 
+				public OutgoingMessage processOutgoing(OutgoingMessage message){
+					  processOutgoingCalls++;
+					  return processOutgoing_Internal(message);
+					}
 			};
 		}
-		
-		protected IncomingMessage theProcessIncoming;
-		protected int processIncomingCalls = 0;
 
-		protected IncomingMessage processIncoming_Internal(
-				IncomingMessage message) {
-			theProcessIncoming = message;
-			return theProcessIncoming;
-		}
-		
 		protected int checkEnvelopeAddressesCalls = 0;
 
 		protected void checkEnvelopeAddresses_Internal(MessageEnvelope envelope) {
@@ -67,8 +59,15 @@ public class DefaultNHINDAgent_ProcessIncoming_AsMessageEnvelope_Test extends Te
 			theCreateEnvelope = new DefaultMessageEnvelope(msg, recipients, sender);
 			return theCreateEnvelope;
 		}
+		
+		protected OutgoingMessage theProcessOutgoing;
+		protected int processOutgoingCalls=0;
+		protected OutgoingMessage processOutgoing_Internal(OutgoingMessage message){
+		  theProcessOutgoing=message;
+		  return theProcessOutgoing;
+		}
 
-		protected void doAssertions(IncomingMessage processIncoming)
+		protected void doAssertions(OutgoingMessage processOutgoing)
 				throws Exception {
 		}
 	}
@@ -84,7 +83,7 @@ public class DefaultNHINDAgent_ProcessIncoming_AsMessageEnvelope_Test extends Te
 				return theCreateEnvelope;
 			}
 			
-			protected void doAssertions(IncomingMessage processIncoming)
+			protected void doAssertions(OutgoingMessage processOutgoing)
 				throws Exception {
 				fail();
 			}
@@ -109,7 +108,7 @@ public class DefaultNHINDAgent_ProcessIncoming_AsMessageEnvelope_Test extends Te
 				assertEquals(theCreateEnvelope, envelope);
 			}
 			
-			protected void doAssertions(IncomingMessage processIncoming)
+			protected void doAssertions(OutgoingMessage processOutgoing)
 				throws Exception {
 				assertEquals(1, checkEnvelopeAddressesCalls);
 			}
@@ -121,14 +120,14 @@ public class DefaultNHINDAgent_ProcessIncoming_AsMessageEnvelope_Test extends Te
 	 * 
 	 * @throws Exception
 	 */
-	public void testMessageEnvelopeIsNotNull_ProcessIncomingMethodIsCalled() throws Exception {
+	public void testMessageEnvelopeIsNotNull_ProcessOutgoingMethodIsCalled() throws Exception {
 		new TestPlan() {
 			
-			protected void doAssertions(IncomingMessage processIncoming)
+			protected void doAssertions(OutgoingMessage processOutgoing)
 				throws Exception {
-				assertEquals(1, processIncomingCalls);
-				assertNotNull(theProcessIncoming);
-				assertEquals(theProcessIncoming, processIncoming);
+				assertEquals(1, processOutgoingCalls);
+				assertNotNull(theProcessOutgoing);
+				assertEquals(theProcessOutgoing, processOutgoing);
 			}
 			
 		}.perform();

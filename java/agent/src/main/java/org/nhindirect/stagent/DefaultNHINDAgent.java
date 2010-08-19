@@ -355,6 +355,10 @@ public class DefaultNHINDAgent implements NHINDAgent
 	 */ 
     public IncomingMessage processIncoming(MimeMessage msg)
     {
+    	if (msg == null)
+    	{
+    		throw new IllegalArgumentException();
+    	}
     	IncomingMessage inMsg = null;
     	try
     	{
@@ -774,7 +778,7 @@ public class DefaultNHINDAgent implements NHINDAgent
     /*
      * Wrap the message in an RFC 822 message.
      */
-    private Message wrapMessage(String messageText)
+    protected Message wrapMessage(String messageText)
     {
     	Message retVal = null;
     	try

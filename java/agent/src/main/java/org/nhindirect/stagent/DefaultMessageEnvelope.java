@@ -43,7 +43,7 @@ import org.nhindirect.stagent.trust.TrustEnforcementStatus;
  */
 public class DefaultMessageEnvelope implements MessageEnvelope
 {
-	protected DefaultNHINDAgent agent;
+	protected NHINDAgent agent;
 	protected Message message;
 	protected NHINDAddress sender;
 	protected NHINDAddressCollection to;
@@ -148,7 +148,7 @@ public class DefaultMessageEnvelope implements MessageEnvelope
 	 * Gets the agent associated with the message.
 	 * @return The security and trust agent.
 	 */
-	public DefaultNHINDAgent getAgent()
+	public NHINDAgent getAgent()
 	{
 		return this.agent;
 	}
@@ -157,7 +157,7 @@ public class DefaultMessageEnvelope implements MessageEnvelope
 	 * Associates the security and trust agent with the message.
 	 * @param agent The security and trust agent.
 	 */
-	protected void setAgent(DefaultNHINDAgent agent)
+	public void setAgent(NHINDAgent agent)
 	{
 		this.agent = agent;
 	}

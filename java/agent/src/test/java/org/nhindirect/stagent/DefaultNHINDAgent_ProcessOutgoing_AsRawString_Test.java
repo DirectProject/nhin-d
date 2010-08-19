@@ -1,54 +1,72 @@
 package org.nhindirect.stagent;
 
-import java.io.ByteArrayOutputStream;
-
 import javax.mail.Message.RecipientType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import junit.framework.TestCase;
-
 import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
+import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.trust.DefaultTrustAnchorResolver;
 import org.nhindirect.stagent.utils.BaseTestPlan;
 import org.nhindirect.stagent.utils.SecondaryMimeMessage;
 
 /**
  * Generated test case.
- * 
  * @author junit_generate
  */
-public class DefaultNHINDAgent_ProcessIncoming_AsRawString_Test extends
-		TestCase {
+public class DefaultNHINDAgent_ProcessOutgoing_AsRawString_Test extends TestCase {
 	abstract class TestPlan extends BaseTestPlan {
 		@Override
 		protected void performInner() throws Exception {
 			DefaultNHINDAgent impl = createDefaultNHINDAgent();
-			IncomingMessage processIncoming = impl
-					.processIncoming(createMessageText());
-			doAssertions(processIncoming);
+			OutgoingMessage processOutgoing = impl
+					.processOutgoing(createMessageText());
+			doAssertions(processOutgoing);
 		}
 
 		protected DefaultNHINDAgent createDefaultNHINDAgent() throws Exception {
 			return new DefaultNHINDAgent("", new KeyStoreCertificateStore(),
 					new KeyStoreCertificateStore(), new DefaultTrustAnchorResolver()) {
-
 				@Override
-				public IncomingMessage processIncoming(IncomingMessage message) {
-					processIncomingCalls++;
-					return processIncoming_Internal(message);
+				protected Message wrapMessage(String messageText) {
+					wrapMessageCalls++;
+					return wrapMessage_Internal(messageText);
 				}
+
+				@Override 
+				public OutgoingMessage processOutgoing(OutgoingMessage message){
+					  processOutgoingCalls++;
+					  return processOutgoing_Internal(message);
+					}
 			};
 		}
 
-		protected IncomingMessage theProcessIncoming;
-		protected int processIncomingCalls = 0;
+		protected Message theWrapMessage;
+		protected int wrapMessageCalls = 0;
 
-		protected IncomingMessage processIncoming_Internal(
-				IncomingMessage message) {
-			theProcessIncoming = message;
-			return theProcessIncoming;
+		protected Message wrapMessage_Internal(String messageText) {
+			try {
+			MimeMessage mimeMsg = new SecondaryMimeMessage();
+			mimeMsg.setText("");
+			mimeMsg.setRecipients(RecipientType.TO, "some");
+			mimeMsg.setSender(new InternetAddress());
+			Message msg = new Message(mimeMsg);
+			theWrapMessage = msg;
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				fail();
+			}
+			return theWrapMessage;
+		}
+		
+		protected OutgoingMessage theProcessOutgoing;
+		protected int processOutgoingCalls=0;
+		protected OutgoingMessage processOutgoing_Internal(OutgoingMessage message){
+		  theProcessOutgoing=message;
+		  return theProcessOutgoing;
 		}
 
 		protected String theCreateMessageText;
@@ -58,7 +76,7 @@ public class DefaultNHINDAgent_ProcessIncoming_AsRawString_Test extends
 			return theCreateMessageText;
 		}
 
-		protected void doAssertions(IncomingMessage processIncoming)
+		protected void doAssertions(OutgoingMessage processOutgoing)
 				throws Exception {
 		}
 	}
@@ -69,12 +87,13 @@ public class DefaultNHINDAgent_ProcessIncoming_AsRawString_Test extends
 	 */
 	public void testMessageTxtIsNull_ThrowsException() throws Exception {
 		new TestPlan() {
+			@Override
 			protected String createMessageText() throws Exception {
 				theCreateMessageText = null;
 				return theCreateMessageText;
 			}
 
-			protected void doAssertions(IncomingMessage processIncoming)
+			protected void doAssertions(OutgoingMessage processOutgoing)
 					throws Exception {
 				fail();
 			}
@@ -85,22 +104,22 @@ public class DefaultNHINDAgent_ProcessIncoming_AsRawString_Test extends
 				assertNull(theCreateMessageText);
 				assertTrue(exception instanceof IllegalArgumentException);
 			}
-
 		}.perform();
 	}
-
+	
 	/**
 	 * 
 	 * @throws Exception
 	 */
 	public void testMessageTxtIsBlank_ThrowsException() throws Exception {
 		new TestPlan() {
+			@Override
 			protected String createMessageText() throws Exception {
 				theCreateMessageText = "";
 				return theCreateMessageText;
 			}
 
-			protected void doAssertions(IncomingMessage processIncoming)
+			protected void doAssertions(OutgoingMessage processOutgoing)
 					throws Exception {
 				fail();
 			}
@@ -114,30 +133,40 @@ public class DefaultNHINDAgent_ProcessIncoming_AsRawString_Test extends
 
 		}.perform();
 	}
-
+	
 	/**
 	 * 
 	 * @throws Exception
 	 */
-	public void testMessageTxtIsValid_ProcessIncomingMethodIsCalled()
-			throws Exception {
+	public void testCorrectMessageTxtParamIsPassedToWrapMessage() throws Exception {
 		new TestPlan() {
-			protected String createMessageText() throws Exception {
-				MimeMessage mimeMsg = new SecondaryMimeMessage();
-				mimeMsg.setText("");
-				mimeMsg.setRecipients(RecipientType.TO, "some");
-				mimeMsg.setSender(new InternetAddress());
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				mimeMsg.writeTo(bos);
-				theCreateMessageText = new String(bos.toByteArray());
-				return theCreateMessageText;
+			
+			protected Message wrapMessage_Internal(String messageText) {
+				assertEquals(theCreateMessageText, messageText);
+				return super.wrapMessage_Internal(messageText);
+			}
+			
+			protected void doAssertions(OutgoingMessage processOutgoing)
+					throws Exception {
+				assertEquals(1, wrapMessageCalls);
 			}
 
-			protected void doAssertions(IncomingMessage processIncoming)
+		}.perform();
+	}
+	
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	public void testMessageTxtIsValid_ProcessOutgoingMethodIsCalled()
+			throws Exception {
+		new TestPlan() {
+
+			protected void doAssertions(OutgoingMessage processOutgoing)
 					throws Exception {
-				assertEquals(1, processIncomingCalls);
-				assertNotNull(theProcessIncoming);
-				assertEquals(theProcessIncoming, processIncoming);
+				assertEquals(1, processOutgoingCalls);
+				assertNotNull(theProcessOutgoing);
+				assertEquals(theProcessOutgoing, processOutgoing);
 			}
 
 		}.perform();

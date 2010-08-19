@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -252,7 +253,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 					domains.add(domain);
 					try
 					{
-						domainPostmasters.put(domain, new DomainPostmaster(domain, new InternetAddress(postmasterAddr)));
+						domainPostmasters.put(domain.toUpperCase(Locale.getDefault()), new DomainPostmaster(domain, new InternetAddress(postmasterAddr)));
 					}
 					catch (AddressException e) {}
 					

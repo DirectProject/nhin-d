@@ -25,6 +25,7 @@ package org.nhindirect.gateway.smtp;
 public enum SmtpAgentError 
 {
     Unknown,
+    Uninitialized,
     MissingPostmaster,
     MissingLogSettings,
     InvalidEnvelopeFromAgent,

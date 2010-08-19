@@ -6,15 +6,41 @@ import java.util.Collections;
 import javax.mail.internet.MimeMessage;
 
 import org.nhindirect.stagent.mail.Message;
+import org.nhindirect.stagent.trust.TrustEnforcementStatus;
+
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 public class MockNHINDAgent implements NHINDAgent
 {
 	private Collection<String> domains;
+	private AgentException incomingException;
+	private AgentException outgoingException;
+	private Collection<String> anchorDomains;
 	
 	public MockNHINDAgent(Collection<String> domains)
 	{
 		this.domains = domains; 
 	}
+	
+	@Inject(optional = true)
+	public void setIncomingException(@Named("MockAgentIncomingException") AgentException incomingException)
+	{
+		System.out.println("Setting mock incoming exception: " + incomingException.toString());
+		this.incomingException = incomingException;
+	}
+	
+	@Inject(optional = true)
+	public void setOutgoingException(@Named("MockAgentOutgoingException") AgentException outgoingException)
+	{
+		this.outgoingException = outgoingException;
+	}
+	
+	@Inject(optional = true)
+	public void setAnchorDomains(@Named("MockAgentAnchorDomains") Collection<String> anchorDomains)
+	{
+		this.anchorDomains = anchorDomains;
+	}	
 	
     public Collection<String> getDomains()
     {
@@ -51,6 +77,21 @@ public class MockNHINDAgent implements NHINDAgent
     
     public IncomingMessage processIncoming(IncomingMessage message)
     {
+    	if (message.getAgent() == null)
+    		message.setAgent(this);
+    	
+    	for (NHINDAddress addr : message.getRecipients())
+    	{
+    		if (!addr.isInDomain(this.domains))
+    			addr.setStatus(TrustEnforcementStatus.Failed);
+    		else
+    			addr.setStatus(TrustEnforcementStatus.Success);
+    	}
+    	message.categorizeRecipients(TrustEnforcementStatus.Success);
+    	message.updateRoutingHeaders();
+    	
+    	if (incomingException != null)
+    		throw incomingException;
     	return message;
     }
     
@@ -71,6 +112,25 @@ public class MockNHINDAgent implements NHINDAgent
     
     public OutgoingMessage processOutgoing(OutgoingMessage message)
     {
+    	if (message.getAgent() == null)
+    		message.setAgent(this);
+    	
+    	if (outgoingException != null)
+    		throw outgoingException;
+    	
+    	if (this.anchorDomains != null)
+    	{
+	    	for (NHINDAddress addr : message.getRecipients())
+	    	{
+	    		if (!addr.isInDomain(this.anchorDomains))
+	    			addr.setStatus(TrustEnforcementStatus.Failed);
+	    		else
+	    			addr.setStatus(TrustEnforcementStatus.Success);
+	    	}
+	    	message.categorizeRecipients(TrustEnforcementStatus.Success);
+	    	message.updateRoutingHeaders();
+    	}    	
+    	
     	return message;
     }
 }
