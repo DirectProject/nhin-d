@@ -31,7 +31,7 @@ import org.bouncycastle.cms.SignerInformation;
  * @author Greg Meyer
  *
  */
-public class SingnerCertPair 
+public class SignerCertPair 
 {
 	private final SignerInformation signer;
 	private final X509Certificate cert;
@@ -41,7 +41,7 @@ public class SingnerCertPair
 	 * @param _signer Infomorationg about the the signer of a message.
 	 * @param _cert The certificate used to sign a message.
 	 */
-	public SingnerCertPair(SignerInformation _signer, X509Certificate _cert)
+	public SignerCertPair(SignerInformation _signer, X509Certificate _cert)
 	{
 		if (_signer == null || _cert == null)
 			throw new IllegalArgumentException();

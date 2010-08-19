@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cryptography.DigestAlgorithm;
 import org.nhindirect.stagent.cryptography.EncryptionAlgorithm;
-import org.nhindirect.stagent.cryptography.SMIMECryptographer;
+import org.nhindirect.stagent.cryptography.SMIMECryptographerImpl;
 import org.nhindirect.stagent.cryptography.SignedEntity;
 import org.nhindirect.stagent.mail.MimeEntity;
 import org.nhindirect.stagent.mail.MimeStandard;
@@ -50,7 +50,7 @@ public class CryptographerTest extends TestCase
 	{
 		X509Certificate cert = TestUtils.getExternalCert("user1");
 		
-		SMIMECryptographer cryptographer = new SMIMECryptographer();
+		SMIMECryptographerImpl cryptographer = new SMIMECryptographerImpl();
 		cryptographer.setEncryptionAlgorithm(encAlg);
 		
 		MimeEntity entity = new MimeEntity();
@@ -100,7 +100,7 @@ public class CryptographerTest extends TestCase
 	{		
 		X509Certificate cert = TestUtils.getExternalCert("user1");
 		
-		SMIMECryptographer cryptographer = new SMIMECryptographer();
+		SMIMECryptographerImpl cryptographer = new SMIMECryptographerImpl();
 		cryptographer.setEncryptionAlgorithm(encAlgo);
 		
 		MimeEntity entityText = new MimeEntity();
@@ -169,7 +169,7 @@ public class CryptographerTest extends TestCase
 	{	
 		X509CertificateEx certex = TestUtils.getInternalCert("user1");
 		
-		SMIMECryptographer cryptographer = new SMIMECryptographer();
+		SMIMECryptographerImpl cryptographer = new SMIMECryptographerImpl();
 		cryptographer.setDigestAlgorithm(digAlg);
 		
 		MimeEntity entity = new MimeEntity();
@@ -197,7 +197,7 @@ public class CryptographerTest extends TestCase
 	{	
 		X509Certificate cert = TestUtils.getExternalCert("user1");
 		
-		SMIMECryptographer cryptographer = new SMIMECryptographer();
+		SMIMECryptographerImpl cryptographer = new SMIMECryptographerImpl();
 		
 		MimeEntity entity = new MimeEntity();
 		entity.setText("Hello world.");

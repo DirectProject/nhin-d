@@ -1,31 +1,20 @@
 package org.nhindirect.stagent;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Map.Entry;
 
 import javax.mail.internet.MimeMessage;
 
-import org.nhindirect.stagent.NHINDAgent;
-import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
-import org.nhindirect.stagent.cert.impl.UniformCertificateStore;
-import org.nhindirect.stagent.trust.TrustAnchorResolver;
+import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.utils.TestUtils;
 
 import junit.framework.TestCase;
 
 public class NHINDAgentTest extends TestCase 
-{
-	private static final String internalStorePassword = "h3||0 wor|d";
-	private static final String pkPassword = "pKpa$$wd";	
-	
+{	
 	static
 	{
 		// Override the logging system to turn on trace level logging
@@ -39,71 +28,11 @@ public class NHINDAgentTest extends TestCase
 		}
 	}
 	
-	private static String readResource(String _rec) throws Exception
-	{
-		
-		int BUF_SIZE = 2048;		
-		int count = 0;
-	
-		BufferedInputStream imgStream = new BufferedInputStream(NHINDAgentTest.class.getResourceAsStream(_rec));
-				
-		ByteArrayOutputStream ouStream = new ByteArrayOutputStream();
-		if (imgStream != null) 
-		{
-			byte buf[] = new byte[BUF_SIZE];
-			
-			while ((count = imgStream.read(buf)) > -1)
-			{
-				ouStream.write(buf, 0, count);
-			}
-			
-			try 
-			{
-				imgStream.close();
-			} 
-			catch (IOException ieo) 
-			{
-				throw ieo;
-			}
-			catch (Exception e)
-			{
-				throw e;
-			}					
-		} 
-		else
-			throw new IOException("Failed to open resource " + _rec);
-
-		return new String(ouStream.toByteArray());		
-	}
-	
-	
 	public void testEndToEndMessageWithCertKeyStore() throws Exception
-	{
-		// get the keystore file
-		File fl = new File("testfile");
-		int idx = fl.getAbsolutePath().lastIndexOf("testfile");
+	{				
+		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"cerner.com"}));
 		
-		String path = fl.getAbsolutePath().substring(0, idx);
-		
-		File internalKeystoreFile = new File(path + "src/test/resources/keystores/internalKeystore");		
-		
-		KeyStoreCertificateStore service = new KeyStoreCertificateStore(internalKeystoreFile, 
-				internalStorePassword, pkPassword);
-		
-		X509Certificate caCert = TestUtils.getExternalCert("cacert");
-		X509Certificate externCaCert = TestUtils.getExternalCert("externCaCert");
-		X509Certificate secureHealthEmailCACert = TestUtils.getExternalCert("secureHealthEmailCACert");
-		
-		// anchors cert validation
-		Collection<X509Certificate> anchors = new ArrayList<X509Certificate>();
-		anchors.add(caCert);
-		anchors.add(externCaCert);
-		anchors.add(secureHealthEmailCACert);
-		
-		NHINDAgent agent = new NHINDAgent("cerner.com", service, 
-				service, new TrustAnchorResolver(anchors));
-		
-		String testMessage = readResource("MultipartMimeMessage.txt");
+		String testMessage = TestUtils.readResource("MultipartMimeMessage.txt");
 		MimeMessage originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
 
 		
@@ -115,8 +44,7 @@ public class NHINDAgentTest extends TestCase
 		
 		// verify the message
 		// need a new agent because this is a different domain
-		agent = new NHINDAgent("starugh-stateline.com", service, 
-				service, new TrustAnchorResolver(anchors));
+		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"starugh-stateline.com"})); 
 		IncomingMessage strippedAndVerifiesMessage = agent.processIncoming(SMIMEenvMessage.getMessage().toString());
 		
 		
@@ -155,10 +83,9 @@ public class NHINDAgentTest extends TestCase
 		
 		
 		// now do a large message with some attachments
-		agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new TrustAnchorResolver(anchors));
+		agent =  TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"})); 
 		
-		testMessage = readResource("LargeMsgWithAttachments.txt");
+		testMessage = TestUtils.readResource("LargeMsgWithAttachments.txt");
 		originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
 
 		
@@ -172,8 +99,7 @@ public class NHINDAgentTest extends TestCase
 
 		
 		// verify the message
-		agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new TrustAnchorResolver(anchors));
+		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"})); 
 		strippedAndVerifiesMessage = agent.processIncoming(SMIMEenvMessage);
 		
 		
@@ -219,33 +145,8 @@ public class NHINDAgentTest extends TestCase
 		 */
 		
 		
-		// get the keystore file
-		File fl = new File("testfile");
-		int idx = fl.getAbsolutePath().lastIndexOf("testfile");
-		
-		String path = fl.getAbsolutePath().substring(0, idx);
-		
-		File internalKeystoreFile = new File(path + "src/test/resources/keystores/internalKeystore");		
-		
-		KeyStoreCertificateStore service = new KeyStoreCertificateStore(internalKeystoreFile, 
-				internalStorePassword, pkPassword);
-		
-		X509Certificate caCert = TestUtils.getExternalCert("cacert");
-		X509Certificate externCaCert = TestUtils.getExternalCert("externCaCert");
-		X509Certificate secureHealthEmailCACert = TestUtils.getExternalCert("secureHealthEmailCACert");
-		X509Certificate msCACert = TestUtils.getExternalCert("msanchor");
-		
-		// anchors cert validation
-		Collection<X509Certificate> anchors = new ArrayList<X509Certificate>();
-		anchors.add(caCert);
-		anchors.add(externCaCert);
-		anchors.add(secureHealthEmailCACert);
-		anchors.add(msCACert);
-		
-		NHINDAgent agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new TrustAnchorResolver(anchors));
-		
-		String testMessage = readResource("EncryptedMessage2.txt");
+		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"})); 
+		String testMessage = TestUtils.readResource("EncryptedMessage2.txt");
 		MimeMessage originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
 		
 		
@@ -261,7 +162,7 @@ public class NHINDAgentTest extends TestCase
 		 * EncryptedMessage3
 		 */				
 		
-		testMessage = readResource("EncryptedMessage3.txt");
+		testMessage = TestUtils.readResource("EncryptedMessage3.txt");
 		originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
 		
 		
@@ -279,33 +180,10 @@ public class NHINDAgentTest extends TestCase
 	{
 		
 	
-		// get the keystore file
-		File fl = new File("testfile");
-		int idx = fl.getAbsolutePath().lastIndexOf("testfile");
+		// get the keystore file		
+		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"})); 
 		
-		String path = fl.getAbsolutePath().substring(0, idx);
-		
-		File internalKeystoreFile = new File(path + "src/test/resources/keystores/internalKeystore");		
-		
-		KeyStoreCertificateStore service = new KeyStoreCertificateStore(internalKeystoreFile, 
-				internalStorePassword, pkPassword);
-		
-		X509Certificate caCert = TestUtils.getExternalCert("cacert");
-		X509Certificate externCaCert = TestUtils.getExternalCert("externCaCert");
-		X509Certificate secureHealthEmailCACert = TestUtils.getExternalCert("secureHealthEmailCACert");
-		X509Certificate msCACert = TestUtils.getExternalCert("msanchor");
-		
-		// anchors cert validation
-		Collection<X509Certificate> anchors = new ArrayList<X509Certificate>();
-		anchors.add(caCert);
-		anchors.add(externCaCert);
-		anchors.add(secureHealthEmailCACert);
-		anchors.add(msCACert);
-		
-		NHINDAgent agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new TrustAnchorResolver(anchors));
-		
-		String testMessage = readResource("EncAttachment.txt");
+		String testMessage = TestUtils.readResource("EncAttachment.txt");
 		MimeMessage originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
 			
 		
@@ -321,10 +199,9 @@ public class NHINDAgentTest extends TestCase
 		 * EncAttachment2.txt
 		 */		
 		
-		agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new TrustAnchorResolver(anchors));
+		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"})); 
 		
-		testMessage = readResource("EncAttachment2.txt");
+		testMessage = TestUtils.readResource("EncAttachment2.txt");
 		originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
 		
 		
@@ -338,10 +215,9 @@ public class NHINDAgentTest extends TestCase
 		/*
 		 * LargeEncAttachment.txt
 		 */		
-		agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new TrustAnchorResolver(anchors));
+		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"})); 
 		
-		testMessage = readResource("LargeEncAttachment.txt");
+		testMessage = TestUtils.readResource("LargeEncAttachment.txt");
 		originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
 		
 
@@ -356,33 +232,9 @@ public class NHINDAgentTest extends TestCase
 	
 	public void testEndToEndMessageBase64AttachmentOnly() throws Exception
 	{
-		// get the keystore file
-		File fl = new File("testfile");
-		int idx = fl.getAbsolutePath().lastIndexOf("testfile");
-		
-		String path = fl.getAbsolutePath().substring(0, idx);
-		
-		File internalKeystoreFile = new File(path + "src/test/resources/keystores/internalKeystore");		
-		
-		KeyStoreCertificateStore service = new KeyStoreCertificateStore(internalKeystoreFile, 
-				internalStorePassword, pkPassword);
-		
-		X509Certificate caCert = TestUtils.getExternalCert("cacert");
-		X509Certificate externCaCert = TestUtils.getExternalCert("externCaCert");
-		X509Certificate secureHealthEmailCACert = TestUtils.getExternalCert("secureHealthEmailCACert");
-		X509Certificate cernerDemos = TestUtils.getExternalCert("cernerDemosCaCert");		
-		
-		// anchors cert validation
-		Collection<X509Certificate> anchors = new ArrayList<X509Certificate>();
-		anchors.add(caCert);
-		anchors.add(externCaCert);
-		anchors.add(secureHealthEmailCACert);		
-		anchors.add(cernerDemos);
 
-		NHINDAgent agent = new NHINDAgent("messaging.cernerdemos.com", service, 
-				service, new TrustAnchorResolver(anchors));
-		
-		String testMessage = readResource("raw2.txt");
+		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"messaging.cernerdemos.com"})); 
+		String testMessage = TestUtils.readResource("raw2.txt");
 		MimeMessage originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));		
 		
 		OutgoingMessage SMIMEenvMessage = agent.processOutgoing(testMessage);
@@ -393,8 +245,7 @@ public class NHINDAgentTest extends TestCase
 		
 		// verify the message
 		// need a new agent because this is a different domain
-		agent = new NHINDAgent("securehealthemail.com", service, 
-				service, new TrustAnchorResolver(anchors));
+		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"}));
 		IncomingMessage strippedAndVerifiesMessage = agent.processIncoming(SMIMEenvMessage);
 		
 		

@@ -25,13 +25,18 @@ package org.nhindirect.stagent.cert;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 
+import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
+
+import com.google.inject.ImplementedBy;
+
 /**
  * Responsible for maintaining and managing a certificate repository.
  * @author Greg Meyer
  * @author Umesh Madan
  *
  */
-public interface IX509Store 
+@ImplementedBy(KeyStoreCertificateStore.class)
+public interface X509Store 
 {
 	/**
 	 * Gets a collection of certificates where the cert's E or CN field match the subject name.

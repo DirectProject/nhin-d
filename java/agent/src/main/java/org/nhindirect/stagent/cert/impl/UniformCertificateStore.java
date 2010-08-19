@@ -29,16 +29,19 @@ import java.util.Collections;
 
 import javax.mail.internet.InternetAddress;
 
-import org.nhindirect.stagent.cert.ICertificateResolver;
-import org.nhindirect.stagent.cert.IX509Store;
+import org.nhindirect.stagent.cert.CertificateResolver;
+import org.nhindirect.stagent.cert.X509Store;
+import org.nhindirect.stagent.cert.impl.annotation.UniformCertStoreCerts;
+
+import com.google.inject.Inject;
 
 /**
  * Certificate store when an entire organization is represented by a single certificate.  This should not be used if a single agent instance is
- * used to manage multiple organizations.
+ * used to manage multiple organizations/domains.
  * @author Greg Meyer
  *
  */
-public class UniformCertificateStore implements ICertificateResolver
+public class UniformCertificateStore implements CertificateResolver
 {
 	private Collection<X509Certificate> certs;
 	
@@ -48,12 +51,13 @@ public class UniformCertificateStore implements ICertificateResolver
     	certs.add(cert);
     }
     
-    public UniformCertificateStore(Collection<X509Certificate> certs)
+    @Inject
+    public UniformCertificateStore(@UniformCertStoreCerts Collection<X509Certificate> certs)
     {
     	setCertificates(certs);
     }    
     
-    public UniformCertificateStore(IX509Store certs)
+    public UniformCertificateStore(X509Store certs)
     {
         if (certs == null)
         {
