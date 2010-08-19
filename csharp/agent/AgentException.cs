@@ -21,6 +21,9 @@ using System.Security.Cryptography;
 
 namespace NHINDirect.Agent
 {    
+    /// <summary>
+    /// Represents agent exceptions.
+    /// </summary>
     public class AgentException : NHINDException<AgentError>
     {
         public AgentException(AgentError error)

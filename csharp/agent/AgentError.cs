@@ -20,6 +20,9 @@ using System.Text;
 
 namespace NHINDirect.Agent
 {
+    /// <summary>
+    /// Enumeration of types of agent errors, used in <see cref="AgentException"/>
+    /// </summary>
     public enum AgentError
     {
         Unexpected = 0,

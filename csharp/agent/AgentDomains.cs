@@ -22,6 +22,9 @@ using NHINDirect.Mail;
 
 namespace NHINDirect.Agent
 {
+    /// <summary>
+    /// Represents domains managed by an agent.
+    /// </summary>
     public class AgentDomains
     {
         //
@@ -35,6 +38,9 @@ namespace NHINDirect.Agent
             this.SetDomains(domains);
         }
         
+        /// <summary>
+        /// Gets the domains managed.
+        /// </summary>
         public IEnumerable<string> Domains
         {
             get
@@ -43,6 +49,12 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Tests if an address is managed.
+        /// </summary>
+        /// <param name="address">The <see cref="MailAddress"/> to test</param>
+        /// <returns><c>true</c> if the address's domain is managed by the agent,
+        /// <c>false</c> otherwise.</returns>
         public bool IsManaged(MailAddress address)
         {
             if (address == null)
@@ -52,7 +64,13 @@ namespace NHINDirect.Agent
             
             return this.IsManaged(address.Host);
         }
-        
+
+        /// <summary>
+        /// Tests if an address is managed.
+        /// </summary>
+        /// <param name="address">The domain in <c>string</c> form to test</param>
+        /// <returns><c>true</c> if the address's domain is managed by the agent,
+        /// <c>false</c> otherwise.</returns>
         public bool IsManaged(string domain)
         {
             if (string.IsNullOrEmpty(domain))
