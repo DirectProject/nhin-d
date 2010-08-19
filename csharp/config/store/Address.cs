@@ -20,6 +20,7 @@ using System.Text;
 using System.Data.SqlTypes;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
+using System.Net.Mail;
 
 namespace NHINDirect.Config.Store
 {
@@ -50,7 +51,12 @@ namespace NHINDirect.Config.Store
             this.UpdateDate = this.CreateDate;
             this.Status = EntityStatus.New;
         }
-
+        
+        public Address(long domainID, MailAddress address)
+            : this(domainID, address.Address, address.DisplayName)
+        {
+        }
+        
         [Column(Name = "EmailAddress", CanBeNull = false, IsPrimaryKey=true)]
         public string EmailAddress
         {

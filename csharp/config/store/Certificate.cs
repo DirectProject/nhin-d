@@ -162,7 +162,7 @@ namespace NHINDirect.Config.Store
         
         public void ValidateHasData()
         {
-            if (m_data == null || m_data.Length == 0)
+            if (m_data.IsNullOrEmpty())
             {
                 throw new ConfigStoreException(ConfigStoreError.MissingCertificateData);
             }        
@@ -192,7 +192,25 @@ namespace NHINDirect.Config.Store
             
             return cert;
         }
-        
+
+        public static X509Certificate2Collection ToX509Collection(Certificate[] source)
+        {
+            if (source.IsNullOrEmpty())
+            {
+                return null;
+            }
+            
+            X509Certificate2Collection x509Coll = new X509Certificate2Collection();
+            if (source != null)
+            {
+                for (int i = 0; i < source.Length; ++i)
+                {
+                    x509Coll.Add(source[i].ToX509Certificate());
+                }
+            }
+            return x509Coll;
+        }
+                
         void SetX509Certificate(X509Certificate2 certificate)
         {
             this.Thumbprint = certificate.Thumbprint;
@@ -204,7 +222,7 @@ namespace NHINDirect.Config.Store
         
         internal static X509Certificate2 Import(byte[] sourceFileBytes, string password)
         {
-            if (sourceFileBytes == null || sourceFileBytes.Length == 0)
+            if (sourceFileBytes.IsNullOrEmpty())
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidX509Certificate);
             }

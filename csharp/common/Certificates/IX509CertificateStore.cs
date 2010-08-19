@@ -22,7 +22,7 @@ using NHINDirect;
 
 namespace NHINDirect.Certificates
 {
-    public interface IX509CertificateIndex : IEnumerable<X509Certificate2>
+    public interface IX509CertificateIndex
     {
         /// <summary>
         /// Locate all certs whose distinguished name satisfies: (E=subjectName OR CN=subjectName)
@@ -32,7 +32,7 @@ namespace NHINDirect.Certificates
         X509Certificate2Collection this[string subjectName] { get; }
     }
 
-    public interface IX509CertificateStore : IX509CertificateIndex, IDisposable
+    public interface IX509CertificateStore : IX509CertificateIndex, IEnumerable<X509Certificate2>, IDisposable
     {   
         /// <summary>
         /// Optional criteria that all certificates in this store match

@@ -143,26 +143,6 @@ namespace NHINDirect.Certificates
             //
             return certIndex;
         }
-
-        public IEnumerator<X509Certificate2> GetEnumerator()
-        {
-            foreach(X509Certificate2Collection certCollection in m_certIndex.Values)
-            {
-                for (int i = 0, count = certCollection.Count; i < count; ++i)
-                {
-                    yield return certCollection[i];
-                }
-            }
-        }
-
-        #region IEnumerable Members
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-           return this.GetEnumerator();
-        }
-
-        #endregion
     }
     
     internal class CertificateDictionary : Dictionary<string, X509Certificate2Collection>
