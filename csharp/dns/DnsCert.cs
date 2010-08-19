@@ -25,14 +25,22 @@ using System.Net;
 
 namespace DnsResolver
 {
-    public class DNSCert
+    /// <summary>
+    /// Representation of an X509 cert in a DNS CERT RR.
+    /// </summary>
+    public class DnsX509Cert
     {
         X509Certificate2 m_cert;
         ushort m_keyTag;
         string m_name;
         int m_ttl;
 
-        public DNSCert(ushort keyTag, string certificate)
+        /// <summary>
+        /// Creates a DnsX509Cert instance for an X509 certificate.
+        /// </summary>
+        /// <param name="keyTag">The key tag for this certificate. See RFC 2535 for details.</param>
+        /// <param name="certificate">A Base64 encoded DER representation of the certificate.</param>
+        public DnsX509Cert(ushort keyTag, string certificate)
         {
             if (string.IsNullOrEmpty(certificate))
             {
@@ -47,7 +55,12 @@ namespace DnsResolver
             this.Certificate = new X509Certificate2(Convert.FromBase64String(this.NormalizeInputCertString(certificate)));
         }
 
-        public DNSCert(ushort keyTag, byte[] certificate)
+        /// <summary>
+        /// Creates a DnsX509Cert instance for an X509 certificate.
+        /// </summary>
+        /// <param name="keyTag">The key tag for this certificate. See RFC 2535 for details.</param>
+        /// <param name="certificate">A byte array providing a DER representation of an X509 certificate.</param>
+        public DnsX509Cert(ushort keyTag, byte[] certificate)
         {
             if (certificate == null || certificate.Length == 0)
             {
@@ -62,11 +75,21 @@ namespace DnsResolver
             this.Certificate = new X509Certificate2(certificate);
         }
 
-        public DNSCert(X509Certificate2 cert)
+        /// <summary>
+        /// Creates a DnsX509Cert instance for an X509 certificate.
+        /// </summary>
+        /// <param name="cert">The <see cref="X509Certificate2"/> certificate instance.</param>
+        public DnsX509Cert(X509Certificate2 cert)
         {
             this.Certificate = cert;
         }
 
+        /// <summary>
+        /// Gets and sets the <see cref="X509Certificate2"/> instance for this DNS RR.
+        /// </summary>
+        /// <value>
+        /// The <see cref="X509Certificate2"/> stored in this DnsCert RR.
+        /// </value>
         public X509Certificate2 Certificate
         {
             get
@@ -91,6 +114,9 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Gets the domain name for this RR.
+        /// </summary>
         public string Name
         {
             get
@@ -99,6 +125,9 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Gets the key tag (see RFC 2535) for this RR.
+        /// </summary>
         public ushort KeyTag
         {
             get
@@ -107,6 +136,9 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Gets the TTL for this RR.
+        /// </summary>
         public int TTL
         {
             get

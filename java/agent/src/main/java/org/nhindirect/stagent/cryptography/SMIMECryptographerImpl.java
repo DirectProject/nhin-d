@@ -61,6 +61,7 @@ import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.SignatureValidationException;
 import org.nhindirect.stagent.cert.X509CertificateEx;
+import org.nhindirect.stagent.cryptography.annotation.IncludeEpilogInSig;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.mail.MimeEntity;
 import org.nhindirect.stagent.mail.MimeError;
@@ -72,6 +73,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.google.inject.Inject;
+
 /**
  * Executes the cryptography operations.  This include encryption, decryption, and signature generation. 
  * @author Greg Meyer
@@ -79,12 +82,12 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 @SuppressWarnings("unchecked")
-public class SMIMECryptographer 
+public class SMIMECryptographerImpl implements Cryptographer
 {
 
-	private static final Log LOGGER = LogFactory.getFactory().getInstance(SMIMECryptographer.class);
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(SMIMECryptographerImpl.class);
 	
-    public final static SMIMECryptographer Default = new SMIMECryptographer();
+    public final static SMIMECryptographerImpl Default = new SMIMECryptographerImpl();
     
     private EncryptionAlgorithm m_encryptionAlgorithm;
     private DigestAlgorithm m_digestAlgorithm;
@@ -93,7 +96,7 @@ public class SMIMECryptographer
     /**
      * Constructs a Cryptographer with a default EncryptionAlgorithm and DigestAlgorithm.
      */
-    public SMIMECryptographer()
+    public SMIMECryptographerImpl()
     {
         this.m_encryptionAlgorithm = EncryptionAlgorithm.AES128;
         this.m_digestAlgorithm = DigestAlgorithm.SHA1;
@@ -104,7 +107,7 @@ public class SMIMECryptographer
      * @param encryptionAlgorithm The encryption algorithm used to encrypt the message.
      * @param digestAlgorithm The digest algorithm used to generate the message digest stored in the message signature.
      */    
-    public SMIMECryptographer(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
+    public SMIMECryptographerImpl(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
     {
         this.m_encryptionAlgorithm = encryptionAlgorithm;
         this.m_digestAlgorithm = digestAlgorithm;
@@ -123,6 +126,7 @@ public class SMIMECryptographer
      * Sets the EncryptionAlgorithm
      * @param value The EncryptionAlgorithm used to encrypt messages.
      */
+    @Inject(optional=true)
     public void setEncryptionAlgorithm(EncryptionAlgorithm value)
     {
         this.m_encryptionAlgorithm = value;
@@ -140,7 +144,8 @@ public class SMIMECryptographer
     /**
      * Sets the DigestAlgorithm.
      * @param value The DigestAlgorithm used generate the message digest stored in the message signature.
-     */    
+     */   
+    @Inject(optional=true)
     public void setDigestAlgorithm(DigestAlgorithm value)
     {
         this.m_digestAlgorithm = value;
@@ -158,8 +163,9 @@ public class SMIMECryptographer
     /**
      * Sets if the the Epilogue part of a multipart entity should be used to generate the message signature.
      * @param value True if the the Epilogue part of a multipart entity should be used to generate the message signature.  False otherwise.
-     */    
-    public void setIncludeMultipartEpilogueInSignature(boolean value)
+     */   
+    @Inject(optional=true)
+    public void setIncludeMultipartEpilogueInSignature(@IncludeEpilogInSig boolean value)
     {
         this.m_includeEpilogue = value;
     }

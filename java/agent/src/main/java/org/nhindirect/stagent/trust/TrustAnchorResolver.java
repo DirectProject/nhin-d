@@ -22,75 +22,32 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.trust;
 
-import java.io.File;
-import java.security.cert.X509Certificate;
-import java.util.Collection;
 
-import org.nhindirect.stagent.cert.ICertificateResolver;
-import org.nhindirect.stagent.cert.IX509Store;
-import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
-import org.nhindirect.stagent.cert.impl.UniformCertificateStore;
+import org.nhindirect.stagent.cert.CertificateResolver;
 
-public class TrustAnchorResolver implements ITrustAnchorResolver
+import com.google.inject.ImplementedBy;
+
+
+/**
+ * A trust setting store contains certificate anchors that assert the trust policy of a recicient's or sender's certificate.  A certificate
+ * must have a anchor in its certificate chain that is contained in this store to be considered trusted.  Certificate anchors can be specific
+ * to an InternetAddress.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
+@ImplementedBy(DefaultTrustAnchorResolver.class)
+public interface TrustAnchorResolver 
 {
-    private ICertificateResolver outgoingAnchors;
-    private ICertificateResolver incomingAnchors;
-    
-    public TrustAnchorResolver(Collection<X509Certificate> anchors)
-	{
-    	this(anchors, anchors);
-	}    
-    
-    public TrustAnchorResolver(Collection<X509Certificate> outgoingAnchors, Collection<X509Certificate> incomingAnchors)
-	{
-    	this (new UniformCertificateStore(outgoingAnchors), new UniformCertificateStore(incomingAnchors));
-	}    
-    
-    public TrustAnchorResolver(IX509Store anchors)
-	{
-    	this(anchors, anchors);
-	}  
-    
-    public TrustAnchorResolver(IX509Store outgoingAnchors, IX509Store incomingAnchors)
-	{
-    	this(new UniformCertificateStore(outgoingAnchors), new UniformCertificateStore(incomingAnchors));
-	}  
-    
-    public TrustAnchorResolver(ICertificateResolver anchors)
-	{
-    	this(anchors, anchors);
-	}
-    
-    public TrustAnchorResolver(ICertificateResolver outgoingAnchors, ICertificateResolver incomingAnchors)
-    {
-        if (outgoingAnchors == null || incomingAnchors == null)
-        {
-            throw new IllegalArgumentException();
-        }
-        
-        this.outgoingAnchors = outgoingAnchors;
-        this.incomingAnchors = incomingAnchors;
-    }    
-    
-    public ICertificateResolver getOutgoingAnchors()
-    {
-    	return outgoingAnchors;
-    }
+	/**
+	 * Gets the certificate resolver for outgoing messages.
+	 * @return The certificate resolver for outgoing messages.
+	 */
+	CertificateResolver getOutgoingAnchors();
 
-    public ICertificateResolver getIncomingAnchors()
-    {
-    	return incomingAnchors;
-    }    
-    
-    public static TrustAnchorResolver createDefault()
-    {
-    	/*
-    	 * TODO: add declarative methods to create a default... trust anchor distribution is an out of band process, so
-    	 * just harding to a file for now
-    	 */
-    	KeyStoreCertificateStore store = new KeyStoreCertificateStore(new File("UniformTrustArchorStore"));
-    	
-        UniformCertificateStore anchors = new UniformCertificateStore(store.getAllCertificates());
-        return new TrustAnchorResolver(anchors);
-    }    
+	/**
+	 * Gets the certificate resolver for incoming messages.
+	 * @return The certificate resolver for incoming messages.
+	 */	
+	CertificateResolver getIncomingAnchors();
 }

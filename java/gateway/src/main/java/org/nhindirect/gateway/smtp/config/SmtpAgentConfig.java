@@ -20,26 +20,15 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.stagent.cert;
+package org.nhindirect.gateway.smtp.config;
 
-import java.security.cert.X509Certificate;
-import java.util.Collection;
+import org.nhindirect.gateway.smtp.provider.XMLSmtpAgentConfigProvider;
 
-import javax.mail.internet.InternetAddress;
+import com.google.inject.Injector;
+import com.google.inject.ProvidedBy;
 
-/**
- * Certificate resolver implementations are responsible for retrieving public X509Certificates from a 
- * certificate repository.  Repositories may include a simple keystore file, a machine cert store,
- * a URI, or a DNS cert implementation.    
- * @author Greg Meyer
- * @author Umesh Madan
- */
-public interface ICertificateResolver
+@ProvidedBy(XMLSmtpAgentConfigProvider.class)
+public interface SmtpAgentConfig 
 {
-	/**
-	 * Retrieves a collection of certificates for a given InternetAddress.
-	 * @param address  The InternetAddress used to lookup the certificate.
-	 * @return An X509Certificate collection containing the address in its E or CN field.
-	 */
-	public Collection<X509Certificate> getCertificates(InternetAddress address);
+	public Injector getAgentInjector();
 }

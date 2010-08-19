@@ -38,7 +38,7 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
-import org.nhindirect.stagent.cert.SingnerCertPair;
+import org.nhindirect.stagent.cert.SignerCertPair;
 import org.nhindirect.stagent.cert.Thumbprint;
 
 /**
@@ -120,7 +120,7 @@ public class CryptoExtensions
 	 * @return A colllection of pairs consisting of the singer's X509 certificated and signer information that matches the provided name.  Returns
 	 * an empty collection if a signer matching the name cannot be found in the signed data.
 	 */
-    public static Collection<SingnerCertPair> findSignersByName(CMSSignedData signedData, String name, Collection<String> excludeNames)
+    public static Collection<SignerCertPair> findSignersByName(CMSSignedData signedData, String name, Collection<String> excludeNames)
     {
         if (name == null || name.length() == 0)
         {
@@ -159,9 +159,9 @@ public class CryptoExtensions
 	            			continue; // break out and don't include this cert
 	            		
 	            		if (retVal == null)
-	            			retVal = new ArrayList<SingnerCertPair>();	            		
+	            			retVal = new ArrayList<SignerCertPair>();	            		
 	            		
-	            		retVal.add(new SingnerCertPair(signer, convertToProfileProvidedCertImpl(cert))); 
+	            		retVal.add(new SignerCertPair(signer, convertToProfileProvidedCertImpl(cert))); 
 	            	}
 	            } 
 	        }
@@ -197,7 +197,7 @@ public class CryptoExtensions
 	 * @return A pair consisting of the singer's X509 certificated and signer information that matches the provided certificate.  Returns
 	 * null if a signer matching the name cannot be found in the signed data.
 	 */
-    public static SingnerCertPair findSignerByCert(CMSSignedData signedData, X509Certificate searchCert)
+    public static SignerCertPair findSignerByCert(CMSSignedData signedData, X509Certificate searchCert)
     {
 
     	if (searchCert == null)
@@ -219,7 +219,7 @@ public class CryptoExtensions
 	        	if (signerId.getIssuer().equals(searchCert.getIssuerX500Principal()) && 
 	        			signerId.getSerialNumber().equals(searchCert.getSerialNumber()))
 	        	{
-	        		return new SingnerCertPair(signer, searchCert); 
+	        		return new SignerCertPair(signer, searchCert); 
 	        	}	            			            	
 	        }
         }

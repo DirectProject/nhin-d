@@ -80,45 +80,6 @@ import org.nhindirect.stagent.utils.TestUtils;
 
 public class SigTest extends TestCase
 {
-	private static String readResource(String _rec) throws Exception
-	{
-		
-		int BUF_SIZE = 2048;
-
-		
-		int count = 0;
-		int size = 0;
-		
-		BufferedInputStream imgStream = new BufferedInputStream(NHINDAgentTest.class.getResourceAsStream(_rec));
-				
-		ByteArrayOutputStream ouStream = new ByteArrayOutputStream();
-		if (imgStream != null) 
-		{
-			byte buf[] = new byte[BUF_SIZE];
-			
-			while ((count = imgStream.read(buf)) > -1)
-			{
-				ouStream.write(buf, 0, count);
-			}
-			
-			try 
-			{
-				imgStream.close();
-			} 
-			catch (IOException ieo) 
-			{
-				throw ieo;
-			}
-			catch (Exception e)
-			{
-				throw e;
-			}					
-		} 
-		else
-			throw new IOException("Failed to open resource " + _rec);
-
-		return new String(ouStream.toByteArray());		
-	}	
 	
 	public void testCreateVerifySig() throws Exception
 	{
@@ -126,7 +87,7 @@ public class SigTest extends TestCase
 		X509Certificate caCert = TestUtils.getExternalCert("cacert");
 		
 		
-		String testMessage = readResource("MultipartMimeMessage.txt");
+		String testMessage = TestUtils.readResource("MultipartMimeMessage.txt");
 		
         MimeMessage entity = EntitySerializer.Default.deserialize(testMessage);
         Message message = new Message(entity);

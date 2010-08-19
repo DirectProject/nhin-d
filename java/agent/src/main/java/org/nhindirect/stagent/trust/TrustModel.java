@@ -32,11 +32,13 @@ import org.nhindirect.stagent.AgentError;
 import org.nhindirect.stagent.AgentException;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.IncomingMessage;
-import org.nhindirect.stagent.MessageSignature;
+import org.nhindirect.stagent.DefaultMessageSignatureImpl;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.OutgoingMessage;
-import org.nhindirect.stagent.cert.SingnerCertPair;
+import org.nhindirect.stagent.cert.SignerCertPair;
+
+import com.google.inject.Inject;
 
 /**
  * Default implementation of the trust model.
@@ -68,6 +70,7 @@ public class TrustModel
      * Constructs a model with a provided chain validator.
      * @param validator The trust validator used to valid trust of a certificate with trust anchors.
      */
+    @Inject
     public TrustModel(TrustChainValidator validator)
     {
     	certChainValidator = validator;
@@ -106,7 +109,7 @@ public class TrustModel
         	recipient.setStatus(TrustEnforcementStatus.Failed);
         	
         	// Find a trusted signature
-        	MessageSignature trustedSignature = findTrustedSignature(message, recipient.getTrustAnchors());
+        	DefaultMessageSignatureImpl trustedSignature = findTrustedSignature(message, recipient.getTrustAnchors());
         	
         	// verify the signature
         	if (trustedSignature != null)
@@ -171,32 +174,32 @@ public class TrustModel
     	
     	NHINDAddress sender = message.getSender();
     	 
-    	Collection<MessageSignature> senderSignatures = new ArrayList<MessageSignature>();
+    	Collection<DefaultMessageSignatureImpl> senderSignatures = new ArrayList<DefaultMessageSignatureImpl>();
     	
     	// check for signatures at an individual level    	
-    	Collection<SingnerCertPair> individualSenders = CryptoExtensions.findSignersByName(message.getSignature(), sender.getAddress(), null);
+    	Collection<SignerCertPair> individualSenders = CryptoExtensions.findSignersByName(message.getSignature(), sender.getAddress(), null);
     	
     	// check for signatures at an org level
-    	Collection<SingnerCertPair> orgSenders = CryptoExtensions.findSignersByName(message.getSignature(), 
+    	Collection<SignerCertPair> orgSenders = CryptoExtensions.findSignersByName(message.getSignature(), 
     			sender.getHost(), Arrays.asList(new String[] {sender.getAddress()}));
     	
-    	for (SingnerCertPair pair : individualSenders)
-    		senderSignatures.add(new MessageSignature(pair.getSigner(), false, pair.getCertificate()));
+    	for (SignerCertPair pair : individualSenders)
+    		senderSignatures.add(new DefaultMessageSignatureImpl(pair.getSigner(), false, pair.getCertificate()));
     	
-    	for (SingnerCertPair pair : orgSenders)
-    		senderSignatures.add(new MessageSignature(pair.getSigner(), true, pair.getCertificate()));
+    	for (SignerCertPair pair : orgSenders)
+    		senderSignatures.add(new DefaultMessageSignatureImpl(pair.getSigner(), true, pair.getCertificate()));
     	
     	message.setSenderSignatures(senderSignatures);
     }
     
-    private MessageSignature findTrustedSignature(IncomingMessage message, Collection<X509Certificate> anchors)    
+    private DefaultMessageSignatureImpl findTrustedSignature(IncomingMessage message, Collection<X509Certificate> anchors)    
     {
     	NHINDAddress sender = message.getSender();
     	
-        Collection<MessageSignature> signatures = message.getSenderSignatures();
-        MessageSignature lastTrustedSignature = null;    	
+        Collection<DefaultMessageSignatureImpl> signatures = message.getSenderSignatures();
+        DefaultMessageSignatureImpl lastTrustedSignature = null;    	
         
-        for (MessageSignature signature : signatures)
+        for (DefaultMessageSignatureImpl signature : signatures)
         {
         	// The point of this loop is to find the most trusted signature
         	// to satisfy the most stringent enforcement policy.  Thumb print match policy is the best, so we will 
