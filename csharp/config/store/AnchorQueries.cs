@@ -28,7 +28,6 @@ namespace NHINDirect.Config.Store
         const string Sql_DeleteAnchorByOwner = "DELETE from Anchors where Owner = {0}";
         const string Sql_DeleteAnchorByThumbprint = "DELETE from Anchors where Owner = {0} and Thumbprint = {1}";
         const string Sql_DeleteAnchorByID = "DELETE from Anchors where CertificateID = {0}";
-        const string Sql_AnchorsByByID = "SELECT * from Anchors where CertificateID in ({0})";
         
         static readonly Func<ConfigDatabase, long, IQueryable<Anchor>> AnchorByID = CompiledQuery.Compile(
             (ConfigDatabase db, long id) =>
@@ -96,7 +95,9 @@ namespace NHINDirect.Config.Store
 
         public static IEnumerable<Anchor> Get(this Table<Anchor> table, long[] certIDs)
         {
-            return table.GetDB().ExecuteQuery<Anchor>(Sql_AnchorsByByID, certIDs.ToIn());
+            return from anchor in table.GetDB().Anchors
+                where certIDs.Contains(anchor.ID)
+                select anchor;
         }
         
         public static IQueryable<Anchor> Get(this Table<Anchor> table, long lastCertID, int maxResults)

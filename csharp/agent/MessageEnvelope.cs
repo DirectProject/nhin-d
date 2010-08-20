@@ -172,7 +172,7 @@ namespace NHINDirect.Agent
                 m_recipients = value;
             }
         }
-        .
+
         /// <summary>
         /// Gets if this message has recipients
         /// </summary>

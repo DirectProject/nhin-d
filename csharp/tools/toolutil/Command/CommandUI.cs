@@ -16,45 +16,58 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel;
 using System.Text;
-using NHINDirect.Config.Store;
 
-namespace NHINDirect.Config.Service
+namespace NHINDirect.Tools.Command
 {
-    [ServiceContract(Namespace = Service.Namespace)]
-    public interface IAddressManager
+    public static class CommandUI
     {
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void AddAddresses(Address[] addresses);
+        public static string GetInput()
+        {
+            Console.Write('>');
+            return Console.ReadLine();            
+        }
+        
+        public static void PrintDivider()
+        {
+            Console.WriteLine("=====================================");
+        }
+        
+        public static void PrintThickDivider()
+        {
+            Console.WriteLine("*************************************");
+        }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void UpdateAddresses(Address[] address);
+        public static void PrintSectionBreak()
+        {
+            Console.WriteLine("------");
+        }
+        
+        public static void PrintHeading(string heading)
+        {
+            PrintDivider();   
+            Console.WriteLine('|');
+            Console.Write("|\t");
+            Console.WriteLine(heading); 
+            Console.WriteLine("|");
+            PrintDivider();
+        }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Address[] GetAddresses(string[] emailAddresses);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Address[] GetAddressesByID(long[] addressIDs);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveAddresses(string[] emailAddresses);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveDomainAddresses(long domainID);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Address[] EnumerateDomainAddresses(long domainID, long lastAddressID, int maxResults);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Address[] EnumerateAddresses(long lastAddressID, int maxResults);
+        public static void PrintHilite(string message)
+        {
+            Console.Write("# ");
+            Console.WriteLine(message);
+        }
+        
+        public static void Print(Exception ex)
+        {
+            PrintHilite("ERROR");
+            Console.WriteLine(ex.Message);
+        }
+        
+        public static void Print(string name, object  value)
+        {
+            Console.WriteLine("{0} = {1}", name, value);
+        }
     }
 }

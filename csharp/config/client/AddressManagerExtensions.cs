@@ -70,6 +70,18 @@ namespace NHINDirect.Config.Client.DomainManager
             return addresses[0];
         }
         
+        public static Address GetAddress(this AddressManagerClient client, long addressID)
+        {
+            // use ids..
+            Address[] addresses = client.GetAddressesByID(new long[] { addressID });
+            if (addresses.IsNullOrEmpty())
+            {
+                return null;
+            }
+            
+            return addresses[0];
+        }
+        
         public static void RemoveAddress(this AddressManagerClient client, MailAddress emailAddress)
         {
             client.RemoveAddress(emailAddress.Address);

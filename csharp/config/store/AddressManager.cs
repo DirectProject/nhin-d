@@ -207,6 +207,24 @@ namespace NHINDirect.Config.Store
             return db.Addresses.Get(lastAddressID, maxResults);
         }
         
+        public Address[] Get(long[] addressIDs)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, addressIDs).ToArray();
+            }            
+        }
+
+        public IEnumerable<Address> Get(ConfigDatabase db, long[] addressIDs)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            return db.Addresses.Get(addressIDs);
+        }
+                
         public void Remove(string emailAddress)
         {
             using(ConfigDatabase db = this.Store.CreateContext())
