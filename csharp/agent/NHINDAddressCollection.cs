@@ -53,20 +53,6 @@ namespace NHINDirect.Agent
             }
         }
         
-        public X509Certificate2 GetFirstCertificate()
-        {
-            for (int i = 0, count = this.Count; i < count; ++i)
-            {
-                NHINDAddress address = this[i];
-                if (address.HasCertificates)
-                {
-                    return address.Certificates[0];
-                }                
-            }
-            
-            return null;
-        }
-        
         public X509Certificate2Collection GetCertificates()
         {
             X509Certificate2Collection certs = new X509Certificate2Collection();

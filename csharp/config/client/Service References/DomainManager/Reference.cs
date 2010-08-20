@@ -33,6 +33,12 @@ namespace NHINDirect.Config.Client.DomainManager {
             "toreFaultFault", Name="ConfigStoreFault")]
         NHINDirect.Config.Store.Address[] GetAddresses(string[] emailAddresses);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByID", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByIDRes" +
+            "ponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByIDCon" +
+            "figStoreFaultFault", Name="ConfigStoreFault")]
+        NHINDirect.Config.Store.Address[] GetAddressesByID(long[] addressIDs);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddressesResp" +
             "onse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddressesConf" +
@@ -97,6 +103,10 @@ namespace NHINDirect.Config.Client.DomainManager {
         
         public NHINDirect.Config.Store.Address[] GetAddresses(string[] emailAddresses) {
             return base.Channel.GetAddresses(emailAddresses);
+        }
+        
+        public NHINDirect.Config.Store.Address[] GetAddressesByID(long[] addressIDs) {
+            return base.Channel.GetAddressesByID(addressIDs);
         }
         
         public void RemoveAddresses(string[] emailAddresses) {

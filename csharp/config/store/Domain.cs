@@ -100,8 +100,8 @@ namespace NHINDirect.Config.Store
             set;
         }        
         
-        [Column(Name = "PostmasterAddressID", CanBeNull=true, UpdateCheck = UpdateCheck.WhenChanged)]
-        public long PostmasterID
+        [Column(Name = "PostmasterAddressID", CanBeNull = true, UpdateCheck = UpdateCheck.WhenChanged)]
+        public long? PostmasterID
         {
             get;
             set;

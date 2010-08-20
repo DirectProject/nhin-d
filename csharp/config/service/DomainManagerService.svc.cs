@@ -130,6 +130,18 @@ namespace NHINDirect.Config.Service
             }
         }
 
+        public Address[] GetAddressesByID(long[] addressIDs)
+        {
+            try
+            {
+                return Service.Current.Store.Addresses.Get(addressIDs);
+            }
+            catch (Exception ex)
+            {
+                throw Service.CreateFault(ex);
+            }
+        }
+
         public void RemoveAddresses(string[] emailAddresses)
         {
             try

@@ -67,7 +67,7 @@
       <xs:element minOccurs="0" name="CreateDate" type="xs:dateTime" />
       <xs:element minOccurs="0" name="ID" type="xs:long" />
       <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="PostmasterID" type="xs:long" />
+      <xs:element minOccurs="0" name="PostmasterID" nillable="true" type="xs:long" />
       <xs:element minOccurs="0" name="Status" type="tns:EntityStatus" />
       <xs:element minOccurs="0" name="UpdateDate" type="xs:dateTime" />
     </xs:sequence>
