@@ -32,6 +32,11 @@ namespace NHINDirect
         {
             return (certs == null || certs.Count == 0);
         }
+
+        public static bool IsNullOrEmpty(this X509ChainElementCollection chainElements)
+        {
+            return (chainElements == null || chainElements.Count == 0);
+        }
         
         public static bool IsNullOrEmpty(this Array array)
         {
