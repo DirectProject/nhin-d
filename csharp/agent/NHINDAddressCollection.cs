@@ -59,20 +59,6 @@ namespace NHINDirect.Agent
             }
         }
         
-        public X509Certificate2 GetFirstCertificate()
-        {
-            for (int i = 0, count = this.Count; i < count; ++i)
-            {
-                NHINDAddress address = this[i];
-                if (address.HasCertificates)
-                {
-                    return address.Certificates[0];
-                }                
-            }
-            
-            return null;
-        }
-        
         /// <summary>
         /// The <see cref="X509Certificate2Collection"/> of all certificates for all signatures.
         /// </summary>

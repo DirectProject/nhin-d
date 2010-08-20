@@ -28,7 +28,6 @@ namespace NHINDirect.Config.Store
         const string Sql_DeleteAddress = "DELETE from Addresses where EmailAddress = {0}";
         const string Sql_DeleteAddressByDomain = "DELETE from Addresses where DomainID = {0}";
         const string Sql_SetStatus = "UPDATE Addresses set Status = {0}, UpdateDate={1} where EmailAddress in ({2})";
-        const string Sql_MultipleAddressGet = "SELECT * from Addresses where EmailAddress in ({0})";
 
         static readonly Func<ConfigDatabase, string, IQueryable<Address>> Addresses = CompiledQuery.Compile(
             (ConfigDatabase db, string emailAddress) =>
@@ -65,7 +64,12 @@ namespace NHINDirect.Config.Store
 
         public static IEnumerable<Address> Get(this Table<Address> table, string[] emailAddresses)
         {
-            return table.GetDB().ExecuteQuery<Address>(Sql_MultipleAddressGet, emailAddresses.ToIn());
+            //
+            // We cannot precompile this (throws at runtime) because emailAddresses.Length can change at runtime
+            //
+            return from address in table.GetDB().Addresses
+                where emailAddresses.Contains(address.EmailAddress)
+                select address;
         }
 
         public static IQueryable<Address> Get(this Table<Address> table, long domainID, long lastAddressID, int maxResults)
@@ -76,6 +80,16 @@ namespace NHINDirect.Config.Store
         public static IQueryable<Address> Get(this Table<Address> table, long lastAddressID, int maxResults)
         {
             return AllAddresses(table.GetDB(), lastAddressID, maxResults);
+        }
+
+        public static IQueryable<Address> Get(this Table<Address> table, long[] ids)
+        {
+            //
+            // We cannot precompile this (throws at runtime) because ids.Length can change at runtime
+            //
+            return from address in table.GetDB().Addresses
+                 where ids.Contains(address.ID)
+                 select address;
         }
 
         public static void ExecDelete(this Table<Address> table, string emailAddress)

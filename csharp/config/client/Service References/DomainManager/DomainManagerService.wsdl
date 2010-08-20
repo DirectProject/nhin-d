@@ -40,6 +40,18 @@
         <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="GetAddressesByID">
+      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
     <wsdl:operation name="RemoveAddresses">
       <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddresses" style="document" />
       <wsdl:input>

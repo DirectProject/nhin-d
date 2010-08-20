@@ -16,45 +16,58 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel;
 using System.Text;
+using System.ServiceModel;
+using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
 
-namespace NHINDirect.Config.Service
+namespace NHINDirect.Config.Command
 {
-    [ServiceContract(Namespace = Service.Namespace)]
-    public interface IAddressManager
+    internal class ConfigConsole
     {
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void AddAddresses(Address[] addresses);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void UpdateAddresses(Address[] address);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Address[] GetAddresses(string[] emailAddresses);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Address[] GetAddressesByID(long[] addressIDs);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveAddresses(string[] emailAddresses);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveDomainAddresses(long domainID);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Address[] EnumerateDomainAddresses(long domainID, long lastAddressID, int maxResults);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Address[] EnumerateAddresses(long lastAddressID, int maxResults);
+        internal static ConfigConsole Current = new ConfigConsole();
+        
+        Commands m_commands;
+        
+        internal ConfigConsole()
+        {
+            m_commands = new Commands("ConfigConsole");
+            m_commands.Error += PrintError;
+            
+            m_commands.Register(new DomainCommands());
+            m_commands.Register(new AddressCommands());
+            m_commands.Register(new CertificateCommands());
+            m_commands.Register(new AnchorCommands());
+        }
+        
+        internal void Run(string[] args)
+        {
+            if (args != null && args.Length > 0)
+            {
+                m_commands.Run(args);
+            }
+            else
+            {
+                m_commands.RunInteractive();
+            }
+        }
+        
+        static void Main(string[] args)
+        {
+            ConfigConsole.Current.Run(args);
+        }
+        
+        void PrintError(Exception ex)
+        {
+            FaultException<ConfigStoreFault> fault = ex as FaultException<ConfigStoreFault>;
+            if (fault != null)
+            {
+                Console.WriteLine(fault.ToString());
+            }
+            else
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }        
     }
 }
