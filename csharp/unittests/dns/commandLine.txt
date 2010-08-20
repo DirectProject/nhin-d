@@ -1,0 +1,1 @@
+/run:DnsResolverTests.BasicResolverTests ..\..\..\..\bin\Debug\dnsResolverUnitTests.dll
