@@ -143,27 +143,17 @@ namespace NHINDirect.Agent
                 
         bool ChainElementHasProblems(X509ChainElement chainElement)
         {
-            //
             // If the builder finds problems with the cert, it will provide a list of "status" flags for the cert
-            // If the list is empty or the list is null, then there were NO problems with the cert
-            //
             X509ChainStatus[] chainElementStatus = chainElement.ChainElementStatus;
-            if (chainElementStatus == null)
+
+            // If the list is empty or the list is null, then there were NO problems with the cert
+            if (chainElementStatus.IsNullOrEmpty())
             {
                 return false;
             }
 
-            for (int i = 0; i < chainElementStatus.Length; ++i)
-            {
-                X509ChainStatus status = chainElementStatus[i];
-
-                if ((status.Status & m_problemFlags) != 0)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            // Return true if there are any status flags we care about
+            return chainElementStatus.Any(s => (s.Status & m_problemFlags) != 0);
         }
     }
 }
