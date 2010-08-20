@@ -16,45 +16,37 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel;
 using System.Text;
-using NHINDirect.Config.Store;
 
-namespace NHINDirect.Config.Service
+namespace NHINDirect.Tools.Command
 {
-    [ServiceContract(Namespace = Service.Namespace)]
-    public interface IAddressManager
+    internal class CommandDef
     {
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void AddAddresses(Address[] addresses);
+        public string Name { get; set; }
+        public Action<string[]> Eval { get; set; }
+        public Action Usage { get; set; }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void UpdateAddresses(Address[] address);
+        internal bool HasUsage
+        {
+            get
+            {
+                return (Usage != null);
+            }
+        }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Address[] GetAddresses(string[] emailAddresses);
+        internal void Invoke()
+        {
+        }
+        
+        internal void ShowUsage()
+        {
+            CommandUI.PrintHilite(this.Name);
+            if (this.Usage != null)
+            {
+                this.Usage();
+            }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Address[] GetAddressesByID(long[] addressIDs);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveAddresses(string[] emailAddresses);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveDomainAddresses(long domainID);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Address[] EnumerateDomainAddresses(long domainID, long lastAddressID, int maxResults);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Address[] EnumerateAddresses(long lastAddressID, int maxResults);
+            Console.WriteLine();
+        }
     }
 }
