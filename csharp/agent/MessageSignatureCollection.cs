@@ -21,6 +21,9 @@ using NHINDirect.Collections;
 
 namespace NHINDirect.Agent
 {
+    /// <summary>
+    /// Represents a collection of message signatures.
+    /// </summary>
     public class MessageSignatureCollection : ObjectCollection<MessageSignature>
     {
         public MessageSignatureCollection()

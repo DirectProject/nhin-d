@@ -24,6 +24,9 @@ using NHINDirect.Cryptography;
 
 namespace NHINDirect.Agent
 {
+    /// <summary>
+    /// Represents a single S/MIME signature on a message.
+    /// </summary>
     public class MessageSignature
     {
         bool? m_signatureValid;
@@ -31,6 +34,12 @@ namespace NHINDirect.Agent
         bool m_usesOrgCertificate;
         bool? m_thumbprintVerified;
         
+        /// <summary>
+        /// Create a signature from <see cref="SignerInfo"/>
+        /// </summary>
+        /// <param name="signer">The <see cref="SignerInfo"/> for this signature</param>
+        /// <param name="usesOrgCertificate"><c>true</c> if the signature is at an organizational,
+        /// not an individual level, <c>false</c> if an individual signature.</param>
         public MessageSignature(SignerInfo signer, bool usesOrgCertificate)
         {
             if (signer == null)
@@ -44,6 +53,9 @@ namespace NHINDirect.Agent
             m_thumbprintVerified = null;
         }    
         
+        /// <summary>
+        /// The <see cref="SignerInfo"/> for this signature.
+        /// </summary>
         public SignerInfo SignerInfo
         {
             get
@@ -52,6 +64,9 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// The <see cref="X509Certificate2"/> for this signature.
+        /// </summary>
         public X509Certificate2 Certificate
         {
             get
@@ -60,6 +75,12 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Has the certificate for this signature been verified by thumbprint against the
+        /// sender address's certificates?
+        /// </summary>
+        /// <value><c>true</c> if the signature is verified, <c>false</c> if not,
+        /// <c>null</c> if verification has not been performed.</value>
         public bool? IsThumbprintVerified
         {
             get
@@ -68,6 +89,9 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Is this signature valid (signed by the certificate it purports to be signed by)?
+        /// </summary>
         public bool IsSignatureValid
         {
             get
@@ -76,6 +100,11 @@ namespace NHINDirect.Agent
             }
         }    
         
+        /// <summary>
+        /// Has this signature been signed by an organizational level signature?
+        /// </summary>
+        /// <value><c>true</c> if this has been signed by an organizational level certificate,
+        /// <c>false</c> if by an individual level certificate.</value>
         public bool UsesOrgCertificate
         {
             get
@@ -84,6 +113,10 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Check the validity of this signature.
+        /// </summary>
+        /// <returns><c>true</c> if valid, <c>false</c> if invalid.</returns>
         public bool CheckSignature()
         {
             if (m_signatureValid == null)
