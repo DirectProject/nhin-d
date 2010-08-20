@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<!--
+  SAMPLE CONFIG FILE
+  Compliant with schema parsed by: NHINDirect.ScriptAgent.SmtpAgentSettings 
+  Customize as per your needs
+-->
+<SmtpAgentConfig>
+  <Domain>nhind.hsgincubator.com</Domain>
+  <Postmaster>postmaster@nhind.hsgincubator.com</Postmaster>
+  <Log>
+    <DirectoryPath>C:\inetpub\logs</DirectoryPath>
+    <NamePrefix>nhindGateway</NamePrefix>
+    <FileChangeFrequency>24</FileChangeFrequency>
+  </Log>
+  <PrivateCerts>
+    <MachineResolver>
+      <Name>NHINDPrivate</Name>
+    </MachineResolver>
+  </PrivateCerts>
+  <PublicCerts>
+    <!--
+    <DnsResolver>
+      <ServerIP>127.0.0.1</ServerIP>
+      <Timeout>5000</Timeout>
+    </DnsResolver>
+    -->
+    <MachineResolver>
+      <Name>NHINDExternal</Name>
+    </MachineResolver>
+  </PublicCerts>
+  <Anchors>
+    <MachineResolver>
+      <Incoming>
+        <Name>NHINDAnchors</Name>
+      </Incoming>
+      <Outgoing>
+        <Name>NHINDAnchors</Name>
+      </Outgoing>
+    </MachineResolver>
+  </Anchors>
+  <RawMessage>
+    <CopyFolder>C:\inetpub\mailroot\nhind\raw</CopyFolder>
+  </RawMessage>
+  <BadMessage>
+    <CopyFolder>C:\inetpub\mailroot\nhind\badMail</CopyFolder>
+  </BadMessage>
+  <ProcessIncoming>
+    <CopyFolder>C:\inetpub\mailroot\nhind\incoming</CopyFolder>
+    <EnableRelay>false</EnableRelay>
+  </ProcessIncoming>
+  <ProcessOutgoing>
+    <CopyFolder>C:\inetpub\mailroot\nhind\outgoing</CopyFolder>
+    <EnableRelay>false</EnableRelay>
+  </ProcessOutgoing>
+</SmtpAgentConfig>
