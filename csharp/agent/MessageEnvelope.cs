@@ -22,6 +22,9 @@ using NHINDirect.Mail;
 
 namespace NHINDirect.Agent
 {
+    /// <summary>
+    /// Represents a message with addresses and content body.
+    /// </summary>
     public class MessageEnvelope
     {
     	readonly NHINDAgent m_agent;
@@ -33,6 +36,10 @@ namespace NHINDirect.Agent
         NHINDAddressCollection m_recipients;
         NHINDAddressCollection m_rejectedRecipients;
 
+        /// <summary>
+        /// Creates an instance from  a <see cref="Message"/>
+        /// </summary>
+        /// <param name="message">The <see cref="Message"/> instance to use as the underlying message for this envelope.</param>
     	public MessageEnvelope(Message message)
         {
             Message = message;
@@ -46,19 +53,38 @@ namespace NHINDirect.Agent
             Sender = new NHINDAddress(from.Value);
         }
         
+        /// <summary>
+        /// Creates an instance from an RFC 5322 message string. 
+        /// </summary>
+        /// <param name="messageText">The RFC 5322 message string to intialize this envelope from. Stored as <c>RawMessage</c></param>
         public MessageEnvelope(string messageText)
             : this(MimeSerializer.Default.Deserialize<Message>(messageText))
         {
             RawMessage = messageText;
         }
-                
+        
+
+        /// <summary>
+        /// Creates an instance from a <see cref="Message"/> and explicitly assigned sender and receivers, which take precendence over what may be
+        /// in the message headers.
+        /// </summary>
+        /// <param name="message">The <see cref="Message"/> this envelopes</param>
+        /// <param name="recipients">The <see cref="NHINDAddressCollection"/> of reciepients; takes precedence over the <c>To:</c> header</param>
+        /// <param name="sender">The <see cref="NHINDAddress"/> of the sender; takes precendence over the <c>From:</c> header.</param>
         public MessageEnvelope(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
         {
             Message = message;
             Recipients = recipients;
             Sender = sender;
         }
-        
+
+        /// <summary>
+        /// Creates an instance from an RFC 5322 message string  and explicitly assigned sender and receivers, which take precendence over what may be
+        /// in the message headers. 
+        /// </summary>
+        /// <param name="messageText">The RFC 5322 message string to intialize this envelope from. Stored as <c>RawMessage</c></param>
+        /// <param name="recipients">The <see cref="NHINDAddressCollection"/> of reciepients; takes precedence over the <c>To:</c> header</param>
+        /// <param name="sender">The <see cref="NHINDAddress"/> of the sender; takes precendence over the <c>From:</c> header.</param>
         public MessageEnvelope(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
             : this(MimeSerializer.Default.Deserialize<Message>(messageText), recipients, sender)
         {
@@ -84,6 +110,9 @@ namespace NHINDirect.Agent
             m_sender = envelope.m_sender;
         }
         
+        /// <summary>
+        /// The <see cref="Message"/> instance representing the underlying message
+        /// </summary>
         public Message Message
         {
             get
@@ -102,6 +131,9 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// The sender (<c>From:</c> header) address.
+        /// </summary>
         public NHINDAddress Sender
         {
             get
@@ -118,6 +150,9 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// The recipients of the message. Will generally reflect the <c>To:</c> header unless there are any <c>RejectedRecipients</c>
+        /// </summary>
         public virtual NHINDAddressCollection Recipients
         {
             get
@@ -137,7 +172,10 @@ namespace NHINDirect.Agent
                 m_recipients = value;
             }
         }
-
+        .
+        /// <summary>
+        /// Gets if this message has recipients
+        /// </summary>
         public bool HasRecipients
         {
             get
@@ -146,6 +184,9 @@ namespace NHINDirect.Agent
             }
         }
 
+        /// <summary>
+        /// A collection of recipients that have been rejected due to trust issues.
+        /// </summary>
         public NHINDAddressCollection RejectedRecipients
         {
             get
@@ -159,6 +200,9 @@ namespace NHINDirect.Agent
             }
         }
 
+        /// <summary>
+        /// Does this message have rejected recipients?
+        /// </summary>
         public bool HasRejectedRecipients
         {
             get
@@ -167,7 +211,7 @@ namespace NHINDirect.Agent
             }
         }
 
-    	public NHINDAddressCollection DomainRecipients { get; internal set; }
+        public NHINDAddressCollection DomainRecipients { get; internal set; }
 
     	public bool HasDomainRecipients
         {
