@@ -25,26 +25,49 @@ using NHINDirect.Mail;
 
 namespace NHINDirect.Agent
 {
+    /// <summary>
+    /// Represents an incoming message, with sender, receivers, and message to be decrypted and verified.
+    /// </summary>
     public class IncomingMessage : MessageEnvelope
     {
         SignedCms m_signatures;                             // All signatures + info about the signed blob etc
         MessageSignatureCollection m_senderSignatures;      // The sender's signatures, which are a subset of m_signatures
         
+        /// <summary>
+        /// Creates an instance from an RFC 5322 format message string.
+        /// </summary>
+        /// <param name="messageText">RFC 5322 message string, signed and encrypted.</param>
         public IncomingMessage(string messageText)
             : base(messageText)
         {
         }
-        
+
+        /// <summary>
+        /// Creates an instance from a <see cref="Message"/> instance.
+        /// </summary>
+        /// <param name="message"><see cref="Message"/> instance, signed and encrypted.</param>
         public IncomingMessage(Message message)
             : base(message)
         {
         }
 
+        /// <summary>
+        /// Creates an instance from a <see cref="Message"/> instance, specifying recipients and sender.
+        /// </summary>
+        /// <param name="message"><see cref="Message"/> instance, signed and encrypted.</param>
+        /// <param name="recipients">An <see cref="NHINDAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
+        /// <param name="sender">Sender <see cref="NHINDAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
         public IncomingMessage(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
             : base(message, recipients, sender)
         {
         }
 
+        /// <summary>
+        /// Creates an instance from an RFC 5322 format message string., specifying recipients and sender.
+        /// </summary>
+        /// <param name="messageText">RFC 5322 message string, signed and encrypted.</param>
+        /// <param name="recipients">An <see cref="NHINDAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
+        /// <param name="sender">Sender <see cref="NHINDAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
         public IncomingMessage(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
             : base(messageText, recipients, sender)
         {
@@ -54,7 +77,13 @@ namespace NHINDirect.Agent
             : base(envelope)
         {
         }
-               
+        
+        /// <summary>
+        /// Gets the signatures attached to this message in <see cref="SignedCms"/> format for manipulation with
+        /// the raw .Net API.
+        /// </summary>
+        /// <remarks>The <c>SenderSignatures</c> property is generally easier to work with.</remarks>
+        /// <value>A <see cref="SignedCms"/> instance representing signatures for this message.</value>
         public SignedCms Signatures
         {
             get
@@ -67,6 +96,10 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Gets if this message has signatures
+        /// </summary>
+        /// <value><c>true</c> if this message has signatures, <c>false</c> otherwise.</value>
         public bool HasSignatures
         {
             get
@@ -75,6 +108,10 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Gets the <see cref="MessageSignatureCollection"/> for this message
+        /// </summary>
+        /// <value>A <see cref="MessageSignatureCollection"/> of <see cref="MessageSignature"/> instances for each sender signature or <c>null</c> if there are no signatures.</value>
         public MessageSignatureCollection SenderSignatures
         {
             get
@@ -87,6 +124,10 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Gets if this message has sender signatures.
+        /// </summary>
+        /// <value><c>true</c> if this message has sender signatures, <c>false</c> otherwise.</value>
         public bool HasSenderSignatures
         {
             get
