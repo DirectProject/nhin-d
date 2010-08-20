@@ -17,8 +17,14 @@ using NHINDirect.Mail;
 
 namespace NHINDirect.Agent
 {
+    /// <summary>
+    /// Represents standard elements of a Direct RFC 5322 message
+    /// </summary>
     public class NHINDStandard : MailStandard
     {
+        /// <summary>
+        /// The required mail headers for a Direct RFC 5322 message
+        /// </summary>
         public readonly static string[] MailHeadersUsed = new[]
         {
             VersionHeader,
