@@ -22,6 +22,9 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Agent
 {
+    /// <summary>
+    /// Validates trust chains for certificates.
+    /// </summary>
     public class TrustChainValidator
     {
         //
@@ -38,6 +41,9 @@ namespace NHINDirect.Agent
         X509ChainPolicy m_policy;
         X509ChainStatusFlags m_problemFlags;
         
+        /// <summary>
+        /// Creates an instance with default chain policy, verification flags and problem flags.
+        /// </summary>
         public TrustChainValidator()
         {
             m_policy = new X509ChainPolicy();
@@ -45,6 +51,9 @@ namespace NHINDirect.Agent
             m_problemFlags = TrustChainValidator.DefaultProblemFlags;
         }
         
+        /// <summary>
+        /// Gets the <see cref="X509ChainPolicy"/> for this validator.
+        /// </summary>
         public X509ChainPolicy ValidationPolicy
         {
             get
@@ -53,6 +62,9 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Gets and sets the <see cref="X509ChainStatusFlags"/> for this validator
+        /// </summary>
         public X509ChainStatusFlags ProblemFlags
         {
             get
@@ -65,6 +77,14 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Validates a certificate by walking the certificate chain for all trust anchor chain, validating the leaf certificate against the chain.
+        /// </summary>
+        /// <remarks>Currently, all intermediate certificates must be stored in the system.</remarks>
+        /// <param name="certificate">The leaf <see cref="X509Certificate2"/> to validate</param>
+        /// <param name="anchors">The collection of certificates representing anchors or roots of trust.</param>
+        /// <returns><c>true</c> if at least one anchor has a valid chain of certs that verify trust in the leaf certificate,
+        /// <c>false</c> if no anchors validate trust in the leaf cert.</returns>
         public bool IsTrustedCertificate(X509Certificate2 certificate, X509Certificate2Collection anchors)
         {
             if (certificate == null)

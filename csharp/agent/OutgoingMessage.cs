@@ -25,18 +25,38 @@ using NHINDirect.Mime;
 
 namespace NHINDirect.Agent
 {
+    /// <summary>
+    /// Represents a message to be prepped for sending (generally an unencrypted message
+    /// to be signed and encrypted).
+    /// </summary>
     public class OutgoingMessage : MessageEnvelope
     {        
+        /// <summary>
+        /// Creates an instance from a <see cref="Message"/>
+        /// </summary>
+        /// <param name="message"></param>
         public OutgoingMessage(Message message)
             : base(message)
         {
         }
-        
+
+        /// <summary>
+        /// Creates an instance from a <see cref="Message"/> instance, specifying recipients and sender.
+        /// </summary>
+        /// <param name="message"><see cref="Message"/> instance representing the message to be prepped for send.</param>
+        /// <param name="recipients">An <see cref="NHINDAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
+        /// <param name="sender">Sender <see cref="NHINDAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
         public OutgoingMessage(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
             : base(message, recipients, sender)
         {
         }
 
+        /// <summary>
+        /// Creates an instance from an RFC 5322 string, specifying recipients and sender.
+        /// </summary>
+        /// <param name="messageText">RFC 5322 message string to be prepped for send.</param>
+        /// <param name="recipients">An <see cref="NHINDAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
+        /// <param name="sender">Sender <see cref="NHINDAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
         public OutgoingMessage(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
             : base(messageText, recipients, sender)
         {
