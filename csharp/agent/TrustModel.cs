@@ -103,20 +103,17 @@ namespace NHINDirect.Agent
             //
             NHINDAddress sender = message.Sender;
             NHINDAddressCollection recipients = message.DomainRecipients;
-            for (int i = 0, count = recipients.Count; i < count; ++i)
+            foreach (NHINDAddress recipient in recipients)
             {
-                NHINDAddress recipient = recipients[i];
                 recipient.Status = TrustEnforcementStatus.Failed;
                 //
                 // First, find a signature that this recipient trusts
                 //
                 MessageSignature trustedSignature = this.FindTrustedSignature(message, recipient.TrustAnchors);
-                //
-                // Then, verify that signer's signature
-                //
                 if (trustedSignature != null)
                 {
                     recipient.Status = TrustEnforcementStatus.Success;
+                    //TODO: Then, verify that signer's signature
                 } 
             }            
         }
@@ -134,15 +131,12 @@ namespace NHINDirect.Agent
             }
             
             NHINDAddress sender = message.Sender;
-            NHINDAddressCollection recipients = message.Recipients;
-            
-            for (int i = 0, count = recipients.Count; i < count; ++i)
+
+            foreach (NHINDAddress recipient in message.Recipients)
             {
-                NHINDAddress recipient = recipients[i];
                 recipient.Status = TrustEnforcementStatus.Failed;    
-                //
-                // The recipient should have at least one certificate that the sender trusts. Otherwise we don't trust this recipient
-                //
+
+                // The recipient is trusted if we at least one certificate that the sender trusts.
                 recipient.Certificates = this.FindTrustedCerts(recipient.Certificates, sender.TrustAnchors);
                 if (recipient.HasCertificates)
                 {
@@ -158,22 +152,11 @@ namespace NHINDirect.Agent
                 return null;
             }
             
-            X509Certificate2Collection trustedCerts = null;
-            for (int i = 0, count = certs.Count; i < count; ++i)
+            X509Certificate2Collection trustedCerts = new X509Certificate2Collection();
+            foreach (X509Certificate2 cert in certs)
             {
-                X509Certificate2 cert = certs[i];
                 if (m_certChainValidator.IsTrustedCertificate(cert, anchors))
                 {
-                    if (count == 1)
-                    {
-                        trustedCerts = certs;
-                        break;
-                    }
-                    
-                    if (trustedCerts == null)
-                    {
-                        trustedCerts = new X509Certificate2Collection();
-                    }
                     trustedCerts.Add(cert);
                 }
             }
@@ -189,10 +172,9 @@ namespace NHINDirect.Agent
             SignerInfoCollection allSigners = message.Signatures.SignerInfos;
             MessageSignatureCollection senderSignatures = null;
             bool match;
-            
-            for (int i = 0, count = allSigners.Count; i < count; ++i)
+
+            foreach (SignerInfo signer in allSigners)
             {
-                SignerInfo signer = allSigners[i];
                 bool isOrgCertificate = false;
                 
                 match = signer.Certificate.MatchEmailNameOrName(sender.Address);
@@ -204,10 +186,7 @@ namespace NHINDirect.Agent
                 
                 if (match)
                 {
-                    if (senderSignatures == null)
-                    {
-                        senderSignatures = new MessageSignatureCollection();
-                    }                    
+                    senderSignatures = senderSignatures ?? new MessageSignatureCollection();
                     senderSignatures.Add(new MessageSignature(signer, isOrgCertificate));
                 }
             }
@@ -221,9 +200,8 @@ namespace NHINDirect.Agent
             MessageSignatureCollection signatures = message.SenderSignatures;
             MessageSignature lastTrustedSignature = null;
             
-            for (int i = 0, count = signatures.Count; i < count; ++i)
+            foreach (MessageSignature signature in signatures)
             {
-                MessageSignature signature = signatures[i];
                 if (m_certChainValidator.IsTrustedCertificate(signature.Certificate, anchors) && signature.CheckSignature())
                 {
                     if (!sender.HasCertificates)
