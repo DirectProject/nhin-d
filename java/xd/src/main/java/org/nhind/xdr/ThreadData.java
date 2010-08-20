@@ -5,6 +5,7 @@
 package org.nhind.xdr;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -21,7 +22,7 @@ public class ThreadData {
     public final String REMOTEHOST = "remotehost";
     public final String PID = "pid";
     public final String FROM = "from";
-    private static HashMap<Long, HashMap> threadMap = new HashMap();
+    private static Map<Long, Map<String, String>> threadMap = new HashMap<Long, Map<String, String>>();
     private Long threadId = null;
 
     public ThreadData(Long id) {
@@ -101,11 +102,11 @@ public class ThreadData {
     }
 
     private void setValue(String value, String type) {
-        HashMap data = null;
+        Map<String, String> data = null;
         if (threadMap.containsKey(threadId)) {
             data = threadMap.get(threadId);
         } else {
-            data = new HashMap();
+            data = new HashMap<String, String>();
             threadMap.put(threadId, data);
         }
         data.put(type, value);
@@ -114,7 +115,7 @@ public class ThreadData {
     private String getValue(String type) {
         String ret = null;
 
-        HashMap data = threadMap.get(threadId);
+        Map<String, String> data = threadMap.get(threadId);
         if (data != null) {
             ret = (String) data.get(type);
         }

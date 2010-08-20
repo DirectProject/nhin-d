@@ -171,7 +171,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                 SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
                 dumpSOAPMessage(msg);
 
-                ServletRequest sr = (ServletRequest) context.get(context.SERVLET_REQUEST);
+                ServletRequest sr = (ServletRequest) context.get(MessageContext.SERVLET_REQUEST);
                 if (sr != null) {
                     remoteHost = sr.getRemoteHost();
                     thisHost = sr.getServerName();
@@ -238,7 +238,8 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         return true;
     }
 
-    private void loadProperties(String fileName, Properties properties) throws IOException {
+    @SuppressWarnings("unused")
+	private void loadProperties(String fileName, Properties properties) throws IOException {
 
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("META-INF/" + fileName);
         properties.load(inputStream);
@@ -254,7 +255,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     @Override
     public Set<QName> getHeaders() {
 
-        HashSet set = new HashSet();
+        Set<QName> set = new HashSet<QName>();
         QName qname = new QName("http://www.w3.org/2005/08/addressing", "Action");
         set.add(qname);
         qname = new QName("http://www.w3.org/2005/08/addressing", "To");
@@ -369,7 +370,8 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
 
     
 
-    private SOAPFaultException createSOAPFaultException(String faultString,
+    @SuppressWarnings("unused")
+	private SOAPFaultException createSOAPFaultException(String faultString,
             Boolean clientFault) {
         try {
             String faultCode = clientFault ? "Client" : "Server";

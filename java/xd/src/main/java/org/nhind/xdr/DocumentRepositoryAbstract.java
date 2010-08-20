@@ -247,21 +247,21 @@ public class DocumentRepositoryAbstract {
     private void mailDocument(String email, String from, String messageId, byte[] message, String suffix, byte[] meta) throws Exception {
         SMTPMailClient smc = new SMTPMailClient();
         Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "SENDING EMAIL TO " + email + " with message id " + messageId);
-        ArrayList recipients = new ArrayList();
+        List<String> recipients = new ArrayList<String>();
         recipients.add(email);
 
         smc.postMail(recipients, "data", messageId, "data attached", message, from, suffix, meta);
     }
 
     private byte[] getDocs(ProvideAndRegisterDocumentSetRequestType prdst) {
-        List documents = prdst.getDocument();
+        List<Document> documents = prdst.getDocument();
 
-        Iterator itd = documents.iterator();
+        Iterator<Document> itd = documents.iterator();
 
         byte[] ret = null;
         try {
             while (itd.hasNext()) {
-                ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document doc = (ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document) itd.next();
+                ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document doc = itd.next();
                 DataHandler dh = doc.getValue();
                 ByteArrayOutputStream buffOS = new ByteArrayOutputStream();
                 dh.writeTo(buffOS);

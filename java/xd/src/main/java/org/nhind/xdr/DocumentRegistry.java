@@ -92,7 +92,7 @@ public class DocumentRegistry {
     }
 
     public String getAuthorEmail() {
-        ArrayList<String> fields = split(author, "^");
+        List<String> fields = split(author, "^");
         String auserId = fields.get(0);
         String last = fields.get(1);
         String first = fields.get(2);
@@ -102,7 +102,7 @@ public class DocumentRegistry {
         String suffix = fields.get(6);
         String what2 = fields.get(7);
         String org = fields.get(8);
-        ArrayList orgs = split(org, "&");
+        List<String> orgs = split(org, "&");
         String aorgId = (String) orgs.get(1);
         aorgId = orgId.replace("ISO", "");
         return auserId;
@@ -110,11 +110,11 @@ public class DocumentRegistry {
 
     protected List getForwards(RegistryPackageType rpt) throws Exception {
         List forwards = new ArrayList();
-        List slots = rpt.getSlot();
-        Iterator islot = slots.iterator();
+        List<SlotType1> slots = rpt.getSlot();
+        Iterator<SlotType1> islot = slots.iterator();
 
         while (islot.hasNext()) {
-            SlotType1 slot = (SlotType1) islot.next();
+            SlotType1 slot = islot.next();
             String slotName = slot.getName();
             Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, slotName);
             Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, slot.getSlotType());
@@ -139,7 +139,7 @@ public class DocumentRegistry {
                     } else {
                         user = org;
                     }
-                    ArrayList<String> fields = split(user, "^");
+                    List<String> fields = split(user, "^");
 
                     String userId = fields.get(0);
                     String last = fields.get(1);
@@ -150,7 +150,7 @@ public class DocumentRegistry {
                     String suffix = fields.get(6);
                     String what2 = fields.get(7);
                     org = fields.get(8);
-                    ArrayList orgs = split(org, "&");
+                    List<String> orgs = split(org, "&");
                     orgId = (String) orgs.get(1);
                  
                     orgId = orgId.replace("ISO", "");
@@ -270,10 +270,10 @@ public class DocumentRegistry {
                 }
 
             } else if (slot.getName().equals("sourcePatientInfo")) {
-                List pids = slot.getValueList().getValue();
-                Iterator ipid = pids.iterator();
+                List<String> pids = slot.getValueList().getValue();
+                Iterator<String> ipid = pids.iterator();
                 while (ipid.hasNext()) {
-                    String pid = (String) ipid.next();
+                    String pid = ipid.next();
                     Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, pid);
                     if (pid.indexOf("PID-5") == 0) {
                         String name = returnField(pid, "|", 2);
@@ -321,7 +321,8 @@ public class DocumentRegistry {
     }
 
     // right now this is not used, just getForwards
-    private void parseSubmissionSet(RegistryPackageType set) throws Exception {
+    @SuppressWarnings("unused")
+	private void parseSubmissionSet(RegistryPackageType set) throws Exception {
 
         try {
 
@@ -418,10 +419,10 @@ public class DocumentRegistry {
 
   
 
-   private ArrayList split(String input, String delimiter) {
+   private List<String> split(String input, String delimiter) {
         boolean wasDelimiter = true;
         String token = null;
-        ArrayList v = new ArrayList();
+        List<String> v = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(input, delimiter, true);
         while (st.hasMoreTokens()) {
             token = st.nextToken();
