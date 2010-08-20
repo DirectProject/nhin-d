@@ -87,7 +87,7 @@ namespace NHINDirect.Agent
         {
             get
             {
-                return (this.m_certificates != null && this.m_certificates.Count > 0);
+                return !this.m_certificates.IsNullOrEmpty();
             }
         }
         
