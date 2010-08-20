@@ -3,12 +3,19 @@ package org.nhindirect.stagent;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Map.Entry;
 
+import javax.mail.Header;
 import javax.mail.internet.MimeMessage;
 
 import org.nhindirect.stagent.DefaultNHINDAgent;
+import org.nhindirect.stagent.mail.MailStandard;
+import org.nhindirect.stagent.mail.Message;
+import org.nhindirect.stagent.mail.MimeStandard;
 import org.nhindirect.stagent.utils.TestUtils;
 
 import junit.framework.TestCase;
@@ -279,6 +286,83 @@ public class NHINDAgentTest extends TestCase
 		
 		String processedPart = new String(oStream.toByteArray(), "ASCII");
 		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void testOutgoingMessageIsWrappedCorrectly() throws Exception
+	{
+
+		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"messaging.cernerdemos.com"})); 
+		String testMessage = TestUtils.readResource("raw2.txt");
+		
+		Message wrappedMessage = agent.wrapMessage(testMessage);
+		
+		assertNotNull(wrappedMessage);
+		assertTrue(wrappedMessage.toString().length() > 0);
+		assertEquals(MailStandard.MediaType_WrappedMessage, wrappedMessage.getContentType());
+		List<String> headers = new ArrayList<String>();
+		Enumeration<Header> allHeaders = wrappedMessage.getAllHeaders();
+		while(allHeaders.hasMoreElements()) {
+			Header header = (Header) allHeaders.nextElement();
+			headers.add(header.getName());
+		}
+		
+		// assert that the headers (according to the NHIND spec) are copied correctly from the 
+		// original message into the wrapped message
+		assertTrue(headers.contains(MimeStandard.VersionHeader));
+		assertTrue(headers.contains("From"));
+		assertTrue(headers.contains("To"));
+		assertTrue(headers.contains("Message-ID"));
+		
+		// The wrapped message should not contain Subject header
+		assertFalse(headers.contains("Subject"));
+	}
+	
+	public void testMessageWithUntrustedRecipient_OutboundMessageHasRejectedRecips() throws Exception
+	{
+
+		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"messaging.cernerdemos.com"})); 
+		String testMessage = TestUtils.readResource("MessageWithAUntrustedRecipient.txt");
+		
+		OutgoingMessage SMIMEenvMessage = agent.processOutgoing(testMessage);
+		
+		assertNotNull(SMIMEenvMessage);
+		assertTrue(SMIMEenvMessage.getMessage().toString().length() > 0);
+		assertTrue(SMIMEenvMessage.hasRejectedRecipients());
+ 
+		assertNull(SMIMEenvMessage.getMessage().getCCHeader());
+		
+		// verify the message
+		// need a new agent because this is a different domain
+		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"}));
+		IncomingMessage strippedAndVerifiesMessage = agent.processIncoming(SMIMEenvMessage);
+		
+		
+		assertNotNull(strippedAndVerifiesMessage);
+		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);
+		
+		MimeMessage processedMsg = new MimeMessage(null, 
+				new ByteArrayInputStream(strippedAndVerifiesMessage.getMessage().toString().getBytes("ASCII")));
+		
+		assertNotNull(processedMsg);
+	}
+	
+	public void testMessageWithAllUntrustedRecipients_AgentRejectsTheMessageCompletely() throws Exception
+	{
+
+		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"messaging.cernerdemos.com"})); 
+		String testMessage = TestUtils.readResource("MessageWithAllUntrustedRecipients.txt");
+		
+		OutgoingMessage SMIMEenvMessage=null;
+		try {
+			SMIMEenvMessage = agent.processOutgoing(testMessage);
+		}
+		catch(NHINDException e) {
+			AgentException agentexception = (AgentException) e.m_error;
+			assertEquals(AgentError.NoTrustedRecipients, agentexception.getError());
+		}
+		
+		assertNull(SMIMEenvMessage);
 	}
 }
 

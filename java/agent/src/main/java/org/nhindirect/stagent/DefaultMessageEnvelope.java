@@ -417,19 +417,34 @@ public class DefaultMessageEnvelope implements MessageEnvelope
 	        if (this.getTo() != null)
 	        {
 	        	this.getTo().removeAll(rejectedRecipients);
-	        	this.getMessage().setHeader(MailStandard.ToHeader, this.getTo().toString());
+	        	if(this.getTo().isEmpty()) {
+	        		this.getMessage().removeHeader(MailStandard.ToHeader);
+	        	}
+	        	else {
+	        		this.getMessage().setHeader(MailStandard.ToHeader, this.getTo().toString());
+	        	}
 	        }
 
 	        if (this.getCC() != null)
 	        {
 	        	this.getCC().removeAll(rejectedRecipients);
-	        	this.getMessage().setHeader(MailStandard.CCHeader, this.getCC().toString());
+	        	if(this.getCC().isEmpty()) {
+	        		this.getMessage().removeHeader(MailStandard.CCHeader);
+	        	}
+	        	else {
+	        		this.getMessage().setHeader(MailStandard.CCHeader, this.getCC().toString());
+	        	}
 	        }
 
 	        if (this.getBCC() != null)
 	        {
 	        	this.getBCC().removeAll(rejectedRecipients);
-	        	this.getMessage().setHeader(MailStandard.BCCHeader, this.getBCC().toString());
+	        	if(this.getBCC().isEmpty()) {
+	        		this.getMessage().removeHeader(MailStandard.BCCHeader);
+	        	}
+	        	else {
+	        		this.getMessage().setHeader(MailStandard.BCCHeader, this.getBCC().toString());
+	        	}
 	        }
 
         }
