@@ -47,10 +47,24 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="GetAddressesByID">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="addressIDs" nillable="true" type="q6:ArrayOflong" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAddressesByIDResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="GetAddressesByIDResult" nillable="true" type="q7:ArrayOfAddress" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="RemoveAddresses">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q6="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="emailAddresses" nillable="true" type="q6:ArrayOfstring" />
+        <xs:element xmlns:q8="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="emailAddresses" nillable="true" type="q8:ArrayOfstring" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -83,7 +97,7 @@
   <xs:element name="EnumerateDomainAddressesResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="EnumerateDomainAddressesResult" nillable="true" type="q7:ArrayOfAddress" />
+        <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="EnumerateDomainAddressesResult" nillable="true" type="q9:ArrayOfAddress" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -98,14 +112,14 @@
   <xs:element name="EnumerateAddressesResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="EnumerateAddressesResult" nillable="true" type="q8:ArrayOfAddress" />
+        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="EnumerateAddressesResult" nillable="true" type="q10:ArrayOfAddress" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="AddDomain">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="domain" nillable="true" type="q9:Domain" />
+        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="domain" nillable="true" type="q11:Domain" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -117,7 +131,7 @@
   <xs:element name="UpdateDomain">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="domain" nillable="true" type="q10:Domain" />
+        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="domain" nillable="true" type="q12:Domain" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -136,7 +150,7 @@
   <xs:element name="GetDomainResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="GetDomainResult" nillable="true" type="q11:Domain" />
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="GetDomainResult" nillable="true" type="q13:Domain" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -163,7 +177,7 @@
   <xs:element name="EnumerateDomainsResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="EnumerateDomainsResult" nillable="true" type="q12:ArrayOfDomain" />
+        <xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="EnumerateDomainsResult" nillable="true" type="q14:ArrayOfDomain" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

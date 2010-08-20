@@ -105,7 +105,7 @@ namespace NHINDirect.Config.Store
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                return this.Get(lastDomainID, maxResults).ToArray();
+                return this.Get(db, lastDomainID, maxResults).ToArray();
             }
         }
         
