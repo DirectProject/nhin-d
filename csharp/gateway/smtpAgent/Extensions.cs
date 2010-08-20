@@ -76,7 +76,7 @@ namespace NHINDirect.SmtpAgent
         public static string GetMessageText(this CDO.Message message)
         {
             ADODB._Stream stream = message.GetStream();
-            return stream.ReadText(stream.Size);
+            return stream.ReadText((int) stream.Size);
         }
 
         public static void SetMessageText(this CDO.Message message, string messageText, bool save)
