@@ -31,17 +31,27 @@ namespace NHINDirect.Agent
         Success= 1,                     // Signature valid, siging cert trusted, and certs match perfectly
     }
         
+    /// <summary>
+    /// Encapsulates enforcement of a Direct trust model, including certificate and trust anchor validation.
+    /// </summary>
     public class TrustModel
     {
         public static readonly TrustModel Default = new TrustModel();
         
         TrustChainValidator m_certChainValidator;
                                 
+        /// <summary>
+        /// Constructs an instance with a default chain validator.
+        /// </summary>
         public TrustModel()
             : this(new TrustChainValidator())
         {
         }
         
+        /// <summary>
+        /// Constructs an instance specifying a certificate chain validator.
+        /// </summary>
+        /// <param name="validator">The <see cref="TrustChainValidator"/> to use in validating certificate chains</param>
         public TrustModel(TrustChainValidator validator)
         {
             if (validator == null)
@@ -52,6 +62,9 @@ namespace NHINDirect.Agent
             m_certChainValidator = validator;
         }
         
+        /// <summary>
+        /// Gets the <see cref="TrustChainValidator"/> instance used by this model to validate certificate chains.
+        /// </summary>
         public TrustChainValidator CertChainValidator
         {
             get
@@ -59,7 +72,13 @@ namespace NHINDirect.Agent
                 return m_certChainValidator;
             }
         }
-                                
+
+        /// <summary>
+        /// Enforces the trust model on an incoming message by marking
+        /// the <c>Status</c> property of <see cref="NHINDAddress"/> instances for the receivers
+        /// </summary>
+        /// <param name="message">The <see cref="IncomingMessage"/> to validate trust for.</param>
+        /// <exception cref="AgentException">If this message has no signatures</exception>
         public void Enforce(IncomingMessage message)
         {
             if (message == null)
@@ -101,7 +120,12 @@ namespace NHINDirect.Agent
                 } 
             }            
         }
-        
+
+        /// <summary>
+        /// Enforces the trust model on an outgoing message by marking
+        /// the <c>Status</c> property of <see cref="NHINDAddress"/> instances for the receivers
+        /// </summary>
+        /// <param name="message">The <see cref="OutgoingMessage"/> to validate trust for.</param>
         public void Enforce(OutgoingMessage message)
         {
             if (message == null)
