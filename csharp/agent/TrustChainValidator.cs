@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Arien Malec     arien.malec@nhindirect.org
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -42,13 +43,23 @@ namespace NHINDirect.Agent
         X509ChainStatusFlags m_problemFlags;
         
         /// <summary>
-        /// Creates an instance with default chain policy, verification flags and problem flags.
+        /// Creates an instance with default chain policy, problem flags.
         /// </summary>
         public TrustChainValidator()
+            : this(new X509ChainPolicy(), TrustChainValidator.DefaultProblemFlags)
         {
-            m_policy = new X509ChainPolicy();
-            m_policy.VerificationFlags = (X509VerificationFlags.IgnoreWrongUsage);            
-            m_problemFlags = TrustChainValidator.DefaultProblemFlags;
+            m_policy.VerificationFlags = (X509VerificationFlags.IgnoreWrongUsage);
+        }
+
+        /// <summary>
+        /// Creates an instance, specifying chain policy and problem flags
+        /// </summary>
+        /// <param name="policy">The <see cref="X509ChainPolicy"/> to use for validating trust chains</param>
+        /// <param name="problemFlags">The status flags that will be treated as invalid in trust verification</param>
+        public TrustChainValidator(X509ChainPolicy policy, X509ChainStatusFlags problemFlags)
+        {
+            m_policy = policy;
+            m_problemFlags = problemFlags;
         }
         
         /// <summary>
