@@ -10,14 +10,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
-
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -72,12 +69,10 @@ public class SMTPMailClient {
         //  msg.setFrom(addressFrom);
 
         InternetAddress[] addressTo = new InternetAddress[recipients.size()];
-        Iterator<String> irec = recipients.iterator();
         int i = 0;
-        while (irec.hasNext()) {
-            addressTo[i++] = new InternetAddress(irec.next());
+        for (String recipient : recipients) {
+            addressTo[i++] = new InternetAddress(recipient);
         }
-   
 
         mmessage = new MimeMessage(session);
         mmessage.setFrom(addressFrom);

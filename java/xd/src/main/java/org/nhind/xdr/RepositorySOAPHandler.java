@@ -239,7 +239,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
     @SuppressWarnings("unused")
-	private void loadProperties(String fileName, Properties properties) throws IOException {
+    private void loadProperties(String fileName, Properties properties) throws IOException {
 
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("META-INF/" + fileName);
         properties.load(inputStream);
@@ -330,6 +330,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         }
 
         try {
+            @SuppressWarnings("unused")
             SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
             // dumpSOAPMessage(msg);
             if (context.getMessage().getSOAPBody().getFault() != null) {
@@ -371,7 +372,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     
 
     @SuppressWarnings("unused")
-	private SOAPFaultException createSOAPFaultException(String faultString,
+    private SOAPFaultException createSOAPFaultException(String faultString,
             Boolean clientFault) {
         try {
             String faultCode = clientFault ? "Client" : "Server";
