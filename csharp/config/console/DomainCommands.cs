@@ -18,7 +18,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Mail;
+using System.ServiceModel;
 using NHINDirect.Tools.Command;
+using NHINDirect.Config.Client;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client.DomainManager;
 
@@ -26,13 +28,13 @@ namespace NHINDirect.Config.Command
 {
     public class DomainCommands
     {
-        DomainManagerClient m_client;
+        DomainManagerClient m_domainClient;
         AddressManagerClient m_addressClient;
         
         public DomainCommands()
         {
-            m_client = new DomainManagerClient();
-            m_addressClient = new AddressManagerClient();
+            m_domainClient = new DomainManagerClient(ConfigConsole.Settings.DomainManager.Binding, ConfigConsole.Settings.DomainManager.Endpoint);
+            m_addressClient = new AddressManagerClient(ConfigConsole.Settings.AddressManager.Binding, ConfigConsole.Settings.AddressManager.Endpoint);
         }     
         
         public void Command_DomainAdd(string[] args)
@@ -40,7 +42,7 @@ namespace NHINDirect.Config.Command
             Domain domain = new Domain(args.GetRequiredValue(0));
             domain.Status = args.GetOptionalEnum<EntityStatus>(1, EntityStatus.New);
             
-            m_client.AddDomain(domain);
+            m_domainClient.AddDomain(domain);
         }                   
         public void Usage_DomainAdd()
         {
@@ -66,7 +68,7 @@ namespace NHINDirect.Config.Command
             
             Domain domain = this.DomainGet(name);
             domain.Status = status;
-            m_client.UpdateDomain(domain);
+            m_domainClient.UpdateDomain(domain);
         }
         public void Usage_DomainStatusSet()
         {
@@ -98,7 +100,7 @@ namespace NHINDirect.Config.Command
             
             Domain domain = this.DomainGet(email.Host);
             domain.PostmasterID = postmaster.ID;
-            m_client.UpdateDomain(domain);
+            m_domainClient.UpdateDomain(domain);
         }        
         public void Usage_DomainSetPostmaster()
         {
@@ -108,7 +110,7 @@ namespace NHINDirect.Config.Command
         
         public void Command_DomainRemove(string[] args)
         {
-            m_client.RemoveDomain(args.GetRequiredValue(0));
+            m_domainClient.RemoveDomain(args.GetRequiredValue(0));
         }
         public void Usage_DomainRemove()
         {
@@ -119,12 +121,12 @@ namespace NHINDirect.Config.Command
         public void Command_DomainListAll(string[] args)
         {
             int chunkSize = args.GetOptionalValue<int>(0, 25);            
-            Print(m_client.EnumerateDomains(chunkSize));
+            Print(m_domainClient.EnumerateDomains(chunkSize));
         }
 
         Domain DomainGet(string name)
         {
-            return DomainGet(m_client, name);
+            return DomainGet(m_domainClient, name);
         }
 
         internal static Domain DomainGet(DomainManagerClient client, string name)

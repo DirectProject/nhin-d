@@ -30,9 +30,9 @@ namespace NHINDirect.Config.Command
         AddressManagerClient m_addressClient;
         
         public AddressCommands()
-        {
-            m_domainClient = new DomainManagerClient();
-            m_addressClient = new AddressManagerClient();
+        {            
+            m_domainClient = new DomainManagerClient(ConfigConsole.Settings.DomainManager.Binding, ConfigConsole.Settings.DomainManager.Endpoint);
+            m_addressClient = new AddressManagerClient(ConfigConsole.Settings.AddressManager.Binding, ConfigConsole.Settings.AddressManager.Endpoint);
         }
         
         public void Command_AddressAdd(string[] args)
