@@ -152,17 +152,8 @@ namespace NHINDirect.Agent
             {
                 return null;
             }
-            
-            X509Certificate2Collection trustedCerts = new X509Certificate2Collection();
-            foreach (X509Certificate2 cert in certs)
-            {
-                if (m_certChainValidator.IsTrustedCertificate(cert, anchors))
-                {
-                    trustedCerts.Add(cert);
-                }
-            }
-            
-            return trustedCerts;
+
+            return certs.Where(c => m_certChainValidator.IsTrustedCertificate(c, anchors));
         }
 
         void FindSenderSignatures(IncomingMessage message)
