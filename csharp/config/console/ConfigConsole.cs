@@ -20,17 +20,20 @@ using System.Text;
 using System.ServiceModel;
 using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
+using System.Configuration;
+using System.Xml.Serialization;
 
 namespace NHINDirect.Config.Command
 {
     internal class ConfigConsole
     {
-        internal static ConfigConsole Current = new ConfigConsole();
+        internal static ConsoleSettings Settings;
+        internal static ConfigConsole Current;
         
         Commands m_commands;
         
         internal ConfigConsole()
-        {
+        {            
             m_commands = new Commands("ConfigConsole");
             m_commands.Error += PrintError;
             
@@ -39,7 +42,7 @@ namespace NHINDirect.Config.Command
             m_commands.Register(new CertificateCommands());
             m_commands.Register(new AnchorCommands());
         }
-        
+                
         internal void Run(string[] args)
         {
             if (args != null && args.Length > 0)
@@ -54,6 +57,8 @@ namespace NHINDirect.Config.Command
         
         static void Main(string[] args)
         {
+            ConfigConsole.Settings = ConsoleSettings.Load();
+            ConfigConsole.Current = new ConfigConsole();
             ConfigConsole.Current.Run(args);
         }
         
