@@ -20,25 +20,74 @@ using System.Text;
 
 namespace NHINDirect.Agent.Config
 {
+    /// <summary>
+    /// Error enumeration for <see cref="AgentConfigException"/>
+    /// </summary>
     public enum AgentConfigError
     {
+        /// <summary>
+        /// Unknown error
+        /// </summary>
         Unknown = 0,
+        /// <summary>
+        /// Domain list misformed or invalid
+        /// </summary>
         InvalidDomainList,
+        /// <summary>
+        /// Missing private certificate settings
+        /// </summary>
         MissingPrivateCertSettings,
+        /// <summary>
+        /// Missing public certificate settings
+        /// </summary>
         MissingPublicCertSettings,
+        /// <summary>
+        /// Missing trust anchor settings
+        /// </summary>
         MissingAnchorSettings,
+        /// <summary>
+        /// Missing certificate resolver
+        /// </summary>
         MissingResolver,
+        /// <summary>
+        /// Missing a resolver for private certificates
+        /// </summary>
         MissingPrivateCertResolver,
+        /// <summary>
+        /// Missing a resolver for public certificates
+        /// </summary>
         MissingPublicCertResolver,
+        /// <summary>
+        /// Missing a resolver for trust anchors
+        /// </summary>
         MissingAnchorResolverSettings,
+        /// <summary>
+        /// Missing settings for incoming trust anchors
+        /// </summary>
         MissingIncomingAnchors,
+        /// <summary>
+        /// Missing settings for outgoing trust anchors
+        /// </summary>
         MissingOutgoingAnchors,
+        /// <summary>
+        /// Missing the name for a machine level certificate store.
+        /// </summary>
         MissingMachineStoreName,
+        /// <summary>
+        /// Missing the IP address for the DNS server
+        /// </summary>
         MissingDnsServerIP
     }
     
+    /// <summary>
+    /// Exception for agent configurations
+    /// </summary>
     public class AgentConfigException : NHINDException<AgentConfigError>
     {
+        /// <summary>
+        /// Creates an exception for agent configuration errors.
+        /// </summary>
+        /// <param name="error">The error type</param>
         public AgentConfigException(AgentConfigError error)
             : base(error)
         {
