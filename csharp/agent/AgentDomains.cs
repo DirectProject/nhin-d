@@ -68,7 +68,7 @@ namespace NHINDirect.Agent
         /// <summary>
         /// Tests if an address is managed.
         /// </summary>
-        /// <param name="address">The domain in <c>string</c> form to test</param>
+        /// <param name="domain">The domain in <c>string</c> form to test</param>
         /// <returns><c>true</c> if the address's domain is managed by the agent,
         /// <c>false</c> otherwise.</returns>
         public bool IsManaged(string domain)
