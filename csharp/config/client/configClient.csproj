@@ -55,6 +55,8 @@
   <ItemGroup>
     <Compile Include="AddressManagerExtensions.cs" />
     <Compile Include="AnchorExtensions.cs" />
+    <Compile Include="ClientSettings.cs" />
+    <Compile Include="BindingFactory.cs" />
     <Compile Include="ConfigAnchorResolver.cs" />
     <Compile Include="CertificateExtensions.cs" />
     <Compile Include="ConfigCertificateResolver.cs" />

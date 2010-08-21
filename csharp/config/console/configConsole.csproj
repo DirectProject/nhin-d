@@ -39,6 +39,7 @@
       <HintPath>..\..\bin\$(Configuration)\nhinToolLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -58,12 +59,18 @@
     <Compile Include="AddressCommands.cs" />
     <Compile Include="AnchorCommands.cs" />
     <Compile Include="CertificateCommands.cs" />
+    <Compile Include="ConsoleSettings.cs" />
     <Compile Include="DomainCommands.cs" />
     <Compile Include="ConfigConsole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ConfigConsoleSettings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

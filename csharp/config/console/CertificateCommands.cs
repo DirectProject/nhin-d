@@ -33,7 +33,7 @@ namespace NHINDirect.Config.Command
         
         public CertificateCommands()
         {
-            m_client = new CertificateStoreClient();
+            m_client = new CertificateStoreClient(ConfigConsole.Settings.CertificateManager.Binding, ConfigConsole.Settings.CertificateManager.Endpoint);
         }
         
         /// <summary>
