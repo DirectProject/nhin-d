@@ -32,8 +32,14 @@ namespace NHINDirect.Agent
     /// </summary>
     public class NHINDAddressCollection : ObjectCollection<NHINDAddress>
     {
+        /// <summary>
+        /// The minimum trust enforcement status treated as indicated successful trust.
+        /// </summary>
         const TrustEnforcementStatus DefaultMinTrustStatus = TrustEnforcementStatus.Success;
         
+        /// <summary>
+        /// Creates an empty collection.
+        /// </summary>
         public NHINDAddressCollection()
         {
         }
@@ -213,11 +219,21 @@ namespace NHINDirect.Agent
             return NHINDAddressCollection.Parse(addresses.Value);
         }
         
+        /// <summary>
+        /// Parse a string representation of an address list
+        /// </summary>
+        /// <param name="addresses">The string representation, as in a <c>To:</c> header</param>
+        /// <returns>The collection corresponding to the address list.</returns>
         public static NHINDAddressCollection Parse(string addresses)
         {
             return MailParser.ParseAddressCollection<NHINDAddress, NHINDAddressCollection>(addresses, x => new NHINDAddress(x));
         }
 
+        /// <summary>
+        /// Parses a string representation of an address list in the format provided in an SMTP session
+        /// </summary>
+        /// <param name="addresses">The string representation of an SMTP <c>RCPT TO</c> command</param>
+        /// <returns>The collection corresponding to the address list.</returns>
         public static NHINDAddressCollection ParseSmtpServerEnvelope(string addresses)
         {
             return MailParser.ParseSMTPServerEnvelopeAddresses<NHINDAddress, NHINDAddressCollection>(addresses, x => new NHINDAddress(x));

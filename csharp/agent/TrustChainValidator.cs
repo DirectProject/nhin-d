@@ -28,9 +28,9 @@ namespace NHINDirect.Agent
     /// </summary>
     public class TrustChainValidator
     {
-        //
-        // The following collection of status flags indicates a trust problem with the certificate
-        //            
+        /// <summary>
+        /// Chain validations status treated as failing trust validation with the certificate.
+        /// </summary>
         public static readonly X509ChainStatusFlags DefaultProblemFlags =
                 X509ChainStatusFlags.NotTimeValid |
                 X509ChainStatusFlags.Revoked |

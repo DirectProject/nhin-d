@@ -118,6 +118,10 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Gets and sets the result of trust checking for this address.
+        /// </summary>
+        /// <value>A <see cref="TrustEnforcementStatus"/> value indicated the result of trust checking</value>
         public TrustEnforcementStatus Status
         {
             get
@@ -130,6 +134,12 @@ namespace NHINDirect.Agent
             }
         }
         
+
+        /// <summary>
+        /// Returns <c>true</c> if the trust status for this address meets minimal trust, <c>false</c> if not
+        /// </summary>
+        /// <param name="minTrustStatus">The <see cref="TrustEnforcementStatus"/> treated as minimally trustworthy</param>
+        /// <returns><c>true</c> if trusted, <c>false</c> if not</returns>
         public bool IsTrusted(TrustEnforcementStatus minTrustStatus)
         {
             return (this.m_trustStatus >= minTrustStatus);
