@@ -9,11 +9,9 @@ import ihe.iti.xds_b._2007.DocumentRepositoryService;
 import ihe.iti.xds_b._2007.ObjectFactory;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -55,22 +53,27 @@ public class DocumentRepositoryAbstract {
     protected String pid = null;
     protected String from = null;
     protected String suffix = null;
-    private String docObjectId = null;
     private String replyEmail = null;
 
+    @SuppressWarnings("unused")
+    private String docObjectId = null; // TODO: is this needed?
+    
     String thincoid = "2.16.840.1.113883.3.402";
 
     public RegistryResponseType provideAndRegisterDocumentSet(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
         RegistryResponseType resp = null;
         try {
             getHeaderData();
+            
+            @SuppressWarnings("unused")
             InitialContext ctx = new InitialContext();
+            
             QName qname = new QName("urn:ihe:iti:xds-b:2007", "ProvideAndRegisterDocumentSet_bRequest");
             String body = marshal(qname, prdst);
             QName sname = new QName("urn:ihe:iti:xds-b:2007", "SubmitObjectsRequest");
             SubmitObjectsRequest sor = prdst.getSubmitObjectsRequest();
             String meta = marshal(sname, sor);
-            List forwards = provideAndRegister(prdst);
+            List<String> forwards = provideAndRegister(prdst);
 
             String rmessageId = fowardMessage(4, body, forwards, replyEmail, prdst, messageId, endpoint, suffix, meta);
 
@@ -89,10 +92,11 @@ public class DocumentRepositoryAbstract {
         return resp;
     }
 
-    protected List provideAndRegister(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
+    protected List<String> provideAndRegister(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
+        List<String> forwards = null;
 
-        List forwards = null;
         try {
+            @SuppressWarnings("unused")
             InitialContext ctx = new InitialContext();
 
             DocumentRegistry drr = new DocumentRegistry();
@@ -137,7 +141,7 @@ public class DocumentRepositoryAbstract {
         return rrt;
     }
 
-    public String fowardMessage(int type, String body, List forwards, String replyEmail, ProvideAndRegisterDocumentSetRequestType prdst, String messageId, String endpoint, String suffix, String meta) throws Exception {
+    public String fowardMessage(int type, String body, List<String> forwards, String replyEmail, ProvideAndRegisterDocumentSetRequestType prdst, String messageId, String endpoint, String suffix, String meta) throws Exception {
 
         try {
             messageId = UUID.randomUUID().toString();
@@ -155,11 +159,9 @@ public class DocumentRepositoryAbstract {
         return messageId;
     }
 
-    private void forwardRepositoryRequest(int type, String messageId, List provideEndpoints, ProvideAndRegisterDocumentSetRequestType prdst, String fromEmail, String body, String suffix, String meta) throws Exception {
+    private void forwardRepositoryRequest(int type, String messageId, List<String> provideEndpoints, ProvideAndRegisterDocumentSetRequestType prdst, String fromEmail, String body, String suffix, String meta) throws Exception {
         try {
-            Iterator it = provideEndpoints.iterator();
-            while (it.hasNext()) {
-                String reqEndpoint = (String) it.next();
+            for (String reqEndpoint : provideEndpoints) {
                 if (reqEndpoint.indexOf('@') > 0) {
                     byte[] docs = getDocs(prdst);
                     mailDocument(reqEndpoint, fromEmail, messageId, docs, suffix, meta.getBytes());
@@ -256,12 +258,9 @@ public class DocumentRepositoryAbstract {
     private byte[] getDocs(ProvideAndRegisterDocumentSetRequestType prdst) {
         List<Document> documents = prdst.getDocument();
 
-        Iterator<Document> itd = documents.iterator();
-
         byte[] ret = null;
         try {
-            while (itd.hasNext()) {
-                ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document doc = itd.next();
+            for (ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document doc : documents) {
                 DataHandler dh = doc.getValue();
                 ByteArrayOutputStream buffOS = new ByteArrayOutputStream();
                 dh.writeTo(buffOS);

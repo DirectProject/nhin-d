@@ -24,7 +24,6 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 
 /**
  *
@@ -42,7 +41,7 @@ public class DocumentRegistry {
     String patientId = null;
     String sourceDocId = null;
     String sourceObjectId = null;
-    List forwards = null;
+    List<String> forwards = null;
   
     public static final int PNR = 1;
     public static final int REG = 2;
@@ -87,7 +86,7 @@ public class DocumentRegistry {
         return ret;
     }
 
-    public List getForwards() {
+    public List<String> getForwards() {
         return forwards;
     }
 
@@ -108,24 +107,17 @@ public class DocumentRegistry {
         return auserId;
     }
 
-    protected List getForwards(RegistryPackageType rpt) throws Exception {
-        List forwards = new ArrayList();
-        List<SlotType1> slots = rpt.getSlot();
-        Iterator<SlotType1> islot = slots.iterator();
+    protected List<String> getForwards(RegistryPackageType rpt) throws Exception {
+        List<String> forwards = new ArrayList<String>();
 
-        while (islot.hasNext()) {
-            SlotType1 slot = islot.next();
+        for (SlotType1 slot : rpt.getSlot()) {
             String slotName = slot.getName();
             Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, slotName);
             Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, slot.getSlotType());
             Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, slot.getValueList().getValue().get(0));
 
             if (slotName.equals("intendedRecipient")) {
-
-                List<String> recips = slot.getValueList().getValue();
-                Iterator<String> irec = recips.iterator();
-                while (irec.hasNext()) {
-                    String prov = irec.next();
+                for (String prov : slot.getValueList().getValue()) {
                     // this intentended recipient
                     // |john.smith@happyvalleyclinic.nhindirect.org^Smith^John^^^Dr^MD^^&amp;1.3.6.1.4.1.21367.3100.1
                     // casues a forward to
@@ -190,28 +182,15 @@ public class DocumentRegistry {
         String lauthor = null;
         try {
 
-            Iterator<ClassificationType> ic = classes.iterator();
-            while (ic.hasNext()) {
-                ClassificationType clas = ic.next();
-
-
-                List<SlotType1> slots = clas.getSlot();
-                Iterator<SlotType1> si = slots.iterator();
-
-                while (si.hasNext()) {
-                    SlotType1 slot = si.next();
+            for (ClassificationType clas : classes) {
+                for (SlotType1 slot : clas.getSlot()) {
                     String sname = slot.getName();
                     if (sname.equals("authorPerson")) {
-                        ValueListType valts = slot.getValueList();
-                        List<String> vals = valts.getValue();
-                        Iterator<String> ival = vals.iterator();
-                        while (ival.hasNext()) {
-                            lauthor = ival.next();
+                        for (String value : slot.getValueList().getValue()) {
+                            lauthor = value;
                         }
                     }
                 }
-
-
             }
         } catch (Exception x) {
             x.printStackTrace();
@@ -241,13 +220,8 @@ public class DocumentRegistry {
         String reposId = null;
 
         boolean repos = false;
-        List<SlotType1> slots = document.getSlot();
-        Iterator<SlotType1> islots = slots.iterator();
-        SlotType1 slot = null;
-
-        while (islots.hasNext()) {
-
-            slot = islots.next();
+        
+        for (SlotType1 slot : document.getSlot()) {
             if (slot.getName().equals("creationTime")) {
                 creationDate = slot.getValueList().getValue().get(0);
 
@@ -270,10 +244,7 @@ public class DocumentRegistry {
                 }
 
             } else if (slot.getName().equals("sourcePatientInfo")) {
-                List<String> pids = slot.getValueList().getValue();
-                Iterator<String> ipid = pids.iterator();
-                while (ipid.hasNext()) {
-                    String pid = ipid.next();
+                for (String pid : slot.getValueList().getValue()) {
                     Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, pid);
                     if (pid.indexOf("PID-5") == 0) {
                         String name = returnField(pid, "|", 2);
@@ -322,16 +293,13 @@ public class DocumentRegistry {
 
     // right now this is not used, just getForwards
     @SuppressWarnings("unused")
-	private void parseSubmissionSet(RegistryPackageType set) throws Exception {
+    private void parseSubmissionSet(RegistryPackageType set) throws Exception {
 
         try {
 
             String setId = set.getId();
             String objectType = set.getObjectType();
 
-            List<SlotType1> slots = set.getSlot();
-            Iterator<SlotType1> islots = slots.iterator();
-            SlotType1 slot = null;
             String submissionDate = null;
             String setName = null;
             String setDesc = null;
@@ -340,9 +308,7 @@ public class DocumentRegistry {
             boolean repos = false;
             nhdirect = false;
 
-            while (islots.hasNext()) {
-
-                slot = islots.next();
+            for (SlotType1 slot : set.getSlot()) {
                 if (slot.getName().equals("submissionTime")) {
                     try {
                         submissionDate = slot.getValueList().getValue().get(0);
@@ -417,24 +383,39 @@ public class DocumentRegistry {
         return ret;
     }
 
-  
-
-   private List<String> split(String input, String delimiter) {
-        boolean wasDelimiter = true;
+    /*
+     * TODO - explain this method.. it appears at first glance to be flawed
+     * 
+     * What should happen in the case of "a&&" using "&" as a delimiter?
+     * 
+     * I would think the output should be (a, empty, empty), however 
+     * the actual output is (a, empty). 
+     * 
+     * If it is actually supposed to be the prior, is can be accomplished using
+     * string.split
+     * 
+     * List<String> tokens = Arrays.asList("a&&".split("&", -1));
+     * 
+     * Would just have to be careful to escape certain delimiters ("\\^")
+     * 
+     * -- beau
+     */
+    private List<String> split(String input, String delimiter) {
+        boolean previousTokenWasDelimiter = true;
         String token = null;
         List<String> v = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(input, delimiter, true);
         while (st.hasMoreTokens()) {
             token = st.nextToken();
             if (token.equals(delimiter)) {
-                if (wasDelimiter) {
+                if (previousTokenWasDelimiter) {
                     token = "";
                 } else {
                     token = null;
                 }
-                wasDelimiter = true;
+                previousTokenWasDelimiter = true;
             } else {
-                wasDelimiter = false;
+                previousTokenWasDelimiter = false;
             }
             if (token != null) {
                 v.add(token);
