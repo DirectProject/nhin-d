@@ -24,15 +24,24 @@ using System.Net;
 
 namespace NHINDirect.Agent.Config
 {
+    /// <summary>
+    /// Settings for a DNS-based certificate resolver.
+    /// </summary>
     [XmlType("DnsCertificateStore")]
     public class DnsCertResolverSettings : CertResolverSettings
     {
         bool m_assumeWildcard = false;
         
+        /// <summary>
+        /// Creates an instance, normally called from the XML load.
+        /// </summary>
         public DnsCertResolverSettings()
         {
         }
         
+        /// <summary>
+        /// The IP address (in <c>string</c> form) used by the resolver.
+        /// </summary>
         [XmlElement]
         public string ServerIP
         {
@@ -40,6 +49,9 @@ namespace NHINDirect.Agent.Config
             set;
         }
         
+        /// <summary>
+        /// The timeout interval used by the resolver.
+        /// </summary>
         [XmlElement]
         public int Timeout
         {
@@ -47,6 +59,9 @@ namespace NHINDirect.Agent.Config
             set;
         }
         
+        /// <summary>
+        /// A default fallback domain used to remap addresses that are not able to be managed for DNS certificates.
+        /// </summary>
         [XmlElement]
         public string FallbackDomain
         {
@@ -54,6 +69,9 @@ namespace NHINDirect.Agent.Config
             set;
         }
 
+        /// <summary>
+        /// Does this resolver assume the DNS responser implements wildcard support?
+        /// </summary>
         public bool AssumeWildcardSupport
         {
             get
@@ -66,6 +84,9 @@ namespace NHINDirect.Agent.Config
             }
         }
         
+        /// <summary>
+        /// Validates the configuration settings.
+        /// </summary>
         public override void Validate()
         {
             if (string.IsNullOrEmpty(this.ServerIP))
@@ -74,6 +95,10 @@ namespace NHINDirect.Agent.Config
             }
         }
         
+        /// <summary>
+        /// Creates the DNS certificate resolver from the configured settings.
+        /// </summary>
+        /// <returns>A configured DNS certificate resolver.</returns>
         public override ICertificateResolver CreateResolver()
         {
             this.Validate();

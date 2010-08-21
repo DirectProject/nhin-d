@@ -22,9 +22,19 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Agent.Config
 {
+    /// <summary>
+    /// Settings for certificate resolvers.
+    /// </summary>
     public abstract class CertResolverSettings
     {
+        /// <summary>
+        /// Validates the instance.
+        /// </summary>
         public abstract void Validate();
+        /// <summary>
+        /// Creates a certificate resolver from the configured settings
+        /// </summary>
+        /// <returns>The certificate resolver instance corresponding to the settings.</returns>
         public abstract ICertificateResolver CreateResolver();
     }
 }

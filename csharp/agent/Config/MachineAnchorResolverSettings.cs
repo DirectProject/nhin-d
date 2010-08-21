@@ -22,13 +22,22 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Agent.Config
 {
+    /// <summary>
+    /// Configuration for a machine store based set of trust anchors.
+    /// </summary>
     [XmlType("MachineAnchorStore")]
     public class MachineAnchorResolverSettings : TrustAnchorResolverSettings
     {
+        /// <summary>
+        /// Creates an instance, noramlly called from XML deserialization.
+        /// </summary>
         public MachineAnchorResolverSettings()
         {
         }
         
+        /// <summary>
+        /// Configuration settings for trust anchors for incoming messages.
+        /// </summary>
         [XmlElement]
         public MachineCertResolverSettings Incoming 
         {
@@ -36,6 +45,9 @@ namespace NHINDirect.Agent.Config
             set;
         }
 
+        /// <summary>
+        /// Configuration settings for trust anchors for outgoing messages.
+        /// </summary>
         [XmlElement]
         public MachineCertResolverSettings Outgoing 
         { 
@@ -43,6 +55,9 @@ namespace NHINDirect.Agent.Config
             set; 
         }
 
+        /// <summary>
+        /// Validates the configuration settings.
+        /// </summary>
         public override void Validate()
         {
             if (this.Incoming == null)
@@ -58,6 +73,10 @@ namespace NHINDirect.Agent.Config
             this.Outgoing.Validate();
         }
         
+        /// <summary>
+        /// Creates the machine store trust anchor resolver from configuration settings.
+        /// </summary>
+        /// <returns>The configured machine store trust anchor resolver.</returns>
         public override ITrustAnchorResolver CreateResolver()
         {
             this.Validate();
