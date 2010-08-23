@@ -60,6 +60,8 @@ public class DocumentRepositoryAbstract {
     
     String thincoid = "2.16.840.1.113883.3.402";
 
+    private static final Logger LOGGER = Logger.getLogger(DocumentRepositoryAbstract.class.getPackage().getName());
+    
     public RegistryResponseType provideAndRegisterDocumentSet(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
         RegistryResponseType resp = null;
         try {
@@ -130,7 +132,7 @@ public class DocumentRepositoryAbstract {
 
 
             } catch (Exception ex) {
-                Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "not sure what this ");
+                LOGGER.info("not sure what this ");
                 ex.printStackTrace();
             }
 
@@ -172,7 +174,7 @@ public class DocumentRepositoryAbstract {
                     String to = reqEndpoint;
                     to = to.replace("?wsdl", "");
                     Long threadId = new Long(Thread.currentThread().getId());
-                    Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "THREAD ID " + threadId);
+                    LOGGER.info("THREAD ID " + threadId);
                     ThreadData threadData = new ThreadData(threadId);
                     threadData.setTo(to);
 
@@ -193,7 +195,7 @@ public class DocumentRepositoryAbstract {
 
                     docs.add(doc);
 
-                    Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, " SENDING TO ENDPOINT " + to);
+                    LOGGER.info(" SENDING TO ENDPOINT " + to);
                     DocumentRepositoryService service = new DocumentRepositoryService();
                     service.setHandlerResolver(new RepositoryHandlerResolver());
 
@@ -237,7 +239,7 @@ public class DocumentRepositoryAbstract {
             ret = new String(sb);
 
         } catch (Exception ex) {
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "marshall. Exception msg=" + ex.getMessage());
+            LOGGER.info("marshall. Exception msg=" + ex.getMessage());
             ex.printStackTrace();
 
         }
@@ -248,7 +250,7 @@ public class DocumentRepositoryAbstract {
 
     private void mailDocument(String email, String from, String messageId, byte[] message, String suffix, byte[] meta) throws Exception {
         SMTPMailClient smc = new SMTPMailClient();
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "SENDING EMAIL TO " + email + " with message id " + messageId);
+        LOGGER.info("SENDING EMAIL TO " + email + " with message id " + messageId);
         List<String> recipients = new ArrayList<String>();
         recipients.add(email);
 
@@ -275,7 +277,7 @@ public class DocumentRepositoryAbstract {
 
     protected void getHeaderData() {
         Long threadId = new Long(Thread.currentThread().getId());
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "DTHREAD ID " + threadId);
+        LOGGER.info("DTHREAD ID " + threadId);
         ThreadData threadData = new ThreadData(threadId);
         endpoint = threadData.getReplyAddress();
         messageId = threadData.getMessageId();
@@ -289,7 +291,7 @@ public class DocumentRepositoryAbstract {
 
     protected void setHeaderData() {
         Long threadId = new Long(Thread.currentThread().getId());
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "THREAD ID " + threadId);
+        LOGGER.info("THREAD ID " + threadId);
         ThreadData threadData = new ThreadData(threadId);
         threadData.setTo(to);
         threadData.setMessageId(messageId);

@@ -7,7 +7,7 @@ to download the zipped api from:
 
  http://www.oracle.com/technetwork/java/index-138643.html
 
-then get the mail.jar in the zip and place it into your $JAVA_HOME/jre/lib/ext directory.  
+then get the mailapi.jar and the smpt.jar in the zip and place it into your $JAVA_HOME/jre/lib/ext directory.  
 
 Currently there is one primary junit test which operates on the XDR class during
 the "maven install" build. The java\xd\src\main\resources\request.xml is the source for the XDR
@@ -38,7 +38,7 @@ The deployment has been tested using apache-tomcat-6.0.29 . This can be download
 is installed and running, the xd.war file can be copied from the hg\java\xd\target directory to the TOMCAT_HOME\webapps directory where it will 
 hot-deploy automatically. This deployment runs on port 8080 as is. 
 
-This implementation can be tested out using the SOAP-UI test dirctory \hg\java\xd\soapui.  Currently only the ccd test is working (not the pdf) .
+This implementation can be tested out using the SOAP-UI test dirctory \hg\java\xd\soapui.
 
 the endpoint for testing in standard tomcat is http://localhost:8080/xd/services/DocumentRepository_Service
  
