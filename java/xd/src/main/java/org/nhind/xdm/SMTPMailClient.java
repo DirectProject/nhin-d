@@ -222,7 +222,7 @@ public class SMTPMailClient {
                 "<li><a href=\"SUBSET01/\">SUBSET01/</a> - XDS Submission Set 1" +
                 "<ul>" +
                 "<li><a href=\"SUBSET01/METADATA.XML\">SUBSET01/METADATA.XML</a> - XDS information about the content, recipient, author, etc.</li>" +
-                "<li><a href=\"SUBSET01/DOCUMENT.PDF\">SUBSET01/DOCUMENT.XXX</a> - document payload in PDF format</li>" +
+                "<li><a href=\"SUBSET01/DOCUMENT.PDF\">SUBSET01/DOCUMENT.XXX</a> - document payload in XXX format</li>" +
                 "</ul>" +
                 "</li>" +
                 "</ul>" +
