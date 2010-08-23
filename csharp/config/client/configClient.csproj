@@ -132,6 +132,10 @@
       <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
       <Name>nhinCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\service\configService.csproj">
+      <Project>{83C99331-F451-4175-943D-12FCF17B636E}</Project>
+      <Name>configService</Name>
+    </ProjectReference>
     <ProjectReference Include="..\store\configStore.csproj">
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>configStore</Name>

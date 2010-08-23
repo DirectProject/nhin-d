@@ -49,14 +49,6 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nhinAgent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\$(Configuration)\nhinAgent.dll</HintPath>
-    </Reference>
-    <Reference Include="nhinCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\$(Configuration)\nhinCommon.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -113,6 +105,14 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\agent\nhinAgent.csproj">
+      <Project>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</Project>
+      <Name>nhinAgent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\nhinCommon.csproj">
+      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
+      <Name>nhinCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\config\client\configClient.csproj">
       <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
       <Name>configClient</Name>
@@ -120,6 +120,10 @@
     <ProjectReference Include="..\..\config\store\configStore.csproj">
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>configStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dns\dnsResolver.csproj">
+      <Project>{AE250214-0E85-4C28-90C9-A006440BCE97}</Project>
+      <Name>dnsResolver</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -222,7 +222,11 @@ namespace NHINDirect.Agent
         /// <summary>
         /// Gets the domain managed recipients for this envelope
         /// </summary>
+        public NHINDAddressCollection DomainRecipients 
+        { 
+            get;
             internal set;
+        }
 
 
         /// <summary>
@@ -240,7 +244,10 @@ namespace NHINDirect.Agent
         /// <summary>
         /// Gets and sets the non-domain recipients for this evelope.
         /// </summary>
-    	    internal set;
+        public MailAddressCollection OtherRecipients
+        {
+            get;
+            internal set;
         }
 
         /// <summary>
