@@ -37,10 +37,6 @@ import javax.xml.ws.soap.SOAPFaultException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-
-
-
-
 /**
  * This class handles the SOAP-Requests before they reach the
  * Web Service Operation. It is possible to read and manipulate
@@ -83,6 +79,9 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         }
     }
 
+    /* (non-Javadoc)
+     * @see javax.xml.ws.handler.Handler#close(javax.xml.ws.handler.MessageContext)
+     */
     @Override
     public void close(MessageContext messageContext) {
     }
@@ -310,10 +309,6 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
             e.printStackTrace();
         }
     }
-
-  
-
-  
 
     /**
      * Handles SOAP-Errors.
