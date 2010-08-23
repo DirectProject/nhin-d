@@ -96,11 +96,11 @@ public class DocumentRegistry {
         return forwards;
     }
 
-	/**
-	 * Extract an email address from an HL7 string using "^" delimiter.
-	 * 
-	 * @return the extracted email address
-	 */
+    /**
+     * Extract an email address from an HL7 string using "^" delimiter.
+     * 
+     * @return the extracted email address
+     */
     public String getAuthorEmail() {
         // Literal string
         if (!StringUtils.contains(author, "^")) {
@@ -108,8 +108,8 @@ public class DocumentRegistry {
             if (StringUtils.contains(author, "@")) {
                 return author;
             } else {
-            	// TODO: What happens when an author email address is not provided?
-            	LOGGER.info("Author email not found");
+                // TODO: What happens when an author email address is not provided?
+                LOGGER.info("Author email not found");
                 return "postmaster@nhindirect.org";
             }
         }
@@ -118,9 +118,9 @@ public class DocumentRegistry {
         List<String> fields = split(author, "^");
 
         if (fields != null) {
-        	if (fields.get(0) != null) {
-        		auserId = fields.get(0);
-        	}
+            if (fields.get(0) != null) {
+                auserId = fields.get(0);
+            }
         }
 
         /*
@@ -131,7 +131,7 @@ public class DocumentRegistry {
          * String prefix = fields.get(5);
          * String suffix = fields.get(6);
          * String what2 = fields.get(7);
-		 * String org = fields.get(8);
+         * String org = fields.get(8);
          * List<String> orgs = split(org, "&");
          * String aorgId = (String) orgs.get(1);
          * aorgId = aorgId.replace("ISO", "");
@@ -177,14 +177,14 @@ public class DocumentRegistry {
 
                     String sendPoint = userId;
                     
-					/*
-					 * TODO: define when and where to relay vs email this.
-					 * intentended recipient
-					 * |john.smith@happyvalleyclinic.nhindirect.org^Smith^John^^^Dr^MD^^&amp;1.3.6.1.4.1.21367.3100.1
-					 * casues a forward to
-					 * "http://shinnytest.gsihealth.com:8080/DocumentRepository_Service/DocumentRepository?wsdl"
-					 * otherwise the email is used for XDM
-					 */
+                    /*
+                     * TODO: define when and where to relay vs. email this.
+                     * intentended recipient
+                     * |john.smith@happyvalleyclinic.nhindirect.org^Smith^John^^^Dr^MD^^&amp;1.3.6.1.4.1.21367.3100.1
+                     * casues a forward to
+                     * "http://shinnytest.gsihealth.com:8080/DocumentRepository_Service/DocumentRepository?wsdl"
+                     * otherwise the email is used for XDM
+                     */
                     if(userId.equals("john.smith@happyvalleyclinic.nhindirect.org")){
                          sendPoint = "http://shinnytest.gsihealth.com:8080/DocumentRepository_Service/DocumentRepository?wsdl";
                     }
@@ -217,13 +217,13 @@ public class DocumentRegistry {
             for (ClassificationType clas : classes) {
                 for (SlotType1 slot : clas.getSlot()) {
                     String sname = slot.getName();
-					if (sname.equals("authorPerson")
-							&& slot.getValueList() != null
-							&& slot.getValueList().getValue() != null) {
-						for (String value : slot.getValueList().getValue()) {
-							lauthor = value;
-						}
-					}
+                    if (sname.equals("authorPerson")
+                            && slot.getValueList() != null
+                            && slot.getValueList().getValue() != null) {
+                        for (String value : slot.getValueList().getValue()) {
+                            lauthor = value;
+                        }
+                    }
                 }
             }
         } catch (Exception x) {
@@ -350,8 +350,6 @@ public class DocumentRegistry {
                         submissionDate = null;
                     }
 
-
-
                 } else if (slot.getName().equals("repositoryUniqueId")) {
                     reposId = slot.getValueList().getValue().get(0);
                     repos = true;
@@ -417,19 +415,19 @@ public class DocumentRegistry {
         return ret;
     }
 
-	/**
-	 * Split up a string using the given delimiter and return as a list of
-	 * tokens
-	 * 
-	 * @param input
-	 *            The string to split
-	 * @param delimiter
-	 *            The delimiter used for splitting
-	 * @return a list of split tokens
-	 */
+    /**
+     * Split up a string using the given delimiter and return as a list of
+     * tokens
+     * 
+     * @param input
+     *            The string to split
+     * @param delimiter
+     *            The delimiter used for splitting
+     * @return a list of split tokens
+     */
     private List<String> split(String input, String delimiter) {
-    	String quotedDelimiter = Pattern.quote(delimiter);
-    	List<String> tokens = Arrays.asList(input.split(quotedDelimiter, -1));
+        String quotedDelimiter = Pattern.quote(delimiter);
+        List<String> tokens = Arrays.asList(input.split(quotedDelimiter, -1));
 
         return tokens;
     }
