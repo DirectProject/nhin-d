@@ -58,3 +58,11 @@ glob:csharp/unittests/xunittest.bat
 glob:smtpEventHandler_i.h
 # Ignore Sandcastle API generated documentation
 [Hh]elp
+glob:csharp/gateway/prodinstall/HVAgentConfig.xml
+glob:csharp/gateway/prodinstall/NHINDAgentConfig.xml
+glob:csharp/gateway/prodinstall/RedmondAgentConfig.xml
+glob:csharp/gateway/prodinstall/install.bat
+glob:csharp/gateway/prodinstall/installhv.bat
+glob:csharp/gateway/prodinstall/prop.bat
+glob:csharp/gateway/prodinstall/readme.txt
+glob:csharp/unittests/runall.bat
