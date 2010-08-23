@@ -142,7 +142,7 @@ namespace NHINDirect.SmtpAgent
         {
             try
             {
-                SmtpAgentSettings settings = SmtpAgentSettings.LoadFile(configFilePath);
+                SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configFilePath);
                 return new SmtpAgent(settings);
             }
             catch(Exception error)
