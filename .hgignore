@@ -56,3 +56,5 @@ _ReSharper*/
 *.[Pp]ublish.xml
 glob:csharp/unittests/xunittest.bat
 glob:smtpEventHandler_i.h
+# Ignore Sandcastle API generated documentation
+[Hh]elp
