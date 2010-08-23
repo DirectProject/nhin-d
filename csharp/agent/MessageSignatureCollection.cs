@@ -26,6 +26,9 @@ namespace NHINDirect.Agent
     /// </summary>
     public class MessageSignatureCollection : ObjectCollection<MessageSignature>
     {
+        /// <summary>
+        /// Creates an empty collection.
+        /// </summary>
         public MessageSignatureCollection()
         {
         }

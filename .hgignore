@@ -20,6 +20,11 @@ tmp/
 target/
 NHINKeyStore
 
+# Ignore Eclipse files
+.classpath
+.project
+.settings/
+
 # Ignore Visual Studio 2008 files
 *.obj
 *.exe

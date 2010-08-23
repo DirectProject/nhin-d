@@ -10,14 +10,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
-
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -46,7 +43,29 @@ public class SMTPMailClient {
     private static final String SMTP_AUTH_USER = "lewistower1@gmail.com";
     private static final String SMTP_AUTH_PWD = "hadron106";
  
-
+    /**
+     * Create and send a message over SMTP.
+     * 
+     * @param recipients
+     *            The list of recipient addresses for the mail message
+     * @param subject
+     *            The subject of the mail message
+     * @param messageId
+     *            The message ID
+     * @param body
+     *            The body body of the message
+     * @param message
+     *            The data to be zipped and attached to the mail message
+     * @param from
+     *            The sender of the mail message
+     * @param suffix
+     *            The suffix of the data to be zipped and attached to the mail
+     *            message
+     * @param meta
+     *            The metadata to be included in the zip and attached to the
+     *            mail message
+     * @throws MessagingException
+     */
     public void postMail(List<String> recipients, String subject, String messageId, String body,
             byte[] message, String from, String suffix, byte[] meta) throws MessagingException {
         boolean debug = false;
@@ -72,12 +91,10 @@ public class SMTPMailClient {
         //  msg.setFrom(addressFrom);
 
         InternetAddress[] addressTo = new InternetAddress[recipients.size()];
-        Iterator<String> irec = recipients.iterator();
         int i = 0;
-        while (irec.hasNext()) {
-            addressTo[i++] = new InternetAddress(irec.next());
+        for (String recipient : recipients) {
+            addressTo[i++] = new InternetAddress(recipient);
         }
-   
 
         mmessage = new MimeMessage(session);
         mmessage.setFrom(addressFrom);
@@ -109,6 +126,17 @@ public class SMTPMailClient {
 
     }
 
+    /**
+     * Write data to a .zip file and return the Flie object.
+     * 
+     * @param attachment
+     *            The attachment data to be included in the .zip file
+     * @param suffix
+     *            The suffix for the attachment data
+     * @param meta
+     *            The metadata to be included in the .zip file
+     * @return a reference to the created .zip file
+     */
     private File getZip(byte[] attachment, String suffix, byte[] meta) {
 
         File temp = null;
@@ -200,6 +228,12 @@ public class SMTPMailClient {
      */
     private class SMTPAuthenticator extends javax.mail.Authenticator {
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see javax.mail.Authenticator#getPasswordAuthentication()
+         */
+        @Override
         public PasswordAuthentication getPasswordAuthentication() {
             String username = SMTP_AUTH_USER;
             String password = SMTP_AUTH_PWD;
@@ -207,10 +241,22 @@ public class SMTPMailClient {
         }
     }
 
+    /**
+     * Create the readme string for the XDM package.
+     * 
+     * @return a string to be used as the readme for the XDM package
+     */
     private String getReadme() {
         return "NHIN Direct - IHE Team - Implementation. This XDM message was created via the web interface.  Please view INDEX.HTM for links to the files and metadata that make up this message. ";
     }
 
+    /**
+     * Create the index file for the XDM package.
+     * 
+     * @param type
+     *            The suffix for the attachment included in the XDM package
+     * @return a string to be used as the index for the XDM package
+     */
     private String getIndex(String type) {
 
         String index = "<html xmlns=\"http://www.w3.org/1999/xhtml\" > <head>" +
@@ -227,7 +273,7 @@ public class SMTPMailClient {
                 "<li><a href=\"SUBSET01/\">SUBSET01/</a> - XDS Submission Set 1" +
                 "<ul>" +
                 "<li><a href=\"SUBSET01/METADATA.XML\">SUBSET01/METADATA.XML</a> - XDS information about the content, recipient, author, etc.</li>" +
-                "<li><a href=\"SUBSET01/DOCUMENT.PDF\">SUBSET01/DOCUMENT.XXX</a> - document payload in PDF format</li>" +
+                "<li><a href=\"SUBSET01/DOCUMENT.PDF\">SUBSET01/DOCUMENT.XXX</a> - document payload in XXX format</li>" +
                 "</ul>" +
                 "</li>" +
                 "</ul>" +
@@ -236,6 +282,12 @@ public class SMTPMailClient {
         return ret;
     }
 
+    /**
+     * Return the CCD.xsl file as an array of bytes.
+     * 
+     * @return the CCD.xsl file as an array of bytes.
+     * @throws Exception
+     */
     private byte[] getXsl() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/CCD.xsl");
         byte[] theBytes = new byte[is.available()];

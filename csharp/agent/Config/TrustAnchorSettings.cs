@@ -22,9 +22,15 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Agent.Config
 {
+    /// <summary>
+    /// Configuration settings for incoming and outgoing trust anchor resolvers.
+    /// </summary>
     [XmlType("TrustAnchorSettings")]
     public class TrustAnchorSettings
     {
+        /// <summary>
+        /// Settings for a machine-based trust anchor resolver.
+        /// </summary>
         [XmlElement("MachineResolver", typeof(MachineAnchorResolverSettings))]
         public TrustAnchorResolverSettings Resolver
         {
@@ -32,6 +38,9 @@ namespace NHINDirect.Agent.Config
             set;
         }
         
+        /// <summary>
+        /// Validates the configuration settings.
+        /// </summary>
         public void Validate()
         {
             if (this.Resolver == null)

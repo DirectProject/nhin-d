@@ -26,11 +26,17 @@ public class XDRTest extends TestCase {
         super(testName);
     }
 
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
     }
 
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#tearDown()
+     */
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
@@ -114,6 +120,12 @@ public class XDRTest extends TestCase {
         return ret;
     }
 
+    /**
+     * Return the test request.xml as a string.
+     * 
+     * @return the test request.xml as a string
+     * @throws Exception
+     */
     private String getTestRequest() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/request.xml");
         byte[] theBytes = new byte[is.available()];

@@ -90,7 +90,15 @@ namespace NHINDirect.Agent
         {
             this.RawMessage = messageText;
         }
-                
+        
+        /// <summary>
+        /// Creates an instance from a <see cref="Message"/> instance, with explicitly assigned raw message, recipients and sender,
+        /// which take precendece over what may be in the message object or text.
+        /// </summary>
+        /// <param name="message">The <see cref="Message"/> this envelopes</param>
+        /// <param name="recipients">The <see cref="NHINDAddressCollection"/> of reciepients; takes precedence over the <c>To:</c> header</param>
+        /// <param name="sender">The <see cref="NHINDAddress"/> of the sender; takes precendence over the <c>From:</c> header.</param>
+        /// <param name="rawMessage">The RFC 5322 message string to use ae the raw message for this instance.</param>
         protected MessageEnvelope(Message message, string rawMessage, NHINDAddressCollection recipients, NHINDAddress sender)
             : this(message, recipients, sender)
         {
@@ -211,13 +219,17 @@ namespace NHINDirect.Agent
             }
         }
 
-        public NHINDAddressCollection DomainRecipients 
-        { 
-            get;
+        /// <summary>
+        /// Gets the domain managed recipients for this envelope
+        /// </summary>
             internal set;
-        }
 
-    	public bool HasDomainRecipients
+
+        /// <summary>
+        /// Indicates if this envelope has domain managed recipients.
+        /// </summary>
+        /// <value><c>true</c> if this envelope has domain managed recipients, <c>false</c> otherwise</value>
+        public bool HasDomainRecipients
         {
             get
             {
@@ -225,12 +237,16 @@ namespace NHINDirect.Agent
             }
         }
 
-    	public MailAddressCollection OtherRecipients 
-    	{ 
-    	    get;
+        /// <summary>
+        /// Gets and sets the non-domain recipients for this evelope.
+        /// </summary>
     	    internal set;
         }
 
+        /// <summary>
+        /// Indicates if this envelope has non-domain managed recipients.
+        /// </summary>
+        /// <value><c>true</c> if this envelope has non-domain managed recipients, <c>false</c> otherwise</value>
     	public bool HasOtherRecipients
         {
             get
@@ -288,6 +304,12 @@ namespace NHINDirect.Agent
 
     	internal string RawMessage { get; set; }
 
+
+        /// <summary>
+        /// Creates an RFC 5322 representation of this evelope's message. Does not serialize the custom properties, only the underlying
+        /// message instance associated with this envelope.
+        /// </summary>
+        /// <returns>An RFC 5322 string representation of this envelope's message.</returns>
     	public string SerializeMessage()
         {
             return MimeSerializer.Default.Serialize(m_message);
@@ -359,6 +381,10 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// If recipients have  not been categorized by domain, categorizes by domain.
+        /// </summary>
+        /// <param name="domains">Domains to treat as  domain recipients.</param>
         public void EnsureRecipientsCategorizedByDomain(AgentDomains domains)
         {
             if (this.HasDomainRecipients || this.HasOtherRecipients)

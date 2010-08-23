@@ -143,6 +143,22 @@ namespace NHINDirect.Certificates
             return -1;
         }
 
+        public static X509Certificate2Collection Where(this X509Certificate2Collection certs, Func<X509Certificate2, bool> match)
+        {
+            X509Certificate2Collection matchingCerts = null;
+
+            foreach (X509Certificate2 cert in certs)
+            {
+                if (match(cert))
+                {
+                    matchingCerts = matchingCerts ?? new X509Certificate2Collection();
+                    matchingCerts.Add(cert);
+                }
+            }
+
+            return matchingCerts;
+        }
+
         public static X509Certificate2 Find(this X509Certificate2Collection certs, Predicate<X509Certificate2> matcher)
         {
             int index = certs.IndexOf(matcher);

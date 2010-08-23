@@ -113,6 +113,24 @@ namespace NHINDirect.Agent
         {
         }
 
+        /// <summary>
+        /// Creates an NHINDAgent instance, specifying private, external and trust anchor certificate stores, and
+        /// and defaulting to the standard trust and cryptography models.
+        /// </summary>
+        /// <param name="domains">
+        /// The local domain names managed by this agent.
+        /// </param>
+        /// <param name="privateCerts">
+        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
+        /// for senders of outgoing messages and receivers of incoming messages.
+        /// </param>
+        /// <param name="publicCerts">
+        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
+        /// for receivers of outgoing messages and senders of incoming messages. 
+        /// </param>
+        /// <param name="anchors">
+        /// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
+        /// </param>
         public NHINDAgent(string[] domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
             : this(domains, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default)
         {
@@ -147,6 +165,31 @@ namespace NHINDirect.Agent
         {
         }
 
+
+        /// <summary>
+        /// Creates an NHINDAgent instance, specifying private, external and trust anchor certificate stores, and 
+        /// trust and cryptography models.
+        /// </summary>
+        /// <param name="domains">
+        /// An array of local domain name managed by this agent.
+        /// </param>
+        /// <param name="privateCerts">
+        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
+        /// for senders of outgoing messages and receivers of incoming messages.
+        /// </param>
+        /// <param name="publicCerts">
+        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
+        /// for receivers of outgoing messages and senders of incoming messages. 
+        /// </param>
+        /// <param name="anchors">
+        /// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
+        /// </param>
+        /// <param name="trustModel">
+        /// An instance or subclass of <see cref="NHINDirect.Agent.TrustModel"/> providing a custom trust model.
+        /// </param>
+        /// <param name="cryptographer">
+        /// An instance or subclass of <see cref="NHINDirect.Cryptography.SMIMECryptographer"/> providing a custom cryptography model.
+        /// </param>
         public NHINDAgent(string[] domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
         {
             m_managedDomains = new AgentDomains(domains);
@@ -237,6 +280,9 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Should this agent allow incoming messages that are not wrapped <c>message/822</c> MIME entities?
+        /// </summary>
         public bool AllowNonWrappedIncoming
         {
             get
@@ -253,7 +299,7 @@ namespace NHINDirect.Agent
         /// Gets the public certificate resolver (set in the constructor).  
         /// </summary> 
         /// <value> 
-        /// The <see cref="NHINDirect.Certificates.ICertificateResolver" instance used for resolving public certificates. 
+        /// The <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance used for resolving public certificates. 
         /// </value> 
         public ICertificateResolver PublicCertResolver
         {
@@ -267,7 +313,7 @@ namespace NHINDirect.Agent
         /// Gets the private certificate resolver (set in the constructor).  
         /// </summary> 
         /// <value> 
-        /// The <see cref="NHINDirect.Certificates.ICertificateResolver" instance used for resolving private certificates. 
+        /// The <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance used for resolving private certificates. 
         /// </value> 
         public ICertificateResolver PrivateCertResolver
         {
@@ -280,7 +326,7 @@ namespace NHINDirect.Agent
         /// Getst the trust anchor resolver (set in the constructor).  
         /// </summary> 
         /// <value> 
-        /// The <see cref="NHINDirect.Certificates.ITrustAnchorResolver" instance used for resolving trust anchors. 
+        /// The <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance used for resolving trust anchors. 
         /// </value>
         public ITrustAnchorResolver TrustAnchors
         {
@@ -418,7 +464,7 @@ namespace NHINDirect.Agent
 		/// <summary>
 		/// Decrypts and verifies trust in an IncomingMessage instance with signed and encrypted message content.
 		/// </summary>
-		/// <param name="envelope">
+		/// <param name="message">
 		/// A <see cref="IncomingMessage"/> instance with signed and encrypted content for decryption and trust verification.
 		/// </param>
 		/// <returns>
@@ -647,7 +693,7 @@ namespace NHINDirect.Agent
 		/// <summary>
         /// Encrypts, verifies recipient trust, and signs an OutgoingMessage containing a message to prepare for send.
 		/// </summary>
-		/// <param name="envelope">
+		/// <param name="message">
         /// An <see cref="OutgoingMessage"/> instance containing the message to prepare for send.
 		/// </param>
 		/// <returns>
