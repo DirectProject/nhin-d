@@ -22,6 +22,10 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp.module;
 
+import java.io.File;
+import java.net.URL;
+
+import org.apache.commons.io.FileUtils;
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.gateway.smtp.provider.XMLSmtpAgentConfigProvider;
 import org.nhindirect.stagent.NHINDAgent;
@@ -31,18 +35,18 @@ import com.google.inject.Provider;
 
 public class SmtpAgentConfigModule extends AbstractModule 
 {
-	private final String configurationFile;
+	private final URL configLocation;
 	private final Provider<SmtpAgentConfig> smtpAgentprovider;
 	private final Provider<NHINDAgent> agentProvider;
 	
-	public static SmtpAgentConfigModule create(String configurationFile,  Provider<SmtpAgentConfig> smtpAgentprovider, Provider<NHINDAgent> agentProvider)
+	public static SmtpAgentConfigModule create(URL configLocation,  Provider<SmtpAgentConfig> smtpAgentprovider, Provider<NHINDAgent> agentProvider)
 	{
-		return new SmtpAgentConfigModule(configurationFile, smtpAgentprovider, agentProvider);
+		return new SmtpAgentConfigModule(configLocation, smtpAgentprovider, agentProvider);
 	}
 	
-	private SmtpAgentConfigModule(String configurationFile, Provider<SmtpAgentConfig> smtpAgentprovider, Provider<NHINDAgent> agentProvider)
+	private SmtpAgentConfigModule(URL configLocation, Provider<SmtpAgentConfig> smtpAgentprovider, Provider<NHINDAgent> agentProvider)
 	{
-		this.configurationFile = configurationFile;
+		this.configLocation = configLocation;
 		this.smtpAgentprovider = smtpAgentprovider;
 		this.agentProvider = agentProvider;
 	}
@@ -52,8 +56,11 @@ public class SmtpAgentConfigModule extends AbstractModule
 		Provider<SmtpAgentConfig> provider = smtpAgentprovider;
 		
 		if (provider == null) // use the default XML configuration 
-			provider = new XMLSmtpAgentConfigProvider(configurationFile, agentProvider);
-
+		{
+			// convert URL to file location
+			File fl = FileUtils.toFile(configLocation);
+			provider = new XMLSmtpAgentConfigProvider(fl.getAbsolutePath(), agentProvider);
+		}
 		bind(SmtpAgentConfig.class).toProvider(provider);
 	}
 }

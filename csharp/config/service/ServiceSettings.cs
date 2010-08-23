@@ -24,12 +24,13 @@ namespace NHINDirect.Config.Service
 {
     public class ServiceSettings
     {
-        public const string ConfigConnectString = "configStoreConnectString";
-        public const string LogDirectory = "logDirectory";
+        public const string ConfigConnectStringKey = "configStoreConnectString";
+        public const string LogDirectoryKey = "logDirectory";
+        public const string QueryTimeoutKey = "queryTimeout";
         
         string m_connectString;
-        LogFileSettings m_logSettings;
-        
+        int m_dbTimeout;
+        LogFileSettings m_logSettings;        
         
         public ServiceSettings()
         {
@@ -44,6 +45,14 @@ namespace NHINDirect.Config.Service
             }
         }
         
+        public int QueryTimeout
+        {
+            get
+            {
+                return m_dbTimeout;
+            }
+        }
+                
         public LogFileSettings LogSettings
         {
             get
@@ -83,11 +92,17 @@ namespace NHINDirect.Config.Service
                 
         void Load()
         {
-            m_connectString = this.GetSetting(ServiceSettings.ConfigConnectString);
+            m_connectString = this.GetSetting(ServiceSettings.ConfigConnectStringKey);
             
             m_logSettings = new LogFileSettings();
             m_logSettings.SetDefaults();
-            m_logSettings.DirectoryPath = this.GetSetting<string>(LogDirectory, m_logSettings.DirectoryPath);
+            m_logSettings.DirectoryPath = this.GetSetting<string>(LogDirectoryKey, m_logSettings.DirectoryPath);
+            
+            m_dbTimeout = this.GetSetting<int>(ServiceSettings.QueryTimeoutKey, Config.Store.ConfigStore.DefaultTimeoutSeconds);
+            if (m_dbTimeout <= 0)
+            {
+                throw new ArgumentException("Invalid query timeout in config");
+            }
         }
     }
 }

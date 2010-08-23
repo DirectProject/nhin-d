@@ -58,6 +58,7 @@
     <Compile Include="AgentConfigTest.cs" />
     <Compile Include="AgentTester.cs" />
     <Compile Include="BasicAgentTests.cs" />
+    <Compile Include="AddressTest.cs" />
     <Compile Include="DnsResolverTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

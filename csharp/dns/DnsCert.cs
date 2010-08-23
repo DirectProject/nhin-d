@@ -38,41 +38,52 @@ namespace DnsResolver
         /// <summary>
         /// Creates a DnsX509Cert instance for an X509 certificate.
         /// </summary>
-        /// <param name="keyTag">The key tag for this certificate. See RFC 2535 for details.</param>
         /// <param name="certificate">A Base64 encoded DER representation of the certificate.</param>
-        public DnsX509Cert(ushort keyTag, string certificate)
+        public DnsX509Cert(string certificate)
         {
             if (string.IsNullOrEmpty(certificate))
             {
                 throw new ArgumentException();
             }
-            m_keyTag = keyTag;
-            //
-            // TODO: Support
-            //  - Remove '(' and ')'
-            //  - Remove spaces
-            //
+
+            // This will also create a key tag
             this.Certificate = new X509Certificate2(Convert.FromBase64String(this.NormalizeInputCertString(certificate)));
+        }
+        
+        /// <summary>
+        /// Creates a DnsX509Cert instance for an X509 certificate.
+        /// </summary>
+        /// <param name="certificate">A Base64 encoded DER representation of the certificate.</param>
+        /// <param name="keyTag">The key tag for this certificate. See RFC 2535 for details.</param>
+        public DnsX509Cert(string certificate, ushort keyTag)
+            : this(certificate)
+        {
+            m_keyTag = keyTag;
         }
 
         /// <summary>
         /// Creates a DnsX509Cert instance for an X509 certificate.
         /// </summary>
-        /// <param name="keyTag">The key tag for this certificate. See RFC 2535 for details.</param>
         /// <param name="certificate">A byte array providing a DER representation of an X509 certificate.</param>
-        public DnsX509Cert(ushort keyTag, byte[] certificate)
+        public DnsX509Cert(byte[] certificate)
         {
             if (certificate == null || certificate.Length == 0)
             {
                 throw new ArgumentException();
             }
-            m_keyTag = keyTag;
-            //
-            // TODO: Support
-            //  - Remove '(' and ')'
-            //  - Remove spaces
-            //
+            // This will also create a key tag
             this.Certificate = new X509Certificate2(certificate);
+        }
+
+        /// <summary>
+        /// Creates a DnsX509Cert instance for an X509 certificate.
+        /// </summary>
+        /// <param name="certificate">A byte array providing a DER representation of an X509 certificate.</param>
+        /// <param name="keyTag">The key tag for this certificate. See RFC 2535 for details.</param>
+        public DnsX509Cert(byte[] certificate, ushort keyTag)
+            : this(certificate)
+        {
+            m_keyTag = keyTag;
         }
 
         /// <summary>
