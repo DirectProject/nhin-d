@@ -61,8 +61,8 @@ Bad message?";
         
         [Fact]
         public void TestUntrusted()
-        {   
-            SmtpAgentSettings settings =  SmtpAgentSettings.LoadFile(Path.Combine(Directory.GetCurrentDirectory(), "TestSmtpAgentConfig.xml"));      
+        {
+            SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(Path.Combine(Directory.GetCurrentDirectory(), "TestSmtpAgentConfig.xml"));      
             SmtpAgent agent = new SmtpAgent(settings);
             //
             // This should be accepted because the envelope is what we look at

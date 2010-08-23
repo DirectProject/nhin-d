@@ -236,7 +236,7 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
-        public static SmtpAgentSettings LoadFile(string configFilePath)
+        public static SmtpAgentSettings LoadSettings(string configFilePath)
         {
             ExtensibleXmlSerializer serializer = new ExtensibleXmlSerializer();
             serializer.AddElementOption<CertificateSettings>("Resolver", "ServiceResolver", typeof(CertServiceResolverSettings));
