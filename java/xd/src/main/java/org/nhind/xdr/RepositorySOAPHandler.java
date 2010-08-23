@@ -37,10 +37,6 @@ import javax.xml.ws.soap.SOAPFaultException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-
-
-
-
 /**
  * This class handles the SOAP-Requests before they reach the
  * Web Service Operation. It is possible to read and manipulate
@@ -61,6 +57,8 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     protected String from;
     private static boolean first = true;
 
+    private static final Logger LOGGER = Logger.getLogger(RepositorySOAPHandler.class.getPackage().getName());
+    
     /**
      * Is called after constructing the handler and before executing any othe method.
      */
@@ -74,13 +72,16 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                // loadProperties("system.properties", properties);
                // Properties sysprop = System.getProperties();
                // sysprop.putAll(properties);
-              //  Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,properties.toString());
+               // LOGGER.info(properties.toString());
             } catch (Exception exception) {
-                Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"Problem with properties file");
+                LOGGER.info("Problem with properties file");
             }
         }
     }
 
+    /* (non-Javadoc)
+     * @see javax.xml.ws.handler.Handler#close(javax.xml.ws.handler.MessageContext)
+     */
     @Override
     public void close(MessageContext messageContext) {
     }
@@ -166,7 +167,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                 pid = null;
                 relatesTo = null;
              
-                Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"Direction=inbound (handleMessage)");
+                LOGGER.info("Direction=inbound (handleMessage)");
 
                 SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
                 dumpSOAPMessage(msg);
@@ -186,26 +187,26 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                 Iterator it = sh.extractAllHeaderElements();
                 while (it.hasNext()) {
                     Node header = (Node) it.next();
-                    Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,header.getNodeName());
+                    LOGGER.info(header.getNodeName());
 
                     if (header.toString().indexOf("MessageID") >= 0) {
                         messageId = header.getTextContent();
-                        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,messageId);
+                        LOGGER.info(messageId);
 
                     } else if (header.toString().indexOf("Action") >= 0) {
                         action = header.getTextContent();
-                        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,action);
+                        LOGGER.info(action);
                     } else if (header.toString().indexOf("RelatesTo") >= 0) {
                         relatesTo = header.getTextContent();
-                        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,action);
+                        LOGGER.info(action);
                     } else if (header.toString().indexOf("ReplyTo") >= 0) {
                         NodeList reps = header.getChildNodes();
                         for (int i = 0; i < reps.getLength(); i++) {
                             Node address = reps.item(i);
-                            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,address.getNodeName());
+                            LOGGER.info(address.getNodeName());
                             if (address.getNodeName().indexOf("Address") >= 0) {
                                 endpoint = address.getTextContent();
-                                Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,endpoint);
+                                LOGGER.info(endpoint);
 
                             }
                         }
@@ -213,16 +214,16 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                         NodeList reps = header.getChildNodes();
                         for (int i = 0; i < reps.getLength(); i++) {
                             Node address = reps.item(i);
-                            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,address.getNodeName());
+                            LOGGER.info(address.getNodeName());
                             if (address.getNodeName().indexOf("Address") >= 0) {
                                 from = address.getTextContent();
-                                Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,from);
+                                LOGGER.info(from);
 
                             }
                         }
                     } else if (header.toString().indexOf("To") >= 0) {// must be after ReplyTo
                         to = header.getTextContent();
-                        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,to);
+                        LOGGER.info(to);
                     }
                 }
                 setHeaderData();
@@ -239,7 +240,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
     @SuppressWarnings("unused")
-	private void loadProperties(String fileName, Properties properties) throws IOException {
+    private void loadProperties(String fileName, Properties properties) throws IOException {
 
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("META-INF/" + fileName);
         properties.load(inputStream);
@@ -289,29 +290,25 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
      */
     protected void dumpSOAPMessage(SOAPMessage msg) {
         if (msg == null) {
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"SOAP Message is null");
+            LOGGER.info("SOAP Message is null");
             return;
         }
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"");
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"--------------------");
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO," DUMP OF SOAP MESSAGE");
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"--------------------");
+        LOGGER.info("");
+        LOGGER.info("--------------------");
+        LOGGER.info(" DUMP OF SOAP MESSAGE");
+        LOGGER.info("--------------------");
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             msg.writeTo(baos);
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,baos.toString(getMessageEncoding(msg)));
+            LOGGER.info(baos.toString(getMessageEncoding(msg)));
 
             // show included values
             String values = msg.getSOAPBody().getTextContent();
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"Included values:" + values);
+            LOGGER.info("Included values:" + values);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-  
-
-  
 
     /**
      * Handles SOAP-Errors.
@@ -321,22 +318,23 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
      */
     @Override
     public boolean handleFault(SOAPMessageContext context) {
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"ServerSOAPHandler.handleFault");
+        LOGGER.info("ServerSOAPHandler.handleFault");
         boolean outbound = (Boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
         if (outbound) {
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"Direction=outbound (handleFault)");
+            LOGGER.info("Direction=outbound (handleFault)");
         } else {
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"Direction=inbound (handleFault)");
+            LOGGER.info("Direction=inbound (handleFault)");
         }
 
         try {
+            @SuppressWarnings("unused")
             SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
             // dumpSOAPMessage(msg);
             if (context.getMessage().getSOAPBody().getFault() != null) {
                 String detailName = null;
                 try {
                     detailName = context.getMessage().getSOAPBody().getFault().getDetail().getFirstChild().getLocalName();
-                    Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"detailName=" + detailName);
+                    LOGGER.info("detailName=" + detailName);
                 } catch (Exception e) {
                 }
             }
@@ -361,7 +359,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
             ret = unmarshaller.unmarshal(byteArrayInputStream);
 
         } catch (Exception ex) {
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,xml.substring(0, 50) + " Failed to Unmarshall. Exception msg=" + ex.getMessage());
+            LOGGER.info(xml.substring(0, 50) + " Failed to Unmarshall. Exception msg=" + ex.getMessage());
             ex.printStackTrace();
 
         }
@@ -371,7 +369,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     
 
     @SuppressWarnings("unused")
-	private SOAPFaultException createSOAPFaultException(String faultString,
+    private SOAPFaultException createSOAPFaultException(String faultString,
             Boolean clientFault) {
         try {
             String faultCode = clientFault ? "Client" : "Server";

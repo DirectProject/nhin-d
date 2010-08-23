@@ -26,11 +26,20 @@ namespace NHINDirect.Agent
     /// </summary>
     public class AgentException : NHINDException<AgentError>
     {
+        /// <summary>
+        /// Creates an exception with an associated agent error status.
+        /// </summary>
+        /// <param name="error">The <see cref="AgentError"/> status</param>
         public AgentException(AgentError error)
             : base(error)
         {
         }
-        
+
+        /// <summary>
+        /// Creates an exception with an associated agent error status and custom message
+        /// </summary>
+        /// <param name="error">The <see cref="AgentError"/> status</param>
+        /// <param name="message">The custom message for this error</param>
         public AgentException(AgentError error, string message)
             : base(error, message)
         {

@@ -118,6 +118,10 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Gets and sets the result of trust checking for this address.
+        /// </summary>
+        /// <value>A <see cref="TrustEnforcementStatus"/> value indicated the result of trust checking</value>
         public TrustEnforcementStatus Status
         {
             get
@@ -130,6 +134,7 @@ namespace NHINDirect.Agent
             }
         }
         
+
         /// <summary>
         /// An arbitrary Tag that an integrator may associate with this address during pre/post processing of messages. 
         /// </summary>

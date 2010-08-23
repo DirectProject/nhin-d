@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Arien Malec     arien.malec@nhindirect.org
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -24,10 +25,22 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Agent
 {
+    /// <summary>
+    /// Status of trust checking
+    /// </summary>
     public enum TrustEnforcementStatus
     {
+        /// <summary>
+        /// Failed trust enforcement
+        /// </summary>
         Failed = -1,
+        /// <summary>
+        /// Trust status could not be determined
+        /// </summary>
         Unknown = 0,
+        /// <summary>
+        /// Trust checked and confirmed.
+        /// </summary>
         Success= 1,                     // Signature valid, siging cert trusted, and certs match perfectly
     }
         
@@ -36,6 +49,9 @@ namespace NHINDirect.Agent
     /// </summary>
     public class TrustModel
     {
+        /// <summary>
+        /// A trust model with default configurations for chain validator
+        /// </summary>
         public static readonly TrustModel Default = new TrustModel();
         
         TrustChainValidator m_certChainValidator;
@@ -151,17 +167,8 @@ namespace NHINDirect.Agent
             {
                 return null;
             }
-            
-            X509Certificate2Collection trustedCerts = new X509Certificate2Collection();
-            foreach (X509Certificate2 cert in certs)
-            {
-                if (m_certChainValidator.IsTrustedCertificate(cert, anchors))
-                {
-                    trustedCerts.Add(cert);
-                }
-            }
-            
-            return trustedCerts;
+
+            return certs.Where(c => m_certChainValidator.IsTrustedCertificate(c, anchors));
         }
 
         void FindSenderSignatures(IncomingMessage message)

@@ -5,26 +5,30 @@
 package org.nhind.xdr;
 
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.ws.WebServiceContext;
+
 import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -42,12 +46,14 @@ public class DocumentRegistry {
     String patientId = null;
     String sourceDocId = null;
     String sourceObjectId = null;
-    List forwards = null;
+    List<String> forwards = null;
   
     public static final int PNR = 1;
     public static final int REG = 2;
     private boolean nhdirect = false;
     String author = null;
+    
+    private static final Logger LOGGER = Logger.getLogger(DocumentRegistry.class.getPackage().getName());
 
     public String parseRegistry(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
         SubmitObjectsRequest sor = prdst.getSubmitObjectsRequest();
@@ -55,9 +61,8 @@ public class DocumentRegistry {
     }
 
     protected String parseRegistryData(SubmitObjectsRequest sor, int ttype) throws Exception {
-       
-
         String ret = null;
+
         try {
             if (sor != null) {
                 RegistryObjectListType rol = sor.getRegistryObjectList();
@@ -74,7 +79,7 @@ public class DocumentRegistry {
                         forwards = getForwards((RegistryPackageType) value);
                     }  else if (type.equals("oasis.names.tc.ebxml_regrep.xsd.rim._3.AssociationType1")) {
                     }
-                    Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, elem.getDeclaredType().getName() + elem.getValue().toString());
+                    LOGGER.info(elem.getDeclaredType().getName() + elem.getValue().toString());
                 }
                 if (nhdirect && (forwards == null || forwards.isEmpty() || ((String) forwards.get(0)).equals("no endpoint"))) {
                     throw new Exception("NO ENDPOINT for IntendedRecipient");
@@ -87,50 +92,65 @@ public class DocumentRegistry {
         return ret;
     }
 
-    public List getForwards() {
+    public List<String> getForwards() {
         return forwards;
     }
 
+    /**
+     * Extract an email address from an HL7 string using "^" delimiter.
+     * 
+     * @return the extracted email address
+     */
     public String getAuthorEmail() {
+        // Literal string
+        if (!StringUtils.contains(author, "^")) {
+            // If string is an email
+            if (StringUtils.contains(author, "@")) {
+                return author;
+            } else {
+                // TODO: What happens when an author email address is not provided?
+                LOGGER.info("Author email not found");
+                return "postmaster@nhindirect.org";
+            }
+        }
+        
+        String auserId = null;
         List<String> fields = split(author, "^");
-        String auserId = fields.get(0);
-        String last = fields.get(1);
-        String first = fields.get(2);
-        String mid = fields.get(3);
-        String what = fields.get(4);
-        String prefix = fields.get(5);
-        String suffix = fields.get(6);
-        String what2 = fields.get(7);
-        String org = fields.get(8);
-        List<String> orgs = split(org, "&");
-        String aorgId = (String) orgs.get(1);
-        aorgId = orgId.replace("ISO", "");
+
+        if (fields != null) {
+            if (fields.get(0) != null) {
+                auserId = fields.get(0);
+            }
+        }
+
+        /*
+         * String last = fields.get(1);
+         * String first = fields.get(2);
+         * String mid = fields.get(3);
+         * String what = fields.get(4);
+         * String prefix = fields.get(5);
+         * String suffix = fields.get(6);
+         * String what2 = fields.get(7);
+         * String org = fields.get(8);
+         * List<String> orgs = split(org, "&");
+         * String aorgId = (String) orgs.get(1);
+         * aorgId = aorgId.replace("ISO", "");
+         */
+
         return auserId;
     }
 
-    protected List getForwards(RegistryPackageType rpt) throws Exception {
-        List forwards = new ArrayList();
-        List<SlotType1> slots = rpt.getSlot();
-        Iterator<SlotType1> islot = slots.iterator();
+    protected List<String> getForwards(RegistryPackageType rpt) throws Exception {
+        List<String> forwards = new ArrayList<String>();
 
-        while (islot.hasNext()) {
-            SlotType1 slot = islot.next();
+        for (SlotType1 slot : rpt.getSlot()) {
             String slotName = slot.getName();
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, slotName);
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, slot.getSlotType());
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, slot.getValueList().getValue().get(0));
+            LOGGER.info(slotName);
+            LOGGER.info(slot.getSlotType());
+            LOGGER.info(slot.getValueList().getValue().get(0));
 
             if (slotName.equals("intendedRecipient")) {
-
-                List<String> recips = slot.getValueList().getValue();
-                Iterator<String> irec = recips.iterator();
-                while (irec.hasNext()) {
-                    String prov = irec.next();
-                    // this intentended recipient
-                    // |john.smith@happyvalleyclinic.nhindirect.org^Smith^John^^^Dr^MD^^&amp;1.3.6.1.4.1.21367.3100.1
-                    // casues a forward to
-                    // sendPoint = "http://shinnytest.gsihealth.com:8080/DocumentRepository_Service/DocumentRepository?wsdl";
-                    // otherwise the email is used for XDM
+                for (String prov : slot.getValueList().getValue()) {
                     StringTokenizer ids = new StringTokenizer(prov, "|");
                     String user = null;
                     String org = ids.nextToken();
@@ -156,9 +176,17 @@ public class DocumentRegistry {
                     orgId = orgId.replace("ISO", "");
 
                     String sendPoint = userId;
+                    
+                    /*
+                     * TODO: define when and where to relay vs. email this.
+                     * intentended recipient
+                     * |john.smith@happyvalleyclinic.nhindirect.org^Smith^John^^^Dr^MD^^&amp;1.3.6.1.4.1.21367.3100.1
+                     * casues a forward to
+                     * "http://shinnytest.gsihealth.com:8080/DocumentRepository_Service/DocumentRepository?wsdl"
+                     * otherwise the email is used for XDM
+                     */
                     if(userId.equals("john.smith@happyvalleyclinic.nhindirect.org")){
                          sendPoint = "http://shinnytest.gsihealth.com:8080/DocumentRepository_Service/DocumentRepository?wsdl";
-
                     }
 
                     forwards.add(sendPoint);
@@ -182,48 +210,33 @@ public class DocumentRegistry {
         return ret;
     }
 
-  
-  
-
     private String parseClassifications(List<ClassificationType> classes) throws Exception {
-
         String lauthor = null;
+
         try {
-
-            Iterator<ClassificationType> ic = classes.iterator();
-            while (ic.hasNext()) {
-                ClassificationType clas = ic.next();
-
-
-                List<SlotType1> slots = clas.getSlot();
-                Iterator<SlotType1> si = slots.iterator();
-
-                while (si.hasNext()) {
-                    SlotType1 slot = si.next();
+            for (ClassificationType clas : classes) {
+                for (SlotType1 slot : clas.getSlot()) {
                     String sname = slot.getName();
-                    if (sname.equals("authorPerson")) {
-                        ValueListType valts = slot.getValueList();
-                        List<String> vals = valts.getValue();
-                        Iterator<String> ival = vals.iterator();
-                        while (ival.hasNext()) {
-                            lauthor = ival.next();
+                    if (sname.equals("authorPerson")
+                            && slot.getValueList() != null
+                            && slot.getValueList().getValue() != null) {
+                        for (String value : slot.getValueList().getValue()) {
+                            lauthor = value;
                         }
                     }
                 }
-
-
             }
         } catch (Exception x) {
             x.printStackTrace();
             throw (x);
         }
+        
         return lauthor;
-
     }
 
     private String parseDocument(ExtrinsicObjectType document) throws Exception {
-
         sourceObjectId = document.getId();
+
         String objectType = document.getObjectType();
         String mimeType = document.getMimeType();
         String firstName = null;
@@ -241,13 +254,8 @@ public class DocumentRegistry {
         String reposId = null;
 
         boolean repos = false;
-        List<SlotType1> slots = document.getSlot();
-        Iterator<SlotType1> islots = slots.iterator();
-        SlotType1 slot = null;
-
-        while (islots.hasNext()) {
-
-            slot = islots.next();
+        
+        for (SlotType1 slot : document.getSlot()) {
             if (slot.getName().equals("creationTime")) {
                 creationDate = slot.getValueList().getValue().get(0);
 
@@ -270,11 +278,8 @@ public class DocumentRegistry {
                 }
 
             } else if (slot.getName().equals("sourcePatientInfo")) {
-                List<String> pids = slot.getValueList().getValue();
-                Iterator<String> ipid = pids.iterator();
-                while (ipid.hasNext()) {
-                    String pid = ipid.next();
-                    Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, pid);
+                for (String pid : slot.getValueList().getValue()) {
+                    LOGGER.info(pid);
                     if (pid.indexOf("PID-5") == 0) {
                         String name = returnField(pid, "|", 2);
                         firstName = returnField(name, "^", 2);
@@ -322,16 +327,13 @@ public class DocumentRegistry {
 
     // right now this is not used, just getForwards
     @SuppressWarnings("unused")
-	private void parseSubmissionSet(RegistryPackageType set) throws Exception {
+    private void parseSubmissionSet(RegistryPackageType set) throws Exception {
 
         try {
 
             String setId = set.getId();
             String objectType = set.getObjectType();
 
-            List<SlotType1> slots = set.getSlot();
-            Iterator<SlotType1> islots = slots.iterator();
-            SlotType1 slot = null;
             String submissionDate = null;
             String setName = null;
             String setDesc = null;
@@ -340,17 +342,13 @@ public class DocumentRegistry {
             boolean repos = false;
             nhdirect = false;
 
-            while (islots.hasNext()) {
-
-                slot = islots.next();
+            for (SlotType1 slot : set.getSlot()) {
                 if (slot.getName().equals("submissionTime")) {
                     try {
                         submissionDate = slot.getValueList().getValue().get(0);
                     } catch (Exception x) {
                         submissionDate = null;
                     }
-
-
 
                 } else if (slot.getName().equals("repositoryUniqueId")) {
                     reposId = slot.getValueList().getValue().get(0);
@@ -417,29 +415,20 @@ public class DocumentRegistry {
         return ret;
     }
 
-  
+    /**
+     * Split up a string using the given delimiter and return as a list of
+     * tokens
+     * 
+     * @param input
+     *            The string to split
+     * @param delimiter
+     *            The delimiter used for splitting
+     * @return a list of split tokens
+     */
+    private List<String> split(String input, String delimiter) {
+        String quotedDelimiter = Pattern.quote(delimiter);
+        List<String> tokens = Arrays.asList(input.split(quotedDelimiter, -1));
 
-   private List<String> split(String input, String delimiter) {
-        boolean wasDelimiter = true;
-        String token = null;
-        List<String> v = new ArrayList<String>();
-        StringTokenizer st = new StringTokenizer(input, delimiter, true);
-        while (st.hasMoreTokens()) {
-            token = st.nextToken();
-            if (token.equals(delimiter)) {
-                if (wasDelimiter) {
-                    token = "";
-                } else {
-                    token = null;
-                }
-                wasDelimiter = true;
-            } else {
-                wasDelimiter = false;
-            }
-            if (token != null) {
-                v.add(token);
-            }
-        }
-        return v;
+        return tokens;
     }
 }
