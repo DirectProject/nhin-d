@@ -130,10 +130,10 @@ namespace NHINDirect.Agent
         /// Does this collection of NHINDAddress contain only trustworthy addresses? 
         /// </summary>
         /// <param name="minTrustStatus">The <see cref="TrustEnforcementStatus"/> defined as minimally trustworthy.</param>
-        /// <returns><c>true</c> if all the addresses are trusted, <c>false</c> if at least one is untrusted</returns>        
+        /// <returns><c>true</c> if all the addresses are trusted, <c>false</c> if the collection is empty or at least one is untrusted</returns>        
         public bool IsTrusted(TrustEnforcementStatus minTrustStatus)
         {
-            return this.All(x => x.IsTrusted(minTrustStatus));
+            return this.Count > 0 && this.All(x => x.IsTrusted(minTrustStatus));
         }
         
         /// <summary>
