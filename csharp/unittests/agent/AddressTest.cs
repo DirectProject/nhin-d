@@ -50,13 +50,64 @@ namespace AgentTests
             Assert.False(coll.IsTrusted());
             Assert.Equal<string>("", coll.ToString());
             Assert.False(coll.IsTrusted(TrustEnforcementStatus.Failed));
-            Assert.Null(coll.GetCertificates());
-            Assert.Null(coll.Certificates);
-            Assert.Null(coll.GetUntrusted());
-            Assert.Null(coll.GetTrusted());
+            Assert.True(coll.GetCertificates().Count == 0);
+            Assert.True(coll.Certificates.Count() == 0);
+            Assert.True(coll.GetUntrusted().Count() == 0);
+            Assert.True(coll.GetTrusted().Count() == 0);
+            Assert.DoesNotThrow(() => coll.RemoveUntrusted());
         }
 
+        [Fact]
+        public void TestAddressCollectionTrust()
+        {
+            NHINDAddressCollection coll = BasicCollection();
+            Assert.False(coll.IsTrusted());
+            Assert.True(coll.IsTrusted(TrustEnforcementStatus.Unknown));
+            foreach (NHINDAddress addr in coll)
+            {
+                addr.Status = TrustEnforcementStatus.Success;
+            }
+            Assert.True(coll.IsTrusted());
+        }
 
+        [Theory]
+        [InlineData(null,0)]
+        [InlineData("", 0)]
+        [InlineData("eleanor@roosevelt.com, \"Franklin Roosevelt\" <frank@roosevelt.com>, sean+o'nolan@tinymollitude.net", 3)]
+        public void TestParseAddressCollection(string addressList, int expectedCount)
+        {
+            NHINDAddressCollection coll = NHINDAddressCollection.Parse(addressList);
+            Assert.Equal<int>(expectedCount, coll.Count);
+        }
+
+        [Fact]
+        public void TestAddressCollectionTrustedUntrusted()
+        {
+            NHINDAddressCollection coll = BasicCollection();
+            coll[0].Status = TrustEnforcementStatus.Failed;
+            coll[1].Status = TrustEnforcementStatus.Unknown;
+            coll[2].Status = TrustEnforcementStatus.Success;
+
+            Assert.False(coll.IsTrusted());
+            Assert.Equal(1, coll.GetTrusted().Count());
+            Assert.Equal(2, coll.GetUntrusted().Count());
+            Assert.Equal(2, coll.GetTrusted(TrustEnforcementStatus.Unknown).Count());
+
+            coll.RemoveUntrusted();
+            Assert.Equal(1, coll.Count);
+        }
+
+        NHINDAddressCollection BasicCollection()
+        {
+            string[] addrStrings = new string[] {
+                "eleanor@roosevelt.com",
+                "\"Franklin Roosevelt\" <frank@roosevelt.com>",
+                "sean+o'nolan@tinymollitude.net"};
+            IEnumerable<NHINDAddress> addrs =  addrStrings.Select(a => new NHINDAddress(a));
+            NHINDAddressCollection coll = new NHINDAddressCollection();
+            coll.Add(addrs);
+            return coll;
+        }
 
     }
 }
