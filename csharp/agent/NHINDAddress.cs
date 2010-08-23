@@ -144,6 +144,11 @@ namespace NHINDirect.Agent
             set;
         }
         
+	/// <summary>
+        /// Returns <c>true</c> if the trust status for this address meets minimal trust, <c>false</c> if not
+        /// </summary>
+        /// <param name="minTrustStatus">The <see cref="TrustEnforcementStatus"/> treated as minimally trustworthy</param>
+        /// <returns><c>true</c> if trusted, <c>false</c> if not</returns>
         public bool IsTrusted(TrustEnforcementStatus minTrustStatus)
         {
             return (this.m_trustStatus >= minTrustStatus);
