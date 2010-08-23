@@ -1,6 +1,7 @@
 package org.nhindirect.gateway.smtp;
 
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,7 +43,14 @@ public class DefaultSmtpAgent_ProcessMessage_Test extends TestCase
 			if (agentProvider == null)
 				agentProvider = new MockNHINDAgentProvider(Arrays.asList(new String[] {"cerner.com", "securehealthemail.com"}));
 			
-			modules.add(SmtpAgentConfigModule.create(configfile, null, agentProvider));
+			try
+			{
+				modules.add(SmtpAgentConfigModule.create(new URL("file://" + configfile), null, agentProvider));	
+			}
+			catch (Exception e)
+			{
+				throw new RuntimeException(e);
+			}
 			
 			Injector injector = Guice.createInjector(modules);
 			SmtpAgentConfig config = injector.getInstance(SmtpAgentConfig.class);

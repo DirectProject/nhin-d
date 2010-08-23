@@ -22,6 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,24 +36,24 @@ import com.google.inject.Provider;
 
 public class SmtpAgentFactory 
 {
-	private static Map<String, SmtpAgent> agents = new HashMap<String, SmtpAgent>();
+	private static Map<URL, SmtpAgent> agents = new HashMap<URL, SmtpAgent>();
 	
-	public synchronized static SmtpAgent createAgent(String configurationFile)
+	public synchronized static SmtpAgent createAgent(URL configLocation)
 	{
-		return createAgent(configurationFile, null, null);
+		return createAgent(configLocation, null, null);
 	}
 	
-	public synchronized static SmtpAgent createAgent(String configurationFile, Provider<SmtpAgentConfig> configProvider, 
+	public synchronized static SmtpAgent createAgent(URL configLocation, Provider<SmtpAgentConfig> configProvider, 
 			Provider<NHINDAgent> agentProvider)
 	{
-		SmtpAgent retVal = agents.get(configurationFile);
+		SmtpAgent retVal = agents.get(configLocation);
 		
 		if (retVal == null)
 		{
-			Injector agentInjector = buildAgentInjector(configurationFile, configProvider, agentProvider);
+			Injector agentInjector = buildAgentInjector(configLocation, configProvider, agentProvider);
 			retVal = agentInjector.getInstance(SmtpAgent.class);
 			
-			agents.put(configurationFile, retVal);
+			agents.put(configLocation, retVal);
 		}
 		
 		return retVal;
@@ -61,9 +62,9 @@ public class SmtpAgentFactory
 	/*
 	 * Creates an injector for getting SmtpAgent instances
 	 */
-	private static Injector buildAgentInjector(String configurationFile, Provider<SmtpAgentConfig> configProvider, Provider<NHINDAgent> agentProvider)
+	private static Injector buildAgentInjector(URL configLocation, Provider<SmtpAgentConfig> configProvider, Provider<NHINDAgent> agentProvider)
 	{
-		Injector configInjector = Guice.createInjector(SmtpAgentConfigModule.create(configurationFile, configProvider, agentProvider));
+		Injector configInjector = Guice.createInjector(SmtpAgentConfigModule.create(configLocation, configProvider, agentProvider));
 		
 		SmtpAgentConfig config = configInjector.getInstance(SmtpAgentConfig.class);
 		
