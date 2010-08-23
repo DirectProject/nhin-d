@@ -21,28 +21,45 @@ using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using NHINDirect.Config.Store;
 using NHINDirect.Certificates;
+using NHINDirect.Config.Client.DomainManager;
 using NHINDirect.Config.Client.CertificateService;
 
 namespace NHINDirect.Config.Client
 {
     public class ConfigCertificateResolver : ICertificateResolver, IX509CertificateIndex
     {
-        CertificateStoreClient m_client;
-        NHINDirect.Certificates.CertificateResolver m_resolver;
+        ClientSettings m_certClientSettings;
+        ClientSettings m_addressClientSettings;
+        CertificateResolver m_resolver;
         
-        public ConfigCertificateResolver(CertificateStoreClient store)
+        public ConfigCertificateResolver(ClientSettings certClientSettings)
+            : this(certClientSettings, null)
         {
-            if (store == null)
+        }
+        
+        public ConfigCertificateResolver(ClientSettings certClientSettings, ClientSettings addressClientSettings)
+        {
+            if (certClientSettings == null)
             {
                 throw new ArgumentNullException();
             }
             
-            m_client = store;
-            m_resolver = new NHINDirect.Certificates.CertificateResolver(this);
+            m_certClientSettings = certClientSettings;
+            m_addressClientSettings = addressClientSettings;
+            m_resolver = new CertificateResolver(this);
         }
 
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
+            if (m_addressClientSettings != null)
+            {
+                Address registeredAddress = this.ResolveAddress(address);
+                if (registeredAddress == null)
+                {
+                    return null;
+                }
+            }
+            
             return m_resolver.GetCertificates(address);
         }
 
@@ -50,8 +67,28 @@ namespace NHINDirect.Config.Client
         {
             get 
             { 
-                return Certificate.ToX509Collection(m_client.GetCertificatesForOwner(subjectName));
+                using(CertificateStoreClient client = this.CreateCertClient())
+                {
+                    return Certificate.ToX509Collection(client.GetCertificatesForOwner(subjectName));
+                }
             }
+        }
+        
+        Address ResolveAddress(MailAddress address)
+        {
+            AddressManagerClient client = this.CreateAddressClient();
+            return client.GetAddress(address);
+        }
+        
+        CertificateStoreClient CreateCertClient()
+        {
+            return new CertificateStoreClient(m_certClientSettings.Binding, m_certClientSettings.Endpoint);
+        }
+        
+        AddressManagerClient CreateAddressClient()
+        {
+            return new AddressManagerClient(m_addressClientSettings.Binding, m_addressClientSettings.Endpoint);
         }
     }
 }
+    

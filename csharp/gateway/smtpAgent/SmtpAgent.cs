@@ -26,6 +26,8 @@ using NHINDirect.Certificates;
 using NHINDirect.Diagnostics;
 using NHINDirect.Mail;
 using NHINDirect.Mime;
+using NHINDirect.Config.Store;
+using NHINDirect.Config.Client.DomainManager;
 using System.Diagnostics;
 using CDO;
 using ADODB;
@@ -36,8 +38,9 @@ namespace NHINDirect.SmtpAgent
     {
         SmtpAgentSettings m_settings;
         NHINDAgent m_agent;
-        LogFile m_log;
         DomainPostmasters m_postmasters;
+        AgentDiagnostics m_diagnostics;
+        MessageRouter m_router;
         BounceMessageCreator m_outgoingBounceFactory;
         BounceMessageCreator m_incomingBounceFactory;
         
@@ -64,7 +67,15 @@ namespace NHINDirect.SmtpAgent
         {
             get
             {
-                return m_log;
+                return m_diagnostics.Log;
+            }
+        }
+        
+        public MessageRouter Router
+        {
+            get
+            {
+                return m_router;
             }
         }
         
@@ -81,10 +92,7 @@ namespace NHINDirect.SmtpAgent
         /// </summary>
         public void LogStatus(string message)
         {
-            if (m_settings.LogVerbose)
-            {
-                m_log.WriteLine(message);
-            }
+            m_diagnostics.LogStatus(message);
         }
 
         //---------------------------------------------------
@@ -97,21 +105,16 @@ namespace NHINDirect.SmtpAgent
             m_settings = settings;
             m_settings.Validate();
             
-            m_log = new LogFile(m_settings.LogSettings.CreateWriter());
+            m_diagnostics = new AgentDiagnostics(new LogFile(m_settings.LogSettings.CreateWriter()), m_settings.LogVerbose);
             
             this.LogStatus("Init_Begin");
             try
             {
-                this.LogStatus("InitPostmasters_Begin");
-                m_postmasters = new DomainPostmasters();
-                m_postmasters.Init(m_settings.Domains, m_settings.Postmasters);
-                this.LogStatus("InitPostmasters_End");
-
+                this.InitPostmasters();
                 this.InitFolders();
+                this.InitRoutes();                
                 this.InitBounceFactories();
-
                 this.InitAgent();
-
                 this.SubscribeToAgentEvents();
      
                 this.LogStatus("Init_End");
@@ -119,7 +122,7 @@ namespace NHINDirect.SmtpAgent
             catch (Exception error)
             {
                 this.LogStatus("Init_Failed");
-                m_log.WriteError(error);
+                m_diagnostics.LogError(error);
                 throw;
             }
         }
@@ -131,7 +134,15 @@ namespace NHINDirect.SmtpAgent
             m_agent = m_settings.CreateAgent();            
             this.LogStatus("CreateAgent_End");            
         }
-                
+        
+        void InitPostmasters()
+        {
+            this.LogStatus("InitPostmasters_Begin");
+            m_postmasters = new DomainPostmasters();
+            m_postmasters.Init(m_settings.Domains, m_settings.Postmasters);
+            this.LogStatus("InitPostmasters_End");
+        }
+        
         void InitFolders()
         {
             this.LogStatus("InitFolder_Begin");
@@ -144,17 +155,33 @@ namespace NHINDirect.SmtpAgent
             this.LogStatus("InitFolder_End");        
         }
         
+        void InitRoutes()
+        {
+            m_router = new MessageRouter(m_diagnostics);            
+            if (!m_settings.HasRoutes)
+            {
+                return;
+            }
+            
+            this.LogStatus("InitRoutes_Begin");
+            
+            m_router.SetRoutes(m_settings.IncomingRoutes);            
+            
+            this.LogStatus("InitRoutes_End");
+        }
+        
         void SubscribeToAgentEvents()
         {
             this.LogStatus("SubscribingToEvents_Begin");
 
-            m_agent.ErrorIncoming += this.OnIncomingError;
-            m_agent.ErrorOutgoing += this.OnOutgoingError;
+            m_agent.PreProcessIncoming += this.OnPreProcessIncoming;
+            m_agent.ErrorIncoming += m_diagnostics.OnIncomingError;
+            m_agent.ErrorOutgoing += m_diagnostics.OnOutgoingError;
             
             DnsCertResolver dnsResolver = m_agent.PublicCertResolver as DnsCertResolver;
             if (dnsResolver != null)
             {
-                dnsResolver.Error += this.OnDnsError;
+                dnsResolver.Error += m_diagnostics.OnDnsError;
             }
 
             this.LogStatus("SubscribingToEvents_End");
@@ -193,9 +220,9 @@ namespace NHINDirect.SmtpAgent
                 this.PreProcessMessage(message);
                 //
                 // Let the agent do its thing
-                //
+                //   
                 MessageEnvelope envelope = this.CreateEnvelope(message);
-                envelope = this.ProcessEnvelope(envelope);
+                envelope = this.ProcessEnvelope(message, envelope);
                 if (envelope == null)
                 {
                     throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
@@ -223,7 +250,7 @@ namespace NHINDirect.SmtpAgent
             catch (Exception ex)
             {
                 this.RejectMessage(message);
-                m_log.WriteError(ex);
+                m_diagnostics.LogError(ex);
                 throw;
             }
         }
@@ -231,11 +258,11 @@ namespace NHINDirect.SmtpAgent
         protected virtual void PreProcessMessage(CDO.Message message)
         {
             this.LogStatus("Message Received from: " + message.From);
-            this.CopyMessage(message, m_settings.RawMessage);
+            this.CopyMessageToFolder(message, m_settings.RawMessage);
         }
                                 
-        protected virtual MessageEnvelope ProcessEnvelope(MessageEnvelope envelope)
-        {
+        protected virtual MessageEnvelope ProcessEnvelope(CDO.Message message, MessageEnvelope envelope)
+        {            
             //
             // Messages from within the domain are always treated as OUTGOING
             // All messages sent by sources OUTSIDE the domain are always treated as INCOMING
@@ -246,11 +273,11 @@ namespace NHINDirect.SmtpAgent
             {
                 if (isOutgoing)
                 {
-                    envelope = this.Agent.ProcessOutgoing(envelope);
+                    envelope = this.ProcessOutgoing(message, envelope);
                 }
                 else
                 {
-                    envelope = this.Agent.ProcessIncoming(envelope);
+                    envelope = this.ProcessIncoming(message, envelope);
                 }                
                 if (envelope == null)
                 {
@@ -261,9 +288,7 @@ namespace NHINDirect.SmtpAgent
                 {
                     this.GenerateBounces(envelope);
                 }
-                
-                this.LogStatus(isOutgoing ? "ProcessedOutgoing" : "ProcessedIncoming");
-                
+                                
                 return envelope;
             }
             catch(AgentException agentEx)
@@ -284,24 +309,62 @@ namespace NHINDirect.SmtpAgent
             
             return null;     
         }
-
-        MessageEnvelope CreateEnvelope(CDO.Message message)
+        
+        protected virtual MessageEnvelope ProcessOutgoing(CDO.Message message, MessageEnvelope envelope)
         {
-            NHINDAddressCollection recipientAddresses = null;
-            NHINDAddress senderAddress = null;
-            MessageEnvelope envelope;
-
-            string messageText = message.GetMessageText();
-
-            if (this.ExtractEnvelopeFields(message, ref recipientAddresses, ref senderAddress))
+            envelope = this.Agent.ProcessOutgoing(envelope);
+            this.LogStatus("ProcessedOutgoing");
+            return envelope;
+        }
+        
+        //
+        // Event handler called by the agent
+        // Here, if configured, we will verify that addresses are real. We don't always have to do that, especially if
+        // say we are running as PURELY a gateway. However, if we are set up to e.g. route messages, then...
+        //
+        void OnPreProcessIncoming(IncomingMessage message)
+        {
+            if (!m_settings.HasAddressManager)
             {
-                envelope = new MessageEnvelope(messageText, recipientAddresses, senderAddress);
+                return;
             }
-            else
-            {
-                envelope = new MessageEnvelope(messageText);
-            }
+            
+            message.EnsureRecipientsCategorizedByDomain(this.Agent.Domains);
 
+            NHINDAddressCollection recipients = message.DomainRecipients;
+            Address[] resolved = this.ResolveAddresses(recipients);
+            if (resolved.IsNullOrEmpty())
+            {
+                throw new AgentException(AgentError.NoRecipients);
+            }            
+            // Remove any addresses that could not be resolved
+            // Yes, this is currently n^2, but given the typical # of addresses, cost should be insignificant
+            int i = 0;
+            while (i < recipients.Count)
+            {
+                NHINDAddress recipient = recipients[i];
+                int iAddress = Array.FindIndex<Address>(resolved, x => x.Match(recipient));
+                if (iAddress >= 0)
+                {
+                    ++i; // Found
+                    recipient.Tag = resolved[iAddress];
+                }
+                else
+                {
+                    recipients.RemoveAt(i);
+                }
+            }
+        }
+        
+        protected virtual MessageEnvelope ProcessIncoming(CDO.Message message, MessageEnvelope envelope)
+        {            
+            envelope = this.Agent.ProcessIncoming(envelope);
+            this.LogStatus("ProcessedIncoming");
+            //
+            // Need to update the envelope (if any) to ensure the message is delivered only to trusted valid recipients
+            //
+            message.SetEnvelopeRecipients(envelope.DomainRecipients.ToMailAddressCollection());
+            
             return envelope;
         }
         
@@ -321,13 +384,14 @@ namespace NHINDirect.SmtpAgent
             bool isOutgoing = envelope is OutgoingMessage;
             if (isOutgoing)
             {
-                this.CopyMessage(message, m_settings.Outgoing);
+                this.CopyMessageToFolder(message, m_settings.Outgoing);
                 relay = m_settings.Outgoing.EnableRelay;
             }
             else
             {
-                this.CopyMessage(message, m_settings.Incoming);
-                relay = m_settings.Incoming.EnableRelay;
+                bool fullyRouted = m_router.Route(message, envelope);
+                this.CopyMessageToFolder(message, m_settings.Incoming);
+                relay = fullyRouted ? false : m_settings.Incoming.EnableRelay;
             }
 
             if (!relay)
@@ -335,12 +399,12 @@ namespace NHINDirect.SmtpAgent
                 //
                 // Turn relay off for debugging and diagnostics
                 //
-                m_log.WriteLine(isOutgoing ? "Outgoing Relay disabled" : "Incoming Relay Disabled");
+                m_diagnostics.LogStatus(isOutgoing ? "Outgoing Relay disabled" : "Incoming Relay Disabled");
                 message.AbortMessage();
                 return;
             }
         }
-        
+                
         protected virtual void AcceptMessage(CDO.Message message)
         {
             message.SetMessageStatus(CdoMessageStat.cdoStatSuccess);
@@ -353,13 +417,127 @@ namespace NHINDirect.SmtpAgent
                 message.AbortMessage();
                 this.LogStatus("Rejected Message");
 
-                this.CopyMessage(message, m_settings.BadMessage);
+                this.CopyMessageToFolder(message, m_settings.BadMessage);
             }
             catch
             {
             }
         }
+
+        void CopyMessageToFolder(CDO.Message message, MessageProcessingSettings settings)
+        {
+            try
+            {
+                MessageRouter.CopyMessageToFolder(message, settings);
+            }
+            catch (Exception ex)
+            {
+                m_diagnostics.LogError(ex);
+            }
+        }
+
+        Address[] ResolveAddresses(NHINDAddressCollection addresses)
+        {
+            string[] emailAddresses = (
+                from address in addresses
+                select address.Address
+            ).ToArray();
+
+            AddressManagerClient client = new AddressManagerClient(m_settings.AddressManager.Binding, m_settings.AddressManager.Endpoint);
+            return client.GetAddresses(emailAddresses);
+        }                                                
+
+        //--------------------------------------
+        //
+        // Envelope Manipulation
+        // 
+        //--------------------------------------
         
+        MessageEnvelope CreateEnvelope(CDO.Message message)
+        {
+            NHINDAddressCollection recipientAddresses = null;
+            NHINDAddress senderAddress = null;
+            MessageEnvelope envelope;
+
+            string messageText = message.GetMessageText();
+
+            if (this.ExtractEnvelopeFields(message, ref recipientAddresses, ref senderAddress))
+            {
+                envelope = new MessageEnvelope(messageText, recipientAddresses, senderAddress);
+            }
+            else
+            {
+                envelope = new MessageEnvelope(messageText);
+            }
+            
+            return envelope;
+        }
+
+        bool ExtractEnvelopeFields(CDO.Message message, ref NHINDAddressCollection recipientAddresses, ref NHINDAddress senderAddress)
+        {
+            Fields fields = message.GetEnvelopeFields();
+            if (fields == null || fields.Count == 0)
+            {
+                //
+                // No envelope
+                //
+                return false;
+            }
+
+            recipientAddresses = null;
+            senderAddress = null;
+
+            string sender = message.GetEnvelopeSender();
+            if (string.IsNullOrEmpty(sender))
+            {
+                throw new NotSupportedException("Sender required");
+            }
+            //
+            // In SMTP Server, the MAIL TO (sender) in the envelope can be empty if the message is from the server postmaster 
+            // The actual postmaster address is found in the message itself
+            //
+            if (Extensions.IsSenderLocalPostmaster(sender))
+            {
+                return false;
+            }
+            string recipients = message.GetEnvelopeRecipients();
+            if (string.IsNullOrEmpty(recipients))
+            {
+                throw new NotSupportedException("Recipients required");
+            }
+
+            recipientAddresses = NHINDAddressCollection.ParseSmtpServerEnvelope(recipients);
+            senderAddress = new NHINDAddress(sender);
+
+            return true;
+        }
+        
+        bool IsInternalPostmasterMessage(MessageEnvelope envelope)
+        {
+            if (!m_postmasters.IsPostmaster(envelope.Sender))
+            {
+                return false;
+            }
+
+            return (envelope.DomainRecipients.Count == envelope.Recipients.Count);
+        }
+
+        bool IsSenderPostmaster(CDO.Message message)
+        {
+            string sender = message.GetEnvelopeSender();
+            if (string.IsNullOrEmpty(sender))
+            {
+                return false;
+            }
+
+            return (Extensions.IsSenderLocalPostmaster(sender) || m_postmasters.IsPostmaster(sender));
+        }
+
+        //---------------------------------------------------
+        //
+        //  Bounce Handling
+        //
+        //---------------------------------------------------
         void GenerateBounces(MessageEnvelope envelope)
         {
             this.GenerateBounces(envelope, (envelope is OutgoingMessage));
@@ -397,7 +575,7 @@ namespace NHINDirect.SmtpAgent
             }
             catch(Exception ex)
             {
-                m_log.WriteError(ex);
+                m_diagnostics.LogError(ex);
             }
         }
 
@@ -425,197 +603,8 @@ namespace NHINDirect.SmtpAgent
             }
             catch(Exception ex)
             {
-                m_log.WriteError(ex);
+                m_diagnostics.LogError(ex);
             }
-        }
-                                                
-        //---------------------------------------------------
-        //
-        //  Helpers
-        //
-        //---------------------------------------------------
-
-        const string EnvelopeField_Recipients = @"http://schemas.microsoft.com/cdo/smtpenvelope/recipientlist";
-        const string EnvelopeField_Sender = @"http://schemas.microsoft.com/cdo/smtpenvelope/senderemailaddress";
-        const string EnvelopeSender_LocalPostmaster = "<>";
-
-        bool ExtractEnvelopeFields(CDO.Message message, ref NHINDAddressCollection recipientAddresses, ref NHINDAddress senderAddress)
-        {
-            Fields fields = message.GetEnvelopeFields();
-            if (fields == null || fields.Count == 0)
-            {
-                //
-                // No envelope
-                //
-                return false;
-            }
-
-            recipientAddresses = null;
-            senderAddress = null;
-
-            string sender = this.GetEnvelopeSender(message);
-            if (string.IsNullOrEmpty(sender))
-            {
-                throw new NotSupportedException("Sender required");
-            }
-            //
-            // In SMTP Server, the MAIL TO (sender) in the envelope can be empty if the message is from the server postmaster 
-            // The actual postmaster address is found in the message itself
-            //
-            if (this.IsSenderLocalPostmaster(sender))
-            {
-                return false;
-            }
-            string recipients = this.GetEnvelopeRecipients(message);
-            if (string.IsNullOrEmpty(recipients))
-            {
-                throw new NotSupportedException("Recipients required");
-            }
-            
-            recipientAddresses = NHINDAddressCollection.ParseSmtpServerEnvelope(recipients);
-            senderAddress = new NHINDAddress(sender);
-
-            return true;
-        }
-        
-        string GetEnvelopeRecipients(CDO.Message message)
-        {
-            return this.GetEnvelopeField(message, EnvelopeField_Recipients);
-        }
-        
-        string GetEnvelopeSender(CDO.Message message)
-        {
-            return this.GetEnvelopeField(message, EnvelopeField_Sender);
-        }
-
-        //
-        // In SMTP Server, the sender address can be empty if the message is from the postmaster
-        //
-        bool IsSenderLocalPostmaster(string sender)
-        {
-            return (sender == SmtpAgent.EnvelopeSender_LocalPostmaster);
-        }
-        
-        string GetEnvelopeField(CDO.Message message, string name)
-        {
-            Fields fields = message.GetEnvelopeFields();
-            if (fields == null || fields.Count == 0)
-            {
-                return null;
-            }
-
-            return fields.GetStringValue(name);
-        }
-
-        bool IsInternalPostmasterMessage(MessageEnvelope envelope)
-        {
-            if (!m_postmasters.IsPostmaster(envelope.Sender))
-            {
-                return false;
-            }
-
-            return (envelope.DomainRecipients.Count == envelope.Recipients.Count);
-        }
-
-        bool IsSenderPostmaster(CDO.Message message)
-        {
-            string sender = this.GetEnvelopeSender(message);
-            if (string.IsNullOrEmpty(sender))
-            {
-                return false;
-            }
-
-            return (this.IsSenderLocalPostmaster(sender) || m_postmasters.IsPostmaster(sender));
-        }
-
-        void CopyMessage(CDO.Message message, MessageProcessingSettings settings)
-        {
-            if (!settings.HasCopyFolder)
-            {
-                return;
-            }
-
-            this.CopyMessage(message, settings.CopyFolder);
-        }
-
-        void CopyMessage(CDO.Message message, string folderPath)
-        {
-            try
-            {
-                string fileName = this.CreateUniqueFileName();
-                message.SaveToFile(Path.Combine(folderPath, fileName));
-            }
-            catch (Exception ex)
-            {
-                m_log.WriteError(ex);
-            }
-        }
-        
-        string CreateUniqueFileName()
-        {
-            return Guid.NewGuid().ToString("D") + ".eml";
-        }
-
-        void OnOutgoingError(OutgoingMessage message, Exception error)
-        {            
-            if (m_settings.LogVerbose)
-            {
-                m_log.WriteError(this.BuildVerboseErrorMessage("OUTGOING", message, error));
-            }
-            else
-            {
-                m_log.WriteError(error);            
-            }
-        }
-
-        void OnIncomingError(IncomingMessage message, Exception error)
-        {
-            if (m_settings.LogVerbose)
-            {
-                m_log.WriteError(this.BuildVerboseErrorMessage("INCOMING", message, error));
-            }
-            else
-            {
-                m_log.WriteError(error);
-            }
-        }
-        
-        void OnDnsError(DnsCertResolver service, Exception error)
-        {
-            m_log.WriteError(error);
-        }
-        
-        string BuildVerboseErrorMessage(string message, MessageEnvelope envelope, Exception ex)
-        {
-            StringBuilder builder = new StringBuilder();
-            builder.AppendLine(message);
-            this.SummarizeHeaders(builder, envelope);
-            builder.AppendLine(ex.ToString());            
-            return builder.ToString();
-        }
-        
-        void SummarizeHeaders(StringBuilder builder, MessageEnvelope envelope)
-        {
-            if (envelope.HasRecipients)
-            {
-                builder.AppendFormat("RECIPIENTS={0}", envelope.Recipients.ToString());
-                builder.AppendLine();
-            }
-            if (envelope.HasDomainRecipients)
-            {
-                builder.AppendFormat("DOMAIN RECIPIENTS={0}", envelope.DomainRecipients.ToString());
-                builder.AppendLine();
-            }
-            if (envelope.HasRejectedRecipients)
-            {
-                builder.AppendFormat("REJECTED RECIPIENTS={0}", envelope.RejectedRecipients.ToString());
-                builder.AppendLine();
-            }
-            if (envelope.HasRejectedRecipients)
-            {
-                builder.AppendFormat("OTHER RECIPIENTS={0}", envelope.OtherRecipients.ToString());
-                builder.AppendLine();
-            }
-        }
+        }        
     }
 }

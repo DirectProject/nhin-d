@@ -30,7 +30,12 @@ namespace NHINDirect.Config.Client.CertificateService
             IncludeData = true,
             IncludePrivateKey = true
         };
-
+        
+        public static void AddAnchor(this AnchorStoreClient client, Anchor anchor)
+        {
+            client.AddAnchors(new Anchor[] {anchor});
+        }
+        
         public static Anchor[] GetIncomingAnchors(this AnchorStoreClient client, string owner)
         {
             return client.GetIncomingAnchors(owner, GetFullCertData);

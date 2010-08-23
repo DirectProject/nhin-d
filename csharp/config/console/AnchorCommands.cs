@@ -20,6 +20,7 @@ using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.IO;
 using System.Net.Mail;
+using System.ServiceModel;
 using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client;
@@ -39,11 +40,10 @@ namespace NHINDirect.Config.Command
         public void Command_AnchorAdd(string[] args)
         {
             string owner = args.GetRequiredValue(0);
-            string path = args.GetRequiredValue(1);
+            string filePath = args.GetRequiredValue(1);
             string password = args.GetOptionalValue(2, string.Empty);
-
-            Anchor cert = new Anchor(owner, File.ReadAllBytes(path), password);
-            m_client.AddAnchors(new Anchor[] { cert });
+            
+            this.PushCerts(owner, CertificateCommands.LoadCerts(filePath, password));
         }
         public void Usage_AnchorAdd()
         {
@@ -80,11 +80,11 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("  anchorsget owner [options]");
             CertificateCommands.PrintOptionsUsage();
         }
-        
+           
         public void Command_AnchorsResolve(string[] args)
         {
             MailAddress mail = new MailAddress(args.GetRequiredValue(0));
-            ConfigAnchorResolver resolver = new ConfigAnchorResolver(m_client);
+            ConfigAnchorResolver resolver = new ConfigAnchorResolver(ConfigConsole.Settings.AnchorManager);
             
             X509Certificate2Collection matches = resolver.IncomingAnchors.GetCertificates(mail);
             CertificateCommands.Print(matches);
@@ -111,6 +111,25 @@ namespace NHINDirect.Config.Command
         {
             Console.WriteLine("List all anchors");
             CertificateCommands.PrintOptionsUsage();
+        }
+
+        void PushCerts(string owner, IEnumerable<X509Certificate2> certs)
+        {
+            foreach (X509Certificate2 cert in certs)
+            {
+                try
+                {
+                    m_client.AddAnchor(new Anchor(owner, cert, true, true));
+                    Console.WriteLine("Added {0}", cert.Subject);
+                }
+                catch(FaultException<ConfigStoreFault> ex)
+                {
+                    if (ex.Detail.Error == ConfigStoreError.UniqueConstraint)
+                    {
+                        Console.WriteLine("Exists {0}", cert.Subject);
+                    }
+                }
+            }
         }
         
         void Print(Anchor[] anchors)

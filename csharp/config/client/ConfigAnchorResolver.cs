@@ -26,20 +26,18 @@ namespace NHINDirect.Config.Client
 {
     public class ConfigAnchorResolver : ITrustAnchorResolver
     {
-        AnchorStoreClient m_client;
-        NHINDirect.Certificates.CertificateResolver m_incomingResolver;
-        NHINDirect.Certificates.CertificateResolver m_outgoingResolver;
-        
-        public ConfigAnchorResolver(AnchorStoreClient client)
+        CertificateResolver m_incomingResolver;
+        CertificateResolver m_outgoingResolver;
+
+        public ConfigAnchorResolver(ClientSettings clientSettings)
         {
-            if (client == null)
+            if (clientSettings == null)
             {
                 throw new ArgumentNullException();
             }
             
-            m_client = client;
-            m_incomingResolver = new NHINDirect.Certificates.CertificateResolver(new AnchorIndex(m_client, true));
-            m_outgoingResolver = new NHINDirect.Certificates.CertificateResolver(new AnchorIndex(m_client, false));
+            m_incomingResolver = new CertificateResolver(new AnchorIndex(clientSettings, true));
+            m_outgoingResolver = new CertificateResolver(new AnchorIndex(clientSettings, false));
         }
 
         public ICertificateResolver IncomingAnchors
@@ -60,12 +58,12 @@ namespace NHINDirect.Config.Client
         
         internal class AnchorIndex : IX509CertificateIndex
         {
-            AnchorStoreClient m_client;
+            ClientSettings m_clientSettings;
             bool m_incoming;
             
-            internal AnchorIndex(AnchorStoreClient client, bool incoming)
+            internal AnchorIndex(ClientSettings clientSettings, bool incoming)
             {
-                m_client = client;
+                m_clientSettings = clientSettings;
                 m_incoming = incoming;
             }
             
@@ -74,18 +72,25 @@ namespace NHINDirect.Config.Client
                 get 
                 { 
                     X509Certificate2Collection matches;
-                    
-                    if (m_incoming)
+                    using(AnchorStoreClient client = this.CreateClient())
                     {
-                        matches = m_client.GetIncomingAnchorX509Certificates(subjectName);
+                        if (m_incoming)
+                        {
+                            matches = client.GetIncomingAnchorX509Certificates(subjectName);
+                        }
+                        else
+                        {
+                            matches = client.GetOutgoingAnchorX509Certificates(subjectName);
+                        }
                     }
-                    else
-                    {
-                        matches = m_client.GetOutgoingAnchorX509Certificates(subjectName);
-                    }
-                    
+                                        
                     return matches;
                 }
+            }
+
+            AnchorStoreClient CreateClient()
+            {
+                return new AnchorStoreClient(m_clientSettings.Binding, m_clientSettings.Endpoint);
             }
         }
     }

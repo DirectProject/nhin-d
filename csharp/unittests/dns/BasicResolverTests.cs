@@ -13,9 +13,11 @@ namespace DnsResolverTests
     {
     	private readonly DnsClient m_client;
 
-    	const string PublicDns = "8.8.8.8";
+    	const string PublicDns = "8.8.8.8";         // Google
+        //const string PublicDns = "151.197.0.38";  // Verizon
+        //const string PublicDns = "4.2.2.1";       // Level 3
+        //const string PublicDns = "64.81.111.2";   // Speakeasy
         //const string SubnetDns = "192.168.0.1";
-        //const string PublicDns = "4.2.2.1";
         //const string LocalDns = "127.0.0.1";
         
 		public BasicResolverTests()
@@ -33,9 +35,14 @@ namespace DnsResolverTests
 		[InlineData("www.yahoo.com")]
 		[InlineData("www.google.com")]
 		[InlineData("www.apple.com")]
-		[InlineData("nhind.hsgincubator.com")]
+        [InlineData("www.bing.com")]
+        [InlineData("nhind.hsgincubator.com")]
 		[InlineData("hvnhind.hsgincubator.com")]
-		[InlineData("dns.hsgincubator.com")]
+		[InlineData("www.nhindirect.org")]
+        [InlineData("www.relayhealth.com")]
+        [InlineData("www.epic.com")]
+        [InlineData("www.cerner.com")]
+        [InlineData("www.ibm.com")]
         public void TestA(string domain)
         {
             Resolve(DnsRequest.CreateA(domain));
@@ -75,6 +82,10 @@ namespace DnsResolverTests
 		[InlineData("nhind.hsgincubator.com")]
 		[InlineData("redmond.hsgincubator.com")]
 		[InlineData("www.microsoft.com")]
+        [InlineData("www.hotmail.com")]
+        [InlineData("www.gmail.com")]
+        [InlineData("www.relayhealth.com")]
+        [InlineData("www.aol.com")]
         public void TestMX(string domain)
         {
             Resolve(DnsRequest.CreateMX(domain));

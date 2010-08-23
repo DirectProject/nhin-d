@@ -114,7 +114,7 @@ namespace DnsResolver
         DnsBuffer m_lengthBuffer;
         int m_timeout;
         int m_maxRetries = 3;
-        ushort m_requestID = ushort.MinValue;
+        Random m_requestIDGenerator;
         
 		/// <summary>
 		///   Creates a DnsClient instance specifying a string representation of the IP address and using the default DNS port.
@@ -191,6 +191,7 @@ namespace DnsResolver
             m_responseBuffer = new DnsBuffer(maxBufferSize);
             this.Timeout = timeoutMillis;
             this.UseUDPFirst = true;
+            m_requestIDGenerator = new Random();
         }
         
 		/// <summary>
@@ -306,6 +307,15 @@ namespace DnsResolver
                     }
                     
                     DnsResponse response = this.DeserializeResponse();
+                    if (request.RequestID != response.RequestID || !response.Question.Equals(request.Question))
+                    {
+                        // Hmm. Not a response to any query we'd sent. 
+                        // Could be a spoof, a server misbehaving, or some other socket (UDP) oddity (delayed message etc)
+                        // If this is TCP, then this should not happen and we will hit max attempts and stop
+                        // Ignore and retry
+                        continue;
+                    }
+                    
                     if (response.IsNameError)
                     {
                         return response;
@@ -709,14 +719,6 @@ namespace DnsResolver
             DnsBufferReader reader = new DnsBufferReader(m_responseBuffer.Buffer, 0, m_responseBuffer.Count);
             return new DnsResponse(ref reader);
         }
-        
-        void ValidateRequestID()
-        {
-            if (m_requestBuffer[0] != m_responseBuffer[0] || m_requestBuffer[1] != m_responseBuffer[1])
-            {
-                throw new DnsProtocolException(DnsProtocolError.RequestIDMismatch);
-            }
-        }
                 
         //--------------------------------------------
         //
@@ -733,8 +735,6 @@ namespace DnsResolver
             m_udpSocket.SendTo(m_requestBuffer.Buffer, m_requestBuffer.Count, SocketFlags.None, m_dnsServer);
 
             m_responseBuffer.Count = m_udpSocket.Receive(m_responseBuffer.Buffer);
-
-            this.ValidateRequestID();
         }
         
         //--------------------------------------------
@@ -771,7 +771,6 @@ namespace DnsResolver
                     throw new DnsProtocolException(DnsProtocolError.Failed);
                 }
                 
-                this.ValidateRequestID();
             }
         }
                 
@@ -791,14 +790,7 @@ namespace DnsResolver
         
         ushort NextID()
         {
-            if (this.m_requestID == (ushort) ushort.MaxValue)
-            {
-                this.m_requestID = ushort.MinValue;
-                return this.m_requestID;
-            }
-            
-            this.m_requestID++;
-            return this.m_requestID;
+            return (ushort) m_requestIDGenerator.Next(ushort.MinValue, ushort.MaxValue);
         }
 
         #region IDisposable Members

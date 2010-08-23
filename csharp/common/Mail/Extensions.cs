@@ -53,5 +53,24 @@ namespace NHINDirect.Mail
             smtpClient.PickupDirectoryLocation = folderPath;            
             smtpClient.Send(message);
         }
+        
+        /// <summary>
+        /// Formats a set of mail addresses in the format expected by SMTP Server's envelope fields
+        /// </summary>
+        public static string ToSmtpServerEnvelopeAddresses(this MailAddressCollection addresses)
+        {            
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0, count = addresses.Count; i < count; ++i)
+            {
+                if (i > 0)
+                {
+                    builder.Append(';');
+                }
+                builder.Append("SMTP:");
+                builder.Append(addresses[i].Address);
+            }            
+            
+            return builder.ToString();
+        }
     }
 }

@@ -67,11 +67,11 @@ namespace DnsResolver
         {
             get
             {
-                return this.m_header.UniqueID;
+                return m_header.UniqueID;
             }
             set
             {
-                this.m_header.UniqueID = value;
+                m_header.UniqueID = value;
             }
         }
         

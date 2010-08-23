@@ -57,7 +57,15 @@ namespace DnsResolver
                 return m_header;
             }
         }
-        
+
+        public ushort RequestID
+        {
+            get
+            {
+                return m_header.UniqueID;
+            }
+        }
+
         public DnsQuestion Question
         {
             get
@@ -131,6 +139,13 @@ namespace DnsResolver
         {
             m_header = new DnsHeader(ref reader);
             m_question = new DnsQuestion(ref reader);
+            if (reader.IsDone)
+            {
+                //
+                // No answers!
+                //
+                return;
+            }
             
             this.AnswerRecords.Deserialize(this.Header.AnswerCount, ref reader);
             this.NameServerRecords.Deserialize(this.Header.NameServerAnswerCount, ref reader);

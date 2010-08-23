@@ -187,7 +187,8 @@ namespace NHINDirect.Config.Store
 
             using (ConfigDatabase db = this.Store.CreateContext())
             {
-                return db.Anchors.GetIncoming(ownerName).ToArray();
+                Anchor[] matches = db.Anchors.GetIncoming(ownerName).ToArray();
+                return matches;
             }
         }
 

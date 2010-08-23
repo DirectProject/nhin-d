@@ -21,6 +21,7 @@ using System.Data.SqlTypes;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Net.Mail;
+using NHINDirect.Mail;
 
 namespace NHINDirect.Config.Store
 {
@@ -141,6 +142,21 @@ namespace NHINDirect.Config.Store
             {
                 return (!string.IsNullOrEmpty(this.Type));
             }            
+        }
+        
+        public bool Match(MailAddress address)
+        {
+            if (address == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            return this.Match(address.Address);
+        }
+        
+        public bool Match(string emailAddress)
+        {
+            return MailStandard.Equals(this.EmailAddress, emailAddress);
         }
     }
 }

@@ -54,11 +54,8 @@ namespace NHINDirect.SmtpAgent
         
         internal virtual void EnsureFolders()
         {
-            if (this.HasCopyFolder)
+            if (this.HasCopyFolder && !Directory.Exists(this.CopyFolder))
             {
-                //
-                // If the directory already exists, CreateDirectory does nothing
-                //
                 Directory.CreateDirectory(this.CopyFolder);
             }
         }

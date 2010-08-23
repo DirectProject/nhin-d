@@ -30,14 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nhinCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\$(Configuration)\nhinCommon.dll</HintPath>
-    </Reference>
-    <Reference Include="nhinConfigStore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\$(Configuration)\nhinConfigStore.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
@@ -86,6 +78,16 @@
     <Compile Include="ICertificateStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceSettings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\nhinCommon.csproj">
+      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
+      <Name>nhinCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\store\configStore.csproj">
+      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
+      <Name>configStore</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

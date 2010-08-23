@@ -18,6 +18,13 @@
     <DefaultDigest>SHA1</DefaultDigest>
   </Cryptographer>
   <PrivateCerts>
+    <!--
+    <ServiceResolver>
+      <ClientSettings>
+        <Url>http://localhost:6692/CertificateService.svc/Certificates</Url>
+      </ClientSettings>
+    </ServiceResolver>
+  -->
     <MachineResolver>
       <Name>NHINDPrivate</Name>
     </MachineResolver>
@@ -34,6 +41,13 @@
     </MachineResolver>
   </PublicCerts>
   <Anchors>
+    <!--
+    <ServiceResolver>
+      <ClientSettings>
+        <Url>http://localhost:6692/CertificateService.svc/Anchors</Url>
+      </ClientSettings>
+    </ServiceResolver>
+    -->
     <MachineResolver>
       <Incoming>
         <Name>NHINDAnchors</Name>
@@ -43,6 +57,17 @@
       </Outgoing>
     </MachineResolver>
   </Anchors>
+  <!--
+  <AddressManager>
+    <Url>http://localhost:6692/DomainManagerService.svc/Addresses</Url>
+  </AddressManager>
+  -->
+  <IncomingRoutes>
+    <Route>
+      <AddressType>XDR</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\xdr</CopyFolder>
+    </Route>
+  </IncomingRoutes>
   <MessageBounce>
     <MailPickupFolder>C:\inetpub\mailroot\pickup</MailPickupFolder>
     <EnableForOutgoing>true</EnableForOutgoing>

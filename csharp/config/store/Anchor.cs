@@ -195,7 +195,7 @@ namespace NHINDirect.Config.Store
             {
                 for (int i = 0; i < anchors.Length; ++i)
                 {
-                    x509Collection.Add(anchors[0].ToX509Certificate());
+                    x509Collection.Add(anchors[i].ToX509Certificate());
                 }
             }            
             return x509Collection;

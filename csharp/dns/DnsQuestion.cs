@@ -90,6 +90,20 @@ namespace DnsResolver
             set;
         }
         
+        public bool Equals(DnsQuestion question)
+        {
+            if (question == null)
+            {
+                return false;
+            }
+            
+            return (
+                    string.Equals(question.QName, this.QName, StringComparison.OrdinalIgnoreCase)
+                &&  question.QType == this.QType
+                &&  question.QClass == this.QClass
+            );
+        }
+        
         internal void Parse(ref DnsBufferReader reader)
         {
             this.QName = reader.ReadString();

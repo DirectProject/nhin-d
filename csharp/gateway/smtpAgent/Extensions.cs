@@ -17,13 +17,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Net.Mail;
+using NHINDirect.Agent;
+using NHINDirect.Mail;
 using CDO;
 using ADODB;
 
 namespace NHINDirect.SmtpAgent
 {
     //
-    // Extensions on CDO & ADODB
+    // Extensions on CDO & ADODB + SmtpServer
     //
     public static class Extensions
     {
@@ -52,7 +56,6 @@ namespace NHINDirect.SmtpAgent
             stream.SaveToFile(filePath, SaveOptionsEnum.adSaveCreateOverWrite);
         }
         
-        const string EnvelopeField_Status = "http://schemas.microsoft.com/cdo/smtpenvelope/messagestatus";
         public static void SetMessageStatus(this CDO.Message message, CdoMessageStat status)
         {
             Fields fields = message.GetEnvelopeFields();
@@ -98,10 +101,103 @@ namespace NHINDirect.SmtpAgent
                 }
             }
         }
+
+        public static void CopyMessage(this CDO.Message message, string folderPath)
+        {
+            string fileName = CreateUniqueFileName();
+            message.SaveToFile(Path.Combine(folderPath, fileName));
+        }
+
+        static string CreateUniqueFileName()
+        {
+            return Guid.NewGuid().ToString("D") + ".eml";
+        }
+
+        //------------------------------------        
+        //
+        // Envelopes
+        //
+        //------------------------------------
+        const string EnvelopeSender_LocalPostmaster = "<>";
+        const string EnvelopeField_Recipients = @"http://schemas.microsoft.com/cdo/smtpenvelope/recipientlist";
+        const string EnvelopeField_Sender = @"http://schemas.microsoft.com/cdo/smtpenvelope/senderemailaddress";
+        const string EnvelopeField_Status = "http://schemas.microsoft.com/cdo/smtpenvelope/messagestatus";
+
+        //
+        // In SMTP Server, the sender address can be empty if the message is from the postmaster
+        //
+        public static bool IsSenderLocalPostmaster(string sender)
+        {
+            return (sender == EnvelopeSender_LocalPostmaster);
+        }
         
+        public static bool HasEnvelopeFields(this CDO.Message message)
+        {
+            return (message.GetEnvelopeFields() != null);
+        }
+        
+        public static Fields GetEnvelopeFields(this CDO.Message message)
+        {
+            Fields fields = null;
+            try
+            {
+                fields = message.EnvelopeFields;
+            }
+            catch
+            {
+            }
+            
+            return fields;
+        }
+
+        public static string GetEnvelopeRecipients(this CDO.Message message)
+        {
+            return message.GetEnvelopeField(EnvelopeField_Recipients);
+        }
+        
+        public static void SetEnvelopeRecipients(this CDO.Message message, MailAddressCollection recipients)
+        {
+            message.SetEnvelopeField(EnvelopeField_Recipients, recipients.ToSmtpServerEnvelopeAddresses());
+        }
+        
+        public static void SetEnvelopeRecipients(this CDO.Message message, string recipients)
+        {
+            message.SetEnvelopeField(EnvelopeField_Recipients, recipients);
+        }
+        
+        public static string GetEnvelopeSender(this CDO.Message message)
+        {
+            return message.GetEnvelopeField(EnvelopeField_Sender);
+        }
+
+        public static string GetEnvelopeField(this CDO.Message message, string name)
+        {
+            Fields fields = message.GetEnvelopeFields();
+            if (fields == null || fields.Count == 0)
+            {
+                return null;
+            }
+
+            return fields.GetStringValue(name);
+        }
+
+        public static void SetEnvelopeField(this CDO.Message message, string name, string value)
+        {
+            Fields fields = message.GetEnvelopeFields();
+            if (fields != null && fields.Count > 0)
+            {
+                fields.SetValue(name, value);                
+            }
+        }
+
+        //------------------------------------        
+        //
+        // Fields
+        //
+        //------------------------------------
         public static string GetStringValue(this Fields fields, string name)
         {
-            return (string) fields.GetValue(name);
+            return (string)fields.GetValue(name);
         }
 
         public static object GetValue(this Fields fields, string name)
@@ -123,20 +219,6 @@ namespace NHINDirect.SmtpAgent
                 field.Value = value;
                 fields.Update();
             }
-        }
-        
-        public static Fields GetEnvelopeFields(this CDO.Message message)
-        {
-            Fields fields = null;
-            try
-            {
-                fields = message.EnvelopeFields;
-            }
-            catch
-            {
-            }
-            
-            return fields;
         }
     }
 }

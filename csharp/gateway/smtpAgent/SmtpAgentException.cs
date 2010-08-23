@@ -18,7 +18,9 @@ namespace NHINDirect.SmtpAgent
         MailPickupFolderDoesNotExist,
         MissingBounceTemplateOutgoing,
         MissingBounceTemplateIncoming,
-        InvalidBounceMessageTemplate
+        InvalidBounceMessageTemplate,
+        MissingCertResolverClientSettings,
+        MissingAnchorResolverClientSettings,
     }
     
     public class SmtpAgentException : NHINDException<SmtpAgentError>

@@ -40,6 +40,11 @@ namespace NHINDirect.Config.Client.CertificateService
             
             client.AddCertificates(new Certificate[] {cert});
         }
+
+        public static Certificate GetCertificate(this CertificateStoreClient client, string owner, string thumbprint)
+        {
+            return client.GetCertificate(owner, thumbprint, GetFullCertData);
+        }
         
         public static Certificate GetCertificate(this CertificateStoreClient client, long certificateID, CertificateGetOptions options)
         {

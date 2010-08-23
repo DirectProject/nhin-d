@@ -21,6 +21,8 @@ using System.Net.Mail;
 using NHINDirect.Agent.Config;
 using NHINDirect.Diagnostics;
 using System.Xml.Serialization;
+using System.IO;
+using NHINDirect.Config.Client;
 
 namespace NHINDirect.SmtpAgent
 {
@@ -32,6 +34,7 @@ namespace NHINDirect.SmtpAgent
         ProcessIncomingSettings m_incomingSettings;
         ProcessOutgoingSettings m_outgoingSettings;
         ProcessBadMessageSettings m_badMessageSettings;
+        MessageRoute[] m_incomingRoutes;
         bool m_logVerbose = true;
         
         public SmtpAgentSettings()
@@ -158,8 +161,54 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
+        [XmlArray("IncomingRoutes")]
+        [XmlArrayItem("Route")]
+        public MessageRoute[] IncomingRoutes
+        {
+            get
+            {
+                if (m_incomingRoutes == null)
+                {
+                    m_incomingRoutes = new MessageRoute[0];
+                }
+                
+                return m_incomingRoutes;
+            }
+            set
+            {
+                m_incomingRoutes = value;
+            }
+        }
+        
+        [XmlElement("AddressManager")]
+        public ClientSettings AddressManager
+        {
+            get;
+            set;
+        }
+
+        [XmlIgnore]
+        public bool HasRoutes
+        {
+            get
+            {
+                return (!m_incomingRoutes.IsNullOrEmpty());
+            }
+        }
+        
+        [XmlIgnore]
+        public bool HasAddressManager
+        {
+            get
+            {
+                return (this.AddressManager != null);
+            }
+        }        
+        
         public override void Validate()
         {
+            base.Validate();
+            
             if (this.LogSettings == null)
             {
                 throw new SmtpAgentException(SmtpAgentError.MissingLogSettings);
@@ -176,11 +225,27 @@ namespace NHINDirect.SmtpAgent
             this.BadMessage.Validate();
             this.Incoming.Validate();
             this.Outgoing.Validate();
+            
+            if (this.HasAddressManager)
+            {
+                this.AddressManager.Validate();
+            }
+            if (!m_incomingRoutes.IsNullOrEmpty())
+            {
+                Array.ForEach<MessageRoute>(m_incomingRoutes, x => x.Validate());
+            }
         }
         
         public static SmtpAgentSettings LoadFile(string configFilePath)
         {
-            return AgentSettings.LoadFile<SmtpAgentSettings>(configFilePath);
+            ExtensibleXmlSerializer serializer = new ExtensibleXmlSerializer();
+            serializer.AddElementOption<CertificateSettings>("Resolver", "ServiceResolver", typeof(CertServiceResolverSettings));
+            serializer.AddElementOption<TrustAnchorSettings>("Resolver", "ServiceResolver", typeof(AnchorServiceResolverSettings));            
+
+            using(Stream stream = File.OpenRead(configFilePath))
+            {
+                return serializer.Deserialize<SmtpAgentSettings>(stream);
+            }
         }
     }
 }

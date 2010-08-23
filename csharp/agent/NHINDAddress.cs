@@ -130,6 +130,15 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// An arbitrary Tag that an integrator may associate with this address during pre/post processing of messages. 
+        /// </summary>
+        public object Tag
+        {
+            get;
+            set;
+        }
+        
         public bool IsTrusted(TrustEnforcementStatus minTrustStatus)
         {
             return (this.m_trustStatus >= minTrustStatus);

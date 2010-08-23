@@ -71,7 +71,15 @@ namespace DnsResolver
                 return this.m_buffer[index];
             }
         }
-
+        
+        public bool IsDone
+        {
+            get
+            {
+                return (m_index >= m_count);
+            }
+        }
+        
         public StringBuilder StringBuilder
         {
             get
