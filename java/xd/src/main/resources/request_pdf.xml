@@ -44,10 +44,7 @@
                   <rim:Classification id="cl01" classificationScheme="urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d" classifiedObject="Document01">
                      <rim:Slot name="authorPerson">
                         <rim:ValueList>
-                           <!--  TODO: Figure out if a single name (as below) is permitted and/or expected for pdf -->
-                           <!--  TODO: If so, need to update parsing logic to ingore missing fields -->
-                           <!--  <rim:Value>Gerald Smitty</rim:Value> -->
-                          <rim:Value>vincent.lewis@gsihealth.com^Allscripts^Provider^^^^^^&amp;1.3.6.1.4.1.21367.3100.1&amp;ISO</rim:Value>
+                           <rim:Value>Gerald Smitty</rim:Value>
                         </rim:ValueList>
                      </rim:Slot>
                      <rim:Slot name="authorInstitution">

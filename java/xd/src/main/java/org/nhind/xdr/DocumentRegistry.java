@@ -11,13 +11,15 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.ws.WebServiceContext;
+
+import org.apache.commons.lang.StringUtils;
+
 import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
@@ -47,6 +49,8 @@ public class DocumentRegistry {
     public static final int REG = 2;
     private boolean nhdirect = false;
     String author = null;
+    
+    private static final Logger LOGGER = Logger.getLogger(DocumentRegistry.class.getPackage().getName());
 
     public String parseRegistry(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
         SubmitObjectsRequest sor = prdst.getSubmitObjectsRequest();
@@ -73,7 +77,7 @@ public class DocumentRegistry {
                         forwards = getForwards((RegistryPackageType) value);
                     }  else if (type.equals("oasis.names.tc.ebxml_regrep.xsd.rim._3.AssociationType1")) {
                     }
-                    Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, elem.getDeclaredType().getName() + elem.getValue().toString());
+                    LOGGER.info(elem.getDeclaredType().getName() + elem.getValue().toString());
                 }
                 if (nhdirect && (forwards == null || forwards.isEmpty() || ((String) forwards.get(0)).equals("no endpoint"))) {
                     throw new Exception("NO ENDPOINT for IntendedRecipient");
@@ -90,20 +94,47 @@ public class DocumentRegistry {
         return forwards;
     }
 
+	/**
+	 * Extract an email address from an HL7 string using "^" delimiter.
+	 * 
+	 * @return the extracted email address
+	 */
     public String getAuthorEmail() {
+        // Literal string
+        if (!StringUtils.contains(author, "^")) {
+            // If string is an email
+            if (StringUtils.contains(author, "@")) {
+                return author;
+            } else {
+            	// TODO: What happens when an author email address is not provided?
+            	LOGGER.info("Author email not found");
+                return "postmaster@nhindirect.org";
+            }
+        }
+        
+        String auserId = null;
         List<String> fields = split(author, "^");
-        String auserId = fields.get(0);
-        String last = fields.get(1);
-        String first = fields.get(2);
-        String mid = fields.get(3);
-        String what = fields.get(4);
-        String prefix = fields.get(5);
-        String suffix = fields.get(6);
-        String what2 = fields.get(7);
-        String org = fields.get(8);
-        List<String> orgs = split(org, "&");
-        String aorgId = (String) orgs.get(1);
-        aorgId = orgId.replace("ISO", "");
+
+        if (fields != null) {
+        	if (fields.get(0) != null) {
+        		auserId = fields.get(0);
+        	}
+        }
+
+        /*
+         * String last = fields.get(1);
+         * String first = fields.get(2);
+         * String mid = fields.get(3);
+         * String what = fields.get(4);
+         * String prefix = fields.get(5);
+         * String suffix = fields.get(6);
+         * String what2 = fields.get(7);
+		 * String org = fields.get(8);
+         * List<String> orgs = split(org, "&");
+         * String aorgId = (String) orgs.get(1);
+         * aorgId = orgId.replace("ISO", "");
+         */
+        
         return auserId;
     }
 
@@ -112,12 +143,13 @@ public class DocumentRegistry {
 
         for (SlotType1 slot : rpt.getSlot()) {
             String slotName = slot.getName();
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, slotName);
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, slot.getSlotType());
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, slot.getValueList().getValue().get(0));
+            LOGGER.info(slotName);
+            LOGGER.info(slot.getSlotType());
+            LOGGER.info(slot.getValueList().getValue().get(0));
 
             if (slotName.equals("intendedRecipient")) {
                 for (String prov : slot.getValueList().getValue()) {
+                	// TODO: define when and where to relay vs email
                     // this intentended recipient
                     // |john.smith@happyvalleyclinic.nhindirect.org^Smith^John^^^Dr^MD^^&amp;1.3.6.1.4.1.21367.3100.1
                     // casues a forward to
@@ -245,7 +277,7 @@ public class DocumentRegistry {
 
             } else if (slot.getName().equals("sourcePatientInfo")) {
                 for (String pid : slot.getValueList().getValue()) {
-                    Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, pid);
+                    LOGGER.info(pid);
                     if (pid.indexOf("PID-5") == 0) {
                         String name = returnField(pid, "|", 2);
                         firstName = returnField(name, "^", 2);
