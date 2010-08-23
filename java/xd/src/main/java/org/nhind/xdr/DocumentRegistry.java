@@ -5,20 +5,21 @@
 package org.nhind.xdr;
 
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.ws.WebServiceContext;
-
-import org.apache.commons.lang.StringUtils;
 
 import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
@@ -26,6 +27,8 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -58,9 +61,8 @@ public class DocumentRegistry {
     }
 
     protected String parseRegistryData(SubmitObjectsRequest sor, int ttype) throws Exception {
-       
-
         String ret = null;
+
         try {
             if (sor != null) {
                 RegistryObjectListType rol = sor.getRegistryObjectList();
@@ -132,9 +134,9 @@ public class DocumentRegistry {
 		 * String org = fields.get(8);
          * List<String> orgs = split(org, "&");
          * String aorgId = (String) orgs.get(1);
-         * aorgId = orgId.replace("ISO", "");
+         * aorgId = aorgId.replace("ISO", "");
          */
-        
+
         return auserId;
     }
 
@@ -149,12 +151,6 @@ public class DocumentRegistry {
 
             if (slotName.equals("intendedRecipient")) {
                 for (String prov : slot.getValueList().getValue()) {
-                	// TODO: define when and where to relay vs email
-                    // this intentended recipient
-                    // |john.smith@happyvalleyclinic.nhindirect.org^Smith^John^^^Dr^MD^^&amp;1.3.6.1.4.1.21367.3100.1
-                    // casues a forward to
-                    // sendPoint = "http://shinnytest.gsihealth.com:8080/DocumentRepository_Service/DocumentRepository?wsdl";
-                    // otherwise the email is used for XDM
                     StringTokenizer ids = new StringTokenizer(prov, "|");
                     String user = null;
                     String org = ids.nextToken();
@@ -180,9 +176,17 @@ public class DocumentRegistry {
                     orgId = orgId.replace("ISO", "");
 
                     String sendPoint = userId;
+                    
+					/*
+					 * TODO: define when and where to relay vs email this.
+					 * intentended recipient
+					 * |john.smith@happyvalleyclinic.nhindirect.org^Smith^John^^^Dr^MD^^&amp;1.3.6.1.4.1.21367.3100.1
+					 * casues a forward to
+					 * "http://shinnytest.gsihealth.com:8080/DocumentRepository_Service/DocumentRepository?wsdl"
+					 * otherwise the email is used for XDM
+					 */
                     if(userId.equals("john.smith@happyvalleyclinic.nhindirect.org")){
                          sendPoint = "http://shinnytest.gsihealth.com:8080/DocumentRepository_Service/DocumentRepository?wsdl";
-
                     }
 
                     forwards.add(sendPoint);
@@ -206,35 +210,33 @@ public class DocumentRegistry {
         return ret;
     }
 
-  
-  
-
     private String parseClassifications(List<ClassificationType> classes) throws Exception {
-
         String lauthor = null;
-        try {
 
+        try {
             for (ClassificationType clas : classes) {
                 for (SlotType1 slot : clas.getSlot()) {
                     String sname = slot.getName();
-                    if (sname.equals("authorPerson")) {
-                        for (String value : slot.getValueList().getValue()) {
-                            lauthor = value;
-                        }
-                    }
+					if (sname.equals("authorPerson")
+							&& slot.getValueList() != null
+							&& slot.getValueList().getValue() != null) {
+						for (String value : slot.getValueList().getValue()) {
+							lauthor = value;
+						}
+					}
                 }
             }
         } catch (Exception x) {
             x.printStackTrace();
             throw (x);
         }
+        
         return lauthor;
-
     }
 
     private String parseDocument(ExtrinsicObjectType document) throws Exception {
-
         sourceObjectId = document.getId();
+
         String objectType = document.getObjectType();
         String mimeType = document.getMimeType();
         String firstName = null;
@@ -415,44 +417,20 @@ public class DocumentRegistry {
         return ret;
     }
 
-    /*
-     * TODO - explain this method.. it appears at first glance to be flawed
-     * 
-     * What should happen in the case of "a&&" using "&" as a delimiter?
-     * 
-     * I would think the output should be (a, empty, empty), however 
-     * the actual output is (a, empty). 
-     * 
-     * If it is actually supposed to be the prior, is can be accomplished using
-     * string.split
-     * 
-     * List<String> tokens = Arrays.asList("a&&".split("&", -1));
-     * 
-     * Would just have to be careful to escape certain delimiters ("\\^")
-     * 
-     * -- beau
-     */
+	/**
+	 * Split up a string using the given delimiter and return as a list of
+	 * tokens
+	 * 
+	 * @param input
+	 *            The string to split
+	 * @param delimiter
+	 *            The delimiter used for splitting
+	 * @return a list of split tokens
+	 */
     private List<String> split(String input, String delimiter) {
-        boolean previousTokenWasDelimiter = true;
-        String token = null;
-        List<String> v = new ArrayList<String>();
-        StringTokenizer st = new StringTokenizer(input, delimiter, true);
-        while (st.hasMoreTokens()) {
-            token = st.nextToken();
-            if (token.equals(delimiter)) {
-                if (previousTokenWasDelimiter) {
-                    token = "";
-                } else {
-                    token = null;
-                }
-                previousTokenWasDelimiter = true;
-            } else {
-                previousTokenWasDelimiter = false;
-            }
-            if (token != null) {
-                v.add(token);
-            }
-        }
-        return v;
+    	String quotedDelimiter = Pattern.quote(delimiter);
+    	List<String> tokens = Arrays.asList(input.split(quotedDelimiter, -1));
+
+        return tokens;
     }
 }
