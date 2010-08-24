@@ -51,7 +51,8 @@ public class DocumentRegistry {
     public static final int PNR = 1;
     public static final int REG = 2;
     private boolean nhdirect = false;
-    String author = null;
+    
+    private String author = null;
     
     private static final Logger LOGGER = Logger.getLogger(DocumentRegistry.class.getPackage().getName());
 
@@ -430,5 +431,24 @@ public class DocumentRegistry {
         List<String> tokens = Arrays.asList(input.split(quotedDelimiter, -1));
 
         return tokens;
+    }
+
+    /**
+     * Return the value of author.
+     * 
+     * @return the value of author
+     */
+    public String getAuthor() {
+        return author;
+    }
+
+    /**
+     * Set the value of author.
+     * 
+     * @param author
+     *            The value of author
+     */
+    public void setAuthor(String author) {
+        this.author = author;
     }
 }
