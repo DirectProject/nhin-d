@@ -2,7 +2,7 @@
 
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
-
+using AgentTests;
 using Xunit;
 
 namespace SmtpAgentTests
