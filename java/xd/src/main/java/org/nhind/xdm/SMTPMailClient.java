@@ -264,7 +264,7 @@ public class SMTPMailClient {
                 "<title>XDM Message</title>" +
                 "</head><body>" +
                 "<h1>XDM Message</h1>" +
-                "<p>This package contains an XDS message.  The message was created by" +
+                "<p>This package contains an XDS message.  The message was created by " +
                 "Happy Valley Clinic and is solely intended for the intended" +
                 "recipients listed in the XDS Metadata.  Any other use is forbidden.</p>" +
                 "<h2>Package Contents</h2>" +

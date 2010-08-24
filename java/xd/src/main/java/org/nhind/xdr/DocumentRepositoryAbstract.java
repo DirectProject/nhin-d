@@ -6,32 +6,29 @@ package org.nhind.xdr;
 
 import ihe.iti.xds_b._2007.DocumentRepositoryPortType;
 import ihe.iti.xds_b._2007.DocumentRepositoryService;
-import ihe.iti.xds_b._2007.ObjectFactory;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
+
 import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
+
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-
-
 import javax.mail.util.ByteArrayDataSource;
-
-import javax.xml.ws.soap.SOAPBinding;
 import javax.naming.InitialContext;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.MTOMFeature;
+import javax.xml.ws.soap.SOAPBinding;
+
 import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
+
+import org.nhind.util.XMLUtils;
 import org.nhind.xdm.SMTPMailClient;
 
 /**
@@ -70,10 +67,10 @@ public class DocumentRepositoryAbstract {
             InitialContext ctx = new InitialContext();
             
             QName qname = new QName("urn:ihe:iti:xds-b:2007", "ProvideAndRegisterDocumentSet_bRequest");
-            String body = marshal(qname, prdst);
+            String body = XMLUtils.marshal(qname, prdst, ihe.iti.xds_b._2007.ObjectFactory.class);
             QName sname = new QName("urn:ihe:iti:xds-b:2007", "SubmitObjectsRequest");
             SubmitObjectsRequest sor = prdst.getSubmitObjectsRequest();
-            String meta = marshal(sname, sor);
+            String meta = XMLUtils.marshal(sname, sor, ihe.iti.xds_b._2007.ObjectFactory.class);
             List<String> forwards = provideAndRegister(prdst);
 
             String rmessageId = fowardMessage(4, body, forwards, replyEmail, prdst, messageId, endpoint, suffix, meta);
@@ -223,29 +220,6 @@ public class DocumentRepositoryAbstract {
             x.printStackTrace();
         }
     }
-
-    private String marshal(QName altName, Object jaxb) {
-
-        String ret = null;
-        try {
-            //   javax.xml.bind.JAXBContext jaxbCtx = javax.xml.bind.JAXBContext.newInstance(msg.getClass().getPackage().getName());
-            javax.xml.bind.JAXBContext jc = javax.xml.bind.JAXBContext.newInstance(ObjectFactory.class);
-            Marshaller u = jc.createMarshaller();
-
-            StringWriter sw = new StringWriter();
-            u.marshal(new JAXBElement(altName, jaxb.getClass(), jaxb), sw);
-            StringBuffer sb = sw.getBuffer();
-            ret = new String(sb);
-
-        } catch (Exception ex) {
-            LOGGER.info("marshall. Exception msg=" + ex.getMessage());
-            ex.printStackTrace();
-
-        }
-        return ret;
-    }
-
-  
 
     private void mailDocument(String email, String from, String messageId, byte[] message, String suffix, byte[] meta) throws Exception {
         SMTPMailClient smc = new SMTPMailClient();
