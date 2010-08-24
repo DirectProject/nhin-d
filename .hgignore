@@ -19,6 +19,7 @@ test-results/
 tmp/
 target/
 NHINKeyStore
+xdm.zip
 
 # Ignore Eclipse files
 .classpath
