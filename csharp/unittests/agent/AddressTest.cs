@@ -139,6 +139,23 @@ namespace AgentTests
             Assert.Equal(1, coll.Count);
         }
 
+        [Fact]
+        public void TestAddressCollectionsCertificates()
+        {
+            NHINDAddressCollection coll = BasicCollection();
+            X509Certificate2 certa = new X509Certificate2();
+            X509Certificate2 certb = new X509Certificate2();
+            X509Certificate2 certc = new X509Certificate2();
+
+            coll[0].Certificates = new X509Certificate2Collection(certa);
+            coll[1].Certificates = new X509Certificate2Collection(certb);
+            coll[2].Certificates = new X509Certificate2Collection(certc);
+            IEnumerable<X509Certificate2> certs = coll.Certificates;
+            Assert.Contains<X509Certificate2>(certa, certs);
+            Assert.Contains<X509Certificate2>(certb, certs);
+            Assert.Contains<X509Certificate2>(certc, certs);
+        }
+
         NHINDAddressCollection BasicCollection()
         {
             string[] addrStrings = new string[] {
