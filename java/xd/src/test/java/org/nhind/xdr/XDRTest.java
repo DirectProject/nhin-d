@@ -22,11 +22,18 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
  */
 public class XDRTest extends TestCase {
 
+    /**
+     * Constructor
+     * 
+     * @param testName The test name
+     */
     public XDRTest(String testName) {
         super(testName);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see junit.framework.TestCase#setUp()
      */
     @Override
@@ -34,7 +41,9 @@ public class XDRTest extends TestCase {
         super.setUp();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see junit.framework.TestCase#tearDown()
      */
     @Override

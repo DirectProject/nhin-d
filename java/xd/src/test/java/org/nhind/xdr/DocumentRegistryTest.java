@@ -2,13 +2,25 @@ package org.nhind.xdr;
 
 import junit.framework.TestCase;
 
+/**
+ * Test class for methods in DocumentRegistry.
+ * 
+ * @author beau
+ */
 public class DocumentRegistryTest extends TestCase {
 
+    /**
+     * Constructor
+     * 
+     * @param testName The test name
+     */
     public DocumentRegistryTest(String testName) {
         super(testName);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see junit.framework.TestCase#setUp()
      */
     @Override
@@ -16,7 +28,9 @@ public class DocumentRegistryTest extends TestCase {
         super.setUp();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see junit.framework.TestCase#tearDown()
      */
     @Override
@@ -24,6 +38,9 @@ public class DocumentRegistryTest extends TestCase {
         super.tearDown();
     }
     
+    /**
+     * Test the getAuthorEmail method.
+     */
     public void testGetAuthorEmail() {
         String authorEmail = null;
         DocumentRegistry dr = new DocumentRegistry();
