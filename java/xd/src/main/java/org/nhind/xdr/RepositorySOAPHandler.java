@@ -345,29 +345,6 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         return true;
     }
 
-    public Object unmarshalMessage(QName altName, String xml, Class factory) {
-
-        Object ret = null;
-        try {
-            //   javax.xml.bind.JAXBContext jaxbCtx = javax.xml.bind.JAXBContext.newInstance(msg.getClass().getPackage().getName());
-            javax.xml.bind.JAXBContext jaxbCtx = javax.xml.bind.JAXBContext.newInstance(factory);
-            javax.xml.bind.Unmarshaller unmarshaller = jaxbCtx.createUnmarshaller();
-
-
-            byte currentXMLBytes[] = xml.getBytes();
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(currentXMLBytes);
-            ret = unmarshaller.unmarshal(byteArrayInputStream);
-
-        } catch (Exception ex) {
-            LOGGER.info(xml.substring(0, 50) + " Failed to Unmarshall. Exception msg=" + ex.getMessage());
-            ex.printStackTrace();
-
-        }
-        return ret;
-    }
-
-    
-
     @SuppressWarnings("unused")
     private SOAPFaultException createSOAPFaultException(String faultString,
             Boolean clientFault) {

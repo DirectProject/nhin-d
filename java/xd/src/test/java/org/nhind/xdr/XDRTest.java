@@ -5,7 +5,6 @@
 package org.nhind.xdr;
 
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.logging.Level;
@@ -13,6 +12,9 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
+
+import org.nhind.util.XMLUtils;
+
 import junit.framework.TestCase;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
@@ -60,7 +62,7 @@ public class XDRTest extends TestCase {
         ProvideAndRegisterDocumentSetRequestType body = null;
         try {
             String request = getTestRequest();
-            JAXBElement jb = (JAXBElement) unmarshalRequest(qname, request);
+            JAXBElement jb = (JAXBElement) XMLUtils.unmarshal(request, ihe.iti.xds_b._2007.ObjectFactory.class);
             body = (ProvideAndRegisterDocumentSetRequestType) jb.getValue();
         } catch (Exception x) {
             x.printStackTrace();
@@ -87,26 +89,7 @@ public class XDRTest extends TestCase {
 
     }
 
-    public Object unmarshalRequest(QName altName, String xml) {
 
-        Object ret = null;
-        try {
-            //   javax.xml.bind.JAXBContext jaxbCtx = javax.xml.bind.JAXBContext.newInstance(msg.getClass().getPackage().getName());
-            javax.xml.bind.JAXBContext jaxbCtx = javax.xml.bind.JAXBContext.newInstance(ihe.iti.xds_b._2007.ObjectFactory.class);
-            javax.xml.bind.Unmarshaller unmarshaller = jaxbCtx.createUnmarshaller();
-
-
-            byte currentXMLBytes[] = xml.getBytes();
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(currentXMLBytes);
-            ret = unmarshaller.unmarshal(byteArrayInputStream);
-
-        } catch (Exception ex) {
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, xml.substring(0, 50) + " Failed to Unmarshall. Exception msg=" + ex.getMessage());
-            ex.printStackTrace();
-
-        }
-        return ret;
-    }
 
     protected String marshalResponse(QName altName, Object jaxb) {
 
