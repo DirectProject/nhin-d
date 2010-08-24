@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpAgent", "..\gateway\smtpAgent\smtpAgent.csproj", "{A9B11AAD-3461-4DDB-A447-91779BD41A78}"
+	ProjectSection(ProjectDependencies) = postProject
+		{83C99331-F451-4175-943D-12FCF17B636E} = {83C99331-F451-4175-943D-12FCF17B636E}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smtpEventHandler", "..\gateway\smtpEventHandler\smtpEventHandler.vcproj", "{1C4EFA2C-943E-4ABA-9EDC-F92BD561EAC2}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -15,8 +18,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smtpEventHandlerPS", "..\ga
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpagenttests", "..\unittests\smtpAgent\smtpagenttests.csproj", "{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}"
 	ProjectSection(ProjectDependencies) = postProject
+		{6A48C90B-0BD0-4F19-BBAE-B973AD504902} = {6A48C90B-0BD0-4F19-BBAE-B973AD504902}
 		{1C4EFA2C-943E-4ABA-9EDC-F92BD561EAC2} = {1C4EFA2C-943E-4ABA-9EDC-F92BD561EAC2}
+		{BC563499-B6F2-492A-AC91-D2D18E2FCFDD} = {BC563499-B6F2-492A-AC91-D2D18E2FCFDD}
 		{A9B11AAD-3461-4DDB-A447-91779BD41A78} = {A9B11AAD-3461-4DDB-A447-91779BD41A78}
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F} = {86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configStore", "..\config\store\configStore.csproj", "{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}"
@@ -28,8 +34,18 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nhinCommon", "..\common\nhinCommon.csproj", "{6A48C90B-0BD0-4F19-BBAE-B973AD504902}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nhinAgent", "..\agent\nhinAgent.csproj", "{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AE250214-0E85-4C28-90C9-A006440BCE97} = {AE250214-0E85-4C28-90C9-A006440BCE97}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnsResolver", "..\dns\dnsResolver.csproj", "{AE250214-0E85-4C28-90C9-A006440BCE97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "agentTests", "..\unittests\agent\agentTests.csproj", "{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6A48C90B-0BD0-4F19-BBAE-B973AD504902} = {6A48C90B-0BD0-4F19-BBAE-B973AD504902}
+		{AE250214-0E85-4C28-90C9-A006440BCE97} = {AE250214-0E85-4C28-90C9-A006440BCE97}
+		{BC563499-B6F2-492A-AC91-D2D18E2FCFDD} = {BC563499-B6F2-492A-AC91-D2D18E2FCFDD}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -187,6 +203,18 @@ Global
 		{AE250214-0E85-4C28-90C9-A006440BCE97}.Release|Win32.ActiveCfg = Release|Any CPU
 		{AE250214-0E85-4C28-90C9-A006440BCE97}.Release|x64.ActiveCfg = Release|Any CPU
 		{AE250214-0E85-4C28-90C9-A006440BCE97}.Release|x64.Build.0 = Release|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Release|Win32.ActiveCfg = Release|Any CPU
+		{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
