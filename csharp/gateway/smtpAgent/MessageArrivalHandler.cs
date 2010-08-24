@@ -103,8 +103,10 @@ namespace NHINDirect.SmtpAgent
                         agent = this.CreateAgent(configFilePath);
                         s_agents[configFilePath] = agent;
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        AgentDiagnostics.WriteEventLog(ex);
+                        throw;
                     }
                 }
                 
@@ -118,8 +120,9 @@ namespace NHINDirect.SmtpAgent
             {
                 this.Agent.ProcessMessage(message);
             }
-            catch
+            catch(Exception ex)
             {
+                AgentDiagnostics.WriteEventLog(ex);
                 //
                 // Paranoia of last resort. A malconfigured or malfunctioning agent should NEVER let ANY messages through
                 //
@@ -140,16 +143,8 @@ namespace NHINDirect.SmtpAgent
         
         SmtpAgent CreateAgent(string configFilePath)
         {
-            try
-            {
-                SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configFilePath);
-                return new SmtpAgent(settings);
-            }
-            catch(Exception error)
-            {
-                this.Agent.Log.WriteError(error);
-                throw;
-            }
+            SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configFilePath);
+            return new SmtpAgent(settings);
         }
     }    
 }

@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using NHINDirect.Agent;
 using NHINDirect.Certificates;
 using NHINDirect.Diagnostics;
@@ -25,6 +26,8 @@ namespace NHINDirect.SmtpAgent
 {
     internal class AgentDiagnostics
     {
+        const string EventLogName = "nhinMessageSink";
+        
         LogFile m_log;
         bool m_logVerbose; 
         
@@ -53,6 +56,16 @@ namespace NHINDirect.SmtpAgent
         internal void LogError(Exception ex)
         {
             m_log.WriteError(ex);
+        }
+        
+        internal static void WriteEventLog(string message)
+        {
+            EventLog.WriteEntry(EventLogName, message);
+        }
+
+        internal static void WriteEventLog(Exception ex)
+        {
+            EventLog.WriteEntry(EventLogName, ex.ToString(), EventLogEntryType.Error);
         }
         
         internal void OnOutgoingError(OutgoingMessage message, Exception error)
@@ -109,12 +122,34 @@ namespace NHINDirect.SmtpAgent
             {
                 builder.AppendFormat("REJECTED RECIPIENTS={0}", envelope.RejectedRecipients.ToString());
                 builder.AppendLine();
+                builder.AppendFormat("NO CERTS={0}", this.CollectNoCertInformation(envelope.RejectedRecipients));
+                builder.AppendLine();
             }
             if (envelope.HasRejectedRecipients)
             {
                 builder.AppendFormat("OTHER RECIPIENTS={0}", envelope.OtherRecipients.ToString());
                 builder.AppendLine();
             }
+        }
+        
+        string CollectNoCertInformation(NHINDAddressCollection recipients)
+        {
+            if (recipients.IsNullOrEmpty())
+            {
+                return string.Empty;
+            }
+            
+            StringBuilder builder = new StringBuilder();
+            foreach(NHINDAddress recipient in recipients)
+            {
+                if (!recipient.HasCertificates)
+                {
+                    builder.Append(recipient.Address);
+                    builder.Append(';');
+                }
+            }
+            
+            return builder.ToString();
         }
     }
 }
