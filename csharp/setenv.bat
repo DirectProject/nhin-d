@@ -6,8 +6,6 @@ IF "%PROCESSOR_ARCHITECTURE%" == "x86" SET frameworkpath=%windir%\microsoft.net\
 
 IF NOT EXIST %frameworkpath% GOTO :FrameworkMissing
 
-PATH "%frameworkpath%";%PATH%
-
 IF "%VS90COMNTOOLS%"=="" GOTO :VisualStudioMissing
 
 SET vcvarsallpath=%VS90COMNTOOLS%..\..\VC\vcvarsall.bat
@@ -15,6 +13,8 @@ SET vcvarsallpath=%VS90COMNTOOLS%..\..\VC\vcvarsall.bat
 IF NOT EXIST "%vcvarsallpath%" GOTO :VCVarsMissing
 
 CALL "%vcvarsallpath%" %PROCESSOR_ARCHITECTURE%
+
+PATH "%frameworkpath%";%PATH%
 
 GOTO :Finished
 

@@ -89,17 +89,7 @@
 		    <groupId>bouncycastle</groupId>
 		    <artifactId>bcmail-jdk15</artifactId>
 		    <version>140</version>	    
-		</dependency>
-		<dependency>
-		    <groupId>org.apache.james</groupId>
-		    <artifactId>apache-mailet</artifactId>
-		    <version>2.4</version>	    
-		</dependency>
-		<dependency>
-		    <groupId>org.apache.james</groupId>
-		    <artifactId>apache-mailet-base</artifactId>
-		    <version>1.1</version>	    
-		</dependency>		
+		</dependency>	
 		<dependency>
 		    <groupId>org.dnsjava</groupId>
 		    <artifactId>dnsjava</artifactId>
