@@ -27,14 +27,22 @@
 		<MSBuild Projects=".\build\build.sln" Targets="Clean" />
 	</Target>
 
+	<Target Name="build-agent-help" DependsOnTargets="build-agent">
+		<Exec Command="build\sc_help.bat bin\debug\nhinAgent.dll" />
+	</Target>
+
 	<Target Name="build-gateway">
-		<MSBuild Projects=".\build\buildGateway.sln" Targets="Build" Properties="Configuration=Debug" />
+		<MSBuild Projects=".\build\buildGateway.sln" Targets="Build" Properties="Configuration=Debug;Architecture=Any CPU" />
+	</Target>
+
+	<Target Name="build-gateway64">
+		<MSBuild Projects=".\build\buildGateway.sln" Targets="Build" Properties="Configuration=Debug;Architecture=x64" />
 	</Target>
 
 	<Target Name="clean-gateway">
-		<!-- taken out for now due to failure
-		<MSBuild Projects=".\build\buildGateway.sln" Targets="Clean" />
-		 -->
+		<!-- still broken
+		<MSBuild Projects=".\build\buildGateway.sln" Targets="Clean" Properties="Configuration=Debug;Architecture=Any CPU" />
+		-->
 	</Target>
 	
 	<Target Name="clean-xds">

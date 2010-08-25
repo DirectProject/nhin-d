@@ -67,3 +67,4 @@ glob:csharp/gateway/prodinstall/installhv.bat
 glob:csharp/gateway/prodinstall/prop.bat
 glob:csharp/gateway/prodinstall/readme.txt
 glob:csharp/unittests/runall.bat
+glob:csharp/*.chm
