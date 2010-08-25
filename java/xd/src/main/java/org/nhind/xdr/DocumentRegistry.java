@@ -54,9 +54,13 @@ public class DocumentRegistry {
     
     private String author = null;
     
+    /**
+     * Class logger
+     */
     private static final Logger LOGGER = Logger.getLogger(DocumentRegistry.class.getPackage().getName());
 
     /**
+     * 
      * @param prdst
      * @return
      * @throws Exception

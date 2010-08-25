@@ -79,9 +79,7 @@ public abstract class DocumentRepositoryAbstract {
     public RegistryResponseType provideAndRegisterDocumentSet(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
         RegistryResponseType resp = null;
         try {
-            System.out.println(this);
             getHeaderData();
-            System.out.println(this);
             
             @SuppressWarnings("unused")
             InitialContext ctx = new InitialContext();
@@ -102,9 +100,7 @@ public abstract class DocumentRepositoryAbstract {
             messageId = rmessageId;
             to = endpoint;
             
-            System.out.println(this);
             setHeaderData();
-            System.out.println(this);
         } catch (Exception e) {
             e.printStackTrace();
             throw (e);
@@ -334,8 +330,6 @@ public abstract class DocumentRepositoryAbstract {
         this.pid = threadData.getPid();
         this.action = threadData.getAction();
         this.from = threadData.getFrom();
-        
-        System.out.println(threadData);
     }
 
     /**
@@ -354,26 +348,5 @@ public abstract class DocumentRepositoryAbstract {
         threadData.setRemoteHost(this.remoteHost);
         threadData.setPid(this.pid);
         threadData.setFrom(this.from);
-        
-        System.out.println(threadData);
-    }
-    
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-        
-        sb.append("endpoint: " + endpoint + "\n");
-        sb.append("messageId: " + messageId + "\n");
-        sb.append("relatesTo: " + relatesTo + "\n");
-        sb.append("action: " + action + "\n");
-        sb.append("to: " + to + "\n");
-        
-        sb.append("thisHost: " + thisHost + "\n");
-        sb.append("remoteHost: " + remoteHost + "\n");
-        sb.append("pid: " + pid + "\n");
-        sb.append("from: " + from + "\n");
-        sb.append("suffix: " + suffix + "\n");
-        sb.append("replyEmail: " + replyEmail + "\n");
-        
-        return sb.toString();
     }
 }

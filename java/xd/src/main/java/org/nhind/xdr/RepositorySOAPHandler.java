@@ -8,16 +8,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-
 import javax.servlet.ServletRequest;
-
 import javax.xml.namespace.QName;
-
-
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPElement;
@@ -33,6 +29,7 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.SOAPFaultException;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -56,6 +53,9 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     protected String from;
     private static boolean first = true;
 
+    /**
+     * Class logger
+     */
     private static final Logger LOGGER = Logger.getLogger(RepositorySOAPHandler.class.getPackage().getName());
     
     /**
@@ -238,6 +238,11 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         return true;
     }
 
+    /**
+     * @param fileName
+     * @param properties
+     * @throws IOException
+     */
     @SuppressWarnings("unused")
     private void loadProperties(String fileName, Properties properties) throws IOException {
 
@@ -245,27 +250,24 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         properties.load(inputStream);
     }
 
-  
-
-   
-
     /**
      * Returns the <code>Set</code> of supported SOAP headers
      */
     @Override
     public Set<QName> getHeaders() {
-
         Set<QName> set = new HashSet<QName>();
+        
         QName qname = new QName("http://www.w3.org/2005/08/addressing", "Action");
         set.add(qname);
+        
         qname = new QName("http://www.w3.org/2005/08/addressing", "To");
         set.add(qname);
+        
         qname = new QName("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", "Security");
         set.add(qname);
+        
         return set;
     }
-
-   
 
     /**
      * Returns the message encoding (e.g. utf-8)
@@ -344,6 +346,11 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         return true;
     }
 
+    /**
+     * @param faultString
+     * @param clientFault
+     * @return
+     */
     @SuppressWarnings("unused")
     private SOAPFaultException createSOAPFaultException(String faultString,
             Boolean clientFault) {
@@ -359,9 +366,13 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
 
     }
 
+    /**
+     * Extract header values from a ThreadData object.
+     */
     protected void getHeaderData() {
         Long threadId = new Long(Thread.currentThread().getId());
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.FINE,"GTHREAD ID " + threadId);
+        LOGGER.fine("GTHREAD ID " + threadId);
+
         ThreadData threadData = new ThreadData(threadId);
         messageId = threadData.getMessageId();
         to = threadData.getTo();
@@ -373,9 +384,13 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         from = threadData.getFrom();
     }
 
+    /**
+     * Build a ThreadData object with header information.
+     */
     protected void setHeaderData() {
         Long threadId = new Long(Thread.currentThread().getId());
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.FINE,"GTHREAD ID " + threadId);
+        LOGGER.fine("GTHREAD ID " + threadId);
+        
         ThreadData threadData = new ThreadData(threadId);
         threadData.setReplyAddress(endpoint);
         threadData.setMessageId(messageId);
@@ -387,6 +402,11 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         threadData.setFrom(from);
     }
 
+    /**
+     * Get the current process ID.
+     * 
+     * @return the current process ID
+     */
     public String getPID() {
         String processName =
                 ManagementFactory.getRuntimeMXBean().getName();
