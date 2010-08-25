@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
-
 /**
  * Utility methods for working with HL7 strings.
  * 

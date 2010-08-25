@@ -29,7 +29,6 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 
 import org.apache.commons.lang.StringUtils;
-import org.nhind.util.HL7Utils;
 
 /**
  * This class handles document registry functions and general XDR parsing
