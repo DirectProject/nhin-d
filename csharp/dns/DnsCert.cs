@@ -97,6 +97,7 @@ namespace DnsResolver
 
         /// <summary>
         /// Gets and sets the <see cref="X509Certificate2"/> instance for this DNS RR.
+        /// When setting, also updates the KeyTag to match the new certificate.
         /// </summary>
         /// <value>
         /// The <see cref="X509Certificate2"/> stored in this DnsCert RR.

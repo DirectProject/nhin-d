@@ -92,6 +92,13 @@ namespace NHINDirect.Tests.Mime
 			Assert.Equal(expectedSegment, segment.ToString());
 		}
 
+        [Fact]
+        public void ToStringOnNullSegment()
+        {
+            StringSegment nullSegment = StringSegment.Null;
+            Assert.Equal("", nullSegment.ToString());
+        }
+
 		[Fact]
 		public void NullSource()
 		{
@@ -263,6 +270,8 @@ namespace NHINDirect.Tests.Mime
 		[Theory]
 		[InlineData(0, 5, 5, 10, 0, 10)]
 		[InlineData(1, 5, 0, 3, 0, 5)]
+        [InlineData(0, 2, 4, 10, 0, 10)] //Disjoint segments
+        [InlineData(4, 10, 0, 2, 0, 10)] //Same but reversed
 		public void UnionCases(int firstStart, int firstEnd, int secondStart, int secondEnd, int expectedStart, int expectedEnd)
 		{
 			var segment = new StringSegment(TestContent, firstStart, firstEnd);
