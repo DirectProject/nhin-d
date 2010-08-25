@@ -54,13 +54,28 @@ public class DocumentRegistry {
     
     private String author = null;
     
+    /**
+     * Class logger
+     */
     private static final Logger LOGGER = Logger.getLogger(DocumentRegistry.class.getPackage().getName());
 
+    /**
+     * 
+     * @param prdst
+     * @return
+     * @throws Exception
+     */
     public String parseRegistry(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
         SubmitObjectsRequest sor = prdst.getSubmitObjectsRequest();
         return parseRegistryData(sor, PNR);
     }
 
+    /**
+     * @param sor
+     * @param ttype
+     * @return
+     * @throws Exception
+     */
     protected String parseRegistryData(SubmitObjectsRequest sor, int ttype) throws Exception {
         String ret = null;
 
@@ -91,10 +106,6 @@ public class DocumentRegistry {
             throw (x);
         }
         return ret;
-    }
-
-    public List<String> getForwards() {
-        return forwards;
     }
 
     /**
@@ -141,6 +152,11 @@ public class DocumentRegistry {
         return auserId;
     }
 
+    /**
+     * @param rpt
+     * @return
+     * @throws Exception
+     */
     protected List<String> getForwards(RegistryPackageType rpt) throws Exception {
         List<String> forwards = new ArrayList<String>();
 
@@ -195,13 +211,18 @@ public class DocumentRegistry {
                     }
 
                     forwards.add(sendPoint);
-                    
                 }
             }
         }
         return forwards;
     }
 
+    /**
+     * @param in
+     * @param token
+     * @param field
+     * @return
+     */
     private String returnField(String in, String token, int field) {
         StringTokenizer list = new StringTokenizer(in, token);
         String ret = in;
@@ -215,6 +236,11 @@ public class DocumentRegistry {
         return ret;
     }
 
+    /**
+     * @param classes
+     * @return
+     * @throws Exception
+     */
     private String parseClassifications(List<ClassificationType> classes) throws Exception {
         String lauthor = null;
 
@@ -239,6 +265,11 @@ public class DocumentRegistry {
         return lauthor;
     }
 
+    /**
+     * @param document
+     * @return
+     * @throws Exception
+     */
     private String parseDocument(ExtrinsicObjectType document) throws Exception {
         sourceObjectId = document.getId();
 
@@ -330,7 +361,10 @@ public class DocumentRegistry {
         return mimeType;
     }
 
-    // right now this is not used, just getForwards
+    /**
+     * @param set
+     * @throws Exception
+     */
     @SuppressWarnings("unused")
     private void parseSubmissionSet(RegistryPackageType set) throws Exception {
 
@@ -384,7 +418,11 @@ public class DocumentRegistry {
 
     }
 
-   private String formatDateForMDM(String value) {
+    /**
+     * @param value
+     * @return
+     */
+    private String formatDateForMDM(String value) {
         String form;
         String formOut = "MM/dd/yyyy";
         String ret = value;
@@ -406,7 +444,6 @@ public class DocumentRegistry {
         }
 
         form = form.substring(0, valen);
-
 
         SimpleDateFormat date = new SimpleDateFormat(form);
         SimpleDateFormat dateOut = new SimpleDateFormat(formOut);
@@ -454,5 +491,12 @@ public class DocumentRegistry {
      */
     public void setAuthor(String author) {
         this.author = author;
+    }
+    
+    /**
+     * @return
+     */
+    public List<String> getForwards() {
+        return forwards;
     }
 }

@@ -20,24 +20,29 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
  *
  * @author vlewis
  */
-@WebService(serviceName = "DocumentRepository_Service",
-portName = "DocumentRepository_Port_Soap12",
-        endpointInterface = "ihe.iti.xds_b._2007.DocumentRepositoryPortType",
-        targetNamespace = "urn:ihe:iti:xds-b:2007",
-        wsdlLocation = "WEB-INF/wsdl/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl")
+@WebService(serviceName       = "DocumentRepository_Service",
+            portName          = "DocumentRepository_Port_Soap12",
+            endpointInterface = "ihe.iti.xds_b._2007.DocumentRepositoryPortType",
+            targetNamespace   = "urn:ihe:iti:xds-b:2007",
+            wsdlLocation      = "WEB-INF/wsdl/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl")
 @BindingType(SOAPBinding.SOAP12HTTP_BINDING)
 @HandlerChain(file = "/DocumentRepository_Service_handler.xml")
 public class XDR extends DocumentRepositoryAbstract{
 
+    /* 
+     * (non-Javadoc)
+     * 
+     * @see org.nhind.xdr.DocumentRepositoryAbstract#documentRepositoryProvideAndRegisterDocumentSetB(ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType)
+     */
     public RegistryResponseType documentRepositoryProvideAndRegisterDocumentSetB(ProvideAndRegisterDocumentSetRequestType body) {
       RegistryResponseType resp = null;
         try {
             resp = provideAndRegisterDocumentSet(body);
         } catch (Exception x) {
-            relatesTo = messageId;
-            action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
-            messageId = UUID.randomUUID().toString();
-            to = endpoint;
+            this.relatesTo = messageId;
+            this.action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
+            this.messageId = UUID.randomUUID().toString();
+            this.to = endpoint;
             setHeaderData();
             resp = new RegistryResponseType();
             resp.setStatus("urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure");
@@ -45,6 +50,11 @@ public class XDR extends DocumentRepositoryAbstract{
         return resp;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.nhind.xdr.DocumentRepositoryAbstract#documentRepositoryRetrieveDocumentSet(ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType)
+     */
     public RetrieveDocumentSetResponseType documentRepositoryRetrieveDocumentSet(RetrieveDocumentSetRequestType body) {
         //TODO implement this method
         throw new UnsupportedOperationException("Not implemented for XDR");
