@@ -79,6 +79,14 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\agent\nhinAgent.csproj">
+      <Project>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</Project>
+      <Name>nhinAgent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\nhinCommon.csproj">
+      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
+      <Name>nhinCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\gateway\smtpAgent\smtpAgent.csproj">
       <Project>{A9B11AAD-3461-4DDB-A447-91779BD41A78}</Project>
       <Name>smtpAgent</Name>
