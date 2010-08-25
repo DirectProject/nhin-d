@@ -163,13 +163,17 @@ public class DocumentRegistry {
                     List<String> fields = split(user, "^");
 
                     String userId = fields.get(0);
-                    String last = fields.get(1);
-                    String first = fields.get(2);
-                    String mid = fields.get(3);
-                    String what = fields.get(4);
-                    String prefix = fields.get(5);
-                    String suffix = fields.get(6);
-                    String what2 = fields.get(7);
+                    
+                    /*
+                     * String last = fields.get(1);
+                     * String first = fields.get(2);
+                     * String mid = fields.get(3);
+                     * String what = fields.get(4);
+                     * String prefix = fields.get(5);
+                     * String suffix = fields.get(6);
+                     * String what2 = fields.get(7);
+                     */
+                    
                     org = fields.get(8);
                     List<String> orgs = split(org, "&");
                     orgId = (String) orgs.get(1);

@@ -26,6 +26,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.gateway.smtp.module.SmtpAgentConfigModule;
 import org.nhindirect.stagent.NHINDAgent;
@@ -38,22 +40,40 @@ public class SmtpAgentFactory
 {
 	private static Map<URL, SmtpAgent> agents = new HashMap<URL, SmtpAgent>();
 	
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(SmtpAgentFactory.class);	
+	
 	public synchronized static SmtpAgent createAgent(URL configLocation)
 	{
 		return createAgent(configLocation, null, null);
 	}
 	
 	public synchronized static SmtpAgent createAgent(URL configLocation, Provider<SmtpAgentConfig> configProvider, 
-			Provider<NHINDAgent> agentProvider)
+			Provider<NHINDAgent> agentProvider) throws SmtpAgentException
 	{
-		SmtpAgent retVal = agents.get(configLocation);
+		SmtpAgent retVal = null;
 		
-		if (retVal == null)
+		try
 		{
-			Injector agentInjector = buildAgentInjector(configLocation, configProvider, agentProvider);
-			retVal = agentInjector.getInstance(SmtpAgent.class);
+			agents.get(configLocation);
 			
-			agents.put(configLocation, retVal);
+			if (retVal == null)
+			{
+				Injector agentInjector = buildAgentInjector(configLocation, configProvider, agentProvider);
+				retVal = agentInjector.getInstance(SmtpAgent.class);
+				
+				agents.put(configLocation, retVal);
+			}
+		}
+		catch (SmtpAgentException e)
+		{
+			// rethrow
+			throw e;
+		}
+		catch (Throwable t)
+		{
+			// catch all
+			LOGGER.error("SmtpAgent creation failed: " + t.getMessage(), t);
+			throw new SmtpAgentException(SmtpAgentError.Unknown, "SmtpAgent creation failed: " + t.getMessage());
 		}
 		
 		return retVal;
