@@ -1,9 +1,12 @@
 package org.nhind.util;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Utility methods for working with HL7 strings.
@@ -48,9 +51,15 @@ public class HL7Utils {
      * @return a list of split tokens
      */
     public static List<String> split(String input, String delimiter) {
-        String quotedDelimiter = Pattern.quote(delimiter);
-        List<String> tokens = Arrays.asList(input.split(quotedDelimiter, -1));
+        if (StringUtils.isEmpty(input)) {
+            return Collections.emptyList();
+        }
 
-        return tokens;
+        if (StringUtils.isEmpty(delimiter)) {
+            throw new IllegalArgumentException("A delimiter must be provided.");
+        }
+
+        String quotedDelimiter = Pattern.quote(delimiter);
+        return Arrays.asList(input.split(quotedDelimiter, -1));
     }
 }

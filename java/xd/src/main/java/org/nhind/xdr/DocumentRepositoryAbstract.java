@@ -384,6 +384,8 @@ public abstract class DocumentRepositoryAbstract {
         this.pid = threadData.getPid();
         this.action = threadData.getAction();
         this.from = threadData.getFrom();
+        
+        LOGGER.info(threadData.toString());
     }
 
     /**
@@ -402,5 +404,7 @@ public abstract class DocumentRepositoryAbstract {
         threadData.setRemoteHost(this.remoteHost);
         threadData.setPid(this.pid);
         threadData.setFrom(this.from);
+        
+        LOGGER.info(threadData.toString());
     }
 }
