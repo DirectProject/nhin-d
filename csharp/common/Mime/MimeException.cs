@@ -21,23 +21,46 @@ using System.Security.Cryptography;
 
 namespace NHINDirect.Mime
 {    
+    /// <summary>
+    /// Exception for mime parsing errors.
+    /// </summary>
     public class MimeException : NHINDException<MimeError>
     {
+        /// <summary>
+        /// Creates an exception with the specified error
+        /// </summary>
+        /// <param name="error">The <see cref="MimeError"/> that triggered this exception.</param>
         public MimeException(MimeError error)
             : base(error)
         {
         }
 
+        /// <summary>
+        /// Creates an exception with the specified error and a custom message
+        /// </summary>
+        /// <param name="error">The <see cref="MimeError"/> that triggered this exception.</param>
+        /// <param name="message">The custom error message</param>
         public MimeException(MimeError error, string message)
             : base(error, message)
         {
         }
 
+        /// <summary>
+        /// Creates an exception with the specified error, and a lower level exception
+        /// </summary>
+        /// <param name="error">The <see cref="MimeError"/> that triggered this exception.</param>
+        /// <param name="innerException">The lower level exception that triggered this exception</param>
         public MimeException(MimeError error, Exception innerException)
             : base(error, innerException)
         {
         }
 
+        /// <summary>
+        /// Creates an exception with the specified error, a lower level exception, and a custom message
+        /// </summary>
+        /// <param name="error">The <see cref="MimeError"/> that triggered this exception.</param>
+        /// <param name="innerException">The lower level exception that triggered this exception</param>
+        /// <param name="message">The custom error message</param>
         public MimeException(MimeError error, string message, Exception innerException)
             : base(error, message, innerException)
         {
