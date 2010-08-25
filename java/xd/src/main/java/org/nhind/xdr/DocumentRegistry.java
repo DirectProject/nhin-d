@@ -4,17 +4,17 @@
  */
 package org.nhind.xdr;
 
+import static org.nhind.util.HL7Utils.returnField;
+import static org.nhind.util.HL7Utils.split;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
@@ -29,9 +29,12 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 
 import org.apache.commons.lang.StringUtils;
+import org.nhind.util.HL7Utils;
 
 /**
- *
+ * This class handles document registry functions and general XDR parsing
+ * utilities.
+ * 
  * @author Vince
  */
 public class DocumentRegistry {
@@ -55,14 +58,17 @@ public class DocumentRegistry {
     private String author = null;
     
     /**
-     * Class logger
+     * Class logger.
      */
     private static final Logger LOGGER = Logger.getLogger(DocumentRegistry.class.getPackage().getName());
 
     /**
+     * Parse the registry data of a ProvideAndRegisterDocumentSetRequestType
+     * object and return a mime-type.
      * 
      * @param prdst
-     * @return
+     *            The ProvideAndRegisterDocumentSetRequestType object to parse.
+     * @return a mime-type.
      * @throws Exception
      */
     public String parseRegistry(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
@@ -71,9 +77,14 @@ public class DocumentRegistry {
     }
 
     /**
+     * Parse the registry data of a SubmitObjectsRequest object and return a
+     * mime-type.
+     * 
      * @param sor
+     *            The SubmitObjectsRequest object to parse.
      * @param ttype
-     * @return
+     *            ?? TODO unused param
+     * @return a mime-type.
      * @throws Exception
      */
     protected String parseRegistryData(SubmitObjectsRequest sor, int ttype) throws Exception {
@@ -109,9 +120,9 @@ public class DocumentRegistry {
     }
 
     /**
-     * Extract an email address from an HL7 string using "^" delimiter.
+     * Extract an email address from an HL7 string using '^' delimiter.
      * 
-     * @return the extracted email address
+     * @return the extracted email address.
      */
     public String getAuthorEmail() {
         // Literal string
@@ -153,8 +164,13 @@ public class DocumentRegistry {
     }
 
     /**
+     * Get a list of forwards (email addresses and/or relay endpoints) from a
+     * RegistryPackage object.
+     * 
      * @param rpt
-     * @return
+     *            The RegistryPackage object from which to extract a list of
+     *            forwards.
+     * @return a list of forwards.
      * @throws Exception
      */
     protected List<String> getForwards(RegistryPackageType rpt) throws Exception {
@@ -216,40 +232,21 @@ public class DocumentRegistry {
         }
         return forwards;
     }
-
+    
     /**
-     * @param in
-     * @param token
-     * @param field
-     * @return
-     */
-    private String returnField(String in, String token, int field) {
-        StringTokenizer list = new StringTokenizer(in, token);
-        String ret = in;
-        int count = 0;
-        while (list.hasMoreElements()) {
-            String temp = list.nextToken();
-            if (++count == field) {
-                ret = temp;
-            }
-        }
-        return ret;
-    }
-
-    /**
+     * 
      * @param classes
      * @return
      * @throws Exception
      */
-    private String parseClassifications(List<ClassificationType> classes) throws Exception {
+    public static String parseClassifications(List<ClassificationType> classes) throws Exception {
         String lauthor = null;
 
         try {
             for (ClassificationType clas : classes) {
                 for (SlotType1 slot : clas.getSlot()) {
                     String sname = slot.getName();
-                    if (sname.equals("authorPerson")
-                            && slot.getValueList() != null
+                    if (sname.equals("authorPerson") && slot.getValueList() != null
                             && slot.getValueList().getValue() != null) {
                         for (String value : slot.getValueList().getValue()) {
                             lauthor = value;
@@ -261,13 +258,16 @@ public class DocumentRegistry {
             x.printStackTrace();
             throw (x);
         }
-        
+
         return lauthor;
     }
 
     /**
+     * Parse the fields out of an ExtrinsicObjectType object.
+     * 
      * @param document
-     * @return
+     *            The ExtrinsicObjectType object to parse.
+     * @return a mime-type.
      * @throws Exception
      */
     private String parseDocument(ExtrinsicObjectType document) throws Exception {
@@ -362,7 +362,10 @@ public class DocumentRegistry {
     }
 
     /**
+     * Parse the data out of a RegistryPackageType object.
+     * 
      * @param set
+     *            The RegistryPackageType object to parse.
      * @throws Exception
      */
     @SuppressWarnings("unused")
@@ -455,23 +458,6 @@ public class DocumentRegistry {
             x.printStackTrace();
         }
         return ret;
-    }
-
-    /**
-     * Split up a string using the given delimiter and return as a list of
-     * tokens
-     * 
-     * @param input
-     *            The string to split
-     * @param delimiter
-     *            The delimiter used for splitting
-     * @return a list of split tokens
-     */
-    private List<String> split(String input, String delimiter) {
-        String quotedDelimiter = Pattern.quote(delimiter);
-        List<String> tokens = Arrays.asList(input.split(quotedDelimiter, -1));
-
-        return tokens;
     }
 
     /**

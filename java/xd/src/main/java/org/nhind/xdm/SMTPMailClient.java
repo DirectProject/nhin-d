@@ -48,23 +48,23 @@ public class SMTPMailClient {
      * Create and send a message over SMTP.
      * 
      * @param recipients
-     *            The list of recipient addresses for the mail message
+     *            The list of recipient addresses for the mail message.
      * @param subject
-     *            The subject of the mail message
+     *            The subject of the mail message.
      * @param messageId
-     *            The message ID
+     *            The message ID.
      * @param body
-     *            The body body of the message
+     *            The body body of the message.
      * @param message
-     *            The data to be zipped and attached to the mail message
+     *            The data to be zipped and attached to the mail message.
      * @param from
-     *            The sender of the mail message
+     *            The sender of the mail message.
      * @param suffix
      *            The suffix of the data to be zipped and attached to the mail
-     *            message
+     *            message.
      * @param meta
      *            The metadata to be included in the zip and attached to the
-     *            mail message
+     *            mail message.
      * @throws MessagingException
      */
     public void postMail(List<String> recipients, String subject, String messageId, String body,
@@ -124,12 +124,12 @@ public class SMTPMailClient {
      * Write data to a .zip file and return the Flie object.
      * 
      * @param attachment
-     *            The attachment data to be included in the .zip file
+     *            The attachment data to be included in the .zip file.
      * @param suffix
-     *            The suffix for the attachment data
+     *            The suffix for the attachment data.
      * @param meta
-     *            The metadata to be included in the .zip file
-     * @return a reference to the created .zip file
+     *            The metadata to be included in the .zip file.
+     * @return a reference to the created .zip file.
      */
     private File getZip(byte[] attachment, String suffix, byte[] meta) {
         File temp = null;
@@ -237,7 +237,7 @@ public class SMTPMailClient {
     /**
      * Create the readme string for the XDM package.
      * 
-     * @return a string to be used as the readme for the XDM package
+     * @return a string to be used as the readme for the XDM package.
      */
     private String getReadme() {
         return "NHIN Direct - IHE Team - Implementation. This XDM message was created via the web interface.  Please view INDEX.HTM for links to the files and metadata that make up this message. ";
@@ -247,8 +247,8 @@ public class SMTPMailClient {
      * Create the index file for the XDM package.
      * 
      * @param type
-     *            The suffix for the attachment included in the XDM package
-     * @return a string to be used as the index for the XDM package
+     *            The suffix for the attachment included in the XDM package.
+     * @return a string to be used as the index for the XDM package.
      */
     private String getIndex(String type) {
 

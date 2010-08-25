@@ -34,7 +34,8 @@ import org.nhind.util.XMLUtils;
 import org.nhind.xdm.SMTPMailClient;
 
 /**
- *
+ * Base class for handling incoming XDR requests.
+ * 
  * @author Vince
  */
 public abstract class DocumentRepositoryAbstract {
@@ -60,23 +61,37 @@ public abstract class DocumentRepositoryAbstract {
     private static final Logger LOGGER = Logger.getLogger(DocumentRepositoryAbstract.class.getPackage().getName());
 
     /**
+     * Handle an incoming XDR request with a
+     * ProvideAndRegisterDocumentSetRequestType object.
+     * 
      * @param body
-     * @return
+     *            The ProvideAndRegisterDocumentSetRequestType object
+     *            representing an XDR message
+     * @return a RegistryResponseType object
      */
     public abstract RegistryResponseType documentRepositoryProvideAndRegisterDocumentSetB(ProvideAndRegisterDocumentSetRequestType body);
     
     /**
+     * Handle an incoming XDR request with a RetrieveDocumentSetRequestType
+     * object
+     * 
      * @param body
-     * @return
+     *            The RetrieveDocumentSetRequestType object representing an XDR
+     *            message
+     * @return a RetrieveDocumentSetRequestType object
      */
     public abstract RetrieveDocumentSetResponseType documentRepositoryRetrieveDocumentSet(RetrieveDocumentSetRequestType body);
     
     /**
+     * Handle an incoming ProvideAndRegisterDocumentSetRequestType object and
+     * transform to XDM or relay to another XDR endponit.
+     * 
      * @param prdst
-     * @return
+     *            The incoming ProvideAndRegisterDocumentSetRequestType object
+     * @return a RegistryResponseType object
      * @throws Exception
      */
-    public RegistryResponseType provideAndRegisterDocumentSet(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
+    protected RegistryResponseType provideAndRegisterDocumentSet(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
         RegistryResponseType resp = null;
         try {
             getHeaderData();
@@ -110,8 +125,12 @@ public abstract class DocumentRepositoryAbstract {
     }
 
     /**
+     * Handle an incoming ProvideAndRegisterDocumentSetRequestType object and
+     * transform to XDM or relay to another XDR endponit.
+     * 
      * @param prdst
-     * @return
+     *            The incoming ProvideAndRegisterDocumentSetRequestType object
+     * @return a RegistryResponseType object
      * @throws Exception
      */
     protected List<String> provideAndRegister(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
@@ -140,11 +159,14 @@ public abstract class DocumentRepositoryAbstract {
     }
 
     /**
+     * Create a RegistryResponseType object.
+     * 
      * @param messageId
-     * @return
+     *            The message ID
+     * @return a RegistryResponseType object
      * @throws Exception
      */
-    public RegistryResponseType getRepositoryProvideResponse(String messageId) throws Exception {
+    protected RegistryResponseType getRepositoryProvideResponse(String messageId) throws Exception {
         RegistryResponseType rrt = null;
         try { // Call Web Service Operation
 
@@ -169,16 +191,28 @@ public abstract class DocumentRepositoryAbstract {
     }
 
     /**
+     * Forward a message to an email recipient or to an XDR relay endpoint.
+     * 
      * @param type
+     *            ?? TODO What is this? It's not used anywhere down the line. A
+     *            literal value of '4' is being passed here
      * @param body
+     *            The message body
      * @param forwards
+     *            The list of email recipients and relay endponits
      * @param replyEmail
+     *            The reply-to email address
      * @param prdst
+     *            The ProvideAndRegisterDocumentSetRequestType object
      * @param messageId
+     *            The message ID
      * @param endpoint
+     *            ?? TODO Unused param
      * @param suffix
+     *            The file extension of the XDR document
      * @param meta
-     * @return
+     *            The XDR metadata
+     * @return a message ID
      * @throws Exception
      */
     public String fowardMessage(int type, String body, List<String> forwards, String replyEmail, ProvideAndRegisterDocumentSetRequestType prdst, String messageId, String endpoint, String suffix, String meta) throws Exception {
@@ -201,13 +235,22 @@ public abstract class DocumentRepositoryAbstract {
 
     /**
      * @param type
+     *            ?? TODO What is this? It's not used anywhere down the line. A
+     *            literal value of '4' is being passed here
      * @param messageId
+     *            The message ID
      * @param provideEndpoints
+     *            The list of email recipients and relay endponits
      * @param prdst
+     *            The ProvideAndRegisterDocumentSetRequestType object
      * @param fromEmail
+     *            The reply-to email address
      * @param body
+     *            The message body
      * @param suffix
+     *            The file extension of the XDR document
      * @param meta
+     *            The XDR metadata
      * @throws Exception
      */
     private void forwardRepositoryRequest(int type, String messageId, List<String> provideEndpoints, ProvideAndRegisterDocumentSetRequestType prdst, String fromEmail, String body, String suffix, String meta) throws Exception {
@@ -275,12 +318,20 @@ public abstract class DocumentRepositoryAbstract {
     }
 
     /**
+     * Mail a recipient the XDR data.
+     * 
      * @param email
+     *            The email recipient
      * @param from
+     *            The reply-to email address
      * @param messageId
+     *            The message ID
      * @param message
+     *            The raw message to be sent
      * @param suffix
+     *            The file extension of the XDR document
      * @param meta
+     *            The XDR metadata
      * @throws Exception
      */
     private void mailDocument(String email, String from, String messageId, byte[] message, String suffix, byte[] meta) throws Exception {
@@ -293,8 +344,11 @@ public abstract class DocumentRepositoryAbstract {
     }
 
     /**
+     * Extract the documents from the XDR message.
+     * 
      * @param prdst
-     * @return
+     *            The XDR message
+     * @return the raw documents from the XDR message
      */
     private byte[] getDocs(ProvideAndRegisterDocumentSetRequestType prdst) {
         List<Document> documents = prdst.getDocument();
