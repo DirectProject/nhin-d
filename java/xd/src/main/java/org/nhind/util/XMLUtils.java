@@ -17,7 +17,7 @@ import javax.xml.namespace.QName;
 public class XMLUtils {
 
     /**
-     * Class logger
+     * Class logger.
      */
     private static final Logger LOGGER = Logger.getLogger(XMLUtils.class.getPackage().getName());
 
@@ -25,12 +25,12 @@ public class XMLUtils {
      * Marshal an object into an XML string.
      * 
      * @param altName
-     *            The altName
+     *            The altName.
      * @param jaxb
-     *            The object to marshal
+     *            The object to marshal.
      * @param factory
-     *            The factory class
-     * @return a marshaled string from the object
+     *            The factory class.
+     * @return a marshaled string from the object.
      */
     public static String marshal(QName altName, Object jaxb, Class factory) {
         String ret = null;
@@ -55,10 +55,10 @@ public class XMLUtils {
      * Unmarshal an string into an object.
      * 
      * @param xml
-     *            The XML string
+     *            The XML string.
      * @param factory
-     *            The factory class
-     * @return an object representation of the string
+     *            The factory class.
+     * @return an object representation of the string.
      */
     public static Object unmarshal(String xml, Class factory) {
         javax.xml.bind.JAXBContext jaxbCtx = null;
@@ -77,10 +77,10 @@ public class XMLUtils {
      * Unmarshal an string into an object.
      * 
      * @param xml
-     *            The XML string
+     *            The XML string.
      * @param jaxbCtx
-     *            The JAXBContext object
-     * @return an object representation of the string
+     *            The JAXBContext object.
+     * @return an object representation of the string.
      */
     private static Object unmarshal(String xml, javax.xml.bind.JAXBContext jaxbCtx) {
         Object ret = null;
