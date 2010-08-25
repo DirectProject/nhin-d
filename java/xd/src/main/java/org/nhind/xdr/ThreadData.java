@@ -47,7 +47,7 @@ public class ThreadData {
      * @param id
      *            The id of the element to remove from the threadMap object
      */
-    public void clean(Long id) {
+    public static void clean(Long id) {
         threadMap.remove(id);
     }
 

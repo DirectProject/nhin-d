@@ -2,6 +2,8 @@ package org.nhind.xdr;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import junit.framework.TestCase;
 
 /**
@@ -73,6 +75,16 @@ public class ThreadDataTest extends TestCase {
         assertEquals("Map value does not match expected.", "thisHost.1", map.get(new Long(99991)).get(ThreadData.THISHOST));    
         assertEquals("Map value does not match expected.", "to.1", map.get(new Long(99991)).get(ThreadData.TO));    
         
+        assertEquals("Instance value does not match expected.", "action.1", t1.getAction());        
+        assertEquals("Instance value does not match expected.", "from.1", t1.getFrom());    
+        assertEquals("Instance value does not match expected.", "messageId.1", t1.getMessageId());    
+        assertEquals("Instance value does not match expected.", "pid.1", t1.getPid());    
+        assertEquals("Instance value does not match expected.", "relatesTo.1", t1.getRelatesTo());    
+        assertEquals("Instance value does not match expected.", "remoteHost.1", t1.getRemoteHost());    
+        assertEquals("Instance value does not match expected.", "replyAddress.1", t1.getReplyAddress());    
+        assertEquals("Instance value does not match expected.", "thisHost.1", t1.getThisHost());    
+        assertEquals("Instance value does not match expected.", "to.1", t1.getTo());    
+        
         t1.setTo("to.1.1");
 
         assertEquals("Map value does not match expected.", "to.1.1", map.get(new Long(99991)).get(ThreadData.TO));    
@@ -89,7 +101,16 @@ public class ThreadDataTest extends TestCase {
         t2.setTo("to.2");
         
         assertEquals("Map size does not match expected value.", mapSize + 2, map.size());
-        assertEquals("Map does not contain specific key.", true, map.containsKey(new Long(99992)));      
+        assertEquals("Map does not contain specific key.", true, map.containsKey(new Long(99992)));    
+        
+        ThreadData.clean(new Long(99991));
+        assertTrue("Key,value was not removed from map", map.get(new Long(99991)) == null);
+        
+        String out = t1.toString();
+        assertTrue("toString() output does not contain expected value", StringUtils.containsIgnoreCase(out, "No map found"));
+        
+        out = t2.toString();
+        assertTrue("toString() output does not contain expected value", StringUtils.contains(out, "99992"));
     }
 
 }
