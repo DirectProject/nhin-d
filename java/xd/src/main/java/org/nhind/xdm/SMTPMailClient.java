@@ -29,7 +29,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 /**
- *
+ * This class handles the packaging and sending of XDM data over SMTP.
+ * 
  * @author vlewis
  */
 public class SMTPMailClient {
@@ -71,7 +72,7 @@ public class SMTPMailClient {
         boolean debug = false;
         java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 
-        //Set the host smtp address
+        // Set the host SMTP address
         Properties props = new Properties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.starttls.enable", "true");
@@ -83,12 +84,7 @@ public class SMTPMailClient {
 
         session.setDebug(debug);
 
-        // create a message
-        //   Message msg = new MimeMessage(session);
-
-        // set the from and to address
         InternetAddress addressFrom = new InternetAddress(from);
-        //  msg.setFrom(addressFrom);
 
         InternetAddress[] addressTo = new InternetAddress[recipients.size()];
         int i = 0;
@@ -96,6 +92,7 @@ public class SMTPMailClient {
             addressTo[i++] = new InternetAddress(recipient);
         }
 
+        // Build message object
         mmessage = new MimeMessage(session);
         mmessage.setFrom(addressFrom);
         mmessage.setRecipients(Message.RecipientType.TO, addressTo);
@@ -106,7 +103,6 @@ public class SMTPMailClient {
         mainBody = new MimeBodyPart();
         mainBody.setDataHandler(new DataHandler(body, "text/plain"));
         mailBody.addBodyPart(mainBody);
-
 
         mimeAttach = new MimeBodyPart();
 
@@ -122,8 +118,6 @@ public class SMTPMailClient {
 
         mmessage.setContent(mailBody);
         Transport.send(mmessage);
-
-
     }
 
     /**
@@ -138,14 +132,13 @@ public class SMTPMailClient {
      * @return a reference to the created .zip file
      */
     private File getZip(byte[] attachment, String suffix, byte[] meta) {
-
         File temp = null;
+        
         try {
             BufferedInputStream origin = null;
             temp = new File("xdm.zip");
             FileOutputStream dest = new FileOutputStream(temp);
 
-            // OutputStream dest = new ByteArrayOutputStream(attachmentString.length()*2);
             ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
             out.setMethod(ZipOutputStream.DEFLATED);
             byte data[] = new byte[BUFFER];

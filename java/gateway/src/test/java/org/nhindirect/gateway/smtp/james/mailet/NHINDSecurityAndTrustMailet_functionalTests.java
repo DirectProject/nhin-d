@@ -6,11 +6,13 @@ import java.util.Map;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.mailet.Mail;
+import org.apache.mailet.Mailet;
 import org.apache.mailet.MailetConfig;
 import org.nhindirect.gateway.smtp.james.mailet.NHINDSecurityAndTrustMailet;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.cryptography.SMIMEStandard;
+import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
 import junit.framework.TestCase;
@@ -18,32 +20,27 @@ import junit.framework.TestCase;
 public class NHINDSecurityAndTrustMailet_functionalTests extends TestCase 
 {
 	abstract class TestPlan extends BaseTestPlan 
-	{
-		@Override
-		protected void performInner() throws Exception 
+	{		
+		protected Mailet getMailet(String configurationFileName)  throws Exception
 		{
-			String configfile = TestUtils.getTestConfigFile(getConfigFileName());
+			Mailet retVal = null;
+			String configfile = TestUtils.getTestConfigFile(configurationFileName);
 			Map<String,String> params = new HashMap<String, String>();
 			
 			params.put("ConfigURL", "file://" + configfile);
 			
-			NHINDSecurityAndTrustMailet theMailet = new NHINDSecurityAndTrustMailet();
+			retVal = new NHINDSecurityAndTrustMailet();
 			MailetConfig mailetConfig = new MockMailetConfig(params, "NHINDSecurityAndTrustMailet");
 			
-			theMailet.init(mailetConfig);
-
-			MimeMessage msg = EntitySerializer.Default.deserialize(getMessageToProcess());
-			
-			MockMail theMessage = new MockMail(msg);
-			
-			theMailet.service(theMessage);
-			
-			doAssertions(theMessage);
-		}	
+			retVal.init(mailetConfig);
 		
-		protected void doAssertions(Mail processedMsg) throws Exception
-		{
+			return retVal;
 		}
+			
+		
+		@Override
+		protected abstract void performInner() throws Exception;
+		
 		
 		protected String getConfigFileName()
 		{
@@ -53,7 +50,7 @@ public class NHINDSecurityAndTrustMailet_functionalTests extends TestCase
 		protected abstract String getMessageToProcess() throws Exception;
 	}
 	
-	public void testProcessOutgoingMessageWithValidConfig() throws Exception 
+	public void testProcessOutgoingMessageEndToEnd() throws Exception 
 	{
 		new TestPlan() 
 		{			
@@ -61,18 +58,53 @@ public class NHINDSecurityAndTrustMailet_functionalTests extends TestCase
 			{
 				return TestUtils.readMessageResource("PlainOutgoingMessage.txt");
 			}	
+
 			
-			@Override
-			protected void doAssertions(Mail processedMsg) throws Exception
+			protected void performInner() throws Exception
 			{
-				assertNotNull(processedMsg);
-				assertNotNull(processedMsg.getMessage());
+
+				// encrypt
+				String originalMessage = getMessageToProcess();
 				
-				MimeMessage msg = processedMsg.getMessage();
+				MimeMessage msg = EntitySerializer.Default.deserialize(originalMessage);
+				
+				MockMail theMessage = new MockMail(msg);
+				
+				Mailet theMailet = getMailet("ValidConfig.xml");
+				
+				theMailet.service(theMessage);
+				
+				
+				assertNotNull(theMessage);
+				assertNotNull(theMessage.getMessage());
+				
+				msg = theMessage.getMessage();
 				
 				assertTrue(SMIMEStandard.isEncrypted(msg));
-			}
-			
+				assertEquals(theMessage.getState(), Mail.TRANSPORT);
+				
+				
+				// decrypt
+				theMailet = getMailet("ValidConfigStateLine.txt");				
+				
+				theMessage = new MockMail(msg);
+				
+				theMailet.service(theMessage);
+				
+				assertNotNull(theMessage);
+				assertNotNull(theMessage.getMessage());
+				
+				
+				msg = theMessage.getMessage();
+				assertFalse(SMIMEStandard.isEncrypted(msg));
+				assertEquals(theMessage.getState(), Mail.TRANSPORT);
+
+				Message compareMessage = new Message(theMessage.getMessage());
+				
+				assertEquals(originalMessage, compareMessage.toString());
+				
+			}				
+					
 		}.perform();
 	}
 }

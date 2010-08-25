@@ -4,104 +4,233 @@
  */
 package org.nhind.xdr;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * ThreadData bean. Contains information about the running threads.
+ * 
  * @author Vince
  */
 public class ThreadData {
 
-    public final String MESSAGE = "message";
-    public final String ACTION = "action";
-    public final String REPLY = "reply";
-    public final String TO = "to";
-    public final String RELATESTO = "relatesto";
-    public final String THISHOST = "thishost";
-    public final String REMOTEHOST = "remotehost";
-    public final String PID = "pid";
-    public final String FROM = "from";
-    private static Map<Long, Map<String, String>> threadMap = new HashMap<Long, Map<String, String>>();
+    public static final String MESSAGE = "message";
+    public static final String ACTION = "action";
+    public static final String REPLY = "reply";
+    public static final String TO = "to";
+    public static final String RELATESTO = "relatesto";
+    public static final String THISHOST = "thishost";
+    public static final String REMOTEHOST = "remotehost";
+    public static final String PID = "pid";
+    public static final String FROM = "from";
+    
     private Long threadId = null;
 
+    /**
+     * Object to contain and relate all ThreadData objects.
+     */
+    private static Map<Long, Map<String, String>> threadMap = new HashMap<Long, Map<String, String>>();
+    
+    /**
+     * Constructor.
+     * 
+     * @param id The value to set as the ID for the ThreadData object
+     */
     public ThreadData(Long id) {
         this.threadId = id;
     }
 
+    /**
+     * Remove an element from the threadMap object specified by the given id.
+     * 
+     * @param id
+     *            The id of the element to remove from the threadMap object
+     */
     public void clean(Long id) {
         threadMap.remove(id);
     }
 
+    /**
+     * Set the value for the key MESSAGE
+     * 
+     * @param value
+     *            the value for the key MESSAGE
+     */
     public void setMessageId(String value) {
         setValue(value, MESSAGE);
     }
 
-     public void setFrom(String value) {
+    /**
+     * Set the value for the key FROM
+     * 
+     * @param value
+     *            the value for the key FROM
+     */
+    public void setFrom(String value) {
         setValue(value,FROM);
     }
+
+    /**
+     * Set the value for the key THISHOST
+     * 
+     * @param value
+     *            the value for the key THISHOST
+     */
     public void setThisHost(String value) {
         setValue(value, THISHOST);
     }
+
+    /**
+     * Set the value for the key REMOTEHOST
+     * 
+     * @param value
+     *            the value for the key REMOTEHOST
+     */
     public void setRemoteHost(String value) {
         setValue(value, REMOTEHOST);
     }
 
+    /**
+     * Set the value for the key ACTION
+     * 
+     * @param value
+     *            the value for the key ACTION
+     */
     public void setAction(String value) {
         setValue(value, ACTION);
     }
 
+    /**
+     * Set the value for the key PID
+     * 
+     * @param value
+     *            the value for the key PID
+     */
     public void setPid(String value) {
         setValue(value, PID);
     }
 
+    /**
+     * Set the value for the key REPLY
+     * 
+     * @param value
+     *            the value for the key REPLY
+     */
     public void setReplyAddress(String value) {
         setValue(value, REPLY);
     }
 
+    /**
+     * Set the value for the key TO
+     * 
+     * @param value
+     *            the value for the key TO
+     */
     public void setTo(String value) {
         setValue(value, TO);
     }
 
+    /**
+     * Set the value for the key RELATESTO
+     * 
+     * @param value
+     *            the value for the key RELATESTO
+     */
     public void setRelatesTo(String value) {
         setValue(value, RELATESTO);
     }
 
+    /**
+     * Return the value for the key THISHOST.
+     * 
+     * @return the value for the key THISHOST
+     */
     public String getThisHost() {
        return getValue(THISHOST);
     }
 
-     public String getRemoteHost() {
+    /**
+     * Return the value for the key REMOTEHOST.
+     * 
+     * @return the value for the key REMOTEHOST
+     */
+    public String getRemoteHost() {
         return getValue(REMOTEHOST);
     }
+
+    /**
+     * Return the value for the key MESSAGE.
+     * 
+     * @return the value for the key MESSAGE
+     */
     public String getMessageId() {
         return getValue(MESSAGE);
     }
 
+    /**
+     * Return the value for the key ACTION.
+     * 
+     * @return the value for the key ACTION
+     */
     public String getAction() {
         return getValue(ACTION);
     }
-      public String getPid() {
+    
+    /**
+     * Return the value for the key PID.
+     * 
+     * @return the value for the key PID
+     */
+    public String getPid() {
         return getValue(PID);
     }
 
+    /**
+     * Return the value for the key REPLY.
+     * 
+     * @return the value for the key REPLY
+     */
     public String getReplyAddress() {
         return getValue(REPLY);
     }
 
+    /**
+     * Return the value for the key TO.
+     * 
+     * @return the value for the key TO
+     */
     public String getTo() {
         return getValue(TO);
     }
 
+    /**
+     * Return the value for the key FROM.
+     * 
+     * @return the value for the key FROM
+     */
     public String getFrom() {
         return getValue(FROM);
     }
 
+    /**
+     * Return the value for the key RELATESTO.
+     * 
+     * @return the value for the key RELATESTO
+     */
     public String getRelatesTo() {
         return getValue(RELATESTO);
     }
 
-    private void setValue(String value, String type) {
+    /**
+     * Set a key,value pair for the current threadId.
+     * 
+     * @param value
+     *            The value to set
+     * @param key
+     *            The key to set
+     */
+    private void setValue(String value, String key) {
         Map<String, String> data = null;
         if (threadMap.containsKey(threadId)) {
             data = threadMap.get(threadId);
@@ -109,16 +238,54 @@ public class ThreadData {
             data = new HashMap<String, String>();
             threadMap.put(threadId, data);
         }
-        data.put(type, value);
+        data.put(key, value);
     }
 
-    private String getValue(String type) {
+    /**
+     * Get the value relating to the specified key and current threadId.
+     * 
+     * @param key
+     *            The key for which to retrieve the value
+     * @return the value associated with the given key and current threadId
+     */
+    private String getValue(String key) {
         String ret = null;
 
         Map<String, String> data = threadMap.get(threadId);
         if (data != null) {
-            ret = (String) data.get(type);
+            ret = data.get(key);
         }
         return ret;
+    }
+
+    /**
+     * Return a read-only copy of the threadMap object.
+     * 
+     * @return a read-only copy of the threadmap object
+     */
+    protected static Map<Long, Map<String, String>> getThreadMapView() {
+        return Collections.unmodifiableMap(threadMap);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        Map<String, String> m = threadMap.get(this.threadId);
+
+        if (m != null) {
+            StringBuffer sb = new StringBuffer("ThreadData (threadId: " + this.threadId + ")" + "\n");
+
+            for (Map.Entry<String, String> e : m.entrySet()) {
+                sb.append(" > " + e.getKey() + ": " + e.getValue() + "\n");
+            }
+
+            return sb.toString();
+        }
+
+        return "No map found for threadId: " + this.threadId;
     }
 }

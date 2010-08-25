@@ -44,6 +44,7 @@ import org.nhindirect.stagent.MessageEnvelope;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.OutgoingMessage;
+import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
@@ -179,12 +180,30 @@ public class DefaultSmtpAgent implements SmtpAgent
 		copyMessage(message, settings.getRawMessageSettings());		
 	}
 	
+	private boolean isOutgoing(MessageEnvelope envelope)
+	{		
+		// if the sender is not from our domain, then is has to be an incoming message
+		if (!envelope.getSender().isInDomain(agent.getDomains()))
+			return false;
+		else
+		{
+			// depending on the SMTP stack configuration, a message with a sender from our domain
+			// may still be an incoming message... check if the message is encrypted
+			if (SMIMEStandard.isEncrypted(envelope.getMessage()))
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
     protected MessageProcessResult processEnvelope(MessageEnvelope envelope)
     {
     	MessageProcessResult retVal = null;
     	MessageEnvelope processedMessage = null;
     	MessageEnvelope bouceMessage = null;
-    	boolean isOutgoing = envelope.getSender().isInDomain(agent.getDomains());
+    	boolean isOutgoing = isOutgoing(envelope);
     	
     	try
     	{    		    		
