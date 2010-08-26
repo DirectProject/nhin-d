@@ -17,6 +17,16 @@
                 <role>owner</role>
             </roles>              
         </developer>   
+        <developer>
+            <name>Manjiri Namjoshi</name>
+            <id>NM019057</id>
+            <email>Manjiri.Namjoshi@cerner.com</email>
+        </developer>
+        <developer>
+            <name>John Pavlecich</name>
+            <id>JP018858</id>
+            <email>John.Pavlecich@cerner.com</email>
+        </developer>                          
      </developers>
      <organization>
         <name>HNIN Direct</name>
@@ -26,8 +36,13 @@
         <maven>2.0.4</maven>
    </prerequisites>   
   <scm>
-    <url>https://nhin-d.googlecode.com/hg/</url>
+     <url>http://code.google.com/p/nhin-d/source/browse/#hg/java/agent</url>  
+     <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/agent</connection>
   </scm> 
+  <issueManagement>
+     <system>Google Code</system>
+     <url>http://code.google.com/p/nhin-d/issues/list</url>
+  </issueManagement>	    
   <repositories>
 	<repository>
 	    <id>codehaus-release-repo</id>
@@ -151,8 +166,8 @@
 			<optimize>true</optimize>
 			<showDeprecation>true</showDeprecation>
 			<encoding>UTF-8</encoding>
-			<source>1.5</source>
-			<target>1.5</target>
+			<source>1.6</source>
+			<target>1.6</target>
 		</configuration>
 	</plugin>	     
       <plugin>
@@ -177,31 +192,15 @@
                </archive>
             </configuration>
          </plugin>
-	    <plugin>
-	        <groupId>com.atlassian.maven.plugins</groupId>
-	        <artifactId>maven-clover2-plugin</artifactId>
-	        <version>2.5.1</version>	        
-	        <configuration>
-	            <jdk>1.5</jdk>
-			<licenseLocation>${project.basedir}/licenses/clover.license</licenseLocation>
-	        </configuration>
-	        <executions>
-	            <execution>
-	                <phase>pre-site</phase>
-	                <goals>
-	                    <goal>instrument</goal>
-	                </goals>
-	            </execution>
-	        </executions>
-	    </plugin>       
     </plugins>
   </build>                        
   <reporting>
 		<plugins>
-	      <plugin>
-	          <groupId>org.apache.maven.plugins</groupId>
-	          <artifactId>maven-project-info-reports-plugin</artifactId>
-	      </plugin>  
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-project-info-reports-plugin</artifactId>
+             <version>2.1</version>
+          </plugin>    
 	      <plugin>
 	      	<groupId>org.apache.maven.plugins</groupId> 
 	        <artifactId>maven-javadoc-plugin</artifactId>
@@ -212,9 +211,10 @@
 	          <docfilessubdirs>true</docfilessubdirs>
               <detectJavaApiLink>true</detectJavaApiLink>
               <detectLinks>true</detectLinks>
-	          <source>1.5</source>
+	          <source>1.6</source>
 	          <show>protected</show>
 	          <excludePackageNames>
+	              org.nhindirect.stagent.annotation:org.nhindirect.stagent.cert.impl:org.nhindirect.stagent.cert.impl.annotation:org.nhindirect.stagent.cert.impl.module:org.nhindirect.stagent.cert.impl.provider:org.nhindirect.stagent.cryptography.annotation:org.nhindirect.stagent.module:org.nhindirect.stagent.provider:org.nhindirect.stagent.trust.annotation:org.nhindirect.stagent.trust.provider:org.nhindirect.stagent.utils
 	          </excludePackageNames>          	          
 	        </configuration>
 	      </plugin>
@@ -222,21 +222,13 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
        			<configuration>
-          			<targetJdk>1.5</targetJdk>
+          			<targetJdk>1.6</targetJdk>
         		</configuration>					
 			</plugin>
 		    <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-surefire-report-plugin</artifactId>
 		    </plugin>
-			<plugin>
-	            <groupId>com.atlassian.maven.plugins</groupId>
-	            <artifactId>maven-clover2-plugin</artifactId>
-	            <version>2.5.1</version>
-				<configuration>
-					<licenseLocation>${project.basedir}/licenses/clover.license</licenseLocation>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
@@ -280,18 +272,8 @@
 	                    <tag>@deprecated</tag>
 	                </tags>
 	            </configuration>
-	        </plugin>                            
+	        </plugin>	           
 		</plugins>
   </reporting>
-  <pluginRepositories>
-	    <pluginRepository>
-	        <id>atlassian-m2-repository</id>
-	        <name>Atlassian Maven 2.x Repository</name>
-	        <url>http://repository.atlassian.com/maven2</url>
-	        <snapshots>
-	            <enabled>false</enabled>
-	        </snapshots>
-	    </pluginRepository> 
-  </pluginRepositories>     
   <distributionManagement/>          
 </project>
