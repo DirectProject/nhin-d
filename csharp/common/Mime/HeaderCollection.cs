@@ -6,17 +6,36 @@ using NHINDirect.Collections;
 
 namespace NHINDirect.Mime
 {
+    /// <summary>
+    /// Represents a collection of MIME and RFC 5322 headers
+    /// </summary>
     public class HeaderCollection : ObjectCollection<Header>
     {
+        /// <summary>
+        /// Initializes a new empty collection
+        /// </summary>
         public HeaderCollection()
         {                
         }
         
+        /// <summary>
+        /// Initializes a new collection from an enumeration of headers.
+        /// </summary>
+        /// <param name="headers">An enumeration of <see cref="Header"/> instances.</param>
         public HeaderCollection(IEnumerable<Header> headers)
             : base(headers)
         {
         }
         
+        /// <summary>
+        /// Gets and sets the named header. Setting a header to <c>null</c> will remove the header.
+        /// </summary>
+        /// <remarks>
+        /// Headers are not case sensitive, so <c>myHeaders["content-type"]</c> and <c>myHeaders["Content-Type"]</c>
+        /// will refer to the same header value.
+        /// </remarks>
+        /// <param name="name">The name of the header to get or set. See remarks.</param>
+        /// <returns>The <see cref="Header"/> associated with the header name.</returns>
         public Header this[string name]
         {
             get
@@ -57,6 +76,25 @@ namespace NHINDirect.Mime
             }          
         }
         
+        /// <summary>
+        /// Returns the <c>Content-*</c> headers specified by the MIME RFCs
+        /// </summary>
+        /// <remarks>
+        /// When processing an RFC 5322 message, it if often useful to extract the main MIME
+        /// entity from the message. Because of the structure of MIME and RFC 5322 messages,
+        /// the MIME entity is the collection of MIME headers and the body.
+        /// </remarks>
+        /// <example>
+        /// The following code extracts the body and the MIME headers from a message (note that
+        /// Message object already provides a convenience method for this):
+        /// <code>
+        /// string email = File.ReadAllText("message.eml");
+        /// Message msg = MimeParser.ParseMessage(email);
+        /// Body body = message.Body;
+        /// IEnumerable<Headers> mimeHeaders = msg.Headers.MimeHeaders; //Content-Type:, Content-Disposition:, etc.
+        /// IEnumerable<Headers> nonMimeMeaders = msg.Headers.NonMimeHeaders; // To:, From:, etc
+        /// </code>
+        /// </example>
         public IEnumerable<Header> MimeHeaders
         {
             get
@@ -67,6 +105,10 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Returns the non MIME (not <c>Content-*</c>) headers
+        /// </summary>
+        /// <remarks>See documentation for <see cref="HeaderCollection.MimeHeaders"/> for more detail.</remarks>
         public IEnumerable<Header> NonMimeHeaders
         {
             get
@@ -77,6 +119,16 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Returns the index to a header name. See <see cref="HeaderCollection.[]"/> for more details.
+        /// </summary>
+        /// <remarks>
+        /// Headers are not case sensitive, so <c>myHeaders.IndexOf("content-type")</c> and 
+        /// <c>myHeaders.IndexOf("Content-Type")</c>
+        /// will refer to the same header value.
+        /// </remarks>
+        /// <param name="name">The name of the header to get or set. See remarks.</param>
+        /// <returns>The zero-based index of the named header or -1 if the header was not found.</returns>
         public int IndexOf(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -95,16 +147,36 @@ namespace NHINDirect.Mime
             return -1;
         }
         
+        /// <summary>
+        /// Adds a named header with an associated value to this collection.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// Message = MimeParser.ParseMessage(File.ReadAllText("message.eml"));
+        /// message.Headers.Add("my-foo-header", "bar;baz");
+        /// </code>
+        /// </example>
+        /// <param name="name">The header name, case insensitive.</param>
+        /// <param name="value">The associated value of the header</param>
         public void Add(string name, string value)
         {
             Add(new Header(name, value));
         }
 
+        /// <summary>
+        /// Adds a header specified by a key-value pair to this collection.
+        /// </summary>
+        /// <param name="value">The <see cref="KeyValuePair"/> where the key is the header
+        /// name, and the value is the header value.</param>
         public void Add(KeyValuePair<string, string> value)
         {
             Add(value.Key, value.Value);
         }
         
+        /// <summary>
+        /// Adds an enumeration of <see cref="KeyValuePairs"/> to this collection as headers.
+        /// </summary>
+        /// <param name="headers">The enumeration to add to this collection.</param>
         public void Add(IEnumerable<KeyValuePair<string, string>> headers)
         {
             if (headers == null)
@@ -118,11 +190,20 @@ namespace NHINDirect.Mime
             }
         }
                 
+        /// <summary>
+        /// Adds or updates a named header with an associated value.
+        /// </summary>
+        /// <param name="name">The header name to add or update.</param>
+        /// <param name="value">The header value to which to set the header.</param>
         public void AddUpdate(string name, string value)
         {
             this[name] = new Header(name, value);
         }
         
+        /// <summary>
+        /// Adds or updates each of an enumeration of headers.
+        /// </summary>
+        /// <param name="headers">The headers to add or update.</param>
         public void AddUpdate(IEnumerable<Header> headers)
         {
             if (headers == null)
@@ -135,7 +216,12 @@ namespace NHINDirect.Mime
                 this[header.Name] = header;
             }
         }
-        
+
+        /// <summary>
+        /// Adds or updates each of an enumeration of <see cref="KeyValuePair"/> instances..
+        /// </summary>
+        /// <param name="headers">The <see cref="KeyValuePair"/> instances to add or update, where
+        /// each key specifies the header name, and each value the header value.</param>
         public void AddUpdate(IEnumerable<KeyValuePair<string, string>> headers)
         {
             if (headers == null)
@@ -148,8 +234,13 @@ namespace NHINDirect.Mime
                 this[header.Value] = new Header(header);
             }
         }
-
-        public void CopyFrom(IEnumerable<Header> source, Predicate<Header> filter)
+        
+        /// <summary>
+        /// Adds all headers from <c>source</c> that match the predicate provided by <c>filter</c>
+        /// </summary>
+        /// <param name="source">The enumeration of <see cref="Header"/> instances to add</param>
+        /// <param name="filter">The filter to supply before </param>
+        public void Add(IEnumerable<Header> source, Predicate<Header> filter)
         {
             if (source == null)
             {
@@ -165,7 +256,12 @@ namespace NHINDirect.Mime
             }
         }
 
-        public void CopyFrom(IEnumerable<Header> source, string[] headerNames)
+        /// <summary>
+        /// Adds all headers from <c>source</c> where the headers match the names provided by <c>headerNames</c>
+        /// </summary>
+        /// <param name="source">The enumeration of <see cref="Header"/> instances to add</param>
+        /// <param name="headerNames">An array of names to filter <c>source</c> by.</param>
+        public void Add(IEnumerable<Header> source, string[] headerNames)
         {
             if (source == null)
             {
@@ -181,6 +277,10 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Sets or updates the <c>header</c> value in this collection
+        /// </summary>
+        /// <param name="header">The <see cref="Header"/> to update.</param>
         public void Set(Header header)
         {
             if (header == null)
@@ -191,10 +291,12 @@ namespace NHINDirect.Mime
             this[header.Name] = header;
         }
         
-        //
-        // Locates the header with the give name. If it exists, return its value.
-        // Else return null
-        //
+        /// <summary>
+        /// Gets the value of the header with the given name.
+        /// </summary>
+        /// <remarks>Header matching uses case insenstive comparison.</remarks>
+        /// <param name="headerName">The header name for which to retrieve the value.</param>
+        /// <returns>The value of the header, or <c>null</c> if the header does not exist in this collection</returns>
         public string GetValue(string headerName)
         {
             Header header = this[headerName];
@@ -205,7 +307,13 @@ namespace NHINDirect.Mime
             
             return header.Value;
         }
-        
+
+        /// <summary>
+        /// Adds or updates the value of the header with the given name.
+        /// </summary>
+        /// <remarks>Header matching uses case insenstive comparison.</remarks>
+        /// <param name="headerName">The header name for which to set the value.</param>
+        /// <param name="value">The value name to add or update</param>
         public void SetValue(string name, string value)
         {
             int index = IndexOf(name);
@@ -218,6 +326,10 @@ namespace NHINDirect.Mime
             this[index] = new Header(name, value);
         }
         
+        /// <summary>
+        /// Performs a shallow clone of this header
+        /// </summary>
+        /// <returns>The cloned value.</returns>
         public HeaderCollection Clone()
         {
             return new HeaderCollection(this);
@@ -238,16 +350,31 @@ namespace NHINDirect.Mime
             return copy;
         }
         
+        /// <summary>
+        /// Selects the collection of content headers out of this collection
+        /// </summary>
+        /// <remarks>See <see cref="HeaderCollection.MimeHeaders"/></remarks>
+        /// <returns>A collection of content headers</returns>
         public HeaderCollection SelectMimeHeaders()
         {
             return new HeaderCollection(MimeHeaders);
         }
 
+        /// <summary>
+        /// Selects the collection of non-content headers out of this collection
+        /// </summary>
+        /// <remarks>See <see cref="HeaderCollection.NonMimeHeaders"/></remarks>
+        /// <returns>A collection the non-content headers</returns>
         public HeaderCollection SelectNonMimeHeaders()
         {
             return new HeaderCollection(NonMimeHeaders);
         }
 
+        /// <summary>
+        /// Verifies that a header name matches name of the associate header, with MIME string comparison semantics. 
+        /// </summary>
+        /// <param name="name">The header name to verify</param>
+        /// <param name="header">The <see cref="Header"/> to verify against.</param>
     	static void VerifyName(string name, Header header)
         {
             if (!MimeStandard.Equals(name, header.Name))
