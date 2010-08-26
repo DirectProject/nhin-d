@@ -28,13 +28,15 @@ namespace NHINDirect.Config.Command
 {
     public class DomainCommands
     {
+        const int DefaultChunkSize = 25;
+        
         DomainManagerClient m_domainClient;
         AddressManagerClient m_addressClient;
         
         public DomainCommands()
         {
-            m_domainClient = new DomainManagerClient(ConfigConsole.Settings.DomainManager.Binding, ConfigConsole.Settings.DomainManager.Endpoint);
-            m_addressClient = new AddressManagerClient(ConfigConsole.Settings.AddressManager.Binding, ConfigConsole.Settings.AddressManager.Endpoint);
+            m_domainClient = ConfigConsole.Settings.DomainManager.CreateDomainManagerClient();
+            m_addressClient = ConfigConsole.Settings.AddressManager.CreateAddressManagerClient();
         }     
         
         public void Command_DomainAdd(string[] args)
@@ -65,15 +67,29 @@ namespace NHINDirect.Config.Command
         {
             string name = args.GetRequiredValue(0);
             EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
-            
+
             Domain domain = this.DomainGet(name);
-            domain.Status = status;
+            domain.Status = status;            
             m_domainClient.UpdateDomain(domain);
-        }
+        }        
         public void Usage_DomainStatusSet()
         {
             Console.WriteLine("Change a domain's status");
-            Console.WriteLine("    domainstatusset domainName Status(New | Enabled | Disabled)");
+            Console.WriteLine("    domainstatusset domainName Status({0})", Extensions.EntityStatusString);
+        }
+
+        public void Command_DomainAddressStatusSet(string[] args)
+        {
+            string name = args.GetRequiredValue(0);
+            EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
+
+            Domain domain = this.DomainGet(name);
+            m_addressClient.SetDomainAddressesStatus(domain.ID, status);
+        }
+        public void Usage_DomainAddressStatusSet()
+        {
+            Console.WriteLine("Set the status of all addresses in this domain");
+            Console.WriteLine("    domainaddressstatusset Status ({0})", Extensions.EntityStatusString);
         }
         
         public void Command_DomainGetPostmaster(string[] args)
@@ -118,12 +134,17 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("    domainremove domainName");
         }
         
-        public void Command_DomainListAll(string[] args)
+        public void Command_DomainList(string[] args)
         {
-            int chunkSize = args.GetOptionalValue<int>(0, 25);            
+            int chunkSize = args.GetOptionalValue<int>(0, DefaultChunkSize);            
             Print(m_domainClient.EnumerateDomains(chunkSize));
         }
-
+        public void Usage_DomainList()
+        {
+            Console.WriteLine("List all domains");
+            Console.WriteLine("domainlist");
+        }
+        
         Domain DomainGet(string name)
         {
             return DomainGet(m_domainClient, name);

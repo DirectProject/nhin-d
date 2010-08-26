@@ -17,49 +17,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Data.SqlTypes;
-using System.Data.Linq;
-using System.Data.Linq.Mapping;
+using NHINDirect.Config.Store;
 
-namespace NHINDirect.Config.Store
+namespace NHINDirect.Config.Command
 {
-    [Table(Name = "Accounts")]
-    public class Account
+    public static class Extensions
     {
-        public const int MaxAccountNameLength = 255;
-        
-        string m_name;
-        
-        [Column(Name="AccountID", IsDbGenerated=true, IsPrimaryKey=true)]
-        public long ID
-        {
-            get;
-            set;
-        }
-        
-        [Column(Name="AccountName", DbType="nvarchar(255)", CanBeNull=false)]
-        public string Name
-        {
-            get
-            {
-                return m_name;
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value) || value.Length > MaxAccountNameLength)
-                {
-                    throw new ConfigStoreException(ConfigStoreError.AccountNameLength);
-                }
-                
-                m_name = value;
-            }
-        }
-        
-        [Column(Name="CreateDate", CanBeNull=false)]
-        public DateTime CreateDate
-        {
-            get;
-            set;
-        }
+        public static string EntityStatusString = string.Join(" | ", Enum.GetNames(typeof(EntityStatus)));
     }
 }

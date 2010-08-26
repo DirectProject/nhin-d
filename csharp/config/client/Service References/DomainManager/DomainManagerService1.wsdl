@@ -62,6 +62,15 @@
   <wsdl:message name="IAddressManager_RemoveDomainAddresses_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="IAddressManager_SetDomainAddressesStatus_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetDomainAddressesStatus" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_SetDomainAddressesStatus_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetDomainAddressesStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_SetDomainAddressesStatus_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:message name="IAddressManager_EnumerateDomainAddresses_InputMessage">
     <wsdl:part name="parameters" element="tns:EnumerateDomainAddresses" />
   </wsdl:message>
@@ -98,13 +107,13 @@
   <wsdl:message name="IDomainManager_UpdateDomain_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
-  <wsdl:message name="IDomainManager_GetDomain_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetDomain" />
+  <wsdl:message name="IDomainManager_GetDomains_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDomains" />
   </wsdl:message>
-  <wsdl:message name="IDomainManager_GetDomain_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetDomainResponse" />
+  <wsdl:message name="IDomainManager_GetDomains_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDomainsResponse" />
   </wsdl:message>
-  <wsdl:message name="IDomainManager_GetDomain_ConfigStoreFaultFault_FaultMessage">
+  <wsdl:message name="IDomainManager_GetDomains_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
   <wsdl:message name="IDomainManager_RemoveDomain_InputMessage">
@@ -156,6 +165,11 @@
       <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveDomainAddressesResponse" message="tns:IAddressManager_RemoveDomainAddresses_OutputMessage" />
       <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveDomainAddressesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_RemoveDomainAddresses_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
+    <wsdl:operation name="SetDomainAddressesStatus">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesStatus" message="tns:IAddressManager_SetDomainAddressesStatus_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesStatusResponse" message="tns:IAddressManager_SetDomainAddressesStatus_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesStatusConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_SetDomainAddressesStatus_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
     <wsdl:operation name="EnumerateDomainAddresses">
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddresses" message="tns:IAddressManager_EnumerateDomainAddresses_InputMessage" />
       <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddressesResponse" message="tns:IAddressManager_EnumerateDomainAddresses_OutputMessage" />
@@ -178,10 +192,10 @@
       <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomainResponse" message="tns:IDomainManager_UpdateDomain_OutputMessage" />
       <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_UpdateDomain_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
-    <wsdl:operation name="GetDomain">
-      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomain" message="tns:IDomainManager_GetDomain_InputMessage" />
-      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainResponse" message="tns:IDomainManager_GetDomain_OutputMessage" />
-      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_GetDomain_ConfigStoreFaultFault_FaultMessage" />
+    <wsdl:operation name="GetDomains">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomains" message="tns:IDomainManager_GetDomains_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainsResponse" message="tns:IDomainManager_GetDomains_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_GetDomains_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="RemoveDomain">
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/RemoveDomain" message="tns:IDomainManager_RemoveDomain_InputMessage" />

@@ -7,7 +7,13 @@
 <SmtpAgentConfig>
   <Domain>redmond.hsgincubator.com</Domain>
   <Domain>nhind.hsgincubator.com</Domain>
-  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>  
+  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>
+  <DomainManager>
+    <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
+  </DomainManager>
+  <AddressManager>
+    <Url>http://localhost:6692/DomainManagerService.svc/Addresses</Url>
+  </AddressManager>
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>testSmtpAgent</NamePrefix>
@@ -18,16 +24,32 @@
     <DefaultDigest>SHA1</DefaultDigest>
   </Cryptographer>
   <PrivateCerts>
+    <ServiceResolver>
+      <ClientSettings>
+        <Url>http://localhost:6692/CertificateService.svc/Certificates</Url>
+      </ClientSettings>
+    </ServiceResolver>
     <MachineResolver>
       <Name>NHINDPrivate</Name>
     </MachineResolver>
   </PrivateCerts>
   <PublicCerts>
+    <!--
+    <DnsResolver>
+      <ServerIP>127.0.0.1</ServerIP>
+      <Timeout>5000</Timeout>
+    </DnsResolver>
+    -->
     <MachineResolver>
       <Name>NHINDExternal</Name>
     </MachineResolver>
   </PublicCerts>
   <Anchors>
+    <ServiceResolver>
+      <ClientSettings>
+        <Url>http://localhost:6692/CertificateService.svc/Anchors</Url>
+      </ClientSettings>
+    </ServiceResolver>
     <MachineResolver>
       <Incoming>
         <Name>NHINDAnchors</Name>

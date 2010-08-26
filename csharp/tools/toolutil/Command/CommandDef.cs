@@ -40,7 +40,7 @@ namespace NHINDirect.Tools.Command
         
         internal void ShowUsage()
         {
-            CommandUI.PrintHilite(this.Name);
+            CommandUI.PrintUpperCase(this.Name);
             if (this.Usage != null)
             {
                 this.Usage();

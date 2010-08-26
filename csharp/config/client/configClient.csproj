@@ -31,6 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nhinConfigService, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="nhinConfigStore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -76,33 +78,34 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Service References\CertificateService\CertificateService.wsdl" />
-    <None Include="Service References\CertificateService\CertificateService.xsd" />
-    <None Include="Service References\CertificateService\CertificateService1.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\DataSources\NHINDirect.Config.Store.Anchor.datasource" />
+    <None Include="Properties\DataSources\NHINDirect.Config.Store.Certificate.datasource" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\DataSources\NHINDirect.Config.Store.Address.datasource" />
+    <None Include="Properties\DataSources\NHINDirect.Config.Store.Domain.datasource" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\nhinCommon.csproj">
+      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
+      <Name>nhinCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\service\configService.csproj">
+      <Project>{83C99331-F451-4175-943D-12FCF17B636E}</Project>
+      <Name>configService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\store\configStore.csproj">
+      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
+      <Name>configStore</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Service References\CertificateService\" />
     <WCFMetadataStorage Include="Service References\DomainManager\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\CertificateService\CertificateService.disco" />
-    <None Include="Service References\CertificateService\CertificateService1.xsd" />
-    <None Include="Service References\CertificateService\CertificateService2.xsd" />
-    <None Include="Service References\CertificateService\CertificateService3.xsd" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\CertificateService\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\CertificateService\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Properties\DataSources\NHINDirect.Config.Store.Anchor.datasource" />
-    <None Include="Properties\DataSources\NHINDirect.Config.Store.Certificate.datasource" />
-    <None Include="Service References\CertificateService\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
     <None Include="Service References\DomainManager\DomainManagerService.wsdl" />
     <None Include="Service References\DomainManager\DomainManagerService.xsd" />
     <None Include="Service References\DomainManager\DomainManagerService1.xsd" />
@@ -120,26 +123,31 @@
     <None Include="Service References\DomainManager\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\DataSources\NHINDirect.Config.Store.Address.datasource" />
-    <None Include="Properties\DataSources\NHINDirect.Config.Store.Domain.datasource" />
+    <None Include="Service References\CertificateService\CertificateService.wsdl" />
+    <None Include="Service References\CertificateService\CertificateService.xsd" />
+    <None Include="Service References\CertificateService\CertificateService1.wsdl" />
     <None Include="Service References\DomainManager\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\common\nhinCommon.csproj">
-      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
-      <Name>nhinCommon</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\service\configService.csproj">
-      <Project>{83C99331-F451-4175-943D-12FCF17B636E}</Project>
-      <Name>configService</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\store\configStore.csproj">
-      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
-      <Name>configStore</Name>
-    </ProjectReference>
+    <None Include="Service References\CertificateService\CertificateService.disco" />
+    <None Include="Service References\CertificateService\CertificateService1.xsd" />
+    <None Include="Service References\CertificateService\CertificateService2.xsd" />
+    <None Include="Service References\CertificateService\CertificateService3.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\CertificateService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\CertificateService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\CertificateService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

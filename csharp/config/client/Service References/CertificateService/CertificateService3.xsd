@@ -162,10 +162,30 @@
   <xs:element name="AddAnchors">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="anchors" nillable="true" type="q8:ArrayOfAnchor" />
+        <xs:element minOccurs="0" name="anchors" nillable="true" type="tns:ArrayOfAnchor" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:complexType name="ArrayOfAnchor">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Anchor" nillable="true" type="tns:Anchor" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAnchor" nillable="true" type="tns:ArrayOfAnchor" />
+  <xs:complexType name="Anchor">
+    <xs:sequence>
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="Data" nillable="true" type="xs:base64Binary" />
+      <xs:element name="ForIncoming" type="xs:boolean" />
+      <xs:element name="ForOutgoing" type="xs:boolean" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element name="Owner" nillable="true" type="xs:string" />
+      <xs:element name="Thumbprint" nillable="true" type="xs:string" />
+      <xs:element name="ValidEndDate" type="xs:dateTime" />
+      <xs:element name="ValidStartDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Anchor" nillable="true" type="tns:Anchor" />
   <xs:element name="AddAnchorsResponse">
     <xs:complexType>
       <xs:sequence />
@@ -174,7 +194,7 @@
   <xs:element name="GetAnchors">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q9="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q9:ArrayOflong" />
+        <xs:element xmlns:q8="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q8:ArrayOflong" />
         <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
       </xs:sequence>
     </xs:complexType>
@@ -182,7 +202,7 @@
   <xs:element name="GetAnchorsResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="GetAnchorsResult" nillable="true" type="q10:ArrayOfAnchor" />
+        <xs:element minOccurs="0" name="GetAnchorsResult" nillable="true" type="tns:ArrayOfAnchor" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -197,7 +217,7 @@
   <xs:element name="GetAnchorsForOwnerResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="GetAnchorsForOwnerResult" nillable="true" type="q11:ArrayOfAnchor" />
+        <xs:element minOccurs="0" name="GetAnchorsForOwnerResult" nillable="true" type="tns:ArrayOfAnchor" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -212,7 +232,7 @@
   <xs:element name="GetIncomingAnchorsResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="GetIncomingAnchorsResult" nillable="true" type="q12:ArrayOfAnchor" />
+        <xs:element minOccurs="0" name="GetIncomingAnchorsResult" nillable="true" type="tns:ArrayOfAnchor" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -227,7 +247,7 @@
   <xs:element name="GetOutgoingAnchorsResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="GetOutgoingAnchorsResult" nillable="true" type="q13:ArrayOfAnchor" />
+        <xs:element minOccurs="0" name="GetOutgoingAnchorsResult" nillable="true" type="tns:ArrayOfAnchor" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -243,14 +263,14 @@
   <xs:element name="EnumerateAnchorsResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="EnumerateAnchorsResult" nillable="true" type="q14:ArrayOfAnchor" />
+        <xs:element minOccurs="0" name="EnumerateAnchorsResult" nillable="true" type="tns:ArrayOfAnchor" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="RemoveAnchors">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q15="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q15:ArrayOflong" />
+        <xs:element xmlns:q9="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q9:ArrayOflong" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

@@ -36,13 +36,7 @@ namespace NHINDirect.Mime
         {
             this.Text = body;
         }        
-        
-        public Body(byte[] body)
-            : base(MimePartType.Body)
-        {
-            this.Text = Convert.ToBase64String(body, Base64FormattingOptions.InsertLineBreaks);
-        }
-        
+                
         internal Body(Body body)
             : base(MimePartType.Body, body.SourceText)
         {

@@ -10,6 +10,7 @@ namespace NHINDirect.SmtpAgent
     public enum SmtpAgentError
     {
         Unknown = 0,
+        NotInitialized,
         MissingPostmaster,
         MissingLogSettings,
         InvalidEnvelopeFromAgent,
@@ -21,6 +22,10 @@ namespace NHINDirect.SmtpAgent
         InvalidBounceMessageTemplate,
         MissingCertResolverClientSettings,
         MissingAnchorResolverClientSettings,
+        NoAddressManager,
+        ConfiguredDomainsMismatch,   // Domains in Xml file not found in config
+        NoSenderInEnvelope,
+        NoRecipientsInEnvelope
     }
     
     public class SmtpAgentException : NHINDException<SmtpAgentError>
