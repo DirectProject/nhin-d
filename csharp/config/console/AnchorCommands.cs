@@ -80,23 +80,6 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("  anchorsget owner [options]");
             CertificateCommands.PrintOptionsUsage();
         }
-           
-        public void Command_AnchorsResolve(string[] args)
-        {
-            MailAddress mail = new MailAddress(args.GetRequiredValue(0));
-            ConfigAnchorResolver resolver = new ConfigAnchorResolver(ConfigConsole.Settings.AnchorManager);
-            
-            X509Certificate2Collection matches = resolver.IncomingAnchors.GetCertificates(mail);
-            CertificateCommands.Print(matches);
-            
-            matches = resolver.OutgoingAnchors.GetCertificates(mail);
-            CertificateCommands.Print(matches);
-        }
-        public void Usage_AnchorsResolve()
-        {
-            Console.WriteLine("Resolve anchors like the agent would.");
-            Console.WriteLine("    anchorsresolve emailaddress");
-        }
         
         public void Command_AnchorsList(string[] args)
         {
@@ -111,6 +94,19 @@ namespace NHINDirect.Config.Command
         {
             Console.WriteLine("List all anchors");
             CertificateCommands.PrintOptionsUsage();
+        }
+
+        public void Command_AnchorStatusSet(string[] args)
+        {
+            string owner = args.GetRequiredValue(0);
+            EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
+
+            m_client.SetAnchorStatusForOwner(owner, status);
+        }
+        public void Usage_AnchorStatusSet()
+        {
+            Console.WriteLine("Set the status for ALL anchors for an owner.");
+            Console.WriteLine("    anchorstatuset owner");
         }
 
         void PushCerts(string owner, IEnumerable<X509Certificate2> certs)

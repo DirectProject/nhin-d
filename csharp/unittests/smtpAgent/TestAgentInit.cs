@@ -27,8 +27,8 @@ namespace SmtpAgentTests
         {
             get
             {
-                yield return new object[] { "TestSmtpAgentConfig.xml" };
-                yield return new object[] { "TestSmtpAgentConfigService.xml" };
+                yield return new[] { "TestSmtpAgentConfig.xml" };
+                yield return new[] { "TestSmtpAgentConfigService.xml" };
             }
         }
         

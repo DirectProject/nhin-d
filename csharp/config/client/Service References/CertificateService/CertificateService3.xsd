@@ -53,6 +53,7 @@
     <xs:sequence>
       <xs:element minOccurs="0" name="IncludeData" type="xs:boolean" />
       <xs:element minOccurs="0" name="IncludePrivateKey" type="xs:boolean" />
+      <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="Status" nillable="true" type="q3:EntityStatus" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="CertificateGetOptions" nillable="true" type="tns:CertificateGetOptions" />
@@ -66,7 +67,7 @@
   <xs:element name="GetCertificates">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="certificateIDs" nillable="true" type="q3:ArrayOflong" />
+        <xs:element xmlns:q4="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="certificateIDs" nillable="true" type="q4:ArrayOflong" />
         <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
       </xs:sequence>
     </xs:complexType>
@@ -96,8 +97,8 @@
   <xs:element name="SetCertificateStatus">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q4="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="certificateIDs" nillable="true" type="q4:ArrayOflong" />
-        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="status" type="q5:EntityStatus" />
+        <xs:element xmlns:q5="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="certificateIDs" nillable="true" type="q5:ArrayOflong" />
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="status" type="q6:EntityStatus" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -110,7 +111,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
-        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="status" type="q6:EntityStatus" />
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="status" type="q7:EntityStatus" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -122,7 +123,7 @@
   <xs:element name="RemoveCertificates">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q7="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="certificateIDs" nillable="true" type="q7:ArrayOflong" />
+        <xs:element xmlns:q8="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="certificateIDs" nillable="true" type="q8:ArrayOflong" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -180,6 +181,7 @@
       <xs:element name="ForOutgoing" type="xs:boolean" />
       <xs:element name="ID" type="xs:long" />
       <xs:element name="Owner" nillable="true" type="xs:string" />
+      <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" name="Status" type="q9:EntityStatus" />
       <xs:element name="Thumbprint" nillable="true" type="xs:string" />
       <xs:element name="ValidEndDate" type="xs:dateTime" />
       <xs:element name="ValidStartDate" type="xs:dateTime" />
@@ -194,7 +196,7 @@
   <xs:element name="GetAnchors">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q8="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q8:ArrayOflong" />
+        <xs:element xmlns:q10="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q10:ArrayOflong" />
         <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
       </xs:sequence>
     </xs:complexType>
@@ -251,6 +253,19 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="SetAnchorStatusForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="status" type="q11:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetAnchorStatusForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
   <xs:element name="EnumerateAnchors">
     <xs:complexType>
       <xs:sequence>
@@ -270,7 +285,7 @@
   <xs:element name="RemoveAnchors">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q9="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q9:ArrayOflong" />
+        <xs:element xmlns:q12="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q12:ArrayOflong" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

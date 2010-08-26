@@ -310,16 +310,9 @@ namespace NHINDirect.SmtpAgent
                     throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
                 }
                 //
-                // Internal only messages from the postmaster can be passed through in the clear
-                // They are invariably local delivery notification errors
+                // Replace the contents of the original message with what the agent gave us
                 //
-                if (!this.IsInternalPostmasterMessage(envelope))
-                {
-                    //
-                    // Replace the contents of the original message with what the agent gave us
-                    //
-                    this.UpdateMessageText(message, envelope);
-                }
+                this.UpdateMessageText(message, envelope);
                 //
                 // We did well...
                 //
@@ -346,10 +339,29 @@ namespace NHINDirect.SmtpAgent
         protected virtual MessageEnvelope ProcessEnvelope(ISmtpMessage message, MessageEnvelope envelope)
         {      
             //
-            // Messages from within the domain are always treated as OUTGOING
-            // All messages sent by sources OUTSIDE the domain are always treated as INCOMING
+            // OUTGOING:
+            //  Non-Encrypted messages from within the domain are treated as OUTGOING.
+            //  Encrypted messages from within the domain are OPTIONALLY treated as Incoming
+            // INCOMING:
+            //  All messages sent by sources OUTSIDE the domain are ALWAYS treated as INCOMING
             //
-            bool isOutgoing = this.SecurityAgent.Domains.IsManaged(envelope.Sender);
+            // The following boolean logic is the way it is to make it *easy to read*
+            //
+            bool isSenderInDomain = this.SecurityAgent.Domains.IsManaged(envelope.Sender);            
+            bool isOutgoing;            
+            if (isSenderInDomain)
+            {
+                isOutgoing = true;
+                if (m_settings.AllowInternalMessages && NHINDirect.Cryptography.SMIMEStandard.IsEncrypted(envelope.Message))
+                {
+                    isOutgoing = false;
+                }
+            }
+            else
+            {
+                isOutgoing = false;
+            }
+            
             if (isOutgoing)
             {
                 envelope = this.ProcessOutgoing(message, envelope);
@@ -552,17 +564,6 @@ namespace NHINDirect.SmtpAgent
             }
 
             return (envelope.DomainRecipients.Count == envelope.Recipients.Count);
-        }
-
-        bool IsSenderPostmaster(CDO.Message message)
-        {
-            string sender = message.GetEnvelopeSender();
-            if (string.IsNullOrEmpty(sender))
-            {
-                return false;
-            }
-
-            return (Extensions.IsSenderLocalPostmaster(sender) || m_postmasters.IsPostmaster(sender));
         }
     }
 }

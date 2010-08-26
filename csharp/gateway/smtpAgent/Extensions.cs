@@ -192,6 +192,28 @@ namespace NHINDirect.SmtpAgent
 
         //------------------------------------        
         //
+        // Headers
+        //
+        //------------------------------------
+        const string Header_ContentType = "urn:schemas:mailheader:content-type";
+        
+        public static string GetContentType(this CDO.Message message)
+        {
+            return message.GetHeader(Header_ContentType);
+        }
+        
+        public static string GetHeader(this CDO.Message message, string name)
+        {
+            Fields fields = message.Fields;
+            if (fields == null || fields.Count == 0)
+            {
+                return  null;
+            }
+            
+            return fields.GetStringValue(name);
+        }
+        //------------------------------------        
+        //
         // Fields
         //
         //------------------------------------

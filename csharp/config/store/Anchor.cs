@@ -163,6 +163,14 @@ namespace NHINDirect.Config.Store
             set;
         }
 
+        [Column(Name = "Status", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
+        public EntityStatus Status
+        {
+            get;
+            set;
+        }
+        
         public bool HasData
         {
             get

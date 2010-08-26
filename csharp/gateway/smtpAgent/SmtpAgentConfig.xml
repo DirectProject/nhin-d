@@ -12,6 +12,7 @@
     <NamePrefix>redmondGateway</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
   </Log>
+  <AllowInternalMessages>true</AllowInternalMessages>
   <PrivateCerts>
     <MachineResolver>
       <Name>NHINDPrivate</Name>

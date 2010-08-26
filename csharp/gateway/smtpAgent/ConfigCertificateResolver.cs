@@ -21,10 +21,11 @@ using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using NHINDirect.Config.Store;
 using NHINDirect.Certificates;
+using NHINDirect.Config.Client;
 using NHINDirect.Config.Client.DomainManager;
 using NHINDirect.Config.Client.CertificateService;
 
-namespace NHINDirect.Config.Client
+namespace NHINDirect.SmtpAgent
 {
     public class ConfigCertificateResolver : ICertificateResolver, IX509CertificateIndex
     {
@@ -69,7 +70,7 @@ namespace NHINDirect.Config.Client
             { 
                 using(CertificateStoreClient client = this.CreateCertClient())
                 {
-                    return Certificate.ToX509Collection(client.GetCertificatesForOwner(subjectName));
+                    return Certificate.ToX509Collection(client.GetCertificatesForOwner(subjectName, EntityStatus.Enabled));
                 }
             }
         }

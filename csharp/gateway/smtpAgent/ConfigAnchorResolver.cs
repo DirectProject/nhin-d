@@ -20,9 +20,10 @@ using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using NHINDirect.Config.Store;
 using NHINDirect.Certificates;
+using NHINDirect.Config.Client;
 using NHINDirect.Config.Client.CertificateService;
 
-namespace NHINDirect.Config.Client
+namespace NHINDirect.SmtpAgent
 {
     public class ConfigAnchorResolver : ITrustAnchorResolver
     {
@@ -76,11 +77,11 @@ namespace NHINDirect.Config.Client
                     {
                         if (m_incoming)
                         {
-                            matches = client.GetIncomingAnchorX509Certificates(subjectName);
+                            matches = client.GetIncomingAnchorX509Certificates(subjectName, EntityStatus.Enabled);
                         }
                         else
                         {
-                            matches = client.GetOutgoingAnchorX509Certificates(subjectName);
+                            matches = client.GetOutgoingAnchorX509Certificates(subjectName, EntityStatus.Enabled);
                         }
                     }
                                         

@@ -98,19 +98,6 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Set the status for ALL certificates for an owner.");
             Console.WriteLine("    certificatestatusset owner");
         }
-        
-        public void Command_CertificateResolve(string[] args)
-        {
-            MailAddress address = new MailAddress(args.GetRequiredValue(0));            
-            ConfigCertificateResolver resolver = new ConfigCertificateResolver(ConfigConsole.Settings.CertificateManager);
-            X509Certificate2Collection matches = resolver.GetCertificates(address);
-            Print(matches);
-        }       
-        public void Usage_CertificateResolve()
-        {
-            Console.WriteLine("Resolve the certificate for an email address - duplicates what the agent would do.");
-            Console.WriteLine("    certificateResolve emailAddress");
-        }
 
         void PushCerts(IEnumerable<X509Certificate2> certs)
         {

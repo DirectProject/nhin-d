@@ -36,6 +36,7 @@ namespace NHINDirect.SmtpAgent
         ProcessBadMessageSettings m_badMessageSettings;
         MessageRoute[] m_incomingRoutes;
         bool m_logVerbose = true;
+        bool m_allowInternal = true;
         
         public SmtpAgentSettings()
         {
@@ -48,6 +49,7 @@ namespace NHINDirect.SmtpAgent
             set;
         }
         
+        [XmlElement]      
         public bool LogVerbose
         {
             get
@@ -70,6 +72,22 @@ namespace NHINDirect.SmtpAgent
             set
             {
                 m_postmasters = value;
+            }
+        }
+
+        /// <summary>
+        /// If true, then any ENCRYPTED messages from within the domain are passed through the Incoming message pipeline
+        /// </summary>
+        [XmlElement]
+        public bool AllowInternalMessages
+        {
+            get
+            {
+                return m_allowInternal;
+            }
+            set
+            {
+                m_allowInternal = value;
             }
         }
 
@@ -104,7 +122,7 @@ namespace NHINDirect.SmtpAgent
                 return (this.AddressManager != null);
             }
         }        
-        
+                
         [XmlElement("RawMessage")]
         public RawMessageSettings RawMessage
         {
