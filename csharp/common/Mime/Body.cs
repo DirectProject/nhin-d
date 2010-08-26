@@ -20,23 +20,44 @@ using System.Text;
 
 namespace NHINDirect.Mime
 {
+    /// <summary>
+    /// Represents the body of an RFC 5322 message.
+    /// </summary>
+    /// <remarks>
+    /// Note that a body, both in the RFC 5322 spec and in this implementation is not a full
+    /// MIME entity, and will need to be combined with the appropriate <c>Content-</c> headers
+    /// for proper interpretation.
+    /// </remarks>
     public class Body : MimePart
     {
+        /// <summary>
+        /// Initializes an empty body
+        /// </summary>
         public Body()
             : base(MimePartType.Body)
         {
         }
+
+        /// <summary>
+        /// Intializes a body from a <see cref="StringSegment"/>
+        /// </summary>
+        /// <param name="body">The body text <see cref="StringSegment"/></param>
         public Body(StringSegment body)
             : base(MimePartType.Body, body)
         {
         }
         
+        /// <summary>
+        /// Initializes a body from a <see cref="string"/> representation of the body text
+        /// </summary>
+        /// <param name="body">A <see cref="String"/> providing the body text</param>
         public Body(string body)
             : base(MimePartType.Body)
         {
             this.Text = body;
         }        
                 
+        
         internal Body(Body body)
             : base(MimePartType.Body, body.SourceText)
         {
