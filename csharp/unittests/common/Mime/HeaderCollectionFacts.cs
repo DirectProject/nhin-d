@@ -49,18 +49,18 @@ namespace NHINDirect.Tests.Mime
 		}
 
 		[Fact]
-		public void CopyFromThrowsArgumentNullException()
+		public void AddFilteredByHeaderStringsThrowsArgumentNullException()
 		{
 			var headers = new HeaderCollection();
-			var ex = Assert.Throws<ArgumentNullException>(() => headers.CopyFrom(null, header => true));
+			var ex = Assert.Throws<ArgumentNullException>(() => headers.Add(null, header => true));
 			Assert.Equal("source", ex.ParamName);
 		}
 
 		[Fact]
-		public void CopyFromThrowsArgumentNullException2()
+		public void AddThrowsArgumentNullException2()
 		{
 			var headers = new HeaderCollection();
-			var ex = Assert.Throws<ArgumentNullException>(() => headers.CopyFrom(null, new string[0]));
+			var ex = Assert.Throws<ArgumentNullException>(() => headers.Add(null, new string[0]));
 			Assert.Equal("source", ex.ParamName);
 		}
 
@@ -87,5 +87,37 @@ namespace NHINDirect.Tests.Mime
 		{
 			Assert.Null(m_headers.GetValue("unknown"));
 		}
+
+        [Fact]
+        public void FilteredVersionOfAdd()
+        {
+            var a = new Header("a", "a");
+            var b = new Header("b", "b");
+            var aa = new Header("aa", "c");
+            Header[] headers =  new Header[] { a, b, aa };
+            HeaderCollection coll = new HeaderCollection();
+
+            coll.Add(headers, h => h.Name.StartsWith("a"));
+
+            Assert.True(coll.Contains(a));
+            Assert.True(coll.Contains(aa));
+            Assert.False(coll.Contains(b));
+        }
+
+        [Fact]
+        public void StringArrayFilteredVersionOfAdd()
+        {
+            var a = new Header("a", "a");
+            var b = new Header("b", "b");
+            var aa = new Header("aa", "c");
+            var headers = new Header[] { a, b, aa };
+            HeaderCollection coll = new HeaderCollection();
+
+            coll.Add(headers, new string[] { "a", "aa" });
+            Assert.True(coll.Contains(a));
+            Assert.True(coll.Contains(aa));
+            Assert.False(coll.Contains(b));
+        }
+
 	}
 }
