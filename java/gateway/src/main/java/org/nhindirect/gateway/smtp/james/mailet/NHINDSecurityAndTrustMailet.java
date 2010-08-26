@@ -77,7 +77,9 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		{
 			LOGGER.error("Failed to create the SMTP agent. Reason unknown.");
 			throw new MessagingException("Failed to create the SMTP agent.  Reason unknown.");
-		}		
+		}	
+		
+		LOGGER.info("NHINDSecurityAndTrustMailet initialization complete.");
 	}
 
 	
@@ -88,6 +90,8 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	@Override
 	public void service(Mail mail) throws MessagingException 
 	{ 
+		LOGGER.trace("Entering service(Mail mail)");
+		
 		NHINDAddressCollection recipients = new NHINDAddressCollection();		
 		
 		MimeMessage msg = mail.getMessage();
@@ -113,10 +117,13 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		}
 		
 		// get the sender
+		
 		NHINDAddress sender = new NHINDAddress(mail.getSender().toInternetAddress(), AddressSource.From);				
 		
 		// process the message with the agent stack
+		LOGGER.trace("Calling agent.processMessage");
 		MessageProcessResult result = agent.processMessage(msg, recipients, sender);
+		LOGGER.trace("Finished calling agent.processMessage");
 		
 		try
 		{
@@ -127,9 +134,11 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 				 */
 				LOGGER.error("Failed to process message.  processMessage returned null.");				
 				mail.setState(Mail.GHOST);
+				
+				LOGGER.trace("Exiting service(Mail mail)");
 				return;
 			}
-		}
+		}	
 		catch (Throwable e)
 		{
 			// catch all
@@ -138,6 +147,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			 */
 			LOGGER.error("Failed to process message: " + e.getMessage(), e);					
 			mail.setState(Mail.GHOST);
+			LOGGER.trace("Exiting service(Mail mail)");
 			return;			
 		}
 		
@@ -151,6 +161,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			/*
 			 * TODO: Handle exception... GHOST the message for now and eat it
 			 */		
+			LOGGER.debug("Processed message is null.  GHOST and eat the message.");
 			mail.setState(Mail.GHOST);
 		}
 		
@@ -169,6 +180,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			 */
 		}
 		
+		LOGGER.trace("Exiting service(Mail mail)");
 	}
 	
 	/*

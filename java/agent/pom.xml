@@ -212,7 +212,7 @@
               <detectJavaApiLink>true</detectJavaApiLink>
               <detectLinks>true</detectLinks>
 	          <source>1.6</source>
-	          <show>protected</show>
+	          <show>public</show>
 	          <excludePackageNames>
 	              org.nhindirect.stagent.annotation:org.nhindirect.stagent.cert.impl:org.nhindirect.stagent.cert.impl.annotation:org.nhindirect.stagent.cert.impl.module:org.nhindirect.stagent.cert.impl.provider:org.nhindirect.stagent.cryptography.annotation:org.nhindirect.stagent.module:org.nhindirect.stagent.provider:org.nhindirect.stagent.trust.annotation:org.nhindirect.stagent.trust.provider:org.nhindirect.stagent.utils
 	          </excludePackageNames>          	          
