@@ -50,7 +50,7 @@ namespace NHINDirect.Tools.Command
         string m_appName;
         List<object> m_instances;        
         Dictionary<string, CommandDef> m_commands;
-        string[] m_names;
+        string[] m_commandNames;
         
         public Commands(string appName)
         {
@@ -82,19 +82,8 @@ namespace NHINDirect.Tools.Command
         {
             get
             {
-                if (m_names == null)
-                {
-                    m_names = new string[m_commands.Values.Count];
-                    int i = 0;
-                    foreach (CommandDef command in m_commands.Values)
-                    {
-                        m_names[i++] = command.Name;
-                    }
-                    
-                    Array.Sort(m_names);
-                }
-                
-                return m_names;
+                this.EnsureCommandNamesArray();
+                return m_commandNames;
             }
         }
         
@@ -209,6 +198,7 @@ namespace NHINDirect.Tools.Command
         void ShowAllUsage()
         {
             CommandUI.PrintHeading("Registered commands");
+            
             foreach(string name in this.CommandNames)
             {
                 this.ShowUsage(name);
@@ -244,12 +234,29 @@ namespace NHINDirect.Tools.Command
             CommandDef cmd = this[name];
             if (cmd == null)
             {
-                throw new ArgumentException(string.Format("Command {0} not found", name));
+                throw new ArgumentException(string.Format("Command {0} not found. Type help for usage.", name));
             }
 
             return cmd;
         }
+        
+        void EnsureCommandNamesArray()
+        {
+            if (!m_commandNames.IsNullOrEmpty())
+            {
+                return;
+            }
+            
+            m_commandNames = new string[m_commands.Values.Count];
+            int i = 0;
+            foreach (CommandDef command in m_commands.Values)
+            {
+                m_commandNames[i++] = command.Name;
+            }
 
+            Array.Sort(m_commandNames);
+        }
+        
         void SetEval(string name, Action<string[]> eval)
         {
             this.Ensure(name).Eval = eval;
@@ -300,13 +307,44 @@ namespace NHINDirect.Tools.Command
             { 
                 cmdName = args[0];
             }
-            ShowUsage(cmdName);
+            
+            if (string.IsNullOrEmpty(cmdName))
+            {
+                Usage_Help();
+                return;
+            }
+            
+            if (cmdName.Equals("all", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowAllUsage();
+                return;
+            }
+            
+            CommandDef cmd = this[cmdName];
+            if (cmd != null)
+            {
+                cmd.ShowUsage();
+                return;
+            }            
+            //
+            // Do a prefix match. Note: if needed, we can speed this up since the name array is sorted. 
+            //
+            var prefixMatch = from name in this.CommandNames
+                              where name.StartsWith(cmdName, StringComparison.OrdinalIgnoreCase)
+                              select name;
+            foreach (string name in prefixMatch)
+            {
+                this.Bind(name).ShowUsage();
+            }
         }
         
         public void Usage_Help()
         {
             Console.WriteLine("Show help");
-            Console.WriteLine("help [commandName]");
+            Console.WriteLine("help ['all' | commandName]");
+            Console.WriteLine("   all: Show all commands");
+            Console.WriteLine("   commandName: Show help for this command"); 
+            Console.WriteLine("   If command not found, then show help for commands whose names begin with commandName");
         }        
     }    
 }

@@ -28,6 +28,7 @@ namespace NHINDirect.Config.Store
         const string Sql_DeleteAddress = "DELETE from Addresses where EmailAddress = {0}";
         const string Sql_DeleteAddressByDomain = "DELETE from Addresses where DomainID = {0}";
         const string Sql_SetStatus = "UPDATE Addresses set Status = {0}, UpdateDate={1} where EmailAddress in ({2})";
+        const string Sql_SetStatusByDomain = "UPDATE Addresses set Status = {0} where DomainID = {1}";
 
         static readonly Func<ConfigDatabase, string, IQueryable<Address>> Addresses = CompiledQuery.Compile(
             (ConfigDatabase db, string emailAddress) =>
@@ -62,8 +63,26 @@ namespace NHINDirect.Config.Store
             return Addresses(table.GetDB(), emailAddress).SingleOrDefault();
         }
 
+        public static IEnumerable<Address> Get(this Table<Address> table, string[] emailAddresses, EntityStatus? status)
+        {
+            if (emailAddresses.IsNullOrEmpty())
+            {
+                throw new ArgumentException();
+            }
+            //
+            // We cannot precompile this (throws at runtime) because emailAddresses.Length can change at runtime
+            //
+            return from address in table.GetDB().Addresses
+                   where emailAddresses.Contains(address.EmailAddress) && address.Status == status
+                   select address;
+        }
+
         public static IEnumerable<Address> Get(this Table<Address> table, string[] emailAddresses)
         {
+            if (emailAddresses.IsNullOrEmpty())
+            {
+                throw new ArgumentException();
+            }
             //
             // We cannot precompile this (throws at runtime) because emailAddresses.Length can change at runtime
             //
@@ -92,6 +111,16 @@ namespace NHINDirect.Config.Store
                  select address;
         }
 
+        public static IQueryable<Address> Get(this Table<Address> table, long[] ids, EntityStatus status)
+        {
+            //
+            // We cannot precompile this (throws at runtime) because ids.Length can change at runtime
+            //
+            return from address in table.GetDB().Addresses
+                   where ids.Contains(address.ID) && address.Status == status
+                   select address;
+        }
+
         public static void ExecDelete(this Table<Address> table, string emailAddress)
         {
             table.Context.ExecuteCommand(Sql_DeleteAddress, emailAddress);
@@ -105,6 +134,11 @@ namespace NHINDirect.Config.Store
         public static void ExecSetStatus(this Table<Address> table, string[] emailAddresses, EntityStatus status)
         {
             table.Context.ExecuteCommand(Sql_SetStatus, status, DateTime.Now, emailAddresses.ToIn());
+        }
+
+        public static void ExecSetStatus(this Table<Address> table, long domainID, EntityStatus status)
+        {
+            table.Context.ExecuteCommand(Sql_SetStatusByDomain, status, domainID);
         }
     }
 }

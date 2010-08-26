@@ -43,24 +43,4 @@
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />
-  <xs:complexType name="ArrayOfAnchor">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="Anchor" nillable="true" type="tns:Anchor" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfAnchor" nillable="true" type="tns:ArrayOfAnchor" />
-  <xs:complexType name="Anchor">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="CreateDate" type="xs:dateTime" />
-      <xs:element minOccurs="0" name="Data" nillable="true" type="xs:base64Binary" />
-      <xs:element minOccurs="0" name="ForIncoming" type="xs:boolean" />
-      <xs:element minOccurs="0" name="ForOutgoing" type="xs:boolean" />
-      <xs:element minOccurs="0" name="ID" type="xs:long" />
-      <xs:element minOccurs="0" name="Owner" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="Thumbprint" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="ValidEndDate" type="xs:dateTime" />
-      <xs:element minOccurs="0" name="ValidStartDate" type="xs:dateTime" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="Anchor" nillable="true" type="tns:Anchor" />
 </xs:schema>

@@ -20,10 +20,12 @@ using System.Text;
 using System.Data.SqlTypes;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
+using System.Runtime.Serialization;
 
 namespace NHINDirect.Config.Store
 {
     [Table(Name="Domains")]
+    [DataContract(Namespace = ConfigStore.Namespace)]
     public class Domain
     {
         public const int MaxDomainNameLength = 255;
@@ -43,6 +45,7 @@ namespace NHINDirect.Config.Store
         }
            
         [Column(Name="DomainID", IsPrimaryKey=true, IsDbGenerated=true)]
+        [DataMember(IsRequired = true)]
         public long ID
         {
             get;
@@ -50,6 +53,7 @@ namespace NHINDirect.Config.Store
         }
         
         [Column(Name="DomainName", DbType="varchar(255)", CanBeNull=false, IsPrimaryKey = true)]
+        [DataMember(IsRequired = true)]
         public string Name
         {
             get
@@ -70,16 +74,9 @@ namespace NHINDirect.Config.Store
                 m_name = value;
             }
         }
-        /*
-        [Column(Name="AccountID", CanBeNull=true, UpdateCheck = UpdateCheck.WhenChanged)]
-        public long AccountID
-        {
-            get;
-            set;
-        }
-        */
         
         [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
         public DateTime CreateDate
         {
             get;
@@ -87,6 +84,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Always)]
+        [DataMember(IsRequired = true)]
         public DateTime UpdateDate
         {
             get;
@@ -94,6 +92,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "Status", DbType="tinyint", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
         public EntityStatus Status
         {
             get;
@@ -101,6 +100,7 @@ namespace NHINDirect.Config.Store
         }        
         
         [Column(Name = "PostmasterAddressID", CanBeNull = true, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = false)]
         public long? PostmasterID
         {
             get;

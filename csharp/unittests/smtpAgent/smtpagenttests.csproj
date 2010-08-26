@@ -53,9 +53,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SmtpAgentTester.cs" />
+    <Compile Include="TestAgentInit.cs" />
+    <Compile Include="TestHandler.cs" />
     <Compile Include="TestSmtpAgent.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfig.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigService.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestSmtpAgentConfig.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

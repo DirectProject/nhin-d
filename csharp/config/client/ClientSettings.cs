@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using System.ServiceModel;
+using NHINDirect.Config.Client.CertificateService;
+using NHINDirect.Config.Client.DomainManager;
 
 namespace NHINDirect.Config.Client
 {
@@ -18,6 +20,7 @@ namespace NHINDirect.Config.Client
     {
         int m_maxReceivedMessageSize = int.MaxValue;   // No limits by default
         string m_url;
+        bool m_secure = false;
         EndpointAddress m_endpoint;
         BasicHttpBinding m_binding;
         
@@ -60,6 +63,19 @@ namespace NHINDirect.Config.Client
             }
         }
         
+        [XmlElement]        
+        public bool Secure
+        {
+            get
+            {
+                return m_secure;
+            }
+            set
+            {
+                m_secure = value;
+            }
+        }
+        
         [XmlIgnore]
         public EndpointAddress Endpoint
         {
@@ -74,11 +90,7 @@ namespace NHINDirect.Config.Client
         {
             get
             {
-                if (m_binding == null)
-                {
-                    m_binding = BindingFactory.CreateBasic(m_maxReceivedMessageSize);
-                }
-                
+                this.EnsureBinding();
                 return m_binding;
             }
         }
@@ -89,6 +101,36 @@ namespace NHINDirect.Config.Client
             {
                 throw new ArgumentException("Invalid ServiceUrl");
             }
+        }
+        
+        void EnsureBinding()
+        {
+            if (m_binding != null)
+            {
+                return;
+            }
+            
+            m_binding = BindingFactory.CreateBasic(m_maxReceivedMessageSize, m_secure);
+        }        
+        
+        public DomainManagerClient CreateDomainManagerClient()
+        {
+            return new DomainManagerClient(this.Binding, this.Endpoint);
+        }
+        
+        public AddressManagerClient CreateAddressManagerClient()
+        {
+            return new AddressManagerClient(this.Binding, this.Endpoint);
+        }
+        
+        public CertificateStoreClient CreateCertificateStoreClient()
+        {
+            return new CertificateStoreClient(this.Binding, this.Endpoint);
+        }
+        
+        public AnchorStoreClient CreateAnchorStoreClient()
+        {
+            return new AnchorStoreClient(this.Binding, this.Endpoint);
         }
     }
 }

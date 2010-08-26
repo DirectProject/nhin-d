@@ -154,23 +154,39 @@ namespace NHINDirect.Config.Store
 
         public Address[] Get(string[] emailAddresses)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, emailAddresses).ToArray();
-            }
+            return this.Get(emailAddresses, null);
         }
 
         public IEnumerable<Address> Get(ConfigDatabase db, string[] emailAddresses)
+        {
+            return this.Get(db, emailAddresses, null);
+        }
+
+
+        public Address[] Get(string[] emailAddresses, EntityStatus? status)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, emailAddresses, status).ToArray();
+            }
+        }
+
+        public IEnumerable<Address> Get(ConfigDatabase db, string[] emailAddresses, EntityStatus? status)
         {
             if (db == null)
             {
                 throw new ArgumentException();
             }
-            
-            this.VerifyEmailAddresses(emailAddresses);
-            return db.Addresses.Get(emailAddresses);
-        }
 
+            this.VerifyEmailAddresses(emailAddresses);
+            if (status == null)
+            {
+                return db.Addresses.Get(emailAddresses);
+            }
+            
+            return db.Addresses.Get(emailAddresses, status.Value);
+        }
+        
         public Address[] Get(long domainID, long lastAddressID, int maxResults)
         {
             using(ConfigDatabase db = this.Store.CreateReadContext())
@@ -209,20 +225,35 @@ namespace NHINDirect.Config.Store
         
         public Address[] Get(long[] addressIDs)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, addressIDs).ToArray();
-            }            
+            return this.Get(addressIDs, null);
         }
 
         public IEnumerable<Address> Get(ConfigDatabase db, long[] addressIDs)
+        {
+            return this.Get(db, addressIDs, null);
+        }
+
+        public Address[] Get(long[] addressIDs, EntityStatus? status)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, addressIDs, status).ToArray();
+            }
+        }
+
+        public IEnumerable<Address> Get(ConfigDatabase db, long[] addressIDs, EntityStatus? status)
         {
             if (db == null)
             {
                 throw new ArgumentNullException();
             }
-
-            return db.Addresses.Get(addressIDs);
+            
+            if (status == null)
+            {
+                return db.Addresses.Get(addressIDs);
+            }
+            
+            return db.Addresses.Get(addressIDs, status.Value);
         }
                 
         public void Remove(string emailAddress)
@@ -269,6 +300,10 @@ namespace NHINDirect.Config.Store
         
         public void SetStatus(string[] emailAddresses, EntityStatus status)
         {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                this.SetStatus(db, emailAddresses, status);
+            }
         }
         
         public void SetStatus(ConfigDatabase db, string[] emailAddresses, EntityStatus status)
@@ -280,6 +315,14 @@ namespace NHINDirect.Config.Store
             
             this.VerifyEmailAddresses(emailAddresses);
             db.Addresses.ExecSetStatus(emailAddresses, status);
+        }
+
+        public void SetStatus(long domainID, EntityStatus status)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                db.Addresses.ExecSetStatus(domainID, status);
+            }
         }
         
         void VerifyEmailAddresses(string[] emailAddresses)

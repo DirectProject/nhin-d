@@ -1,69 +1,65 @@
-﻿using System.IO;
-
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.IO;
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
 using AgentTests;
 using Xunit;
+using Xunit.Extensions;
 
 namespace SmtpAgentTests
 {    
-    public class TestSmtpAgent
+    public class TestSmtpAgent : SmtpAgentTester
     {
-        const string TestMessage = 
-@"From: <toby@redmond.hsgincubator.com>
-To: <biff@nhind.hsgincubator.com>
-Subject: Simple Text Message
-Date: Mon, 10 May 2010 14:53:27 -0700
-MIME-Version: 1.0
-Content-Type: text/plain
-
-Yo. Wassup?";
-
-        const string BadMessage =
-@"From: <toby@redmond.hsgincubator.com>
-To: <xyz@untrusted.com>
-Subject: Simple Text Message
-Date: Mon, 10 May 2010 14:53:27 -0700
-MIME-Version: 1.0
-Content-Type: text/plain
-
-Bad message?";
-        
-        MessageArrivalEventHandler m_handler;
+        SmtpAgent m_agent;
         
         public TestSmtpAgent()
         {
             AgentTests.AgentTester.EnsureStandardMachineStores();
-            m_handler = new MessageArrivalEventHandler();
-            m_handler.InitFromConfigFile(Path.Combine(Directory.GetCurrentDirectory(), "TestSmtpAgentConfig.xml"));
+
+            //m_agent = new SmtpAgent(SmtpAgentSettings.LoadSettings(MakeFilePath("SmtpAgentTestFiles\\TestSmtpAgentConfigService.xml")));
+            m_agent = new SmtpAgent(SmtpAgentSettings.LoadSettings(MakeFilePath("SmtpAgentTestFiles\\TestSmtpAgentConfig.xml")));
         }
         
         [Fact]
         public void Test()
         {
-            Assert.DoesNotThrow(() => m_handler.ProcessCDOMessage(this.LoadMessage(TestMessage)));
-            Assert.Throws<AgentException>(() => m_handler.ProcessCDOMessage(this.LoadMessage(BadMessage)));
+            Assert.DoesNotThrow(() => m_agent.ProcessMessage(this.LoadMessage(TestMessage)));
+            Assert.Throws<AgentException>(() => m_agent.ProcessMessage(this.LoadMessage(BadMessage)));
         }
         
         [Fact]
         public void TestEndToEnd()
         {
-            CDO.Message message = this.LoadMessage(TestMessage);
-            //
-            // Outgoing
-            //
-            Assert.DoesNotThrow(() => m_handler.ProcessCDOMessage(message));
-            //
-            // Incoming
-            //
-            Assert.DoesNotThrow(() => m_handler.ProcessCDOMessage(message));   
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(TestMessage)));   
+        }
+
+        [Fact(Skip="Need Config Service to run  this")]
+        //[Fact]
+        public void TestEndToEndBad()
+        {
+            Assert.Throws<AgentException>(() => RunEndToEndTest(this.LoadMessage(UnknownUsersMessage)));
+        }
+        
+        void RunEndToEndTest(CDO.Message message)
+        {
+            string text = message.GetMessageText();
+            
+            CDOSmtpMessage smtpMessage = new CDOSmtpMessage(message);
+            
+            MessageEnvelope envelope = m_agent.ProcessOutgoing(smtpMessage);
+            smtpMessage.Update(envelope.SerializeMessage());
+            
+            smtpMessage = new CDOSmtpMessage(message);
+            envelope = m_agent.ProcessIncoming(smtpMessage);
+            smtpMessage.Update(envelope.SerializeMessage());
         }
         
         [Fact]
         public void TestUntrusted()
         {
-            SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(Path.Combine(Directory.GetCurrentDirectory(), "TestSmtpAgentConfig.xml"));      
-            SmtpAgent agent = new SmtpAgent(settings);
             //
             // This should be accepted because the envelope is what we look at
             //
@@ -72,7 +68,7 @@ Bad message?";
                                                         new NHINDAddress("toby@redmond.hsgincubator.com")
                                                         );
            
-            Assert.DoesNotThrow(() => agent.Agent.ProcessOutgoing(envelope));  
+            Assert.DoesNotThrow(() => m_agent.SecurityAgent.ProcessOutgoing(envelope));  
 
             envelope = new MessageEnvelope(TestMessage,
                                     NHINDAddressCollection.ParseSmtpServerEnvelope("xyz@untrusted.com"),
@@ -81,12 +77,7 @@ Bad message?";
             //
             // This SHOULD throw an exception
             //
-            Assert.Throws<AgentException>(() => agent.Agent.ProcessOutgoing(envelope));
-        }
-        
-        CDO.Message LoadMessage(string text)
-        {
-            return NHINDirect.SmtpAgent.Extensions.LoadCDOMessageFromText(text);
-        }
+            Assert.Throws<AgentException>(() => m_agent.SecurityAgent.ProcessOutgoing(envelope));
+        }        
     }
 }

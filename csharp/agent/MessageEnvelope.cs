@@ -394,7 +394,9 @@ namespace NHINDirect.Agent
         /// <param name="domains">Domains to treat as  domain recipients.</param>
         public void EnsureRecipientsCategorizedByDomain(AgentDomains domains)
         {
-            if (this.HasDomainRecipients || this.HasOtherRecipients)
+            // We only want to categorize if we haven't done it already
+            // Do NOT change these to IsNullOrEmpty
+            if (this.DomainRecipients != null || this.OtherRecipients != null)
             {
                 return;
             }
