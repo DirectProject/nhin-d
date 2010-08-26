@@ -68,3 +68,8 @@ glob:csharp/gateway/prodinstall/prop.bat
 glob:csharp/gateway/prodinstall/readme.txt
 glob:csharp/unittests/runall.bat
 glob:csharp/*.chm
+glob:csharp/config/service.sln
+glob:csharp/config/service/ve-4D36.tmp
+glob:csharp/config/store/configStore.sln
+glob:csharp/external/xunit/xunit.console.sln
+glob:csharp/unittests/agenttest.bat

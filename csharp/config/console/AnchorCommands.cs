@@ -34,7 +34,7 @@ namespace NHINDirect.Config.Command
         
         public AnchorCommands()
         {
-            m_client = new AnchorStoreClient(ConfigConsole.Settings.AnchorManager.Binding, ConfigConsole.Settings.AnchorManager.Endpoint);
+            m_client = ConfigConsole.Settings.AnchorManager.CreateAnchorStoreClient();
         }
         
         public void Command_AnchorAdd(string[] args)

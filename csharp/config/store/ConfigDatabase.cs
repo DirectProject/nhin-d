@@ -30,25 +30,10 @@ namespace NHINDirect.Config.Store
         Table<Anchor> m_anchors;
         Table<Domain> m_domains;
         Table<Address> m_addresses;
-        Table<Account> m_accounts;
                           
         public ConfigDatabase(string connectString)
             : base(connectString)
         {
-        }
-
-
-        public Table<Account> Accounts
-        {
-            get
-            {
-                if (m_accounts == null)
-                {
-                    m_accounts = this.GetTable<Account>();
-                }
-
-                return m_accounts;
-            }
         }
 
         public Table<Domain> Domains
@@ -63,7 +48,6 @@ namespace NHINDirect.Config.Store
                 return m_domains;
             }
         }
-
 
         public Table<Address> Addresses
         {

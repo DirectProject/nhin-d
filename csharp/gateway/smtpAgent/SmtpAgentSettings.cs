@@ -72,22 +72,38 @@ namespace NHINDirect.SmtpAgent
                 m_postmasters = value;
             }
         }
-        
-        [XmlElement("MessageBounce")]
-        public MessageBounceSettings MessageBounce
+
+        [XmlElement("DomainManager")]
+        public ClientSettings DomainManager
         {
             get;
             set;
         }
-        
+
         [XmlIgnore]
-        public bool HasMessageBounceSettings
+        public bool HasDomainManager
         {
             get
             {
-                return (this.MessageBounce != null);
+                return (this.DomainManager != null);
             }
+        }        
+        
+        [XmlElement("AddressManager")]
+        public ClientSettings AddressManager
+        {
+            get;
+            set;
         }
+
+        [XmlIgnore]
+        public bool HasAddressManager
+        {
+            get
+            {
+                return (this.AddressManager != null);
+            }
+        }        
         
         [XmlElement("RawMessage")]
         public RawMessageSettings RawMessage
@@ -179,13 +195,6 @@ namespace NHINDirect.SmtpAgent
                 m_incomingRoutes = value;
             }
         }
-        
-        [XmlElement("AddressManager")]
-        public ClientSettings AddressManager
-        {
-            get;
-            set;
-        }
 
         [XmlIgnore]
         public bool HasRoutes
@@ -195,16 +204,7 @@ namespace NHINDirect.SmtpAgent
                 return (!m_incomingRoutes.IsNullOrEmpty());
             }
         }
-        
-        [XmlIgnore]
-        public bool HasAddressManager
-        {
-            get
-            {
-                return (this.AddressManager != null);
-            }
-        }        
-        
+                
         public override void Validate()
         {
             base.Validate();
@@ -215,12 +215,7 @@ namespace NHINDirect.SmtpAgent
             }
             
             this.LogSettings.Validate();      
-                  
-            if (this.HasMessageBounceSettings)
-            {
-                this.MessageBounce.Validate();
-            }
-            
+                              
             this.RawMessage.Validate();            
             this.BadMessage.Validate();
             this.Incoming.Validate();

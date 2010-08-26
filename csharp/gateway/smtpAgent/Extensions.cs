@@ -108,7 +108,7 @@ namespace NHINDirect.SmtpAgent
             message.SaveToFile(Path.Combine(folderPath, fileName));
         }
 
-        static string CreateUniqueFileName()
+        public static string CreateUniqueFileName()
         {
             return Guid.NewGuid().ToString("D") + ".eml";
         }

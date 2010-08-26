@@ -22,12 +22,14 @@ using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Runtime.Serialization;
 using NHINDirect;
 using NHINDirect.Certificates;
 
 namespace NHINDirect.Config.Store
 {
     [Table(Name = "Anchors")]
+    [DataContract(Namespace = ConfigStore.Namespace)]
     public class Anchor
     {
         public const int MaxOwnerLength = 400;
@@ -68,6 +70,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "Owner", CanBeNull = false, IsPrimaryKey = true)]
+        [DataMember(IsRequired = true)]
         public string Owner
         {
             get
@@ -91,6 +94,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "Thumbprint", CanBeNull = false, IsPrimaryKey = true)]
+        [DataMember(IsRequired = true)]
         public string Thumbprint
         {
             get;
@@ -98,6 +102,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "CertificateID", CanBeNull = false, IsDbGenerated=true, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = true)]
         public long ID
         {
             get;
@@ -105,6 +110,7 @@ namespace NHINDirect.Config.Store
         }
         
         [Column(Name = "CertificateData", DbType = "varbinary(MAX)", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = true)]
         public byte[] Data
         {
             get
@@ -118,6 +124,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
         public DateTime CreateDate
         {
             get;
@@ -125,6 +132,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "ValidStartDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
         public DateTime ValidStartDate
         {
             get;
@@ -132,6 +140,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "ValidEndDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
         public DateTime ValidEndDate
         {
             get;
@@ -139,6 +148,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "ForIncoming", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
         public bool ForIncoming
         {
             get;
@@ -146,6 +156,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "ForOutgoing", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
         public bool ForOutgoing
         {
             get;

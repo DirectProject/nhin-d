@@ -500,10 +500,17 @@ namespace NHINDirect.Agent
         {
             if (message.Sender == null)
             {
-                throw new AgentException(AgentError.UntrustedSender);
-            }
-
+                throw new AgentException(AgentError.NoSender);
+            }            
+            if (!message.HasRecipients)
+            {
+                throw new AgentException(AgentError.NoRecipients);
+            }            
             message.EnsureRecipientsCategorizedByDomain(m_managedDomains);
+            if (!message.HasDomainRecipients)
+            {
+                throw new AgentException(AgentError.NoTrustedRecipients);
+            }            
             //
             // Map each address to its certificates/trust settings
             //
@@ -734,7 +741,11 @@ namespace NHINDirect.Agent
             
             if (message.Sender == null)
             {
-                throw new AgentException(AgentError.MissingFrom);
+                throw new AgentException(AgentError.NoSender);
+            }            
+            if (!message.HasRecipients)
+            {
+                throw new AgentException(AgentError.NoRecipients);
             }
             //
             // Ensure we support this sender's domain
@@ -767,6 +778,10 @@ namespace NHINDirect.Agent
             {
                 throw new AgentException(AgentError.NoTrustedRecipients);
             }
+            //
+            // And update routing headers to remove any recipients we had yanked
+            //
+            message.UpdateRoutingHeaders();
             //
             // Finally, sign and encrypt the message
             //

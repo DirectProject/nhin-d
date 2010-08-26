@@ -66,7 +66,7 @@ namespace NHINDirect.SmtpAgent
             get
             {
                 MessageRoute settings = null;
-                if (!m_routes.TryGetValue(addressType, out settings))
+                if (!m_routes.TryGetValue(addressType ?? string.Empty, out settings))
                 {
                     settings = null;
                 }
@@ -88,44 +88,42 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
-        // Returns true if all recipients had routes assigned
-        public bool Route(CDO.Message message, MessageEnvelope envelope)
+        public bool Route(ISmtpMessage message, MessageEnvelope envelope, Action<ISmtpMessage, MessageRoute> action)
         {
-            if (message == null || envelope == null)
+            if (envelope == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            return this.Route(message, envelope.DomainRecipients, action);
+        }
+        
+        // Returns true if all recipients had routes assigned
+        public bool Route(ISmtpMessage message, IEnumerable<NHINDAddress> recipients, Action<ISmtpMessage, MessageRoute> action)
+        {
+            if (recipients == null || action == null)
             {
                 throw new ArgumentException();
             }
-            
-            if (!envelope.HasDomainRecipients)
-            {
-                return false;
-            }
-            
-            NHINDAddressCollection recipients = envelope.DomainRecipients;
+
             int countRouted = 0;
+            int recipientCount = 0;
             foreach (NHINDAddress recipient in recipients)
             {
+                ++recipientCount;
                 Address address = recipient.Tag as Address;
                 if (address != null && !string.IsNullOrEmpty(address.Type))
                 {
                     MessageRoute route = m_routes[address.Type];
                     if (route != null)
                     {
-                        CopyMessageToFolder(message, route);
+                        action(message, route);
                         ++countRouted;
                     }
                 }
             }
-            
-            return (countRouted == recipients.Count);
-        }
 
-        internal static void CopyMessageToFolder(CDO.Message message, MessageProcessingSettings settings)
-        {
-            if (settings.HasCopyFolder)
-            {
-                message.CopyMessage(settings.CopyFolder);
-            }
+            return (countRouted == recipientCount);
         }
 
         public IEnumerator<MessageRoute> GetEnumerator()
