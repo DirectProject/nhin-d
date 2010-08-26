@@ -20,21 +20,66 @@ using System.Text;
 
 namespace NHINDirect.Mime
 {
+    /// <summary>
+    /// MIME processing errors that may trigger <see cref="MimeException"/> exceptions.
+    /// </summary>
     public enum MimeError
     {
+        /// <summary>
+        /// Unknown unexpected event.
+        /// </summary>
         Unexpected = 0,
+        /// <summary>
+        /// The MIME entity does not terminate lines properly.
+        /// </summary>
         InvalidCRLF,
+        /// <summary>
+        /// The content could not be interpreted as a MIME entity
+        /// </summary>
         InvalidMimeEntity,
+        /// <summary>
+        /// A header was expected but could not be processed as a header.
+        /// </summary>
         InvalidHeader,
+        /// <summary>
+        /// A MIME body was expected but could not be processed as a MIME body.
+        /// </summary>
         InvalidBody,
+        /// <summary>
+        /// A subpart of a multipart MIME entity was expected, but could not be processed as a subpart.
+        /// </summary>
         InvalidBodySubpart,
+        /// <summary>
+        /// A header did not have a name value separator
+        /// </summary>
         MissingNameValueSeparator,
+        /// <summary>
+        /// A header had a missing value part
+        /// </summary>
         MissingHeaderValue,
+        /// <summary>
+        /// A MIME body was expected but was not found
+        /// </summary>
         MissingBody,
+        /// <summary>
+        /// The actual content type did not match the expected content type.
+        /// </summary>
         ContentTypeMismatch,
+        /// <summary>
+        /// The actual transfer encoding did not match the expected transfer encoding.
+        /// </summary>
         TransferEncodingMismatch,
+        /// <summary>
+        /// Base64 encoded content was expected but not provided.
+        /// </summary>
         Base64EncodingRequired,
+        /// <summary>
+        /// A MIME body was declared multipart but was not provided as multipart.
+        /// </summary>
         NotMultipart,
+        /// <summary>
+        /// A multipart message was missing a boundary separator.
+        /// </summary>
         MissingBoundarySeparator
     }
 }

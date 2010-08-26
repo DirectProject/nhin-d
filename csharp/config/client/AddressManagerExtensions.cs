@@ -46,22 +46,32 @@ namespace NHINDirect.Config.Client.DomainManager
         
         public static Address GetAddress(this AddressManagerClient client, MailAddress address)
         {
+            return client.GetAddress(address.Address, null);
+        }
+
+        public static Address GetAddress(this AddressManagerClient client, MailAddress address, EntityStatus? status)
+        {
             if (address == null)
             {
                 throw new ArgumentNullException();
             }
-            
-            return client.GetAddress(address.Address);
+
+            return client.GetAddress(address.Address, status);
         }
         
         public static Address GetAddress(this AddressManagerClient client, string emailAddress)
+        {
+            return client.GetAddress(emailAddress, null);
+        }
+        
+        public static Address GetAddress(this AddressManagerClient client, string emailAddress, EntityStatus? status)
         {
             if (string.IsNullOrEmpty(emailAddress))
             {
                 throw new ArgumentException();
             }
             
-            Address[] addresses = client.GetAddresses(new string[] {emailAddress});
+            Address[] addresses = client.GetAddresses(new string[] {emailAddress}, status);
             if (addresses.IsNullOrEmpty())
             {
                 return null;
@@ -72,14 +82,29 @@ namespace NHINDirect.Config.Client.DomainManager
         
         public static Address GetAddress(this AddressManagerClient client, long addressID)
         {
+            return client.GetAddress(addressID, null);
+        }
+        
+        public static Address GetAddress(this AddressManagerClient client, long addressID, EntityStatus? status)
+        {
             // use ids..
-            Address[] addresses = client.GetAddressesByID(new long[] { addressID });
+            Address[] addresses = client.GetAddressesByID(new long[] { addressID }, status);
             if (addresses.IsNullOrEmpty())
             {
                 return null;
             }
             
             return addresses[0];
+        }
+        
+        public static Address[] GetAddresses(this AddressManagerClient client, string[] emailAddresses)
+        {
+            return client.GetAddresses(emailAddresses, null);
+        }
+
+        public static Address[] GetAddressesByID(this AddressManagerClient client, long[] addressIDs)
+        {
+            return client.GetAddressesByID(addressIDs, null);
         }
         
         public static void RemoveAddress(this AddressManagerClient client, MailAddress emailAddress)

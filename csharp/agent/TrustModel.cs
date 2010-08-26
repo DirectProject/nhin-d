@@ -129,7 +129,9 @@ namespace NHINDirect.Agent
                 if (trustedSignature != null)
                 {
                     recipient.Status = TrustEnforcementStatus.Success;
-                    //TODO: Then, verify that signer's signature
+                    //
+                    // Signature has already been verified by FindTrustedSignature!
+                    //
                 } 
             }            
         }

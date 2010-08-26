@@ -60,13 +60,25 @@ namespace NHINDirect.Config.Service
             }
         }
         
+        [DataMember]
+        public EntityStatus? Status
+        {
+            get;
+            set;
+        }
+        
         internal Certificate ApplyTo(Certificate cert)
         {
             if (cert == null)
             {
                 return cert;
             }
-
+            
+            if (this.Status != null && Status.Value != cert.Status)
+            {
+                return null;
+            }
+            
             if (!this.IncludeData)
             {
                 cert.ClearData();
@@ -86,6 +98,11 @@ namespace NHINDirect.Config.Service
                 return anchor;
             }
 
+            if (this.Status != null && Status.Value != anchor.Status)
+            {
+                return null;
+            }
+            
             if (!this.IncludeData)
             {
                 anchor.ClearData();

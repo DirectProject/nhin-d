@@ -35,7 +35,7 @@ namespace NHINDirect.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Domain GetDomain(string domainName);
+        Domain[] GetDomains(string[] domainNames, EntityStatus? status);
         
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]

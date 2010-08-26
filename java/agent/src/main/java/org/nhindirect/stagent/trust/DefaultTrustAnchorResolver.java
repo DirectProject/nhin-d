@@ -33,6 +33,12 @@ import org.nhindirect.stagent.trust.annotation.OutgoingTrustAnchors;
 
 import com.google.inject.Inject;
 
+/**
+ * Default implementation of the {@link TrustAnchorResolver} interface.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public class DefaultTrustAnchorResolver implements TrustAnchorResolver
 {
     private CertificateResolver outgoingAnchors;

@@ -101,6 +101,43 @@ namespace NHINDirect.Config.Store
             return db.Domains.Get(name);
         }
         
+        public Domain[] Get(string[] names)
+        {
+            return this.Get(names, null);
+        }
+                
+        public IEnumerable<Domain> Get(ConfigDatabase db, string[] names)
+        {
+            return this.Get(db, names, null);
+        }
+
+        public Domain[] Get(string[] names, EntityStatus? status)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, names, status).ToArray();
+            }
+        }
+        
+        public IEnumerable<Domain> Get(ConfigDatabase db, string[] names, EntityStatus? status)
+        {
+            if (db == null)
+            {
+                throw new ArgumentException();
+            }
+            if (names.IsNullOrEmpty())
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
+            }
+            
+            if (status == null)
+            {
+                return db.Domains.Get(names);
+            }
+            
+            return db.Domains.Get(names, status.Value);
+        }
+        
         public Domain[] Get(long lastDomainID, int maxResults)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())

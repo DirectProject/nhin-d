@@ -54,11 +54,12 @@ namespace NHINDirect.Config.Service
             }
         }
         
-        public Domain GetDomain(string domainName)
+        public Domain[] GetDomains(string[] domainNames, EntityStatus? status)
         {
             try
             {
-                return Service.Current.Store.Domains.Get(domainName);
+                Domain[] matches = Service.Current.Store.Domains.Get(domainNames, status);
+                return matches;
             }
             catch (Exception ex)
             {
@@ -118,11 +119,11 @@ namespace NHINDirect.Config.Service
             }
         }
 
-        public Address[] GetAddresses(string[] emailAddresses)
+        public Address[] GetAddresses(string[] emailAddresses, EntityStatus? status)
         {
             try
             {
-                return Service.Current.Store.Addresses.Get(emailAddresses);
+                return Service.Current.Store.Addresses.Get(emailAddresses, status);
             }
             catch (Exception ex)
             {
@@ -130,11 +131,11 @@ namespace NHINDirect.Config.Service
             }
         }
 
-        public Address[] GetAddressesByID(long[] addressIDs)
+        public Address[] GetAddressesByID(long[] addressIDs, EntityStatus? status)
         {
             try
             {
-                return Service.Current.Store.Addresses.Get(addressIDs);
+                return Service.Current.Store.Addresses.Get(addressIDs, status);
             }
             catch (Exception ex)
             {
@@ -165,7 +166,19 @@ namespace NHINDirect.Config.Service
                 throw Service.CreateFault(ex);
             }
         }
-
+        
+        public void SetDomainAddressesStatus(long domainID, EntityStatus status)
+        {
+            try
+            {
+                Service.Current.Store.Addresses.SetStatus(domainID, status);
+            }
+            catch (Exception ex)
+            {
+                throw Service.CreateFault(ex);
+            }
+        }
+        
         public Address[] EnumerateDomainAddresses(long domainID, long lastAddressID, int maxResults)
         {
             try

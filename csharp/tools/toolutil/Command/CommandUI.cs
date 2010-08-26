@@ -59,6 +59,11 @@ namespace NHINDirect.Tools.Command
             Console.WriteLine(message);
         }
         
+        public static void PrintUpperCase(string message)
+        {
+            Console.WriteLine(message.ToUpper());
+        }
+        
         public static void Print(Exception ex)
         {
             PrintHilite("ERROR");

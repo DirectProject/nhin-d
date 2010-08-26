@@ -145,7 +145,7 @@ namespace DnsResolver
         {
             if (m_cert == null && m_certType == CertificateType.X509)
             {
-                m_cert = new DnsX509Cert(m_keyTag, m_certData);
+                m_cert = new DnsX509Cert(m_certData, m_keyTag);
             }
         }
         

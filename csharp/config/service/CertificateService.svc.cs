@@ -209,6 +209,18 @@ namespace NHINDirect.Config.Service
             }
         }
 
+        public void SetAnchorStatusForOwner(string owner, EntityStatus status)
+        {
+            try
+            {
+                Service.Current.Store.Anchors.SetStatus(owner, status);
+            }
+            catch (Exception ex)
+            {
+                throw Service.CreateFault(ex);
+            }
+        }
+
         public Anchor[] EnumerateAnchors(long lastAnchorID, int maxResults, CertificateGetOptions options)
         {
             try

@@ -4,17 +4,17 @@
  */
 package org.nhind.xdr;
 
+import static org.nhind.util.HL7Utils.returnField;
+import static org.nhind.util.HL7Utils.split;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
@@ -31,7 +31,9 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 import org.apache.commons.lang.StringUtils;
 
 /**
- *
+ * This class handles document registry functions and general XDR parsing
+ * utilities.
+ * 
  * @author Vince
  */
 public class DocumentRegistry {
@@ -51,15 +53,39 @@ public class DocumentRegistry {
     public static final int PNR = 1;
     public static final int REG = 2;
     private boolean nhdirect = false;
-    String author = null;
     
+    private String author = null;
+    
+    /**
+     * Class logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(DocumentRegistry.class.getPackage().getName());
 
+    /**
+     * Parse the registry data of a ProvideAndRegisterDocumentSetRequestType
+     * object and return a mime-type.
+     * 
+     * @param prdst
+     *            The ProvideAndRegisterDocumentSetRequestType object to parse.
+     * @return a mime-type.
+     * @throws Exception
+     */
     public String parseRegistry(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
         SubmitObjectsRequest sor = prdst.getSubmitObjectsRequest();
         return parseRegistryData(sor, PNR);
     }
 
+    /**
+     * Parse the registry data of a SubmitObjectsRequest object and return a
+     * mime-type.
+     * 
+     * @param sor
+     *            The SubmitObjectsRequest object to parse.
+     * @param ttype
+     *            ?? TODO unused param
+     * @return a mime-type.
+     * @throws Exception
+     */
     protected String parseRegistryData(SubmitObjectsRequest sor, int ttype) throws Exception {
         String ret = null;
 
@@ -92,14 +118,10 @@ public class DocumentRegistry {
         return ret;
     }
 
-    public List<String> getForwards() {
-        return forwards;
-    }
-
     /**
-     * Extract an email address from an HL7 string using "^" delimiter.
+     * Extract an email address from an HL7 string using '^' delimiter.
      * 
-     * @return the extracted email address
+     * @return the extracted email address.
      */
     public String getAuthorEmail() {
         // Literal string
@@ -140,6 +162,16 @@ public class DocumentRegistry {
         return auserId;
     }
 
+    /**
+     * Get a list of forwards (email addresses and/or relay endpoints) from a
+     * RegistryPackage object.
+     * 
+     * @param rpt
+     *            The RegistryPackage object from which to extract a list of
+     *            forwards.
+     * @return a list of forwards.
+     * @throws Exception
+     */
     protected List<String> getForwards(RegistryPackageType rpt) throws Exception {
         List<String> forwards = new ArrayList<String>();
 
@@ -162,13 +194,17 @@ public class DocumentRegistry {
                     List<String> fields = split(user, "^");
 
                     String userId = fields.get(0);
-                    String last = fields.get(1);
-                    String first = fields.get(2);
-                    String mid = fields.get(3);
-                    String what = fields.get(4);
-                    String prefix = fields.get(5);
-                    String suffix = fields.get(6);
-                    String what2 = fields.get(7);
+                    
+                    /*
+                     * String last = fields.get(1);
+                     * String first = fields.get(2);
+                     * String mid = fields.get(3);
+                     * String what = fields.get(4);
+                     * String prefix = fields.get(5);
+                     * String suffix = fields.get(6);
+                     * String what2 = fields.get(7);
+                     */
+                    
                     org = fields.get(8);
                     List<String> orgs = split(org, "&");
                     orgId = (String) orgs.get(1);
@@ -190,35 +226,26 @@ public class DocumentRegistry {
                     }
 
                     forwards.add(sendPoint);
-                    
                 }
             }
         }
         return forwards;
     }
-
-    private String returnField(String in, String token, int field) {
-        StringTokenizer list = new StringTokenizer(in, token);
-        String ret = in;
-        int count = 0;
-        while (list.hasMoreElements()) {
-            String temp = list.nextToken();
-            if (++count == field) {
-                ret = temp;
-            }
-        }
-        return ret;
-    }
-
-    private String parseClassifications(List<ClassificationType> classes) throws Exception {
+    
+    /**
+     * 
+     * @param classes
+     * @return
+     * @throws Exception
+     */
+    public static String parseClassifications(List<ClassificationType> classes) throws Exception {
         String lauthor = null;
 
         try {
             for (ClassificationType clas : classes) {
                 for (SlotType1 slot : clas.getSlot()) {
                     String sname = slot.getName();
-                    if (sname.equals("authorPerson")
-                            && slot.getValueList() != null
+                    if (sname.equals("authorPerson") && slot.getValueList() != null
                             && slot.getValueList().getValue() != null) {
                         for (String value : slot.getValueList().getValue()) {
                             lauthor = value;
@@ -230,10 +257,18 @@ public class DocumentRegistry {
             x.printStackTrace();
             throw (x);
         }
-        
+
         return lauthor;
     }
 
+    /**
+     * Parse the fields out of an ExtrinsicObjectType object.
+     * 
+     * @param document
+     *            The ExtrinsicObjectType object to parse.
+     * @return a mime-type.
+     * @throws Exception
+     */
     private String parseDocument(ExtrinsicObjectType document) throws Exception {
         sourceObjectId = document.getId();
 
@@ -325,7 +360,13 @@ public class DocumentRegistry {
         return mimeType;
     }
 
-    // right now this is not used, just getForwards
+    /**
+     * Parse the data out of a RegistryPackageType object.
+     * 
+     * @param set
+     *            The RegistryPackageType object to parse.
+     * @throws Exception
+     */
     @SuppressWarnings("unused")
     private void parseSubmissionSet(RegistryPackageType set) throws Exception {
 
@@ -379,7 +420,11 @@ public class DocumentRegistry {
 
     }
 
-   private String formatDateForMDM(String value) {
+    /**
+     * @param value
+     * @return
+     */
+    private String formatDateForMDM(String value) {
         String form;
         String formOut = "MM/dd/yyyy";
         String ret = value;
@@ -402,7 +447,6 @@ public class DocumentRegistry {
 
         form = form.substring(0, valen);
 
-
         SimpleDateFormat date = new SimpleDateFormat(form);
         SimpleDateFormat dateOut = new SimpleDateFormat(formOut);
         Date dateVal = null;
@@ -416,19 +460,28 @@ public class DocumentRegistry {
     }
 
     /**
-     * Split up a string using the given delimiter and return as a list of
-     * tokens
+     * Return the value of author.
      * 
-     * @param input
-     *            The string to split
-     * @param delimiter
-     *            The delimiter used for splitting
-     * @return a list of split tokens
+     * @return the value of author
      */
-    private List<String> split(String input, String delimiter) {
-        String quotedDelimiter = Pattern.quote(delimiter);
-        List<String> tokens = Arrays.asList(input.split(quotedDelimiter, -1));
+    public String getAuthor() {
+        return author;
+    }
 
-        return tokens;
+    /**
+     * Set the value of author.
+     * 
+     * @param author
+     *            The value of author
+     */
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+    
+    /**
+     * @return
+     */
+    public List<String> getForwards() {
+        return forwards;
     }
 }

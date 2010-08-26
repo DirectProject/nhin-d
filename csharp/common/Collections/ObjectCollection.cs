@@ -21,10 +21,22 @@ using System.Text;
 
 namespace NHINDirect.Collections
 {
+    /// <summary>
+    /// Change types for event observation
+    /// </summary>
     public enum CollectionChangeType
     {
+        /// <summary>
+        /// An item has been added
+        /// </summary>
         Add,
+        /// <summary>
+        /// An item has been removed
+        /// </summary>
         Remove,
+        /// <summary>
+        /// An item has been changed
+        /// </summary>
         Update
     }
 
@@ -34,17 +46,32 @@ namespace NHINDirect.Collections
     /// </summary>
     public class ObjectCollection<T> : Collection<T>
     {        
+
+        /// <summary>
+        /// Initializes a new empty instance.
+        /// </summary>
         public ObjectCollection()
         {
         }
         
+        /// <summary>
+        /// Initializes a new instance containing the provided items.
+        /// </summary>
+        /// <param name="items">An enumeration of items with which to initialize this instance</param>
         public ObjectCollection(IEnumerable<T> items)
         {
             this.Add(items);
         }
         
+        /// <summary>
+        /// An event sink to register for observing container item changes.
+        /// </summary>
         public event Action<CollectionChangeType, T> Changed;
         
+        /// <summary>
+        /// Adds the provided items to this instance.
+        /// </summary>
+        /// <param name="items">An enumeration of items to add to this instance</param>
         public void Add(IEnumerable<T> items)
         {
             if (items == null)
@@ -61,7 +88,16 @@ namespace NHINDirect.Collections
         /// <summary>
         /// Remove all items matching the given filter
         /// </summary>
-        /// <param name="filter"></param>
+        /// <example>
+        /// <code>
+        /// ObjectCollection<int> coll = new ObjectCollection<int>();
+        /// coll.Add(1);
+        /// coll.Add(2);
+        /// coll.Add(3);
+        /// coll.Remove(x => i % 2 == 0); // Removes 2
+        /// </code>
+        /// </example>
+        /// <param name="filter">The filter taking items and returning <c>bool</c></param>
         public void Remove(Predicate<T> filter)
         {
             this.Remove(filter, true);
@@ -70,7 +106,7 @@ namespace NHINDirect.Collections
         /// <summary>
         /// Remove all items EXCEPT those that match this filter
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="filter">The filter delegat taking items and returning <c>bool</c></param>
         public void RemoveExcept(Predicate<T> filter)
         {
             this.Remove(filter, false);

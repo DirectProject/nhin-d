@@ -20,12 +20,14 @@ using System.Text;
 using System.Data.SqlTypes;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
+using System.Runtime.Serialization;
 using System.Net.Mail;
 using NHINDirect.Mail;
 
 namespace NHINDirect.Config.Store
 {
     [Table(Name = "Addresses")]
+    [DataContract(Namespace = ConfigStore.Namespace)]
     public class Address
     {
         public const int MaxAddressLength = 400;
@@ -59,6 +61,7 @@ namespace NHINDirect.Config.Store
         }
         
         [Column(Name = "EmailAddress", CanBeNull = false, IsPrimaryKey=true)]
+        [DataMember(IsRequired = true)]
         public string EmailAddress
         {
             get
@@ -77,6 +80,7 @@ namespace NHINDirect.Config.Store
         }
         
         [Column(Name="AddressID", IsDbGenerated=true)]
+        [DataMember(IsRequired = true)]
         public long ID
         {
             get;
@@ -84,6 +88,7 @@ namespace NHINDirect.Config.Store
         }
         
         [Column(Name="DomainID", CanBeNull=false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
         public long DomainID
         {
             get;
@@ -91,6 +96,7 @@ namespace NHINDirect.Config.Store
         }
         
         [Column(Name="DisplayName", CanBeNull=false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
         public string DisplayName
         {
             get
@@ -109,6 +115,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
         public DateTime CreateDate
         {
             get;
@@ -116,6 +123,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Always)]
+        [DataMember(IsRequired = true)]
         public DateTime UpdateDate
         {
             get;
@@ -123,6 +131,7 @@ namespace NHINDirect.Config.Store
         }
 
         [Column(Name = "Status", DbType = "tinyint", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
         public EntityStatus Status
         {
             get;
@@ -130,6 +139,7 @@ namespace NHINDirect.Config.Store
         }
         
         [Column(Name = "Type", DbType = "nvarchar(64)", CanBeNull = true, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = false)]
         public string Type
         {
             get;
@@ -144,6 +154,11 @@ namespace NHINDirect.Config.Store
             }            
         }
         
+        public MailAddress ToMailAddress()
+        {
+            return new MailAddress(this.EmailAddress);
+        }
+                
         public bool Match(MailAddress address)
         {
             if (address == null)

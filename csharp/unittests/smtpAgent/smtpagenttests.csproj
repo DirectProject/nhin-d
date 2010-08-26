@@ -31,7 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="agentXUnitTests, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="nhinAgent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="nhinCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -54,9 +53,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SmtpAgentTester.cs" />
+    <Compile Include="TestAgentInit.cs" />
+    <Compile Include="TestHandler.cs" />
     <Compile Include="TestSmtpAgent.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfig.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigService.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestSmtpAgentConfig.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -80,9 +88,21 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\agent\nhinAgent.csproj">
+      <Project>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</Project>
+      <Name>nhinAgent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\nhinCommon.csproj">
+      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
+      <Name>nhinCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\gateway\smtpAgent\smtpAgent.csproj">
       <Project>{A9B11AAD-3461-4DDB-A447-91779BD41A78}</Project>
       <Name>smtpAgent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\agent\agentTests.csproj">
+      <Project>{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}</Project>
+      <Name>agentTests</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

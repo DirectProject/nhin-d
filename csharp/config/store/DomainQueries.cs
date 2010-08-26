@@ -37,6 +37,7 @@ namespace NHINDirect.Config.Store
             (ConfigDatabase db, long lastDomainID, int maxResults) =>
                 (from domain in db.Domains
                  where domain.ID > lastDomainID
+                 orderby domain.ID
                  select domain).Take(maxResults)
         );
 
@@ -48,6 +49,34 @@ namespace NHINDirect.Config.Store
         public static Domain Get(this Table<Domain> table, string domainName)
         {
             return Domain(table.GetDB(), domainName).SingleOrDefault();
+        }
+
+        public static IEnumerable<Domain> Get(this Table<Domain> table, string[] domains, EntityStatus status)
+        {
+            if (domains.IsNullOrEmpty())
+            {
+                throw new ArgumentException();
+            }
+            //
+            // We cannot precompile this (throws at runtime) because domains.Length can change at runtime
+            //
+            return from domain in table.GetDB().Domains
+                   where domains.Contains(domain.Name) && domain.Status == status
+                   select domain;
+        }
+
+        public static IEnumerable<Domain> Get(this Table<Domain> table, string[] domains)
+        {
+            if (domains.IsNullOrEmpty())
+            {
+                throw new ArgumentException();
+            }
+            //
+            // We cannot precompile this (throws at runtime) because domains.Length can change at runtime
+            //
+            return from domain in table.GetDB().Domains
+                   where domains.Contains(domain.Name)
+                   select domain;
         }
 
         public static IQueryable<Domain> Get(this Table<Domain> table, long lastDomainID, int maxResults)

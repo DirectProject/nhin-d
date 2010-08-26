@@ -17,20 +17,31 @@ using System;
 
 namespace NHINDirect.Mime
 {
+    /// <summary>
+    /// Class providing efficient management of subsegments of a single long string (e.g., parts of a long textual document or message).
+    /// </summary>
     public struct StringSegment : IEquatable<StringSegment>
     {
+        /// <summary>
+        /// The single null string segment, can be used as a special unique object, or to represent an empty or default segment. 
+        /// </summary>
         public static readonly StringSegment Null = new StringSegment(null);
         
         string m_source;
         int m_startIndex;
         int m_endIndex;
 
+        /// <summary>
+        /// Creates an instance from a string, encompassing the entire string.
+        /// </summary>
+        /// <param name="source">The underlying string for this segement.</param>
     	public StringSegment(string source)
         {
             m_source = source;
             m_startIndex = 0;
             if (source == null)
             {
+                // Guarantees that the calculation: m_endIndex - m_startIndex + 1 will always generate an invalid index value
                 m_endIndex = -1;
             }
             else
@@ -39,6 +50,12 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Constructs a subsegement instance on of an underlying string
+        /// </summary>
+        /// <param name="source">The underlying string of which this is a segment</param>
+        /// <param name="startIndex">The starting position of this segment</param>
+        /// <param name="endIndex">The end position of this segemnet.</param>
         public StringSegment(string source, int startIndex, int endIndex)
         {
             if (source == null)
@@ -59,6 +76,11 @@ namespace NHINDirect.Mime
             m_endIndex = endIndex;
         }
         
+        /// <summary>
+        /// Indexes the segment by character index as an offset from the start.
+        /// </summary>
+        /// <param name="index">The character position offset from the start</param>
+        /// <returns>The <c>char</c> at the index position.</returns>
         public char this[int index]
         {
             get
@@ -66,7 +88,11 @@ namespace NHINDirect.Mime
                 return m_source[m_startIndex + index];
             }
         }
-                
+        
+        /// <summary>
+        /// Gets the underlying string this is a segment of.
+        /// </summary>
+        /// <value>A <see cref="System.String"/> instance that this is a segment of</value>
         public string Source
         {
             get
@@ -75,6 +101,9 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// The length of this segment in characters.
+        /// </summary>
         public int Length
         {
             get
@@ -83,6 +112,10 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Gets if this segment spans no characters.
+        /// </summary>
+        /// <value><c>true</c> if this segment spans no characters, <c>false</c> if it does.</value>
         public bool IsEmpty
         {
             get
@@ -91,6 +124,10 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Gets if this segment is based on a <c>null</c> string
+        /// </summary>
+        /// <remarks>Note that the segment may be empty but will not be <c>null</c> unless the underlying <c>string</c> representation is <c>null</c></remarks>
         public bool IsNull
         {
             get
@@ -99,6 +136,9 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// The offset from the underlying <c>string</c> 0 index where the first character of this segment is
+        /// </summary>
         public int StartIndex
         {
             get
@@ -107,6 +147,9 @@ namespace NHINDirect.Mime
             }
         }
 
+        /// <summary>
+        /// The offset from the underlying <c>string</c> 0 index where the last character of this segment is.
+        /// </summary>
         public int EndIndex
         {
             get
@@ -115,6 +158,12 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Returns a <c>string</c> corresponding to the string represented by the segment.
+        /// </summary>
+        /// <returns>A <see cref="string"/> corresponding to the segment this represents. The return value
+        /// is a new string instance unless the segment encompasses the entire base string, in which case it
+        /// is a reference to the base string</returns>
         public override string ToString()
         {
             int length = this.Length;
@@ -133,6 +182,11 @@ namespace NHINDirect.Mime
             return m_source.Substring(m_startIndex, length);
         }
         
+        /// <summary>
+        /// Increases the span of this segement to the widest span on the underlying string that includes
+        /// both segments.
+        /// </summary>
+        /// <param name="segment">The segment to widen to</param>
         public void Union(StringSegment segment)
         {
             if (segment.m_source == null)
@@ -164,6 +218,11 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Returns a substring of the segment, from the provided start position (indexed from the start of the segment) to the segement end.
+        /// </summary>
+        /// <param name="startAt">Start position of the segment</param>
+        /// <returns>A <see cref="string"/> repesenting the substring</returns>
         public string Substring(int startAt)
         {
             int length = m_endIndex - startAt + 1;
@@ -174,6 +233,12 @@ namespace NHINDirect.Mime
             return m_source.Substring(startAt, length);
         }
 
+        /// <summary>
+        /// Returns a substring of <c>length</c> characters of the segment, from the provided start position (indexed from the start of the segment).
+        /// </summary>
+        /// <param name="startAt">Start position of the segment</param>
+        /// <param name="length">The number of characters to substring</param>
+        /// <returns>A <see cref="string"/> repesenting the substring</returns>
         public string Substring(int startAt, int length)
         {
             int endIndex = startAt + length;
@@ -184,6 +249,12 @@ namespace NHINDirect.Mime
             return m_source.Substring(startAt, length);
         }
         
+        /// <summary>
+        /// Determines whether the segment represented by this instance and a 
+        /// specified <see cref="String"/> object have the same value.
+        /// </summary>
+        /// <param name="other">A <see cref="String"/> instance to compare this segement to</param>
+        /// <returns><c>true</c> if this segment is equal to the string, <c>false</c> if not</returns>
         public bool Equals(string other)
         {
             if (this.Length != other.Length)
@@ -192,7 +263,13 @@ namespace NHINDirect.Mime
             }
             return (string.Compare(m_source, m_startIndex, other, 0, other.Length, StringComparison.OrdinalIgnoreCase) == 0);
         }
-        
+
+        /// <summary>
+        /// Determines whether the segment represented by this instance and an 
+        /// other  <see cref="StringSegment"/> object have the same value.
+        /// </summary>
+        /// <param name="other">A <see cref="StringSegment"/> instance to compare this segement to</param>
+        /// <returns><c>true</c> if this segment is equal to the other segment, <c>false</c> if not</returns>
         public bool Equals(StringSegment other)
         {
             if (this.Length != other.Length)
@@ -202,6 +279,13 @@ namespace NHINDirect.Mime
             return (string.Compare(m_source, m_startIndex, other.Source, other.StartIndex, this.Length, StringComparison.OrdinalIgnoreCase) == 0);
         }
         
+        /// <summary>
+        /// Determins whether the segment represented by this instance starts with the same
+        /// characters as an other <see cref="String"/>
+        /// </summary>
+        /// <param name="other">The <see cref="String"/> to compare to this segment</param>
+        /// <returns><c>true</c> if this segment starts with the same characters as the other
+        /// <see cref="String"/>, false otherwise</returns>
         public bool StartsWith(string other)
         {
             int length = this.Length;
@@ -213,6 +297,11 @@ namespace NHINDirect.Mime
             return (string.Compare(m_source, m_startIndex, other, 0, other.Length, StringComparison.OrdinalIgnoreCase) == 0);
         }
         
+        /// <summary>
+        /// Returns the first position of this segment matching the specified <see cref="String"/>
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>The zero based index of the string if found, -1 if not</returns>
         public int IndexOf(string other)
         {
             int length = this.Length;

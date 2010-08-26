@@ -230,6 +230,25 @@ namespace NHINDirect.Config.Store
             return db.Anchors.Get(owner, thumbprint);
         }
 
+        public void SetStatus(string owner, EntityStatus status)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                this.SetStatus(db, owner, status);
+                //db.SubmitChanges(); // Not needed, since we do a direct update
+            }
+        }
+
+        public void SetStatus(ConfigDatabase db, string owner, EntityStatus status)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            db.Anchors.ExecUpdateStatus(owner, status);
+        }
+
         public void Remove(long[] certificateIDs)
         {
             using (ConfigDatabase db = this.Store.CreateContext())

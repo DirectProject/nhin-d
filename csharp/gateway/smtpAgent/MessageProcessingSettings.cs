@@ -48,6 +48,17 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
+        internal string CreateUniqueCopyFileName()
+        {
+            if (!this.HasCopyFolder)
+            {
+                throw new InvalidOperationException();
+            }
+            
+            string uniqueFileName = Extensions.CreateUniqueFileName();
+            return Path.Combine(this.CopyFolder, uniqueFileName);
+        }
+        
         public virtual void Validate()
         {
         }
