@@ -26,13 +26,15 @@ namespace NHINDirect.Config.Command
 {
     public class AddressCommands
     {
+        const int DefaultChunkSize = 25;
+        
         DomainManagerClient m_domainClient;
         AddressManagerClient m_addressClient;
         
         public AddressCommands()
         {            
-            m_domainClient = new DomainManagerClient(ConfigConsole.Settings.DomainManager.Binding, ConfigConsole.Settings.DomainManager.Endpoint);
-            m_addressClient = new AddressManagerClient(ConfigConsole.Settings.AddressManager.Binding, ConfigConsole.Settings.AddressManager.Endpoint);
+            m_domainClient = ConfigConsole.Settings.DomainManager.CreateDomainManagerClient();
+            m_addressClient = ConfigConsole.Settings.AddressManager.CreateAddressManagerClient();
         }
         
         public void Command_AddressAdd(string[] args)
@@ -79,8 +81,8 @@ namespace NHINDirect.Config.Command
         
         public void Command_AddressList(string[] args)
         {
-            string domainName = args.GetRequiredValue(0);            
-            int chunkSize = args.GetOptionalValue<int>(1, 25);
+            string domainName = args.GetRequiredValue(0);
+            int chunkSize = args.GetOptionalValue<int>(1, DefaultChunkSize);
          
             Domain domain = DomainCommands.DomainGet(m_domainClient, domainName);
             Print(m_addressClient.EnumerateDomainAddresses(domain.ID, chunkSize));
@@ -88,8 +90,40 @@ namespace NHINDirect.Config.Command
         public void Usage_AddressList()
         {
             Console.WriteLine("List addresses for a domain.");
-            Console.WriteLine("    addresslist domainName [chunkSize] [displayChunkSize]");
+            Console.WriteLine("    addresslist domainName [chunkSize]");
             Console.WriteLine("\tchunkSize: Number of addresses to download from service at a time.");
+        }
+
+        public void Command_AddressListAll(string[] args)
+        {
+            int chunkSize = args.GetOptionalValue<int>(0, DefaultChunkSize);
+            Print(m_addressClient.EnumerateAddresses(chunkSize));
+        }
+        public void Usage_AddressListAll()
+        {
+            Console.WriteLine("List all addresses.");
+            Console.WriteLine("    addresslist [chunkSize]");
+            Console.WriteLine("\tchunkSize: Number of addresses to download from service at a time.");
+        }
+        
+        public void Command_AddressStatusSet(string[] args)
+        {
+            MailAddress emailAddress = new MailAddress(args.GetRequiredValue(0));
+            EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
+            
+            Address address = m_addressClient.GetAddress(emailAddress);
+            if (address == null)
+            {
+                throw new ArgumentException("Address not found");
+            }
+            
+            address.Status = status;
+            m_addressClient.UpdateAddress(address);
+        }        
+        public void Usage_AddressStatusSet()
+        {
+            Console.WriteLine("Set the status of an address");
+            Console.WriteLine("    addressstatussetfs emailAddress status");
         }
         
         internal Address GetAddress(string email)
@@ -124,6 +158,7 @@ namespace NHINDirect.Config.Command
             CommandUI.Print("DisplayName", address.DisplayName);
             CommandUI.Print("DomainID", address.DomainID);
             CommandUI.Print("Type", address.Type);
+            CommandUI.Print("Status", address.Status);
             CommandUI.Print("CreateDate", address.CreateDate);
             CommandUI.Print("UpdateDate", address.UpdateDate);
         }

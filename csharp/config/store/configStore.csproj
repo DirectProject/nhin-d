@@ -55,7 +55,6 @@
     <Compile Include="AnchorQueries.cs" />
     <Compile Include="AnchorResolver.cs" />
     <Compile Include="CertificateManager.cs" />
-    <Compile Include="Account.cs" />
     <Compile Include="Address.cs" />
     <Compile Include="Anchor.cs" />
     <Compile Include="Certificate.cs" />

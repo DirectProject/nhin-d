@@ -49,6 +49,15 @@ namespace NHINDirect.SmtpAgent
                 
                 return null;
             }
+            internal set
+            {
+                if (string.IsNullOrEmpty(domain) || value == null)
+                {
+                    throw new ArgumentException();
+                }
+                
+                m_postmasters[domain] = value;
+            }
         }
         
         public MailAddress this[MailAddress address]
@@ -59,6 +68,7 @@ namespace NHINDirect.SmtpAgent
                 {
                     throw new ArgumentNullException();
                 }
+                
                 return this[address.Host];
             }
         }

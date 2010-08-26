@@ -74,7 +74,7 @@ goto :EOF
 @rem -------------------------------
 :CopyBins
 call :PrintHeading Copying BINS to "%dest%"
-call :CopyFiles dnsResolver.dll nhinCommon.dll nhinAgent.dll nhinSmtpAgent.dll Interop.ADODB.dll Interop.CDO.dll smtpEventHandler.dll
+call :CopyFiles dnsResolver.dll nhinCommon.dll nhinAgent.dll nhinSmtpAgent.dll Interop.ADODB.dll Interop.CDO.dll smtpEventHandler.dll nhinConfigClient.dll nhinConfigStore.dll
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------

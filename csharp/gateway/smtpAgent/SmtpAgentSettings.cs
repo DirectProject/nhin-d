@@ -36,6 +36,7 @@ namespace NHINDirect.SmtpAgent
         ProcessBadMessageSettings m_badMessageSettings;
         MessageRoute[] m_incomingRoutes;
         bool m_logVerbose = true;
+        bool m_allowInternal = true;
         
         public SmtpAgentSettings()
         {
@@ -48,6 +49,7 @@ namespace NHINDirect.SmtpAgent
             set;
         }
         
+        [XmlElement]      
         public bool LogVerbose
         {
             get
@@ -72,23 +74,55 @@ namespace NHINDirect.SmtpAgent
                 m_postmasters = value;
             }
         }
-        
-        [XmlElement("MessageBounce")]
-        public MessageBounceSettings MessageBounce
+
+        /// <summary>
+        /// If true, then any ENCRYPTED messages from within the domain are passed through the Incoming message pipeline
+        /// </summary>
+        [XmlElement]
+        public bool AllowInternalMessages
+        {
+            get
+            {
+                return m_allowInternal;
+            }
+            set
+            {
+                m_allowInternal = value;
+            }
+        }
+
+        [XmlElement("DomainManager")]
+        public ClientSettings DomainManager
         {
             get;
             set;
         }
-        
+
         [XmlIgnore]
-        public bool HasMessageBounceSettings
+        public bool HasDomainManager
         {
             get
             {
-                return (this.MessageBounce != null);
+                return (this.DomainManager != null);
             }
-        }
+        }        
         
+        [XmlElement("AddressManager")]
+        public ClientSettings AddressManager
+        {
+            get;
+            set;
+        }
+
+        [XmlIgnore]
+        public bool HasAddressManager
+        {
+            get
+            {
+                return (this.AddressManager != null);
+            }
+        }        
+                
         [XmlElement("RawMessage")]
         public RawMessageSettings RawMessage
         {
@@ -179,13 +213,6 @@ namespace NHINDirect.SmtpAgent
                 m_incomingRoutes = value;
             }
         }
-        
-        [XmlElement("AddressManager")]
-        public ClientSettings AddressManager
-        {
-            get;
-            set;
-        }
 
         [XmlIgnore]
         public bool HasRoutes
@@ -195,16 +222,7 @@ namespace NHINDirect.SmtpAgent
                 return (!m_incomingRoutes.IsNullOrEmpty());
             }
         }
-        
-        [XmlIgnore]
-        public bool HasAddressManager
-        {
-            get
-            {
-                return (this.AddressManager != null);
-            }
-        }        
-        
+                
         public override void Validate()
         {
             base.Validate();
@@ -215,12 +233,7 @@ namespace NHINDirect.SmtpAgent
             }
             
             this.LogSettings.Validate();      
-                  
-            if (this.HasMessageBounceSettings)
-            {
-                this.MessageBounce.Validate();
-            }
-            
+                              
             this.RawMessage.Validate();            
             this.BadMessage.Validate();
             this.Incoming.Validate();

@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configClient", "..\client\c
 		{83C99331-F451-4175-943D-12FCF17B636E} = {83C99331-F451-4175-943D-12FCF17B636E}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configStore", "..\store\configStore.csproj", "{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +24,10 @@ Global
 		{2EA3D265-4E39-4631-85F3-1DC6B5103C71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EA3D265-4E39-4631-85F3-1DC6B5103C71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EA3D265-4E39-4631-85F3-1DC6B5103C71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

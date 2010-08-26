@@ -25,7 +25,7 @@ namespace NHINDirect.Config.Client.CertificateService
 {
     public static class CertificateExtensions
     {
-        static CertificateGetOptions GetFullCertData = new CertificateGetOptions
+        static CertificateGetOptions FullCertData = new CertificateGetOptions
         {
             IncludeData = true,
             IncludePrivateKey = true
@@ -43,7 +43,7 @@ namespace NHINDirect.Config.Client.CertificateService
 
         public static Certificate GetCertificate(this CertificateStoreClient client, string owner, string thumbprint)
         {
-            return client.GetCertificate(owner, thumbprint, GetFullCertData);
+            return client.GetCertificate(owner, thumbprint, FullCertData);
         }
         
         public static Certificate GetCertificate(this CertificateStoreClient client, long certificateID, CertificateGetOptions options)
@@ -59,7 +59,14 @@ namespace NHINDirect.Config.Client.CertificateService
         
         public static Certificate[] GetCertificatesForOwner(this CertificateStoreClient client, string owner)
         {
-            return client.GetCertificatesForOwner(owner, GetFullCertData);
+            return client.GetCertificatesForOwner(owner, FullCertData);
+        }
+
+        public static Certificate[] GetCertificatesForOwner(this CertificateStoreClient client, string owner, EntityStatus status)
+        {
+            CertificateGetOptions options = FullCertData.Clone();
+            options.Status = status;
+            return client.GetCertificatesForOwner(owner, options);
         }
         
         public static X509Certificate2Collection GetX509CertificatesForOwner(this CertificateStoreClient client, string owner)
@@ -69,7 +76,7 @@ namespace NHINDirect.Config.Client.CertificateService
         
         public static IEnumerable<Certificate> EnumerateCertificates(this CertificateStoreClient client, int chunkSize)
         {
-            return client.EnumerateCertificates(chunkSize, GetFullCertData);
+            return client.EnumerateCertificates(chunkSize, FullCertData);
         }
 
         public static IEnumerable<Certificate> EnumerateCertificates(this CertificateStoreClient client, int chunkSize, CertificateGetOptions options)
@@ -100,10 +107,19 @@ namespace NHINDirect.Config.Client.CertificateService
         
         public static IEnumerable<X509Certificate2> EnumerateX509Certificates(this CertificateStoreClient client, int chunkSize)
         {
-            foreach(Certificate cert in client.EnumerateCertificates(chunkSize, GetFullCertData))
+            foreach(Certificate cert in client.EnumerateCertificates(chunkSize, FullCertData))
             {
                 yield return cert.ToX509Certificate();
             }
+        }
+        
+        public static CertificateGetOptions Clone(this CertificateGetOptions options)
+        {
+            return new CertificateGetOptions {
+                IncludeData = options.IncludeData,
+                IncludePrivateKey = options.IncludePrivateKey,
+                Status = options.Status
+            };
         }
     }
 }

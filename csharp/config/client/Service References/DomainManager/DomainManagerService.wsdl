@@ -76,6 +76,18 @@
         <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="SetDomainAddressesStatus">
+      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
     <wsdl:operation name="EnumerateDomainAddresses">
       <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddresses" style="document" />
       <wsdl:input>
@@ -127,8 +139,8 @@
         <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
-    <wsdl:operation name="GetDomain">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomain" style="document" />
+    <wsdl:operation name="GetDomains">
+      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomains" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

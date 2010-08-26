@@ -51,15 +51,11 @@ namespace NHINDirect.Agent
         {
             get
             {
-                for (int i = 0, count = this.Count; i < count; ++i)
+                foreach (NHINDAddress addr in this)
                 {
-                    X509Certificate2Collection certs = this[i].Certificates;
-                    if (certs != null)
+                    foreach (X509Certificate2 cert in addr.Certificates)
                     {
-                        for (int c = 0, cCount = certs.Count; c < cCount; ++c)
-                        {
-                            yield return certs[c];
-                        }
+                        yield return cert;
                     }
                 }
             }
@@ -130,10 +126,10 @@ namespace NHINDirect.Agent
         /// Does this collection of NHINDAddress contain only trustworthy addresses? 
         /// </summary>
         /// <param name="minTrustStatus">The <see cref="TrustEnforcementStatus"/> defined as minimally trustworthy.</param>
-        /// <returns><c>true</c> if all the addresses are trusted, <c>false</c> if at least one is untrusted</returns>        
+        /// <returns><c>true</c> if all the addresses are trusted, <c>false</c> if the collection is empty or at least one is untrusted</returns>        
         public bool IsTrusted(TrustEnforcementStatus minTrustStatus)
         {
-            return this.All(x => x.IsTrusted(minTrustStatus));
+            return this.Count > 0 && this.All(x => x.IsTrusted(minTrustStatus));
         }
         
         /// <summary>

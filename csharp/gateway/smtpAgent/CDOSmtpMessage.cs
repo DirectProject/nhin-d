@@ -1,0 +1,182 @@
+﻿/* 
+ Copyright (c) 2010, NHIN Direct Project
+ All rights reserved.
+
+ Authors:
+    Umesh Madan     umeshma@microsoft.com
+  
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Runtime.InteropServices;
+using System.Net.Mail;
+using System.IO;
+using NHINDirect.Agent;
+using NHINDirect.Agent.Config;
+using NHINDirect.Certificates;
+using NHINDirect.Diagnostics;
+using NHINDirect.Mail;
+using NHINDirect.Mime;
+using NHINDirect.Config.Store;
+using NHINDirect.Config.Client.DomainManager;
+using System.Diagnostics;
+using CDO;
+using ADODB;
+
+namespace NHINDirect.SmtpAgent
+{    
+    public class CDOSmtpMessage : ISmtpMessage
+    {
+        CDO.Message m_message;
+        string m_sender;
+        
+        public CDOSmtpMessage(CDO.Message message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException();
+            }
+            m_message = message;
+        }
+        
+        public string Sender
+        {
+            get
+            {
+                if (m_sender == null)
+                {
+                    m_sender = m_message.GetEnvelopeSender();
+                    if (string.IsNullOrEmpty(m_sender))
+                    {
+                        m_sender = m_message.From;
+                    }
+                }
+                
+                return m_message.From;
+            }
+        }
+        
+        public MessageEnvelope GetEnvelope()
+        {
+            return this.CreateEnvelope(m_message);
+        }
+        
+        public void SetEnvelopeRecipients(NHINDAddressCollection recipients)
+        {
+            if (recipients == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            m_message.SetEnvelopeRecipients(recipients.ToMailAddressCollection());
+        }
+        
+        public void Update(string messageText)
+        {
+            if (string.IsNullOrEmpty(messageText))
+            {
+                throw new ArgumentException();
+            }
+
+            m_message.SetMessageText(messageText, true);
+        }
+        
+        public void Accept()
+        {
+            m_message.SetMessageStatus(CdoMessageStat.cdoStatSuccess);
+        }
+        
+        public void Reject()
+        {
+            this.Abort();
+        }
+
+        public void Abort()
+        {
+            m_message.AbortMessage();
+        }
+                
+        public void SaveToFile(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                throw new ArgumentException();
+            }
+            
+            m_message.SaveToFile(filePath);
+        }
+        
+        MessageEnvelope CreateEnvelope(CDO.Message message)
+        {
+            NHINDAddressCollection recipientAddresses = null;
+            NHINDAddress senderAddress = null;
+            MessageEnvelope envelope;
+
+            string messageText = message.GetMessageText();
+
+            if (this.ExtractEnvelopeFields(message, ref recipientAddresses, ref senderAddress))
+            {
+                envelope = new MessageEnvelope(messageText, recipientAddresses, senderAddress);
+            }
+            else
+            {
+                envelope = new MessageEnvelope(messageText);
+            }
+
+            return envelope;
+        }
+        
+        //
+        // A CDO Message could be arriving via the SMTP server, or could have been constructed manually
+        // The one created by SMTP has envelope information
+        // Returns false if no envelope info is available. We have to look within message headers in that case
+        //
+        bool ExtractEnvelopeFields(CDO.Message message, ref NHINDAddressCollection recipientAddresses, ref NHINDAddress senderAddress)
+        {
+            Fields fields = message.GetEnvelopeFields();
+            if (fields == null || fields.Count == 0)
+            {
+                //
+                // No envelope
+                //
+                return false;
+            }
+
+            recipientAddresses = null;
+            senderAddress = null;
+
+            string sender = message.GetEnvelopeSender();
+            if (string.IsNullOrEmpty(sender))
+            {
+                throw new SmtpAgentException(SmtpAgentError.NoSenderInEnvelope);
+            }
+            //
+            // In SMTP Server, the MAIL TO (sender) in the envelope can be empty if the message is from the server postmaster 
+            // The actual postmaster address is found in the message itself
+            //
+            if (Extensions.IsSenderLocalPostmaster(sender))
+            {
+                return false;
+            }
+            string recipients = message.GetEnvelopeRecipients();
+            if (string.IsNullOrEmpty(recipients))
+            {
+                throw new SmtpAgentException(SmtpAgentError.NoRecipientsInEnvelope);
+            }
+
+            recipientAddresses = NHINDAddressCollection.ParseSmtpServerEnvelope(recipients);
+            senderAddress = new NHINDAddress(sender);
+
+            return true;
+        }
+    }
+}

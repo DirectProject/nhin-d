@@ -29,7 +29,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 /**
- *
+ * This class handles the packaging and sending of XDM data over SMTP.
+ * 
  * @author vlewis
  */
 public class SMTPMailClient {
@@ -47,23 +48,23 @@ public class SMTPMailClient {
      * Create and send a message over SMTP.
      * 
      * @param recipients
-     *            The list of recipient addresses for the mail message
+     *            The list of recipient addresses for the mail message.
      * @param subject
-     *            The subject of the mail message
+     *            The subject of the mail message.
      * @param messageId
-     *            The message ID
+     *            The message ID.
      * @param body
-     *            The body body of the message
+     *            The body body of the message.
      * @param message
-     *            The data to be zipped and attached to the mail message
+     *            The data to be zipped and attached to the mail message.
      * @param from
-     *            The sender of the mail message
+     *            The sender of the mail message.
      * @param suffix
      *            The suffix of the data to be zipped and attached to the mail
-     *            message
+     *            message.
      * @param meta
      *            The metadata to be included in the zip and attached to the
-     *            mail message
+     *            mail message.
      * @throws MessagingException
      */
     public void postMail(List<String> recipients, String subject, String messageId, String body,
@@ -71,7 +72,7 @@ public class SMTPMailClient {
         boolean debug = false;
         java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 
-        //Set the host smtp address
+        // Set the host SMTP address
         Properties props = new Properties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.starttls.enable", "true");
@@ -83,12 +84,7 @@ public class SMTPMailClient {
 
         session.setDebug(debug);
 
-        // create a message
-        //   Message msg = new MimeMessage(session);
-
-        // set the from and to address
         InternetAddress addressFrom = new InternetAddress(from);
-        //  msg.setFrom(addressFrom);
 
         InternetAddress[] addressTo = new InternetAddress[recipients.size()];
         int i = 0;
@@ -96,6 +92,7 @@ public class SMTPMailClient {
             addressTo[i++] = new InternetAddress(recipient);
         }
 
+        // Build message object
         mmessage = new MimeMessage(session);
         mmessage.setFrom(addressFrom);
         mmessage.setRecipients(Message.RecipientType.TO, addressTo);
@@ -106,7 +103,6 @@ public class SMTPMailClient {
         mainBody = new MimeBodyPart();
         mainBody.setDataHandler(new DataHandler(body, "text/plain"));
         mailBody.addBodyPart(mainBody);
-
 
         mimeAttach = new MimeBodyPart();
 
@@ -122,30 +118,27 @@ public class SMTPMailClient {
 
         mmessage.setContent(mailBody);
         Transport.send(mmessage);
-
-
     }
 
     /**
      * Write data to a .zip file and return the Flie object.
      * 
      * @param attachment
-     *            The attachment data to be included in the .zip file
+     *            The attachment data to be included in the .zip file.
      * @param suffix
-     *            The suffix for the attachment data
+     *            The suffix for the attachment data.
      * @param meta
-     *            The metadata to be included in the .zip file
-     * @return a reference to the created .zip file
+     *            The metadata to be included in the .zip file.
+     * @return a reference to the created .zip file.
      */
     private File getZip(byte[] attachment, String suffix, byte[] meta) {
-
         File temp = null;
+        
         try {
             BufferedInputStream origin = null;
             temp = new File("xdm.zip");
             FileOutputStream dest = new FileOutputStream(temp);
 
-            // OutputStream dest = new ByteArrayOutputStream(attachmentString.length()*2);
             ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
             out.setMethod(ZipOutputStream.DEFLATED);
             byte data[] = new byte[BUFFER];
@@ -244,7 +237,7 @@ public class SMTPMailClient {
     /**
      * Create the readme string for the XDM package.
      * 
-     * @return a string to be used as the readme for the XDM package
+     * @return a string to be used as the readme for the XDM package.
      */
     private String getReadme() {
         return "NHIN Direct - IHE Team - Implementation. This XDM message was created via the web interface.  Please view INDEX.HTM for links to the files and metadata that make up this message. ";
@@ -254,8 +247,8 @@ public class SMTPMailClient {
      * Create the index file for the XDM package.
      * 
      * @param type
-     *            The suffix for the attachment included in the XDM package
-     * @return a string to be used as the index for the XDM package
+     *            The suffix for the attachment included in the XDM package.
+     * @return a string to be used as the index for the XDM package.
      */
     private String getIndex(String type) {
 
@@ -264,7 +257,7 @@ public class SMTPMailClient {
                 "<title>XDM Message</title>" +
                 "</head><body>" +
                 "<h1>XDM Message</h1>" +
-                "<p>This package contains an XDS message.  The message was created by" +
+                "<p>This package contains an XDS message.  The message was created by " +
                 "Happy Valley Clinic and is solely intended for the intended" +
                 "recipients listed in the XDS Metadata.  Any other use is forbidden.</p>" +
                 "<h2>Package Contents</h2>" +
@@ -273,7 +266,7 @@ public class SMTPMailClient {
                 "<li><a href=\"SUBSET01/\">SUBSET01/</a> - XDS Submission Set 1" +
                 "<ul>" +
                 "<li><a href=\"SUBSET01/METADATA.XML\">SUBSET01/METADATA.XML</a> - XDS information about the content, recipient, author, etc.</li>" +
-                "<li><a href=\"SUBSET01/DOCUMENT.PDF\">SUBSET01/DOCUMENT.XXX</a> - document payload in XXX format</li>" +
+                "<li><a href=\"SUBSET01/DOCUMENT.XXX\">SUBSET01/DOCUMENT.XXX</a> - document payload in XXX format</li>" +
                 "</ul>" +
                 "</li>" +
                 "</ul>" +

@@ -28,7 +28,8 @@ namespace NHINDirect.Config.Store
         const string Sql_DeleteAnchorByOwner = "DELETE from Anchors where Owner = {0}";
         const string Sql_DeleteAnchorByThumbprint = "DELETE from Anchors where Owner = {0} and Thumbprint = {1}";
         const string Sql_DeleteAnchorByID = "DELETE from Anchors where CertificateID = {0}";
-        
+        const string Sql_UpdateStatusByOwner = "UPDATE Anchors Set Status = {0} where Owner = {1}";
+       
         static readonly Func<ConfigDatabase, long, IQueryable<Anchor>> AnchorByID = CompiledQuery.Compile(
             (ConfigDatabase db, long id) =>
                 from anchor in db.Anchors
@@ -148,6 +149,11 @@ namespace NHINDirect.Config.Store
         public static void ExecDelete(this Table<Anchor> table, long certificateID)
         {
             table.Context.ExecuteCommand(Sql_DeleteAnchorByID, certificateID);
+        }
+
+        public static void ExecUpdateStatus(this Table<Anchor> table, string owner, EntityStatus status)
+        {
+            table.Context.ExecuteCommand(Sql_UpdateStatusByOwner, status, owner);
         }
     }
 }
