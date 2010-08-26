@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<!--
+  Compliant with schema parsed by: NHINDirect.ScriptAgent.SmtpAgentSettings 
+  Customize as per your needs
+-->
+<SmtpAgentConfig>
+  <Log>
+    <DirectoryPath>C:\inetpub\logs</DirectoryPath>
+    <NamePrefix>smtpAgent</NamePrefix>
+    <FileChangeFrequency>24</FileChangeFrequency>
+  </Log>
+  <Domain>nhind.hsgincubator.com</Domain>
+  <PrivateCerts>
+    <MachineResolver>
+      <Name>NHINDPrivate</Name>
+    </MachineResolver>
+  </PrivateCerts>
+  <PublicCerts>
+    <MachineResolver>
+      <Name>NHINDExternal</Name>
+    </MachineResolver>
+  </PublicCerts>
+  <Anchors>
+    <MachineResolver>
+      <Incoming>
+        <Name>NHINDAnchors</Name>
+      </Incoming>
+      <Outgoing>
+        <Name>NHINDAnchors</Name>
+      </Outgoing>
+    </MachineResolver>
+  </Anchors>
+</SmtpAgentConfig>
