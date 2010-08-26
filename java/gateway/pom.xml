@@ -172,31 +172,15 @@
                </archive>
             </configuration>
          </plugin>
-	    <plugin>
-	        <groupId>com.atlassian.maven.plugins</groupId>
-	        <artifactId>maven-clover2-plugin</artifactId>
-	        <version>2.5.1</version>	        
-	        <configuration>
-	            <jdk>1.5</jdk>
-			<licenseLocation>${project.basedir}/licenses/clover.license</licenseLocation>
-	        </configuration>
-	        <executions>
-	            <execution>
-	                <phase>pre-site</phase>
-	                <goals>
-	                    <goal>instrument</goal>
-	                </goals>
-	            </execution>
-	        </executions>
-	    </plugin>       
     </plugins>
   </build>                        
   <reporting>
 		<plugins>
-	      <plugin>
-	          <groupId>org.apache.maven.plugins</groupId>
-	          <artifactId>maven-project-info-reports-plugin</artifactId>
-	      </plugin>  
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-project-info-reports-plugin</artifactId>
+             <version>2.1</version>
+          </plugin>  
 	      <plugin>
 	      	<groupId>org.apache.maven.plugins</groupId> 
 	        <artifactId>maven-javadoc-plugin</artifactId>
@@ -210,6 +194,7 @@
 	          <source>1.5</source>
 	          <show>protected</show>
 	          <excludePackageNames>
+	              org.nhindirect.gateway.smtp.annotation
 	          </excludePackageNames>          	          
 	        </configuration>
 	      </plugin>
@@ -224,14 +209,6 @@
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-surefire-report-plugin</artifactId>
 		    </plugin>
-			<plugin>
-	            <groupId>com.atlassian.maven.plugins</groupId>
-	            <artifactId>maven-clover2-plugin</artifactId>
-	            <version>2.5.1</version>
-				<configuration>
-					<licenseLocation>${project.basedir}/licenses/clover.license</licenseLocation>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
@@ -278,15 +255,5 @@
 	        </plugin>                            
 		</plugins>
   </reporting>
-  <pluginRepositories>
-	    <pluginRepository>
-	        <id>atlassian-m2-repository</id>
-	        <name>Atlassian Maven 2.x Repository</name>
-	        <url>http://repository.atlassian.com/maven2</url>
-	        <snapshots>
-	            <enabled>false</enabled>
-	        </snapshots>
-	    </pluginRepository> 
-  </pluginRepositories>     
   <distributionManagement/>          
 </project>

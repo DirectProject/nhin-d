@@ -69,6 +69,12 @@ public class SmtpAgentFactory
 			// rethrow
 			throw e;
 		}
+		catch (Exception t)
+		{
+			// catch all
+			LOGGER.error("SmtpAgent creation failed: " + t.getMessage(), t);
+			throw new SmtpAgentException(SmtpAgentError.Unknown, "SmtpAgent creation failed: " + t.getMessage(), t);
+		}		
 		catch (Throwable t)
 		{
 			// catch all

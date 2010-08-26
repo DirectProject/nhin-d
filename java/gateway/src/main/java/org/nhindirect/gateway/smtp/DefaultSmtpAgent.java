@@ -138,6 +138,8 @@ public class DefaultSmtpAgent implements SmtpAgent
 	 */
 	public MessageProcessResult processMessage(MimeMessage message, NHINDAddressCollection recipients, NHINDAddress sender)
 	{
+		LOGGER.trace("Entering processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress");
+		
 		MessageProcessResult retVal = null;
 		
 		verifyInitialized();
@@ -158,13 +160,16 @@ public class DefaultSmtpAgent implements SmtpAgent
 		catch (SmtpAgentException e)
 		{
 			// rethrow
+			LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress");
 			throw e;
 		}
 		catch (Exception e)
 		{
+			LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress");
 			throw new SmtpAgentException(SmtpAgentError.Unknown, e);
 		}
 		
+		LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress");
 		return retVal;
 	}
 	
@@ -206,7 +211,16 @@ public class DefaultSmtpAgent implements SmtpAgent
     	boolean isOutgoing = isOutgoing(envelope);
     	
     	try
-    	{    		    		
+    	{    		
+    		if (LOGGER.isDebugEnabled())
+    		{
+    			if (isOutgoing)
+    				LOGGER.debug("Sending outgoing message from " + envelope.getSender().toString() + " to STAgent");
+    			else
+    				LOGGER.debug("Sending incoming message from " + envelope.getSender().toString() + " to STAgent");
+    			
+    		}
+    		
     		processedMessage = (isOutgoing) ? agent.processOutgoing(envelope) : agent.processIncoming(envelope);
     		if  (processedMessage == null)
     			throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
