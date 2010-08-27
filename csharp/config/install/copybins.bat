@@ -64,16 +64,23 @@ goto :EOF
 @rem -------------------------------
 :CopyBins
 call :PrintHeading Copying BINS to "%dest%"
-call :CopyFiles *.cs *.svc *.xml
-xcopy /y *.config %dest%
-pushd bin
-xcopy /y * %dest%\bin
-popd
+call :CopyFiles *.svc 
+call :CopyFiles *.cs
+call :CopyFiles *.xml 
+call :CopyFiles *.config
+call :CopyFilesRecursive *.dll
+
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------
 :CopyFiles
 for %%i in (%*) do (xcopy /y %%i %dest% || exit /b)
+goto :EOF
+
+@rem -------------------------------
+:CopyFilesRecursive
+xcopy /y /s %1 %dest%
+if %ERRORLEVEL% NEQ 0 exit /b
 goto :EOF
 
 @rem -------------------------------

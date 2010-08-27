@@ -43,10 +43,17 @@ namespace NHINDirect.Config.Store
                 select cert
         );
         
-        static readonly Func<ConfigDatabase, string, IQueryable<Certificate>> CertsByOwner = CompiledQuery.Compile(
+        static readonly Func<ConfigDatabase, string, IQueryable<Certificate>> AllCertsByOwner = CompiledQuery.Compile(
             (ConfigDatabase db, string owner) =>
                 from cert in db.Certificates
                 where cert.Owner == owner
+                select cert
+        );
+
+        static readonly Func<ConfigDatabase, string, EntityStatus, IQueryable<Certificate>> CertsByOwner = CompiledQuery.Compile(
+            (ConfigDatabase db, string owner, EntityStatus status) =>
+                from cert in db.Certificates
+                where cert.Owner == owner && cert.Status == status
                 select cert
         );
 
@@ -90,7 +97,12 @@ namespace NHINDirect.Config.Store
 
         public static IQueryable<Certificate> Get(this Table<Certificate> table, string owner)
         {
-            return CertsByOwner(table.GetDB(), owner);
+            return AllCertsByOwner(table.GetDB(), owner);
+        }
+
+        public static IQueryable<Certificate> Get(this Table<Certificate> table, string owner, EntityStatus status)
+        {
+            return CertsByOwner(table.GetDB(), owner, status);
         }
 
         public static Certificate Get(this Table<Certificate> table, string owner, string thumbprint)
