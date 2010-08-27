@@ -4,7 +4,7 @@
         </div>
             <asp:GridView ID="AddressesGridView" runat="server" AutoGenerateColumns="False" 
                 CellPadding="4" ForeColor="#333333" 
-                GridLines="None" DataKeyNames="ID, DomainID" 
+                GridLines="None" DataKeyNames="ID, DomainID, EmailAddress" 
                 onrowcommand="AddressesGridView_RowCommand">
                 <RowStyle BackColor="#F7F6F3" ForeColor="#333333" />
                 <Columns>

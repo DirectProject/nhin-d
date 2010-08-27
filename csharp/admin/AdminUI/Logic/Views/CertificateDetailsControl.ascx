@@ -10,11 +10,11 @@
         <asp:Label runat="server" ID="OwnerLabel" Style="font-weight: 700" /><br />
         Thumbprint:
         <asp:Label runat="server" ID="ThumbprintLabel" Style="font-weight: 700" /><br />
-        CreateDate:
+        Create Date:
         <asp:Label runat="server" ID="CreateDateLabel" Style="font-weight: 700" /><br />
-        ValidStartDate:
+        Valid Start Date:
         <asp:Label runat="server" ID="ValidStartDateLabel" Style="font-weight: 700" /><br />
-        ValidEndDate:
+        Valid End Date:
         <asp:Label runat="server" ID="ValidEndDateLabel" Style="font-weight: 700" /><br />
         Status:
         <asp:DropDownList ID="StatusDropDownList" runat="server">

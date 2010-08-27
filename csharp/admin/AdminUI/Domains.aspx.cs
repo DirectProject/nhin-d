@@ -36,15 +36,15 @@ namespace AdminUI
                     break;
 
                 case "Certificates":
-                    Response.Redirect(string.Format("~/Certificates.aspx?Owner={0}", e.DomainName));
+                    Response.Redirect(string.Format("~/Certificates.aspx?Owner={0}&DomainId={1}", e.DomainName,e.DomainId));
                     break;
                
                 case "Addresses":
-                    Response.Redirect(string.Format("~/Addresses.aspx?Owner={0}", e.DomainName));
+                    Response.Redirect(string.Format("~/Addresses.aspx?Owner={0}&DomainId={1}", e.DomainName, e.DomainId));
                     break;
 
                 case "Anchors":
-                    Response.Redirect(string.Format("~/Anchors.aspx?Owner={0}", e.DomainName));
+                    Response.Redirect(string.Format("~/Anchors.aspx?Owner={0}&DomainId={1}", e.DomainName, e.DomainId));
                     break;
 
                 default:
