@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using System.IO;
 using System.Xml.Schema;
-using System.Configuration;
-using System.Security.Cryptography;
-using log4net;
 
+using NLog;
 
 namespace NHINDirect.XDS
 {
     public class XDSHelper
     {
-        private ILog logger = LogManager.GetLogger("XDS");
+        private readonly Logger m_logger = LogManager.GetLogger("XDS");
         bool IsSchemaError = false;
-        //To create slots for meta data.
+
+		//To create slots for meta data.
         public XmlDocument CreateRepositoryMetadata(XmlDocument xmlDocMsgBody, string slotName, string slotValue, string documentID)
         {
             XmlDocument xmlDocRepositoryMetadata = new XmlDocument();
@@ -55,7 +53,7 @@ namespace NHINDirect.XDS
             }
             catch (Exception ex)
             {
-                logger.Error("Unexpected error", ex);
+                m_logger.Error("Unexpected error", ex);
                 throw;
             }
             return xmlDocRepositoryMetadata;
@@ -72,17 +70,17 @@ namespace NHINDirect.XDS
                 XmlNodeList xdsDocuments = rootElement.SelectNodes(@"//*[local-name()='Document']");
                 foreach (XmlNode xdsDocument in xdsDocuments)
                 {
-                    if (xdsDocument.Attributes["id"].Value.ToString() == xdsUniqueId)
+                    if (xdsDocument.Attributes["id"].Value == xdsUniqueId)
                     {
-                        string strContent = xdsDocument.InnerText.ToString();
-                        documentContent = System.Text.ASCIIEncoding.ASCII.GetBytes(strContent);
+                        string strContent = xdsDocument.InnerText;
+                        documentContent = System.Text.Encoding.ASCII.GetBytes(strContent);
                     }
 
                 }
             }
             catch (Exception ex)
             {
-                logger.Error("Unexpected error", ex);
+                m_logger.Error("Unexpected error", ex);
                 throw;
             }
             return documentContent;
@@ -115,7 +113,7 @@ namespace NHINDirect.XDS
             }
             catch (Exception ex)
             {
-                logger.Error("Unexpected error", ex);
+                m_logger.Error("Unexpected error", ex);
                 throw;
             }
 
@@ -152,7 +150,7 @@ namespace NHINDirect.XDS
             }
             catch (Exception ex)
             {
-                logger.Error("Error attempting to validate schema", ex);
+                m_logger.Error("Error attempting to validate schema", ex);
                 IsSchemaValid = false;
                 throw ex;
             }
