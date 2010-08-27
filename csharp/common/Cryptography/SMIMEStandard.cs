@@ -21,34 +21,100 @@ using NHINDirect.Mime;
 
 namespace NHINDirect.Cryptography
 {
+
+    /// <summary>
+    /// Utility methods testing conformance to RFC 5751 and 1847.
+    /// </summary>
     public class SMIMEStandard : MailStandard
     {
         //
         // MIME Types
         //
+        /// <summary>
+        /// Multipart signed content. RFC 1847
+        /// </summary>
         public const string MultiPartTypeSigned = "multipart/signed";
+        /// <summary>
+        /// <c>multipart/signed</c> parameter for protocol
+        /// </summary>
         public const string ProtocolParameterKey = "protocol";
+        /// <summary>
+        /// S/MIME detached signature <c>Content-Type</c>
+        /// </summary>
         public const string SignatureProtocol = "application/pkcs7-signature";
+        /// <summary>
+        /// <c>multipart/signed</c> parameter for hash/digest (message integrity check) algorithm
+        /// </summary>
         public const string MICAlgorithmKey = "micalg"; // Message Integrity Check Protocol        
         //
         // Cryptography
         //
+        /// <summary>
+        /// S/MIME encrypted (enveloped) data <c>Content-Type</c> (see RFC 5751)
+        /// </summary>
         public const string CmsEnvelopeMediaType = "application/pkcs7-mime";
+        /// <summary>
+        /// Alternative S/MIME encrypted (enveloped) data <c>Content-Type</c> (see RFC 5751)
+        /// </summary>
+        /// <remarks>
+        /// Some S/MIME system (e.g., OpenSSL) use this content type by default.
+        /// </remarks>
         public const string CmsEnvelopeMediaTypeAlt = "application/x-pkcs7-mime";   // we are forgiving when we receive messages
         
+        /// <summary>
+        /// S/MIME encrypted (enveloped) data full <c>Content-Type</c> with parameters
+        /// </summary>
         public const string EncryptedEnvelopeContentTypeHeaderValue = "application/pkcs7-mime; smime-type=enveloped-data; name=\"smime.p7m\"";
+        /// <summary>
+        /// S/MIME non-detached signature full <c>Content-Type</c> with parameters
+        /// </summary>
         public const string SignatureEnvelopeContentTypeHeaderValue = "application/pkcs7-mime; smime-type=signed-data; name=\"smime.p7\"";
         
+        /// <summary>
+        /// S/MIME detached signature full <c>Content-Type</c> with parameters
+        /// </summary>
         public const string SignatureContentTypeHeaderValue = "application/pkcs7-signature; name=\"smime.p7s\"";
+        /// <summary>
+        /// S/MIME detached signature <c>Content-Type</c>
+        /// </summary>
         public const string SignatureContentMediaType = "application/pkcs7-signature";
+        /// <summary>
+        /// S/MIME detached signature alternative <c>Content-Type</c>
+        /// </summary>
+        /// <remarks>
+        /// Some S/MIME systems use this by defualt.
+        /// </remarks>
         public const string SignatureContentMediaTypeAlternative = "application/x-pkcs7-signature"; // we are forgiving when we receive messages
+        /// <summary>
+        /// S/MIME detached signature <c>Content-Disposition</c> header value.
+        /// </summary>
         public const string SignatureDisposition = "attachment; filename=\"smime.p7s\"";
         
+        /// <summary>
+        /// S/MIME <c>Content-Type</c> <c>smime-type</c> parameter
+        /// </summary>
         public const string SmimeTypeParameterKey = "smime-type";
+        /// <summary>
+        /// S/MIME <c>smime-type</c> parameter value for encrypted (enveloped) data
+        /// </summary>
         public const string EnvelopedDataSmimeType = "enveloped-data";
+        /// <summary>
+        /// S/MIME <c>smime-type</c> parameter value for signed data
+        /// </summary>
         public const string SignedDataSmimeType = "signed-data";
+        /// <summary>
+        /// Default filename for enveloped encrypted and detached signature data
+        /// </summary>
         public const string DefaultFileName = "smime.p7m";
         
+
+        //TODO: These should all be extension methods on ContentType....
+
+        /// <summary>
+        /// Tests content type to determine if it indicates enveloped data
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is enveloped content, <c>false</c> if not</returns>
         public static bool IsContentCms(ContentType contentType)
         {
             if (contentType == null)
@@ -59,7 +125,12 @@ namespace NHINDirect.Cryptography
             return (   contentType.IsMediaType(CmsEnvelopeMediaType) 
                     || contentType.IsMediaType(CmsEnvelopeMediaTypeAlt));
         }
-        
+
+        /// <summary>
+        /// Tests content type to determine if it indicates encrypted data
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is encrypted content, <c>false</c> if not</returns>
         public static bool IsContentEncrypted(ContentType contentType)
         {
             if (contentType == null)
@@ -70,7 +141,12 @@ namespace NHINDirect.Cryptography
             return (IsContentCms(contentType)
                     &&  contentType.IsParameter(SmimeTypeParameterKey, EnvelopedDataSmimeType));
         }
-        
+
+        /// <summary>
+        /// Tests content type to determine if it indicates enveloped (non-detached) signature data
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is eveloped signature content, <c>false</c> if not</returns>
         public static bool IsContentEnvelopedSignature(ContentType contentType)
         {
             if (contentType == null)
@@ -82,6 +158,11 @@ namespace NHINDirect.Cryptography
                     &&  contentType.IsParameter(SmimeTypeParameterKey, SignedDataSmimeType));
         }
         
+        /// <summary>
+        /// Tests content type to determine if it indicates a multipart message with detached signature
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is multipart signature content, <c>false</c> if not</returns>
         public static bool IsContentMultipartSignature(ContentType contentType)
         {
             if (contentType == null)
@@ -91,23 +172,46 @@ namespace NHINDirect.Cryptography
 
             return (contentType.IsMediaType(MultiPartTypeSigned));
         }
-        
+
+        /// <summary>
+        /// Tests content type to determine if it indicates a detached signature
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is a detached signature, <c>false</c> if not</returns>
         public static bool IsContentDetachedSignature(ContentType contentType)
         {
             return (    contentType.IsMediaType(SignatureContentMediaType) 
                     ||  contentType.IsMediaType(SignatureContentMediaTypeAlternative));
         }
         
+        /// <summary>
+        /// Tests the <paramref name="entity"/> to determine if the content type and encoding
+        /// indicates it contains encrypted data.
+        /// </summary>
+        /// <param name="entity">The <see cref="MimeEntity"/> to test</param>
+        /// <returns><c>true</c> if encrypted data, <c>false</c> otherwise</returns>
         public static bool IsEncrypted(MimeEntity entity)
         {
             return (IsContentEncrypted(entity.ParsedContentType) && VerifyEncoding(entity));
         }
-                        
+
+        /// <summary>
+        /// Tests the <paramref name="entity"/> to determine if the content type and encoding
+        /// indicates it contains enveloped signed (non-detached) data.
+        /// </summary>
+        /// <param name="entity">The <see cref="MimeEntity"/> to test</param>
+        /// <returns><c>true</c> if enveloped signed data, <c>false</c> otherwise</returns>
         public static bool IsSignedEnvelope(MimeEntity entity)
         {
             return (IsContentEnvelopedSignature(entity.ParsedContentType) && VerifyEncoding(entity));
         }
 
+        /// <summary>
+        /// Tests the <paramref name="entity"/> to determine if the content type and encoding
+        /// indicates it contains detached signature data.
+        /// </summary>
+        /// <param name="entity">The <see cref="MimeEntity"/> to test</param>
+        /// <returns><c>true</c> if detached signature data, <c>false</c> otherwise</returns>
         public static bool IsDetachedSignature(MimeEntity entity)
         {
             return (IsContentDetachedSignature(entity.ParsedContentType) && VerifyEncoding(entity));
