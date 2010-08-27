@@ -165,17 +165,35 @@ namespace NHINDirect.Config.Store
 
         public IEnumerable<Certificate> Get(ConfigDatabase db, string owner)
         {
+            return this.Get(db, owner, (EntityStatus?) null);
+        }
+
+        public Certificate[] Get(string owner, EntityStatus? status)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, owner, status).ToArray();
+            }
+        }
+
+        public IEnumerable<Certificate> Get(ConfigDatabase db, string owner, EntityStatus? status)
+        {
             if (db == null)
             {
                 throw new ArgumentNullException();
             }
-            
+
             if (string.IsNullOrEmpty(owner))
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
             
-            return db.Certificates.Get(owner);
+            if (status == null)
+            {
+                return db.Certificates.Get(owner);
+            }
+            
+            return db.Certificates.Get(owner, status.Value);
         }
                 
         public void SetStatus(long[] certificateIDs, EntityStatus status)

@@ -83,6 +83,11 @@ namespace NHINDirect.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
             }
             
+            if (!address.IsValidMailAddress())
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
+            }
+            
             db.Addresses.InsertOnSubmit(address);
         }
         
@@ -117,7 +122,12 @@ namespace NHINDirect.Config.Store
             {
                 throw new ArgumentNullException();
             }
+
             if (address == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
+            }
+            if (!address.IsValidMailAddress())
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
             }

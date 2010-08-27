@@ -22,14 +22,41 @@ namespace NHINDirect.Cryptography
 {
     public enum SignatureError
     {
+        /// <summary>
+        /// A MIME entity was provided to sign but was null
+        /// </summary>
         NullEntity,
+        /// <summary>
+        /// A MIME entity was provided to sign but was empty
+        /// </summary>
         NullContent,
+        /// <summary>
+        /// Data was provided to sign but was not a data container.
+        /// </summary>
         ContentNotDataContainer,
+        /// <summary>
+        /// No signing certificates were provided.
+        /// </summary>
         NoCertificates,
+        /// <summary>
+        /// No signers were found in the signature.
+        /// </summary>
         NoSigners,
+        /// <summary>
+        /// <c>multipart/signed</c> was expected, but a different content type was found
+        /// </summary>
         InvalidMultipartSigned,
+        /// <summary>
+        /// A signature envelope was expected but was not found.
+        /// </summary>
         NotSignatureEnvelope,
+        /// <summary>
+        /// A signed entity had unexpected parts.
+        /// </summary>
         InvalidSignedEntity,
+        /// <summary>
+        /// A detached signature was expected but was not found.
+        /// </summary>
         NotDetachedSignature
     }
 }

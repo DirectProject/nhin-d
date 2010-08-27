@@ -154,6 +154,19 @@ namespace NHINDirect.Config.Store
             }            
         }
         
+        public bool IsValidMailAddress()
+        {
+            try
+            {
+                return (this.ToMailAddress() != null);
+            }
+            catch
+            {
+            }
+            
+            return false;
+        }
+        
         public MailAddress ToMailAddress()
         {
             return new MailAddress(this.EmailAddress);

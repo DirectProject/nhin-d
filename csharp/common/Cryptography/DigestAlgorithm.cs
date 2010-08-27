@@ -20,11 +20,26 @@ using System.Text;
 
 namespace NHINDirect.Cryptography
 {
+    /// <summary>
+    /// Standard digest (hash) algorithms supported.
+    /// </summary>
     public enum DigestAlgorithm
     {
+        /// <summary>
+        /// The SHA1 digest (hash) algorithm
+        /// </summary>
         SHA1,
+        /// <summary>
+        /// The SHA256 digest (hash) algorithm
+        /// </summary>
         SHA256,
+        /// <summary>
+        /// The SHA384 digest (hash) algorithm
+        /// </summary>
         SHA384,
+        /// <summary>
+        /// The SHA512 digest (hash) algorithm
+        /// </summary>
         SHA512
     }
 }
