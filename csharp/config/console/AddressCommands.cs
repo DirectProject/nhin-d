@@ -84,8 +84,7 @@ namespace NHINDirect.Config.Command
             string domainName = args.GetRequiredValue(0);
             int chunkSize = args.GetOptionalValue<int>(1, DefaultChunkSize);
          
-            Domain domain = DomainCommands.DomainGet(m_domainClient, domainName);
-            Print(m_addressClient.EnumerateDomainAddresses(domain.ID, chunkSize));
+            Print(m_addressClient.EnumerateDomainAddresses(domainName, chunkSize));
         }        
         public void Usage_AddressList()
         {
@@ -124,6 +123,17 @@ namespace NHINDirect.Config.Command
         {
             Console.WriteLine("Set the status of an address");
             Console.WriteLine("    addressstatussetfs emailAddress status");
+        }
+
+        public void Command_AddressCount(string[] args)
+        {
+            string domainName = args.GetRequiredValue(0);
+            Console.WriteLine("{0} addresses", m_addressClient.GetAddressCount(domainName));
+        }
+        public void Usage_AddressDomainCount()
+        {
+            Console.WriteLine("Retrieve # of addresses in given domain.");
+            Console.WriteLine("  addressdomaincount domainName");
         }
         
         internal Address GetAddress(string email)
