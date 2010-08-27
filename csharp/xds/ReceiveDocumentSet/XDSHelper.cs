@@ -4,13 +4,13 @@ using System.Xml;
 using System.IO;
 using System.Xml.Schema;
 
-using NLog;
+using Health.Net.Diagnostics;
 
 namespace NHINDirect.XDS
 {
     public class XDSHelper
     {
-        private readonly Logger m_logger = LogManager.GetLogger("XDS");
+        private readonly ILogger m_logger = LogManager.GetLogger("XDS");
         bool IsSchemaError = false;
 
 		//To create slots for meta data.
