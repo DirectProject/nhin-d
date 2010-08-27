@@ -1,8 +1,13 @@
 ﻿<%@ Page Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeBehind="Anchors.aspx.cs" Inherits="AdminUI.Anchors" Title="Untitled Page" %>
 
+<%@ Register src="Logic/Views/CertificateUploadControl.ascx" tagname="CertificateUploadControl" tagprefix="uc1" %>
+
 <asp:Content ID="Content3" ContentPlaceHolderID="ContentPlaceHolder" runat="server">
     <h2>
     Anchors</h2>
+
+    <div __designer:mapid="71">
+</div>
 
     <div>
         <asp:HyperLink ID="DomainsHyperLink" runat="server" 
@@ -15,7 +20,7 @@
             SelectMethod="EnumerateAnchors" 
             TypeName="NHINDirect.Config.Client.CertificateService.AnchorStoreClient">
             <SelectParameters>
-                <asp:Parameter DefaultValue="-1" Name="lastAnchorID" Type="Int64" />
+                <asp:Parameter DefaultValue="" Name="lastAnchorID" Type="Int64" />
                 <asp:Parameter DefaultValue="20" Name="maxResults" Type="Int32" />
                 <asp:Parameter DefaultValue="" Name="options" Type="Object" />
             </SelectParameters>
@@ -40,6 +45,13 @@
                     SortExpression="ForOutgoing" />
                 <asp:CheckBoxField DataField="HasData" HeaderText="HasData" ReadOnly="True" 
                     SortExpression="HasData" />
+                <asp:TemplateField>
+                    <ItemTemplate>
+                        <asp:LinkButton ID="DetailsButton" runat="server" CommandName="Details">Details</asp:LinkButton>
+                        &nbsp;|
+                        <asp:LinkButton ID="RemoveButton" runat="server" CommandName="Remove">Remove</asp:LinkButton>
+                    </ItemTemplate>
+                </asp:TemplateField>
             </Columns>
             <FooterStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
             <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
@@ -57,8 +69,49 @@
             <EditRowStyle BackColor="#999999" />
             <AlternatingRowStyle BackColor="White" ForeColor="#284775" />
         </asp:GridView>
+        <uc1:CertificateUploadControl ID="CertificateUploadControl1" runat="server" />
     </asp:View>
     <asp:View ID="DetailsView" runat="server">
+        <div>
+            Owner:
+            <asp:Label ID="OwnerLabel" runat="server" Text='<%# Bind("Owner") %>' />
+            <br />
+            Thumbprint:
+            <asp:Label ID="ThumbprintLabel" runat="server" 
+                Text='<%# Bind("Thumbprint") %>' />
+            <br />
+            CreateDate:
+            <asp:Label ID="CreateDateLabel" runat="server" 
+                Text='<%# Bind("CreateDate") %>' />
+            <br />
+            ValidStartDate:
+            <asp:Label ID="ValidStartDateLabel" runat="server" 
+                Text='<%# Bind("ValidStartDate") %>' />
+            <br />
+            ValidEndDate:
+            <asp:Label ID="ValidEndDateLabel" runat="server" 
+                Text='<%# Bind("ValidEndDate") %>' />
+            <br />
+            ForIncoming:
+            <asp:CheckBox ID="ForIncomingCheckBox" runat="server" 
+                Checked='<%# Bind("ForIncoming") %>' Enabled="false" />
+            <br />
+            ForOutgoing:
+            <asp:CheckBox ID="ForOutgoingCheckBox" runat="server" 
+                Checked='<%# Bind("ForOutgoing") %>' Enabled="false" />
+            <br />
+            Status:
+            <asp:DropDownList ID="StatusDropDownList" runat="server">
+                <asp:ListItem Value="0">New</asp:ListItem>
+                <asp:ListItem Value="1">Enabled</asp:ListItem>
+                <asp:ListItem Value="2">Disabled</asp:ListItem>
+            </asp:DropDownList>
+            <br />
+            HasData:
+            <asp:CheckBox ID="HasDataCheckBox" runat="server" 
+                Checked='<%# Bind("HasData") %>' Enabled="false" />
+            <br />
+        </div>
     </asp:View>
 </asp:MultiView>
 </asp:Content>

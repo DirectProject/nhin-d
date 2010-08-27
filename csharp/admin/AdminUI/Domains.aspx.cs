@@ -31,9 +31,10 @@ namespace AdminUI
                     DomainsMultiView.SetActiveView(DetailsView);
                     break;
 
-                case "New":
-                    DomainsMultiView.SetActiveView(DetailsView);
+                case "Remove":
+                    // Removal occurs inside of User control 
                     break;
+                    
 
                 case "Certificates":
                     Response.Redirect(string.Format("~/Certificates.aspx?Owner={0}&DomainId={1}", e.DomainName,e.DomainId));

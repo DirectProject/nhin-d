@@ -185,7 +185,6 @@
     <Content Include="Global.asax" />
     <Content Include="Logic\Views\NewAddressControl.ascx" />
     <Content Include="Logic\Views\NewDomainControl.ascx" />
-    <Content Include="nhinCommon.csproj" />
     <Content Include="Site.master" />
     <Content Include="Domains.aspx" />
   </ItemGroup>
