@@ -14,6 +14,15 @@ namespace AdminUI {
     public partial class Certificates {
         
         /// <summary>
+        /// DomainsHyperLink control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink DomainsHyperLink;
+        
+        /// <summary>
         /// CertificatesMultiView control.
         /// </summary>
         /// <remarks>
@@ -57,5 +66,14 @@ namespace AdminUI {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::AdminUI.Logic.Views.CertificateDetailsControl CertificateDetailsControl1;
+        
+        /// <summary>
+        /// ErrorLiteral control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal ErrorLiteral;
     }
 }

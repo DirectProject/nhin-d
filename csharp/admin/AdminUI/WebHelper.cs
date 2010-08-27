@@ -15,6 +15,12 @@ namespace AdminUI
 {
     public static class WebHelper
     {
+        public static string DateTimeFormatString = "{0:d}";
+      
+        public static string FormatDateTime(DateTime date)
+        {
+            return string.Format(DateTimeFormatString, date);
+        }
        public static  int GetDataKeyFromGridView(object sender, object commandArgument, string dataKeyName)
         {
             int index = -1;
@@ -36,7 +42,6 @@ namespace AdminUI
 
 
         }
-      
        public static object GetDataKeyAsObjectFromGridView(object sender, object commandArgument, string dataKeyName)
         {
 

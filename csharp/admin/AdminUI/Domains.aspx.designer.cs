@@ -41,6 +41,15 @@ namespace AdminUI {
         protected global::AdminUI.Logic.Views.DomainListControl DomainListControl1;
         
         /// <summary>
+        /// NewDomainControl1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::AdminUI.Logic.Views.NewDomainControl NewDomainControl1;
+        
+        /// <summary>
         /// DetailsView control.
         /// </summary>
         /// <remarks>

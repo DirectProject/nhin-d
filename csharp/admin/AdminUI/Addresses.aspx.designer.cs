@@ -14,6 +14,15 @@ namespace AdminUI {
     public partial class Addresses {
         
         /// <summary>
+        /// DomainsHyperLink control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink DomainsHyperLink;
+        
+        /// <summary>
         /// AddressesMultiView control.
         /// </summary>
         /// <remarks>
@@ -39,6 +48,15 @@ namespace AdminUI {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::AdminUI.Logic.Views.AddressListControl AddressListControl1;
+        
+        /// <summary>
+        /// NewAddressControl1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::AdminUI.Logic.Views.NewAddressControl NewAddressControl1;
         
         /// <summary>
         /// DetailsView control.

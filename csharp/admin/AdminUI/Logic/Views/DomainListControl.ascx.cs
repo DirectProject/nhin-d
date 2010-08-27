@@ -70,9 +70,6 @@ namespace AdminUI.Logic.Views
 
         }
 
-        protected void NewImageButton_Click(object sender, ImageClickEventArgs e)
-        {
 
-        }
     }
 }

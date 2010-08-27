@@ -20,52 +20,8 @@ namespace AdminUI.Logic.Views
     {
         public event EventHandler AddressCancelled;
         public event EventHandler AddressSaved;
-        private Address _model;
-        private AddressManagerClient _addressManagerClient = new AddressManagerClient();
-
-        protected void Page_Load(object sender, EventArgs e)
-        {
-            AddressCancelled += delegate(object s, EventArgs ea) { };
-            AddressSaved += delegate(object s, EventArgs ea) { };
-        }
-        protected override void OnPreRender(EventArgs e)
-        {
-            base.OnPreRender(e);
-            if (!string.IsNullOrEmpty(EmailAddress))
-            {
-                _model = _addressManagerClient.GetAddress(EmailAddress);
-                DataBindControls();
-            }
-        }
-
-        private void DataBindControls()
-        {
-            this.OwnerTitleLabel.Text = "[Domain Name]";
-            this.EmailAddressTextBox.Text = _model.EmailAddress;
-
-            this.CreateDateLabel.Text = string.Format("{0:d}", _model.CreateDate);
-            this.UpdateDateLabel.Text = string.Format("{0:d}", _model.UpdateDate);
-            this.StatusDropDownList.SelectedValue = ((int)_model.Status).ToString();
-            this.TypeTextBox.Text = _model.Type;
-
-        }
-
         #region "Public Properties with ViewState as backing store"
-        public long AddressId
-        {
-            get
-            {
-                long returnValue = -1;
-                if (ViewState["AddressId"] != null)
-                {
-
-                    long.TryParse(ViewState["AddressId"].ToString(), out returnValue);
-
-                }
-                return returnValue;
-            }
-            set { ViewState["AddressId"] = value; }
-        }
+     
         public string EmailAddress
         {
             get
@@ -81,13 +37,59 @@ namespace AdminUI.Logic.Views
             }
             set { ViewState["EmailAddress"] = value; }
         }
+        public string Owner
+        {
+            get
+            {
+                if (ViewState["Owner"] != null)
+                {
+                    return ViewState["Owner"] as string;
+                }
+                else
+                {
+                    return String.Empty;
+                }
+            }
+            set { ViewState["Owner"] = value; }
+        }
         #endregion
+        private Address _model;
+        private AddressManagerClient _addressManagerClient = new AddressManagerClient();
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            AddressCancelled += delegate(object s, EventArgs ea) { };
+            AddressSaved += delegate(object s, EventArgs ea) { };
+        }
+        protected override void OnPreRender(EventArgs e)
+        {
+            base.OnPreRender(e);
+            if (!string.IsNullOrEmpty(EmailAddress))
+            {
+                 CertificateListControl1.Owner = EmailAddress;
+                _model = _addressManagerClient.GetAddress(EmailAddress);
+                DataBindControls();
+
+            }
+        }
+
+        private void DataBindControls()
+        {
+            this.OwnerTitleLabel.Text = Owner;
+            this.EmailAddressLabel.Text = _model.EmailAddress;
+            this.DisplayNameTextBox.Text = _model.DisplayName;
+            this.CreateDateLabel.Text = string.Format("{0:d}", _model.CreateDate);
+            this.UpdateDateLabel.Text = string.Format("{0:d}", _model.UpdateDate);
+            this.StatusDropDownList.SelectedValue = ((int)_model.Status).ToString();
+            this.TypeTextBox.Text = _model.Type;
+
+        }
+
+      
 
         protected void SaveButton_Click(object sender, EventArgs e)
         {
-            //TODO: Great candidate for an extension method
             string newDisplayName = this.DisplayNameTextBox.Text;
-            string newEmailAddress = this.EmailAddressTextBox.Text;
             string newType = TypeTextBox.Text;
             var newStatus = (EntityStatus)Enum.ToObject(typeof(EntityStatus), int.Parse(StatusDropDownList.SelectedValue));
 
@@ -95,7 +97,6 @@ namespace AdminUI.Logic.Views
             if (!string.IsNullOrEmpty(EmailAddress))
             {
                 oldAddress = _addressManagerClient.GetAddress(EmailAddress);
-                oldAddress.EmailAddress = newEmailAddress;
                 oldAddress.DisplayName = newDisplayName;
                 oldAddress.Type = newType;
                 oldAddress.Status = newStatus;
@@ -103,11 +104,11 @@ namespace AdminUI.Logic.Views
                 _addressManagerClient.UpdateAddress(oldAddress);
                 AddressSaved(this, null);
             }
-            else
-            {
-                oldAddress = new Address(1, newEmailAddress, newDisplayName) {Type = newType, Status = newStatus};
-                _addressManagerClient.AddAddress(oldAddress);
-            }
+        }
+
+        protected void CancelButton_Click(object sender, EventArgs e)
+        {
+            AddressCancelled(this, null);
         }
     }
 }

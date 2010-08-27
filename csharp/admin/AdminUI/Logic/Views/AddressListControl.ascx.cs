@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
+using System.ServiceModel;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
 using NHINDirect.Config.Client.DomainManager;
 using NHINDirect.Config.Store;
 
@@ -55,21 +46,28 @@ namespace AdminUI.Logic.Views
             set { ViewState["DomainId"] = value; }
         }
 
-    
+
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            UpdateModel();
+
             Command += delegate(object o, AddressListControlEventArgs ea) { };
         }
 
         protected override void OnPreRender(EventArgs e)
         {
             base.OnPreRender(e);
-            //DataBindControls();
+            UpdateModel();
+            DataBindControls();
+
+        }
+
+        private void DataBindControls()
+        {
             AddressesGridView.DataSource = _model;
             AddressesGridView.DataBind();
         }
+
         private void UpdateModel()
         {
             bool filterByOwner = false;
@@ -88,18 +86,33 @@ namespace AdminUI.Logic.Views
 
             }
 
-            _model = filterByOwner ? _addressManagerClient.EnumerateDomainAddresses(DomainId, MAXRESULTSPERPAGE)
+            _model = filterByOwner ? _addressManagerClient.EnumerateDomainAddresses(Owner, MAXRESULTSPERPAGE)
                 : _addressManagerClient.EnumerateAddresses(MAXRESULTSPERPAGE);
         }
 
         protected void AddressesGridView_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             long addressId = WebHelper.GetDataKeyFromGridView(sender, e.CommandArgument, "ID");
-            string emailAddress = WebHelper.GetDataKeyAsObjectFromGridView( sender, e.CommandArgument, "EmailAddress").ToString();
+            string emailAddress = WebHelper.GetDataKeyAsObjectFromGridView(sender, e.CommandArgument, "EmailAddress").ToString();
             long domainId = WebHelper.GetDataKeyFromGridView(sender, e.CommandArgument, "DomainID");
 
+            switch (e.CommandName)
+            {
+                case "Remove":
+                    try
+                    {
+                        _addressManagerClient.RemoveAddress(emailAddress);
+                    }
+                    catch(FaultException<ConfigStoreFault> faultException)
+                    {
+                        ErrorLiteral.Text = "An error has occurred.";
+                    }
+
+                    break;
+
+            }
             //TODO: Provide Owner 
-            Command(this, new AddressListControlEventArgs(addressId,emailAddress , domainId,  e.CommandName));
+            Command(this, new AddressListControlEventArgs(addressId, emailAddress, domainId, e.CommandName));
 
         }
         public class AddressListControlEventArgs : EventArgs

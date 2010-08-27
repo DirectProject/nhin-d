@@ -33,19 +33,18 @@ namespace AdminUI.Logic.Views
         {
             base.OnLoad(e);
             // Subscribe to events
-            CertificateUploadControl1.CertificateUploaded += new EventHandler<CertificateUploadControl.CertificateUploadControlEventArgs>(CertificateUploadControl1_CertificateUploaded);
+            CertificateUploadControl1.CertificateUploaded += CertificateUploadControl1_CertificateUploaded;
             CertificateUploadControl1.CertificateUploadCancelled += new EventHandler(CertificateUploadControl1_CertificateUploadCancelled);
 
-            UpdateModel();
+          
         }
 
         private void UpdateModel()
         {
             bool filterByOwner = false;
-            if (!string.IsNullOrEmpty(Request.QueryString["Owner"]))
+            if (!string.IsNullOrEmpty(Owner ))
             {
                 filterByOwner = true;
-                Owner = Request.QueryString["Owner"];
                 OwnerTitleContainer.Visible = true;
                 OwnerTitleLabel.Text = Owner;
 
@@ -106,6 +105,7 @@ namespace AdminUI.Logic.Views
         protected override void OnPreRender(System.EventArgs e)
         {
             base.OnPreRender(e);
+            UpdateModel();
             DataBindControls();
         }
 
@@ -119,6 +119,26 @@ namespace AdminUI.Logic.Views
         {
             long certificateId = WebHelper.GetDataKeyFromGridView(sender, e.CommandArgument, "ID");
 
+            
+            switch(e.CommandName){
+            
+                case "Remove":
+                    // TODO: Config deletion
+                    _certStoreClient = new CertificateStoreClient();
+                    try
+                    {
+                        _certStoreClient.RemoveCertificates(new long[] { certificateId });
+                        UpdateModel();
+                        DataBindControls();
+                    }
+                    catch(System.ServiceModel.FaultException<NHINDirect.Config.Store.ConfigStoreFault> faultException)
+                    {
+                     //TODO: More testing to figure out what are the possible failures
+                        ErrorLiteral.Text = "an error has occurred.";
+                    }
+                    break;
+            }
+            
             if (this.Command != null)
             {
                 Command(this, new CertificateListControlEventArgs(certificateId, e.CommandName));

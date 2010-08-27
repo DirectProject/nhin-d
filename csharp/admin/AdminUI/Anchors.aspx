@@ -3,6 +3,12 @@
 <asp:Content ID="Content3" ContentPlaceHolderID="ContentPlaceHolder" runat="server">
     <h2>
     Anchors</h2>
+
+    <div>
+        <asp:HyperLink ID="DomainsHyperLink" runat="server" 
+            NavigateUrl="~/Domains.aspx">Back to Domains</asp:HyperLink>
+</div>
+
 <asp:MultiView ID="AnchorsMultiView" runat="server" ActiveViewIndex="0">
     <asp:View ID="MasterView" runat="server">
         <asp:ObjectDataSource ID="ObjectDataSource1" runat="server" 

@@ -1,8 +1,9 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="DomainListControl.ascx.cs"
     Inherits="AdminUI.Logic.Views.DomainListControl" %>
+<div class="GridContainer">
 <asp:GridView ID="DomainGridView" runat="server" AutoGenerateColumns="False" CellPadding="4"
     ForeColor="#333333" GridLines="None" DataKeyNames="Id,Name" 
-    AllowSorting="True" OnRowCommand="DomainGridView_RowCommand">
+        OnRowCommand="DomainGridView_RowCommand">
     <RowStyle BackColor="#F7F6F3" ForeColor="#333333" />
     <Columns>
         <asp:BoundField DataField="Name" HeaderText="Name" SortExpression="Name" />
@@ -13,12 +14,6 @@
         <asp:BoundField DataField="UpdateDate" HeaderText="UpdateDate" SortExpression="UpdateDate"
             DataFormatString="{0:d}" />
         <asp:TemplateField>
-            <HeaderTemplate>
-                <div style="text-align: right">
-                    <asp:ImageButton ID="NewImageButton" runat="server" CommandName="Add" 
-                        ImageUrl="~/Assets/images/plus.png" onclick="NewImageButton_Click" />
-                </div>
-            </HeaderTemplate>
             <ItemTemplate>
                 <asp:LinkButton ID="Details" runat="server" CommandArgument="<%# Container.DataItemIndex %>"
                     CommandName="Details">Details</asp:LinkButton>
@@ -37,15 +32,13 @@
     <FooterStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
     <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
     <EmptyDataTemplate>
-        No domains have been defined. Please add a new one.<br />
-        &nbsp;<div>
-            Add New Domain
-            <asp:ImageButton ID="AddNewDomain" runat="server" 
-                ImageUrl="~/Assets/images/plus.png" />
-        </div>
+        No domains have been defined. Please add a new one.&nbsp;
     </EmptyDataTemplate>
     <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333" />
     <HeaderStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
     <EditRowStyle BackColor="#999999" />
     <AlternatingRowStyle BackColor="White" ForeColor="#284775" />
 </asp:GridView>
+</div>
+
+

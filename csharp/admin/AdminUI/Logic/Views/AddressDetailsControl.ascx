@@ -1,5 +1,6 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="AddressDetailsControl.ascx.cs"
     Inherits="AdminUI.Logic.Views.AddressDetailsControl" %>
+<%@ Register src="CertificateListControl.ascx" tagname="CertificateListControl" tagprefix="uc1" %>
 <style type="text/css">
     .style1
     {
@@ -10,19 +11,13 @@
     Address in
     <asp:Label ID="OwnerTitleLabel" runat="server"></asp:Label>
 </h3>
-
 <div class="AddressDetails">
     <fieldset>
         <legend><b>Details</b></legend>EmailAddress:
-        <asp:TextBox  runat="server" ID="EmailAddressTextBox" CausesValidation="True" 
-            ValidationGroup="AddressGroup" Width="383px"/>
-        &nbsp;<asp:RegularExpressionValidator ID="EmailValidator" runat="server" 
-            ControlToValidate="EmailAddressTextBox" ErrorMessage="Invalid email address." 
-            ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" 
-            ValidationGroup="AddressGroup"></asp:RegularExpressionValidator>
+        <asp:Label runat="server" ID="EmailAddressLabel" />
         <br />
         DisplayName:
-        <asp:TextBox  runat="server" ID="DisplayNameTextBox" Width="382px" />
+        <asp:TextBox runat="server" ID="DisplayNameTextBox" Width="382px" />
         <br />
         Create Date:
         <asp:Label runat="server" ID="CreateDateLabel" Style="font-weight: 700" />
@@ -35,19 +30,19 @@
             <asp:ListItem Value="0">New</asp:ListItem>
             <asp:ListItem Value="1">Enabled</asp:ListItem>
             <asp:ListItem Value="2">Disabled</asp:ListItem>
-            <asp:ListItem Value="3">Deleted</asp:ListItem>
         </asp:DropDownList>
         <br />
         Type:
         <asp:TextBox runat="server" ID="TypeTextBox" />
         <span class="style1">(e.g.:SMTP, XDR)</span><br />
         <div class="ButtonRow">
-            <asp:LinkButton ID="SaveButton" runat="server" CommandName="Save" 
-                CssClass="SaveButton" onclick="SaveButton_Click" 
-                ValidationGroup="AddressGroup">Save</asp:LinkButton>
+            <asp:LinkButton ID="SaveButton" runat="server" CommandName="Save" CssClass="SaveButton"
+                OnClick="SaveButton_Click" ValidationGroup="AddressGroup">Save</asp:LinkButton>
             &nbsp;|
             <asp:LinkButton ID="CancelButton" runat="server" CommandName="Cancel" 
-                CssClass="CancelButton">Cancel</asp:LinkButton>
+                CssClass="CancelButton" onclick="CancelButton_Click">Cancel</asp:LinkButton>
         </div>
     </fieldset>
 </div>
+<uc1:CertificateListControl ID="CertificateListControl1" runat="server" />
+

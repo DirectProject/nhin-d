@@ -83,9 +83,16 @@ namespace AdminUI.Logic.Views
             {
                 CertificateGetOptions options = new CertificateGetOptions();
                 options.IncludeData = true;
-                _model = _certificateStoreClient.GetCertificate(CertificateId, options);
-
-                DataBindControls();
+                try
+                {
+                    _model = _certificateStoreClient.GetCertificate(CertificateId, options);
+                    DataBindControls();
+                }
+                catch(System.ServiceModel.FaultException<NHINDirect.Config.Store.ConfigStoreFault> faultException)
+                {
+                    ErrorLiteral.Text = "An error occurred while trying to retrieve the certificate.";
+                }
+                
             }
         }
 
@@ -104,6 +111,6 @@ namespace AdminUI.Logic.Views
 
         }
 
-     
+
     }
 }

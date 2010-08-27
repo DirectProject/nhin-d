@@ -81,6 +81,7 @@ namespace AdminUI.Logic.Views
             Session["CertificateUploadControl.CertificateFileName"] = null;
             if (data.Length > 0)
             {
+                CertificatePasswordTextBox.Text = String.Empty;
                 CertificateUploadMultiView.SetActiveView(CertificateUploadView);
                 CertificateUploaded(this, new CertificateUploadControlEventArgs(data,fileName, CertificatePasswordTextBox.Text));
             }

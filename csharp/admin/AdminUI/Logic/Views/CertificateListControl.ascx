@@ -3,7 +3,7 @@
 <%@ Register src="CertificateUploadControl.ascx" tagname="CertificateUploadControl" tagprefix="uc1" %>
 
         <div class="FilterTitleContainer" id="OwnerTitleContainer" runat="server" visible="false">
-        <h3>For:<asp:Label ID="OwnerTitleLabel" runat="server"></asp:Label></h3>
+        <h3>Certificates for:<asp:Label ID="OwnerTitleLabel" runat="server"></asp:Label></h3>
         </div>
 
 <asp:GridView ID="CertificateGridView" runat="server" AutoGenerateColumns="False"
@@ -25,6 +25,9 @@
             <ItemTemplate>
                 <asp:LinkButton ID="Details" runat="server" CommandArgument="<%# Container.DataItemIndex %>"
                     CommandName="Details">Details</asp:LinkButton>
+                &nbsp;|
+                <asp:LinkButton ID="RemoveButton" runat="server" 
+                    CommandArgument="<%# Container.DataItemIndex %>" CommandName="Remove">Remove</asp:LinkButton>
                 &nbsp;|
                 <asp:LinkButton ID="Export" runat="server" CommandArgument="<%# Container.DataItemIndex %>"
                     CommandName="Export">Export</asp:LinkButton>

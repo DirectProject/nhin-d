@@ -27,12 +27,13 @@
         <asp:CheckBox ID="HasDataCheckBox" runat="server" Enabled="False" Text="Has Data"
             TextAlign="Left" />
         <br />
-        <div class="ButtonRow" >
+        <div class="ButtonRow" style="color: #FF0000" >
             <asp:LinkButton ID="SaveButton" runat="server" CommandName="Save" 
                 CssClass="SaveButton" onclick="SaveButton_Click">Save</asp:LinkButton>
 &nbsp;|
             <asp:LinkButton ID="CancelButton" runat="server" CommandName="Cancel" 
                 CssClass="CancelButton" onclick="CancelButton_Click">Cancel</asp:LinkButton>
+        &nbsp;<asp:Literal ID="ErrorLiteral" runat="server" EnableViewState="False"></asp:Literal>
         </div>
     </fieldset>
 </div>

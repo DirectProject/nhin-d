@@ -74,7 +74,9 @@ namespace AdminUI.Logic.Views
 
         private void DataBindControls()
         {
-            this.DomainNameTextBox.Text = _model.Name;
+            this.DomainNameLabel.Text = _model.Name;
+            this.CreateDateLabel.Text = WebHelper.FormatDateTime(_model.CreateDate);
+            this.UpdateDateLabel.Text = WebHelper.FormatDateTime(_model.UpdateDate);
             this.StatusDropDownList.SelectedValue = ((int)_model.Status).ToString();
         }
 
@@ -92,37 +94,24 @@ namespace AdminUI.Logic.Views
         private void SaveDomain()
         {
             Domain d;
-                try
-                {
-                    d= _domainManagerClient.GetDomain(DomainName);
-                }
+            try
+            {
+                d = _domainManagerClient.GetDomain(DomainName);
+            }
 
             catch (System.ServiceModel.FaultException<ConfigStoreFault> ex)
             {
                 // The domain was not found
                 d = null;
             }
-            bool isNew = false; 
+          
             if (d != null)
             {
-                d.Name = DomainNameTextBox.Text;
                 //TODO: Great candidate for an extension method
-                d.Status = (EntityStatus) Enum.ToObject(typeof(EntityStatus),int.Parse(StatusDropDownList.SelectedValue)) ;
+                d.Status = (EntityStatus)Enum.ToObject(typeof(EntityStatus), int.Parse(StatusDropDownList.SelectedValue));
             }
-            else
-            {
-                d = new Domain(DomainNameTextBox.Text);
-                isNew = true;
-            }
-            if(isNew)
-            {
-                _domainManagerClient.AddDomain(d);
-            }
-            else
-            {
-                _domainManagerClient.UpdateDomain(d);
-            }
-
+            _domainManagerClient.UpdateDomain(d);
+            
             DomainSaved(this, null);
         }
     }

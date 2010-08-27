@@ -11,69 +11,51 @@
 namespace AdminUI.Logic.Views {
     
     
-    public partial class DomainDetailsControl {
+    public partial class NewAddressControl {
         
         /// <summary>
-        /// EntityName control.
+        /// EmailAddressTextBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label EntityName;
+        protected global::System.Web.UI.WebControls.TextBox EmailAddressTextBox;
         
         /// <summary>
-        /// DomainNameLabel control.
+        /// DisplayNameTextBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DomainNameLabel;
+        protected global::System.Web.UI.WebControls.TextBox DisplayNameTextBox;
         
         /// <summary>
-        /// CreateDateLabel control.
+        /// TypeTextBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label CreateDateLabel;
+        protected global::System.Web.UI.WebControls.TextBox TypeTextBox;
         
         /// <summary>
-        /// UpdateDateLabel control.
+        /// AddButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label UpdateDateLabel;
+        protected global::System.Web.UI.WebControls.LinkButton AddButton;
         
         /// <summary>
-        /// StatusDropDownList control.
+        /// ErrorLiteral control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList StatusDropDownList;
-        
-        /// <summary>
-        /// Save control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton Save;
-        
-        /// <summary>
-        /// Cancel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton Cancel;
+        protected global::System.Web.UI.WebControls.Literal ErrorLiteral;
     }
 }

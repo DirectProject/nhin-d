@@ -23,22 +23,13 @@ namespace AdminUI.Logic.Views {
         protected global::System.Web.UI.WebControls.Label OwnerTitleLabel;
         
         /// <summary>
-        /// EmailAddressTextBox control.
+        /// EmailAddressLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox EmailAddressTextBox;
-        
-        /// <summary>
-        /// EmailValidator control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator EmailValidator;
+        protected global::System.Web.UI.WebControls.Label EmailAddressLabel;
         
         /// <summary>
         /// DisplayNameTextBox control.
@@ -102,5 +93,14 @@ namespace AdminUI.Logic.Views {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton CancelButton;
+        
+        /// <summary>
+        /// CertificateListControl1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::AdminUI.Logic.Views.CertificateListControl CertificateListControl1;
     }
 }
