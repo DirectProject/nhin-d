@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <body>
+        <menu name="Documents">
+            <item name="Release Notes" href="releaseNotes.html" />
+        </menu>
+        <menu name="External Links">
+        	<item name="NHIN Direct Wiki" href="http://nhindirect.org" />
+        	<item name="Security Agent Specification" href="http://nhindirect.org/Content+Security+for+Simple+Health+Transport" />
+        </menu>
+        ${reports}
+    </body>
+</project>
