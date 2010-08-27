@@ -10,7 +10,6 @@
       <xs:enumeration value="New" />
       <xs:enumeration value="Enabled" />
       <xs:enumeration value="Disabled" />
-      <xs:enumeration value="Deleted" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="EntityStatus" nillable="true" type="tns:EntityStatus" />

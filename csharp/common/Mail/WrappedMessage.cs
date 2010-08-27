@@ -19,8 +19,17 @@ using NHINDirect.Mime;
 
 namespace NHINDirect.Mail
 {
+    /// <summary>
+    /// Encapsulates an RFC 5322 message wrapped as a separate RFC5322 message containing the wrapped message
+    /// </summary>
     public static class WrappedMessage
     {        
+        /// <summary>
+        /// Creates a wrapped message, copying headers
+        /// </summary>
+        /// <param name="message">The message to wrap</param>
+        /// <param name="headersToCopy">The headers that will be copied into the wrapped message</param>
+        /// <returns></returns>
         public static Message Create(Message message, string[] headersToCopy)
         {
             if (message == null)
@@ -38,7 +47,14 @@ namespace NHINDirect.Mail
             
             return wrappedMessage;
         }
-        
+
+
+        /// <summary>
+        /// Creates a wrapped message, copying headers
+        /// </summary>
+        /// <param name="message">A string containing the RFC 5322 message to wrap</param>
+        /// <param name="headersToCopy">The headers that will be copied into the wrapped message</param>
+        /// <returns></returns>
         public static Message Create(string message, string[] headersToCopy)
         {
             if (string.IsNullOrEmpty(message))
@@ -54,6 +70,11 @@ namespace NHINDirect.Mail
             return wrappedMessage;
         }
         
+        /// <summary>
+        /// Tests if this message contains a wrapped RFC 5322 message
+        /// </summary>
+        /// <param name="message">The message to test</param>
+        /// <returns><c>true</c> if the message contains a wrapped RFC 5322 message, <c>false</c> otherwise</returns>
         public static bool IsWrapped(Message message)
         {
             if (message == null)
@@ -65,6 +86,12 @@ namespace NHINDirect.Mail
             return (!string.IsNullOrEmpty(contentType) && MimeStandard.Equals(contentType, MailStandard.MediaType.WrappedMessage));            
         }
         
+        /// <summary>
+        /// Extracts the inner message of a wrapped message as an unwrapped message
+        /// </summary>
+        /// <param name="message">The wrapped message</param>
+        /// <returns>The unwrapped message</returns>
+        /// <exception cref="MimeException">If this is not a wrapped message</exception>
         public static Message ExtractInner(Message message)
         {
             if (!IsWrapped(message))

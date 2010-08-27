@@ -9,7 +9,6 @@ namespace NHINDirect.Config.Store
     {
         New = 0,
         Enabled = 1,
-        Disabled = 2,
-        Deleted = 3
+        Disabled = 2
     }
 }

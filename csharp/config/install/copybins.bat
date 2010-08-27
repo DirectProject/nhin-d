@@ -64,13 +64,11 @@ goto :EOF
 @rem -------------------------------
 :CopyBins
 call :PrintHeading Copying BINS to "%dest%"
-call :CopyFiles *.dll *.config *.cs *.svc *.xml
-exit /b %ERRORLEVEL%
-
-@rem -------------------------------
-:CopyInstall
-call :PrintHeading Copying INSTALL FILES
-call :CopyFiles regasm.bat registerGateway.bat unregisterGateway.bat smtpreg.vbs agentsetup.vbs adsutil.vbs
+call :CopyFiles *.cs *.svc *.xml
+xcopy /y *.config %dest%
+pushd bin
+xcopy /y * %dest%\bin
+popd
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------
