@@ -53,6 +53,18 @@ namespace NHINDirect.Config.Service
                 throw Service.CreateFault(ex);
             }
         }
+
+        public int GetDomainCount()
+        {
+            try
+            {
+                return Service.Current.Store.Domains.Count();
+            }
+            catch (Exception ex)
+            {
+                throw Service.CreateFault(ex);
+            }
+        }
         
         public Domain[] GetDomains(string[] domainNames, EntityStatus? status)
         {
@@ -78,12 +90,12 @@ namespace NHINDirect.Config.Service
                 throw Service.CreateFault(ex);
             }
         }
-        
-        public Domain[] EnumerateDomains(long lastDomainID, int maxResults)
+
+        public Domain[] EnumerateDomains(string lastDomainName, int maxResults)
         {
             try
             {
-                return Service.Current.Store.Domains.Get(lastDomainID, maxResults);
+                return Service.Current.Store.Domains.Get(lastDomainName, maxResults);
             }
             catch (Exception ex)
             {
@@ -119,6 +131,24 @@ namespace NHINDirect.Config.Service
             }
         }
 
+        public int GetAddressCount(string domainName)
+        {
+            try
+            {
+                Domain domain = Service.Current.Store.Domains.Get(domainName);
+                if (domain == null)
+                {
+                    return 0;
+                }
+
+                return Service.Current.Store.Addresses.Count(domain.ID);
+            }
+            catch (Exception ex)
+            {
+                throw Service.CreateFault(ex);
+            }
+        }
+        
         public Address[] GetAddresses(string[] emailAddresses, EntityStatus? status)
         {
             try
@@ -179,11 +209,17 @@ namespace NHINDirect.Config.Service
             }
         }
         
-        public Address[] EnumerateDomainAddresses(long domainID, long lastAddressID, int maxResults)
+        public Address[] EnumerateDomainAddresses(string domainName, string lastAddress, int maxResults)
         {
             try
             {
-                return Service.Current.Store.Addresses.Get(domainID, lastAddressID, maxResults);
+                Domain domain = Service.Current.Store.Domains.Get(domainName);
+                if (domain == null)
+                {
+                    return null;
+                }
+                
+                return Service.Current.Store.Addresses.Get(domain.ID, lastAddress, maxResults);
             }
             catch (Exception ex)
             {
@@ -191,11 +227,11 @@ namespace NHINDirect.Config.Service
             }
         }
 
-        public Address[] EnumerateAddresses(long lastAddressID, int maxResults)
+        public Address[] EnumerateAddresses(string lastAddress, int maxResults)
         {
             try
             {
-                return Service.Current.Store.Addresses.Get(lastAddressID, maxResults);
+                return Service.Current.Store.Addresses.Get(lastAddress, maxResults);
             }
             catch (Exception ex)
             {

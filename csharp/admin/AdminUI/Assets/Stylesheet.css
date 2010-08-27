@@ -1,0 +1,30 @@
+﻿body
+{
+}
+
+.Logo
+{
+	width: 250px;
+	height: 130px;
+	background-color: Silver;
+	background-image: url(  'images/logo_placeholder.png' );
+	background-repeat: no-repeat;
+	position: relative;
+	top: 0px;
+	left: 5px;
+	margin: 10 10 10 10;
+}
+.SiteHeader
+{
+	background-color: Silver;
+}
+.SiteMenu
+{
+	position: relative;
+}
+.FieldContainer
+{
+	
+	margin: 2 0 0 5;
+	padding: 2 2 2 2;
+}
