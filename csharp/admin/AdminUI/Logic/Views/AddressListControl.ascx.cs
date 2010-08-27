@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ServiceModel;
 using System.Web.UI.WebControls;
 using NHINDirect.Config.Client.DomainManager;
+
 using NHINDirect.Config.Store;
 
 namespace AdminUI.Logic.Views
@@ -12,7 +13,7 @@ namespace AdminUI.Logic.Views
         private NHINDirect.Config.Client.DomainManager.AddressManagerClient _addressManagerClient =
             new AddressManagerClient();
 
-        private IEnumerable<Address> _model;
+        private IEnumerable<NHINDirect.Config.Store.Address> _model;
         public const int MAXRESULTSPERPAGE = 20;
         public event EventHandler<AddressListControlEventArgs> Command;
         public string Owner
@@ -85,9 +86,15 @@ namespace AdminUI.Logic.Views
                 OwnerTitleLabel.Text = Owner;
 
             }
+            if (filterByOwner)
+            {
+                _model = _addressManagerClient.EnumerateDomainAddresses(Owner, MAXRESULTSPERPAGE);
+            }
+            else
+            {
+                _model = _addressManagerClient.EnumerateAddresses(MAXRESULTSPERPAGE);
+            }
 
-            _model = filterByOwner ? _addressManagerClient.EnumerateDomainAddresses(Owner, MAXRESULTSPERPAGE)
-            //    : _addressManagerClient.EnumerateAddresses(MAXRESULTSPERPAGE);
         }
 
         protected void AddressesGridView_RowCommand(object sender, GridViewCommandEventArgs e)
@@ -103,7 +110,7 @@ namespace AdminUI.Logic.Views
                     {
                         _addressManagerClient.RemoveAddress(emailAddress);
                     }
-                    catch(FaultException<ConfigStoreFault> faultException)
+                    catch (FaultException<ConfigStoreFault> faultException)
                     {
                         ErrorLiteral.Text = "An error has occurred.";
                     }
