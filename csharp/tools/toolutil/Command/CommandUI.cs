@@ -58,6 +58,11 @@ namespace NHINDirect.Tools.Command
             Console.Write("# ");
             Console.WriteLine(message);
         }
+
+        public static void PrintBold(string message)
+        {
+            Console.WriteLine("**{0}**", message);
+        }
         
         public static void PrintUpperCase(string message)
         {

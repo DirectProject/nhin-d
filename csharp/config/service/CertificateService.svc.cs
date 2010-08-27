@@ -76,7 +76,8 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return this.ApplyGetOptions(Service.Current.Store.Certificates.Get(owner), options);
+                options = options ?? CertificateGetOptions.Default;
+                return this.ApplyGetOptions(Service.Current.Store.Certificates.Get(owner, options.Status), options);
             }
             catch (Exception ex)
             {
@@ -189,7 +190,8 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return this.ApplyGetOptions(Service.Current.Store.Anchors.GetIncoming(owner), options);
+                options = options ?? CertificateGetOptions.Default;
+                return this.ApplyGetOptions(Service.Current.Store.Anchors.GetIncoming(owner, options.Status), options);
             }
             catch (Exception ex)
             {
@@ -201,7 +203,8 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return this.ApplyGetOptions(Service.Current.Store.Anchors.GetOutgoing(owner), options);
+                options = options ?? CertificateGetOptions.Default;
+                return this.ApplyGetOptions(Service.Current.Store.Anchors.GetOutgoing(owner, options.Status), options);
             }
             catch (Exception ex)
             {

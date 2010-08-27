@@ -76,6 +76,11 @@ namespace NHINDirect.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
             }
             
+            if (!domain.IsValidEmailDomain())
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
+            }
+            
             db.Domains.InsertOnSubmit(domain);
         }
         
