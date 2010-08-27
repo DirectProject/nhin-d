@@ -35,10 +35,19 @@ namespace NHINDirect.Config.Service
         LogFile m_log;
                 
         public Service()
-        {
-            m_settings = new ServiceSettings();
-            m_log = new LogFile(m_settings.LogSettings.CreateWriter());
-            m_store = new ConfigStore(m_settings.StoreConnectString);
+        {   
+            try
+            {
+                m_settings = new ServiceSettings();
+                m_log = new LogFile(m_settings.LogSettings.CreateWriter());
+                m_log.WriteLine("Starting Service");
+                m_store = new ConfigStore(m_settings.StoreConnectString);
+            }
+            catch(Exception ex)
+            {
+                System.Diagnostics.EventLog.WriteEntry("ConfigService", ex.ToString());
+                throw ex;
+            }
         }
         
         public ServiceSettings Settings
