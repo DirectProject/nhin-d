@@ -122,18 +122,18 @@ namespace NHINDirect.Config.Client.DomainManager
             client.RemoveAddresses(new string[] {emailAddress});
         }
         
-        public static IEnumerable<Address> EnumerateDomainAddresses(this AddressManagerClient client, long domainID, int chunkSize)
+        public static IEnumerable<Address> EnumerateDomainAddresses(this AddressManagerClient client, string domainName, int chunkSize)
         {
             if (chunkSize <= 0)
             {
                 throw new ArgumentException();
             }
 
-            long lastID = -1;
+            string lastAddress = null;
             Address[] addresses;
             while (true)
             {
-                addresses = client.EnumerateDomainAddresses(domainID, lastID, chunkSize);
+                addresses = client.EnumerateDomainAddresses(domainName, lastAddress, chunkSize);
                 if (addresses.IsNullOrEmpty())
                 {
                     yield break;
@@ -142,7 +142,7 @@ namespace NHINDirect.Config.Client.DomainManager
                 {
                     yield return addresses[i];
                 }
-                lastID = addresses[addresses.Length - 1].ID;
+                lastAddress = addresses[addresses.Length - 1].EmailAddress;
             }
         }
 
@@ -153,11 +153,11 @@ namespace NHINDirect.Config.Client.DomainManager
                 throw new ArgumentException();
             }
 
-            long lastID = -1;
+            string lastAddress = null;
             Address[] addresses;
             while (true)
             {
-                addresses = client.EnumerateAddresses(lastID, chunkSize);
+                addresses = client.EnumerateAddresses(lastAddress, chunkSize);
                 if (addresses.IsNullOrEmpty())
                 {
                     yield break;
@@ -166,7 +166,7 @@ namespace NHINDirect.Config.Client.DomainManager
                 {
                     yield return addresses[i];
                 }
-                lastID = addresses[addresses.Length - 1].ID;
+                lastAddress = addresses[addresses.Length - 1].EmailAddress;
             }
         }
     }
