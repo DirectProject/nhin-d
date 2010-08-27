@@ -21,21 +21,37 @@ using System.Security.Cryptography;
 
 namespace NHINDirect.Cryptography
 {
+    /// <summary>
+    /// Represents an exception ocurring in cryptographic operations.
+    /// </summary>
+    /// <typeparam name="T">The exception error type.</typeparam>
     public class CryptographicException<T> : CryptographicException
     {
         T m_error;
         
+        /// <summary>
+        /// Initializes an instance with the specified error type.
+        /// </summary>
+        /// <param name="error">The error type for this exception.</param>
         public CryptographicException(T error)
         {
             m_error = error;
         }
 
+        /// <summary>
+        /// Initializes an instance with the specified error type.
+        /// </summary>
+        /// <param name="error">The error type for this exception.</param>
+        /// <param name="message">A cusom exception message.</param>
         public CryptographicException(T error, string message)
             : base(message)
         {
             m_error = error;
         }
         
+        /// <summary>
+        /// The error type for this exception.
+        /// </summary>
         public T Error
         {
             get
@@ -44,6 +60,10 @@ namespace NHINDirect.Cryptography
             }
         }
 
+        /// <summary>
+        /// Formats this exception as a string.
+        /// </summary>
+        /// <returns>A string representation of the exception.</returns>
         public override string ToString()
         {
             return string.Format("ERROR={0};\r\n", this.m_error, base.ToString());

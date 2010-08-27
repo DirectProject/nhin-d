@@ -21,6 +21,7 @@ using System.Data.SqlTypes;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Runtime.Serialization;
+using System.Net.Mail;
 
 namespace NHINDirect.Config.Store
 {
@@ -71,6 +72,7 @@ namespace NHINDirect.Config.Store
                 {
                     throw new ConfigStoreException(ConfigStoreError.DomainNameLength);
                 }
+                                
                 m_name = value;
             }
         }
@@ -105,6 +107,33 @@ namespace NHINDirect.Config.Store
         {
             get;
             set;
+        }
+        
+        public bool IsValidEmailDomain()
+        {
+            return IsValidEmailDomain(this.Name);
+        }        
+        /// <summary>
+        /// The robust way to validate that a domainName meets the criteria of RFC5322...is to parse it as as an Address Field.
+        /// We use MailAdress to do that.
+        /// </summary>
+        public static bool IsValidEmailDomain(string domainName)
+        {
+            if (string.IsNullOrEmpty(domainName))
+            {
+                throw new ArgumentException();
+            }
+            try
+            {
+                MailAddress address = new MailAddress("unknown.user@" + domainName);
+                return address.Host.Equals(domainName, StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+            }
+            
+            return false;
+            
         }
     }
 }

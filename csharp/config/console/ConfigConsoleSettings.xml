@@ -1,4 +1,5 @@
 ﻿<ConsoleSettings>
+<!--
   <DomainManager>
     <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
   </DomainManager>
@@ -11,7 +12,22 @@
   <AnchorManager>
     <Url>http://localhost:6692/CertificateService.svc/Anchors</Url>
   </AnchorManager>
-  <!--
+  -->
+
+  <DomainManager>
+    <Url>http://131.107.224.83/ConfigService/DomainManagerService.svc/Domains</Url>
+  </DomainManager>
+  <AddressManager>
+    <Url>http://131.107.224.83/ConfigService/DomainManagerService.svc/Addresses</Url>
+  </AddressManager>
+  <CertificateManager>
+    <Url>http://131.107.224.83/ConfigService/CertificateService.svc/Certificates</Url>
+  </CertificateManager>
+  <AnchorManager>
+    <Url>http://131.107.224.83/ConfigService/CertificateService.svc/Anchors</Url>
+  </AnchorManager>
+
+<!--
   <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
@@ -24,7 +40,7 @@
   <AnchorManager>
     <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
   </AnchorManager>
--->
+  -->
 <!--
   <DomainManager>
     <Url>http://um-amalga1/ConfigService/DomainManagerService.svc/Domains</Url>

@@ -180,6 +180,11 @@ namespace NHINDirect.Config.Store
 
         public Anchor[] GetIncoming(string ownerName)
         {
+            return this.GetIncoming(ownerName, null);
+        }
+
+        public Anchor[] GetIncoming(string ownerName, EntityStatus? status)
+        {
             if (string.IsNullOrEmpty(ownerName))
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
@@ -187,12 +192,26 @@ namespace NHINDirect.Config.Store
 
             using (ConfigDatabase db = this.Store.CreateContext())
             {
-                Anchor[] matches = db.Anchors.GetIncoming(ownerName).ToArray();
-                return matches;
+                IEnumerable<Anchor> matches;
+                if (status == null)
+                {
+                    matches = db.Anchors.GetIncoming(ownerName);
+                }
+                else
+                {
+                    matches = db.Anchors.GetIncoming(ownerName, status.Value);
+                }
+                
+                return matches.ToArray();
             }
         }
 
         public Anchor[] GetOutgoing(string ownerName)
+        {
+            return this.GetOutgoing(ownerName, null);
+        }
+
+        public Anchor[] GetOutgoing(string ownerName, EntityStatus? status)
         {
             if (string.IsNullOrEmpty(ownerName))
             {
@@ -201,7 +220,18 @@ namespace NHINDirect.Config.Store
 
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                return db.Anchors.GetOutgoing(ownerName).ToArray();
+                IEnumerable<Anchor> matches;
+                
+                if (status == null)
+                {
+                    matches = db.Anchors.GetOutgoing(ownerName);
+                }
+                else
+                {
+                    matches = db.Anchors.GetOutgoing(ownerName, status.Value);
+                }
+                
+                return matches.ToArray();                    
             }
         }
 
