@@ -119,11 +119,25 @@
       <xs:sequence />
     </xs:complexType>
   </xs:element>
+  <xs:element name="GetAddressCount">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAddressCountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAddressCountResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="EnumerateDomainAddresses">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="domainID" type="xs:long" />
-        <xs:element minOccurs="0" name="lastAddressID" type="xs:long" />
+        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="lastAddress" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="maxResults" type="xs:int" />
       </xs:sequence>
     </xs:complexType>
@@ -138,7 +152,7 @@
   <xs:element name="EnumerateAddresses">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="lastAddressID" type="xs:long" />
+        <xs:element minOccurs="0" name="lastAddress" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="maxResults" type="xs:int" />
       </xs:sequence>
     </xs:complexType>
@@ -185,6 +199,18 @@
       <xs:sequence />
     </xs:complexType>
   </xs:element>
+  <xs:element name="GetDomainCount">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDomainCountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetDomainCountResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="GetDomains">
     <xs:complexType>
       <xs:sequence>
@@ -221,7 +247,7 @@
   <xs:element name="EnumerateDomains">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="lastDomainID" type="xs:long" />
+        <xs:element minOccurs="0" name="lastDomainName" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="maxResults" type="xs:int" />
       </xs:sequence>
     </xs:complexType>

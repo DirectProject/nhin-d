@@ -28,9 +28,10 @@ namespace NHINDirect.Diagnostics
         string m_namePrefix;
         string m_ext;
         int m_fileChangeFreqHours = 24;
-        int m_fileNumber = -1;
+        long m_fileNumber = -1;
         StreamWriter m_writer;
-
+        string m_currentFilePath;
+        
         public LogWriter(string directoryPath, string namePrefix)
             : this(directoryPath, namePrefix, "log", 24)
         {
@@ -71,7 +72,15 @@ namespace NHINDirect.Diagnostics
 
         public bool KeepWriterOpen = true;
         public bool UTCTime = false;
-
+        
+        public string CurrentFilePath
+        {
+            get
+            {
+                return m_currentFilePath;
+            }
+        }
+        
         DateTime Now
         {
             get
@@ -140,22 +149,26 @@ namespace NHINDirect.Diagnostics
 
         void EnsureWriter()
         {
-            DateTime now = this.Now;
-            if (m_writer == null || (now.Hour / m_fileChangeFreqHours) != m_fileNumber)
+            this.EnsureWriter(this.Now);
+        }
+        
+        public void EnsureWriter(DateTime now)
+        {
+            if (m_writer == null || (AbsoluteHour(now) / m_fileChangeFreqHours) != m_fileNumber)
             {
                 this.NewFile(now);
             }
         }
-
+        
         const string FileDateFormat = "yyyyMMdd";
         void NewFile(DateTime now)
         {
             this.Close();
             
             string fileName;
-            int fileIndex = now.Hour / m_fileChangeFreqHours;
+            long fileIndex = AbsoluteHour(now) / m_fileChangeFreqHours;
             m_fileNumber = fileIndex;
-
+            
             int id = -1;
             int maxid = 1024;
             do
@@ -163,7 +176,7 @@ namespace NHINDirect.Diagnostics
                 id++;
                 if (m_fileChangeFreqHours < 24)
                 {
-                    fileName = this.CreateHourlyName(now, fileIndex, id);
+                    fileName = this.CreateHourlyName(now, now.Hour, id);
                 }
                 else
                 {
@@ -174,10 +187,15 @@ namespace NHINDirect.Diagnostics
                 {
                     m_writer = new StreamWriter(File.Open(filePath, FileMode.Append, FileAccess.Write, FileShare.Read));
                     m_writer.AutoFlush = true;                    
+                    m_currentFilePath = filePath;
                     return;
                 }
                 catch
                 {
+                    if (!File.Exists(filePath))
+                    {
+                        throw;
+                    }
                 }
             }
             while (id < maxid);
@@ -210,7 +228,7 @@ namespace NHINDirect.Diagnostics
             return fileName;
         }
 
-        string CreateHourlyName(DateTime now, int fileIndex, int id)
+        string CreateHourlyName(DateTime now, long fileIndex, int id)
         {
             string fileName;
 
@@ -237,6 +255,11 @@ namespace NHINDirect.Diagnostics
             }
             
             return null;
+        }
+        
+        internal long AbsoluteHour(DateTime now)
+        {
+            return (long) (now.Ticks / TimeSpan.TicksPerHour);
         }
     }
 }
