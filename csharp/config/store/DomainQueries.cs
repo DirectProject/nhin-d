@@ -33,19 +33,31 @@ namespace NHINDirect.Config.Store
                 where domain.Name == owner
                 select domain
         );
-        static readonly Func<ConfigDatabase, long, int, IQueryable<Domain>> Domains = CompiledQuery.Compile(
+        static readonly Func<ConfigDatabase, long, int, IQueryable<Domain>> EnumDomainsByID = CompiledQuery.Compile(
             (ConfigDatabase db, long lastDomainID, int maxResults) =>
                 (from domain in db.Domains
                  where domain.ID > lastDomainID
-                 orderby domain.ID
+                 orderby domain.ID ascending
                  select domain).Take(maxResults)
         );
+        
+        //
+        // Linq to Sql doesn't do this efficiently
+        //
+        const string Sql_EnumDomainFirst = "SELECT TOP ({0}) * from Domains order by DomainName asc";
+        const string Sql_EnumDomainNext = "SELECT TOP ({0}) * from Domains where DomainName > {1} order by DomainName asc";
 
         public static ConfigDatabase GetDB(this Table<Domain> table)
         {
             return (ConfigDatabase)table.Context;
         }
-
+        
+        public static int GetCount(this Table<Domain> table)
+        {
+            return (from domain in table.GetDB().Domains
+                select domain.ID).Count();
+        }
+        
         public static Domain Get(this Table<Domain> table, string domainName)
         {
             return Domain(table.GetDB(), domainName).SingleOrDefault();
@@ -81,7 +93,17 @@ namespace NHINDirect.Config.Store
 
         public static IQueryable<Domain> Get(this Table<Domain> table, long lastDomainID, int maxResults)
         {
-            return Domains(table.GetDB(), lastDomainID, maxResults);
+            return EnumDomainsByID(table.GetDB(), lastDomainID, maxResults);
+        }
+
+        public static IEnumerable<Domain> ExecGet(this Table<Domain> table, string lastDomainName, int maxResults)
+        {
+            if (string.IsNullOrEmpty(lastDomainName))
+            {
+                return table.GetDB().ExecuteQuery<Domain>(Sql_EnumDomainFirst, maxResults);
+            }
+            
+            return table.GetDB().ExecuteQuery<Domain>(Sql_EnumDomainNext, maxResults, lastDomainName);
         }
 
         public static void ExecDelete(this Table<Domain> table, string domainName)

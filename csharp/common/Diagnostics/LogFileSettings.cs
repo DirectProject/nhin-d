@@ -75,16 +75,25 @@ namespace NHINDirect.Diagnostics
             
             if (string.IsNullOrEmpty(this.DirectoryPath))
             {
-                this.DirectoryPath = System.IO.Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.System), "System32\\LogFiles");
+                this.DirectoryPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "LogFiles");
+                System.IO.Directory.CreateDirectory(this.DirectoryPath);
             }
         }
         
         string GetProcessName()
         {
-            using (System.Diagnostics.Process process = System.Diagnostics.Process.GetCurrentProcess())
+            try
             {
-                return System.IO.Path.GetFileNameWithoutExtension(process.MainModule.ModuleName);
+                using (System.Diagnostics.Process process = System.Diagnostics.Process.GetCurrentProcess())
+                {
+                    return System.IO.Path.GetFileNameWithoutExtension(process.MainModule.ModuleName);
+                }
             }
+            catch
+            {
+                return "Unknown";
+            }
+            
         }
         
         public LogWriter CreateWriter()
