@@ -25,10 +25,8 @@ namespace AdminUI
             switch (e.CommandName)
             {
                 case "Details":
-                    //CertificateId = e.CertificateId;
-                    // CertificateDetailsControl1.Owner = e.Owner;
-                    // CertificatesMultiView.SetActiveView(DetailsView);
-                    //AddressDetailsControl1.
+                    AddressDetailsControl1.EmailAddress = e.EmailAddress;
+                    AddressDetailsControl1.AddressId = e.AddressId;   
                     AddressesMultiView.SetActiveView(DetailsView);
                     break;
             }

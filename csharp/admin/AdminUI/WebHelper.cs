@@ -29,6 +29,7 @@ namespace AdminUI
                 catch (Exception ex)
                 {
                     //TODO: Something went wrong. Do something about it
+                    throw new Exception("Could not find the key specified:" + dataKeyName, ex);
                 }
             }
             return index;

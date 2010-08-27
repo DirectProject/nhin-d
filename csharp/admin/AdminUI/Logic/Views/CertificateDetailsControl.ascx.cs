@@ -47,12 +47,6 @@ namespace AdminUI.Logic.Views
             }
             set { ViewState["Owner"] = value; }
         }
-        //public Certificate Model
-        //{
-        //    get { return _model; }
-        //    set { _model = value; }
-        //}
-
 
         private Certificate _model;
         private CertificateStoreClient _certificateStoreClient = new CertificateStoreClient();
