@@ -88,8 +88,8 @@ namespace AdminUI.Logic.Views
 
             }
 
-            _model = filterByOwner ? _addressManagerClient.EnumerateDomainAddresses(DomainId, MAXRESULTSPERPAGE)
-                : _addressManagerClient.EnumerateAddresses(MAXRESULTSPERPAGE);
+            //_model = filterByOwner ? _addressManagerClient.EnumerateDomainAddresses(DomainId, MAXRESULTSPERPAGE)
+            //    : _addressManagerClient.EnumerateAddresses(MAXRESULTSPERPAGE);
         }
 
         protected void AddressesGridView_RowCommand(object sender, GridViewCommandEventArgs e)
