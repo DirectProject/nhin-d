@@ -73,3 +73,4 @@ glob:csharp/config/service/ve-4D36.tmp
 glob:csharp/config/store/configStore.sln
 glob:csharp/external/xunit/xunit.console.sln
 glob:csharp/unittests/agenttest.bat
+glob:csharp/build/buildGateway64.5.1.ReSharper

@@ -64,7 +64,7 @@ namespace NHINDirect.Config.Client.DomainManager
 
             client.RemoveDomain(address.Host);
         }
-        
+
         public static IEnumerable<Domain> EnumerateDomains(this DomainManagerClient client, int chunkSize)
         {
             if (chunkSize <= 0)
@@ -72,12 +72,12 @@ namespace NHINDirect.Config.Client.DomainManager
                 throw new ArgumentException();
             }
 
-            long lastID = -1;
+            string lastDomain = null;
 
             Domain[] domains;
             while (true)
             {
-                domains = client.EnumerateDomains(lastID, chunkSize);
+                domains = client.EnumerateDomains(lastDomain, chunkSize);
                 if (domains.IsNullOrEmpty())
                 {
                     yield break;
@@ -86,7 +86,7 @@ namespace NHINDirect.Config.Client.DomainManager
                 {
                     yield return domains[i];
                 }
-                lastID = domains[domains.Length - 1].ID;
+                lastDomain = domains[domains.Length - 1].Name;
             }
         }
     }
