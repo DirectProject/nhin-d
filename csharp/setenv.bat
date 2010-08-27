@@ -1,8 +1,10 @@
 @ECHO OFF
 
 SET frameworkpath=%windir%\microsoft.net\framework64\v3.5
+SET arch=%1%
+IF "%1" == "" SET arch=%PROCESSOR_ARCHITECTURE%
 
-IF "%PROCESSOR_ARCHITECTURE%" == "x86" SET frameworkpath=%windir%\microsoft.net\framework\v3.5
+IF "%arch%" == "x86" SET frameworkpath=%windir%\microsoft.net\framework\v3.5
 
 IF NOT EXIST %frameworkpath% GOTO :FrameworkMissing
 
@@ -12,7 +14,7 @@ SET vcvarsallpath=%VS90COMNTOOLS%..\..\VC\vcvarsall.bat
 
 IF NOT EXIST "%vcvarsallpath%" GOTO :VCVarsMissing
 
-CALL "%vcvarsallpath%" %PROCESSOR_ARCHITECTURE%
+CALL "%vcvarsallpath%" %arch%
 
 PATH "%frameworkpath%";%PATH%
 
