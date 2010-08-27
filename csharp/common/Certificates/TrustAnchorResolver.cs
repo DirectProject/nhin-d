@@ -21,36 +21,68 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace NHINDirect.Certificates
 {
+    /// <summary>
+    /// Provides trusted certificates 
+    /// </summary>
+    /// <remarks>Trust anchors are root certificates for which leaf certificates that
+    /// chain up to the anchor are presumed to be trusted.</remarks>
     public class TrustAnchorResolver : ITrustAnchorResolver
     {
         ICertificateResolver m_outgoingAnchors;
         ICertificateResolver m_incomingAnchors;
         
+        /// <summary>
+        /// Initializes an instance with a collection of trust anchors used across both incoming and outgoing messages.
+        /// </summary>
+        /// <param name="anchors">The trust anchors for this resolver.</param>
         public TrustAnchorResolver(X509Certificate2Collection anchors)
             : this(anchors, anchors)
         {
         }
 
+        /// <summary>
+        /// Initializes an instance with separate certificates for incoming and outgoing messages.
+        /// </summary>
+        /// <param name="outgoingAnchors">Trust anchors used to validate messages for sending</param>
+        /// <param name="incomingAnchors">Trust anchors used to validate messages on reciept.</param>
         public TrustAnchorResolver(X509Certificate2Collection outgoingAnchors, X509Certificate2Collection incomingAnchors)
             : this(new UniformCertificateStore(outgoingAnchors), new UniformCertificateStore(incomingAnchors))
         {
         }
 
+        /// <summary>
+        /// Initializes an instance with a store of trust anchors used across both incoming and outgoing messages.
+        /// </summary>
+        /// <param name="anchors">The store of trust anchors for this resolver.</param>
         public TrustAnchorResolver(IX509CertificateStore anchors)
             : this(anchors, anchors)
         {
         }
 
+        /// <summary>
+        /// Initializes an instance with separate certificate stores for incoming and outgoing messages.
+        /// </summary>
+        /// <param name="outgoingAnchors">Trust anchor store used to validate messages for sending</param>
+        /// <param name="incomingAnchors">Trust anchor store used to validate messages on reciept.</param>
         public TrustAnchorResolver(IX509CertificateStore outgoingAnchors, IX509CertificateStore incomingAnchors)
             : this(new UniformCertificateStore(outgoingAnchors), new UniformCertificateStore(incomingAnchors))
         {
         }
-                
+        
+        /// <summary>
+        /// Initializes an instance with a resolver for all messages.
+        /// </summary>
+        /// <param name="anchors">The resolver providing the anchor certificates.</param>
         public TrustAnchorResolver(ICertificateResolver anchors)
             : this(anchors, anchors)
         {
         }
         
+        /// <summary>
+        /// Initializes an instance with separate resolvers for incoming and outgoing messages.
+        /// </summary>
+        /// <param name="outgoingAnchors">The resolver to use for resolving trust anchors for outgoing messages</param>
+        /// <param name="incomingAnchors">The resolver to use for resolving trust anchors for incoming messages</param>
         public TrustAnchorResolver(ICertificateResolver outgoingAnchors, ICertificateResolver incomingAnchors)
         {
             if (outgoingAnchors == null || incomingAnchors == null)
@@ -63,6 +95,9 @@ namespace NHINDirect.Certificates
         }
 
 
+        /// <summary>
+        /// The resolver for trust anchors for outgoing messages.
+        /// </summary>
         public ICertificateResolver OutgoingAnchors
         {
             get 
@@ -71,6 +106,9 @@ namespace NHINDirect.Certificates
             }
         }
 
+        /// <summary>
+        /// The resolver for trust anchors for incoming messages.
+        /// </summary>
         public ICertificateResolver IncomingAnchors
         {
             get 

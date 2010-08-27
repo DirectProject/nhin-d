@@ -90,7 +90,7 @@ namespace NHINDirect.Collections
         /// </summary>
         /// <example>
         /// <code>
-        /// ObjectCollection<int> coll = new ObjectCollection<int>();
+        /// ObjectCollection&lt;int&gt; coll = new ObjectCollection&lt;int&gt;();
         /// coll.Add(1);
         /// coll.Add(2);
         /// coll.Add(3);
@@ -134,7 +134,13 @@ namespace NHINDirect.Collections
                 }
             }
         }
-                   
+
+        /// <summary>
+        /// Inserts the provided item at the provided index, moving items at and past the insertion
+        /// point down.
+        /// </summary>
+        /// <param name="index">The index where the new item will appear.</param>
+        /// <param name="item">The item to insert.</param>
         protected override void InsertItem(int index, T item)
         {
             if (item == null)
@@ -145,6 +151,11 @@ namespace NHINDirect.Collections
             this.Notify(CollectionChangeType.Add, item);
         }
 
+        /// <summary>
+        /// Sets an item at an index position.
+        /// </summary>
+        /// <param name="index">The index position to update.</param>
+        /// <param name="item">The item to update at the index position.</param>
         protected override void SetItem(int index, T item)
         {
             if (item == null)
@@ -156,6 +167,10 @@ namespace NHINDirect.Collections
             this.Notify(CollectionChangeType.Update, item);
         }
 
+        /// <summary>
+        /// Removes the item at the specified index position (moving subsequent items up)
+        /// </summary>
+        /// <param name="index">The index position for which to remove the item.</param>
         protected override void RemoveItem(int index)
         {
             T item = this[index];

@@ -56,7 +56,7 @@ namespace NHINDirect.Mime
         }
 
 		/// <summary>
-		/// Constructs a new CharReader from <paramref name="source"/> between <see cref="position"/> and <see cref="maxPosition"/>
+		/// Constructs a new CharReader from <paramref name="source"/> between <paramref name="position"/> and <paramref name="maxPosition"/>
 		/// </summary>
 		/// <param name="source">The text to construct the buffer from.</param>
 		/// <param name="position">The initial position of the buffer</param>
