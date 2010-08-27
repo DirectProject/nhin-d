@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Text;
 using System.Xml;
-using log4net;
+
+using NLog;
+
 using NHINDirect.XDS.Common;
 
 namespace NHINDirect.XDS
@@ -22,7 +21,7 @@ namespace NHINDirect.XDS
             XDSHelper xdsHelper = null;
             StringDictionary stringDictionary = null;
 
-            ILog logger = LogManager.GetLogger("XDS");
+            Logger logger = LogManager.GetLogger("XDS");
 
             try
             {
