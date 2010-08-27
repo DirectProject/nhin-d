@@ -59,6 +59,15 @@ namespace AdminUI {
         protected global::System.Web.UI.WebControls.GridView GridView1;
         
         /// <summary>
+        /// CertificateUploadControl1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::AdminUI.Logic.Views.CertificateUploadControl CertificateUploadControl1;
+        
+        /// <summary>
         /// DetailsView control.
         /// </summary>
         /// <remarks>
@@ -66,5 +75,86 @@ namespace AdminUI {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.View DetailsView;
+        
+        /// <summary>
+        /// OwnerLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label OwnerLabel;
+        
+        /// <summary>
+        /// ThumbprintLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label ThumbprintLabel;
+        
+        /// <summary>
+        /// CreateDateLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label CreateDateLabel;
+        
+        /// <summary>
+        /// ValidStartDateLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label ValidStartDateLabel;
+        
+        /// <summary>
+        /// ValidEndDateLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label ValidEndDateLabel;
+        
+        /// <summary>
+        /// ForIncomingCheckBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ForIncomingCheckBox;
+        
+        /// <summary>
+        /// ForOutgoingCheckBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ForOutgoingCheckBox;
+        
+        /// <summary>
+        /// StatusDropDownList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList StatusDropDownList;
+        
+        /// <summary>
+        /// HasDataCheckBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox HasDataCheckBox;
     }
 }

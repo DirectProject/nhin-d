@@ -16,34 +16,22 @@
     <!-- for design time support -->
     <link href="Assets/Stylesheet.css" rel="stylesheet" type="text/css" />
 	<style type="text/css">
-#MainMenu ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	width: auto;
-	background-color: #C0C0C0;
-	color: #FFFFFF;
-}
-</style>
+
+    </style>
 </head>
 <body>
     <form id="form1" runat="server">
-    <div class="SiteHeader">
+    <div>
         <asp:ContentPlaceHolder ID="PageHeaderContentPlaceHolder" runat="server">
             <div class="Logo"></div>
-            <div class="SiteMenu">
-                <asp:Menu ID="MainMenu" runat="server" Orientation="Horizontal">
+            <div>
+                <asp:Menu ID="NavigationMenu" runat="server" CssClass="menu">
                     <Items>
                         <asp:MenuItem Text="Domains" Value="Domains" NavigateUrl="~/Domains.aspx">
-                            <asp:MenuItem NavigateUrl="~/Certificates.aspx" Text="Certificates" 
-                                Value="Certificates"></asp:MenuItem>
-                            <asp:MenuItem NavigateUrl="~/Addresses.aspx" Text="Addresses" Value="Addresses">
-                            </asp:MenuItem>
-                            <asp:MenuItem NavigateUrl="~/Anchors.aspx" Text="Anchors" Value="Anchors">
-                            </asp:MenuItem>
                         </asp:MenuItem>
                     </Items>
                 </asp:Menu>
+              
             </div>
         </asp:ContentPlaceHolder>
     </div>

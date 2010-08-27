@@ -9,49 +9,40 @@ namespace AdminUI.Logic.Views
         // TODO: Validate domain name
         public event EventHandler DomainSaved;
 
-        private DomainManagerClient _domainManagerClient = new DomainManagerClient();
-        private Domain _model;
-        protected void Page_Load(object sender, EventArgs e)
+        private DomainManagerClient m_domainManagerClient = new DomainManagerClient();
+        private Domain m_model;
+
+        protected override void OnLoad(EventArgs e)
         {
-
+            base.OnLoad(e);
+            DomainSaved += delegate(object o, EventArgs eventArgs) { };
         }
-
+        
         protected void Add_Click(object sender, EventArgs e)
         {
-           
+
             SaveDomain();
         }
-       
+
         private void SaveDomain()
         {
-            Domain d = new Domain();
-            bool domainFound = true;
-            try
-            {
-                d = _domainManagerClient.GetDomain(this.DomainNameTextBox.Text);
-            }
+            Domain d = null;
+            d = m_domainManagerClient.GetDomain(this.DomainNameTextBox.Text);
 
-            catch (System.ServiceModel.FaultException<ConfigStoreFault> ex)
+            if (d == null)
             {
-                // The domain was not found
-                domainFound = false;
-            }
-
-            if ( !domainFound)
-            {
-                //TODO: Great candidate for an extension method
-                d.Name = this.DomainNameTextBox.Text;
-                d.Status = (EntityStatus)Enum.ToObject(typeof(EntityStatus), int.Parse(StatusDropDownList.SelectedValue));
-                _domainManagerClient.UpdateDomain(d);
+                d = new Domain(this.DomainNameTextBox.Text);
+                m_domainManagerClient.UpdateDomain(d);
                 DomainSaved(this, null);
             }
-            else
+
+            else if (d.Name.ToLower() == DomainNameTextBox.Text.ToLower())
             {
                 ErrorLiteral.Text = "This domain already exists.";
             }
-           
 
-           
+
+
         }
     }
 }

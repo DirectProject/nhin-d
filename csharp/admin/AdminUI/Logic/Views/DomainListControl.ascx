@@ -26,6 +26,10 @@
                 &nbsp;|
                 <asp:LinkButton ID="Anchors" runat="server" CommandArgument="<%# Container.DataItemIndex %>"
                     CommandName="Anchors">Anchors</asp:LinkButton>
+                &nbsp;|
+                <asp:LinkButton ID="RemoveButton" runat="server" 
+                    CommandArgument="<%# Container.DataItemIndex %>" CommandName="Remove" 
+                    CssClass="RemoveLink">Remove</asp:LinkButton>
             </ItemTemplate>
         </asp:TemplateField>
     </Columns>

@@ -10,14 +10,6 @@
                 ControlToValidate="DomainNameTextBox" ErrorMessage="RequiredFieldValidator" 
                 ValidationGroup="NewDomainGroup">Domain name required.</asp:RequiredFieldValidator>
             </span></div>
-        <div> Status:
-            <asp:DropDownList ID="StatusDropDownList" runat="server">
-                <asp:ListItem Value="0">New</asp:ListItem>
-                <asp:ListItem Value="1">Enabled</asp:ListItem>
-                <asp:ListItem Value="2">Disabled</asp:ListItem>
-              
-            </asp:DropDownList>
-        </div>
         <div>
             <div class="ButtonRow" style="color: #FF0000">
          <asp:LinkButton ID="Add" runat="server" 
