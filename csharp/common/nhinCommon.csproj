@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\external\nlog\bin\net-2.0\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -63,11 +67,16 @@
     <Compile Include="Cryptography\SignedEntity.cs" />
     <Compile Include="Cryptography\SMIMECryptographer.cs" />
     <Compile Include="Cryptography\SMIMEStandard.cs" />
+    <Compile Include="Diagnostics\ILogFactory.cs" />
+    <Compile Include="Diagnostics\ILogger.cs" />
     <Compile Include="Diagnostics\LogEventType.cs" />
     <Compile Include="Diagnostics\LogFile.cs" />
     <Compile Include="Diagnostics\LogFileSettings.cs" />
     <Compile Include="Diagnostics\LogListener.cs" />
+    <Compile Include="Diagnostics\LogManager.cs" />
     <Compile Include="Diagnostics\LogWriter.cs" />
+    <Compile Include="Diagnostics\NLogFactory.cs" />
+    <Compile Include="Diagnostics\NLogLogger.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Mail\MailParser.cs" />
     <Compile Include="Mail\Extensions.cs" />
