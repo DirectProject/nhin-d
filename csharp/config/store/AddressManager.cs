@@ -133,6 +133,14 @@ namespace NHINDirect.Config.Store
                 db.Addresses.Attach(address, current);
             }
         }
+        
+        public int Count(long domainID)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return db.Addresses.GetCount(domainID);
+            }            
+        }
                
         public Address Get(string emailAddress)
         {
@@ -162,7 +170,6 @@ namespace NHINDirect.Config.Store
             return this.Get(db, emailAddresses, null);
         }
 
-
         public Address[] Get(string[] emailAddresses, EntityStatus? status)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
@@ -186,26 +193,8 @@ namespace NHINDirect.Config.Store
             
             return db.Addresses.Get(emailAddresses, status.Value);
         }
-        
-        public Address[] Get(long domainID, long lastAddressID, int maxResults)
-        {
-            using(ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, domainID, lastAddressID, maxResults).ToArray();
-            }
-        }
 
-        public IEnumerable<Address> Get(ConfigDatabase db, long domainID, long lastAddressID, int maxResults)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException();
-            }
-            
-            return db.Addresses.Get(domainID, lastAddressID, maxResults);
-        }
-
-        public Address[] Get(long lastAddressID, int maxResults)
+        public Address[] Get(string lastAddressID, int maxResults)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
@@ -213,16 +202,34 @@ namespace NHINDirect.Config.Store
             }
         }
 
-        public IEnumerable<Address> Get(ConfigDatabase db, long lastAddressID, int maxResults)
+        public IEnumerable<Address> Get(ConfigDatabase db, string lastAddressID, int maxResults)
         {
             if (db == null)
             {
                 throw new ArgumentNullException();
             }
 
-            return db.Addresses.Get(lastAddressID, maxResults);
+            return db.Addresses.ExecGet(lastAddressID, maxResults);
         }
-        
+
+        public Address[] Get(long domainID, string lastAddressID, int maxResults)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, domainID, lastAddressID, maxResults).ToArray();
+            }
+        }
+
+        public IEnumerable<Address> Get(ConfigDatabase db, long domainID, string lastAddressID, int maxResults)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            return db.Addresses.ExecGet(domainID, lastAddressID, maxResults);
+        }
+                
         public Address[] Get(long[] addressIDs)
         {
             return this.Get(addressIDs, null);

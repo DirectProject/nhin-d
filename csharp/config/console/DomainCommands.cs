@@ -63,6 +63,16 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("    domainGet domainName");
         }
         
+        public void Command_DomainCount(string[] args)
+        {
+            Console.WriteLine("{0} domains", m_domainClient.GetDomainCount());
+        }
+        public void Usage_DomainCount()
+        {
+            Console.WriteLine("Retrieve # of domains.");
+            Console.WriteLine("    domainCount");
+        }
+                        
         public void Command_DomainStatusSet(string[] args)
         {
             string name = args.GetRequiredValue(0);

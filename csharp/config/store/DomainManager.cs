@@ -79,6 +79,14 @@ namespace NHINDirect.Config.Store
             db.Domains.InsertOnSubmit(domain);
         }
         
+        public int Count()
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return db.Domains.GetCount();
+            }            
+        }
+                
         public Domain Get(string name)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
@@ -137,23 +145,23 @@ namespace NHINDirect.Config.Store
             
             return db.Domains.Get(names, status.Value);
         }
-        
-        public Domain[] Get(long lastDomainID, int maxResults)
+
+        public Domain[] Get(string lastDomain, int maxResults)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                return this.Get(db, lastDomainID, maxResults).ToArray();
+                return this.Get(db, lastDomain, maxResults).ToArray();
             }
         }
-        
-        public IEnumerable<Domain> Get(ConfigDatabase db, long lastDomainID, int maxResults)
+
+        public IEnumerable<Domain> Get(ConfigDatabase db, string lastDomain, int maxResults)
         {
             if (db == null)
             {
                 throw new ArgumentNullException();
-            }   
-            
-            return db.Domains.Get(lastDomainID, maxResults);
+            }
+
+            return db.Domains.ExecGet(lastDomain, maxResults);
         }
 
         public void Update(Domain domain)

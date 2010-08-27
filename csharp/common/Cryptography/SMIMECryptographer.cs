@@ -179,7 +179,7 @@ namespace NHINDirect.Cryptography
         /// there will be multiple copies of the encrypted encryption key.
         /// </remarks>
         /// <param name="entity">The <see cref="MimeEntity"/> including content headers</param>
-        /// <param name="encryptingCertificate">The certificate used for encryption</param>
+        /// <param name="encryptingCertificates">The certificates used for encryption</param>
         /// <returns>The encrypted <see cref="MimeEntity"/></returns>
         public MimeEntity Encrypt(MimeEntity entity, X509Certificate2Collection encryptingCertificates)
         {
@@ -259,11 +259,24 @@ namespace NHINDirect.Cryptography
         //
         // Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
         //
+
+        /// <summary>
+        /// Decrypts a <see cref="Message"/> with a certificate
+        /// </summary>
+        /// <param name="message">The <see cref="Message"/> to decrypt</param>
+        /// <param name="decryptingCertificate">The <see cref="X509Certificate2"/> that encrypted the message</param>
+        /// <returns>A <see cref="MimeEntity"/> holding the decrypted message</returns>
         public MimeEntity Decrypt(Message message, X509Certificate2 decryptingCertificate)
         {
             return Decrypt(message.ExtractMimeEntity(), decryptingCertificate);
         }
 
+        /// <summary>
+        /// Decrypts a <see cref="MimeEntity"/> with a certificate
+        /// </summary>
+        /// <param name="encryptedEntity">The <see cref="MimeEntity"/> to decrypt</param>
+        /// <param name="decryptingCertificate">The <see cref="X509Certificate2"/> that encrypted the message</param>
+        /// <returns>A <see cref="MimeEntity"/> holding the decrypted message</returns>
         public MimeEntity Decrypt(MimeEntity encryptedEntity, X509Certificate2 decryptingCertificate)
         {
             if (decryptingCertificate == null)
@@ -293,11 +306,27 @@ namespace NHINDirect.Cryptography
             return DefaultSerializer.Default.Deserialize<MimeEntity>(decryptedBytes);
         }
 
+
+        /// <summary>
+        /// Decrypts encrypted raw content with a certificate
+        /// </summary>
+        /// <param name="encryptedContent">The raw data to decrypt</param>
+        /// <param name="decryptingCertificate">The <see cref="X509Certificate2"/> that encrypted the message</param>
+        /// <returns>A <c>byte</c> array holding the decrypted content</returns>
         public byte[] Decrypt(byte[] encryptedContent, X509Certificate2 decryptingCertificate)
         {
             return Decrypt(encryptedContent, new X509Certificate2Collection(decryptingCertificate));
         }
 
+        /// <summary>
+        /// Decrypts encrypted raw content with a collection of certificates, at least one of which can decrypt the encryption key.
+        /// </summary>
+        /// <remarks>
+        /// See <see cref="EnvelopedCms.Decrypt()"/> for more information on underlying processing.
+        /// </remarks>
+        /// <param name="encryptedContent">The raw data to decrypt</param>
+        /// <param name="decryptingCertificates">The <see cref="X509Certificate2Collection"/> of certificates, at least one of which encrypted the message</param>
+        /// <returns>A <c>byte</c> array holding the decrypted content</returns>
         public byte[] Decrypt(byte[] encryptedContent, X509Certificate2Collection decryptingCertificates)
         {
             if (decryptingCertificates == null || decryptingCertificates.Count == 0)
@@ -318,6 +347,11 @@ namespace NHINDirect.Cryptography
             return contentInfo.Content;
         }
 
+        /// <summary>
+        /// Deserializes an encrypted <c>byte</c> array of encrypted data as a <see cref="EnvelopedCms"/> instance
+        /// </summary>
+        /// <param name="encryptedContent">The raw encrypted data</param>
+        /// <returns>An instance of <see cref="EnvelopedCms"/> containing the encrypted data</returns>
         public EnvelopedCms DeserializeEncryptionEnvelope(byte[] encryptedContent)
         {
             if (encryptedContent == null)
@@ -349,21 +383,62 @@ namespace NHINDirect.Cryptography
         // Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
         // Some mail readers ignore the epilogue when calculating signatures!
         //
+
+        /// <summary>
+        /// Creates a detatched signed entity from a message and an signing certificate
+        /// </summary>
+        /// <remarks>
+        /// Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
+        /// Some mail readers ignore the epilogue when calculating signatures!
+        /// </remarks>
+        /// <param name="message">The <see cref="Message"/> entity to sign</param>
+        /// <param name="signingCertificate">The certificate with which to sign.</param>
+        /// <returns>A <see cref="SignedEntity"/> instance holding the signature.</returns>
         public SignedEntity Sign(Message message, X509Certificate2 signingCertificate)
         {
             return Sign(message.ExtractEntityForSignature(m_includeEpilogue), signingCertificate);
         }
 
+        /// <summary>
+        /// Creates a detatched signed entity from a message and a collection of signing certificate
+        /// </summary>
+        /// <remarks>
+        /// Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
+        /// Some mail readers ignore the epilogue when calculating signatures!
+        /// </remarks>
+        /// <param name="message">The <see cref="Message"/> entity to sign</param>
+        /// <param name="signingCertificates">The certificates with which to sign.</param>
+        /// <returns>A <see cref="SignedEntity"/> instance holding the signatures.</returns>
         public SignedEntity Sign(Message message, X509Certificate2Collection signingCertificates)
         {
             return Sign(message.ExtractEntityForSignature(m_includeEpilogue), signingCertificates);
         }
 
+        /// <summary>
+        /// Creates a detatched signed entity from a <see cref="MimeEntity"/> and a signing certificate
+        /// </summary>
+        /// <remarks>
+        /// Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
+        /// Some mail readers ignore the epilogue when calculating signatures!
+        /// </remarks>
+        /// <param name="entity">The <see cref="MimeEntity"/> to sign</param>
+        /// <param name="signingCertificate">The certificate with which to sign.</param>
+        /// <returns>A <see cref="SignedEntity"/> instance holding the signature.</returns>
         public SignedEntity Sign(MimeEntity entity, X509Certificate2 signingCertificate)
         {
             return Sign(entity, new X509Certificate2Collection(signingCertificate));
         }
 
+        /// <summary>
+        /// Creates a detatched signed entity from a <see cref="MimeEntity"/> and collection of a signing certificates
+        /// </summary>
+        /// <remarks>
+        /// Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
+        /// Some mail readers ignore the epilogue when calculating signatures!
+        /// </remarks>
+        /// <param name="entity">The <see cref="MimeEntity"/> to sign</param>
+        /// <param name="signingCertificates">The certificates with which to sign.</param>
+        /// <returns>A <see cref="SignedEntity"/> instance holding the signatures.</returns>
         public SignedEntity Sign(MimeEntity entity, X509Certificate2Collection signingCertificates)
         {
             if (entity == null)
@@ -377,18 +452,49 @@ namespace NHINDirect.Cryptography
             return new SignedEntity(m_digestAlgorithm, entity, signature);
         }
 
+        /// <summary>
+        /// Creates a signed data from source raw data and a signing certificate
+        /// </summary>
+        /// <remarks>
+        /// Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
+        /// Some mail readers ignore the epilogue when calculating signatures!
+        /// </remarks>
+        /// <param name="content">The <c>byte</c> array to sign</param>
+        /// <param name="signingCertificate">The certificate with which to sign.</param>
+        /// <returns>Raw data holding the signature.</returns>
         public byte[] Sign(byte[] content, X509Certificate2 signingCertificate)
         {
             SignedCms signature = CreateSignature(content, signingCertificate);
             return signature.Encode();
         }
 
+        /// <summary>
+        /// Creates a signed data from source raw data and a collection of signing certificates
+        /// </summary>
+        /// <remarks>
+        /// Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
+        /// Some mail readers ignore the epilogue when calculating signatures!
+        /// </remarks>
+        /// <param name="content">The <c>byte</c> array to sign</param>
+        /// <param name="signingCertificates">The certificates with which to sign.</param>
+        /// <returns>Raw data holding the signatures.</returns>
         public byte[] Sign(byte[] content, X509Certificate2Collection signingCertificates)
         {
             SignedCms signature = CreateSignature(content, signingCertificates);
             return signature.Encode();
         }
 
+
+        /// <summary>
+        /// Creates a signed entity from source raw data and a collection of signing certificates
+        /// </summary>
+        /// <remarks>
+        /// Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
+        /// Some mail readers ignore the epilogue when calculating signatures!
+        /// </remarks>
+        /// <param name="content">The <c>byte</c> array to sign</param>
+        /// <param name="signingCertificates">The certificates with which to sign.</param>
+        /// <returns>The <see cref="MimeEntity"/> holding the signatures.</returns>
         public MimeEntity CreateSignatureEntity(byte[] content, X509Certificate2Collection signingCertificates)
         {
             byte[] signatureBytes = Sign(content, signingCertificates);
@@ -405,6 +511,12 @@ namespace NHINDirect.Cryptography
         	return signature;
         }
 
+        /// <summary>
+        /// Creates <see cref="SignedCms"/> for raw content and a signing certificate
+        /// </summary>
+        /// <param name="content">The <c>byte</c> array to sign</param>
+        /// <param name="signingCertificate">The certificate with which to sign.</param>
+        /// <returns>An instance of <see cref="SignedCms"/> holdling the signature</returns>
         public SignedCms CreateSignature(byte[] content, X509Certificate2 signingCertificate)
         {
             if (content == null)
@@ -423,6 +535,12 @@ namespace NHINDirect.Cryptography
             return signature;
         }
 
+        /// <summary>
+        /// Creates <see cref="SignedCms"/> for raw content and a collection of signing certificate
+        /// </summary>
+        /// <param name="content">The <c>byte</c> array to sign</param>
+        /// <param name="signingCertificates">The certificates with which to sign.</param>
+        /// <returns>An instance of <see cref="SignedCms"/> holdling the signatures</returns>
         public SignedCms CreateSignature(byte[] content, X509Certificate2Collection signingCertificates)
         {
             if (content == null)
@@ -451,12 +569,24 @@ namespace NHINDirect.Cryptography
         //
         //-----------------------------------------------------
 
+        /// <summary>
+        /// Checks that a signature was signed by the signer certificate.
+        /// </summary>
+        /// <param name="signedEntity">The signed entity to check</param>
+        /// <param name="signerCertificate">The signer certificaet that purports to sign the entity</param>
+        /// <exception cref="SignatureException">If the entity was not signed by the claimed certificate</exception>
         public void CheckSignature(SignedEntity signedEntity, X509Certificate2 signerCertificate)
         {
             SignedCms signatureEnvelope = DeserializeDetachedSignature(signedEntity);
             CheckSignature(signatureEnvelope.SignerInfos, signerCertificate);
         }
 
+        /// <summary>
+        /// Checks that a collection of signature was signed by the signer certificate.
+        /// </summary>
+        /// <param name="signers">The collection of <see cref="SignerInfo"/>  to check</param>
+        /// <param name="signerCertificate">The signer certificate that purports to sign the entity</param>
+        /// <exception cref="SignatureException">If the entity was not signed by the claimed certificate</exception>
         public void CheckSignature(SignerInfoCollection signers, X509Certificate2 signerCertificate)
         {
             if (signerCertificate == null)
@@ -479,6 +609,11 @@ namespace NHINDirect.Cryptography
             signer.CheckSignature(true);
         }
 
+        /// <summary>
+        /// Transforms a <see cref="SignedEntity"/> to the associated <see cref="SignedCms"/> instance
+        /// </summary>
+        /// <param name="entity">The <see cref="SignedEntity"/> to deserialize</param>
+        /// <returns>The corresponding <see cref="SignedCms"/></returns>
         public SignedCms DeserializeDetachedSignature(SignedEntity entity)
         {
             if (entity == null)
@@ -493,6 +628,13 @@ namespace NHINDirect.Cryptography
             return DeserializeDetachedSignature(contentBytes, signatureBytes);
         }
 
+        /// <summary>
+        /// Transforms a detached signature, represented as the entity and the signature raw data
+        /// to the associated <see cref="SignedCms"/> instance
+        /// </summary>
+        /// <param name="content">The raw content of the entity</param>
+        /// <param name="signatureBytes">the raw content of the signature</param>
+        /// <returns>The corresponding <see cref="SignedCms"/></returns>
         public SignedCms DeserializeDetachedSignature(byte[] content, byte[] signatureBytes)
         {
             SignedCms signature = new SignedCms(CreateDataContainer(content), true);
@@ -501,6 +643,11 @@ namespace NHINDirect.Cryptography
             return signature;
         }
 
+        /// <summary>
+        /// Tranforms an enveloped signature to the corresponding <see cref="SignedCms"/>
+        /// </summary>
+        /// <param name="envelopeEntity">The entity containing the enveloped signature</param>
+        /// <returns>the corresponding <see cref="SignedCms"/></returns>
         public SignedCms DeserializeEnvelopedSignature(MimeEntity envelopeEntity)
         {
             if (envelopeEntity == null)
@@ -518,6 +665,11 @@ namespace NHINDirect.Cryptography
             return DeserializeEnvelopedSignature(envelopeBytes);
         }
 
+        /// <summary>
+        /// Tranforms an enveloped signature to the corresponding <see cref="SignedCms"/>
+        /// </summary>
+        /// <param name="envelopeBytes">The raw data containing the enveloped signature</param>
+        /// <returns>the corresponding <see cref="SignedCms"/></returns>
         public SignedCms DeserializeEnvelopedSignature(byte[] envelopeBytes)
         {
             SignedCms signature = new SignedCms();
