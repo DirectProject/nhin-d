@@ -17,7 +17,7 @@ using System;
 
 using NLog;
 
-namespace NHINDirect.Diagnostics
+namespace Health.Net.Diagnostics.NLog
 {
 	class NLogLogger : ILogger
 	{

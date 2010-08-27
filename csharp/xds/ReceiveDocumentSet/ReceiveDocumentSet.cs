@@ -5,7 +5,7 @@ using System.ServiceModel.Channels;
 using System.Text;
 using System.Xml;
 
-using NLog;
+using Health.Net.Diagnostics;
 
 using NHINDirect.XDS.Common;
 
@@ -21,7 +21,7 @@ namespace NHINDirect.XDS
             XDSHelper xdsHelper = null;
             StringDictionary stringDictionary = null;
 
-            Logger logger = LogManager.GetLogger("XDS");
+            ILogger logger = LogManager.GetLogger("XDS");
 
             try
             {
