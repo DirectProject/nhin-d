@@ -27,7 +27,7 @@
 	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xds" />
 
 	<Target Name="build-agent">
-		<MSBuild Projects="$(agent_solution)" Targets="Build" Properties="Configuration=Debug" />
+		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=Debug" />
 	</Target>
 
 	<Target Name="clean-agent">
@@ -39,17 +39,18 @@
 	</Target>
 
 	<Target Name="build-gateway">
-		<MSBuild Projects="$(gateway_solution)" Targets="Build" Properties="Configuration=Debug;Architecture=Any CPU" />
+		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=Debug;Architecture=Any CPU" />
 	</Target>
 
 	<Target Name="build-gateway64">
-		<MSBuild Projects="$(gateway_solution)" Targets="Build" Properties="Configuration=Debug;Architecture=x64" />
+		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=Debug;Architecture=x64" />
 	</Target>
 
 	<Target Name="clean-gateway">
-		<!-- still broken
-		<MSBuild Projects="$(gateway_solution)" Targets="Clean" Properties="Configuration=Debug;Architecture=Any CPU" />
-		-->
+		<!-- common files may have been removed, so... ugly but rebuild them and then clean them! The pain of a
+		     shared bin folder. -->
+		<MSBuild Projects="$(gateway_solution)" Targets="build" Properties="Configuration=Debug;Architecture=Any CPU" />
+		<MSBuild Projects="$(gateway_solution)" Targets="clean" Properties="Configuration=Debug;Architecture=Any CPU" />
 	</Target>
 	
 	<Target Name="clean-xds">
