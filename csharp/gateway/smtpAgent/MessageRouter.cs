@@ -87,45 +87,59 @@ namespace NHINDirect.SmtpAgent
                 m_routes[setting.AddressType] = setting;
             }
         }
-        
-        public bool Route(ISmtpMessage message, MessageEnvelope envelope, Action<ISmtpMessage, MessageRoute> action)
+                
+        public void Route(ISmtpMessage message, MessageEnvelope envelope, Action<ISmtpMessage, MessageRoute> action)
         {
-            if (envelope == null)
+            if (message == null || envelope == null || action == null)
             {
                 throw new ArgumentNullException();
             }
             
-            return this.Route(message, envelope.DomainRecipients, action);
+            foreach(NHINDAddress recipient in envelope.DomainRecipients)
+            {
+                if (this.Route(message, recipient, action))
+                {
+                    //
+                    // If we routed the message, remove the recipient from the Recipient list to prevent double delivery
+                    //
+                    envelope.Recipients.Remove(recipient);
+                }
+            }
         }
         
-        // Returns true if all recipients had routes assigned
-        public bool Route(ISmtpMessage message, IEnumerable<NHINDAddress> recipients, Action<ISmtpMessage, MessageRoute> action)
+        public bool Route(ISmtpMessage message, NHINDAddress recipient, Action<ISmtpMessage, MessageRoute> action)
         {
-            if (recipients == null || action == null)
+            if (recipient == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            Address address = recipient.Tag as Address;
+            if (address == null || !address.HasType)
+            {
+                return false;
+            }
+            
+            return this.Route(message, address.Type, action);
+        }
+
+        public bool Route(ISmtpMessage message, string addressType, Action<ISmtpMessage, MessageRoute> action)
+        {
+            if (message == null || string.IsNullOrEmpty(addressType) || action == null)
             {
                 throw new ArgumentException();
             }
 
-            int countRouted = 0;
-            int recipientCount = 0;
-            foreach (NHINDAddress recipient in recipients)
+            MessageRoute route = m_routes[addressType];
+            if (route == null)
             {
-                ++recipientCount;
-                Address address = recipient.Tag as Address;
-                if (address != null && !string.IsNullOrEmpty(address.Type))
-                {
-                    MessageRoute route = m_routes[address.Type];
-                    if (route != null)
-                    {
-                        action(message, route);
-                        ++countRouted;
-                    }
-                }
+                return false;
             }
 
-            return (countRouted == recipientCount);
+            action(message, route);
+            return true;
         }
-
+        
         public IEnumerator<MessageRoute> GetEnumerator()
         {
             return m_routes.Values.GetEnumerator();
@@ -140,5 +154,4 @@ namespace NHINDirect.SmtpAgent
 
         #endregion
     }
-
 }

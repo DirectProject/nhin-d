@@ -69,6 +69,7 @@
     <Compile Include="ConfigAnchorResolver.cs" />
     <Compile Include="ConfigCertificateResolver.cs" />
     <Compile Include="ConfigService.cs" />
+    <Compile Include="ISmtpMessage.cs" />
     <Compile Include="MessageRouter.cs" />
     <Compile Include="ResolverSettings.cs" />
     <Compile Include="Extensions.cs" />

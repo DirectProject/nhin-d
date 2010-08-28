@@ -20,6 +20,7 @@ namespace SmtpAgentTests
             AgentTests.AgentTester.EnsureStandardMachineStores();
 
             //m_agent = new SmtpAgent(SmtpAgentSettings.LoadSettings(MakeFilePath("SmtpAgentTestFiles\\TestSmtpAgentConfigService.xml")));
+            //m_agent = new SmtpAgent(SmtpAgentSettings.LoadSettings(MakeFilePath("SmtpAgentTestFiles\\TestSmtpAgentConfigServiceProd.xml")));
             m_agent = new SmtpAgent(SmtpAgentSettings.LoadSettings(MakeFilePath("SmtpAgentTestFiles\\TestSmtpAgentConfig.xml")));
         }
         
@@ -33,7 +34,20 @@ namespace SmtpAgentTests
         [Fact]
         public void TestEndToEnd()
         {
-            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(TestMessage)));   
+            m_agent.Settings.InternalMessage.EnableRelay = true;
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(TestMessage)));
+                        
+            m_agent.Settings.InternalMessage.EnableRelay = false;
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(TestMessage)));
+        }
+
+        [Fact]
+        public void TestEndToEndInternalMessage()
+        {
+            m_agent.Settings.InternalMessage.EnableRelay = true;
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(TestMessage)));
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(CrossDomainMessage)));
+            m_agent.Settings.InternalMessage.EnableRelay = false;
         }
 
         [Fact(Skip="Need Config Service to run  this")]
@@ -43,10 +57,36 @@ namespace SmtpAgentTests
             Assert.Throws<AgentException>(() => RunEndToEndTest(this.LoadMessage(UnknownUsersMessage)));
         }
         
+        // DO NOT ENABLE. FOR DEBUGGING ONLY
+        [Fact]
+        public void TestEndToEndCrossDomain()
+        {
+            m_agent.Settings.InternalMessage.EnableRelay = true;
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(CrossDomainMessage)));            
+        }
+        
         void RunEndToEndTest(CDO.Message message)
         {
-            string text = message.GetMessageText();
+            m_agent.ProcessMessage(message);            
+            message = this.LoadMessage(message);
+            base.VerifyOutgoingMessage(message);
             
+            m_agent.ProcessMessage(message);
+            message = this.LoadMessage(message);
+            
+            if (m_agent.Settings.InternalMessage.EnableRelay)
+            {
+                base.VerifyIncomingMessage(message);
+            }
+            else
+            {
+                base.VerifyOutgoingMessage(message);
+            }
+        }
+
+        /*        
+        void RunEndToEndTest(CDO.Message message)
+        {
             CDOSmtpMessage smtpMessage = new CDOSmtpMessage(message);
             
             MessageEnvelope envelope = m_agent.ProcessOutgoing(smtpMessage);
@@ -56,7 +96,7 @@ namespace SmtpAgentTests
             envelope = m_agent.ProcessIncoming(smtpMessage);
             smtpMessage.Update(envelope.SerializeMessage());
         }
-        
+        */
         [Fact]
         public void TestUntrusted()
         {

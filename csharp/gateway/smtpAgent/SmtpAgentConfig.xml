@@ -12,7 +12,6 @@
     <NamePrefix>redmondGateway</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
   </Log>
-  <AllowInternalMessages>true</AllowInternalMessages>
   <PrivateCerts>
     <MachineResolver>
       <Name>NHINDPrivate</Name>
@@ -53,4 +52,8 @@
     <CopyFolder>C:\inetpub\mailroot\outgoing</CopyFolder>
     <EnableRelay>false</EnableRelay>
   </ProcessOutgoing>
+  <ProcessInternal>
+    <CopyFolder>C:\inetpub\mailroot\pickup</CopyFolder>
+    <EnableRelay>false</EnableRelay>
+  </ProcessInternal>
 </SmtpAgentConfig>

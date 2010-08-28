@@ -1,4 +1,19 @@
-﻿using System;
+﻿/* 
+ Copyright (c) 2010, NHIN Direct Project
+ All rights reserved.
+
+ Authors:
+    Umesh Madan     umeshma@microsoft.com
+  
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -86,7 +101,7 @@ namespace NHINDirect.Tools.Command
                 return m_commandNames;
             }
         }
-        
+                        
         public event Action<Exception> Error;
         
         public void Register(object instance)
@@ -153,14 +168,7 @@ namespace NHINDirect.Tools.Command
             }
             catch (Exception ex)
             {
-                if (this.Error != null)
-                {
-                    this.Error(ex);
-                }
-                else
-                {
-                    CommandUI.Print(ex);
-                }
+                this.HandleError(ex);
             }
         }   
            
@@ -171,16 +179,35 @@ namespace NHINDirect.Tools.Command
                 return;
             }
             
-            CommandDef cmd = this.Bind(input);                                    
-            string[] args = EmptyArgs;
+            string commandName = input[0];
+            CommandDef cmd = this[commandName];
+            if (cmd == null)
+            {
+                CommandUI.PrintUpperCase("{0} not found", commandName);
+                CommandUI.PrintSectionBreak();
+                Usage_Help();
+                return;
+            }
             
+            string[] args = EmptyArgs;            
             if (input.Length > 1)
             {
                 args = new string[input.Length - 1];
                 Array.Copy(input, 1, args, 0, input.Length - 1);
             }
             
-            cmd.Eval(args);
+            try
+            {
+                cmd.Eval(args);
+                return;
+            }
+            catch(Exception ex)
+            {
+                this.HandleError(ex);
+            }
+            
+            CommandUI.PrintSectionBreak();
+            cmd.Usage();            
         }
         
         public void ShowUsage(string cmdName)
@@ -205,6 +232,16 @@ namespace NHINDirect.Tools.Command
             }
         }
 
+        public IEnumerable<string> PrefixMatchCommandNames(string prefix)
+        {
+            //
+            // Do a prefix match. Note: if needed, we can speed this up since the name array is sorted. 
+            //
+            return (from name in this.CommandNames
+                    where name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
+                    select name);
+        }
+
         void Exit(int code)
         {
             Environment.Exit(code);
@@ -224,11 +261,7 @@ namespace NHINDirect.Tools.Command
 
             return isValid;
         }
-
-        CommandDef Bind(string[] input)
-        {
-            return this.Bind(input[0]);
-        }
+        
         CommandDef Bind(string name)
         {
             CommandDef cmd = this[name];
@@ -278,7 +311,18 @@ namespace NHINDirect.Tools.Command
 
             return cmd;
         }
-                
+        
+        void HandleError(Exception ex)
+        {
+            if (this.Error != null)
+            {
+                this.Error(ex);
+            }
+            else
+            {
+                CommandUI.Print(ex);
+            }
+        }                
         //-------------------------------
         //
         // Built in Standard Commands
@@ -329,10 +373,7 @@ namespace NHINDirect.Tools.Command
             //
             // Do a prefix match. Note: if needed, we can speed this up since the name array is sorted. 
             //
-            var prefixMatch = from name in this.CommandNames
-                              where name.StartsWith(cmdName, StringComparison.OrdinalIgnoreCase)
-                              select name;
-            foreach (string name in prefixMatch)
+            foreach (string name in this.PrefixMatchCommandNames(cmdName))
             {
                 this.Bind(name).ShowUsage();
             }
@@ -341,10 +382,9 @@ namespace NHINDirect.Tools.Command
         public void Usage_Help()
         {
             Console.WriteLine("Show help");
-            Console.WriteLine("help ['all' | commandName]");
-            Console.WriteLine("   all: Show all commands");
-            Console.WriteLine("   commandName: Show help for this command"); 
-            Console.WriteLine("   If command not found, then show help for commands whose names begin with commandName");
+            Console.WriteLine("help ['all' | name]");
+            Console.WriteLine("   all: All commands");
+            Console.WriteLine("   name: This command name or names with this PREFIX"); 
         }        
     }    
 }

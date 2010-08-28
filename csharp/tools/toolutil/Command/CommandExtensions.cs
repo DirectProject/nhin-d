@@ -166,7 +166,12 @@ namespace NHINDirect.Tools.Command
         {
             return source.IndexOfAny(chars, startAt);
         }
-
+        
+        public static NamedArguments NamedArguments(this string[] rawArgs)
+        {
+            return new NamedArguments(rawArgs);
+        }
+        
         public static IEnumerable<KeyValuePair<string, string>> ParseNamedArguments(this string[] rawArgs)
         {
             Stack<string> names = new Stack<string>();

@@ -135,11 +135,5 @@ namespace NHINDirect.Agent
                 return (m_senderSignatures != null && m_senderSignatures.Count > 0);
             }
         }
-        
-        internal override void CategorizeRecipientsByTrust(TrustEnforcementStatus minTrustStatus)
-        {
-            base.CategorizeRecipientsByTrust(minTrustStatus);
-            this.DomainRecipients.RemoveUntrusted(minTrustStatus);
-        }
     }
 }

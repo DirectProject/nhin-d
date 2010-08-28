@@ -153,7 +153,8 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return Service.Current.Store.Addresses.Get(emailAddresses, status);
+                Address[] matches = Service.Current.Store.Addresses.Get(emailAddresses, status);
+                return matches;
             }
             catch (Exception ex)
             {

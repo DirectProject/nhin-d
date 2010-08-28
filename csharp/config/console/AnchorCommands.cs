@@ -37,7 +37,7 @@ namespace NHINDirect.Config.Command
             m_client = ConfigConsole.Settings.AnchorManager.CreateAnchorStoreClient();
         }
         
-        public void Command_AnchorAdd(string[] args)
+        public void Command_Anchor_Add(string[] args)
         {
             string owner = args.GetRequiredValue(0);
             string filePath = args.GetRequiredValue(1);
@@ -45,13 +45,13 @@ namespace NHINDirect.Config.Command
             
             this.PushCerts(owner, CertificateCommands.LoadCerts(filePath, password));
         }
-        public void Usage_AnchorAdd()
+        public void Usage_Anchor_Add()
         {
             Console.WriteLine("Import an anchor certificate from a file and push it into the store.");
-            Console.WriteLine("    anchoradd owner filepath [password]");
+            Console.WriteLine("    owner filepath [password]");
         }
         
-        public void Command_AnchorGetByID(string[] args)
+        public void Command_Anchor_ByID_Get(string[] args)
         {
             long anchorID = args.GetRequiredValue<int>(0);
             CertificateGetOptions options = CertificateCommands.GetOptions(args, 1);
@@ -59,14 +59,14 @@ namespace NHINDirect.Config.Command
             Anchor[] anchors = m_client.GetAnchors(new long[] { anchorID }, options);
             this.Print(anchors);
         }
-        public void Usage_AnchorGetByID()
+        public void Usage_Anchor_ByID_Get()
         {
             Console.WriteLine("Get an anchor by its id.");
-            Console.WriteLine("    anchorgetbyid anchorID [options]");
+            Console.WriteLine("    anchorID [options]");
             CertificateCommands.PrintOptionsUsage();
         }
                 
-        public void Command_AnchorsGet(string[] args)
+        public void Command_Anchors_Get(string[] args)
         {
             string owner = args.GetRequiredValue(0);
             CertificateGetOptions options = CertificateCommands.GetOptions(args,1);
@@ -74,14 +74,14 @@ namespace NHINDirect.Config.Command
             Anchor[] anchors = m_client.GetAnchorsForOwner(owner, options);
             this.Print(anchors);
         }
-        public void Usage_AnchorsGet()
+        public void Usage_Anchors_Get()
         {
             Console.WriteLine("Get all anchors for an owner.");
-            Console.WriteLine("  anchorsget owner [options]");
+            Console.WriteLine("  owner [options]");
             CertificateCommands.PrintOptionsUsage();
         }
         
-        public void Command_AnchorsList(string[] args)
+        public void Command_Anchors_List(string[] args)
         {
             CertificateGetOptions options = CertificateCommands.GetOptions(args, 0);
             foreach(Anchor anchor in m_client.EnumerateAnchors(10, options))
@@ -90,25 +90,37 @@ namespace NHINDirect.Config.Command
                 CommandUI.PrintSectionBreak();
             }
         }
-        public void Usage_AnchorsList()
+        public void Usage_Anchors_List()
         {
             Console.WriteLine("List all anchors");
             CertificateCommands.PrintOptionsUsage();
         }
 
-        public void Command_AnchorStatusSet(string[] args)
+        public void Command_Anchor_Status_Set(string[] args)
         {
             string owner = args.GetRequiredValue(0);
             EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
 
             m_client.SetAnchorStatusForOwner(owner, status);
         }
-        public void Usage_AnchorStatusSet()
+        public void Usage_Anchor_Status_Set()
         {
             Console.WriteLine("Set the status for ALL anchors for an owner.");
-            Console.WriteLine("    anchorstatuset owner");
+            Console.WriteLine("    owner");
         }
-
+        
+        public void Command_Anchor_Remove(string[] args)
+        {
+            long anchorID = args.GetRequiredValue<long>(0);
+            m_client.RemoveAnchor(anchorID);
+        }
+        
+        public void Usage_Anchor_Remove()
+        {
+            Console.WriteLine("Remove anchors with given ID");
+            Console.WriteLine("    anchorID");
+        }
+        
         void PushCerts(string owner, IEnumerable<X509Certificate2> certs)
         {
             foreach (X509Certificate2 cert in certs)
