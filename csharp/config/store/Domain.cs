@@ -45,15 +45,15 @@ namespace NHINDirect.Config.Store
             this.Status = EntityStatus.New;
         }
            
-        [Column(Name="DomainID", IsPrimaryKey=true, IsDbGenerated=true)]
+        [Column(Name="DomainID", IsPrimaryKey=true, IsDbGenerated=true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public long ID
         {
             get;
             set;
         }
-        
-        [Column(Name="DomainName", DbType="varchar(255)", CanBeNull=false, IsPrimaryKey = true)]
+
+        [Column(Name = "DomainName", DbType = "varchar(255)", CanBeNull = false, IsPrimaryKey = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public string Name
         {
@@ -77,7 +77,7 @@ namespace NHINDirect.Config.Store
             }
         }
         
-        [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public DateTime CreateDate
         {
@@ -93,20 +93,35 @@ namespace NHINDirect.Config.Store
             set;
         }
 
-        [Column(Name = "Status", DbType="tinyint", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "Status", DbType = "tinyint", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public EntityStatus Status
         {
             get;
             set;
-        }        
-        
-        [Column(Name = "PostmasterAddressID", CanBeNull = true, UpdateCheck = UpdateCheck.WhenChanged)]
+        }
+
+        [Column(Name = "PostmasterAddressID", CanBeNull = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = false)]
         public long? PostmasterID
         {
             get;
             set;
+        }
+        
+        internal void CopyFixed(Domain source)
+        {
+            this.ID = source.ID;
+            this.CreateDate = source.CreateDate;
+            this.Name = source.Name;
+            this.UpdateDate = source.UpdateDate;
+        }
+        
+        internal void ApplyChanges(Domain source)
+        {
+            this.PostmasterID = source.PostmasterID;
+            this.Status = source.Status;
+            this.UpdateDate = DateTime.Now;
         }
         
         public bool IsValidEmailDomain()

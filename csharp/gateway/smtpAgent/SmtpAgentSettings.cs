@@ -34,9 +34,9 @@ namespace NHINDirect.SmtpAgent
         ProcessIncomingSettings m_incomingSettings;
         ProcessOutgoingSettings m_outgoingSettings;
         ProcessBadMessageSettings m_badMessageSettings;
+        ProcessInternalMessageSettings m_internalMessageSettings;
         MessageRoute[] m_incomingRoutes;
         bool m_logVerbose = true;
-        bool m_allowInternal = true;
         
         public SmtpAgentSettings()
         {
@@ -72,22 +72,6 @@ namespace NHINDirect.SmtpAgent
             set
             {
                 m_postmasters = value;
-            }
-        }
-
-        /// <summary>
-        /// If true, then any ENCRYPTED messages from within the domain are passed through the Incoming message pipeline
-        /// </summary>
-        [XmlElement]
-        public bool AllowInternalMessages
-        {
-            get
-            {
-                return m_allowInternal;
-            }
-            set
-            {
-                m_allowInternal = value;
             }
         }
 
@@ -195,6 +179,32 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
+        [XmlElement("InternalMessage")]
+        public ProcessInternalMessageSettings InternalMessage
+        {
+            get
+            {
+                if (m_internalMessageSettings == null)
+                {
+                    m_internalMessageSettings = new ProcessInternalMessageSettings();
+                }
+                return m_internalMessageSettings;
+            }
+            set
+            {
+                m_internalMessageSettings = value;
+            }
+        }
+        
+        [XmlIgnore]
+        internal bool AllowInternalRelay
+        {
+            get
+            {
+                return this.InternalMessage.EnableRelay;
+            }
+        }
+                
         [XmlArray("IncomingRoutes")]
         [XmlArrayItem("Route")]
         public MessageRoute[] IncomingRoutes

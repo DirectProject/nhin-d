@@ -33,25 +33,7 @@ using CDO;
 using ADODB;
 
 namespace NHINDirect.SmtpAgent
-{
-    public interface ISmtpMessage
-    {
-        string Sender
-        {
-            get;
-        }
-        
-        MessageEnvelope GetEnvelope();
-        void SetEnvelopeRecipients(NHINDAddressCollection recipients);
-        
-        void Update(string messageText);
-        void Accept();
-        void Reject();
-        void Abort();
-        
-        void SaveToFile(string filePath);
-    }
-    
+{    
     public class SmtpAgent
     {
         SmtpAgentSettings m_settings;
@@ -71,6 +53,22 @@ namespace NHINDirect.SmtpAgent
             this.Init(settings);
         }
         
+        public SmtpAgentSettings Settings
+        {
+            get
+            {
+                return m_settings;
+            }
+        }
+
+        public LogFile Log
+        {
+            get
+            {
+                return m_diagnostics.Log;
+            }
+        }
+                
         public NHINDAgent SecurityAgent
         {
             get
@@ -79,21 +77,21 @@ namespace NHINDirect.SmtpAgent
                 return m_agent;
             }
         }
-        
-        public LogFile Log
-        {
-            get
-            {
-                return m_diagnostics.Log;
-            }
-        }
-        
+                
         public MessageRouter Router
         {
             get
             {
                 return m_router;
             }
+        }
+        
+        public AgentDomains Domains
+        {
+            get
+            {
+                return this.SecurityAgent.Domains;
+            }            
         }
         
         void VerifyInitialized()
@@ -332,8 +330,9 @@ namespace NHINDirect.SmtpAgent
 
         protected virtual void PreProcessMessage(ISmtpMessage message)
         {
-            this.LogStatus("Message Received from: " + message.Sender);
-            this.CopyMessageToFolder(message, m_settings.RawMessage);
+            m_diagnostics.LogEnvelopeHeaders(message);
+            
+            this.CopyMessage(message, m_settings.RawMessage);
         }
                                 
         protected virtual MessageEnvelope ProcessEnvelope(ISmtpMessage message, MessageEnvelope envelope)
@@ -352,7 +351,7 @@ namespace NHINDirect.SmtpAgent
             if (isSenderInDomain)
             {
                 isOutgoing = true;
-                if (m_settings.AllowInternalMessages && NHINDirect.Cryptography.SMIMEStandard.IsEncrypted(envelope.Message))
+                if (m_settings.AllowInternalRelay && NHINDirect.Cryptography.SMIMEStandard.IsEncrypted(envelope.Message))
                 {
                     isOutgoing = false;
                 }
@@ -377,6 +376,30 @@ namespace NHINDirect.SmtpAgent
             }
                             
             return envelope;
+        }
+
+        protected virtual void PostProcessMessage(ISmtpMessage message, MessageEnvelope envelope)
+        {
+            bool isOutgoing = envelope is OutgoingMessage;
+            bool relay = false;
+            if (isOutgoing)
+            {
+                relay = this.PostProcessOutgoing(message, envelope);
+            }
+            else
+            {
+                relay = this.PostProcessIncoming(message, envelope);
+            }
+
+            if (relay && envelope.HasRecipients)
+            {
+                message.SetRcptTo(envelope.Recipients);
+                m_diagnostics.LogEnvelopeHeaders(message);
+            }
+            else
+            {
+                message.Abort();
+            }
         }
 
         //---------------------------------------------------
@@ -419,6 +442,41 @@ namespace NHINDirect.SmtpAgent
             this.LogStatus("ProcessedOutgoing");
             return envelope;
         }
+
+        bool PostProcessOutgoing(ISmtpMessage message, MessageEnvelope envelope)
+        {
+            this.CopyMessage(message, m_settings.Outgoing);
+
+            this.RelayInternal(message, envelope);
+
+            return m_settings.Outgoing.EnableRelay;
+        }
+
+        // If the message contains trusted internal recipients, drop a copy in the pickup folder, so the message can sent back
+        // through the incoming pipeline
+        protected void RelayInternal(ISmtpMessage message, MessageEnvelope envelope)
+        {
+            ProcessInternalMessageSettings settings = m_settings.InternalMessage;
+            if (!(settings.EnableRelay && settings.HasCopyFolder))
+            {
+                return;
+            }
+            if (!envelope.HasDomainRecipients)
+            {
+                // No internal recipients
+                return;
+            }
+            //
+            // We have some trusted domain recipients. Drop a copy of the message into the message pickup folder
+            // It will get passed back through the message processing loop and treated as Incoming
+            //
+            this.CopyMessage(message, settings);
+            //
+            // Since we've routed the message ourselves, ensure there is no double delivery by removing them from
+            // the recipient list
+            //
+            envelope.Recipients.Remove(envelope.DomainRecipients);
+        }
         
         //---------------------------------------------------
         //
@@ -433,8 +491,19 @@ namespace NHINDirect.SmtpAgent
         //
         void OnPreProcessIncoming(IncomingMessage message)
         {
+            this.VerifyDomainRecipientsRegistered(message);
+        }
+        
+        /// <summary>
+        /// Ensure that domain recipients are KNOWN - i.e. registered with the Config System
+        /// If not, remove them.
+        /// </summary>
+        /// <param name="message"></param>
+        void VerifyDomainRecipientsRegistered(IncomingMessage message)
+        {
             if (!m_settings.HasAddressManager)
             {
+                // Address validation is turned off
                 return;
             }
             
@@ -445,8 +514,8 @@ namespace NHINDirect.SmtpAgent
             if (resolved.IsNullOrEmpty())
             {
                 throw new AgentException(AgentError.NoRecipients);
-            }            
-         
+            }
+
             // Remove any addresses that could not be resolved
             // Yes, this is currently n^2, but given the typical # of addresses, cost should be insignificant
             int i = 0;
@@ -480,13 +549,24 @@ namespace NHINDirect.SmtpAgent
         {            
             envelope = this.SecurityAgent.ProcessIncoming(envelope);
             this.LogStatus("ProcessedIncoming");
-            //
-            // Need to update the envelope (if any) to ensure the message is delivered only to trusted valid recipients
-            //
-            message.SetEnvelopeRecipients(envelope.DomainRecipients);
-            
+
             return envelope;
         }
+
+        bool PostProcessIncoming(ISmtpMessage message, MessageEnvelope envelope)
+        {
+            this.CopyMessage(message, m_settings.Incoming);
+
+            m_router.Route(message, envelope, this.CopyMessage);
+
+            return m_settings.Incoming.EnableRelay;
+        }
+
+        //---------------------------------------------------
+        //
+        //  Message Manipulation
+        //
+        //---------------------------------------------------
         
         protected virtual void UpdateMessageText(ISmtpMessage message, MessageEnvelope envelope)
         {
@@ -498,30 +578,7 @@ namespace NHINDirect.SmtpAgent
             
             message.Update(messageText);
         }
-
-        protected virtual void PostProcessMessage(ISmtpMessage message, MessageEnvelope envelope)
-        {
-            bool relay = true;
-            bool isOutgoing = envelope is OutgoingMessage;
-            
-            if (isOutgoing)
-            {
-                this.CopyMessageToFolder(message, m_settings.Outgoing);
-                relay = m_settings.Outgoing.EnableRelay;
-            }
-            else
-            {
-                bool fullyRouted = m_router.Route(message, envelope, this.CopyMessageToFolder);
-                this.CopyMessageToFolder(message, m_settings.Incoming);
-                relay = fullyRouted ? false : m_settings.Incoming.EnableRelay;
-            }
-            
-            if (!relay)
-            {
-                message.Abort();
-            }
-        }
-                
+                                        
         protected virtual void AcceptMessage(ISmtpMessage message)
         {
             message.Accept();
@@ -533,37 +590,33 @@ namespace NHINDirect.SmtpAgent
             {
                 message.Reject();
                 this.LogStatus("Rejected Message");
-                this.CopyMessageToFolder(message, m_settings.BadMessage);
+                this.CopyMessage(message, m_settings.BadMessage);
             }
             catch
             {
             }
         }
         
-        protected virtual void CopyMessageToFolder(ISmtpMessage message, MessageProcessingSettings settings)
+                
+        protected virtual void CopyMessage(ISmtpMessage message, MessageProcessingSettings settings)
+        {
+            if (settings.HasCopyFolder)
+            {
+                this.CopyMessage(message, settings.CopyFolder);
+            }                
+        }
+
+        protected virtual void CopyMessage(ISmtpMessage message, string folderPath)
         {
             try
             {
-                if (settings.HasCopyFolder)
-                {
-                    string uniqueFileName = Extensions.CreateUniqueFileName();
-                    message.SaveToFile(Path.Combine(settings.CopyFolder, uniqueFileName));
-                }                
+                string uniqueFileName = Extensions.CreateUniqueFileName();
+                message.SaveToFile(Path.Combine(folderPath, uniqueFileName));
             }
             catch (Exception ex)
             {
                 m_diagnostics.LogError(ex);
             }
-        }
-        
-        bool IsInternalPostmasterMessage(MessageEnvelope envelope)
-        {
-            if (!m_postmasters.IsPostmaster(envelope.Sender))
-            {
-                return false;
-            }
-
-            return (envelope.DomainRecipients.Count == envelope.Recipients.Count);
         }
     }
 }

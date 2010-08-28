@@ -74,6 +74,11 @@ namespace NHINDirect.Config.Client.CertificateService
             return Certificate.ToX509Collection(client.GetCertificatesForOwner(owner));
         }
         
+        public static void RemoveCertificate(this CertificateStoreClient client, long certificateID)
+        {
+            client.RemoveCertificates(new long[] {certificateID});
+        }
+        
         public static IEnumerable<Certificate> EnumerateCertificates(this CertificateStoreClient client, int chunkSize)
         {
             return client.EnumerateCertificates(chunkSize, FullCertData);

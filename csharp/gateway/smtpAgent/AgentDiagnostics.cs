@@ -76,7 +76,7 @@ namespace NHINDirect.SmtpAgent
             }
             else
             {
-                m_log.WriteError(error);
+                this.LogError(error);
             }
         }
 
@@ -88,15 +88,30 @@ namespace NHINDirect.SmtpAgent
             }
             else
             {
-                m_log.WriteError(error);
+                this.LogError(error);
             }
         }
 
         internal void OnDnsError(DnsCertResolver service, Exception error)
         {
-            m_log.WriteError(error);
+            this.LogError(error);
         }
-
+        
+        internal void LogEnvelopeHeaders(ISmtpMessage message)
+        {       
+            if (m_logVerbose && message.HasEnvelope)
+            {     
+                this.LogStatus(this.SummarizeEnvelopeHeaders(message));
+            }
+        }
+        
+        internal string SummarizeEnvelopeHeaders(ISmtpMessage message)
+        {
+            string mailFrom = message.GetMailFrom();
+            string rcptTo = message.GetRcptTo();
+            return string.Format("MAILFROM={0};RCPTTO={1}", mailFrom, rcptTo);
+        }
+        
         internal string BuildVerboseErrorMessage(string message, MessageEnvelope envelope, Exception ex)
         {
             StringBuilder builder = new StringBuilder();

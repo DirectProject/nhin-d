@@ -188,17 +188,12 @@ namespace NHINDirect.Config.Store
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
             }
-
-            Domain current = this.Get(db, domain.Name);
-            if (current == null)
-            {
-                this.Add(db, domain);
-            }
-            else
-            {
-                domain.UpdateDate = DateTime.Now;
-                db.Domains.Attach(domain, current);
-            }
+            
+            Domain update = new Domain();
+            update.CopyFixed(domain);
+                        
+            db.Domains.Attach(update);
+            update.ApplyChanges(domain);
         }
                 
         public void Remove(string name)

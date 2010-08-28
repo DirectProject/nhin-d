@@ -69,7 +69,12 @@ namespace NHINDirect.Config.Client.CertificateService
         {
             return Anchor.ToX509Collection(client.GetOutgoingAnchors(owner, status));
         }
-
+        
+        public static void RemoveAnchor(this AnchorStoreClient client, long anchorID)
+        {
+            client.RemoveAnchors(new long[] {anchorID});
+        }
+        
         public static IEnumerable<Anchor> EnumerateAnchors(this AnchorStoreClient client, int chunkSize)
         {
             return client.EnumerateAnchors(chunkSize, FullCertData);

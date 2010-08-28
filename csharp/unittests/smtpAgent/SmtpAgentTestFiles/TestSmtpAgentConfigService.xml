@@ -65,15 +65,10 @@
       <CopyFolder>C:\inetpub\mailroot\xdr</CopyFolder>
     </Route>
   </IncomingRoutes>
-  <MessageBounce>
-    <MailPickupFolder>C:\inetpub\mailroot\pickup</MailPickupFolder>
-    <EnableForOutgoing>true</EnableForOutgoing>
-    <EnableForIncoming>false</EnableForIncoming>
-    <OutgoingTemplate>
-      <Subject>Message Delivery Failure</Subject>
-      <Body>The following recipients are not trusted: </Body>
-    </OutgoingTemplate>
-  </MessageBounce>
+  <InternalMessage>
+    <CopyFolder>C:\inetpub\mailroot\Pickup</CopyFolder>
+    <EnableRelay>false</EnableRelay>
+  </InternalMessage>
   <RawMessage>
     <CopyFolder>C:\inetpub\mailroot\raw</CopyFolder>
   </RawMessage>
