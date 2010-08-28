@@ -59,8 +59,8 @@ namespace NHINDirect.Config.Store
             : this(domainID, address.Address, address.DisplayName)
         {
         }
-        
-        [Column(Name = "EmailAddress", CanBeNull = false, IsPrimaryKey=true)]
+
+        [Column(Name = "EmailAddress", CanBeNull = false, IsPrimaryKey = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public string EmailAddress
         {
@@ -78,8 +78,8 @@ namespace NHINDirect.Config.Store
                 m_address = value;
             }
         }
-        
-        [Column(Name="AddressID", IsDbGenerated=true)]
+
+        [Column(Name = "AddressID", IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public long ID
         {
@@ -87,7 +87,7 @@ namespace NHINDirect.Config.Store
             set;
         }
         
-        [Column(Name="DomainID", CanBeNull=false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name="DomainID", CanBeNull=false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public long DomainID
         {
@@ -95,7 +95,7 @@ namespace NHINDirect.Config.Store
             set;
         }
         
-        [Column(Name="DisplayName", CanBeNull=false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name="DisplayName", CanBeNull=false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public string DisplayName
         {
@@ -114,7 +114,7 @@ namespace NHINDirect.Config.Store
             }
         }
 
-        [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public DateTime CreateDate
         {
@@ -122,7 +122,7 @@ namespace NHINDirect.Config.Store
             set;
         }
 
-        [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Always)]
+        [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         [DataMember(IsRequired = true)]
         public DateTime UpdateDate
         {
@@ -130,7 +130,7 @@ namespace NHINDirect.Config.Store
             set;
         }
 
-        [Column(Name = "Status", DbType = "tinyint", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "Status", DbType = "tinyint", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public EntityStatus Status
         {
@@ -138,7 +138,7 @@ namespace NHINDirect.Config.Store
             set;
         }
         
-        [Column(Name = "Type", DbType = "nvarchar(64)", CanBeNull = true, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "Type", DbType = "nvarchar(64)", CanBeNull = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = false)]
         public string Type
         {
@@ -185,6 +185,29 @@ namespace NHINDirect.Config.Store
         public bool Match(string emailAddress)
         {
             return MailStandard.Equals(this.EmailAddress, emailAddress);
+        }
+        
+        internal void CopyFixed(Address source)
+        {
+            this.EmailAddress = source.EmailAddress;
+            this.ID = source.ID;
+            this.DomainID = source.DomainID;
+            this.CreateDate = source.CreateDate;
+            this.UpdateDate = source.UpdateDate;
+        }        
+        /// <summary>
+        /// Only copy those fields that are allowed to change in updates
+        /// </summary>
+        internal void ApplyChanges(Address source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException();
+            }
+            this.DisplayName = source.DisplayName;
+            this.Status = source.Status;
+            this.Type = source.Type;
+            this.UpdateDate = DateTime.Now;
         }
     }
 }

@@ -131,17 +131,12 @@ namespace NHINDirect.Config.Store
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
             }
-
-            Address current = this.Get(db, address.EmailAddress);
-            if (current == null)
-            {
-                this.Add(db, address);
-            }
-            else
-            {
-                address.UpdateDate = DateTime.Now;
-                db.Addresses.Attach(address, current);
-            }
+            
+            Address update = new Address();
+            update.CopyFixed(address);
+            
+            db.Addresses.Attach(update);
+            update.ApplyChanges(address);             
         }
         
         public int Count(long domainID)

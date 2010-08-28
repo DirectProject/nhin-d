@@ -59,6 +59,9 @@
     <Compile Include="TestSmtpAgent.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigServiceProd.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfig.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
