@@ -409,7 +409,7 @@ namespace NHINDirect.Agent
         /// - are they in the local domain or are they external
         /// </summary>
         /// <param name="domains"></param>
-        internal virtual void CategorizeRecipientsByDomain(AgentDomains domains)
+        internal void CategorizeRecipientsByDomain(AgentDomains domains)
         {
             NHINDAddressCollection recipients = Recipients;
             NHINDAddressCollection domainRecipients = null;
@@ -443,7 +443,14 @@ namespace NHINDirect.Agent
         internal virtual void CategorizeRecipientsByTrust(TrustEnforcementStatus minTrustStatus)
         {
             m_rejectedRecipients = NHINDAddressCollection.Create(Recipients.GetUntrusted(minTrustStatus));
-            this.Recipients.RemoveUntrusted(minTrustStatus);
+            if (this.HasRecipients)
+            {
+                this.Recipients.RemoveUntrusted(minTrustStatus);
+            }
+            if (this.HasDomainRecipients)
+            {
+                this.DomainRecipients.RemoveUntrusted(minTrustStatus);
+            }
         }
     }    
 }

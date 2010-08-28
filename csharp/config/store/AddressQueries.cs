@@ -28,7 +28,7 @@ namespace NHINDirect.Config.Store
         const string Sql_DeleteAddress = "DELETE from Addresses where EmailAddress = {0}";
         const string Sql_DeleteAddressByDomain = "DELETE from Addresses where DomainID = {0}";
         const string Sql_SetStatus = "UPDATE Addresses set Status = {0}, UpdateDate={1} where EmailAddress in ({2})";
-        const string Sql_SetStatusByDomain = "UPDATE Addresses set Status = {0} where DomainID = {1}";
+        const string Sql_SetStatusByDomain = "UPDATE Addresses set Status = {0}, UpdateDate={1} where DomainID = {2}";
         const string Sql_EnumDomainAddressFirst = "SELECT TOP ({0}) * from Addresses where DomainID = {1} order by EmailAddress asc";
         const string Sql_EnumDomainAddressNext = "SELECT TOP ({0}) * from Addresses where DomainID = {1} and EmailAddress > {2} order by EmailAddress asc";
         const string Sql_EnumAddressFirst = "SELECT TOP ({0}) * from Addresses order by EmailAddress asc";
@@ -149,7 +149,7 @@ namespace NHINDirect.Config.Store
 
         public static void ExecSetStatus(this Table<Address> table, long domainID, EntityStatus status)
         {
-            table.Context.ExecuteCommand(Sql_SetStatusByDomain, status, domainID);
+            table.Context.ExecuteCommand(Sql_SetStatusByDomain, status, DateTime.Now, domainID);
         }
 
         public static IEnumerable<Address> ExecGet(this Table<Address> table, long domainID, string lastAddress, int maxResults)

@@ -42,7 +42,7 @@ namespace NHINDirect.Config.Command
         /// Import a certificate file...
         /// </summary>
         /// <param name="args"></param>
-        public void Command_CertificateAdd(string[] args)
+        public void Command_Certificate_Add(string[] args)
         {
             string filePath = args.GetRequiredValue(0);
             string password = args.GetOptionalValue(1, string.Empty);
@@ -51,27 +51,27 @@ namespace NHINDirect.Config.Command
             this.PushCerts(certStore);
         }
         
-        public void Usage_CertificateAdd()
+        public void Usage_Certificate_Add()
         {
             Console.WriteLine("Import a certificate from a file and push it into the store.");
-            Console.WriteLine("    certificateadd filepath [password]");
+            Console.WriteLine("    filepath [password]");
         }
         
-        public void Command_CertificateGetByID(string[] args)
+        public void Command_Certificate_ByID_Get(string[] args)
         {
             long certificateID = args.GetRequiredValue<int>(0);
             CertificateGetOptions options = GetOptions(args, 1);            
             
             this.Print(m_client.GetCertificate(certificateID, options));            
-        }
-        public void Usage_CertificateGetByID()
+        }        
+        public void Usage_Certificate_ByID_Get()
         {
             Console.WriteLine("Retrieve a certificate by its id.");
-            Console.WriteLine("    certificateget certificateID [options]");
+            Console.WriteLine("    certificateID [options]");
             PrintOptionsUsage();
         }
         
-        public void Command_CertificateGet(string[] args)
+        public void Command_Certificate_Get(string[] args)
         {
             string owner = args.GetRequiredValue(0);            
             CertificateGetOptions options = GetOptions(args, 1);
@@ -79,26 +79,38 @@ namespace NHINDirect.Config.Command
             Certificate[] certs = m_client.GetCertificatesForOwner(owner, options);            
             this.Print(certs);
         }
-        public void Usage_CertificateGet()
+        public void Usage_Certificate_Get()
         {
             Console.WriteLine("Retrieve all certificates for an owner.");
-            Console.WriteLine("    certificateget owner [options]");
+            Console.WriteLine("    owner [options]");
             PrintOptionsUsage();
         }
         
-        public void Command_CertificateStatusSet(string[] args)
+        public void Command_Certificate_Status_Set(string[] args)
         {
             string owner = args.GetRequiredValue(0);
             EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
             
             m_client.SetCertificateStatusForOwner(owner, status);
         }
-        public void Usage_CertificateStatusSet()
+        public void Usage_Certificate_Status_Set()
         {
-            Console.WriteLine("Set the status for ALL certificates for an owner.");
+            Console.WriteLine("Set the status for ALL certificates for an OWNER.");
             Console.WriteLine("    certificatestatusset owner");
         }
-
+        
+        public void Command_Certificate_Remove(string[] args)
+        {
+            long certificateID = args.GetRequiredValue<long>(0);
+            
+            m_client.RemoveCertificate(certificateID);
+        }
+        public void Usage_Certificate_Remove()
+        {
+            Console.WriteLine("Remove certificate with given ID");
+            Console.WriteLine("    certificateID");
+        }
+        
         void PushCerts(IEnumerable<X509Certificate2> certs)
         {
             foreach (X509Certificate2 cert in certs)

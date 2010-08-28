@@ -37,75 +37,100 @@ namespace NHINDirect.Config.Command
             m_addressClient = ConfigConsole.Settings.AddressManager.CreateAddressManagerClient();
         }
         
-        public void Command_AddressAdd(string[] args)
+        public void Command_Address_Add(string[] args)
         {
-            MailAddress address = new MailAddress(args.GetRequiredValue(0));
-            string displayName = address.DisplayName;
+            MailAddress address = new MailAddress(args.GetRequiredValue(0));            
+            string addressType = args.GetOptionalValue(1, "SMTP");
+            string displayName = args.GetOptionalValue(2, string.Empty);
             if (string.IsNullOrEmpty(displayName))
             {
-                displayName = args.GetOptionalValue(1, string.Empty);
+                displayName = address.DisplayName;
             }
             
             Domain domain = DomainCommands.DomainGet(m_domainClient, address.Host);
-            m_addressClient.AddAddress(new Address(domain.ID, address.Address, displayName));
+            Address newAddress = new Address(domain.ID, address.Address, displayName);
+            newAddress.Type = addressType;
+            
+            m_addressClient.AddAddress(newAddress);
         }                
-        public void Usage_AddressAdd()
+        public void Usage_Address_Add()
         {
             Console.WriteLine("Add a new email address. The address domain must already exist.");
-            Console.WriteLine("    emailAddress [displayName]");
+            Console.WriteLine("    emailAddress [addressType (default:SMTP)] [displayName]");
         }
         
-        public void Command_AddressGet(string[] args)
+        public void Command_Address_DisplayName_Set(string[] args)
+        {
+            string emailAddress = args.GetRequiredValue(0);
+            string displayName = args.GetRequiredValue(1);
+            
+            Address address = m_addressClient.GetAddress(emailAddress);
+            if (address == null)
+            {
+                throw new ArgumentException(string.Format("{0} not found", emailAddress));
+            }
+            
+            address.DisplayName = displayName;
+            m_addressClient.UpdateAddress(address);
+        }
+        
+        public void Usage_Address_DisplayName_Set()
+        {
+            Console.WriteLine("Set the display name for the given address");
+            Console.WriteLine("    emailAddress displayname");
+        }
+        
+        public void Command_Address_Get(string[] args)
         {
             MailAddress email = new MailAddress(args.GetRequiredValue(0));
             
             Address address = GetAddress(email.Address);
             Print(address);
         }
-        public void Usage_AddressGet()
+        public void Usage_Address_Get()
         {
             Console.WriteLine("Retrieve an existing address.");
-            Console.WriteLine("    addressget emailAddress");
+            Console.WriteLine("    emailAddress");
         }
                 
-        public void Command_AddressRemove(string[] args)
+        public void Command_Address_Remove(string[] args)
         {
             MailAddress address = new MailAddress(args.GetRequiredValue(0));
             m_addressClient.RemoveAddress(address);
         }
-        public void Usage_AddressRemove()
+        public void Usage_Address_Remove()
         {
             Console.WriteLine("Remove an existing address.");
-            Console.WriteLine("    addressremove emailAddress.");
+            Console.WriteLine("    emailAddress");
         }
         
-        public void Command_AddressList(string[] args)
+        public void Command_Address_List(string[] args)
         {
             string domainName = args.GetRequiredValue(0);
             int chunkSize = args.GetOptionalValue<int>(1, DefaultChunkSize);
          
             Print(m_addressClient.EnumerateDomainAddresses(domainName, chunkSize));
         }        
-        public void Usage_AddressList()
+        public void Usage_Address_List()
         {
             Console.WriteLine("List addresses for a domain.");
-            Console.WriteLine("    addresslist domainName [chunkSize]");
+            Console.WriteLine("   domainName [chunkSize]");
             Console.WriteLine("\tchunkSize: Number of addresses to download from service at a time.");
         }
 
-        public void Command_AddressListAll(string[] args)
+        public void Command_Address_ListAll(string[] args)
         {
             int chunkSize = args.GetOptionalValue<int>(0, DefaultChunkSize);
             Print(m_addressClient.EnumerateAddresses(chunkSize));
         }
-        public void Usage_AddressListAll()
+        public void Usage_Address_ListAll()
         {
             Console.WriteLine("List all addresses.");
-            Console.WriteLine("    addresslist [chunkSize]");
+            Console.WriteLine("    [chunkSize]");
             Console.WriteLine("\tchunkSize: Number of addresses to download from service at a time.");
         }
         
-        public void Command_AddressStatusSet(string[] args)
+        public void Command_Address_Status_Set(string[] args)
         {
             MailAddress emailAddress = new MailAddress(args.GetRequiredValue(0));
             EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
@@ -119,21 +144,21 @@ namespace NHINDirect.Config.Command
             address.Status = status;
             m_addressClient.UpdateAddress(address);
         }        
-        public void Usage_AddressStatusSet()
+        public void Usage_Address_Status_Set()
         {
             Console.WriteLine("Set the status of an address");
-            Console.WriteLine("    addressstatussetfs emailAddress status");
+            Console.WriteLine("    emailAddress status");
         }
 
-        public void Command_AddressCount(string[] args)
+        public void Command_Address_Count(string[] args)
         {
             string domainName = args.GetRequiredValue(0);
             Console.WriteLine("{0} addresses", m_addressClient.GetAddressCount(domainName));
         }
-        public void Usage_AddressDomainCount()
+        public void Usage_Address_Count()
         {
             Console.WriteLine("Retrieve # of addresses in given domain.");
-            Console.WriteLine("  addressdomaincount domainName");
+            Console.WriteLine("  domainName");
         }
         
         internal Address GetAddress(string email)

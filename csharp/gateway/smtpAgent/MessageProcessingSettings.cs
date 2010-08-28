@@ -145,4 +145,27 @@ namespace NHINDirect.SmtpAgent
         {
         }
     }
+    
+    [XmlType("ProcessInternalMessages")]
+    public class ProcessInternalMessageSettings : MessageProcessingSettings
+    {
+        bool m_enableRelay = true;
+        
+        public ProcessInternalMessageSettings()
+        {
+        }
+
+        [XmlElement("EnableRelay")]
+        public bool EnableRelay
+        {
+            get
+            {
+                return m_enableRelay;
+            }
+            set
+            {
+                m_enableRelay = value;
+            }
+        }
+    }
 }

@@ -10,10 +10,9 @@
     <Url>http://localhost:6692/CertificateService.svc/Certificates</Url>
   </CertificateManager>
   <AnchorManager>
-    <Url>http://localhost:6692/CertificateService.svc/Anchors</Url>
+    <Url>http://localhost:6692/CertificateService.svc/Anchors</Url> 
   </AnchorManager>
-  -->
-
+-->
   <DomainManager>
     <Url>http://131.107.224.83/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
@@ -26,7 +25,6 @@
   <AnchorManager>
     <Url>http://131.107.224.83/ConfigService/CertificateService.svc/Anchors</Url>
   </AnchorManager>
-
 <!--
   <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>

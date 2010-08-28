@@ -37,7 +37,7 @@ namespace NHINDirect.SmtpAgent
     public class CDOSmtpMessage : ISmtpMessage
     {
         CDO.Message m_message;
-        string m_sender;
+        bool? m_hasEnvelope;
         
         public CDOSmtpMessage(CDO.Message message)
         {
@@ -48,21 +48,38 @@ namespace NHINDirect.SmtpAgent
             m_message = message;
         }
         
-        public string Sender
+        public bool HasEnvelope
         {
             get
             {
-                if (m_sender == null)
+                if (m_hasEnvelope == null)
                 {
-                    m_sender = m_message.GetEnvelopeSender();
-                    if (string.IsNullOrEmpty(m_sender))
-                    {
-                        m_sender = m_message.From;
-                    }
+                    Fields envelopeFields = m_message.GetEnvelopeFields();
+                    m_hasEnvelope = (envelopeFields != null && envelopeFields.Count > 0);
                 }
                 
-                return m_message.From;
+                return m_hasEnvelope.Value;
             }
+        }
+        
+        public string GetMailFrom()
+        {
+            if (!this.HasEnvelope)
+            {
+                return string.Empty;
+            }
+            
+            return m_message.GetEnvelopeSender();
+        }
+        
+        public string GetRcptTo()
+        {
+            if (!this.HasEnvelope)
+            {
+                return string.Empty;
+            }
+
+            return m_message.GetEnvelopeRecipients();
         }
         
         public MessageEnvelope GetEnvelope()
@@ -70,16 +87,19 @@ namespace NHINDirect.SmtpAgent
             return this.CreateEnvelope(m_message);
         }
         
-        public void SetEnvelopeRecipients(NHINDAddressCollection recipients)
+        public void SetRcptTo(NHINDAddressCollection recipients)
         {
             if (recipients == null)
             {
                 throw new ArgumentNullException();
             }
-
-            m_message.SetEnvelopeRecipients(recipients.ToMailAddressCollection());
+            
+            if (this.HasEnvelope)
+            {
+                m_message.SetEnvelopeRecipients(recipients.ToMailAddressCollection());
+            }
         }
-        
+                
         public void Update(string messageText)
         {
             if (string.IsNullOrEmpty(messageText))
@@ -142,8 +162,7 @@ namespace NHINDirect.SmtpAgent
         //
         bool ExtractEnvelopeFields(CDO.Message message, ref NHINDAddressCollection recipientAddresses, ref NHINDAddress senderAddress)
         {
-            Fields fields = message.GetEnvelopeFields();
-            if (fields == null || fields.Count == 0)
+            if (!this.HasEnvelope)
             {
                 //
                 // No envelope

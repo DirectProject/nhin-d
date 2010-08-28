@@ -56,16 +56,15 @@ namespace SmtpAgentTests
             //
             Assert.DoesNotThrow(() => m_handler.ProcessCDOMessage(message));            
             
-            message = this.LoadMessage(message.GetMessageText()); // re-load the message
-            Assert.True(string.IsNullOrEmpty(message.Subject));                        
-            ContentType contentType = new ContentType(message.GetContentType());
-            Assert.True(NHINDirect.Cryptography.SMIMEStandard.IsContentEncrypted(contentType));
+            message = this.LoadMessage(message); // re-load the message
+            base.VerifyOutgoingMessage(message);
             //
             // Incoming
             //
             Assert.DoesNotThrow(() => m_handler.ProcessCDOMessage(message));
             
-            message = this.LoadMessage(message.GetMessageText()); // re-load the message            
+            message = this.LoadMessage(message); // re-load the message            
+            base.VerifyIncomingMessage(message);
             Assert.True(message.Subject.Equals(originalSubject));
             Assert.True(MimeStandard.Equals(message.GetContentType(), originalContentType));             
         }
