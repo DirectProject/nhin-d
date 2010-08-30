@@ -22,8 +22,16 @@ using NHINDirect.Mail;
 
 namespace NHINDirect.Mime
 {
+    /// <summary>
+    /// The basic serializer/deserialize to and from RFC 5322 messages.
+    /// </summary>
     public class DefaultSerializer : MimeSerializer
     {
+        /// <summary>
+        /// Serializes the <paramref name="entity"/> as an RFC 5322 message string
+        /// </summary>
+        /// <param name="entity">The <see cref="MimeEntity"/> to serialize</param>
+        /// <returns>An RFC 5322 string for the <paramref name="entity"/></returns>
     	public override string Serialize(MimeEntity entity)
         {
             Message message = entity as Message;
@@ -42,7 +50,12 @@ namespace NHINDirect.Mime
             
             return base.Serialize(entity);
         }
-        
+
+        /// <summary>
+        /// Serializes the <paramref name="entity"/> as RFC 5322 text to <paramref name="writer"/>
+        /// </summary>
+        /// <param name="entity">The <see cref="MimeEntity"/> to serialize</param>
+        /// <param name="writer">The <see cref="TextWriter"/> to which to serialize</param>
         public override void Serialize(MimeEntity entity, TextWriter writer)
         {
             if (entity == null)
@@ -56,6 +69,11 @@ namespace NHINDirect.Mime
 			}
         }
 
+        /// <summary>
+        /// Serializes the <paramref name="entity"/> as RFC 5322 text to <paramref name="writer"/>
+        /// </summary>
+        /// <param name="entity">The <see cref="MimeEntity"/> to serialize</param>
+        /// <param name="entityWriter">The <see cref="MimeWriter"/> to which to serialize</param>
         public void Serialize(MimeEntity entity, MimeWriter entityWriter)
         {
             if (entity == null)
@@ -84,6 +102,15 @@ namespace NHINDirect.Mime
             }
         }
 
+
+        // TODO: Name should indicate function: SerializeMutipart or some such...
+        /// <summary>
+        /// Seralizes an enumeration of <paramref name="entities"/> as a multipart body.
+        /// </summary>
+        /// <remarks>Mutipart MIME headers not included.</remarks>
+        /// <param name="entities">The entities to write as multipart body parts</param>
+        /// <param name="boundary">The multipart boundary string</param>
+        /// <param name="writer">The <see cref="TextWriter"/> to which to serialize.</param>
         public override void Serialize(IEnumerable<MimeEntity> entities, string boundary, TextWriter writer)
         {
             if (entities == null)
@@ -102,26 +129,58 @@ namespace NHINDirect.Mime
 			}
         }
 
+        /// <summary>
+        /// Deserializes and parses <paramref name="messageText"/>
+        /// </summary>
+        /// <typeparam name="T">The entity type to which to deserialize.</typeparam>
+        /// <param name="messageText">The <see cref="StringSegment"/> representing the source text</param>
+        /// <returns>The deserialized and parsed entity</returns>
         public override T Deserialize<T>(StringSegment messageText)
         {
             return MimeParser.Read<T>(messageText);
         }
 
+
+        /// <summary>
+        /// Deserializes and parses a header block supplied as <paramref name="messageText"/>.
+        /// </summary>
+        /// <param name="messageText">The header block.</param>
+        /// <returns>The deserialized and parsed <see cref="Header"/> enumeration</returns>
         public override IEnumerable<Header> DeserializeHeaders(StringSegment messageText)
         {
             return MimeParser.ReadHeaders(messageText);
         }
-        
+
+        // TODO: name overload misery. One of these wants to split a header string into header name/value, the other to split the header value...
+
+        /// <summary>
+        /// Splits a value by the supplied <paramref name="separator"/> <see cref="char"/>.
+        /// </summary>
+        /// <param name="headerText">The string to split.</param>
+        /// <param name="separator">The <see cref="char"/> to split by.</param>
+        /// <returns>The split <see cref="StringSegment"/> instances</returns>
         public override IEnumerable<StringSegment> SplitHeader(string headerText, char separator)
         {
            return MimeParser.ReadHeaderParts(headerText, separator);
         }
         
+        /// <summary>
+        /// Splits a header string <paramref name="headerText"/> into header name and value.
+        /// </summary>
+        /// <param name="headerText">The header line</param>
+        /// <returns>A pair where the key is the header name, and the value the header value.</returns>
         public override KeyValuePair<string, string> SplitHeader(string headerText)
         {
             return MimeParser.ReadNameValue(headerText);
         }
         
+
+        // TODO: parameter misnamed. sb headerPair...
+        /// <summary>
+        /// Joins a pair as a header
+        /// </summary>
+        /// <param name="headerText">The pair where the key is the header name and the value is the header value</param>
+        /// <returns>A <see cref="string"/> representation of the header</returns>
         public override string JoinHeader(KeyValuePair<string, string> headerText)
         {
             if (string.IsNullOrEmpty(headerText.Key))
