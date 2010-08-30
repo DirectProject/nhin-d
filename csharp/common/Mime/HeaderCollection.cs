@@ -91,8 +91,8 @@ namespace NHINDirect.Mime
         /// string email = File.ReadAllText("message.eml");
         /// Message msg = MimeParser.ParseMessage(email);
         /// Body body = message.Body;
-        /// IEnumerable<Headers> mimeHeaders = msg.Headers.MimeHeaders; //Content-Type:, Content-Disposition:, etc.
-        /// IEnumerable<Headers> nonMimeMeaders = msg.Headers.NonMimeHeaders; // To:, From:, etc
+        /// IEnumerable&lt;Headers&gt; mimeHeaders = msg.Headers.MimeHeaders; //Content-Type:, Content-Disposition:, etc.
+        /// IEnumerable&lt;Headers&gt; nonMimeMeaders = msg.Headers.NonMimeHeaders; // To:, From:, etc
         /// </code>
         /// </example>
         public IEnumerable<Header> MimeHeaders
@@ -120,7 +120,7 @@ namespace NHINDirect.Mime
         }
         
         /// <summary>
-        /// Returns the index to a header name. See <see cref="HeaderCollection.[]"/> for more details.
+        /// Returns the index to a header name. See <see cref="HeaderCollection"/> for more details.
         /// </summary>
         /// <remarks>
         /// Headers are not case sensitive, so <c>myHeaders.IndexOf("content-type")</c> and 
@@ -166,7 +166,7 @@ namespace NHINDirect.Mime
         /// <summary>
         /// Adds a header specified by a key-value pair to this collection.
         /// </summary>
-        /// <param name="value">The <see cref="KeyValuePair"/> where the key is the header
+        /// <param name="value">The pair where the key is the header
         /// name, and the value is the header value.</param>
         public void Add(KeyValuePair<string, string> value)
         {
@@ -174,7 +174,7 @@ namespace NHINDirect.Mime
         }
         
         /// <summary>
-        /// Adds an enumeration of <see cref="KeyValuePairs"/> to this collection as headers.
+        /// Adds an enumeration of pairs to this collection as headers.
         /// </summary>
         /// <param name="headers">The enumeration to add to this collection.</param>
         public void Add(IEnumerable<KeyValuePair<string, string>> headers)
@@ -218,9 +218,9 @@ namespace NHINDirect.Mime
         }
 
         /// <summary>
-        /// Adds or updates each of an enumeration of <see cref="KeyValuePair"/> instances..
+        /// Adds or updates each of an enumeration of pair instances..
         /// </summary>
-        /// <param name="headers">The <see cref="KeyValuePair"/> instances to add or update, where
+        /// <param name="headers">The pari instances to add or update, where
         /// each key specifies the header name, and each value the header value.</param>
         public void AddUpdate(IEnumerable<KeyValuePair<string, string>> headers)
         {
@@ -312,7 +312,7 @@ namespace NHINDirect.Mime
         /// Adds or updates the value of the header with the given name.
         /// </summary>
         /// <remarks>Header matching uses case insenstive comparison.</remarks>
-        /// <param name="headerName">The header name for which to set the value.</param>
+        /// <param name="name">The header name for which to set the value.</param>
         /// <param name="value">The value name to add or update</param>
         public void SetValue(string name, string value)
         {

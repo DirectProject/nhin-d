@@ -42,7 +42,7 @@ namespace NHINDirect.Mime
         /// <summary>
         /// Initializes an instance with a header name and value supplied separately.
         /// </summary>
-        /// <param name="segment">The <see cref="string"/> supplying header name.</param>
+        /// <param name="name">The <see cref="string"/> supplying header name.</param>
         /// <param name="value">The <see cref="string"/> supplying header value</param>
         public Header(string name, string value)
             : base(MimePartType.Header)
@@ -54,10 +54,10 @@ namespace NHINDirect.Mime
         }
 
         /// <summary>
-        /// Initializes an instance with <see cref="KeyValuePair"/> supplying header name and value.
+        /// Initializes an instance with pair supplying header name and value.
         /// </summary>
-        /// <param name="value">The <see cref="KeyValuePair"/> where the <see cref="KeyValuePair.Key"/> is the header name,
-        /// and the <see cref="KeyValuePair.Value"/> is the value</param>
+        /// <param name="value">The pair where the key is the header name,
+        /// and the value is the value</param>
         public Header(KeyValuePair<string, string> value)
             : this(value.Key, value.Value)
         {        
