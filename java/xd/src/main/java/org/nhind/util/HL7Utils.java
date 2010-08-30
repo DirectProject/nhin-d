@@ -28,9 +28,14 @@ public class HL7Utils {
      * @return the specified field of the string, broken by the given token.
      */
     public static String returnField(String in, String token, int field) {
-        StringTokenizer list = new StringTokenizer(in, token);
-        String ret = in;
+        if (in == null || token == null) {
+            throw new IllegalArgumentException("Input and token must both be non-null");
+        }
+
         int count = 0;
+        String ret = in;
+        StringTokenizer list = new StringTokenizer(in, token);
+
         while (list.hasMoreElements()) {
             String temp = list.nextToken();
             if (++count == field) {
