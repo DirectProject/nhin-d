@@ -421,25 +421,33 @@ public class DocumentRegistry {
     }
 
     /**
+     * Format a string representing a date.
+     * 
      * @param value
-     * @return
+     *            The string representing a date.
+     * @return a formatted string representing a date.
      */
-    private String formatDateForMDM(String value) {
+    protected static String formatDateForMDM(String value) {
         String form;
         String formOut = "MM/dd/yyyy";
         String ret = value;
-        if (value.indexOf("/") >= 0) {
+        
+        if (StringUtils.isBlank(value)) {
+            throw new IllegalArgumentException("Value must not be blank.");
+        }
+        
+        if (StringUtils.contains(value, "/")) {
             return ret;
         }
-        if (value.indexOf("+") >= 0) {
+        if (StringUtils.contains(value, "+")) {
             value = value.substring(0, value.indexOf("+"));
         }
+        
         int valen = value.length();
-        if (value.indexOf(" ") >= 0) {
+        
+        if (StringUtils.contains(value, " ")) {
             form = "yyyyMMdd HH:mm:ss";
-
-        } else if (value.indexOf("T") >= 0) {
-
+        } else if (StringUtils.contains(value, "T")) {
             form = "yyyyMMdd'T'HH:mm:ss";
         } else {
             form = "yyyyMMddHHmmss";
@@ -447,15 +455,17 @@ public class DocumentRegistry {
 
         form = form.substring(0, valen);
 
+        Date dateVal = null;
         SimpleDateFormat date = new SimpleDateFormat(form);
         SimpleDateFormat dateOut = new SimpleDateFormat(formOut);
-        Date dateVal = null;
+        
         try {
             dateVal = date.parse(value);
             ret = dateOut.format(dateVal);
         } catch (Exception x) {
-            x.printStackTrace();
+            LOGGER.warning("Unable to parse date string: " + value);
         }
+        
         return ret;
     }
 
