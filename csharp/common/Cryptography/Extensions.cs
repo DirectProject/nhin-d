@@ -27,13 +27,22 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Cryptography
 {
+    /// <summary>
+    /// Extension methods for cryto
+    /// </summary>
     public static class Extensions
     {
         //---------------------------------------
         //
         // SignerInfoCollection extensions (PKS7)
         //
-        //---------------------------------------        
+        //---------------------------------------   
+        /// <summary>
+        /// Returns the first index position of this colleciton of signers matching <paramref name="matcher"/>
+        /// </summary>
+        /// <param name="signers">This collection to search</param>
+        /// <param name="matcher">The predicate to match elements against.</param>
+        /// <returns>The zero-based index of the first matching <see cref="SignerInfo"/> or -1 if no elements match</returns>
         public static int IndexOf(this SignerInfoCollection signers, Predicate<SignerInfo> matcher)
         {
             if (matcher == null)
@@ -52,6 +61,12 @@ namespace NHINDirect.Cryptography
             return -1;
         }
 
+        /// <summary>
+        /// Returns the first element of this colleciton of signers matching <paramref name="matcher"/>
+        /// </summary>
+        /// <param name="signers">This collection to search</param>
+        /// <param name="matcher">The predicate to match elements against.</param>
+        /// <returns>The first matching <see cref="SignerInfo"/> or null if no elements match</returns>
         public static SignerInfo Find(this SignerInfoCollection signers, Predicate<SignerInfo> matcher)
         {
             int index = signers.IndexOf(matcher);
@@ -63,6 +78,13 @@ namespace NHINDirect.Cryptography
             return null;
         }
 
+        //TODO: doesn't match or use the logic for X509Certifiate2.MatchEmailNameOrName. Why?
+        /// <summary>
+        /// Searches this collection for the first signature whose certificate has subject name or email <paramref name="name"/>
+        /// </summary>
+        /// <param name="signers">This collection to search</param>
+        /// <param name="name">The subject name or email to match against.</param>
+        /// <returns>The first matching <see cref="SignerInfo"/> or null if no elements match</returns>
         public static SignerInfo FindByName(this SignerInfoCollection signers, string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -73,6 +95,12 @@ namespace NHINDirect.Cryptography
             return signers.Find(x => (x.Certificate.MatchName(name) || x.Certificate.MatchEmailName(name)));
         }
 
+        /// <summary>
+        /// Searches this collection for the first signature whose certificate has <paramref name="thumprint"/>
+        /// </summary>
+        /// <param name="signers">This collection to search</param>
+        /// <param name="thumbprint">The certificate thumbprint to match against.</param>
+        /// <returns>The first matching <see cref="SignerInfo"/> or null if no elements match</returns>
         public static SignerInfo FindByThumbprint(this SignerInfoCollection signers, string thumbprint)
         {
             if (string.IsNullOrEmpty(thumbprint))

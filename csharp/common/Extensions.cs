@@ -21,28 +21,59 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace NHINDirect
 {
+    /// <summary>
+    /// Generally useful extension methods.
+    /// </summary>
     public static class Extensions
     {
+        /// <summary>
+        /// Tests if the second string is contained by the first string with the supplied <paramref name="comparison"/> operator
+        /// </summary>
+        /// <param name="x">The base string.</param>
+        /// <param name="y">The string to test if it is contained in the base string</param>
+        /// <param name="comparison">The comparison operator.</param>
+        /// <returns><c>true</c> if the second string is contained in the first with respect to the supplied form of
+        /// string comparison, <c>false</c> otherwise</returns>
         public static bool Contains(this string x, string y, StringComparison comparison)
         {
             return (x.IndexOf(y, comparison) >= 0);
         }
 
+        /// <summary>
+        /// Tests if this collection is <c>null</c> or has 0 entries.
+        /// </summary>
+        /// <param name="certs">The collection to test.</param>
+        /// <returns><c>true</c> if the collection is <c>null</c> or has 0 entries</returns>
         public static bool IsNullOrEmpty(this X509Certificate2Collection certs)
         {
             return (certs == null || certs.Count == 0);
         }
 
+        /// <summary>
+        /// Tests if this collection is <c>null</c> or has 0 entries.
+        /// </summary>
+        /// <param name="chainElements">The collection to test.</param>
+        /// <returns><c>true</c> if the collection is <c>null</c> or has 0 entries</returns>
         public static bool IsNullOrEmpty(this X509ChainElementCollection chainElements)
         {
             return (chainElements == null || chainElements.Count == 0);
         }
-        
+
+        /// <summary>
+        /// Tests if this array is <c>null</c> or has 0 entries.
+        /// </summary>
+        /// <param name="array">The array to test.</param>
+        /// <returns><c>true</c> if the array is <c>null</c> or has 0 entries</returns>
         public static bool IsNullOrEmpty(this Array array)
         {
             return (array == null || array.Length == 0);
         }
-        
+
+        /// <summary>
+        /// Tests if this collection is <c>null</c> or has 0 entries.
+        /// </summary>
+        /// <param name="collection">The collection to test.</param>
+        /// <returns><c>true</c> if the collection is <c>null</c> or has 0 entries</returns>
         public static bool IsNullOrEmpty(this System.Collections.ICollection collection)
         {
             return (collection == null || collection.Count == 0);
