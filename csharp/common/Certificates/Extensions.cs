@@ -37,6 +37,11 @@ namespace NHINDirect.Certificates
         // X509Store
         //
         //---------------------------------------
+        /// <summary>
+        /// Opens an existing <see cref="X509Store"/> in read-only mode.
+        /// </summary>
+        /// <param name="location">The <see cref="StoreLocation"/> of the store to open.</param>
+        /// <returns>The newly opened <see cref="X509Store"/></returns>
         public static X509Store OpenStoreRead(StoreLocation location)
         {
             X509Store store = new X509Store(location);
@@ -44,6 +49,12 @@ namespace NHINDirect.Certificates
             return store;
         }
 
+        /// <summary>
+        /// Opens a <see cref="X509Store"/> in read-write-only mode,
+        /// creating it if necessary
+        /// </summary>
+        /// <param name="location">The <see cref="StoreLocation"/> of the store to open.</param>
+        /// <returns>The newly opened <see cref="X509Store"/></returns>
         public static X509Store OpenStoreReadWrite(StoreLocation location)
         {
             X509Store store = new X509Store(location);
@@ -51,6 +62,13 @@ namespace NHINDirect.Certificates
             return store;
         }
 
+
+        /// <summary>
+        /// Opens a named existing <see cref="X509Store"/> in read-only mode.
+        /// </summary>
+        /// <param name="location">The <see cref="StoreLocation"/> of the store to open.</param>
+        /// <param name="storeName">The name of the store to open</param>
+        /// <returns>The newly opened <see cref="X509Store"/></returns>
         public static X509Store OpenStoreRead(string storeName, StoreLocation location)
         {
             X509Store store = new X509Store(storeName, location);
@@ -58,6 +76,12 @@ namespace NHINDirect.Certificates
             return store;
         }
 
+        /// <summary>
+        /// Opens a named <see cref="X509Store"/> in read-write mode, creating it if necessary.
+        /// </summary>
+        /// <param name="location">The <see cref="StoreLocation"/> of the store to open.</param>
+        /// <param name="storeName">The name of the store to open</param>
+        /// <returns>The newly opened <see cref="X509Store"/></returns>
         public static X509Store OpenStoreReadWrite(string storeName, StoreLocation location)
         {
             X509Store store = new X509Store(storeName, location);
@@ -65,6 +89,11 @@ namespace NHINDirect.Certificates
             return store;
         }
         
+        /// <summary>
+        /// Adds an enumeration of certificates to a store
+        /// </summary>
+        /// <param name="store">The store to which to add certifiates</param>
+        /// <param name="certs">The enumeration of <see cref="X509Certificate2"/> instances to add</param>
         public static void Add(this X509Store store, IEnumerable<X509Certificate2> certs)
         {
             if (certs == null)
@@ -83,6 +112,12 @@ namespace NHINDirect.Certificates
         // X509Certificate2Collection Extensions
         //
         //---------------------------------------        
+
+        /// <summary>
+        /// Adds certificates from the supplied collection to this collection.
+        /// </summary>
+        /// <param name="certs">The collection to which to add certificates.</param>
+        /// <param name="newCerts">The collection from which to add certificates.</param>
         public static void Add(this X509Certificate2Collection certs, X509Certificate2Collection newCerts)
         {
             if (newCerts == null)
@@ -96,6 +131,11 @@ namespace NHINDirect.Certificates
             }
         }
 
+        /// <summary>
+        /// Adds certificates from the supplied enumeration to this collection.
+        /// </summary>
+        /// <param name="certs">The collection to which to add certificates.</param>
+        /// <param name="newCerts">The enumeration from which to add certificates.</param>
         public static void Add(this X509Certificate2Collection certs, IEnumerable<X509Certificate2> newCerts)
         {
             if (newCerts == null)
@@ -109,11 +149,22 @@ namespace NHINDirect.Certificates
             }
         }
         
+        /// <summary>
+        /// Supplies an enumeration for this collection.
+        /// </summary>
+        /// <param name="certs">The collection to enumerate.</param>
+        /// <returns>The enumerator for this collection.</returns>
         public static IEnumerable<X509Certificate2> Enumerate(this X509Certificate2Collection certs)
         {
             return certs.Enumerate(null);
         }
-        
+
+        /// <summary>
+        /// Supplies an filtered enumeration for this collection.
+        /// </summary>
+        /// <param name="certs">The collection to enumerate.</param>
+        /// <param name="filter">The filter testing each element of the source collection for enumeration. Elements for which the filter returns <c>false</c> will not be returned by the enumerator.</param>
+        /// <returns>The enumerator for this collection.</returns>
         public static IEnumerable<X509Certificate2> Enumerate(this X509Certificate2Collection certs, Predicate<X509Certificate2> filter)
         {
             foreach(X509Certificate2 cert in certs)
@@ -125,6 +176,12 @@ namespace NHINDirect.Certificates
             }
         }
         
+        /// <summary>
+        /// Returns the index of the first certificate matching the supplied <paramref name="matcher"/>.
+        /// </summary>
+        /// <param name="certs">The source collection to test.</param>
+        /// <param name="matcher">The matching predicate for which the index of the first matching element will be returned.</param>
+        /// <returns>The zero-based index of the first matching element, or -1 if no matching elements are found</returns>
         public static int IndexOf(this X509Certificate2Collection certs, Predicate<X509Certificate2> matcher)
         {
             if (matcher == null)
@@ -143,6 +200,12 @@ namespace NHINDirect.Certificates
             return -1;
         }
 
+        /// <summary>
+        /// Returns a subset of this collection whose elements match the supplied <paramref name="match"/> function.
+        /// </summary>
+        /// <param name="certs">The source collection.</param>
+        /// <param name="match">The predicate for which all elements that return <c>will</c> be selected.</param>
+        /// <returns>The collection of matched elements, or <c>null</c> if no matched elements are found.</returns>
         public static X509Certificate2Collection Where(this X509Certificate2Collection certs, Func<X509Certificate2, bool> match)
         {
             X509Certificate2Collection matchingCerts = null;
@@ -159,6 +222,12 @@ namespace NHINDirect.Certificates
             return matchingCerts;
         }
 
+        /// <summary>
+        /// Returns the first element matching the supplied predicate.
+        /// </summary>
+        /// <param name="certs">The source collection to test.</param>
+        /// <param name="matcher">The matching predicate for which the first matching element will be returned.</param>
+        /// <returns>The first matching element, or <c>null</c> if no matching elements are found.</returns>
         public static X509Certificate2 Find(this X509Certificate2Collection certs, Predicate<X509Certificate2> matcher)
         {
             int index = certs.IndexOf(matcher);
@@ -170,6 +239,15 @@ namespace NHINDirect.Certificates
             return null;
         }
 
+        // TODO: Implement in terms of primitives defined below against X509Certificate2
+        // TODO: certs.Find(c => c.MatchName(name));
+        // TODO: remove duplicate definition of "CN" constant...
+        /// <summary>
+        /// Returns the first certificate in this collection that matches <paramref name="name"/> by <c>CN</c>
+        /// </summary>
+        /// <param name="certs">The certificates to search</param>
+        /// <param name="name">The name value to test against the <c>CN</c></param>
+        /// <returns>The first matching element, or <c>null</c> if no matching elements are found.</returns>
         public static X509Certificate2 FindByName(this X509Certificate2Collection certs, string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -181,6 +259,12 @@ namespace NHINDirect.Certificates
             return certs.Find(x => x.Subject.Contains(distinguishedName, StringComparison.OrdinalIgnoreCase));
         }
 
+        /// <summary>
+        /// Return the first maching element whose certificate thumbprint matches the supplied <paramref name="thumbprint"/>
+        /// </summary>
+        /// <param name="certs">The source collection to test.</param>
+        /// <param name="thumbprint">The certificate thumbprint, as a string, to test against the source collection</param>
+        /// <returns>The first matching element, or <c>null</c> if no matching elements are found.</returns>
         public static X509Certificate2 FindByThumbprint(this X509Certificate2Collection certs, string thumbprint)
         {
             if (string.IsNullOrEmpty(thumbprint))
@@ -192,8 +276,11 @@ namespace NHINDirect.Certificates
         }
                         
         /// <summary>
-        /// Return the first certificate with an applicable date range is 
+        /// Return the first certificate that is valid on the supplied <paramref name="usageTime"/>
         /// </summary>
+        /// <param name="certs">The certificates to search</param>
+        /// <param name="usageTime">The date to test the supplied certificates against.</param>
+        /// <returns>The first maching certificate, or <c>null</c> if none match</returns>
         public static X509Certificate2 FindUsable(this X509Certificate2Collection certs, DateTime usageTime)
         {
             for (int i = 0, count = certs.Count; i < count; ++i)
@@ -208,11 +295,22 @@ namespace NHINDirect.Certificates
             return null;
         }
 
+        /// <summary>
+        /// Return the first certificate that is currently valid
+        /// </summary>
+        /// <param name="certs">The certificates to search</param>
+        /// <returns>The first maching certificate, or <c>null</c> if none match</returns>
         public static X509Certificate2 FindUsable(this X509Certificate2Collection certs)
         {
             return certs.FindUsable(DateTime.Now);
         }
-        
+
+
+        /// <summary>
+        /// Return the first certificate that is currently valid
+        /// </summary>
+        /// <param name="certs">The certificates to search</param>
+        /// <returns>The first maching certificate, or <c>null</c> if none match</returns>
         public static X509Certificate2 FindUsable(IEnumerable<X509Certificate2> certs)
         {
             DateTime now = DateTime.Now;
@@ -232,6 +330,12 @@ namespace NHINDirect.Certificates
         // X509Certificate Extensions
         //
         //---------------------------------------
+        /// <summary>
+        /// Loads certificates from a certifiate store matching the supplied <paramref name="subjectName"/>
+        /// </summary>
+        /// <param name="subjectName">The <c>CN</c> value to test</param>
+        /// <param name="location">The store location</param>
+        /// <returns>The first matching certificate, or <c>null</c> if none match.</returns>
         public static X509Certificate2 LoadCert(string subjectName, StoreLocation location)
         {
             X509Store store = OpenStoreRead(location);
@@ -252,6 +356,12 @@ namespace NHINDirect.Certificates
         const string SubjectNamePrefix = "CN=";
         const string EmailNamePrefix = "E=";
         
+        /// <summary>
+        /// Tests the supplied certificate against a <c>CN</c> value
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <param name="name">The <c>CN</c> value to test</param>
+        /// <returns><c>true</c> if the certificate matches by subject name, <c>false</c> otherwise.</returns>
         public static bool MatchName(this X509Certificate2 cert, string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -263,6 +373,12 @@ namespace NHINDirect.Certificates
             return cert.Subject.Contains(distinguishedName, StringComparison.OrdinalIgnoreCase);
         }
 
+        /// <summary>
+        /// Tests the supplied certificate against a <c>E</c> (email) value
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <param name="name">The <c>E</c> value to test</param>
+        /// <returns><c>true</c> if the certificate matches by email, <c>false</c> otherwise.</returns>
         public static bool MatchEmailName(this X509Certificate2 cert, string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -274,11 +390,22 @@ namespace NHINDirect.Certificates
             return cert.Subject.Contains(distinguishedName, StringComparison.OrdinalIgnoreCase);
         }
         
+        /// <summary>
+        /// Matches a certificate by either subject name or email.
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <param name="name">The subject name or email address to test</param>
+        /// <returns><c>true</c> if the certificate matches by email or subject name, <c>false</c> otherwise.</returns>
         public static bool MatchEmailNameOrName(this X509Certificate2 cert, string name)
         {
             return (cert.MatchEmailName(name) || cert.MatchName(name));
         }
         
+        /// <summary>
+        /// Extracts the subject name (<c>CN</c>) value from this certificate.
+        /// </summary>
+        /// <param name="cert">The certificate from which to extract the name</param>
+        /// <returns>The <c>CN</c> value or <c>null</c> if not found</returns>
         public static string ExtractName(this X509Certificate2 cert)
         {
             string[] parts = cert.Subject.Split(',');
@@ -297,6 +424,12 @@ namespace NHINDirect.Certificates
             return null;
         }
 
+        /// <summary>
+        /// Tests the supplied certificate if the subject name begins with the supplied <paramref name="name"/> string
+        /// </summary>
+        /// <param name="cert">The certificate to test.</param>
+        /// <param name="name">The <see cref="string"/> to test against the <c>CN</c> value</param>
+        /// <returns><c>true</c> if the supplied certificate's subject name matches the supplied <paramref name="name"/>, <c>false</c> otherwise.</returns>
         public static bool NameContains(this X509Certificate2 cert, string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -312,7 +445,12 @@ namespace NHINDirect.Certificates
 
             return (distinguishedName.Contains(name, StringComparison.OrdinalIgnoreCase));
         }
-        
+
+        /// <summary>
+        /// Extracts the email (<c>E</c> (by preference) or subject name (<c>CN</c>) value from this certificate.
+        /// </summary>
+        /// <param name="cert">The certificate from which to extract the name</param>
+        /// <returns>The <c>E</c> value, or the <c>CN</c> value if <c>E</c> is not found or <c>null</c> if neither are found</returns>
         public static string ExtractEmailNameOrName(this X509Certificate2 cert)
         {
             string[] parts = cert.Subject.Split(',');
@@ -337,11 +475,23 @@ namespace NHINDirect.Certificates
             return null;
         }
         
+        /// <summary>
+        /// Tests if the supplied certificate has a currently valid date.
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <returns><c>true</c> if it is valid by date as of now, <c>false</c> otherwise.</returns>
         public static bool HasValidDateRange(this X509Certificate2 cert)
         {
             return cert.HasValidDateRange(DateTime.Now);     
         }
 
+        // TODO: "now" a lousy name...
+        /// <summary>
+        /// Tests if the supplied certificate is valid by date as of the supplied <see cref="DateTime"/>
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <param name="now">The <see cref="DateTime"/> to test this certificate against.</param>
+        /// <returns><c>true</c> if it is valid by date, <c>false</c> otherwise.</returns>
         public static bool HasValidDateRange(this X509Certificate2 cert, DateTime now)
         {
             //
@@ -350,11 +500,23 @@ namespace NHINDirect.Certificates
             return (cert.NotBefore < now && now < cert.NotAfter);
         }
         
+        /// <summary>
+        /// Tests if a certificate has expired at the current time.
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <returns><c>true</c> if the certificate is currently expired, <c>false if not</c></returns>
         public static bool HasExpired(this X509Certificate2 cert)
         {
             return cert.HasExpired(DateTime.Now);
         }
 
+        // TODO: "now" a bad parameter name...
+        /// <summary>
+        /// Tests if a certificate has expired at the indicated <see cref="DateTime"/>.
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <param name="now">The <see cref="DateTime"/> to test this certificate against.</param>
+        /// <returns><c>true</c> if the certificate is expired at the indicated <see cref="DateTime"/>, <c>false if not</c></returns>
         public static bool HasExpired(this X509Certificate2 cert, DateTime now)
         {
             //
@@ -363,6 +525,13 @@ namespace NHINDirect.Certificates
             return (now < cert.NotAfter);
         }            
         
+        // TODO: Should be name ExtractExtension to be consistent with ExtractFoo above
+        /// <summary>
+        /// Extracts a certificate extension valid by name
+        /// </summary>
+        /// <param name="cert">The certificate from which to extract the extension value.</param>
+        /// <param name="friendlyName">The extension name (see <see cref="Oid"/>) to test.</param>
+        /// <returns>The <see cref="X509Extension"/> value of the extension or <c>null</c> if none is found.</returns>
         public static X509Extension FindExtension(this X509Certificate2 cert, string friendlyName)
         {
             if (string.IsNullOrEmpty(friendlyName))
@@ -386,16 +555,33 @@ namespace NHINDirect.Certificates
             return null;
         }
 
+        /// <summary>
+        /// Extracts the "Basic Constraints" extension value
+        /// </summary>
+        /// <param name="cert">The certificate from which to extract the "Basic Constraints"</param>
+        /// <returns>The <see cref="X509BasicConstraintsExtension"/> for this certificate, or <c>null</c>
+        /// if not found.</returns>
         public static X509BasicConstraintsExtension FindBasicExtension(this X509Certificate2 cert)
         {
             return (X509BasicConstraintsExtension) cert.FindExtension("Basic Constraints");
         }
 
+        /// <summary>
+        /// Extracts the "Key Usage" extension value
+        /// </summary>
+        /// <param name="cert">The certificate from which to extract the "Key Usage"</param>
+        /// <returns>The <see cref="X509KeyUsageExtension"/> for this certificate, or <c>null</c>
+        /// if not found.</returns>
         public static X509KeyUsageExtension FindKeyUsageExtension(this X509Certificate2 cert)
         {
             return (X509KeyUsageExtension) cert.FindExtension("Key Usage");
         }
         
+        /// <summary>
+        /// Tests if this certificate is a CA cert.
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <returns><c>true</c> if the Basic Constraints for this certificate indicate it is a CA cert, <c>false</c> otherwise</returns>
         public static bool IsCertificateAuthority(this X509Certificate2 cert)
         {
             X509BasicConstraintsExtension extension = cert.FindBasicExtension();            
@@ -407,6 +593,11 @@ namespace NHINDirect.Certificates
         // OidCollection
         //
         //---------------------------------------
+        /// <summary>
+        /// Adds a collection of <see cref="Oid"/> instances to this collection.
+        /// </summary>
+        /// <param name="oids">The collection to which to add values</param>
+        /// <param name="newOids">The collection to add from</param>
         public static void Add(this OidCollection oids, OidCollection newOids)
         {
             if (newOids == null)
@@ -420,6 +611,11 @@ namespace NHINDirect.Certificates
             }
         }
 
+        /// <summary>
+        /// Adds an enumeration of <see cref="Oid"/> instances to this collection.
+        /// </summary>
+        /// <param name="oids">The collection to which to add values</param>
+        /// <param name="newOids">The enumeration to add from</param>
         public static void Add(this OidCollection oids, IEnumerable<Oid> newOids)
         {
             if (newOids == null)
@@ -438,6 +634,11 @@ namespace NHINDirect.Certificates
         // X509ChainPolicy
         //
         //---------------------------------------
+        /// <summary>
+        /// Performs a shallow clone or the specified <see cref="X509ChainPolicy"/>
+        /// </summary>
+        /// <param name="policy">The instance to clone.</param>
+        /// <returns>The shallow cloned instance.</returns>
         public static X509ChainPolicy Clone(this X509ChainPolicy policy)
         {
             X509ChainPolicy newPolicy = new X509ChainPolicy();

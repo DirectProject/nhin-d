@@ -20,6 +20,9 @@ using System.Text;
 
 namespace NHINDirect.Cryptography
 {
+    /// <summary>
+    /// An enumeration of encryption errors for use with <see cref="EncryptionException"/>
+    /// </summary>
     public enum EncryptionError
     {
         /// <summary>

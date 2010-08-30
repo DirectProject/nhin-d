@@ -20,11 +20,26 @@ using System.Text;
 
 namespace NHINDirect.Cryptography
 {
+    /// <summary>
+    /// Standard encryption algorithms.
+    /// </summary>
     public enum EncryptionAlgorithm
     {
+        /// <summary>
+        /// RSA Triple DES encryption
+        /// </summary>
         RSA_3DES,
+        /// <summary>
+        /// AES 128 bit encryption
+        /// </summary>
         AES128,
+        /// <summary>
+        /// AES 192 bit encryption
+        /// </summary>
         AES192,
+        /// <summary>
+        /// AES 256 bit encryption
+        /// </summary>
         AES256,
     }
 }

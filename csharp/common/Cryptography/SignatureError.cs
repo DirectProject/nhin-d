@@ -20,6 +20,9 @@ using System.Text;
 
 namespace NHINDirect.Cryptography
 {
+    /// <summary>
+    /// An enumeration of signature errors for use with <see cref="SignatureException"/>
+    /// </summary>
     public enum SignatureError
     {
         /// <summary>
