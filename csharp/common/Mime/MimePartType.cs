@@ -20,13 +20,34 @@ using System.Text;
 
 namespace NHINDirect.Mime
 {
+    /// <summary>
+    /// Parts of a standard MIME entity.
+    /// </summary>
     public enum MimePartType : byte
     {
+        /// <summary>
+        /// The MIME headers section
+        /// </summary>
         Header,
+        /// <summary>
+        /// The boundary between headers and MIME body.
+        /// </summary>
         HeaderBoundary,
+        /// <summary>
+        /// The full MIME body.
+        /// </summary>
         Body,
+        /// <summary>
+        /// The body prologue (not part of the body but may be displayed for non-MIME compliant clients)
+        /// </summary>
         BodyPrologue,
+        /// <summary>
+        /// The actual MIME body entity.
+        /// </summary>
         BodyPart,
+        /// <summary>
+        /// The MIME epilogue (not part of the body, sometimes not included in signing and encryption).
+        /// </summary>
         BodyEpilogue
     }
 }

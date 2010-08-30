@@ -17,23 +17,62 @@ using NHINDirect.Mime;
 
 namespace NHINDirect.Mail
 {
+    /// <summary>
+    /// Defines constants and functions relating to RFC 5322.
+    /// </summary>
     public class MailStandard : MimeStandard
     {
         //
         // Common RFC822/5322 Headers
         //
+        /// <summary>
+        /// Constant for name of the RFC 5322 <c>to</c> header
+        /// </summary>
         public const string ToHeader = "to";
+        /// <summary>
+        /// Constant for name of the RFC 5322 <c>cc</c> header
+        /// </summary>
         public const string CcHeader = "cc";
+        /// <summary>
+        /// Constant for name of the RFC 5322 <c>bcc</c> header
+        /// </summary>
         public const string BccHeader = "bcc";
+        /// <summary>
+        /// Constant for name of the RFC 5322 <c>from</c> header
+        /// </summary>
         public const string FromHeader = "from";
+        /// <summary>
+        /// Constant for name of the RFC 5322 <c>sender</c> header
+        /// </summary>
         public const string SenderHeader = "sender";
+        /// <summary>
+        /// Constant for name of the RFC 5322 <c>message-id</c> header
+        /// </summary>
         public const string MessageIDHeader = "message-id";
+        /// <summary>
+        /// Constant for name of the RFC 5322 <c>subject</c> header
+        /// </summary>
         public const string SubjectHeader = "subject";
+        /// <summary>
+        /// Constant for name of the RFC 5322 <c>date</c> header
+        /// </summary>
         public const string DateHeader = "date";
+        /// <summary>
+        /// Constant for name of the RFC 5322 <c>orig-date</c> header
+        /// </summary>
         public const string OrigDateHeader = "orig-date";
+        /// <summary>
+        /// Constant for name of the RFC 5322 <c>in-reply-to</c> header
+        /// </summary>
         public const string InReplyToHeader = "in-reply-to";
+        /// <summary>
+        /// Constant for name of the RFC 5322 <c>references</c> header
+        /// </summary>
         public const string ReferencesHeader = "references";
         
+        /// <summary>
+        /// RFC 5322 headers defining the destination of emails.
+        /// </summary>
         public static readonly string[] DestinationHeaders = new[]
         {
             ToHeader, 
@@ -42,16 +81,25 @@ namespace NHINDirect.Mail
             BccHeader
         };
 
+        /// <summary>
+        /// RFC 5322 headers defining the originators of emails.
+        /// </summary>
         public static readonly string[] OriginHeaders = new[]
         {
             FromHeader, 
             SenderHeader,
         };
 
+        /// <summary>
+        /// RFC 5322 separator character for mail addresses.
+        /// </summary>
         public const char MailAddressSeparator = ',';
         //
         // MIME Types
         //
+        /// <summary>
+        /// <c>content-type</c> value for RFC 5322 (and previous RFC version) messages.
+        /// </summary>
 		public new class MediaType : MimeStandard.MediaType
 		{
 			public const string WrappedMessage = "message/rfc822";
