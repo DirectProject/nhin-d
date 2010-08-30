@@ -20,12 +20,23 @@ using NHINDirect.Mime;
 
 namespace NHINDirect.Mail
 {
+    /// <summary>
+    /// Represents an RFC 5322 message.
+    /// </summary>
     public class Message : MimeEntity
     {        
+
+        /// <summary>
+        /// Initializes an empty instance.
+        /// </summary>
         public Message()
         {
         }
         
+        /// <summary>
+        /// Intializes an instance with the supplied <paramref name="headers"/>
+        /// </summary>
+        /// <param name="headers">The email headers for this message</param>
         public Message(IEnumerable<Header> headers)
         {
             if (headers == null)
@@ -35,7 +46,12 @@ namespace NHINDirect.Mail
             
             this.Headers.Add(headers);
         }
-                                        
+
+        // TODO: an AddressHeader subclass would be nice here...
+                          
+        /// <summary>
+        /// The <c>to</c> header
+        /// </summary>      
         public Header To
         {
             get
@@ -48,6 +64,9 @@ namespace NHINDirect.Mail
             }
         }
 
+        /// <summary>
+        /// The <c>cc</c> header
+        /// </summary>
         public Header Cc
         {
             get
@@ -60,6 +79,9 @@ namespace NHINDirect.Mail
             }
         }
 
+        /// <summary>
+        /// The <c>bcc</c> header
+        /// </summary>
         public Header Bcc
         {
             get
@@ -72,6 +94,9 @@ namespace NHINDirect.Mail
             }
         }
                 
+        /// <summary>
+        /// The <c>from</c> header
+        /// </summary>
         public Header From
         {
             get
@@ -84,6 +109,9 @@ namespace NHINDirect.Mail
             }
         }
                 
+        /// <summary>
+        /// The <c>subject</c> header
+        /// </summary>
         public Header Subject
         {
             get
@@ -96,6 +124,9 @@ namespace NHINDirect.Mail
             }
         }
 
+        /// <summary>
+        /// The <c>message-id</c> header
+        /// </summary>
         public Header ID
         {
             get
@@ -108,6 +139,9 @@ namespace NHINDirect.Mail
             }
         }
 
+        /// <summary>
+        /// The <c>date</c> header
+        /// </summary>
         public Header Date
         {
             get
@@ -120,10 +154,12 @@ namespace NHINDirect.Mail
             }
         }
         
-        /// <summary>
-        /// The source message has non-MIME headers
+
+        /// <summary>Extracts the body and associated MIME <c>Content-*</c> headers as a <see cref="MimeEntity"/></summary>
+        /// <remarks>
+        /// The source message has MIME and non-MIME headers, and the body is not a complete MIME entity for signing and encryption.
         /// Takes the source and creates new Message that contains only items relevant to Mime
-        /// </summary>
+        /// </remarks>
         /// <returns></returns>
         public MimeEntity ExtractMimeEntity()
         {
@@ -149,6 +185,15 @@ namespace NHINDirect.Mail
             return entity;
         }
         
+        /// <summary>
+        /// Extracts the MIME entity for signing and encryption purposes.
+        /// </summary>
+        /// <remarks>The MIME entity for signing and encrytion consists of the <c>Content-*</c>
+        /// MIME headers and the body as a complete MIME entity. Some clients omit the epilogue of a
+        /// multipart message.</remarks>
+        /// <param name="includeEpilogue">Should the epilogue be included if this the body of this message
+        /// is multipart?</param>
+        /// <returns>The complete MIME entity from this message for signing and encrytion.</returns>
         public MimeEntity ExtractEntityForSignature(bool includeEpilogue)
         {
             if (includeEpilogue || !this.IsMultiPart)
