@@ -90,7 +90,7 @@ namespace NHINDirect.Certificates
         /// A <see cref="MailAddress"/>
         /// </param>
         /// <returns>
-        /// A <see cref="X509Certificate2Collection"/ or null if there are no addresses.>
+        /// A <see cref="X509Certificate2Collection"/>or null if there are no addresses.
         /// </returns>
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {

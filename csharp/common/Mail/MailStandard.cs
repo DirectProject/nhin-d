@@ -102,7 +102,10 @@ namespace NHINDirect.Mail
         /// </summary>
 		public new class MediaType : MimeStandard.MediaType
 		{
-			public const string WrappedMessage = "message/rfc822";
+            /// <summary>
+            /// <c>content-type</c> value for RFC 5322 (and previous RFC version) messages.
+            /// </summary>
+            public const string WrappedMessage = "message/rfc822";
 		}
     }
 }
