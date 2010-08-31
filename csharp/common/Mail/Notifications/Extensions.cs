@@ -20,18 +20,39 @@ using System.Text;
 
 namespace NHINDirect.Mail.Notifications
 {
+    /// <summary>
+    /// Extension methods relating to MDN
+    /// </summary>
     public static class Extensions
     {
+        /// <summary>
+        /// Tests if this message has requested MDN notification.
+        /// </summary>
+        /// <remarks>The received message may be tested to see if it has a message disposition notification
+        /// request, based on the <c>Disposition-Notification-To</c> header</remarks>
+        /// <param name="message">The message to test.</param>
+        /// <returns><c>true</c> if this message has requested disposition notification, <c>false</c> if not</returns>
         public static bool HasNotificationRequest(this Message message)
         {
             return message.HasHeader(MDNStandard.Headers.DispositionNotificationTo);
         }
         
+        //TODO: would be nicer to return IEnumeration<MailAddress>
+        /// <summary>
+        /// Gets the value of the <c>Disposition-Notification-To</c> header, which indicates where
+        /// the original UA requested notification be sent.
+        /// </summary>
+        /// <param name="message">The message to get the destination from.</param>
+        /// <returns>The value of the header (which will be a comma separated list of addresses)</returns>
         public static string GetNotificationDestination(this Message message)
         {
             return message.Headers.GetValue(MDNStandard.Headers.DispositionNotificationTo);
         }
         
+        /// <summary>
+        /// Sets the header values for this message to request message disposition notification.
+        /// </summary>
+        /// <param name="message">The message for which to set the disposition request headers</param>
         public static void RequestNotification(this Message message)
         {
             message.Headers.SetValue(MDNStandard.Headers.DispositionNotificationTo, message.FromValue);
