@@ -24,36 +24,72 @@ using NHINDirect.Mail;
 namespace NHINDirect.Mail.Notifications
 {
     /// <summary>
+    /// Provides constants and utility functions for working with MDN
+    /// </summary>
+    /// <remarks>
     /// Message Disposition Notifications
     /// RFC 3798
     /// http://tools.ietf.org/html/rfc3798
-    /// </summary>
+    /// </remarks>
     public class MDNStandard : MailStandard
     {
         /// <summary>
-        /// How was the notification triggered? Automatically or initiated by the user manually?
+        /// Specifies how notification was triggered.
         /// </summary>
+        /// <remarks>
+        /// RFC 3798, Disposition modes, 3.2.6.1, action-mode
+        /// </remarks>
         public enum TriggerType
         {
+            /// <summary>
+            /// Notification was triggered automatically.
+            /// </summary>
             Automatic,
+            /// <summary>
+            /// Notification was triggered based on user action.
+            /// </summary>
             UserInitiated
         }
         /// <summary>
-        /// Was the user asked if the notification could be sent?
+        /// Specifies how user was involved in sending notfication.
         /// </summary>
+        /// <remarks>
+        /// RFC 3798, Disposition modes, 3.2.6.1, sending-mode
+        /// </remarks>
         public enum SendType
         {
+            /// <summary>
+            /// Notification was sent automatically.
+            /// </summary>
             Automatic,
+            /// <summary>
+            /// Notification was sent based on user action.
+            /// </summary>
             UserMediated
         }
         
+        /// <summary>
+        /// Indicates what this disposition notification means
+        /// </summary>
+        /// <remarks>
+        /// RFC 3798, Disposition types, 3.2.6.2, includes type (processed) mentioned in document but
+        /// not listed in grammar.
+        /// </remarks>
         public enum NotificationType
         {
+
             Processed,
             Displayed,
             Deleted
         }
         
+        /// <summary>
+        /// Indicates disposition modifier of error, failure or warning
+        /// </summary>
+        /// <remarks>
+        /// RFC 3798, Disposition field, 3.2.6, disposition-modifier, includes modifiers
+        /// that are referred to in the text but not in the grammar.
+        /// </remarks>
         public enum ErrorType
         {
             Error,
@@ -63,25 +99,94 @@ namespace NHINDirect.Mail.Notifications
         //
         // MIME Types
         //
+        /// <summary>
+        /// MIME types for MDN
+        /// </summary>
         public new class MediaType : MailStandard.MediaType
         {
+            /// <summary>
+            /// Base MIME type for an MDN
+            /// </summary>
             public const string ReportMessage = "multipart/report";
+            /// <summary>
+            /// MIME type with qualifier for a disposition report.
+            /// </summary>
             public const string DispositionReport = ReportMessage + "; report-type=disposition-notification";
+            /// <summary>
+            /// MIME type for the disposition notification body part of the <c>multipart/report</c> report.
+            /// </summary>
             public const string DispositionNotification = "message/disposition-notification";
         }
         //
         // Fields
         //
+        /// <summary>
+        /// Standard header names for mail messages
+        /// </summary>
         public new class Headers : MailStandard.Headers
         {
+            /// <summary>
+            /// Disposition header field name
+            /// </summary>
+            /// <remarks>
+            /// RFC 3798, Disposition field, 3.2.6
+            /// </remarks>
             public const string Disposition = "Disposition";
+            /// <summary>
+            /// Disposition-Notification-To header name
+            /// </summary>
+            /// <remarks>
+            /// RFC 3798, The Disposition-Notification-To Header, 2.1
+            /// </remarks>
             public const string DispositionNotificationTo = "Disposition-Notification-To";
+            /// <summary>
+            /// Disposition-Notification-Options header name
+            /// </summary>
+            /// <remarks>
+            /// RFC 3798, The Disposition-Notification-Options Header, 2.2
+            /// </remarks>
             public const string DispositionNotificationOptions = "Disposition-Notification-Options";
+            /// <summary>
+            /// Reporting-UA field name (value is the Health Internet Addresa and software that triggered notification) 
+            /// </summary>
+            /// <remarks>
+            /// RFC 3798, The Reporting-UA field, 3.2.1
+            /// </remarks>
             public const string ReportingAgent = "Reporting-UA";
+            /// <summary>
+            /// MDN-Gateway field name (for SMTP to non-SMTP gateways -- e.g., XDD to SMTP)
+            /// </summary>
+            /// <remarks>
+            /// RFC 3798, The MDN-Gateway field, 3.2.2
+            /// </remarks>
             public const string Gateway = "MDN-Gateway";
+            /// <summary>
+            /// Original-Message-ID field name (value is message for which notification is being sent)
+            /// </summary>
+            /// <remarks>
+            /// RFC 3798, Original-Message-ID field, 3.2.5
+            /// </remarks>
             public const string OriginalMessageID = "Original-Message-ID";
+            /// <summary>
+            /// Failure field name, value is original failure text (e.g., exception)
+            /// </summary>
+            /// <remarks>
+            /// RFC 3798, Failure, Error and Warning fields, 3.2.7
+            /// </remarks>
             public const string Failure = "Failure";
+            /// <summary>
+            /// Error field name, value is original error text (e.g., HL7 error report)
+            /// </summary>
+            /// <remarks>
+            /// RFC 3798, Failure, Error and Warning fields, 3.2.7
+            /// </remarks>
             public const string Error = "Error";
+            /// <summary>
+            /// Warnig field name, value is original warning text
+            /// </summary>
+            /// <remarks>
+            /// RFC 3798, Failure, Error and Warning fields, 3.2.7
+            /// </remarks>
             public const string Warning = "Warning";
         }
                 
@@ -94,6 +199,11 @@ namespace NHINDirect.Mail.Notifications
         internal const string Disposition_Deleted = "deleted";
         internal const string Modifier_Error = "error";
         
+        /// <summary>
+        /// Tests the <paramref name="entity"/> to see if it contains an MDN request.
+        /// </summary>
+        /// <param name="entity">The entity to test</param>
+        /// <returns><c>true</c> if the entity contains an MDN request, <c>false</c> otherwise</returns>
         public static bool HasMDNRequest(MimeEntity entity)
         {
             if (entity == null)
@@ -103,7 +213,16 @@ namespace NHINDirect.Mail.Notifications
             
             return entity.HasHeader(Headers.DispositionNotificationTo);
         }
-                
+
+        /// <summary>
+        /// Tests the <paramref name="entity"/> to see if it is an MDN
+        /// </summary>
+        /// <remarks>
+        /// MDN status is indicated by the appropriate main body <c>Content-Type</c>. The multipart body
+        /// will contain the actual disposition notification (see <see cref="MDNStandard.IsNotification"/>
+        /// </remarks>
+        /// <param name="entity">The entity to test</param>
+        /// <returns><c>true</c> if the entity is an MDN, <c>false</c> otherwise</returns>
         public static bool IsReport(MimeEntity entity)
         {
             if (entity == null)
@@ -114,6 +233,15 @@ namespace NHINDirect.Mail.Notifications
             return entity.HasMediaType(MDNStandard.MediaType.ReportMessage);
         }
         
+        /// <summary>
+        /// Tests the entity to determine if it is a disposition notification body part
+        /// </summary>
+        /// <remarks>
+        /// Notification status is indicated by the appropriate <c>Content-Type</c>. The notification
+        /// section will be a body part of the appropriate MDN report multipart body.
+        /// </remarks>
+        /// <param name="entity">The entity to test</param>
+        /// <returns><c>true</c> if this body part is an MDN notification, <c>false</c> otherwise</returns>
         public static bool IsNotification(MimeEntity entity)
         {
             if (entity == null)
@@ -124,6 +252,11 @@ namespace NHINDirect.Mail.Notifications
             return entity.HasMediaType(MDNStandard.MediaType.DispositionNotification);
         }
         
+        /// <summary>
+        /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="mode"/>
+        /// </summary>
+        /// <param name="mode">The mode to translate</param>
+        /// <returns>A string representation suitable for inclusion in the action mode section of the <c>Disposition</c> header value</returns>
         public static string AsString(TriggerType mode)
         {
             switch(mode)
@@ -138,7 +271,12 @@ namespace NHINDirect.Mail.Notifications
                     return Action_Manual;
             }
         }
-        
+
+        /// <summary>
+        /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="mode"/>
+        /// </summary>
+        /// <param name="mode">The mode to translate</param>
+        /// <returns>A string representation suitable for inclusion in the sending mode section of the <c>Disposition</c> header value</returns>
         public static string AsString(SendType mode)
         {
             switch(mode)
@@ -154,6 +292,11 @@ namespace NHINDirect.Mail.Notifications
             }
         }
 
+        /// <summary>
+        /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="type"/>
+        /// </summary>
+        /// <param name="mode">The type to translate</param>
+        /// <returns>A string representation suitable for inclusion in the disposition type section of the <c>Disposition</c> header value</returns>
         public static string AsString(NotificationType type)
         {
             switch (type)

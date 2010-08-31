@@ -21,15 +21,25 @@ using System.Text;
 namespace NHINDirect.Mail.Notifications
 {
     /// <summary>
-    /// Message Disposition Field
+    /// Encapsulates message disposition status.
     /// </summary>
     public class Disposition
     {
+        /// <summary>
+        /// Initializes an instance with the specified disposition notification type and automatic modes
+        /// </summary> 
+        /// <param name="notification">The disposition notification type</param>
         public Disposition(MDNStandard.NotificationType notification)
             : this(MDNStandard.TriggerType.Automatic, MDNStandard.SendType.Automatic, notification)
         {
         }
 
+        /// <summary>
+        /// Initializes an instance with the specified disposition notification type and action and sending modes
+        /// </summary> 
+        /// <param name="notification">The disposition notification type</param>
+        /// <param name="sendType">The sending mode type</param>
+        /// <param name="triggerType">The action (trigger) mode type</param>
         public Disposition(MDNStandard.TriggerType triggerType, MDNStandard.SendType sendType, MDNStandard.NotificationType notification)
         {
             this.TriggerType = triggerType;
@@ -38,7 +48,7 @@ namespace NHINDirect.Mail.Notifications
         }
         
         /// <summary>
-        /// Was the notification triggered automatically or manually (by the user?)
+        /// Trigger action that generated this disposition (action-mode)
         /// </summary>
         public MDNStandard.TriggerType TriggerType
         {
@@ -46,24 +56,37 @@ namespace NHINDirect.Mail.Notifications
             set;
         }
 
+        /// <summary>
+        /// Sending type (system or user) that sent this dispositon (sending-mode)
+        /// </summary>
         public MDNStandard.SendType SendType
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Type of disposition indicated
+        /// </summary>
         public MDNStandard.NotificationType Notification
         {
             get;
             set;
         }
         
+        /// <summary>
+        /// Is this disposition an error report?
+        /// </summary>
         public bool IsError
         {
             get;
             set;
         }
         
+        /// <summary>
+        /// Constructs the appropriate headers suitable for inclusion in an MDN report
+        /// </summary>
+        /// <returns>A string representation of the disposition suitable for inclusion in the MDN headers</returns>
         public override string ToString()
         {
             StringBuilder notification = new StringBuilder();
