@@ -279,7 +279,7 @@ namespace DnsResolver
 		/// A DNS Response instance representing the response. See <see cref="DnsResponse"/>
 		/// </returns>
 		/// <exception cref="DnsResolver.DnsException">Thrown for network failure (e.g. max retries exceeded) or badly formed responses.</exception>
-        public DnsResponse Resolve(DnsRequest request)
+        public virtual DnsResponse Resolve(DnsRequest request)
         {
             if (request == null)
             {
@@ -470,7 +470,7 @@ namespace DnsResolver
             return response.AnswerRecords.CERT;
         }
 
-        public IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain)
+        public  IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain)
         {
             IEnumerable<IPAddress> nameServers = this.GetNameServers(domain);
             if (nameServers != null)
@@ -495,7 +495,7 @@ namespace DnsResolver
             return null;
         }
 
-        public IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain, IPAddress nameserver)
+        public virtual IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain, IPAddress nameserver)
         {
             if (string.IsNullOrEmpty(domain) || nameserver == null)
             {
