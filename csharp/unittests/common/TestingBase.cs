@@ -63,6 +63,7 @@ namespace NHINDirect.Tests
             Console.WriteLine("{0} - {1}", DateTime.UtcNow.ToString("mm:ss.ff"), msg);
         }
         #endregion
+
     }
 
 
