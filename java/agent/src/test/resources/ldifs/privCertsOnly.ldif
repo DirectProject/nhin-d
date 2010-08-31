@@ -1,0 +1,27 @@
+dn: ou=com, cn=lookupTest
+objectClass: organizationalUnit
+objectClass: top
+ou: com
+description: Top level company entry
+
+dn: ou=cerner, ou=com, cn=lookupTest
+objectClass: organizationalUnit
+objectClass: top
+ou: cerner
+description: Top level entry for cerner.
+
+dn: ou=privKeys, ou=cerner, ou=com, cn=lookupTest
+objectClass: organizationalUnit
+objectClass: top
+ou: privKeys
+description: Top level entry private keys.
+
+
+dn: ou=gm2552, ou=privKeys, ou=cerner, ou=com, cn=lookupTest
+objectClass: organizationalUnit
+objectClass: top
+objectClass: userPrivKey
+email: gm2552@cerner.com
+privKeyStore: 1234567
+ou: gm2552
+description: GM2552 private key
