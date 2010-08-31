@@ -21,6 +21,12 @@ using System.IO;
 
 namespace NHINDirect.Diagnostics
 {
+    /// <summary>
+    /// Provides a writer class specialized for log files.
+    /// </summary>
+    /// <remarks>
+    /// The files created named with a prefix, a timestamp and a sequential numeric identifier.
+    /// </remarks>
     public class LogWriter : TextWriter, IDisposable
     {        
         string m_machineName;
@@ -32,21 +38,47 @@ namespace NHINDirect.Diagnostics
         StreamWriter m_writer;
         string m_currentFilePath;
         
+        /// <summary>
+        /// Initializes an instance using a .log extension and 24hr log rotation.
+        /// </summary>
+        /// <param name="directoryPath">The directory path to which to write log files</param>
+        /// <param name="namePrefix">The prefix for log file name.</param>
         public LogWriter(string directoryPath, string namePrefix)
             : this(directoryPath, namePrefix, "log", 24)
         {
         }
-        
+
+        /// <summary>
+        /// Initializes an instance using 24hr log rotation.
+        /// </summary>
+        /// <param name="directoryPath">The directory path to which to write log files</param>
+        /// <param name="namePrefix">The prefix for log file name.</param>
+        /// <param name="ext">The file extension to use</param>
         public LogWriter(string directoryPath, string namePrefix, string ext)
             : this(directoryPath, namePrefix, ext, 24)
         {
         }
 
+        /// <summary>
+        /// Initializes an instance.
+        /// </summary>
+        /// <param name="directoryPath">The directory path to which to write log files</param>
+        /// <param name="namePrefix">The prefix for log file name.</param>
+        /// <param name="ext">The file extension to use</param>
+        /// <param name="fileChangeFreqHours">The number of hours between log file rotation.</param>
         public LogWriter(string directoryPath, string namePrefix, string ext, int fileChangeFreqHours)
             : this(directoryPath, namePrefix, ext, fileChangeFreqHours, false)
         {
         }
-                        
+
+        /// <summary>
+        /// Initializes an instance.
+        /// </summary>
+        /// <param name="directoryPath">The directory path to which to write log files</param>
+        /// <param name="namePrefix">The prefix for log file name.</param>
+        /// <param name="ext">The file extension to use</param>
+        /// <param name="fileChangeFreqHours">The number of hours between log file rotation.</param>
+        /// <param name="useUTC">Specifies if this writer should timestamp in UTC (<c>true</c>) or local time (<c>false</c>)</param>
         public LogWriter(string directoryPath, string namePrefix, string ext, int fileChangeFreqHours, bool useUTC)
         {
             if (string.IsNullOrEmpty(directoryPath) || string.IsNullOrEmpty(namePrefix) || string.IsNullOrEmpty(ext) || fileChangeFreqHours <= 0 || fileChangeFreqHours > 24)
@@ -62,6 +94,10 @@ namespace NHINDirect.Diagnostics
             m_machineName = this.GetMachineName();
         }
 
+        /// <summary>
+        /// Returns the <see cref="Encoding"/> in which the output is written.
+        /// </summary>
+        /// <remarks>Always UTF8</remarks>
         public override Encoding Encoding
         {
             get
@@ -70,9 +106,20 @@ namespace NHINDirect.Diagnostics
             }
         }
 
+
+        /// <summary>
+        /// Defines whether to keep the file handle open (<c>true</c>) or close it (<c>false</c>) in between writes.
+        /// </summary>
         public bool KeepWriterOpen = true;
+
+        /// <summary>
+        /// Defines if this writer uses UTC for timestamps.
+        /// </summary>
         public bool UTCTime = false;
         
+        /// <summary>
+        /// Gets the current file path.
+        /// </summary>
         public string CurrentFilePath
         {
             get
@@ -89,21 +136,41 @@ namespace NHINDirect.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Logs an exception as an error event.
+        /// </summary>
+        /// <param name="exception">The exception to log.</param>
         public void WriteError(Exception exception)
         {
             this.WriteLine(LogEventType.Error, exception);
         }
 
+        /// <summary>
+        /// Writes an object string representation to the log.
+        /// </summary>
+        /// <param name="type">The <see cref="LogEventType"/> severity level.</param>
+        /// <param name="message">The object whose string representation will be to logged.</param>
         public void WriteLine(LogEventType type, object message)
         {
             this.WriteLine(type, message.ToString());
         }
 
+        /// <summary>
+        /// Writes a message to the log
+        /// </summary>
+        /// <param name="type">The <see cref="LogEventType"/> severity level.</param>
+        /// <param name="message">The message to log.</param>
         public void WriteLine(LogEventType type, string message)
         {
             this.WriteLine(type.ToString(), message);
         }
 
+
+        /// <summary>
+        /// Writes a message of nonstandard severity level to the log.
+        /// </summary>
+        /// <param name="type">The non-standard message type</param>
+        /// <param name="message">The message to log.</param>
         public void WriteLine(string type, string message)
         {
             string log;            
@@ -119,6 +186,10 @@ namespace NHINDirect.Diagnostics
             this.WriteText(log);
         }
     
+        /// <summary>
+        /// Writes a message to the log.
+        /// </summary>
+        /// <param name="message">The message to write.</param>
         public override void WriteLine(string message)
         {
             string log;
@@ -133,6 +204,7 @@ namespace NHINDirect.Diagnostics
             
             this.WriteText(message);
         }
+
 
         void WriteText(string message)
         {
@@ -151,7 +223,13 @@ namespace NHINDirect.Diagnostics
         {
             this.EnsureWriter(this.Now);
         }
+
+        // TODO: Why do we let people pass in a custom DateTime here?
         
+        /// <summary>
+        /// Ensures that the writer is writing to the correct file location (after necessary log rotations, etc.).
+        /// </summary>
+        /// <param name="now">The time at which to calculate rotation.</param>
         public void EnsureWriter(DateTime now)
         {
             if (m_writer == null || (AbsoluteHour(now) / m_fileChangeFreqHours) != m_fileNumber)
@@ -203,6 +281,9 @@ namespace NHINDirect.Diagnostics
             throw new InvalidOperationException("Too many open log files");
         }
 
+        /// <summary>
+        /// Closes the file handle.
+        /// </summary>
         public override void Close()
         {
             if (m_writer != null)
