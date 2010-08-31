@@ -22,7 +22,7 @@ namespace NHINDirect.Tests
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         protected void DumpError(string msg)
         {
-            Console.WriteLine(new String('!', 50));
+            Console.WriteLine(new string('!', 50));
             Dump(msg);
         }
         #endregion
@@ -41,7 +41,7 @@ namespace NHINDirect.Tests
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         protected void DumpSuccess(string msg)
         {
-            Console.WriteLine(new String('-', 50));
+            Console.WriteLine(new string('-', 50));
             Dump(msg);
         }
         #endregion
@@ -60,7 +60,7 @@ namespace NHINDirect.Tests
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         protected void Dump(string msg)
         {
-            Console.WriteLine("{0} - {1}", DateTime.UtcNow.ToString("mm:ss:ff"), msg);
+            Console.WriteLine("{0} - {1}", DateTime.UtcNow.ToString("mm:ss.ff"), msg);
         }
         #endregion
     }
