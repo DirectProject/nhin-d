@@ -56,7 +56,7 @@ public class XDR extends DocumentRepositoryAbstract{
      * @seeorg.nhind.xdr.DocumentRepositoryAbstract#documentRepositoryRetrieveDocumentSet(ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType)
      */
     public RetrieveDocumentSetResponseType documentRepositoryRetrieveDocumentSet(RetrieveDocumentSetRequestType body) {
-        //TODO implement this method
+     
         throw new UnsupportedOperationException("Not implemented for XDR");
     }
 

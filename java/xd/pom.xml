@@ -5,7 +5,7 @@
     <artifactId>xd</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>xd Java EE 6 Webapp</name>
+    <name>NHINDXd</name>
     <url>http://maven.apache.org</url>
 
 <repositories>
@@ -16,14 +16,14 @@
     </repository>
 </repositories>
     <dependencies>
-       
+
  <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>6.0</version>
             <scope>provided</scope>
         </dependency>
-       
+
 	<dependency>
 		<groupId>org.apache.cxf</groupId>
 		<artifactId>cxf-rt-frontend-jaxws</artifactId>
@@ -63,7 +63,7 @@
             <version>2.5</version>
         </dependency>
 
-     
+
     </dependencies>
     <build>
         <plugins>
@@ -179,5 +179,6 @@
     </profiles>
 
 </project>
+
 
 
