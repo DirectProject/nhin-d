@@ -25,6 +25,11 @@ package org.nhindirect.gateway.smtp;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * {@link SmtpAgent} configuration settings.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ */
 public class SmtpAgentSettings
 {	
 	private final Map<String, DomainPostmaster> domains;
@@ -33,6 +38,14 @@ public class SmtpAgentSettings
 	private final ProcessIncomingSettings incomingSettings;
 	private final ProcessBadMessageSettings badMessageSettings;
 	
+	/**
+	 * Constructs the settings objects.
+	 * @param domains A list of domains and postmasters handled by the SmtpAgent.
+	 * @param rawMessageSettings Settings for processing raw messages.
+	 * @param outgoingSettings Settings for processing outgoing messages.
+	 * @param incomingSettings Settings for processing incoming messages.
+	 * @param badMessageSettings Settings for processing bad messages.
+	 */
 	public SmtpAgentSettings(Map<String, DomainPostmaster>  domains, RawMessageSettings rawMessageSettings, ProcessOutgoingSettings outgoingSettings,
 			ProcessIncomingSettings incomingSettings, ProcessBadMessageSettings badMessageSettings)
 	{
@@ -43,26 +56,46 @@ public class SmtpAgentSettings
 		this.badMessageSettings = badMessageSettings;
 	}
 	
+	/**
+	 * Gets the domains managed by the SmtpAgent and postmaster email addresses for each domain.
+	 * @return The domains managed by the SmtpAgent
+	 */
 	public Map<String, DomainPostmaster> getDomainPostmasters()
 	{
 		return Collections.unmodifiableMap(domains);
 	}
 	
+	/**
+	 * Gets the settings for processing raw messages.
+	 * @return The settings for processing raw messages.
+	 */
 	public RawMessageSettings getRawMessageSettings()
 	{
 		return rawMessageSettings;
 	}
 	
+	/**
+	 * Gets the settings for processing outgoing messages.
+	 * @return The settings for processing outgoing messages.
+	 */	
 	public ProcessOutgoingSettings getOutgoingMessageSettings()
 	{
 		return outgoingSettings;
 	}
 	
+	/**
+	 * Gets the settings for processing incoming messages.
+	 * @return The settings for processing incoming messages.
+	 */		
 	public ProcessIncomingSettings getIncomingMessageSettings()
 	{
 		return incomingSettings;
 	}
 	
+	/**
+	 * Gets the settings for processing failed and bad messages.
+	 * @return The settings for processing failed and bad messages.
+	 */		
 	public ProcessBadMessageSettings getBadMessageSettings()
 	{
 		return badMessageSettings;

@@ -22,13 +22,23 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp;
 
+import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.NHINDException;
 
+/**
+ * Exceptions thrown by the {@link SmtpAgent}
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public class SmtpAgentException extends NHINDException
 {
 	static final long serialVersionUID = 8534058110248864799L;
 	
-	
+    /**
+     * Constructs an exception with an SmtpAgentError.
+     * @param error The smtp agent error
+     */
     public SmtpAgentException(SmtpAgentError error)
     {
     	super(error);

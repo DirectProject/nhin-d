@@ -7,7 +7,7 @@
     <version>1.0-SNAPSHOT</version>
     <description>NHIN Direct security agent gateways and bridges.</description>
     <inceptionYear>2010</inceptionYear>
-    <url>https://nhin-d.googlecode.com/hg/</url>        
+    <url>https://nhin-d.googlecode.com/hg/java/gateway/</url>            
     <developers>
         <developer>
             <name>Greg Meyer</name>
@@ -26,8 +26,13 @@
         <maven>2.0.4</maven>
    </prerequisites>   
   <scm>
-    <url>https://nhin-d.googlecode.com/hg/</url>
+     <url>https://nhin-d.googlecode.com/hg/java/gateway/</url>  
+     <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/gateway</connection>
   </scm> 
+  <issueManagement>
+     <system>Google Code</system>
+     <url>http://code.google.com/p/nhin-d/issues/list</url>
+  </issueManagement>  
   <repositories>
 	<repository>
 	    <id>codehaus-release-repo</id>
@@ -192,9 +197,9 @@
               <detectJavaApiLink>true</detectJavaApiLink>
               <detectLinks>true</detectLinks>
 	          <source>1.5</source>
-	          <show>protected</show>
+	          <show>public</show>
 	          <excludePackageNames>
-	              org.nhindirect.gateway.smtp.annotation
+	              org.nhindirect.gateway.smtp.annotation:org.nhindirect.gateway.smtp.module:org.nhindirect.gateway.smtp.provider
 	          </excludePackageNames>          	          
 	        </configuration>
 	      </plugin>

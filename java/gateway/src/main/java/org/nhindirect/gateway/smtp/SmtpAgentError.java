@@ -22,6 +22,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp;
 
+/**
+ * Error conditions for processing message in the {@link SmtpAgent}.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public enum SmtpAgentError 
 {
     Unknown,

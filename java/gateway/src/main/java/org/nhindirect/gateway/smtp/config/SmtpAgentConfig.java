@@ -27,8 +27,18 @@ import org.nhindirect.gateway.smtp.provider.XMLSmtpAgentConfigProvider;
 import com.google.inject.Injector;
 import com.google.inject.ProvidedBy;
 
+/**
+ * The SmtpAgentConfig is responsible for loading configuration information from a URL and creating an injector that will subsequently used
+ * to create instances of an {@link SmtpAgent}.
+ * @author Greg Meyer
+ *
+ */
 @ProvidedBy(XMLSmtpAgentConfigProvider.class)
 public interface SmtpAgentConfig 
 {
+	/**
+	 * Gets a Guide Injector that can be used to create {@link SmtpAgent} objects based on configuration information.
+	 * @return A Guide Injector that can be used to create {@link SmtpAgent} objects.
+	 */
 	public Injector getAgentInjector();
 }

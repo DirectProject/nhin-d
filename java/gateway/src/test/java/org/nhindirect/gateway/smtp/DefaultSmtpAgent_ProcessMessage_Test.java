@@ -96,8 +96,6 @@ public class DefaultSmtpAgent_ProcessMessage_Test extends TestCase
 			{
 				assertNotNull(result);
 				assertNotNull(result.getProcessedMessage());
-				assertNull(result.getIncomingBounceMessage());
-				assertNull(result.getOutgoingBounceMessage());
 			}
 			
 		}.perform();
@@ -117,8 +115,6 @@ public class DefaultSmtpAgent_ProcessMessage_Test extends TestCase
 			{
 				assertNotNull(result);
 				assertNotNull(result.getProcessedMessage());
-				assertNull(result.getIncomingBounceMessage());
-				assertNull(result.getOutgoingBounceMessage());
 			}
 			
 		}.perform();
@@ -153,8 +149,6 @@ public class DefaultSmtpAgent_ProcessMessage_Test extends TestCase
 			{
 				assertNotNull(result);
 				assertNull(result.getProcessedMessage());
-				assertNull(result.getIncomingBounceMessage());
-				assertNotNull(result.getOutgoingBounceMessage());
 			}
 			
 		}.perform();
@@ -193,8 +187,6 @@ public class DefaultSmtpAgent_ProcessMessage_Test extends TestCase
 			{
 				assertNotNull(result);
 				assertNull(result.getProcessedMessage());
-				assertNotNull(result.getIncomingBounceMessage());
-				assertNull(result.getOutgoingBounceMessage());
 			}
 			
 		}.perform();
@@ -270,8 +262,6 @@ public class DefaultSmtpAgent_ProcessMessage_Test extends TestCase
 			{
 				assertNotNull(result);
 				assertNotNull(result.getProcessedMessage());
-				assertNull(result.getIncomingBounceMessage());
-				assertNotNull(result.getOutgoingBounceMessage());
 			}
 			
 		}.perform();

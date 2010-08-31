@@ -20,37 +20,47 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */package org.nhindirect.gateway.smtp;
 
-
-
 import org.nhindirect.stagent.MessageEnvelope;
 
+/**
+ * Result structure for messages processed by the SmtpAgent.  Contains the result of processing the message and 
+ * an acknowledgment message that should be sent back according the security and trust policy.
+ * @author Greg Meyer
+ */
 public class MessageProcessResult 
 {
 	private final MessageEnvelope processedMessage;
 	
-	private final MessageEnvelope outgoingBounceMessage;
+	private final MessageEnvelope ackMessage;
 	
-	private final MessageEnvelope incomingBoundMessage;
-	
-	public MessageProcessResult(MessageEnvelope processedMessage,  MessageEnvelope outgoingBounceMessage, MessageEnvelope incomingBoundMessage)
+	/**
+	 * Construct a result.
+	 * @param processedMessage The resulting message of processing a message through the SmtpAgent.
+	 * @param ackMessage An acknowledgment message that should be sent to the sender.
+	 */
+	public MessageProcessResult(MessageEnvelope processedMessage, MessageEnvelope ackMessage)
 	{
 		this.processedMessage = processedMessage;
-		this.outgoingBounceMessage = outgoingBounceMessage;
-		this.incomingBoundMessage = incomingBoundMessage;
+		this.ackMessage = ackMessage;
 	}
 
+	/**
+	 * Gets the resulting message of processing a message through the SmtpAgent.  A null message indicates that an error occurred while processing
+	 * the message.
+	 * @return The resulting message of processing a message through the SmtpAgen
+	 */
 	public MessageEnvelope getProcessedMessage() 
 	{
 		return processedMessage;
 	}
 
-	public MessageEnvelope getOutgoingBounceMessage() 
+	/**
+	 * Get the ack message that should be sent back to the sender according the security and trust policy.
+	 * @return The ack message that should be sent back to the sender
+	 */
+	public MessageEnvelope getAckMessage() 
 	{
-		return outgoingBounceMessage;
+		return ackMessage;
 	}
 
-	public MessageEnvelope getIncomingBounceMessage() 
-	{
-		return incomingBoundMessage;
-	}	
 }

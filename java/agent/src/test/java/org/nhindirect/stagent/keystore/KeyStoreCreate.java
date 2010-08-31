@@ -71,6 +71,7 @@ public class KeyStoreCreate
 			importCert("highlandclinic", "highlandclinic.der", "highlandclinicKey.der");
 			importCert("bob", "bob.der", null);
 			importCert("umesh", "umesh.der", "umeshKey.der");
+			importCert("dev", "dev.der", "devkey.der");
 			
 		}
 		catch (Exception e)

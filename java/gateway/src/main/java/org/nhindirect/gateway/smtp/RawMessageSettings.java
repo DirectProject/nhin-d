@@ -22,8 +22,17 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp;
 
+/**
+ * Settings specific to processing raw messages.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public class RawMessageSettings extends MessageProcessingSettings
 {
+	/**
+	 * Constructor with default settings.
+	 */	
 	public RawMessageSettings()
 	{
 		super();

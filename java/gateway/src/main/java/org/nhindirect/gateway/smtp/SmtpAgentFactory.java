@@ -23,8 +23,6 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.gateway.smtp;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,17 +34,39 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 
+/**
+ * The SmtpAgentFactory is a bootstrapper for creating instances of the {@link SmtpAgent) based on configuration information.  Configurations
+ * are loaded from a URL that may take the form of any addressable resource such as a file, HTTP resource, LDAP store, or database.  Based on the
+ * URL protocol, an appropriate configuration loader and parser is instantiated which creates an injector used to provide instance of the SmptAgent.
+ * Optionally specific configuration and security and trust agent providers can be passed for specific object creation.  This is generally useful
+ * for creating mock implementations for testing.
+ * @author Greg Meyer
+ *
+ */
 public class SmtpAgentFactory 
-{
-	private static Map<URL, SmtpAgent> agents = new HashMap<URL, SmtpAgent>();
-	
+{	
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(SmtpAgentFactory.class);	
 	
-	public synchronized static SmtpAgent createAgent(URL configLocation)
+	/**
+	 * Creates an instance of an {@link SmtpAgent} using the configuration information stored at the configuration location.
+	 * @param configLocation The URL of the configuration information.  The URL may refer to any addressable resource.
+	 * @return An initialized instance of an SmtpAgent.
+	 * @throws SmtpAgentException Thrown if an error occurs while creating the SmtpAgent.
+	 */
+	public synchronized static SmtpAgent createAgent(URL configLocation) throws SmtpAgentException
 	{
 		return createAgent(configLocation, null, null);
 	}
 	
+	/**
+	 * Creates an instance of an {@link SmtpAgent} using the configuration information stored at the configuration location.  Optional 
+	 * SmptAgentConfig and security and trust providers can be passed to create specific types of these components.
+	 * @param configLocation The URL of the configuration information.  The URL may refer to any addressable resource.
+	 * @param configProvider A provider used to create the SmtpAgentConfig component that parses and the configuration.
+	 * @param agentProvider A provider used to create the security and trust agent component.
+	 * @return An initialized instance of an SmtpAgent.
+	 * @throws SmtpAgentException Thrown if an error occurs while creating the SmtpAgent.
+	 */
 	public synchronized static SmtpAgent createAgent(URL configLocation, Provider<SmtpAgentConfig> configProvider, 
 			Provider<NHINDAgent> agentProvider) throws SmtpAgentException
 	{
@@ -54,15 +74,9 @@ public class SmtpAgentFactory
 		
 		try
 		{
-			agents.get(configLocation);
-			
-			if (retVal == null)
-			{
-				Injector agentInjector = buildAgentInjector(configLocation, configProvider, agentProvider);
-				retVal = agentInjector.getInstance(SmtpAgent.class);
+			Injector agentInjector = buildAgentInjector(configLocation, configProvider, agentProvider);
+			retVal = agentInjector.getInstance(SmtpAgent.class);
 				
-				agents.put(configLocation, retVal);
-			}
 		}
 		catch (SmtpAgentException e)
 		{

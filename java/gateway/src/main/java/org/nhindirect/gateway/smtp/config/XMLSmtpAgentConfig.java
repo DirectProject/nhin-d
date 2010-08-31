@@ -37,8 +37,6 @@ import javax.mail.internet.InternetAddress;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.nhindirect.gateway.smtp.BounceMessageCreator;
-import org.nhindirect.gateway.smtp.BounceMessageTemplate;
 import org.nhindirect.gateway.smtp.DomainPostmaster;
 import org.nhindirect.gateway.smtp.ProcessBadMessageSettings;
 import org.nhindirect.gateway.smtp.ProcessIncomingSettings;
@@ -74,7 +72,11 @@ import com.google.inject.Module;
 import com.google.inject.Provider;
 
 
-
+/**
+ * An implementation of the {@link SmtpAgentConfig} interface that loads configuration information from an XML file.
+ * @author Greg Meyer
+ *
+ */
 public class XMLSmtpAgentConfig implements SmtpAgentConfig
 {
 	@Inject(optional=true)
@@ -96,9 +98,14 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	private ProcessIncomingSettings incomingSettings;
 	private ProcessOutgoingSettings outgoingSettings;
 	private ProcessBadMessageSettings badSettings;
-	private BounceMessageCreator outgoingBounceCreator;
-	private BounceMessageCreator incomingBounceCreator;
 	
+	/**
+	 * Construct and configuration component with the location of the configuration file and an optional provider for creating
+	 * instances of the security and trust anchor.
+	 * @param configFile The full path of the XML configuration file.
+	 * @param agentProvider An option provider used for creating instances of the security and trust agent.  If the provider is
+	 * null, a default provider is used.
+	 */
 	public XMLSmtpAgentConfig(String configFile, Provider<NHINDAgent> agentProvider)
 	{
 		this.agentProvider = agentProvider;
@@ -115,6 +122,9 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 		}
 	}
 		
+	/**
+	 * {@inheritDoc}
+	 */
 	public Injector getAgentInjector()
 	{
 		return buildAgentInjector();
@@ -181,20 +191,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			{
 				buildBadMessageSettings(docNode);
 			}	
-			/*
-			 * Outgoing bounce message
-			 */
-			else if (docNode.getNodeName().equalsIgnoreCase("outgoingbouncemessage"))
-			{
-				buildBounceMessage(docNode, true);
-			}	
-			/*
-			 * Incoming bounce message
-			 */
-			else if (docNode.getNodeName().equalsIgnoreCase("incomingbouncemessage"))
-			{
-				buildBounceMessage(docNode, false);
-			}				
+			
 			
 			docNode = docNode.getNextSibling();
 		} while (docNode != null);
@@ -206,7 +203,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 				incomingSettings, badSettings);
 		
 		if (smtpAgentProvider == null)
-			smtpAgentProvider = new DefaultSmtpAgentProvider(settings, outgoingBounceCreator, incomingBounceCreator);
+			smtpAgentProvider = new DefaultSmtpAgentProvider(settings);
 		
 		AgentModule agentModule;
 		if (agentProvider == null)
@@ -217,6 +214,9 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 		return Guice.createInjector(agentModule, SmtpAgentModule.create(smtpAgentProvider));
 	}
 	
+	/*
+	 * Builds the list of domains managed by the agent.
+	 */
 	private void buildDomains(Node domainsNode)
 	{
 		domains = new ArrayList<String>();
@@ -294,6 +294,9 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 		
 	}	
 	
+	/*
+	 * Builds the resolver used to find trust anchors.
+	 */
 	private void buildTrustAnchorResolver(Element anchorStoreNode, Map<String, Collection<String>> incomingAnchorHolder, 
 			Map<String, Collection<String>> outgoingAnchorHolder)
 	{
@@ -371,6 +374,9 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 		certAnchorModule = TrustAnchorModule.create(provider);
 	}
 	
+	/*
+	 * Gets the trust anchors for a specific domain.
+	 */
 	private Collection<String> getConfiguredTrustAnchorNames(Node anchorsNode)
 	{
 		Collection<String> retVal = new ArrayList<String>();
@@ -392,6 +398,9 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 		return retVal;
 	}
 	
+	/*
+	 * Build the certificate resolver for public certificates
+	 */
 	@SuppressWarnings("unchecked")
 	private void buildPublicCertStore(Node publicCertNode)
 	{
@@ -432,6 +441,9 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	
 	}
 	
+	/*
+	 * Build the certificates store that hold private certificates.
+	 */
 	private void buildPrivateCertStore(Node publicCertNode)
 	{
 		Provider<CertificateResolver> resolverProvider = null;
@@ -520,37 +532,4 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 		}
 	}	
 	
-	private void buildBounceMessage(Node bounceNode, boolean isOutgoing)
-	{
-		Node childNode = bounceNode.getFirstChild();
-		BounceMessageTemplate template = null;
-		
-		String subject = "";
-		String body = "";
-		
-		// defaults to false if it is not present
-		boolean encryptRequired = Boolean.valueOf(((Element)bounceNode).getAttribute("encrypt"));			
-		
-		do
-		{
-			if (childNode.getNodeType() == Node.ELEMENT_NODE)
-			{
-				if (childNode.getNodeName().equalsIgnoreCase("subject"))
-					subject = childNode.getFirstChild().getNodeValue();
-				if (childNode.getNodeName().equalsIgnoreCase("body"))
-					body = childNode.getFirstChild().getNodeValue();		
-			}
-			childNode = childNode.getNextSibling();
-		} while (childNode != null);
-		
-		if ((subject == null || subject.length() == 0) && (body == null || body.length() == 0))
-			template = new BounceMessageTemplate.DefaultBounceMessageTemplate();
-		else
-			template = new BounceMessageTemplate(subject, body, encryptRequired);
-		
-		if (isOutgoing)
-			outgoingBounceCreator = new BounceMessageCreator(template);
-		else
-			incomingBounceCreator = new BounceMessageCreator(template);
-	}
 }

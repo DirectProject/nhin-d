@@ -39,13 +39,5 @@
    <RawMessageSettings saveFolder="RawMsgFolder"/>
    <OutgoingMessagesSettings saveFolder="OutgoingMsgFolder"/>
    <IncomingMessagesSettings saveFolder="IncomingMsgFolder"/>
-   <BadMessagesSettings saveFolder="BadMsgFolder"/>
-   <OutgoingBounceMessage encrypt="true">
-      <Subject><![CDATA[This is a CDATA subject]]></Subject>
-      <Body><![CDATA[This is a CDATA body]]></Body>>
-   </OutgoingBounceMessage>	
-   <IncomingBounceMessage>
-      <Subject>This is a plain subject.</Subject>
-      <Body>this is a plain body.</Body>
-   </IncomingBounceMessage>	   
+   <BadMessagesSettings saveFolder="BadMsgFolder"/>  
 </SmtpAgentConfig>
