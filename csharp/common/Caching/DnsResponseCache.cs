@@ -27,7 +27,7 @@ namespace NHINDirect.Caching
     /// </summary>
     public class DnsResponseCache : CachingBase<DnsResponse>
     {
-
+        
         /// <summary>
         /// provides implementation for base class property for setting a default ttl value
         /// </summary>

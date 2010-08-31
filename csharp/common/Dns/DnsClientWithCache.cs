@@ -31,6 +31,7 @@ namespace NHINDirect.Dns
     public class DnsClientWithCache : DnsClient
     {
 
+
         /// <summary>
         /// instance of the dnsresponse cache object used to cache related DnsResponses resolved by
         /// an this class
