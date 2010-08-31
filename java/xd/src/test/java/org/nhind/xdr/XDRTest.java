@@ -87,6 +87,22 @@ public class XDRTest extends TestCase {
     }
 
     /**
+     * Test the documentRepositoryRetrieveDocumentSet method.
+     */
+    public void testDocumentRepositoryRetrieveDocumentSet() {
+        try {
+            XDR instance = new XDR();
+            RetrieveDocumentSetResponseType response = null;
+            RetrieveDocumentSetRequestType body = new RetrieveDocumentSetRequestType();
+
+            response = instance.documentRepositoryRetrieveDocumentSet(body);
+            fail("Exception not thrown");
+        } catch (UnsupportedOperationException e) {
+            assertTrue(true);
+        }
+    }
+    
+    /**
      * Return the test request.xml as a string.
      * 
      * @return the test request.xml as a string
