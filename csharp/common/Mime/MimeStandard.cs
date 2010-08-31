@@ -19,49 +19,124 @@ using NHINDirect.Cryptography;
 
 namespace NHINDirect.Mime
 {
+    /// <summary>
+    /// Implements constants and utility functions for the MIME standard (RFC TODO).
+    /// </summary>
     public class MimeStandard
     {
         //
         // Character Tokens
         //
+        /// <summary>
+        /// The MIME standard CR character
+        /// </summary>
         public const char CR = '\r';
+        /// <summary>
+        /// The MIME standard LF character
+        /// </summary>
         public const char LF = '\n';
+        /// <summary>
+        /// CRLF is the standard line terminator for RFC 5322 and MIME.
+        /// </summary>
         public const string CRLF = "\r\n";
+        /// <summary>
+        /// The MIME escape character.
+        /// </summary>
         public const char Escape = '\\';
+        /// <summary>
+        /// The MIME separator between header and header value.
+        /// </summary>
         public const char NameValueSeparator = ':';
+        /// <summary>
+        /// The character from which the standard MIME boundary is constructed
+        /// </summary>
         public const char BoundaryChar = '-';
+        /// <summary>
+        /// The standard MIME boundary separator.
+        /// </summary>
         public const string BoundarySeparator = "--";
         //
         // Headers
         //
+        /// <summary>
+        /// The prefix string for MIME content headers
+        /// </summary>
         public const string HeaderPrefix = "Content-";
+        /// <summary>
+        /// The standard MIME version header.
+        /// </summary>
         public const string VersionHeader = "MIME-Version";
 
+        /// <summary>
+        /// The standard string representation of the <c>Content-Type</c> MIME header
+        /// </summary>
         public const string ContentTypeHeader = "Content-Type";
+        /// <summary>
+        /// The standard string representation of the <c>Content-ID</c> MIME header
+        /// </summary>
         public const string ContentIDHeader = "Content-ID";
+        /// <summary>
+        /// The standard string representation of the <c>Content-Disposition</c> MIME header
+        /// </summary>
         public const string ContentDispositionHeader = "Content-Disposition";
+        /// <summary>
+        /// The standard string representation of the <c>Content-Description</c> MIME header
+        /// </summary>
         public const string ContentDescriptionHeader = "Content-Description";
+        /// <summary>
+        /// The standard string representation of the <c>Content-Transfer-Encoding</c> MIME header
+        /// </summary>
         public const string ContentTransferEncodingHeader = "Content-Transfer-Encoding";
         //
         // Encodings
         //
+        /// <summary>
+        /// The standard string representation for the Base 64 <c>Content-Transfer-Encoding</c>
+        /// </summary>
         public const string TransferEncodingBase64 = "base64";
+        /// <summary>
+        /// The standard string representation for the ASCII 7-bit clean <c>Content-Transfer-Encoding</c>
+        /// </summary>
         public const string TransferEncoding7Bit = "7bit";
+        /// <summary>
+        /// The standard string representation for the ASCII quoted printable <c>Content-Transfer-Encoding</c>
+        /// </summary>
         public const string TransferEncodingQuoted = "quoted-printable";
         //
         // Mime/Content-Type
         //
+        //TODO: Needs to be a class of its own. Likely a generic class.
+        /// <summary>
+        /// Default <c>Content-Type</c> media type values as per the IANA registry.
+        /// </summary>
 		public class MediaType
 		{
+            /// <summary>
+            /// The <c>text/plain media type</c>
+            /// </summary>
 			public const string TextPlain = "text/plain";
+            /// <summary>
+            /// The default media type to assume if the actual media type can not be understood.
+            /// </summary>
 			public const string Default = TextPlain;
+            /// <summary>
+            /// The prefix for <c>multipart</c> content.
+            /// </summary>
+            /// The <c>multipart/mixed</c> media type.
+            /// </summary>
 			public const string Multipart = "multipart";
 			public const string MultipartMixed = "multipart/mixed";
+
 		}
         //
         // Used to implement Parsing Operations
         //
         
+        /// <summary>
+        /// Tests if the <paramref name="ch"/> is MIME whitespace.
+        /// </summary>
+        /// <param name="ch">The <see cref="char"/> to test</param>
+        /// <returns><c>true</c> if <paramref name="ch"/> is MIME whitespace, <c>false</c> otherwise</returns>
         public static bool IsWhitespace(char ch)
         {
             //
@@ -70,11 +145,14 @@ namespace NHINDirect.Mime
             return (ch == ' ' || ch == '\t');
         }
 
-        //
-        // MIME RFC: 
-        //  - All string comparisions are case-insensitive        
-        //  - locale independant - i.e. ordinal
-        //
+        /// <summary>
+        /// Implements the <see cref="StringComparer"/> for MIME string comparisons.
+        /// </summary>
+        /// <remarks>
+        /// MIME RFC: 
+        ///  - All string comparisions are case-insensitive        
+        ///  - locale independant - i.e. ordinal
+        /// </remarks>
         public static StringComparer Comparer
         {
             get
@@ -82,7 +160,15 @@ namespace NHINDirect.Mime
                 return StringComparer.OrdinalIgnoreCase;
             }
         }
-        
+
+        /// <summary>
+        /// Implements the <see cref="StringComparison"/> function for MIME string comparisons.
+        /// </summary>
+        /// <remarks>
+        /// MIME RFC: 
+        ///  - All string comparisions are case-insensitive        
+        ///  - locale independant - i.e. ordinal
+        /// </remarks>
         public static StringComparison Comparison
         {
             get
@@ -91,16 +177,36 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Implements equality comparison for MIME strings
+        /// </summary>
+        /// <param name="x">The reference string to test for equality</param>
+        /// <param name="y">The target string to test for equality.</param>
+        /// <returns></returns>
         public static bool Equals(string x, string y)
         {
             return string.Equals(x, y, Comparison);
         }
 
+        /// <summary>
+        /// Implements initial string comparison for MIME strings
+        /// </summary>
+        /// <param name="x">The string to test if it starts with <paramref name="y"/></param>
+        /// <param name="y">The string to test if it is an initial substring of <paramref name="x"/>
+        /// <returns><c>true</c> if <paramref name="x"/> starts with <paramref name="y"/> under
+        /// MIME comparison rules, <c>false</c> otherwise</returns>
         public static bool StartsWith(string x, string y)
         {
             return x.StartsWith(y, Comparison);
         }
 
+        /// <summary>
+        /// Implements string inclusion testing for MIME strings
+        /// </summary>
+        /// <param name="x">The string to test if it contains <paramref name="y"/></param>
+        /// <param name="y">The string to test if it is contained in <paramref name="x"/>
+        /// <returns><c>true</c> if <paramref name="x"/> contains <paramref name="y"/> under
+        /// MIME comparison rules, <c>false</c> otherwise</returns>
         public static bool Contains(string x, string y)
         {
             return (x.IndexOf(y, Comparison) >= 0);

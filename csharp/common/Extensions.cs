@@ -26,27 +26,34 @@ namespace NHINDirect
     /// </summary>
     public static class Extensions
     {
-        //---------------------------------------
-        //
-        // String
-        //
-        //---------------------------------------
+        /// <summary>
+        /// Tests if the second string is contained by the first string with the supplied <paramref name="comparison"/> operator
+        /// </summary>
+        /// <param name="x">The base string.</param>
+        /// <param name="y">The string to test if it is contained in the base string</param>
+        /// <param name="comparison">The comparison operator.</param>
+        /// <returns><c>true</c> if the second string is contained in the first with respect to the supplied form of
+        /// string comparison, <c>false</c> otherwise</returns>
         public static bool Contains(this string x, string y, StringComparison comparison)
         {
             return (x.IndexOf(y, comparison) >= 0);
         }
 
-        //---------------------------------------
-        //
-        // Array
-        //
-        //---------------------------------------
+        /// <summary>
+        /// Tests if this collection is <c>null</c> or has 0 entries.
+        /// </summary>
+        /// <param name="certs">The collection to test.</param>
+        /// <returns><c>true</c> if the collection is <c>null</c> or has 0 entries</returns>
         public static bool IsNullOrEmpty(this Array array)
         {
             return (array == null || array.Length == 0);
         }
 
         public static bool IsNullOrEmpty(this System.Collections.ICollection collection)
+        /// Tests if this collection is <c>null</c> or has 0 entries.
+        /// </summary>
+        /// <param name="chainElements">The collection to test.</param>
+        /// <returns><c>true</c> if the collection is <c>null</c> or has 0 entries</returns>
         {
             return (collection == null || collection.Count == 0);
         }

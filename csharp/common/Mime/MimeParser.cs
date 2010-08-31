@@ -18,7 +18,8 @@ using System.Collections.Generic;
 
 namespace NHINDirect.Mime
 {   
-    /// <summary>
+    /// <summary>A set of lightweight MIME and email entity parsing routines.</summary>
+    /// <remarks>
     /// A set of lightweight MIME entity parsing routines. They utilize .NET's "lazy evaluation/LINQ" technique to generate
     /// a set of enumerators of the source - that can then be further composed into higher level constructs
     /// and integrated with LINQ, if required. 
@@ -29,17 +30,28 @@ namespace NHINDirect.Mime
     /// StringSegment maintains offsets into the original entity text. 
     /// 
     /// This design has the added benefit of minimizing string allocations (substrings etc), since no strings are
-    /// actually allocated. 
-    /// 
-    /// </summary>
+    /// actually allocated.
+    /// </remarks>
     public static class MimeParser
     {
+        /// <summary>
+        /// Reads the supplied text returning a newly created instance of a <see cref="MimeEntity"/> or subclass 
+        /// </summary>
+        /// <typeparam name="T">The <see cref="MimeEntity"/> or subclass type to return.</typeparam>
+        /// <param name="entityText">The text to parse.</param>
+        /// <returns>The parsed <see cref="MimeEntity"/> or subclass.</returns>
         public static T Read<T>(string entityText)
             where T : MimeEntity, new()
         {
             return Read<T>(new StringSegment(entityText));
         }
-        
+
+        /// <summary>
+        /// Reads the supplied <see cref="StringSegment"/> returning a newly created instance of a <see cref="MimeEntity"/> or subclass 
+        /// </summary>
+        /// <typeparam name="T">The <see cref="MimeEntity"/> or subclass type to return.</typeparam>
+        /// <param name="entityText">The segment text to parse.</param>
+        /// <returns>The parsed <see cref="MimeEntity"/> or subclass.</returns>
         public static T Read<T>(StringSegment entityText)
             where T : MimeEntity, new()
         {
@@ -69,6 +81,11 @@ namespace NHINDirect.Mime
             return entity;
         }
 
+        /// <summary>
+        /// Parses a header string
+        /// </summary>
+        /// <param name="headerText">The header text to parse.</param>
+        /// <returns>A <see cref="KeyValuePair"/> where the key is the header name, and the value is the header value.</returns>
         public static KeyValuePair<string, string> ReadNameValue(string headerText)
         {
             int separatorPosition = IndexOf(headerText, MimeStandard.NameValueSeparator);
@@ -92,12 +109,44 @@ namespace NHINDirect.Mime
 
             return new KeyValuePair<string, string>(name, value);
         }
-        
+
+        // TODO: these methods are more general than indicated -- split into string or stringsegment extension methods...
+        // TODO: turn supplied code example into a unit test.
+
+        /// <summary>
+        /// Splits the supplied string by <paramref name="separator"/>, returning an enumeration of <see cref="StringSegment"/> instances for each header subpart.
+        /// </summary>
+        /// <param name="source">String to split.</param>
+        /// <param name="separator">The value separator to split on.</param>
+        /// <returns>An enumeration of <see cref="StringSegment"/> instances, one for each parsed part.</returns>
         public static IEnumerable<StringSegment> ReadHeaderParts(string source, char separator)
         {
             return ReadHeaderParts(new StringSegment(source), separator);
         }
-        
+
+        /// <summary>
+        /// Splits the supplied <see cref="StringSegment"/> by <paramref name="separator"/>, returning an enumeration of <see cref="StringSegment"/> instances for each header subpart.
+        /// </summary>
+        /// <param name="source">Segment to split.</param>
+        /// <param name="separator">The value separator to split on.</param>
+        /// <example>
+        /// <code>
+        /// StringSegment text = new StringSegment("a, b, c;d, e, f:g, e");
+        /// IEnumerable&lt;StringSegment&gt; parts = MimeParser.ReadHeaderParts(text, ',');
+        /// foreach(StringSegment part in parts)
+        /// {
+        ///     Console.WriteLine(part);
+        /// }
+        /// // Prints:
+        /// // a
+        /// // b
+        /// // c;d
+        /// // e
+        /// // f:g
+        /// // e
+        /// </code>
+        /// </example>
+        /// <returns>An enumeration of <see cref="StringSegment"/> instances, one for each parsed part.</returns>
         public static IEnumerable<StringSegment> ReadHeaderParts(StringSegment source, char separator)
         {
             int startAt = source.StartIndex;
@@ -115,16 +164,31 @@ namespace NHINDirect.Mime
             }
         }
 
+        /// <summary>
+        /// Parses the supplied string providing a valid block of headers into an enumeration of <see cref="Header"/> instances.
+        /// </summary>
+        /// <param name="entity">The header block string to parse.</param>
+        /// <returns>An enumeration of <see cref="Header"/> instances supplying the parsed headers</returns>
         public static IEnumerable<Header> ReadHeaders(string entity)
         {
             return ReadHeaders(new StringSegment(entity));
         }
 
+        /// <summary>
+        /// Parses the supplied <see cref="StringSegment"/> providing a valid block of headers into an enumeration of <see cref="Header"/> instances.
+        /// </summary>
+        /// <param name="entity">The header block to parse.</param>
+        /// <returns>An enumeration of <see cref="Header"/> instances supplying the parsed headers</returns>
         public static IEnumerable<Header> ReadHeaders(StringSegment entity)
         {
             return ReadHeaders(ReadLines(entity));
         }
 
+        /// <summary>
+        /// Parse each line in lines as a <see cref="Header"/>.
+        /// </summary>
+        /// <param name="lines">The lines to parse.</param>
+        /// <returns>The parsed enumeration of <see cref="Header"/> instances.</returns>
         public static IEnumerable<Header> ReadHeaders(IEnumerable<StringSegment> lines)
         {
             if (lines == null)
@@ -176,16 +240,35 @@ namespace NHINDirect.Mime
         }
 
         
+        /// <summary>
+        /// Parses a string supplying a <c>multipart</c> body returning contituent parts.
+        /// </summary>
+        /// <param name="entity">The <c>multipart</c> body</param>
+        /// <param name="boundary">The <c>multipart</c> boundary string</param>
+        /// <returns>The constituent body parts.</returns>
         public static IEnumerable<MimePart> ReadBodyParts(string entity, string boundary)
         {
             return ReadBodyParts(new StringSegment(entity), boundary);
         }
 
+        /// <summary>
+        /// Parses a <see cref="StringSegment"/> supplying a <c>multipart</c> body, returning contituent parts.
+        /// </summary>
+        /// <param name="entity">The <c>multipart</c> body</param>
+        /// <param name="boundary">The <c>multipart</c> boundary string</param>
+        /// <returns>The constituent body parts.</returns>
         public static IEnumerable<MimePart> ReadBodyParts(StringSegment entity, string boundary)
         {
             return ReadBodyParts(ReadLines(entity), boundary);
         }
-        
+
+        /// <summary>
+        /// Parses set of <see cref="StringSegment"/> supplying the individual lines of a <c>multipart</c> body, returning contituent parts.
+        /// </summary>
+        /// <param name="bodyLines">The <c>multipart</c> body lines</param>
+        /// <param name="boundary">The <c>multipart</c> boundary string</param>
+        /// <returns>The constituent body parts.</returns>
+
         public static IEnumerable<MimePart> ReadBodyParts(IEnumerable<StringSegment> bodyLines, string boundary)
         {
             if (bodyLines == null)
@@ -274,6 +357,14 @@ namespace NHINDirect.Mime
             }
         }
         
+        //TODO: naming here is confusing. Must meditate on multipart spec....
+
+        /// <summary>
+        /// Tests the supplied line against <paramref name="boundary"/> to see if the line is the multipart boundary
+        /// </summary>
+        /// <param name="line">The line to test</param>
+        /// <param name="boundary">The multipart boundary string.</param>
+        /// <returns><c>true</c> if the line is the multipart boundary, <c>false</c> if not.</returns>
         static bool IsBoundary(StringSegment line, string boundary)
         {
             int length = line.Length;
@@ -284,6 +375,11 @@ namespace NHINDirect.Mime
                     && (string.Compare(boundary, 0, line.Source, line.StartIndex + 2, boundary.Length) == 0));
         }
         
+        /// <summary>
+        /// Tests the <paramref name="line"/> to see if it represents the last multipart boundary separator
+        /// </summary>
+        /// <param name="line">The line to test</param>
+        /// <returns><c>true</c> if the line is the last multipart boundary separator, <c>false</c> otherwise.</returns>
         static bool IsBoundaryEnd(StringSegment line)
         {
             int length = line.Length;
@@ -292,16 +388,37 @@ namespace NHINDirect.Mime
                     && line[length - 2] == MimeStandard.BoundaryChar);
         }
         
+        /// <summary>
+        /// Parses the supplied <paramref name="entity"/> into constituent <see cref="MimePart"/> instances
+        /// </summary>
+        /// <param name="entity">The <see cref="string"/> to parse</param>
+        /// <returns>An enumeration of the constituent <see cref="MimePart"/> instances parsed from the <paramref name="entity"/></returns>
         public static IEnumerable<MimePart> ReadMimeParts(string entity)
         {
             return ReadMimeParts(new StringSegment(entity));
         }
 
+        /// <summary>
+        /// Parses the supplied <paramref name="entity"/> into constituent <see cref="MimePart"/> instances
+        /// </summary>
+        /// <remarks>
+        /// This is the main parser interface. The <see cref="MimePart"/> instances expected to be returned are <see cref="Header"/> (one for each header), and <see cref="Body"/>
+        /// </remarks>
+        /// <param name="entity">The <see cref="StringSegment"/> to parse</param>
+        /// <returns>An enumeration of the constituent <see cref="MimePart"/> instances parsed from the <paramref name="entity"/></returns>
         public static IEnumerable<MimePart> ReadMimeParts(StringSegment entity)
         {
             return ReadMimeParts(ReadLines(entity));
         }
-        
+
+        /// <summary>
+        /// Parses the supplied <paramref name="lines"/> into constituent <see cref="MimePart"/> instances
+        /// </summary>
+        /// <remarks>
+        /// This is the main parser interface. The <see cref="MimePart"/> instances expected to be returned are <see cref="Header"/> (one for each header), and <see cref="Body"/>
+        /// </remarks>
+        /// <param name="lines">The enumeration of <see cref="StringSegment"/> lines to parse</param>
+        /// <returns>An enumeration of the constituent <see cref="MimePart"/> instances parsed from the <paramref name="entity"/></returns>
         public static IEnumerable<MimePart> ReadMimeParts(IEnumerable<StringSegment> lines)
         {
             if (lines == null)
@@ -378,11 +495,21 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Breaks the supplied <paramref name="entity"/> into constituent lines by CRLF.
+        /// </summary>
+        /// <param name="entity">The entity to parse into lines.</param>
+        /// <returns>An enumeration of <see cref="StringSegment"/> instances, one for each parsed line</returns>
         public static IEnumerable<StringSegment> ReadLines(string entity)
         {
             return ReadLines(new StringSegment(entity));
         }
-        
+
+        /// <summary>
+        /// Breaks the supplied <paramref name="entity"/> into constituent lines by CRLF.
+        /// </summary>
+        /// <param name="entity">The entity to parse into lines.</param>
+        /// <returns>An enumeration of <see cref="StringSegment"/> instances, one for each parsed line</returns>
         public static IEnumerable<StringSegment> ReadLines(StringSegment entity)
         {
             CharReader reader = new CharReader(entity);
@@ -427,6 +554,11 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Advances the start position of <paramref name="text"/> to the first non-whitespace position
+        /// </summary>
+        /// <param name="text">The <see cref="StringSegment"/> potentially containing initial whitepace</param>
+        /// <returns>A <see cref="StringSegment"/> with no intial whitespace (possibly an empty segment if the <paramref name="text"/> was empty or all whitespace)</returns>
         public static StringSegment SkipWhitespace(StringSegment text)
         {
             CharReader reader = new CharReader(text);
@@ -439,6 +571,12 @@ namespace NHINDirect.Mime
         	return new StringSegment(text.Source, reader.Position, text.EndIndex);
         }
 
+        /// <summary>
+        /// Returns the first index of the supplied <paramref name="ch"/> <c>char</c> in <paramref name="text"/>
+        /// </summary>
+        /// <param name="text">The <see cref="string"/> to search</param>
+        /// <param name="ch">The <c>char</c> to test for</param>
+        /// <returns>The zero-based index of the first instance of <paramref name="ch"/>, or -1 if no instances found/</returns>
 		public static int IndexOf(string text, char ch)
 		{
 			CharReader reader = new CharReader(text);

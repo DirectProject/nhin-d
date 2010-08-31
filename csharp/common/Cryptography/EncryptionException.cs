@@ -20,13 +20,25 @@ using System.Text;
 
 namespace NHINDirect.Cryptography
 {
+    /// <summary>
+    /// Represents program excecution errors relating to encryption.
+    /// </summary>
     public class EncryptionException : CryptographicException<EncryptionError>
     {
+        /// <summary>
+        /// Intializes an instance with the supplied error subtype.
+        /// </summary>
+        /// <param name="error">The specific error type.</param>
         public EncryptionException(EncryptionError error)
             : base(error)
         {
         }
 
+        /// <summary>
+        /// Intializes an instance with the supplied error subtype and a custom message
+        /// </summary>
+        /// <param name="error">The specific error type.</param>
+        /// <param name="message">The custom exception message.</param>
         public EncryptionException(EncryptionError error, string message)
             : base(error, message)
         {
