@@ -107,9 +107,6 @@ namespace NHINDirect.Cryptography
         /// </summary>
         public const string DefaultFileName = "smime.p7m";
         
-
-        //TODO: These should all be extension methods on ContentType....
-
         /// <summary>
         /// Tests content type to determine if it indicates enveloped data
         /// </summary>
@@ -220,6 +217,27 @@ namespace NHINDirect.Cryptography
         static bool VerifyEncoding(MimeEntity entity)
         {
             return entity.HasHeader(ContentTransferEncodingHeader, TransferEncodingBase64);
+        }
+
+        public static string AsString(DigestAlgorithm algorithm)
+        {
+            switch (algorithm)
+            {
+                default:
+                    throw new NotSupportedException();
+
+                case DigestAlgorithm.SHA1:
+                    return "sha1";
+
+                case DigestAlgorithm.SHA256:
+                    return "sha256";
+
+                case DigestAlgorithm.SHA384:
+                    return "sha384";
+
+                case DigestAlgorithm.SHA512:
+                    return "sha512";
+            }
         }
     }
 }

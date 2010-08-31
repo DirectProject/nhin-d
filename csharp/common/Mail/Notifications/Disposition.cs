@@ -17,65 +17,74 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Security.Cryptography.X509Certificates;
 
-namespace NHINDirect
+namespace NHINDirect.Mail.Notifications
 {
     /// <summary>
-    /// Extensions to core/common .NET objects. 
+    /// Message Disposition Field
     /// </summary>
-    public static class Extensions
+    public class Disposition
     {
-        //---------------------------------------
-        //
-        // String
-        //
-        //---------------------------------------
-        public static bool Contains(this string x, string y, StringComparison comparison)
+        public Disposition(MDNStandard.NotificationType notification)
+            : this(MDNStandard.TriggerType.Automatic, MDNStandard.SendType.Automatic, notification)
         {
-            return (x.IndexOf(y, comparison) >= 0);
         }
 
-        //---------------------------------------
-        //
-        // Array
-        //
-        //---------------------------------------
-        public static bool IsNullOrEmpty(this Array array)
+        public Disposition(MDNStandard.TriggerType triggerType, MDNStandard.SendType sendType, MDNStandard.NotificationType notification)
         {
-            return (array == null || array.Length == 0);
+            this.TriggerType = triggerType;
+            this.SendType = sendType;
+            this.Notification = notification;
+        }
+        
+        /// <summary>
+        /// Was the notification triggered automatically or manually (by the user?)
+        /// </summary>
+        public MDNStandard.TriggerType TriggerType
+        {
+            get;
+            set;
         }
 
-        public static bool IsNullOrEmpty(this System.Collections.ICollection collection)
+        public MDNStandard.SendType SendType
         {
-            return (collection == null || collection.Count == 0);
+            get;
+            set;
         }
 
-        //---------------------------------------
-        //
-        // StringBuilder
-        //
-        //---------------------------------------
-                
-        public static void AppendLine(this StringBuilder builder, object value)
+        public MDNStandard.NotificationType Notification
         {
-            builder.AppendLine(value.ToString());
+            get;
+            set;
         }
-
-        public static void AppendLine<T>(this StringBuilder builder, T value)
+        
+        public bool IsError
         {
-            builder.AppendLine(value.ToString());            
+            get;
+            set;
         }
-
-        public static void AppendLineFormat(this StringBuilder builder, string format, params object[] args)
+        
+        public override string ToString()
         {
-            builder.AppendFormat(format, args);
-            builder.AppendLine();
-        }
+            StringBuilder notification = new StringBuilder();
+            //
+            // Disposition Mode
+            //
+            notification.Append(MDNStandard.AsString(this.TriggerType));
+            notification.Append('/');
+            notification.Append(MDNStandard.AsString(this.SendType));
+            notification.Append(';');
+            //
+            // Disposition Type & Modifier
+            //
+            notification.Append(MDNStandard.AsString(this.Notification));
+            if (this.IsError)
+            {
+                notification.Append('/');
+                notification.Append(MDNStandard.Modifier_Error);
+            }
 
-        public static void Append<T>(this StringBuilder builder, T value)
-        {
-            builder.Append(value.ToString());
+            return notification.ToString();
         }
     }
 }

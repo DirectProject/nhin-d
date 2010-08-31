@@ -16,8 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Net.Mime;
 
-using NHINDirect.Cryptography;
-
 namespace NHINDirect.Mime
 {
     public static class Extensions
@@ -38,44 +36,9 @@ namespace NHINDirect.Mime
             return MimeStandard.Equals(paramValue, value);
         }
 
-		public static string AsString(this DigestAlgorithm algorithm)
-		{
-			switch (algorithm)
-			{
-				default:
-					throw new NotSupportedException();
-
-				case DigestAlgorithm.SHA1:
-					return "sha1";
-
-				case DigestAlgorithm.SHA256:
-					return "sha256";
-
-				case DigestAlgorithm.SHA384:
-					return "sha384";
-
-				case DigestAlgorithm.SHA512:
-					return "sha512";
-			}
-		}
-
 		public static string AsString(this TransferEncoding encoding)
 		{
-			switch (encoding)
-			{
-				default:
-					throw new NotSupportedException();
-
-				case TransferEncoding.Base64:
-					return MimeStandard.TransferEncodingBase64;
-
-				case TransferEncoding.SevenBit:
-					return MimeStandard.TransferEncoding7Bit;
-
-				case TransferEncoding.QuotedPrintable:
-					return MimeStandard.TransferEncodingQuoted;
-			}
+		    return MimeStandard.AsString(encoding);
 		}
-
     }
 }

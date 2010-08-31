@@ -73,8 +73,14 @@
     <Compile Include="Diagnostics\LogListener.cs" />
     <Compile Include="Diagnostics\LogWriter.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Mail\Notifications\Disposition.cs" />
+    <Compile Include="Mail\Notifications\Extensions.cs" />
+    <Compile Include="Mail\Notifications\MailAgent.cs" />
+    <Compile Include="Mail\Notifications\Notification.cs" />
     <Compile Include="Mail\MailParser.cs" />
     <Compile Include="Mail\Extensions.cs" />
+    <Compile Include="Mail\Notifications\NotificationMessage.cs" />
+    <Compile Include="Mail\Notifications\MDNStandard.cs" />
     <Compile Include="Mail\Message.cs" />
     <Compile Include="Mail\MailStandard.cs" />
     <Compile Include="Mail\WrappedMessage.cs" />

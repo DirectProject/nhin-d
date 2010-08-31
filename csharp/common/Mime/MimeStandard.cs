@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Net.Mime;
+using NHINDirect.Cryptography;
 
 namespace NHINDirect.Mime
 {
@@ -55,7 +56,7 @@ namespace NHINDirect.Mime
 			public const string TextPlain = "text/plain";
 			public const string Default = TextPlain;
 			public const string Multipart = "multipart";
-			public const string MultipartMixed = "multipart/mixed;";
+			public const string MultipartMixed = "multipart/mixed";
 		}
         //
         // Used to implement Parsing Operations
@@ -103,6 +104,24 @@ namespace NHINDirect.Mime
         public static bool Contains(string x, string y)
         {
             return (x.IndexOf(y, Comparison) >= 0);
+        }
+
+        public static string AsString(TransferEncoding encoding)
+        {
+            switch (encoding)
+            {
+                default:
+                    throw new NotSupportedException();
+
+                case TransferEncoding.Base64:
+                    return MimeStandard.TransferEncodingBase64;
+
+                case TransferEncoding.SevenBit:
+                    return MimeStandard.TransferEncoding7Bit;
+
+                case TransferEncoding.QuotedPrintable:
+                    return MimeStandard.TransferEncodingQuoted;
+            }
         }
     }
 }

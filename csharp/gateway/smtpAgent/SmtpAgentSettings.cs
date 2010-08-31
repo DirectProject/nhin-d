@@ -34,7 +34,8 @@ namespace NHINDirect.SmtpAgent
         ProcessIncomingSettings m_incomingSettings;
         ProcessOutgoingSettings m_outgoingSettings;
         ProcessBadMessageSettings m_badMessageSettings;
-        ProcessInternalMessageSettings m_internalMessageSettings;
+        InternalMessageSettings m_internalMessageSettings;
+        NotificationSettings m_notificationSettings;
         MessageRoute[] m_incomingRoutes;
         bool m_logVerbose = true;
         
@@ -74,7 +75,25 @@ namespace NHINDirect.SmtpAgent
                 m_postmasters = value;
             }
         }
-
+        
+        [XmlElement("Notifications")]
+        public NotificationSettings Notifications
+        {
+            get
+            {
+                if (m_notificationSettings == null)
+                {
+                    m_notificationSettings = new NotificationSettings();
+                }
+                
+                return m_notificationSettings;
+            }
+            set
+            {
+                m_notificationSettings = value;
+            }
+        }
+        
         [XmlElement("DomainManager")]
         public ClientSettings DomainManager
         {
@@ -180,13 +199,13 @@ namespace NHINDirect.SmtpAgent
         }
         
         [XmlElement("InternalMessage")]
-        public ProcessInternalMessageSettings InternalMessage
+        public InternalMessageSettings InternalMessage
         {
             get
             {
                 if (m_internalMessageSettings == null)
                 {
-                    m_internalMessageSettings = new ProcessInternalMessageSettings();
+                    m_internalMessageSettings = new InternalMessageSettings();
                 }
                 return m_internalMessageSettings;
             }
@@ -243,12 +262,13 @@ namespace NHINDirect.SmtpAgent
             }
             
             this.LogSettings.Validate();      
-                              
+            this.InternalMessage.Validate();
+            this.Notifications.Validate();
             this.RawMessage.Validate();            
             this.BadMessage.Validate();
             this.Incoming.Validate();
             this.Outgoing.Validate();
-            
+                        
             if (this.HasAddressManager)
             {
                 this.AddressManager.Validate();

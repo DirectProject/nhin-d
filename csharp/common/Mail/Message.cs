@@ -35,91 +35,232 @@ namespace NHINDirect.Mail
             
             this.Headers.Add(headers);
         }
-                                        
+        
+        public Message(string to)
+            : this(to, null)
+        {
+        }
+        
+        public Message(string to, string from)
+        {
+            this.AddToFromHeaders(to, from);
+        }
+                
+        public Message(string to, string from, string bodyText)
+            : this(to, from, bodyText, MimeStandard.MediaType.Default)
+        {
+        }
+        
+        public Message(string to, string from, string bodyText, string contentType)
+            : base(bodyText, contentType)
+        {
+            this.AddToFromHeaders(to, from);
+        }
+        
+        /// <summary>
+        /// The message's To
+        /// </summary>
         public Header To
         {
             get
             {
-                return this.Headers[MailStandard.ToHeader];
+                return this.Headers[MailStandard.Headers.To];
             }
             set
             {
-                this.Headers[MailStandard.ToHeader] = value;
+                this.Headers[MailStandard.Headers.To] = value;
             }
         }
 
+        /// <summary>
+        /// The message's Cc
+        /// </summary>
         public Header Cc
         {
             get
             {
-                return this.Headers[MailStandard.CcHeader];
+                return this.Headers[MailStandard.Headers.Cc];
             }
             set
             {
-                this.Headers[MailStandard.CcHeader] = value;
+                this.Headers[MailStandard.Headers.Cc] = value;
             }
         }
 
+        /// <summary>
+        /// The message's Bcc
+        /// </summary>
         public Header Bcc
         {
             get
             {
-                return this.Headers[MailStandard.BccHeader];
+                return this.Headers[MailStandard.Headers.Bcc];
             }
             set
             {
-                this.Headers[MailStandard.BccHeader] = value;
+                this.Headers[MailStandard.Headers.Bcc] = value;
             }
         }
-                
+
+        /// <summary>
+        /// The message's From Header
+        /// </summary>                
         public Header From
         {
             get
             {
-                return this.Headers[MailStandard.FromHeader];
+                return this.Headers[MailStandard.Headers.From];
             }
             set
             {
-                this.Headers[MailStandard.FromHeader] = value;
+                this.Headers[MailStandard.Headers.From] = value;
             }
         }
-                
+
+        /// <summary>
+        /// The message's Subject Header
+        /// </summary>                
         public Header Subject
         {
             get
             {
-                return this.Headers[MailStandard.SubjectHeader];
+                return this.Headers[MailStandard.Headers.Subject];
             }
             set
             {
-                this.Headers[MailStandard.SubjectHeader] = value;
+                this.Headers[MailStandard.Headers.Subject] = value;
             }
         }
 
+        /// <summary>
+        /// The message's Message-ID Header
+        /// </summary>                
         public Header ID
         {
             get
             {
-                return this.Headers[MailStandard.MessageIDHeader];
+                return this.Headers[MailStandard.Headers.MessageID];
             }
             set
             {
-                this.Headers[MailStandard.MessageIDHeader] = value;
+                this.Headers[MailStandard.Headers.MessageID] = value;
             }
         }
-
+        
+        /// <summary>
+        /// The message's Date header
+        /// </summary>
         public Header Date
         {
             get
             {
-                return this.Headers[MailStandard.DateHeader];
+                return this.Headers[MailStandard.Headers.Date];
             }
             set
             {
-                this.Headers[MailStandard.DateHeader] = value;
+                this.Headers[MailStandard.Headers.Date] = value;
             }
         }
-        
+
+        /// <summary>
+        /// The value of the To Header, if any
+        /// </summary>                
+        public string ToValue
+        {
+            get
+            {
+                return this.Headers.GetValue(MailStandard.Headers.To);
+            }
+            set
+            {
+                this.Headers.SetValue(MailStandard.Headers.To, value);
+            }
+        }
+
+        /// <summary>
+        /// The value of the Cc Header, if any
+        /// </summary>                
+        public string CcValue
+        {
+            get
+            {
+                return this.Headers.GetValue(MailStandard.Headers.Cc);
+            }
+            set
+            {
+                this.Headers.SetValue(MailStandard.Headers.Cc, value);
+            }
+        }
+
+        /// <summary>
+        /// The value of the Bcc Header, if any
+        /// </summary>                
+        public string BccValue
+        {
+            get
+            {
+                return this.Headers.GetValue(MailStandard.Headers.Bcc);
+            }
+            set
+            {
+                this.Headers.SetValue(MailStandard.Headers.Bcc, value);
+            }
+        }
+
+        /// <summary>
+        /// The value of the From Header, if any
+        /// </summary>                
+        public string FromValue
+        {
+            get
+            {
+                return this.Headers.GetValue(MailStandard.Headers.From);
+            }
+            set
+            {
+                this.Headers.SetValue(MailStandard.Headers.From,  value);
+            }
+        }
+
+        /// <summary>
+        /// The message's Subject header value, if any
+        /// </summary>
+        public string SubjectValue
+        {
+            get
+            {
+                return this.Headers.GetValue(MailStandard.Headers.Subject);
+            }
+            set
+            {
+                this.Headers.SetValue(MailStandard.Headers.Subject, value);
+            }
+        }
+
+        public string IDValue
+        {
+            get
+            {
+                return this.Headers.GetValue(MailStandard.Headers.MessageID);
+            }
+            set
+            {
+                this.Headers.SetValue(MailStandard.Headers.MessageID, value);
+            }
+        }
+
+        public string DateValue
+        {
+            get
+            {
+                return this.Headers.GetValue(MailStandard.Headers.Date);
+            }
+            set
+            {
+                this.Headers.SetValue(MailStandard.Headers.Date, value);
+            }
+        }
+
         /// <summary>
         /// The source message has non-MIME headers
         /// Takes the source and creates new Message that contains only items relevant to Mime
@@ -175,5 +316,17 @@ namespace NHINDirect.Mail
             
             return signableEntity;
         }                        
+        
+        void AddToFromHeaders(string to, string from)
+        {
+            if (!string.IsNullOrEmpty(to))
+            {
+                this.Headers.Add(MailStandard.Headers.To, to);
+            }
+            if (!string.IsNullOrEmpty(from))
+            {    
+                this.Headers.Add(MailStandard.Headers.From, from);
+            }
+        }
     }
 }

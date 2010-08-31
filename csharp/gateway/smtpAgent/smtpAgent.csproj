@@ -69,11 +69,13 @@
     <Compile Include="ConfigAnchorResolver.cs" />
     <Compile Include="ConfigCertificateResolver.cs" />
     <Compile Include="ConfigService.cs" />
+    <Compile Include="InternalMessageSettings.cs" />
     <Compile Include="ISmtpMessage.cs" />
+    <Compile Include="NotificationProducer.cs" />
+    <Compile Include="NotificationSettings.cs" />
     <Compile Include="MessageRouter.cs" />
     <Compile Include="ResolverSettings.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="MessageBounceSettings.cs" />
     <Compile Include="MessageProcessingSettings.cs" />
     <Compile Include="DomainPostmasters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

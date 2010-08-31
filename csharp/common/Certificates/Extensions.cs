@@ -83,6 +83,11 @@ namespace NHINDirect.Certificates
         // X509Certificate2Collection Extensions
         //
         //---------------------------------------        
+        public static bool IsNullOrEmpty(this X509Certificate2Collection certs)
+        {
+            return (certs == null || certs.Count == 0);
+        }
+
         public static void Add(this X509Certificate2Collection certs, X509Certificate2Collection newCerts)
         {
             if (newCerts == null)
@@ -450,6 +455,16 @@ namespace NHINDirect.Certificates
             newPolicy.VerificationFlags = policy.VerificationFlags;
 
             return newPolicy;
-        }        
+        }
+
+        //---------------------------------------
+        //
+        // X509ChainElementCollection
+        //
+        //---------------------------------------
+        public static bool IsNullOrEmpty(this X509ChainElementCollection chainElements)
+        {
+            return (chainElements == null || chainElements.Count == 0);
+        }
     }
  }

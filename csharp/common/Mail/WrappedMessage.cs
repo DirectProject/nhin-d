@@ -82,8 +82,7 @@ namespace NHINDirect.Mail
                 return false;
             }
             
-            string contentType = message.ContentType;
-            return (!string.IsNullOrEmpty(contentType) && MimeStandard.Equals(contentType, MailStandard.MediaType.WrappedMessage));            
+            return message.HasMediaType(MailStandard.MediaType.WrappedMessage);
         }
         
         /// <summary>

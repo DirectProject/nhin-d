@@ -32,6 +32,26 @@ namespace NHINDirect.Mime
         {
         }
         
+        public MimeEntity(string bodyText)   
+            : this(bodyText, MimeStandard.MediaType.Default)         
+        {
+        }
+        
+        public MimeEntity(string bodyText, string contentType)
+            : this(new Body(bodyText), contentType)
+        {
+        }
+        
+        public MimeEntity(Body body, string contentType)
+        {
+            if (body == null || contentType == null)
+            {
+                throw new ArgumentException();
+            }
+            
+            this.ContentType = contentType;
+        }
+        
         public bool HasHeaders
         {
             get
@@ -53,6 +73,7 @@ namespace NHINDirect.Mime
             }
             set
             {
+                this.ClearParsedHeaders();
                 m_headers = value;
             }
         }
@@ -145,6 +166,16 @@ namespace NHINDirect.Mime
                 return (m_body != null);
             }
         }
+
+        /// <summary>
+        /// Compares the given mediaType to the media type of the message
+        /// </summary>
+        /// <param name="testType"></param>
+        /// <returns></returns>
+        public bool HasMediaType(string mediaType)
+        {
+            return this.ParsedContentType.IsMediaType(mediaType);
+        }
         
         public virtual void ApplyBody(MimeEntity entity)
         {
@@ -152,7 +183,8 @@ namespace NHINDirect.Mime
             {
                 throw new ArgumentNullException();
             }
-
+            
+            this.ClearParsedHeaders();
             this.Headers.AddUpdate(entity.Headers);
             this.Body = entity.Body;            
         }
@@ -247,6 +279,7 @@ namespace NHINDirect.Mime
             {
                 contentType = MimeStandard.MediaType.MultipartMixed;
             }
+            
             this.ContentType = contentType;
             this.Body = new Body(serializer.Serialize(entities, this.ParsedContentType.Boundary));
         }
@@ -264,6 +297,21 @@ namespace NHINDirect.Mime
             }
             
             return new MimeEntityCollection(this.ContentType, this.GetParts());
+        }
+        
+        public void Save(string filePath)
+        {
+            MimeSerializer.Default.Serialize(this, filePath);
+        }
+        
+        public void Save(Stream stream)
+        {
+            MimeSerializer.Default.Serialize(this, stream);
+        }
+                
+        void ClearParsedHeaders()
+        {
+            m_contentType = null;
         }
     }
 }

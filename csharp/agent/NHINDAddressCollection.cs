@@ -183,6 +183,19 @@ namespace NHINDirect.Agent
         }
         
         /// <summary>
+        /// In .NET 3.5 & below we need to resort to manual iteration to a collection of NHINDAddress as an enumeration of
+        /// it's base type, MailAddress
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<MailAddress> AsMailAddresses()
+        {
+            for (int i = 0, count = this.Count; i < count; ++i)
+            {
+                yield return this[i];
+            }
+        }
+                
+        /// <summary>
         /// A string represntation of the addresses.
         /// </summary>
         /// <returns>A string representing the address collection</returns>

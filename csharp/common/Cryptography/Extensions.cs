@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Net.Mail;
+using System.Net.Mime;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
@@ -81,6 +82,46 @@ namespace NHINDirect.Cryptography
             }
 
             return signers.Find(x => x.Certificate.Thumbprint == thumbprint);
+        }
+
+        //---------------------------------------
+        //
+        // ContentType
+        //
+        //---------------------------------------        
+        public static bool IsCms(this ContentType contentType)
+        {
+            return SMIMEStandard.IsContentCms(contentType);
+        }
+        
+        public static bool IsEncrypted(this ContentType contentType)
+        {
+            return SMIMEStandard.IsContentEncrypted(contentType);
+        }
+        
+        public static bool IsEnvelopedSignature(this ContentType contentType)
+        {
+            return SMIMEStandard.IsContentEnvelopedSignature(contentType);
+        }
+        
+        public static bool IsMultipartSignature(this ContentType contentType)
+        {
+            return SMIMEStandard.IsContentMultipartSignature(contentType);
+        }
+        
+        public static bool IsDetachedSignature(this ContentType contentType)
+        {
+            return SMIMEStandard.IsContentDetachedSignature(contentType);
+        }
+        
+        public static string AsString(this DigestAlgorithm algorithm)
+        {
+            return SMIMEStandard.AsString(algorithm);
+        }
+        
+        public static AlgorithmIdentifier AsAlgorithmIdentifier(this EncryptionAlgorithm algorithm)
+        {
+            return SMIMECryptographer.ToAlgorithmID(algorithm);
         }
     }
  }

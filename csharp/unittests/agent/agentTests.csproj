@@ -156,9 +156,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="commandLine.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\agent\nhinAgent.csproj">
       <Project>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</Project>
       <Name>nhinAgent</Name>

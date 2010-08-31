@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Diagnostics\TestHourly.cs" />
     <Compile Include="Diagnostics\Test24.cs" />
+    <Compile Include="Mail\TestMDN.cs" />
     <Compile Include="Mime\BodyFacts.cs" />
     <Compile Include="Mime\CharReaderFacts.cs" />
     <Compile Include="Mime\DefaultSerializerFacts.cs" />

@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using NHINDirect;
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
+using NHINDirect.Mail;
+using NHINDirect.Mail.Notifications;
 using AgentTests;
 using Xunit;
 using Xunit.Extensions;
@@ -57,14 +60,13 @@ namespace SmtpAgentTests
             Assert.Throws<AgentException>(() => RunEndToEndTest(this.LoadMessage(UnknownUsersMessage)));
         }
         
-        // DO NOT ENABLE. FOR DEBUGGING ONLY
         [Fact]
         public void TestEndToEndCrossDomain()
         {
             m_agent.Settings.InternalMessage.EnableRelay = true;
             Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(CrossDomainMessage)));            
         }
-        
+                
         void RunEndToEndTest(CDO.Message message)
         {
             m_agent.ProcessMessage(message);            
@@ -84,19 +86,6 @@ namespace SmtpAgentTests
             }
         }
 
-        /*        
-        void RunEndToEndTest(CDO.Message message)
-        {
-            CDOSmtpMessage smtpMessage = new CDOSmtpMessage(message);
-            
-            MessageEnvelope envelope = m_agent.ProcessOutgoing(smtpMessage);
-            smtpMessage.Update(envelope.SerializeMessage());
-            
-            smtpMessage = new CDOSmtpMessage(message);
-            envelope = m_agent.ProcessIncoming(smtpMessage);
-            smtpMessage.Update(envelope.SerializeMessage());
-        }
-        */
         [Fact]
         public void TestUntrusted()
         {

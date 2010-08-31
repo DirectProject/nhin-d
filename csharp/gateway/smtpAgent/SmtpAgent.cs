@@ -42,6 +42,7 @@ namespace NHINDirect.SmtpAgent
         AgentDiagnostics m_diagnostics;
         MessageRouter m_router;
         ConfigService m_configService;
+        NotificationProducer m_notifications;
                 
         public SmtpAgent(SmtpAgentSettings settings)
         {
@@ -131,7 +132,8 @@ namespace NHINDirect.SmtpAgent
                 //
                 this.InitDomains();
                 this.InitFolders();
-                this.InitRoutes();                
+                this.InitRoutes();       
+                this.InitNotifications();         
                 //
                 // Call config service, if any was configured
                 //
@@ -250,6 +252,15 @@ namespace NHINDirect.SmtpAgent
             m_router.SetRoutes(m_settings.IncomingRoutes);            
             
             this.LogStatus("InitRoutes_End");
+        }
+        
+        void InitNotifications()
+        {
+            this.LogStatus("InitNotifications_Begin");
+            
+            m_notifications = new NotificationProducer(m_settings.Notifications);
+            
+            this.LogStatus("InitNotifications_End");
         }
         
         void SubscribeToAgentEvents()
@@ -456,8 +467,8 @@ namespace NHINDirect.SmtpAgent
         // through the incoming pipeline
         protected void RelayInternal(ISmtpMessage message, MessageEnvelope envelope)
         {
-            ProcessInternalMessageSettings settings = m_settings.InternalMessage;
-            if (!(settings.EnableRelay && settings.HasCopyFolder))
+            InternalMessageSettings settings = m_settings.InternalMessage;
+            if (!(settings.EnableRelay && settings.HasPickupFolder))
             {
                 return;
             }
@@ -470,7 +481,7 @@ namespace NHINDirect.SmtpAgent
             // We have some trusted domain recipients. Drop a copy of the message into the message pickup folder
             // It will get passed back through the message processing loop and treated as Incoming
             //
-            this.CopyMessage(message, settings);
+            this.CopyMessage(message, settings.PickupFolder);
             //
             // Since we've routed the message ourselves, ensure there is no double delivery by removing them from
             // the recipient list
@@ -558,8 +569,31 @@ namespace NHINDirect.SmtpAgent
             this.CopyMessage(message, m_settings.Incoming);
 
             m_router.Route(message, envelope, this.CopyMessage);
-
+            
+            this.SendNotifications((IncomingMessage) envelope);
+            
             return m_settings.Incoming.EnableRelay;
+        }
+
+        protected virtual void SendNotifications(IncomingMessage envelope)
+        {
+            if (!m_settings.InternalMessage.HasPickupFolder)
+            {
+                return;
+            }
+
+            //
+            // Its ok if we fail on sending notifications - that should never cause us to not
+            // deliver the message
+            //
+            try
+            {
+                m_notifications.Send(envelope, m_settings.InternalMessage.PickupFolder);
+            }
+            catch (Exception ex)
+            {
+                m_diagnostics.LogError(ex);
+            }
         }
 
         //---------------------------------------------------
@@ -596,7 +630,6 @@ namespace NHINDirect.SmtpAgent
             {
             }
         }
-        
                 
         protected virtual void CopyMessage(ISmtpMessage message, MessageProcessingSettings settings)
         {

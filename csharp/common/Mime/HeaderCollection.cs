@@ -53,11 +53,15 @@ namespace NHINDirect.Mime
                 int currentIndex = IndexOf(name);
                 if (currentIndex < 0)
                 {
-                    //
-                    // Not found. New Header
-                    //
-                    VerifyName(name, value);
-                    Add(value);
+                    if (value != null) // If null, then there is nothing to do
+                    {
+                        //
+                        // Not found. New Header
+                        //
+                        VerifyName(name, value);
+                        Add(value);
+                    }
+                    
                     return;
                 }
                 
@@ -310,6 +314,7 @@ namespace NHINDirect.Mime
 
         /// <summary>
         /// Adds or updates the value of the header with the given name.
+        /// If value is null, removes the header entirely
         /// </summary>
         /// <remarks>Header matching uses case insenstive comparison.</remarks>
         /// <param name="headerName">The header name for which to set the value.</param>
@@ -319,11 +324,21 @@ namespace NHINDirect.Mime
             int index = IndexOf(name);
             if (index < 0)
             {
-                Add(name, value);
+                if (value != null)
+                {
+                    this.Add(name, value);
+                }                
                 return;
             }
-
-            this[index] = new Header(name, value);
+            
+            if (value == null)
+            {
+                this.RemoveAt(index);
+            }
+            else
+            {
+                this[index] = new Header(name, value);
+            }
         }
         
         /// <summary>

@@ -56,6 +56,7 @@
     <Compile Include="SmtpAgentTester.cs" />
     <Compile Include="TestAgentInit.cs" />
     <Compile Include="TestHandler.cs" />
+    <Compile Include="TestNotifications.cs" />
     <Compile Include="TestSmtpAgent.cs" />
   </ItemGroup>
   <ItemGroup>

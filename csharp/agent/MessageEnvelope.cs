@@ -366,9 +366,9 @@ namespace NHINDirect.Agent
                 return;
             }
 
-			this.UpdateRecipientHeader(To, MailStandard.ToHeader, rejectedRecipients);
-            this.UpdateRecipientHeader(Cc, MailStandard.CcHeader, rejectedRecipients);
-            this.UpdateRecipientHeader(Bcc, MailStandard.BccHeader, rejectedRecipients);
+            this.UpdateRecipientHeader(To, MailStandard.Headers.To, rejectedRecipients);
+            this.UpdateRecipientHeader(Cc, MailStandard.Headers.Cc, rejectedRecipients);
+            this.UpdateRecipientHeader(Bcc, MailStandard.Headers.Bcc, rejectedRecipients);
         }
         
     	void UpdateRecipientHeader(NHINDAddressCollection recipients, string headerName, IEnumerable<NHINDAddress> rejectedRecipients)

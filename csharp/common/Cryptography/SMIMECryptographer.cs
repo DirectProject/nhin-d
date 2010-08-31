@@ -760,7 +760,7 @@ namespace NHINDirect.Cryptography
             }
         }
 
-    	static AlgorithmIdentifier ToAlgorithmID(EncryptionAlgorithm type)
+    	public static AlgorithmIdentifier ToAlgorithmID(EncryptionAlgorithm type)
         {
             switch (type)
             {
