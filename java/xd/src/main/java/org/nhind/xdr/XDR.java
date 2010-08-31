@@ -46,7 +46,7 @@ public class XDR extends DocumentRepositoryAbstract{
     }
 
     public RetrieveDocumentSetResponseType documentRepositoryRetrieveDocumentSet(RetrieveDocumentSetRequestType body) {
-        //TODO implement this method
+     
         throw new UnsupportedOperationException("Not implemented for XDR");
     }
 
