@@ -177,6 +177,25 @@
                </archive>
             </configuration>
          </plugin>
+        <plugin>
+            <groupId>com.atlassian.maven.plugins</groupId>
+            <artifactId>maven-clover2-plugin</artifactId>
+            <version>3.0.2</version>
+            <configuration>
+                <jdk>1.6</jdk>
+			<licenseLocation>
+				${project.basedir}/licenses/clover.license
+			</licenseLocation>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>pre-site</phase>
+                    <goals>
+                        <goal>instrument</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>	         
     </plugins>
   </build>                        
   <reporting>
@@ -257,8 +276,24 @@
 	                    <tag>@deprecated</tag>
 	                </tags>
 	            </configuration>
-	        </plugin>                            
+	        </plugin>  
+			<plugin>
+	            <groupId>com.atlassian.maven.plugins</groupId>
+	            <artifactId>maven-clover2-plugin</artifactId>
+	            <version>3.0.2</version>
+				<configuration>
+					<licenseLocation>
+						${project.basedir}/licenses/clover.license
+					</licenseLocation>
+				</configuration>
+			</plugin>	                         
 		</plugins>
   </reporting>
-  <distributionManagement/>          
+  <distributionManagement>
+    <site>
+      <id>nhind-site</id>
+      <name>NHIN Direct API publication site</name>
+      <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/gateway/${project.version}</url>
+    </site>
+  </distributionManagement>         
 </project>
