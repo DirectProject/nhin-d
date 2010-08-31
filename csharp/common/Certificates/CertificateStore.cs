@@ -22,22 +22,35 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace NHINDirect.Certificates
 {
+    /// <summary>
+    /// Abstract class for certificate storage and resolution.
+    /// </summary>
     public abstract class CertificateStore : IX509CertificateStore, ICertificateResolver
     {
         Predicate<X509Certificate2> m_criteria;
         CertificateResolver m_resolver;
         
+        /// <summary>
+        /// Initializes a store without certificate validation criteria.
+        /// </summary>
         protected CertificateStore()
         {
             m_resolver = new CertificateResolver(this);
         }
         
+        /// <summary>
+        /// Initializes a store with the supplied <paramref name="criteria"/> for validating added certificates.
+        /// </summary>
+        /// <param name="criteria">The predicate to validate incoming certificates for goodness</param>
         protected CertificateStore(Predicate<X509Certificate2> criteria)
             : this()
         {
             m_criteria = criteria;
         }
         
+        /// <summary>
+        /// Gets and sets the validation criteria for certficates in this store.
+        /// </summary>
         public Predicate<X509Certificate2> Criteria
         {
             get
@@ -50,15 +63,40 @@ namespace NHINDirect.Certificates
             }
         }
 
+        /// <summary>
+        /// Indexes this store by subject name.
+        /// </summary>
+        /// <param name="subjectName">The subject name to retrieve.</param>
+        /// <returns>The collection of certificates for the supplied <paramref name="subjectName"/></returns>
         public abstract X509Certificate2Collection this[string subjectName]
         {
             get;
         }
         
+        /// <summary>
+        /// Tests if this store contains the supplied <paramref name="cert"/>
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <returns><c>true</c> if this store contains <paramref name="cert"/>, <c>false</c> if not</returns>
         public abstract bool Contains(X509Certificate2 cert);
+
+        /// <summary>
+        /// Adds the supplied <paramref name="cert"/> to this store 
+        /// </summary>
+        /// <param name="cert">The certificate to add</param>
         public abstract void Add(X509Certificate2 cert);
+
+        /// <summary>
+        /// Removes the supplied <paramref name="cert"/> from this store 
+        /// </summary>
+        /// <param name="cert">The certificate to remove</param>
         public abstract void Remove(X509Certificate2 cert);
 
+        /// <summary>
+        /// Tests if a certificate matches the validity criteria for this store.
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <returns><c>true</c> if the certificate matches store criteria, <c>false</c> if not</returns>
         public bool MatchesCriteria(X509Certificate2 cert)
         {
             if (cert == null)
@@ -69,6 +107,10 @@ namespace NHINDirect.Certificates
             return (m_criteria == null || m_criteria(cert));
         }
 
+        /// <summary>
+        /// Validates the <paramref name="cert"/> against this store's criteria.
+        /// </summary>
+        /// <param name="cert">The certificate to validate.</param>
         protected void ValidateCriteria(X509Certificate2 cert)
         {
             if (!this.MatchesCriteria(cert))
@@ -77,6 +119,11 @@ namespace NHINDirect.Certificates
             }
         }
 
+
+        /// <summary>
+        /// Adds certificates from <paramref name="source"/> that meet this store's criteria
+        /// </summary>
+        /// <param name="source">The <see cref="X509Store"/> to add certificates from.</param>
         public void CopyFrom(X509Store source)
         {
             if (source == null)
@@ -87,6 +134,11 @@ namespace NHINDirect.Certificates
             this.Update(source.Certificates.Enumerate(this.Criteria));
         }
 
+        /// <summary>
+        /// Adds certificates from <paramref name="source"/> that meet the supplied <paramref name="criteria"/>
+        /// </summary>
+        /// <param name="source">The <see cref="X509Store"/> to add certificates from.</param>
+        /// <param name="criteria">The predicate to filter <paramref name="source"/> certificates by</param>
         public void CopyFrom(X509Store source, Predicate<X509Certificate2> criteria)
         {
             if (source == null)
@@ -96,7 +148,12 @@ namespace NHINDirect.Certificates
 
             this.Update(source.Certificates.Enumerate(criteria));
         }
+        // TODO: why different logic above (filtering by criteria) and below (not filtering)?
 
+        /// <summary>
+        /// Adds certificates to this store from <paramref name="certs"/>.
+        /// </summary>
+        /// <param name="certs">The certificates to add to this store.</param>
         public void Add(IEnumerable<X509Certificate2> certs)
         {
             if (certs == null)
@@ -108,7 +165,11 @@ namespace NHINDirect.Certificates
                 this.Add(cert);
             }
         }
-        
+
+        /// <summary>
+        /// Adds certificates to this store from <paramref name="certs"/>.
+        /// </summary>
+        /// <param name="certs">The certificates to add to this store.</param>
         public void Add(X509Certificate2Collection certs)
         {
             if (certs == null)
@@ -121,11 +182,22 @@ namespace NHINDirect.Certificates
             }        
         }
 
+        /// <summary>
+        /// Adds certificates to this store from a keyfile.
+        /// </summary>
+        /// <param name="filePath">The path to the keyfile</param>
+        /// <param name="flags">The <see cref="X509KeyStorageFlags"/> for the keyfile</param>
         public void ImportKeyFile(string filePath, X509KeyStorageFlags flags)
         {
             this.ImportKeyFile(filePath, null, flags);
         }
 
+        /// <summary>
+        /// Adds certificates to this store from a keyfile.
+        /// </summary>
+        /// <param name="filePath">The path to the keyfile</param>
+        /// <param name="password">The keyfile password</param>
+        /// <param name="flags">The <see cref="X509KeyStorageFlags"/> for the keyfile</param>
         public void ImportKeyFile(string filePath, string password, X509KeyStorageFlags flags)
         {
             X509Certificate2Collection certs = new X509Certificate2Collection();
@@ -133,6 +205,12 @@ namespace NHINDirect.Certificates
             this.Add(certs);
         }
 
+        /// <summary>
+        /// Exports this store as a keyfile
+        /// </summary>
+        /// <param name="filePath">The path to which to export.</param>
+        /// <param name="password">The password for the new keyfile</param>
+        /// <param name="type">The <see cref="X509ContentType"/> for the new keyfile.</param>
         public void ExportKeyFile(string filePath, string password, X509ContentType type)
         {
             X509Certificate2Collection certs = new X509Certificate2Collection();
@@ -142,6 +220,10 @@ namespace NHINDirect.Certificates
             System.IO.File.WriteAllBytes(filePath, blob);
         }
                
+        /// <summary>
+        /// Removes an enumeration of certificates from this store.
+        /// </summary>
+        /// <param name="certs">The certificates to remove.</param>
         public void Remove(IEnumerable<X509Certificate2> certs)
         {
             if (certs == null)
@@ -154,6 +236,10 @@ namespace NHINDirect.Certificates
             }
         }
 
+        /// <summary>
+        /// Removes a collection of certificates from this store.
+        /// </summary>
+        /// <param name="certs">The certificates to remove.</param>
         public void Remove(X509Certificate2Collection certs)
         {
             if (certs == null)
@@ -166,6 +252,10 @@ namespace NHINDirect.Certificates
             }
         }
         
+        /// <summary>
+        /// Removes all certificates matching a subject name.
+        /// </summary>
+        /// <param name="subjectName">The subject name to match.</param>
         public void Remove(string subjectName)
         {
             X509Certificate2Collection certs = this[subjectName];
@@ -175,6 +265,10 @@ namespace NHINDirect.Certificates
             }
         }
         
+        /// <summary>
+        /// Updates a specified certificate.
+        /// </summary>
+        /// <param name="cert">The certificate to update.</param>
         public void Update(X509Certificate2 cert)
         {
             this.ValidateCriteria(cert);
@@ -185,6 +279,10 @@ namespace NHINDirect.Certificates
             this.Add(cert);
         }
 
+        /// <summary>
+        /// Updates certificates in this store.
+        /// </summary>
+        /// <param name="certs">The certificates to update.</param>
         public void Update(IEnumerable<X509Certificate2> certs)
         {
             if (certs == null)
@@ -197,6 +295,10 @@ namespace NHINDirect.Certificates
             }
         }
         
+        /// <summary>
+        /// Gets all certificates for this store.
+        /// </summary>
+        /// <returns>The certificates for this store.</returns>
         public virtual X509Certificate2Collection GetAllCertificates()
         {
             X509Certificate2Collection certs = new X509Certificate2Collection();
@@ -204,8 +306,17 @@ namespace NHINDirect.Certificates
             return certs;
         }
         
+        /// <summary>
+        /// Gets an enumeration of the certificates for this store.
+        /// </summary>
+        /// <returns>An enumeration of the certificates for this store.</returns>
         public abstract IEnumerator<X509Certificate2> GetEnumerator();
 
+        /// <summary>
+        /// Gets an enumerator for this store.
+        /// </summary>
+        /// <remarks>Use the typesafe enumerator by preference.</remarks>
+        /// <returns>An <see cref="System.Collections.IEnumerator"/> for this store.</returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
@@ -216,16 +327,28 @@ namespace NHINDirect.Certificates
         // ICertificateResolver
         //
         //---------------------------------------------
+        /// <summary>
+        /// Gets the certificate for the specified <paramref name="address"/>
+        /// </summary>
+        /// <param name="address">The address for which to retrieve certificates</param>
+        /// <returns>The certificates for this address.</returns>
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
             return m_resolver.GetCertificates(address);
         }
 
+        /// <summary>
+        /// Returns a <see cref="CertificateIndex"/> from this store
+        /// </summary>
+        /// <returns>The <see cref="CertificateIndex"/> for this store.</returns>
         public CertificateIndex Index()
         {
             return new CertificateIndex(this);
         }
 
+        /// <summary>
+        /// Frees resources for this instance.
+        /// </summary>
         public virtual void Dispose()
         {
         }

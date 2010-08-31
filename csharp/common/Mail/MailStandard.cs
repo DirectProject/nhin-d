@@ -17,6 +17,9 @@ using NHINDirect.Mime;
 
 namespace NHINDirect.Mail
 {
+    /// <summary>
+    /// Defines constants and functions relating to RFC 5322.
+    /// </summary>
     public class MailStandard : MimeStandard
     {
         //

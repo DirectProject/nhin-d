@@ -30,6 +30,9 @@ namespace NHINDirect.Certificates
     /// </summary>
     public class DnsCertResolver : ICertificateResolver
     {
+        /// <summary>
+        /// The default timeout in milliseconds.
+        /// </summary>
         public const int DefaultTimeoutMs = 5000; // Milliseconds
         
         IPAddress m_serverIP;
@@ -77,6 +80,9 @@ namespace NHINDirect.Certificates
             m_fallbackDomain = fallbackDomain;
         }
 
+        /// <summary>
+        /// Event to subscribe to for notification of errors.
+        /// </summary>
         public event Action<DnsCertResolver, Exception> Error;
         
         /// <summary>
@@ -143,6 +149,9 @@ namespace NHINDirect.Certificates
             }
         }
         
+        /// <summary>
+        /// Indicates if this instance assumes the DNS server supports wildcarding.
+        /// </summary>
         public bool AssumeWildcardSupport = false;
         
         /// <summary>

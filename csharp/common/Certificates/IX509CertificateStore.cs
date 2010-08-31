@@ -22,6 +22,9 @@ using NHINDirect;
 
 namespace NHINDirect.Certificates
 {
+    /// <summary>
+    /// Interface supporting indexing certificates by subject name.
+    /// </summary>
     public interface IX509CertificateIndex
     {
         /// <summary>
@@ -32,6 +35,9 @@ namespace NHINDirect.Certificates
         X509Certificate2Collection this[string subjectName] { get; }
     }
 
+    /// <summary>
+    /// Interface supporting a store of certificates.
+    /// </summary>
     public interface IX509CertificateStore : IX509CertificateIndex, IEnumerable<X509Certificate2>, IDisposable
     {   
         /// <summary>
@@ -41,21 +47,58 @@ namespace NHINDirect.Certificates
         {
             get;
             set;
-        }     
-                
-        bool Contains(X509Certificate2 cert);        
-            
+        }
+
+        /// <summary>
+        /// Tests if this store contains the supplied <paramref name="cert"/>
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <returns><c>true</c> if this store contains <paramref name="cert"/>, <c>false</c> if not</returns>
+        bool Contains(X509Certificate2 cert);
+
+        /// <summary>
+        /// Adds the supplied <paramref name="cert"/> to this store 
+        /// </summary>
+        /// <param name="cert">The certificate to add</param>
         void Add(X509Certificate2 cert);
+        /// <summary>
+        /// Adds the supplied <paramref name="certs"/> to this store 
+        /// </summary>
+        /// <param name="certs">The certificates to add</param>
         void Add(IEnumerable<X509Certificate2> certs);
-        
+
+        /// <summary>
+        /// Removes the supplied <paramref name="cert"/> from this store 
+        /// </summary>
+        /// <param name="cert">The certificate to remove</param>
         void Remove(X509Certificate2 cert);
+        /// <summary>
+        /// Removes the supplied <paramref name="certs"/> from this store 
+        /// </summary>
+        /// <param name="certs">The certificate to remove</param>
         void Remove(IEnumerable<X509Certificate2> certs);
 
+        /// <summary>
+        /// Removes certificates from this store whose subject name matches <paramref name="subjectName"/> 
+        /// </summary>
+        /// <param name="subjectName">The subject name for which to remove certificates.</param>
         void Remove(string subjectName);
 
+        /// <summary>
+        /// Updates a certificate in this store.
+        /// </summary>
+        /// <param name="cert">The certificate to update.</param>
         void Update(X509Certificate2 cert);
+        /// <summary>
+        /// Updates certificates in this store.
+        /// </summary>
+        /// <param name="certs">The certificates to update.</param>
         void Update(IEnumerable<X509Certificate2> certs);
         
+        /// <summary>
+        /// Gets a collection of all certificates in this store.
+        /// </summary>
+        /// <returns>The collection of all certificates in this store.</returns>
         X509Certificate2Collection GetAllCertificates();             
     }        
 }

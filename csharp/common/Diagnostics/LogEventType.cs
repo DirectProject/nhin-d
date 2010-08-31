@@ -21,13 +21,35 @@ using System.IO;
 
 namespace NHINDirect.Diagnostics
 {
+    /// <summary>
+    /// Subtypes of log events.
+    /// </summary>
     public enum LogEventType
     {
+        /// <summary>
+        /// Events that involve termination or data loss.
+        /// </summary>
         Critical,
+        /// <summary>
+        /// Events that indicate program execute failure.
+        /// </summary>
         Error,
+        /// <summary>
+        /// Events that indicate warning.
+        /// </summary>
         Warning,
+        /// <summary>
+        /// Events that indicate normal program operation.
+        /// </summary>
         Info,
+        /// <summary>
+        /// Events that are used to debug system operation.
+        /// </summary>
         Debug,
+        /// <summary>
+        /// Events for reporting purposes.
+        /// </summary>
+        // TODO: difference from Info?
         Report
     }
 }

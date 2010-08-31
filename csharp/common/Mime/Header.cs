@@ -20,18 +20,30 @@ using System.Text;
 
 namespace NHINDirect.Mime
 {
+    /// <summary>
+    /// Represents a MIME or RFC 5322 header.
+    /// </summary>
     public class Header : MimePart
     {
         string m_name;
         string m_value;
         bool m_parsed;
 
+        /// <summary>
+        /// Initializes a header instance with source text supplied by the <paramref name="segment"/>
+        /// </summary>
+        /// <param name="segment">The <see cref="StringSegment"/> supplying source header text.</param>
         public Header(StringSegment segment)
             : base(MimePartType.Header, segment)
         {
             m_parsed = false;
         }
-        
+
+        /// <summary>
+        /// Initializes an instance with a header name and value supplied separately.
+        /// </summary>
+        /// <param name="name">The <see cref="string"/> supplying header name.</param>
+        /// <param name="value">The <see cref="string"/> supplying header value</param>
         public Header(string name, string value)
             : base(MimePartType.Header)
         {
@@ -40,16 +52,24 @@ namespace NHINDirect.Mime
             m_value = value;
             m_parsed = true;
         }
-        
+
+        /// <summary>
+        /// Initializes an instance with pair supplying header name and value.
+        /// </summary>
+        /// <param name="value">The pair where the key is the header name,
+        /// and the value is the value</param>
         public Header(KeyValuePair<string, string> value)
             : this(value.Key, value.Value)
         {        
         }
         
         /// <summary>
+        /// Gets the raw value for this header, including header name, value, and the ':' separator.
+        /// </summary>
+        /// <remarks>
         /// The Text should contain a ':' separator
         /// Assumes that the text is otherwise well formed. 
-        /// </summary>
+        /// </remarks>
         public override string Text
         {
             get
@@ -63,6 +83,9 @@ namespace NHINDirect.Mime
             }
         }
 
+        /// <summary>
+        /// Gets the header name for this header.
+        /// </summary>
         public string Name
         {
             get
@@ -72,6 +95,9 @@ namespace NHINDirect.Mime
             }
         }
 
+        /// <summary>
+        /// Gets the header value for this header.
+        /// </summary>
         public string Value
         {
             get
@@ -81,6 +107,12 @@ namespace NHINDirect.Mime
             }
         }
         
+        // TODO: rename to IsNamed
+        /// <summary>
+        /// Tests if this header is named the supplied <paramref name="name"/>
+        /// </summary>
+        /// <param name="name">The name to test this header's name against</param>
+        /// <returns><c>true</c> if the names match by MIME string comparison rules</returns>
         public bool IsHeaderName(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -89,7 +121,12 @@ namespace NHINDirect.Mime
             }
             return MimeStandard.Equals(this.Name, name);
         }
-        
+
+        /// <summary>
+        /// Tests if this header is named one of the supplied <paramref name="names"/>
+        /// </summary>
+        /// <param name="names">The names to test this header's name against</param>
+        /// <returns><c>true</c> if this header matches one of the supplied names match by MIME string comparison rules</returns>
         public bool IsHeaderNameOneOf(string[] names)
         {
             if (names == null || names.Length == 0)            
@@ -108,7 +145,11 @@ namespace NHINDirect.Mime
             
             return false;
         }
-        
+
+        /// <summary>
+        /// Creates a shallow clone of this instance.
+        /// </summary>
+        /// <returns>The shallow clone.</returns>
         public Header Clone()
         {
             return new Header(this.SourceText);
