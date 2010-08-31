@@ -1,7 +1,5 @@
 package org.nhind.util;
 
-import static org.nhind.util.HL7Utils.returnField;
-
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -48,7 +46,8 @@ public class HL7UtilsTest extends TestCase {
 
         tokens = HL7Utils.split("PID-3|1111111111^^^&amp;GSIHealth&amp;ISO", "*");
         assertEquals("Returned list size does not match expected", 1, tokens.size());
-        assertEquals("Returned token does not match expected", "PID-3|1111111111^^^&amp;GSIHealth&amp;ISO", tokens.get(0));
+        assertEquals("Returned token does not match expected", "PID-3|1111111111^^^&amp;GSIHealth&amp;ISO", tokens
+                .get(0));
 
         tokens = HL7Utils.split("PID-3|1111111111^^^&amp;GSIHealth&amp;ISO", "|");
         assertEquals("Returned list size does not match expected", 2, tokens.size());
@@ -74,11 +73,58 @@ public class HL7UtilsTest extends TestCase {
         } catch (IllegalArgumentException e) {
         }
     }
-    
+
     /**
      * Test the returnField method.
      */
     public void testReturnField() {
-        // TODO
+        String input = null;
+        String output = null;
+
+        input = "PID-3|1111111111^^^&amp;GSIHealth&amp;ISO";
+        output = HL7Utils.returnField(input, "|", 0);
+        assertEquals("Actual output does not match expected", "PID-3|1111111111^^^&amp;GSIHealth&amp;ISO", output);
+        output = HL7Utils.returnField(input, "|", 1);
+        assertEquals("Actual output does not match expected", "PID-3", output);
+        output = HL7Utils.returnField(input, "|", 2);
+        assertEquals("Actual output does not match expected", "1111111111^^^&amp;GSIHealth&amp;ISO", output);
+        output = HL7Utils.returnField(input, "|", 3);
+        assertEquals("Actual output does not match expected", "PID-3|1111111111^^^&amp;GSIHealth&amp;ISO", output);
+
+        input = "PID-3|1111111111^^^&amp;GSIHealth&amp;ISO";
+        output = HL7Utils.returnField(input, "^", 1);
+        assertEquals("Actual output does not match expected", "PID-3|1111111111", output);
+        output = HL7Utils.returnField(input, "^", 2);
+        assertEquals("Actual output does not match expected", "&amp;GSIHealth&amp;ISO", output);
+
+        input = "PID-3|1111111111^^^&amp;GSIHealth&amp;ISO";
+        output = HL7Utils.returnField(input, "^|", 1);
+        assertEquals("Actual output does not match expected", "PID-3", output);
+        output = HL7Utils.returnField(input, "^|", 2);
+        assertEquals("Actual output does not match expected", "1111111111", output);
+
+        input = "";
+        output = HL7Utils.returnField(input, "|", 1);
+        assertEquals("Actual output does not match expected", "", output);
+
+        try {
+            input = null;
+            output = HL7Utils.returnField(input, "|", 0);
+            fail("Exception was not thrown");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
+
+        input = "PID-3|1111111111^^^&amp;GSIHealth&amp;ISO";
+        output = HL7Utils.returnField(input, "", 0);
+        assertEquals("Actual output does not match expected", "PID-3|1111111111^^^&amp;GSIHealth&amp;ISO", output);
+
+        try {
+            input = "PID-3|1111111111^^^&amp;GSIHealth&amp;ISO";
+            output = HL7Utils.returnField(input, null, 0);
+            fail("Exception was not thrown");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
     }
 }
