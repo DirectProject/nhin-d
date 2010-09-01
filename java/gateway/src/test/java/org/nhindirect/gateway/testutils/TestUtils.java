@@ -1,6 +1,5 @@
 package org.nhindirect.gateway.testutils;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;

@@ -224,7 +224,7 @@ namespace NHINDirect.Cryptography
         /// </summary>
         /// <param name="algorithm">The digest algorithm to transform</param>
         /// <returns>A string suitable for the value of the <c>micalg</c> parameter</returns>
-        public static string AsString(DigestAlgorithm algorithm)
+        public static string ToString(DigestAlgorithm algorithm)
         {
             switch (algorithm)
             {

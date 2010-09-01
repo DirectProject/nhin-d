@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.mail.internet.InternetAddress;
@@ -66,9 +67,10 @@ public class TrustAnchorCertificateStore implements CertificateResolver
 		this.certs = new HashMap<String, Collection<X509Certificate>>();
 		
 		// copy this map, but make all the domains upper case for lookups
+		//Set<Entry<String, Collection<X509Certificate>>> entrySet = ;
 		for (Entry<String, Collection<X509Certificate>> entry : certs.entrySet())
 		{
-			certs.put(entry.getKey().toUpperCase(Locale.getDefault()), entry.getValue());
+			this.certs.put(entry.getKey().toUpperCase(Locale.getDefault()), entry.getValue());
 		}
 	}  
     

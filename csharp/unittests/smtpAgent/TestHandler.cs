@@ -16,10 +16,14 @@ namespace SmtpAgentTests
     public class TestHandler : SmtpAgentTester
     {
         MessageArrivalEventHandler m_handler;
-
-        public TestHandler()
+        
+        static TestHandler()
         {
             AgentTests.AgentTester.EnsureStandardMachineStores();
+        }
+        
+        public TestHandler()
+        {
             m_handler = new MessageArrivalEventHandler();
             m_handler.InitFromConfigFile(MakeFilePath("TestSmtpAgentConfig.xml"));
         }

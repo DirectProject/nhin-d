@@ -53,7 +53,6 @@ namespace NHINDirect.Mime
             return MimeStandard.Equals(paramValue, value);
         }
 
-        //TODO: ToString??
         /// <summary>
         /// Returns a  string representation of <paramref name="encoding"/> compatable with the <c>micalg</c> parameter
         /// </summary>
@@ -61,7 +60,7 @@ namespace NHINDirect.Mime
         /// <returns>The string representation of the encoding compatable with the <c>Content-Transfer-Encoding</c> header</returns>
         public static string AsString(this TransferEncoding encoding)
 		{
-		    return MimeStandard.AsString(encoding);
+		    return MimeStandard.ToString(encoding);
 		}
     }
 }

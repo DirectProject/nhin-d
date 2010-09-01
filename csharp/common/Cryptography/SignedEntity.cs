@@ -129,7 +129,7 @@ namespace NHINDirect.Cryptography
         {
             ContentType contentType = new ContentType(SMIMEStandard.MultiPartTypeSigned);
             contentType.Parameters.Add(SMIMEStandard.ProtocolParameterKey, SMIMEStandard.SignatureProtocol);
-			contentType.Parameters.Add(SMIMEStandard.MICAlgorithmKey, digestAlgorithm.AsString());
+			contentType.Parameters.Add(SMIMEStandard.MICAlgorithmKey, digestAlgorithm.ToString());
             return contentType;
         }
     }

@@ -51,9 +51,13 @@ import org.nhindirect.gateway.smtp.provider.DefaultSmtpAgentProvider;
 import org.nhindirect.stagent.NHINDAgent;
 import org.nhindirect.stagent.cert.DefaultCertStoreCachePolicy;
 import org.nhindirect.stagent.cert.CertificateResolver;
+import org.nhindirect.stagent.cert.impl.EmployLdapAuthInformation;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
+import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
+import org.nhindirect.stagent.cert.impl.LdapStoreConfiguration;
 import org.nhindirect.stagent.cert.impl.provider.DNSCertStoreProvider;
 import org.nhindirect.stagent.cert.impl.provider.KeyStoreCertificateStoreProvider;
+import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
 import org.nhindirect.stagent.module.AgentModule;
 import org.nhindirect.stagent.module.PrivateCertStoreModule;
 import org.nhindirect.stagent.module.PublicCertStoreModule;
@@ -84,15 +88,15 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 
 	@Inject
 	private Provider<NHINDAgent> agentProvider;
-
+	protected LDAPCertificateStore ldapCertificateStore;
 	
 	private Document doc;
 	
-	private Collection<String> domains;
-	private Map<String, DomainPostmaster> domainPostmasters;
-	private Module publicCertModule;
-	private Module privateCertModule;
-	private Module certAnchorModule;
+	protected Collection<String> domains;
+	protected Map<String, DomainPostmaster> domainPostmasters;
+	protected Module publicCertModule;
+	protected Module privateCertModule;
+	protected Module certAnchorModule;
 	
 	private RawMessageSettings rawSettings;
 	private ProcessIncomingSettings incomingSettings;
@@ -296,8 +300,8 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	
 	/*
 	 * Builds the resolver used to find trust anchors.
-	 */
-	private void buildTrustAnchorResolver(Element anchorStoreNode, Map<String, Collection<String>> incomingAnchorHolder, 
+	 */	
+	protected void buildTrustAnchorResolver(Element anchorStoreNode, Map<String, Collection<String>> incomingAnchorHolder, 
 			Map<String, Collection<String>> outgoingAnchorHolder)
 	{
 		
@@ -317,8 +321,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			// get incoming anchors
 			for (Entry<String, Collection<String>> entries : incomingAnchorHolder.entrySet())
 			{
-				Collection<X509Certificate> certs = new ArrayList<X509Certificate>();
-				
+				Collection<X509Certificate> certs = new ArrayList<X509Certificate>();				
 				for (String alias : entries.getValue())
 				{
 					X509Certificate cert = store.getByAlias(alias);
@@ -326,8 +329,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 					{
 						certs.add(cert);
 					}
-				}
-				
+				}				
 				incomingAnchors.put(entries.getKey(), certs);
 			}
 						
@@ -346,6 +348,33 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 				}				
 				outgoingAnchors.put(entries.getKey(), certs);
 			}			
+		}	
+		else if (storeType.equalsIgnoreCase("ldap")){	
+		    
+		    ldapCertificateStore = (LDAPCertificateStore) buildLdapCertificateStoreProvider(anchorStoreNode, "LDAPTrustAnchorStore").get();
+		    // get incoming anchors
+            for (Entry<String, Collection<String>> entries : incomingAnchorHolder.entrySet())
+            {
+                Collection<X509Certificate> certs = new ArrayList<X509Certificate>();      
+                for (String alias : entries.getValue())
+                {
+                    //TODO what if 2nd entry has no certs? Fail?
+                    //each alias could have multiple certificates
+                    certs.addAll(ldapCertificateStore.getCertificates(alias));                    
+                }             
+                incomingAnchors.put(entries.getKey(), certs);
+            }
+                        
+            // get outgoing anchors
+            for (Entry<String, Collection<String>> entries : outgoingAnchorHolder.entrySet())
+            {
+                Collection<X509Certificate> certs = new ArrayList<X509Certificate>(); 
+                for (String alias : entries.getValue())
+                {
+                    certs.addAll(ldapCertificateStore.getCertificates(alias));                    
+                }          
+                outgoingAnchors.put(entries.getKey(), certs);
+            }           
 		}
 		
 		// determine what module to load to inject the trust anchor resolver implementation
@@ -443,8 +472,8 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	
 	/*
 	 * Build the certificates store that hold private certificates.
-	 */
-	private void buildPrivateCertStore(Node publicCertNode)
+	 */	
+	protected void buildPrivateCertStore(Node publicCertNode)
 	{
 		Provider<CertificateResolver> resolverProvider = null;
 		
@@ -460,6 +489,10 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			{
 				resolverProvider = new KeyStoreCertificateStoreProvider(certNode.getAttribute("file"), 
 						certNode.getAttribute("filePass"), certNode.getAttribute("privKeyPass"));
+			}
+			else if(storeType.equalsIgnoreCase("ldap"))
+			{
+			    resolverProvider = buildLdapCertificateStoreProvider(certNode, "LDAPPrivateCertStore");
 			}
 			else
 			{
@@ -530,6 +563,49 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			
 			badSettings = settings;
 		}
-	}	
+	}
 	
+	/**
+	 * This will build an LdapCertificateStoreProvider to be used to grab certificates from the LDAP store.
+	 * @param anchorStoreNode - The Element node in the xml file that contains anchor information
+	 * @param cacheStoreName - The name of the bootstrap cacheStore used when cache and LDAP are unreachable.
+	 * @return
+	 */
+	protected LdapCertificateStoreProvider buildLdapCertificateStoreProvider(Element anchorStoreNode, String cacheStoreName){
+	    //required
+	    String[] ldapURL = anchorStoreNode.getAttribute("ldapURL").split(",");
+	    String ldapSearchBase = anchorStoreNode.getAttribute("ldapSearchBase");
+        String ldapSearchAttr = anchorStoreNode.getAttribute("ldapSearchAttr");
+        String ldapCertAttr = anchorStoreNode.getAttribute("ldapCertAttr");
+        String ldapCertFormat = anchorStoreNode.getAttribute("ldapCertFormat");  
+        if(ldapURL[0].isEmpty() || ldapSearchBase.isEmpty() || ldapSearchAttr.isEmpty() ||
+                ldapCertAttr.isEmpty() || ldapCertFormat.isEmpty())
+        {
+            throw new SmtpAgentException(SmtpAgentError.InvalidConfigurationFormat);
+        }
+        //optional	    
+	    String ldapUser = anchorStoreNode.getAttribute("ldapUser");
+	    String ldapPassword = anchorStoreNode.getAttribute("ldapPassword");
+	    String ldapConnTimeout = anchorStoreNode.getAttribute("ldapConnTimeout");	   
+	    String ldapCertPassphrase = anchorStoreNode.getAttribute("ldapCertPassphrase");
+	    if(ldapCertFormat.equalsIgnoreCase("pkcs12") && ldapCertPassphrase.isEmpty())
+	    {
+	        throw new SmtpAgentException(SmtpAgentError.InvalidConfigurationFormat);
+	    }
+	    LdapStoreConfiguration ldapStoreConfiguration = new LdapStoreConfiguration(ldapURL, ldapSearchBase, ldapSearchAttr, ldapCertAttr, ldapCertFormat);
+	    if(!(ldapUser.isEmpty() && ldapPassword.isEmpty()))
+	    {
+	        ldapStoreConfiguration.setEmployLdapAuthInformation(new EmployLdapAuthInformation(ldapUser, ldapPassword));
+	    }
+	    if(!ldapConnTimeout.isEmpty())
+	    {
+	        ldapStoreConfiguration.setLdapConnectionTimeOut(ldapConnTimeout);
+	    }
+	    if(!ldapCertPassphrase.isEmpty())
+	    {
+	        ldapStoreConfiguration.setLdapCertPassphrase(ldapCertPassphrase);
+	    }
+	    LdapCertificateStoreProvider ldapCertificateStoreProvider = new LdapCertificateStoreProvider(ldapStoreConfiguration,new KeyStoreCertificateStore(new File(cacheStoreName),ldapCertPassphrase), new DefaultCertStoreCachePolicy());
+	    return ldapCertificateStoreProvider;
+	}
 }

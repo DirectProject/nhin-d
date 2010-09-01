@@ -1,8 +1,13 @@
 package org.nhindirect.ldap;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
@@ -19,9 +24,20 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
 import org.apache.directory.server.core.schema.bootstrap.AbstractBootstrapSchema;
 import org.apache.directory.server.unit.AbstractServerTest;
+import org.apache.directory.shared.ldap.ldif.Entry;
+import org.apache.directory.shared.ldap.message.LockableAttributesImpl;
+import org.nhindirect.stagent.cert.CertificateResolver;
+import org.nhindirect.stagent.cert.X509CertificateEx;
+import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
+import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
+import org.nhindirect.stagent.cert.impl.LdapCertUtilImpl;
+import org.nhindirect.stagent.cert.impl.LdapEnvironment;
+import org.nhindirect.stagent.cert.impl.LdapStoreConfiguration;
+import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
 
 public class LDAPResearchTest extends AbstractServerTest
 {
@@ -75,6 +91,7 @@ public class LDAPResearchTest extends AbstractServerTest
 			throw new IOException("Failed to load ldif file");
 		
 		importLdif(stream);
+		createLdapEntries();
 	}
 	
 	private DirContext createContext(String partition) throws Exception
@@ -129,6 +146,94 @@ public class LDAPResearchTest extends AbstractServerTest
         	System.out.println("Privkey BASE64: " + privKey);
         }
         
+	}
+	
+	public void testLdapSearch() throws Exception
+	{
+		int port = configuration.getLdapPort();
+		
+		String url = "ldap://localhost:" + port + "/" + "cn=lookupTest";
+		
+		Hashtable<String, String> env = new Hashtable<String, String>();
+		
+        env.put( Context.SECURITY_PRINCIPAL, "uid=admin,ou=system" );
+        env.put( Context.SECURITY_CREDENTIALS, "secret" );
+        env.put( Context.SECURITY_AUTHENTICATION, "simple" );
+        env.put( Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+        env.put( Context.PROVIDER_URL, url );
+        
+    	InitialContext initialContext = new InitialContext( env );
+    
+    	assertNotNull(initialContext);        	
+        	
+		DirContext dirContext = (DirContext)initialContext.lookup("");
+        	
+    	
+        Attributes attributes = dirContext.getAttributes( "" );
+        assertNotNull( attributes );
+
+        
+        NamingEnumeration<Attribute> namingEnum = (NamingEnumeration<Attribute>)attributes.getAll();
+    	while (namingEnum.hasMoreElements())
+    	{
+    		Attribute attr = namingEnum.nextElement();
+    		System.out.println("Name: " + attr.getID() + "\r\nValue: " + attr.get() + "\r\n\r\n");
+    	}
+            
+        //Set<SearchResult> results = searchDNs( "(email=gm2552@cerner.com)", "", "ou=privKeys, ou=cerner, ou=com", 
+        //        SearchControls.SUBTREE_SCOPE , dirContext);
+    	
+    	LdapStoreConfiguration ldapStoreConfiguration = new LdapStoreConfiguration(new String[]{url}, "", "email", "privKeyStore", "X509");
+    	LdapCertificateStoreProvider provider = new LdapCertificateStoreProvider(ldapStoreConfiguration, null, null);
+    	LDAPCertificateStore certificateResolver = (LDAPCertificateStore) provider.get();
+    	Collection<X509Certificate> certs = certificateResolver.getCertificates("gm2552@cerner.com");
+    	
+        /*LdapEnvironment ldapEnvironment = new LdapEnvironment(env, "privKeyStore", "", "email");
+		LdapCertUtilImpl ldapcertUtilImpl = new LdapCertUtilImpl(ldapEnvironment, "", "X.509");
+		LDAPCertificateStore ldapCertStore = new LDAPCertificateStore(ldapcertUtilImpl, new KeyStoreCertificateStore(), null);
+		
+		Collection<X509Certificate> certs = ldapCertStore.getCertificates("gm2552@cerner.com");
+		*/
+		assertEquals(1, certs.size());
+		X509Certificate cert = certs.iterator().next();
+		assertFalse( cert instanceof X509CertificateEx );
+		assertTrue(cert.getSubjectX500Principal().toString().contains("bob@nhind.hsgincubator.com"));
+        
+	}
+	
+	protected void createLdapEntries() throws NamingException {
+		/*Attributes attrs = new BasicAttributes( "objectClass", "top", true);
+		attrs.put("objectClass", "organizationalUnit");
+		attrs.put("objectClass", "userPrivKey");
+		attrs.put("email", "gm2552@cerner.com");
+		attrs.put("privKeyStore", "1234567");
+		rootDSE.createSubcontext("ou=gm2552, ou=privKeys, ou=cerner, ou=com, cn=lookupTest", attrs);
+		*/
+		Entry entry = new Entry();
+		entry.addAttribute("objectClass", "organizationalUnit");
+		entry.addAttribute("objectClass", "top");
+		entry.addAttribute("objectClass", "userPrivKey");
+		entry.addAttribute("email", "gm2552@cerner.com");
+		
+		File fl = new File("testfile");
+		int idx = fl.getAbsolutePath().lastIndexOf("testfile");
+		String path = fl.getAbsolutePath().substring(0, idx);
+				
+		byte[] buffer = new byte[(int) new File(path + "src/test/resources/certs/bob.der").length()+100];
+		try {
+			InputStream stream = LDAPResearchTest.class.getClassLoader().getResourceAsStream("certs/bob.der");
+			stream.read(buffer);
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Base64 base64 = new Base64();
+	    String certificateValue =  new String(base64.encode(buffer));
+		entry.addAttribute("privKeyStore", certificateValue);
+		entry.addAttribute("ou", "gm2552");
+		rootDSE.createSubcontext("ou=gm2552, ou=privKeys, ou=cerner, ou=com, cn=lookupTest", entry.getAttributes());
 	}
 	
 

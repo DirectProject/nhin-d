@@ -50,9 +50,13 @@ namespace AgentTests
             </AgentSettings>
         ";
         
-        public AgentConfigTest()
+        static AgentConfigTest()
         {
             AgentTester.EnsureStandardMachineStores();
+        }
+        
+        public AgentConfigTest()
+        {
         }
            
         [Fact]

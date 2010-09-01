@@ -14,10 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Configuration;
+
 using DnsResolver;
 
 namespace NHINDirect.Caching
@@ -27,137 +25,153 @@ namespace NHINDirect.Caching
     /// </summary>
     public class DnsResponseCache : CachingBase<DnsResponse>
     {
-        
         /// <summary>
-        /// provides implementation for base class property for setting a default ttl value
+        /// Provides implementation for base class property for setting a default ttl value
         /// </summary>
-        protected override TimeSpan Ttl
+        protected override TimeSpan TimeToLive
         {
             get
             {
-                //----------------------------------------------------------------------------------------------------
-                //---default to 20 seconds for global expiration
-                return new TimeSpan(0, 0, 20);
+                // default to 20 seconds for global expiration
+                return TimeSpan.FromSeconds(20);
             }
         }
 
         /// <summary>
-        /// simple constructor for this class
+        /// Builds a common key format given the dnsquestion passed in
         /// </summary>
-        public DnsResponseCache():base()
-        {
-
-        }        
-
-        /// <summary>
-        /// builds a common key format given the dnsquestion passed in
-        /// </summary>
-        /// <param name="question">instance of a dns question from which qtype and qname are used to build the key</param>
-        /// <returns>string containing the key built from properties in the question</returns>
+        /// <param name="question">Instance of a dns question from which qtype and qname are used to build the key</param>
+        /// <returns>String containing the key built from properties in the question</returns>
         public virtual string BuildKey(DnsQuestion question)
         {
             if (question == null)
             {
-                throw new Exception("Empty DnsQuestion used as key");
+                throw new ArgumentNullException("question");
             }
+
             return string.Format("{0}.{1}"
-                    , question.QType.ToString()
+                    , question.QType
                     , question.QName ?? "unknown").ToLower();
         }
         
         /// <summary>
-        /// puts an object into the cache after building the key by calling the base method Put
+        /// Puts an object into the cache after building the key by calling the base method Put
         /// </summary>
-        /// <param name="dr">DnsResponse instace to be stored in the cache; DnsQuestion from this instance is used for the key</param>
-        /// <param name="ttl">timespan specifying the ttl for the DnsResponse object that is to be stored in the cache</param>
-        public void Put(DnsResponse dr
+        /// <param name="response">DnsResponse instace to be stored in the cache; DnsQuestion from this instance is used for the key</param>
+        /// <param name="ttl">Timespan specifying the ttl for the DnsResponse object that is to be stored in the cache</param>
+        public void Put(DnsResponse response
             , TimeSpan ttl)
         {
-            base.Put(BuildKey(dr.Question)
-                , dr
-                , ttl);
-        }
-
-        /// <summary>
-        /// puts an object into the cache after building the key by calling the base method Put
-        /// </summary>
-        /// <param name="dr">DnsResponse instace to be stored in the cache; DnsQuestion from this instance is used for the key</param>
-        public void Put(DnsResponse dr)
-        {
-            //----------------------------------------------------------------------------------------------------
-            //---no sense in storing nothing
-            if (dr == null || dr.AnswerRecords.Count() == 0)
+            if (response == null || response.AnswerRecords.IsNullOrEmpty())
             {
                 return;
             }
 
-            //----------------------------------------------------------------------------------------------------
-            //---get the minimum ttl from the records (int for the total seconds)
-            var val = dr.AnswerRecords.Select(r => r.TTL).Min();
-            TimeSpan ts = new TimeSpan(0, 0, val);
+            base.Put(BuildKey(response.Question)
+                , response
+                , ttl);
+        }
 
-            //----------------------------------------------------------------------------------------------------
-            //---store the record in the cache
-            Put(dr
+        /// <summary>
+        /// Puts an object into the cache after building the key by calling the base method Put
+        /// </summary>
+        /// <param name="reponse">DnsResponse instace to be stored in the cache; DnsQuestion from this instance is used for the key</param>
+        public void Put(DnsResponse reponse)
+        {
+            // no sense in storing nothing
+            if (reponse == null || reponse.AnswerRecords.Count() == 0)
+            {
+                return;
+            }
+
+            // get the minimum ttl from the records (int for the total seconds)
+            var val = reponse.AnswerRecords.Select(r => r.TTL).Min();
+            TimeSpan ts = TimeSpan.FromSeconds(val);
+
+            // store the record in the cache
+            Put(reponse
                 , ts);
         }
 
         /// <summary>
-        /// gets an item from the cache using the DnsRequest to find the item
+        /// Gets an item from the cache using the DnsRequest to find the item
         /// </summary>
-        /// <param name="drq">DnsRequest instance used to build the key to find the item in the cache</param>
-        /// <returns>DnsResponse instance that was found in the cache; if not found, null is returned</returns>
-        public DnsResponse Get(DnsRequest drq)
+        /// <param name="request">DnsRequest instance used to build the key to find the item in the cache</param>
+        /// <returns>DnsResponse instance that was found in the cache; if not found, <c>null</c> is returned</returns>
+        public DnsResponse Get(DnsRequest request)
         {
-            return base.Get(BuildKey(drq.Question));
+            if (request == null)
+            {
+                throw new ArgumentNullException("request");
+            }
+            return base.Get(BuildKey(request.Question));
         }
 
         /// <summary>
-        /// gets an item from the cache using the DnsResponse to find the item
+        /// Gets an item from the cache using the DnsResponse to find the item
         /// </summary>
-        /// <param name="drs">DnsResponse instance used to build the key to find the item in the cache</param>
-        /// <returns>DnsResponse instance that was found in the cache; if not found, null is returned</returns>
-        public DnsResponse Get(DnsResponse drs)
+        /// <param name="response">DnsResponse instance used to build the key to find the item in the cache</param>
+        /// <returns>DnsResponse instance that was found in the cache; if not found, <c>null</c> is returned</returns>
+        public DnsResponse Get(DnsResponse response)
         {
-            return base.Get(BuildKey(drs.Question));
+            if (response == null)
+            {
+                throw new ArgumentNullException("response");
+            }
+            return base.Get(BuildKey(response.Question));
         }
 
         /// <summary>
-        /// gets an item from the cache using the DnsResponse to find the item
+        /// Gets an item from the cache using the DnsResponse to find the item
         /// </summary>
-        /// <param name="dq">DnsQuestion instance used to build the key to find the item in the cache</param>
-        /// <returns>DnsResponse instance that was found in the cache; if not found, null is returned</returns>
-        public DnsResponse Get(DnsQuestion dq)
+        /// <param name="question">DnsQuestion instance used to build the key to find the item in the cache</param>
+        /// <returns>DnsResponse instance that was found in the cache; if not found, <c>null</c> is returned</returns>
+        public DnsResponse Get(DnsQuestion question)
         {
-            return base.Get(BuildKey(dq));
+            if (question == null)
+            {
+                throw new ArgumentNullException("question");
+            }
+            return base.Get(BuildKey(question));
         }
 
         /// <summary>
-        /// removes an item from the cache
+        /// Removes an item from the cache
         /// </summary>
-        /// <param name="drq">DnsRequest used to build the key for the corresponding item</param>
-        public void Remove(DnsRequest drq)
+        /// <param name="request">DnsRequest used to build the key for the corresponding item</param>
+        public void Remove(DnsRequest request)
         {
-            Remove(drq.Question);
+            if (request == null)
+            {
+                throw new ArgumentNullException("request");
+            }
+            Remove(request.Question);
         }
 
         /// <summary>
-        /// removes an item from the cache
+        /// Removes an item from the cache
         /// </summary>
-        /// <param name="drs">DnsResponse used to build the key for the corresponding item</param>
-        public void Remove(DnsResponse drs)
+        /// <param name="response">DnsResponse used to build the key for the corresponding item</param>
+        public void Remove(DnsResponse response)
         {
-            Remove(drs.Question);
+            if (response == null)
+            {
+                throw new ArgumentNullException("response");
+            }
+            Remove(response.Question);
         }
 
         /// <summary>
-        /// removes an item from the cache
+        /// Removes an item from the cache
         /// </summary>
-        /// <param name="drq">DnsQuestion used to build the key for the corresponding item</param>
-        public void Remove(DnsQuestion drq)
+        /// <param name="question">DnsQuestion used to build the key for the corresponding item</param>
+        public void Remove(DnsQuestion question)
         {
-            base.Remove(BuildKey(drq));
+            if (question == null)
+            {
+                throw new ArgumentNullException("question");
+            }
+            base.Remove(BuildKey(question));
         }
-
     }
 }

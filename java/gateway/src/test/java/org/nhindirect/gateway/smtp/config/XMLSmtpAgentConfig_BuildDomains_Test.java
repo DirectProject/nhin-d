@@ -1,20 +1,33 @@
 package org.nhindirect.gateway.smtp.config;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import junit.framework.TestCase;
+
+import org.apache.commons.fileupload.util.Streams;
 import org.nhindirect.gateway.smtp.DomainPostmaster;
 import org.nhindirect.gateway.smtp.SmtpAgent;
 import org.nhindirect.gateway.smtp.SmtpAgentError;
 import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.SmtpAgentSettings;
-import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
+import org.nhindirect.gateway.testutils.TestUtils;
+import org.nhindirect.stagent.module.TrustAnchorModule;
+import org.nhindirect.stagent.trust.provider.UniformTrustAnchorResolverProvider;
+import org.w3c.dom.Element;
 
 import com.google.inject.Injector;
-
-import junit.framework.TestCase;
 
 public class XMLSmtpAgentConfig_BuildDomains_Test extends TestCase
 {
@@ -23,7 +36,7 @@ public class XMLSmtpAgentConfig_BuildDomains_Test extends TestCase
 		@Override
 		protected void performInner() throws Exception 
 		{
-			SmtpAgentConfig config = new XMLSmtpAgentConfig(TestUtils.getTestConfigFile(getConfigFileName()), null);
+			SmtpAgentConfig config = createSmtpAgentConfig();
 			Injector injector = config.getAgentInjector();
 			SmtpAgent agent = injector.getInstance(SmtpAgent.class);
 			doAssertions(agent);
@@ -31,6 +44,33 @@ public class XMLSmtpAgentConfig_BuildDomains_Test extends TestCase
 	
 		protected void doAssertions(SmtpAgent agent) throws Exception
 		{
+		}
+		
+		protected SmtpAgentConfig createSmtpAgentConfig() {
+		    SmtpAgentConfig config = new XMLSmtpAgentConfig(TestUtils.getTestConfigFile(getConfigFileName()), null){
+                @Override
+                protected void buildTrustAnchorResolver(Element anchorStoreNode, Map<String, Collection<String>> incomingAnchorHolder,
+                       Map<String, Collection<String>> outgoingAnchorHolder) {
+                    try {
+                        this.certAnchorModule = TrustAnchorModule.create(new UniformTrustAnchorResolverProvider(createX509Certificates()));
+                    } 
+                    catch (UnsupportedEncodingException e) {}
+                    catch (CertificateException e) {}
+                    catch (IOException e) {}
+               }
+		    };
+		    return config;
+		}
+		
+		protected Collection<X509Certificate> createX509Certificates() throws CertificateException, IOException{
+		    InputStream certificate = this.getClass().getResourceAsStream( "/x509Certificate.txt" );
+		    Collection<X509Certificate> certs = new ArrayList<X509Certificate>();
+		    CertificateFactory cf = CertificateFactory.getInstance("X.509");
+		    String certificateString = Streams.asString(certificate).replaceAll("\r", "");		    
+		    InputStream is = new ByteArrayInputStream(certificateString.getBytes("ASCII"));
+            X509Certificate cert = (X509Certificate) cf.generateCertificate(is);            
+            certs.add(cert);
+		    return certs;
 		}
 		
 		protected abstract String getConfigFileName();
