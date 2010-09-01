@@ -39,9 +39,9 @@ namespace NHINDirect.SmtpAgent
 
         internal Domain[] GetDomains(string[] domainNames)
         {
-            Debug.Assert(m_settings.HasDomainManager);
+            Debug.Assert(m_settings.HasDomainManagerService);
 
-            using(DomainManagerClient client = m_settings.DomainManager.CreateDomainManagerClient())
+            using(DomainManagerClient client = m_settings.DomainManagerService.CreateDomainManagerClient())
             {
                 return client.GetDomains(domainNames, EntityStatus.Enabled);
             }

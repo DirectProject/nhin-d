@@ -219,6 +219,11 @@ namespace NHINDirect.Cryptography
             return entity.HasHeader(ContentTransferEncodingHeader, TransferEncodingBase64);
         }
 
+        /// <summary>
+        /// Transforms the <paramref name="algorithm"/> to a string suitable for the <c>micalg</c> parameter value
+        /// </summary>
+        /// <param name="algorithm">The digest algorithm to transform</param>
+        /// <returns>A string suitable for the value of the <c>micalg</c> parameter</returns>
         public static string AsString(DigestAlgorithm algorithm)
         {
             switch (algorithm)

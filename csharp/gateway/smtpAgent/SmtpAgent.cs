@@ -159,12 +159,13 @@ namespace NHINDirect.SmtpAgent
             this.LogStatus("CreateAgent_Begin");
             
             m_agent = m_settings.CreateAgent();            
+
             this.LogStatus("CreateAgent_End");            
         }
         
         void InitDomainsFromConfigService()
         {
-            if (!m_settings.HasDomainManager)
+            if (!m_settings.HasDomainManagerService)
             {
                 this.LogStatus("Domains not loaded from config service");
                 return;
@@ -194,12 +195,8 @@ namespace NHINDirect.SmtpAgent
         
         void InitPostmasters()
         {
-            this.LogStatus("InitPostmasters_Begin");
-
             m_postmasters = new DomainPostmasters();
             m_postmasters.Init(m_settings.Domains, m_settings.Postmasters);
-
-            this.LogStatus("InitPostmasters_End");
         }
 
         void InitPostmastersFromConfigService(Domain[] domains)
@@ -456,10 +453,11 @@ namespace NHINDirect.SmtpAgent
 
         bool PostProcessOutgoing(ISmtpMessage message, MessageEnvelope envelope)
         {
-            this.CopyMessage(message, m_settings.Outgoing);
-
             this.RelayInternal(message, envelope);
-
+            if (envelope.HasRecipients)
+            {            
+                this.CopyMessage(message, m_settings.Outgoing);
+            }
             return m_settings.Outgoing.EnableRelay;
         }
 
