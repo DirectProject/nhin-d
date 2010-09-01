@@ -22,7 +22,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DocumentationFile>..\bin\Release\nhinCommon.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,7 +33,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DocumentationFile>..\bin\Release\nhinCommon.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
@@ -83,7 +85,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Mail\Notifications\Disposition.cs" />
     <Compile Include="Mail\Notifications\Extensions.cs" />
-    <Compile Include="Mail\Notifications\MailAgent.cs" />
+    <Compile Include="Mail\Notifications\MdnGateway.cs" />
     <Compile Include="Mail\Notifications\Notification.cs" />
     <Compile Include="Mail\MailParser.cs" />
     <Compile Include="Mail\Extensions.cs" />
