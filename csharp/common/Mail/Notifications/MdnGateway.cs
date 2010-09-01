@@ -22,29 +22,67 @@ using NHINDirect.Mail;
 
 namespace NHINDirect.Mail.Notifications
 {
-    public class MailAgent
+    /// <summary>
+    /// Represents an MDN Gateway as specified by RFC 3798
+    /// </summary>
+    /// <remarks>
+    /// From RFC 3798, 3.2.2, The MDN-Gateway field
+    /// mdn-gateway-field = "MDN-Gateway" ":" mta-name-type ";" mta-name
+    /// ...
+    /// For gateways into Internet Mail, the MTA-name-type will normally be
+    /// "smtp", and the mta-name will be the Internet domain name of the
+    /// gateway.
+    /// </remarks>
+    public class MdnGateway
     {
-        public MailAgent(string name, string type)
+        public const string DefaultGatewayType = "smtp";
+
+        /// <summary>
+        /// Initializes an instance with the specified <paramref name="domain"/> and the
+        /// default type of "smtp"
+        /// </summary>
+        /// <param name="domain">The domain name of this MDN Gateway</param>
+        public MdnGateway(string domain)
+            : this(domain, DefaultGatewayType)
         {
-            this.Name = name;
+        }
+
+        /// <summary>
+        /// Initializes an instance with the specified domain and type
+        /// </summary>
+        /// <param name="domain">The domain name of this MDN Gateway</param>
+        /// <param name="type">The gateway type</param>
+        public MdnGateway(string domain, string type)
+        {
+            this.Domain = domain;
             this.Type = type;
         }
 
+        /// <summary>
+        /// Gets the gateway type
+        /// </summary>
         public string Type
         {
             get;
             private set;
         }
 
-        public string Name
+        /// <summary>
+        /// Gets the gateway domain
+        /// </summary>
+        public string Domain
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Returns a string representation following the conventions for RFC 3798
+        /// </summary>
+        /// <returns>A string representation of this gateway</returns>
         public override string ToString()
         {
-            return string.Format("{0};{1}", this.Type, this.Name);
+            return string.Format("{0};{1}", this.Type, this.Domain);
         }
     }
 }
