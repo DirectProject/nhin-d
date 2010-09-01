@@ -252,12 +252,11 @@ namespace NHINDirect.Mail.Notifications
             return entity.HasMediaType(MDNStandard.MediaType.DispositionNotification);
         }
         
-        /// <summary>
+        public static string ToString(TriggerType mode)
         /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="mode"/>
         /// </summary>
         /// <param name="mode">The mode to translate</param>
         /// <returns>A string representation suitable for inclusion in the action mode section of the <c>Disposition</c> header value</returns>
-        public static string AsString(TriggerType mode)
         {
             switch(mode)
             {
@@ -272,12 +271,11 @@ namespace NHINDirect.Mail.Notifications
             }
         }
 
-        /// <summary>
+        public static string ToString(SendType mode)
         /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="mode"/>
         /// </summary>
         /// <param name="mode">The mode to translate</param>
         /// <returns>A string representation suitable for inclusion in the sending mode section of the <c>Disposition</c> header value</returns>
-        public static string AsString(SendType mode)
         {
             switch(mode)
             {
@@ -292,12 +290,11 @@ namespace NHINDirect.Mail.Notifications
             }
         }
 
-        /// <summary>
+        public static string ToString(NotificationType type)
         /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="type"/>
         /// </summary>
         /// <param name="mode">The type to translate</param>
         /// <returns>A string representation suitable for inclusion in the disposition type section of the <c>Disposition</c> header value</returns>
-        public static string AsString(NotificationType type)
         {
             switch (type)
             {

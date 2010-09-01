@@ -61,7 +61,7 @@ namespace NHINDirect.Mime
         /// <returns>The string representation of the encoding compatable with the <c>Content-Transfer-Encoding</c> header</returns>
         public static string AsString(this TransferEncoding encoding)
 		{
-		    return MimeStandard.AsString(encoding);
+		    return MimeStandard.ToString(encoding);
 		}
     }
 }

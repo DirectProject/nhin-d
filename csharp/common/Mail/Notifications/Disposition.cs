@@ -93,14 +93,14 @@ namespace NHINDirect.Mail.Notifications
             //
             // Disposition Mode
             //
-            notification.Append(MDNStandard.AsString(this.TriggerType));
+            notification.Append(this.TriggerType.AsString());
             notification.Append('/');
-            notification.Append(MDNStandard.AsString(this.SendType));
+            notification.Append(this.SendType.AsString());
             notification.Append(';');
             //
             // Disposition Type & Modifier
             //
-            notification.Append(MDNStandard.AsString(this.Notification));
+            notification.Append(this.Notification.AsString());
             if (this.IsError)
             {
                 notification.Append('/');
