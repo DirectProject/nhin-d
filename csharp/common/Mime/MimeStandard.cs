@@ -212,6 +212,11 @@ namespace NHINDirect.Mime
             return (x.IndexOf(y, Comparison) >= 0);
         }
 
+        /// <summary>
+        /// Returns a  string representation of <paramref name="encoding"/> compatable with the <c>micalg</c> parameter
+        /// </summary>
+        /// <param name="encoding">The <see cref="TransferEncoding"/> to stringify.</param>
+        /// <returns>The string representation of the encoding compatable with the <c>Content-Transfer-Encoding</c> header</returns>
         public static string ToString(TransferEncoding encoding)
         {
             switch (encoding)

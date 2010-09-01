@@ -71,16 +71,13 @@ namespace NHINDirect.SmtpAgent
             {
                 notification.Explanation = m_settings.Text;
             }
-            if (m_settings.HasAgentName)
-            {
-                notification.Gateway = new MailAgent(m_settings.AgentName, "smtp");
-            }
             
             NotificationMessage notificationMessage = NotificationMessage.CreateNotificationFor(envelope.Message, notification);
             foreach (NHINDAddress sender in envelope.DomainRecipients)
             {
                 notificationMessage.FromValue = sender.ToString();
                 notificationMessage.IDValue = Guid.NewGuid().ToString("D");
+                notification.Gateway = new MdnGateway(sender.Host); 
                 yield return notificationMessage;
             }
         }

@@ -130,7 +130,7 @@ namespace AgentTests
     
     public class TestCertFind
     {
-        X509Certificate2Collection m_privateCerts;
+        X509Certificate2Collection m_certs;
         
         static TestCertFind()
         {
@@ -139,7 +139,7 @@ namespace AgentTests
         
         public TestCertFind()
         {
-            m_privateCerts = this.GetPrivateCerts();
+            m_certs = this.GetCerts();
         }
         
         public static IEnumerable<object[]> MixedNames
@@ -168,7 +168,7 @@ namespace AgentTests
         [PropertyData("MixedNames")]                
         public void TestFindMixed(string name, bool shouldMatch)
         {
-            bool found = (m_privateCerts.Find(x => x.MatchEmailNameOrName(name)) != null);
+            bool found = (m_certs.Find(x => x.MatchEmailNameOrName(name)) != null);
             Assert.True(found == shouldMatch);               
         }
 
@@ -176,13 +176,13 @@ namespace AgentTests
         [PropertyData("Names")]
         public void TestFindNames(string name, bool shouldMatch)
         {
-            bool found = (m_privateCerts.FindByName(name) != null);
+            bool found = (m_certs.FindByName(name) != null);
             Assert.True(found == shouldMatch);
         }
 
-        X509Certificate2Collection GetPrivateCerts()
+        X509Certificate2Collection GetCerts()
         {
-            using (SystemX509Store store = SystemX509Store.OpenPrivate())
+            using (SystemX509Store store = SystemX509Store.OpenExternal())
             {
                 return store.GetAllCertificates();
             }
