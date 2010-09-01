@@ -28,6 +28,9 @@ using NHINDirect.Config.Client.CertificateService;
 
 namespace NHINDirect.Config.Command
 {
+    /// <summary>
+    /// Commands to manage Anchors
+    /// </summary>
     public class AnchorCommands
     {
         AnchorStoreClient m_client;

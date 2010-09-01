@@ -29,6 +29,9 @@ using NHINDirect.Config.Client.CertificateService;
 
 namespace NHINDirect.Config.Command
 {
+    /// <summary>
+    /// Commands to manage certificates
+    /// </summary>
     public class CertificateCommands
     {
         CertificateStoreClient m_client;
