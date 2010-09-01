@@ -40,18 +40,21 @@ namespace NHINDirect.Config.Command
             string nhindCertsPath = MakeCertificatesPath(basePath, "nhind");
 
             SystemX509Store store;
+            Console.WriteLine("Installing Private Certs");
             using (store = SystemX509Store.OpenPrivateEdit())
             {
                 InstallCerts(store, LoadCerts(redmondCertsPath, "Private"));
                 InstallCerts(store, LoadCerts(nhindCertsPath, "Private"));
             }
 
+            Console.WriteLine("Installing Public Certs");
             using (store = SystemX509Store.OpenExternalEdit())
             {
                 InstallCerts(store, LoadCerts(redmondCertsPath, "Public"));
                 InstallCerts(store, LoadCerts(nhindCertsPath, "Public"));
             }
 
+            Console.WriteLine("Installing Anchors Certs");
             using (store = SystemX509Store.OpenAnchorEdit())
             {
                 InstallCerts(store, LoadCerts(redmondCertsPath, "IncomingAnchors"));
@@ -83,11 +86,11 @@ namespace NHINDirect.Config.Command
                 switch (ext.ToLower())
                 {
                     default:
-                        certStore.ImportKeyFile(file, X509KeyStorageFlags.DefaultKeySet);
+                        certStore.ImportKeyFile(file, X509KeyStorageFlags.MachineKeySet);
                         break;
 
                     case ".pfx":
-                        certStore.ImportKeyFile(file, "passw0rd!", X509KeyStorageFlags.DefaultKeySet);
+                        certStore.ImportKeyFile(file, "passw0rd!", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
                         break;
                 }
             }
@@ -101,6 +104,7 @@ namespace NHINDirect.Config.Command
             {
                 if (!store.Contains(cert))
                 {
+                    Console.WriteLine("Installing {0} HasPrivateKey={1}", cert.ExtractEmailNameOrName(), cert.HasPrivateKey);
                     store.Add(cert);
                 }
             }
