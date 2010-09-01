@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{27B9597C-906C-4BED-BD4B-0734BF022D23}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -55,9 +55,6 @@
   <ItemGroup>
     <Compile Include="BasicResolverTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="commandLine.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dns\dnsResolver.csproj">
