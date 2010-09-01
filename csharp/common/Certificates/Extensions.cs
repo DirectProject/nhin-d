@@ -182,8 +182,7 @@ namespace NHINDirect.Certificates
                 throw new ArgumentException();
             }
             
-            string distinguishedName = "CN=" + name;
-            return certs.Find(x => x.Subject.Contains(distinguishedName, StringComparison.OrdinalIgnoreCase));
+            return certs.Find(x => x.MatchName(name));
         }
 
         public static X509Certificate2 FindByThumbprint(this X509Certificate2Collection certs, string thumbprint)
@@ -237,26 +236,6 @@ namespace NHINDirect.Certificates
         // X509Certificate Extensions
         //
         //---------------------------------------
-        public static X509Certificate2 LoadCert(string subjectName, StoreLocation location)
-        {
-            X509Store store = OpenStoreRead(location);
-            try
-            {
-                X509Certificate2Collection certs = store.Certificates;
-                return certs.FindByName(subjectName);
-            }
-            finally
-            {
-                if (store != null)
-                {
-                    store.Close();
-                }
-            }
-        }
-
-        const string SubjectNamePrefix = "CN=";
-        const string EmailNamePrefix = "E=";
-        
         public static bool MatchName(this X509Certificate2 cert, string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -264,8 +243,12 @@ namespace NHINDirect.Certificates
                 throw new ArgumentException();
             }
 
-            string distinguishedName = SubjectNamePrefix + name;
-            return cert.Subject.Contains(distinguishedName, StringComparison.OrdinalIgnoreCase);
+            string distinguishedName = cert.GetNameInfo(X509NameType.SimpleName, false);
+            if (string.IsNullOrEmpty(distinguishedName))
+            {
+                return false;
+            }
+            return string.Equals(distinguishedName, name, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool MatchEmailName(this X509Certificate2 cert, string name)
@@ -274,32 +257,18 @@ namespace NHINDirect.Certificates
             {
                 throw new ArgumentException();
             }
-
-            string distinguishedName = EmailNamePrefix + name;
-            return cert.Subject.Contains(distinguishedName, StringComparison.OrdinalIgnoreCase);
+            
+            string distinguishedName = cert.GetNameInfo(X509NameType.EmailName, false);
+            if (string.IsNullOrEmpty(distinguishedName))
+            {
+                return false;
+            }
+            return string.Equals(distinguishedName, name, StringComparison.OrdinalIgnoreCase);
         }
         
         public static bool MatchEmailNameOrName(this X509Certificate2 cert, string name)
         {
             return (cert.MatchEmailName(name) || cert.MatchName(name));
-        }
-        
-        public static string ExtractName(this X509Certificate2 cert)
-        {
-            string[] parts = cert.Subject.Split(',');
-            if (parts != null)
-            {
-                for (int i = 0; i < parts.Length; ++i)
-                {
-                    int index = parts[i].IndexOf(SubjectNamePrefix);
-                    if (index >= 0)
-                    {
-                        return parts[i].Substring(index + SubjectNamePrefix.Length).Trim();
-                    }                               
-                }
-            }
-                        
-            return null;
         }
 
         public static bool NameContains(this X509Certificate2 cert, string name)
@@ -309,7 +278,7 @@ namespace NHINDirect.Certificates
                 throw new ArgumentException();
             }
 
-            string distinguishedName = cert.ExtractName();
+            string distinguishedName = cert.GetNameInfo(X509NameType.SimpleName, false);
             if (string.IsNullOrEmpty(distinguishedName))
             {
                 return false;
@@ -320,26 +289,13 @@ namespace NHINDirect.Certificates
         
         public static string ExtractEmailNameOrName(this X509Certificate2 cert)
         {
-            string[] parts = cert.Subject.Split(',');
-            if (parts != null)
+            string name = cert.GetNameInfo(X509NameType.EmailName, false);
+            if (string.IsNullOrEmpty(name))
             {
-                for (int i = 0; i < parts.Length; ++i)
-                {
-                    string prefix = EmailNamePrefix;
-                    int index = parts[i].IndexOf(prefix);
-                    if (index < 0)
-                    {
-                        prefix = SubjectNamePrefix;
-                        index = parts[i].IndexOf(prefix);
-                    }
-                    if (index >= 0)
-                    {
-                        return parts[i].Substring(index + prefix.Length).Trim();
-                    }
-                }
+                name = cert.GetNameInfo(X509NameType.SimpleName, false);
             }
-
-            return null;
+            
+            return name;
         }
         
         public static bool HasValidDateRange(this X509Certificate2 cert)

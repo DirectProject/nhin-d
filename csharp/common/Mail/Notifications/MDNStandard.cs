@@ -124,7 +124,7 @@ namespace NHINDirect.Mail.Notifications
             return entity.HasMediaType(MDNStandard.MediaType.DispositionNotification);
         }
         
-        public static string AsString(TriggerType mode)
+        public static string ToString(TriggerType mode)
         {
             switch(mode)
             {
@@ -139,7 +139,7 @@ namespace NHINDirect.Mail.Notifications
             }
         }
         
-        public static string AsString(SendType mode)
+        public static string ToString(SendType mode)
         {
             switch(mode)
             {
@@ -154,7 +154,7 @@ namespace NHINDirect.Mail.Notifications
             }
         }
 
-        public static string AsString(NotificationType type)
+        public static string ToString(NotificationType type)
         {
             switch (type)
             {

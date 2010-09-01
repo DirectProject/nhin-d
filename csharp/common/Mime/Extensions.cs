@@ -38,7 +38,7 @@ namespace NHINDirect.Mime
 
 		public static string AsString(this TransferEncoding encoding)
 		{
-		    return MimeStandard.AsString(encoding);
+		    return MimeStandard.ToString(encoding);
 		}
     }
 }

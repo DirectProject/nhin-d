@@ -106,7 +106,7 @@ namespace NHINDirect.Mime
             return (x.IndexOf(y, Comparison) >= 0);
         }
 
-        public static string AsString(TransferEncoding encoding)
+        public static string ToString(TransferEncoding encoding)
         {
             switch (encoding)
             {

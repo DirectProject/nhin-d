@@ -116,7 +116,7 @@ namespace NHINDirect.Cryptography
         
         public static string AsString(this DigestAlgorithm algorithm)
         {
-            return SMIMEStandard.AsString(algorithm);
+            return SMIMEStandard.ToString(algorithm);
         }
         
         public static AlgorithmIdentifier AsAlgorithmIdentifier(this EncryptionAlgorithm algorithm)

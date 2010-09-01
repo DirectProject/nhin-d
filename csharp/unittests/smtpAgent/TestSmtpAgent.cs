@@ -18,10 +18,13 @@ namespace SmtpAgentTests
     {
         SmtpAgent m_agent;
         
+        static TestSmtpAgent()
+        {
+            AgentTests.AgentTester.EnsureStandardMachineStores();        
+        }
+        
         public TestSmtpAgent()
         {
-            AgentTests.AgentTester.EnsureStandardMachineStores();
-
             //m_agent = new SmtpAgent(SmtpAgentSettings.LoadSettings(MakeFilePath("SmtpAgentTestFiles\\TestSmtpAgentConfigService.xml")));
             //m_agent = new SmtpAgent(SmtpAgentSettings.LoadSettings(MakeFilePath("SmtpAgentTestFiles\\TestSmtpAgentConfigServiceProd.xml")));
             m_agent = new SmtpAgent(SmtpAgentSettings.LoadSettings(MakeFilePath("SmtpAgentTestFiles\\TestSmtpAgentConfig.xml")));

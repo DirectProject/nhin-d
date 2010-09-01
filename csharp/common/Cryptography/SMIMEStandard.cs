@@ -219,7 +219,7 @@ namespace NHINDirect.Cryptography
             return entity.HasHeader(ContentTransferEncodingHeader, TransferEncodingBase64);
         }
 
-        public static string AsString(DigestAlgorithm algorithm)
+        public static string ToString(DigestAlgorithm algorithm)
         {
             switch (algorithm)
             {

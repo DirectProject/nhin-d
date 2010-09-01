@@ -36,5 +36,20 @@ namespace NHINDirect.Mail.Notifications
         {
             message.Headers.SetValue(MDNStandard.Headers.DispositionNotificationTo, message.FromValue);
         }
+        
+        public static string AsString(this MDNStandard.TriggerType type)
+        {
+            return MDNStandard.ToString(type);
+        }
+
+        public static string AsString(this MDNStandard.SendType type)
+        {
+            return MDNStandard.ToString(type);
+        }
+        
+        public static string AsString(this MDNStandard.NotificationType type)
+        {
+            return MDNStandard.ToString(type);
+        }
     }
 }
