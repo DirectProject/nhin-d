@@ -99,7 +99,7 @@ namespace NHINDirect.Tests.Mail
         {
             Notification notification = new Notification(MDNStandard.NotificationType.Processed);
             notification.OriginalMessageID = "Message In a Bottle";
-            notification.Gateway = new MailAgent("le gateway", "smtp");
+            notification.Gateway = new MdnGateway("gateway.example.com", "smtp");
             notification.Error = ErrorMessage;
             notification.Explanation = NotificationExplanation;
             
