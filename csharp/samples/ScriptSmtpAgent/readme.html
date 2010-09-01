@@ -1,0 +1,58 @@
+<html>
+<body>
+<h1>SMTP Agent</h1>
+
+<h2>Deployment</h2>
+
+<h3>Registering SMTP Event Handlers</h3>
+You register event sinks using the <b>smptreg.vbs</b> script. 
+<h4>(Win2K8) Verify Registry Permissions</h4>
+Smptreg.vbs needs access to the following registry key:
+<br />
+<b>HKEY_CLASSES_ROOT\CLSID\{CD000005-8B95-11D1-82DB-00C04FB1625D}</b>
+<p/>
+On Windows 2008 the Trusted Installer owns the registry key and disallows all other access. 
+
+For smptreg.vbs to work correctly, you should <i>transfer ownership</i> of the registry key to <b>Administrators</b>.
+<ul>
+<li>Launch RegEdit</li>
+<li>Locate registry key</li>
+<li>Right click on the key, select <b>Permissions</b></li>
+<li>Click Advanced</li>
+<li>Select the <b>Owner</b> Tab</li>
+<li>Give ownership to Administrators</li>
+</ul>
+<h2>Copying Bits to your Bin</h2>
+<ul>
+<li>Assemblies:
+<ul>
+<li>nhinAgent.dll</li>
+<li>nhinCommon.dll</li>
+<li>scriptSmptAgent.dll</li>
+</ul>
+</li>
+<li>Scripts:
+<ul>
+<li>nhinHandler.vbs</li>
+<li>scriptreg.vbs</li>
+<li>regasm.bat</li>
+<li>registerNHIN.bat</li>
+</ul>
+</li>
+<li>Config: 
+<ul>
+<li>Copy <i>AgentConfig.xml</i></li>
+<li>Customize AgentConfig.xml</li>
+</ul>
+</li>
+</ul>
+<h3>Registration</h3>
+Run <b>registerNHIN.bat</b>
+<h2>Customization</h2>
+You must customize <b>nhinHandler.vbs</b> to:
+<ul>
+<li>Point at your various folders: mail roots and Log files</li>
+<li>Config Files</li>
+</ul>
+
+</html>
