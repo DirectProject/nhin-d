@@ -53,7 +53,6 @@ namespace NHINDirect.Mime
             return MimeStandard.Equals(paramValue, value);
         }
 
-        //TODO: ToString??
         /// <summary>
         /// Returns a  string representation of <paramref name="encoding"/> compatable with the <c>micalg</c> parameter
         /// </summary>

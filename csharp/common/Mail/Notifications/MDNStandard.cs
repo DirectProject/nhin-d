@@ -251,12 +251,12 @@ namespace NHINDirect.Mail.Notifications
 
             return entity.HasMediaType(MDNStandard.MediaType.DispositionNotification);
         }
-        
-        public static string ToString(TriggerType mode)
+
         /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="mode"/>
         /// </summary>
         /// <param name="mode">The mode to translate</param>
         /// <returns>A string representation suitable for inclusion in the action mode section of the <c>Disposition</c> header value</returns>
+        public static string ToString(TriggerType mode)
         {
             switch(mode)
             {

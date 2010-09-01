@@ -57,22 +57,6 @@ namespace NHINDirect.SmtpAgent
                 return (!string.IsNullOrEmpty(this.Text));
             }
         }
-
-        [XmlElement]
-        public string AgentName
-        {
-            get;
-            set;
-        }
-        
-        [XmlIgnore]
-        public bool HasAgentName
-        {
-            get
-            {
-                return (!string.IsNullOrEmpty(this.AgentName));
-            }
-        }
         
         public void Validate()
         {
