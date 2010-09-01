@@ -62,7 +62,7 @@ public class PrivkeyAttributeTypeProducer extends AbstractBootstrapProducer
         attributeType = newAttributeType( "1.2.840.113549.1.12", registries );
         attributeType.setDescription( "User Private Key Store" );
         attributeType.setCanUserModify( ! false );
-        attributeType.setSingleValue( true );
+        attributeType.setSingleValue( false );
         attributeType.setCollective( false );
         attributeType.setObsolete( false );
         attributeType.setLength( 32 );
