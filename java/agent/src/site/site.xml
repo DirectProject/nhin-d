@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
+    <bannerLeft>
+        <name>NHIN Direct Gateway</name>
+        <src>images/logo.png</src>
+        <href>http://nhindirect.org/</href>
+    </bannerLeft>  
+    <version position="left" />
+    <publishDate position="right" format="E M-dd-yyyy HH:mm" />   
     <body>
         <menu name="Documents">
             <item name="Release Notes" href="releaseNotes.html" />
@@ -10,4 +17,9 @@
         </menu>
         ${reports}
     </body>
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-classic-skin</artifactId>
+        <version>1.0</version>
+    </skin>       
 </project>
