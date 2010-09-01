@@ -173,7 +173,6 @@ namespace NHINDirect.Mail
             return ParseAddressCollection<T, TCollection>(header.Value, constructor);
         }
 
-        //TODO: null check the suppplied collection and raise ArgumentError.
         /// <summary>
         /// Parses a header and adds to the supplied <paramref name="collection"/> address entries of type <typeparamref name="T"/> that
         /// are subtypes of <see cref="MailAddress"/> and are constructed from mail address
@@ -194,6 +193,11 @@ namespace NHINDirect.Mail
             if (header == null)
             {
                 return;
+            }
+
+            if (collection == null)
+            {
+                throw new ArgumentNullException();
             }
             
             ParseAddressCollection<T, TCollection>(collection, header.Value, constructor);
@@ -233,7 +237,6 @@ namespace NHINDirect.Mail
             return collection;
         }
 
-        //TODO: null check the suppplied collection and raise ArgumentError.
         /// <summary>
         /// Parses a header and adds to the supplied <paramref name="collection"/> address entries of type <typeparamref name="T"/> that
         /// are subtypes of <see cref="MailAddress"/> and are constructed from mail address
@@ -254,6 +257,11 @@ namespace NHINDirect.Mail
             if (string.IsNullOrEmpty(headerValue))
             {
                 return;
+            }
+
+            if (collection == null)
+            {
+                throw new ArgumentNullException();
             }
 
             foreach (StringSegment part in MimeSerializer.Default.SplitHeader(headerValue, MailStandard.MailAddressSeparator))
