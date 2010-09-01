@@ -22,9 +22,12 @@ using System.Reflection;
 namespace NHINDirect.Tools.Command
 {
     /// <summary>
-    /// Useful extensions for making simple & useful command line apps. 
-    /// No major complex learning curve. 
-    /// Goal: keep it REALLY simple.
+    /// Useful extensions that help with making simple & useful command line Console apps. 
+    /// Provide simple extensions on arrays of strings (arguments)
+    /// No major complex learning curve. Goal: keep it REALLY simple.
+    /// 
+    /// One set of methods operate directly on argument arrays.
+    /// Another translates the array into a NameArguments object
     /// </summary>
     public static class CommandExtensions
     {
@@ -105,9 +108,9 @@ namespace NHINDirect.Tools.Command
         static char[] Quotes = new char[] { '"' };
         
         /// <summary>
-        /// Split the string like the command line shell does...
+        /// Parse the string as though it was a command line, handling quoted arguments correctly.
         /// </summary>
-        public static IEnumerable<string> SplitLikeCommandLine(this string input)
+        public static IEnumerable<string> ParseAsCommandLine(this string input)
         {
             if (string.IsNullOrEmpty(input))
             {
@@ -149,30 +152,19 @@ namespace NHINDirect.Tools.Command
             }
         }
 
-        static int SkipOver(this string source, int startAt, char[] chars)
-        {
-            for (int i = startAt; i < source.Length; ++i)
-            {
-                if (!chars.Contains(source[i]))
-                {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        static int SkipTo(this string source, int startAt, char[] chars)
-        {
-            return source.IndexOfAny(chars, startAt);
-        }
-        
+        /// <summary>
+        /// Turn the given array of args into a dictionary of named arguments using the following rules
+        ///  Any text prefixed with '-' is treated as a command with an associated value. The next string is the command's value
+        ///  Any strings that are not part of a name,value pair are treated as names with no value. 
+        /// </summary>
+        /// <param name="rawArgs">arguments</param>
+        /// <returns>A set of named arguments</returns>
         public static NamedArguments NamedArguments(this string[] rawArgs)
         {
             return new NamedArguments(rawArgs);
         }
-        
-        public static IEnumerable<KeyValuePair<string, string>> ParseNamedArguments(this string[] rawArgs)
+
+        internal static IEnumerable<KeyValuePair<string, string>> ParseNamedArguments(this string[] rawArgs)
         {
             Stack<string> names = new Stack<string>();
             string name;
@@ -210,5 +202,23 @@ namespace NHINDirect.Tools.Command
                 yield return new KeyValuePair<string, string>(names.Pop(), string.Empty);
             }
         }        
+
+        static int SkipOver(this string source, int startAt, char[] chars)
+        {
+            for (int i = startAt; i < source.Length; ++i)
+            {
+                if (!chars.Contains(source[i]))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        static int SkipTo(this string source, int startAt, char[] chars)
+        {
+            return source.IndexOfAny(chars, startAt);
+        }
     }
 }

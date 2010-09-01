@@ -41,6 +41,7 @@ namespace NHINDirect.Config.Command
             m_commands.Register(new AddressCommands());
             m_commands.Register(new CertificateCommands());
             m_commands.Register(new AnchorCommands());
+            m_commands.Register(new TestCommands());
         }
                 
         internal void Run(string[] args)

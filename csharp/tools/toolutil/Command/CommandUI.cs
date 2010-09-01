@@ -20,8 +20,15 @@ using System.Text;
 
 namespace NHINDirect.Tools.Command
 {
+    /// <summary>
+    /// Common things most Console apps do on the command line
+    /// </summary>
     public static class CommandUI
     {
+        /// <summary>
+        /// Print a prompt sign, then get line
+        /// </summary>
+        /// <returns></returns>
         public static string GetInput()
         {
             Console.Write('>');

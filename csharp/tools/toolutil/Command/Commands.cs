@@ -22,15 +22,17 @@ using System.Reflection;
 namespace NHINDirect.Tools.Command
 {
     /// <summary>
-    /// For the EASY implementation of command line apps. Can't always do Powershell.
+    /// For the EASY implementation of command line apps. Can't always do Powershell, or may not want to.
     /// 
-    /// 1. Create a class
-    /// 2. Create some command handler methods. Prefix the name of your method with Command_.  E.g. Command_PrintCurrentDate
-    ///     The methods should have the signature Action<string[]>
-    /// 3. Optionally, create a method to provide usage information for your comamnds. E.g. Usage_PrintCurrentDate
-    ///     Usage methods have the signature Action
-    /// 4. You can create multiple classes with commands. 
-    /// 5. In Main, create a new instance of the Commands.
+    /// 1. Create a class. This class will handle commands.
+    /// 2. Create a handler method for each of your commands. 
+    ///   - Prefix the method with Command_.  E.g. Command_PrintCurrentDate
+    ///   - The handler MUST have the signature Action<string[]>
+    /// 3. Optionally, create a method to provide usage information for your command. 
+    ///    - Prefix the method with Usage_. E.g. Usage_PrintCurrentDate
+    ///    - Usage methods have the signature Action()
+    /// 4. You can create multiple classes, each with multiple commands. 
+    /// 5. In the Main method for your class, create a new instance of the Commands object (see below).
     /// 6. Register each of your classes with the Commands object   
     /// 
     /// Several extension methods are supplied (CommandExtensions.cs) to make parsing of arguments Easy. 
@@ -152,7 +154,7 @@ namespace NHINDirect.Tools.Command
                     continue;
                 }
 
-                string[] args = input.SplitLikeCommandLine().ToArray();
+                string[] args = input.ParseAsCommandLine().ToArray();
                 if(!args.IsNullOrEmpty())
                 {
                     this.Run(args);

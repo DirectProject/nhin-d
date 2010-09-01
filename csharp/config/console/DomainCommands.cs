@@ -26,6 +26,9 @@ using NHINDirect.Config.Client.DomainManager;
 
 namespace NHINDirect.Config.Command
 {
+    /// <summary>
+    /// Commands to manage domains
+    /// </summary>
     public class DomainCommands
     {
         const int DefaultChunkSize = 25;

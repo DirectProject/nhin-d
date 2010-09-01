@@ -20,10 +20,22 @@ using System.Text;
 
 namespace NHINDirect.Tools.Command
 {
+    /// <summary>
+    /// Command definition
+    /// </summary>
     internal class CommandDef
     {
+        /// <summary>
+        /// The name of this commaind
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Takes the command's action
+        /// </summary>
         public Action<string[]> Eval { get; set; }
+        /// <summary>
+        /// Prints the command's usage
+        /// </summary>
         public Action Usage { get; set; }
 
         internal bool HasUsage
@@ -33,11 +45,7 @@ namespace NHINDirect.Tools.Command
                 return (Usage != null);
             }
         }
-
-        internal void Invoke()
-        {
-        }
-        
+                
         internal void ShowUsage()
         {
             CommandUI.PrintUpperCase(this.Name);
