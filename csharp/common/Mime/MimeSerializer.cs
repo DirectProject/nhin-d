@@ -20,10 +20,19 @@ using System.IO;
 
 namespace NHINDirect.Mime
 {    
+    /// <summary>
+    /// Implements serialization/deserialization for MIME and RFC 5322 entities
+    /// </summary>
     public abstract class MimeSerializer
     {
+        /// <summary>
+        /// The default serializer.
+        /// </summary>
         public static MimeSerializer s_default = new DefaultSerializer();
 
+        /// <summary>
+        /// Gets and sets the default serializer to use.
+        /// </summary>
     	public static MimeSerializer Default
         {
             get
@@ -40,7 +49,12 @@ namespace NHINDirect.Mime
                 System.Threading.Interlocked.Exchange(ref s_default, value);
             }
         }
-                
+        
+        /// <summary>
+        /// Serializes an entity as an RFC 5322 or MIME document to a named file.
+        /// </summary>
+        /// <param name="entity">The entity to serialize</param>
+        /// <param name="filePath">The file to which to write the new message document</param>
         public virtual void Serialize(MimeEntity entity, string filePath)
         {
             using(Stream stream = File.OpenWrite(filePath))
@@ -49,6 +63,11 @@ namespace NHINDirect.Mime
             }
         }
 
+        /// <summary>
+        /// Serializes an entity as an RFC 5322 or MIME document to a stream
+        /// </summary>
+        /// <param name="entity">The entity to serialize</param>
+        /// <param name="stream">The stream to which to write the new message document</param>
         public virtual void Serialize(MimeEntity entity, Stream stream)
         {
             using (StreamWriter writer = new StreamWriter(stream, Encoding.ASCII))
@@ -56,13 +75,23 @@ namespace NHINDirect.Mime
                 Serialize(entity, writer);
             }
         }
-        
+
+        /// <summary>
+        /// Serializes an entity as an RFC 5322 or MIME document and returns it as a <see cref="string"/>
+        /// </summary>
+        /// <param name="entity">The entity to serialize</param>
+        /// <returns>A string RFC 5322 or MIME representation of the entity </returns>
         public virtual string Serialize(MimeEntity entity)
         {
             byte[] asciiBytes = SerializeToBytes(entity);
             return Encoding.ASCII.GetString(asciiBytes);
         }
 
+        /// <summary>
+        /// Serializes an entity as an RFC 5322 or MIME document and returns it as a byte array/>
+        /// </summary>
+        /// <param name="entity">The entity to serialize</param>
+        /// <returns>A string RFC 5322 or MIME representation of the entity </returns>
         public virtual byte[] SerializeToBytes(MimeEntity entity)
         {
             using (MemoryStream stream = new MemoryStream())
@@ -72,15 +101,43 @@ namespace NHINDirect.Mime
             }
         }
 
+
+        /// <summary>
+        /// Serializes an entity as an RFC 5322 or MIME document to a <see cref="TextWriter"/>
+        /// </summary>
+        /// <param name="entity">The entity to serialize</param>
+        /// <param name="writer">The writer to which to write the new message document</param>
         public abstract void Serialize(MimeEntity entity, TextWriter writer);
+
+        /// <summary>
+        /// Serializes an enumeration of entities as MIME multipart body to a <see cref="TextWriter"/>
+        /// </summary>
+        /// <remarks>Only the body is written; to be a valid MIME entity, appropriate headers must be written as well</remarks>
+        /// <param name="entities">The entities to serialize</param>
+        /// <param name="boundary">The mutipart boundary</param>
+        /// <param name="writer">The writer to which to write the new message document</param>
         public abstract void Serialize(IEnumerable<MimeEntity> entities, string boundary, TextWriter writer);
 
+        /// <summary>
+        /// Serializes an enumeration of entities as MIME multipart body and returns it as a <see cref="string"/>
+        /// </summary>
+        /// <remarks>Only the body is written; to be a valid MIME entity, appropriate headers must be written as well</remarks>
+        /// <param name="entities">The entities to serialize</param>
+        /// <param name="boundary">The mutipart boundary</param>
+        /// <returns>A <see cref="string"/> representation of the multipart body</returns>
         public virtual string Serialize(IEnumerable<MimeEntity> entities, string boundary)
         {
             byte[] asciiBytes = SerializeToBytes(entities, boundary);
             return Encoding.ASCII.GetString(asciiBytes);
         }
 
+        /// <summary>
+        /// Serializes an enumeration of entities as MIME multipart body to a <see cref="Stream"/>
+        /// </summary>
+        /// <remarks>Only the body is written; to be a valid MIME entity, appropriate headers must be written as well</remarks>
+        /// <param name="entities">The entities to serialize</param>
+        /// <param name="boundary">The mutipart boundary</param>
+        /// <param name="stream">The stream to which to write the new message document</param>
         public virtual void Serialize(IEnumerable<MimeEntity> entities, string boundary, Stream stream)
         {
             using (StreamWriter writer = new StreamWriter(stream, Encoding.ASCII))
@@ -89,6 +146,13 @@ namespace NHINDirect.Mime
             }
         }
 
+        /// <summary>
+        /// Serializes an enumeration of entities as MIME multipart body to a <see cref="byte"/> array
+        /// </summary>
+        /// <remarks>Only the body is written; to be a valid MIME entity, appropriate headers must be written as well</remarks>
+        /// <param name="entities">The entities to serialize</param>
+        /// <param name="boundary">The mutipart boundary</param>
+        /// <param name="byte[]">The array to which to write the new message document</param>
         public virtual byte[] SerializeToBytes(IEnumerable<MimeEntity> entities, string boundary)
         {
             using (MemoryStream stream = new MemoryStream())
@@ -98,6 +162,12 @@ namespace NHINDirect.Mime
             }
         }
 
+        /// <summary>
+        /// Deserializes and parses RFC 5322 or MIME text from <paramref name="stream"/>
+        /// </summary>
+        /// <typeparam name="T">The entity type to which to deserialize.</typeparam>
+        /// <param name="stream">The <see cref="Stream"/> providing the source data</param>
+        /// <returns>The deserialized and parsed entity</returns>
         public virtual T Deserialize<T>(Stream stream)
             where T : MimeEntity, new()
         {
@@ -111,7 +181,13 @@ namespace NHINDirect.Mime
                 return Deserialize<T>(reader);
             }
         }
-        
+
+        /// <summary>
+        /// Deserializes and parses RFC 5322 or MIME text from <paramref name="reader"/>
+        /// </summary>
+        /// <typeparam name="T">The entity type to which to deserialize.</typeparam>
+        /// <param name="stream">The <see cref="TextReader"/> providing the source data</param>
+        /// <returns>The deserialized and parsed entity</returns>
         public virtual T Deserialize<T>(TextReader reader)
             where T : MimeEntity, new()
         {
@@ -123,6 +199,12 @@ namespace NHINDirect.Mime
             return Deserialize<T>(reader.ReadToEnd());
         }
 
+        /// <summary>
+        /// Deserializes and parses <paramref name="messageText"/>
+        /// </summary>
+        /// <typeparam name="T">The entity type to which to deserialize.</typeparam>
+        /// <param name="messageText">The <see cref="string"/> representing the source text</param>
+        /// <returns>The deserialized and parsed entity</returns>
         public virtual T Deserialize<T>(string messageText)
             where T : MimeEntity, new()
         {
@@ -133,7 +215,13 @@ namespace NHINDirect.Mime
             
             return Deserialize<T>(new StringSegment(messageText));
         }
-        
+
+        /// <summary>
+        /// Deserializes and parses <paramref name="messageBytes"/>
+        /// </summary>
+        /// <typeparam name="T">The entity type to which to deserialize.</typeparam>
+        /// <param name="messageText">The <see cref="byte"/> array providing the source data</param>
+        /// <returns>The deserialized and parsed entity</returns>
         public virtual T Deserialize<T>(byte[] messageBytes)
             where T : MimeEntity, new()
         {
@@ -152,24 +240,65 @@ namespace NHINDirect.Mime
             }            
         }
 
+        /// <summary>
+        /// Deserializes and parses <paramref name="messageText"/>
+        /// </summary>
+        /// <typeparam name="T">The entity type to which to deserialize.</typeparam>
+        /// <param name="messageText">The <see cref="StringSegment"/> representing the source text</param>
+        /// <returns>The deserialized and parsed entity</returns>
         public abstract T Deserialize<T>(StringSegment messageText)
                     where T : MimeEntity, new();
 
+
+        /// <summary>
+        /// Deserializes and parses a header block supplied as <paramref name="messageText"/>.
+        /// </summary>
+        /// <param name="messageText">The header block.</param>
+        /// <returns>The deserialized and parsed <see cref="Header"/> enumeration</returns>
         public virtual IEnumerable<Header> DeserializeHeaders(string messageText)
         {
             return DeserializeHeaders(new StringSegment(messageText));
         }
-                
+
+
+        /// <summary>
+        /// Deserializes and parses a header block supplied as <paramref name="messageText"/>.
+        /// </summary>
+        /// <param name="messageText">The header block.</param>
+        /// <returns>The deserialized and parsed <see cref="Header"/> enumeration</returns>
         public abstract IEnumerable<Header> DeserializeHeaders(StringSegment messageText);
-                
+
+        /// <summary>
+        /// Splits a value by the supplied <paramref name="separator"/> <see cref="char"/>.
+        /// </summary>
+        /// <param name="headerText">The string to split.</param>
+        /// <param name="separator">The <see cref="char"/> to split by.</param>
+        /// <returns>The split <see cref="StringSegment"/> instances</returns>
         public abstract IEnumerable<StringSegment> SplitHeader(string headerText, char separator);
+
+        /// <summary>
+        /// Splits a header string <paramref name="headerText"/> into header name and value.
+        /// </summary>
+        /// <param name="headerText">The header line</param>
+        /// <returns>A pair where the key is the header name, and the value the header value.</returns>
         public abstract KeyValuePair<string, string> SplitHeader(string headerText);
-        
+
+        /// <summary>
+        /// Joins a header name and value as a header
+        /// </summary>
+        /// <param name="name">The header name</param>
+        /// <param name="value">The header value</param>
+        /// <returns>A <see cref="string"/> representation of the header</returns>
         public virtual string JoinHeader(string name, string value)
         {
             return JoinHeader(new KeyValuePair<string,string>(name, value));
-        }        
-        
+        }
+
+        /// <summary>
+        /// Joins a pair as a header
+        /// </summary>
+        /// <param name="headerText">The pair where the key is the header name and the value is the header value</param>
+        /// <returns>A <see cref="string"/> representation of the header</returns>
         public abstract string JoinHeader(KeyValuePair<string, string> headerText);
 
     }
