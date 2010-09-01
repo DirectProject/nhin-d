@@ -54,7 +54,7 @@ call regsvr32 /s smtpEventHandler.dll
 if %ERRORLEVEL% NEQ 0 goto :EOF
 
 call :PrintBold Ensuring Machine Stores
-cscript /nologo agentsetup.vbs
+cscript /nologo agentsetup.vbs %configFilePath%
 if %ERRORLEVEL% NEQ 0 goto :EOF
 
 call :PrintBold Installing Event Handler

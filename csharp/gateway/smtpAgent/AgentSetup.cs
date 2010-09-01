@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Runtime.InteropServices;
 using NHINDirect.Certificates;
 
@@ -37,6 +38,17 @@ namespace NHINDirect.SmtpAgent
         public void EnsureStandardMachineStores()
         {
             SystemX509Store.CreateAll();
+        }
+        
+        public void ValidateConfig(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException();
+            }
+            
+            SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(filePath);
+            settings.Validate();
         }
     }
 }
