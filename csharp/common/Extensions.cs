@@ -49,11 +49,12 @@ namespace NHINDirect
             return (array == null || array.Length == 0);
         }
 
-        public static bool IsNullOrEmpty(this System.Collections.ICollection collection)
+        /// <summary>
         /// Tests if this collection is <c>null</c> or has 0 entries.
         /// </summary>
         /// <param name="chainElements">The collection to test.</param>
         /// <returns><c>true</c> if the collection is <c>null</c> or has 0 entries</returns>
+        public static bool IsNullOrEmpty(this System.Collections.ICollection collection)
         {
             return (collection == null || collection.Count == 0);
         }
