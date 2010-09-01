@@ -27,7 +27,7 @@ namespace DnsResolver
         int m_index;
         StringBuilder m_stringBuilder;
 
-        internal DnsBufferReader(byte[] buffer, int startAt, int count)
+        public DnsBufferReader(byte[] buffer, int startAt, int count)
         {
             m_buffer = buffer;
             m_count = count;
@@ -35,7 +35,7 @@ namespace DnsResolver
             m_stringBuilder = null;
         }
 
-        internal DnsBufferReader(byte[] buffer, int startAt, int count, StringBuilder sb)
+        public DnsBufferReader(byte[] buffer, int startAt, int count, StringBuilder sb)
         {
             m_buffer = buffer;
             m_count = count;

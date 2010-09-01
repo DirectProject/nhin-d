@@ -28,8 +28,8 @@ namespace DnsResolver
         DnsResourceRecordCollection m_answerRecords;
         DnsResourceRecordCollection m_nameServerRecords;
         DnsResourceRecordCollection m_additionalRecords;
-        
-        internal DnsResponse(ref DnsBufferReader reader)
+
+        public DnsResponse(ref DnsBufferReader reader)
         {
             this.Parse(ref reader);
         }

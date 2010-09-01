@@ -17,7 +17,7 @@ import org.nhindirect.stagent.parser.EntitySerializer;
 
 import junit.framework.TestCase;
 
-public class NHINDSecurityAndTrustMailet_functionalTests extends TestCase 
+public class NHINDSecurityAndTrustMailet_functionalTest extends TestCase 
 {
 	abstract class TestPlan extends BaseTestPlan 
 	{		
