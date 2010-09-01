@@ -116,37 +116,74 @@ namespace NHINDirect.Cryptography
         //
         // ContentType
         //
-        //---------------------------------------        
+        //---------------------------------------      
+  
+        /// <summary>
+        /// Tests if the content type indicates enveloped (encrypted or enveloped signed) data.
+        /// </summary>
+        /// <param name="contentType">The content type to test</param>
+        /// <returns><c>true</c> if this is enveloped content, <c>false</c> if not</returns>
         public static bool IsCms(this ContentType contentType)
         {
             return SMIMEStandard.IsContentCms(contentType);
         }
-        
+
+        /// <summary>
+        /// Tests content type to determine if it indicates encrypted data
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is encrypted content, <c>false</c> if not</returns>
         public static bool IsEncrypted(this ContentType contentType)
         {
             return SMIMEStandard.IsContentEncrypted(contentType);
         }
-        
+
+
+        /// <summary>
+        /// Tests content type to determine if it indicates enveloped (non-detached) signature data
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is eveloped signature content, <c>false</c> if not</returns>
         public static bool IsEnvelopedSignature(this ContentType contentType)
         {
             return SMIMEStandard.IsContentEnvelopedSignature(contentType);
         }
-        
+
+        /// <summary>
+        /// Tests content type to determine if it indicates a multipart message with detached signature
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is multipart signature content, <c>false</c> if not</returns>
         public static bool IsMultipartSignature(this ContentType contentType)
         {
             return SMIMEStandard.IsContentMultipartSignature(contentType);
         }
-        
+
+        /// <summary>
+        /// Tests content type to determine if it indicates a detached signature
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is a detached signature, <c>false</c> if not</returns>
         public static bool IsDetachedSignature(this ContentType contentType)
         {
             return SMIMEStandard.IsContentDetachedSignature(contentType);
         }
-        
+
+        /// <summary>
+        /// Transforms the <paramref name="algorithm"/> to a string suitable for the <c>micalg</c> parameter value
+        /// </summary>
+        /// <param name="algorithm">The digest algorithm to transform</param>
+        /// <returns>A string suitable for the value of the <c>micalg</c> parameter</returns>
         public static string AsString(this DigestAlgorithm algorithm)
         {
             return SMIMEStandard.AsString(algorithm);
         }
-        
+
+        /// <summary>
+        /// Maps the supplied <paramref name="type"/> to an instance of <see cref="AlgorithmIdentifier"/>
+        /// </summary>
+        /// <param name="algorithm">The encryption algorithm to map</param>
+        /// <returns>The corresponding <see cref="AlgorithmIdentifier"/></returns>
         public static AlgorithmIdentifier AsAlgorithmIdentifier(this EncryptionAlgorithm algorithm)
         {
             return SMIMECryptographer.ToAlgorithmID(algorithm);
