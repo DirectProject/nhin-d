@@ -55,12 +55,7 @@ namespace NHINDirect.Mime
 
         //TODO: ToString??
         /// <summary>
-        /// Returns a  string representation of <paramref name="algorithm"/> compatable with the <c>micalg</c> parameter
-        /// </summary>
-        /// <param name="algorithm">The <see cref="DigestAlgorithm"/> to stringify.</param>
-        /// <returns>The string representation of the algorithm compatable with the <c>micalg</c> parameter</returns>
-        /// <summary>
-        /// Returns a  string representation of <paramref name="encoding"/> compatable with the <c>Content-Transfer-Encoding</c> header
+        /// Returns a  string representation of <paramref name="encoding"/> compatable with the <c>micalg</c> parameter
         /// </summary>
         /// <param name="encoding">The <see cref="TransferEncoding"/> to stringify.</param>
         /// <returns>The string representation of the encoding compatable with the <c>Content-Transfer-Encoding</c> header</returns>

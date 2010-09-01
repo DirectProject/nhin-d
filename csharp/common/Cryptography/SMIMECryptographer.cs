@@ -760,6 +760,11 @@ namespace NHINDirect.Cryptography
             }
         }
 
+        /// <summary>
+        /// Maps the supplied <paramref name="type"/> to an instance of <see cref="AlgorithmIdentifier"/>
+        /// </summary>
+        /// <param name="type">The encryption algorithm to map</param>
+        /// <returns>The corresponding <see cref="AlgorithmIdentifier"/></returns>
     	public static AlgorithmIdentifier ToAlgorithmID(EncryptionAlgorithm type)
         {
             switch (type)

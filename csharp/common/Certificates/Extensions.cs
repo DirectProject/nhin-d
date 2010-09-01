@@ -111,7 +111,12 @@ namespace NHINDirect.Certificates
         //
         // X509Certificate2Collection Extensions
         //
-        //---------------------------------------        
+        //---------------------------------------       
+        /// <summary>
+        /// Tests if the collection is <c>null</c> or has 0 entries.
+        /// </summary>
+        /// <param name="certs">The collection to test.</param>
+        /// <returns><c>true</c> if the collection is null or has 0 entries, <c>false</c> if the collection has 1 or more entries</returns>
         public static bool IsNullOrEmpty(this X509Certificate2Collection certs)
         {
             return (certs == null || certs.Count == 0);
@@ -662,6 +667,12 @@ namespace NHINDirect.Certificates
         // X509ChainElementCollection
         //
         //---------------------------------------
+
+        /// <summary>
+        /// Tests if the collection is null or contains 0 elements.
+        /// </summary>
+        /// <param name="chainElements">The collection to test</param>
+        /// <returns><c>true</c> if the collection is null or has 0 elements, <c>false</c> otherwise.</returns>
         public static bool IsNullOrEmpty(this X509ChainElementCollection chainElements)
         {
             return (chainElements == null || chainElements.Count == 0);
