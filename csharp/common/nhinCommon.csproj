@@ -45,9 +45,12 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\CachingBase.cs" />
+    <Compile Include="Caching\DnsResponseCache.cs" />
     <Compile Include="Certificates\CertificateIndex.cs" />
     <Compile Include="Certificates\CertificateResolver.cs" />
     <Compile Include="Certificates\CertificateStore.cs" />
@@ -76,6 +79,7 @@
     <Compile Include="Diagnostics\LogFileSettings.cs" />
     <Compile Include="Diagnostics\LogListener.cs" />
     <Compile Include="Diagnostics\LogWriter.cs" />
+    <Compile Include="Dns\DnsClientWithCache.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Mail\Notifications\Disposition.cs" />
     <Compile Include="Mail\Notifications\Extensions.cs" />
