@@ -1,33 +1,16 @@
-@rem SAMPLE SCRIPT
-@rem This installs gateways on an internal Microsoft Test machine
-@rem 
+@rem This installs gateways on developer machines
 @echo off
 setlocal
 
+if "%1%" == "nocopy" (
+set srcbin=
+set destbin=%~dp0
+) else (
 set srcbin=..\..\bin\debug
 set destbin=C:\inetpub\nhinGateway
+)
 
-@rem -----------------
-call :PrintHeading "Copying Standard Gateway Bins"
-pushd ..\install
-call copybins.bat script %srcbin% %destbin% N
-if %ERRORLEVEL% NEQ 0 goto :Done
-Echo Succeeded
-popd
-
-
-@rem Copy Domain Config files
-for %%i in (DevAgentConfig.xml) do xcopy /y /q /d %%i %destbin%
-
-@rem --------------------------------
-call :PrintHeading "Copying Certificates"
-pushd %srcbin% 
-if not exist %destbin%\Certificates md %destbin%\Certificates
-xcopy /s /q /y /d Certificates\* %destbin%\Certificates
-if %ERRORLEVEL% NEQ 0 goto :Done
-Echo Succeeded
-popd
-
+if NOT "%srcbin%" == "" call copybins.bat %destbin%
 
 @rem --------------------------------
 pushd %destbin%
@@ -53,6 +36,11 @@ echo.
 echo %*
 echo.
 echo ==============================
+goto :EOF
+
+@rem -------------------------------
+echo install [nocopy]
+echo     nocopy: do not copy bits. Just install from local directory
 goto :EOF
 
 :Done
