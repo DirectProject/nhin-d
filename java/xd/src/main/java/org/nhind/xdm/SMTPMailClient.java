@@ -36,10 +36,13 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import javax.activation.DataHandler;
 
+import javax.activation.DataHandler;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -51,6 +54,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  * This class handles the packaging and sending of XDM data over SMTP.
@@ -68,6 +74,11 @@ public class SMTPMailClient {
     private static final String SMTP_AUTH_USER = "lewistower1@gmail.com";
     private static final String SMTP_AUTH_PWD = "hadron106";
  
+    /**
+     * Class logger.
+     */
+    private static final Logger LOGGER = Logger.getLogger(SMTPMailClient.class.getPackage().getName());
+    
     /**
      * Create and send a message over SMTP.
      * 
@@ -131,7 +142,7 @@ public class SMTPMailClient {
         mimeAttach = new MimeBodyPart();
 
         try {
-            File zipout = getZip(message, suffix, meta);
+            File zipout = getZip(message, suffix, meta, messageId);
             mimeAttach.attachFile(zipout);
 
         } catch (Exception x) {
@@ -153,14 +164,25 @@ public class SMTPMailClient {
      *            The suffix for the attachment data.
      * @param meta
      *            The metadata to be included in the .zip file.
+     * @param messageId
+     *            Unique string representing the message ID, used as part of the
+     *            zip filename for thread safety.
      * @return a reference to the created .zip file.
      */
-    private File getZip(byte[] attachment, String suffix, byte[] meta) {
+    private File getZip(byte[] attachment, String suffix, byte[] meta, String messageId) {
         File temp = null;
+        
+        if (StringUtils.isBlank(messageId)) {
+            messageId = UUID.randomUUID().toString();
+
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.info("Message ID not provided, using random ID (" + messageId + ")");
+            }
+        }
         
         try {
             BufferedInputStream origin = null;
-            temp = new File("xdm.zip");
+            temp = new File(messageId + "-xdm.zip");
             FileOutputStream dest = new FileOutputStream(temp);
 
             ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));

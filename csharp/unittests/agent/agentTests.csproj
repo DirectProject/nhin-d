@@ -59,6 +59,7 @@
     <Compile Include="AddressTest.cs" />
     <Compile Include="DnsResolverTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestCerts.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Certificates\nhind\IncomingAnchors\cernerCA.cer">

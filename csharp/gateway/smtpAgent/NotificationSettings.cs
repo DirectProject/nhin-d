@@ -48,7 +48,7 @@ namespace NHINDirect.SmtpAgent
             get;
             set;
         }
-        
+                
         [XmlIgnore]
         public bool HasText
         {
