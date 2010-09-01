@@ -20,6 +20,9 @@ using System.Text;
 
 namespace NHINDirect.Tools.Command
 {
+    /// <summary>
+    /// A Dictionary of name value pairs, where value is optional 
+    /// </summary>
     public class NamedArguments
     {
         string[] m_rawArgs;
@@ -41,7 +44,7 @@ namespace NHINDirect.Tools.Command
         }
 
         public NamedArguments(string parameters)
-            : this(parameters.SplitLikeCommandLine().ToArray())
+            : this(parameters.ParseAsCommandLine().ToArray())
         {
         }
 

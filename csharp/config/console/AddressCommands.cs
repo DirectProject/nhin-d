@@ -24,6 +24,9 @@ using NHINDirect.Config.Client.DomainManager;
 
 namespace NHINDirect.Config.Command
 {
+    /// <summary>
+    /// Commands to manage Addresses
+    /// </summary>
     public class AddressCommands
     {
         const int DefaultChunkSize = 25;
