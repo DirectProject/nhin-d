@@ -23,42 +23,41 @@ namespace NHINDirect.Caching
 {
 
     /// <summary>
-    /// delegate used for simple event signature
+    /// Delegate used for simple event signature
     /// </summary>
-    /// <param name="sender">object that fired the event</param>
-    /// <param name="key">string value intended to denote the key of the item</param>
+    /// <param name="sender">Object that fired the event</param>
+    /// <param name="key">String value intended to denote the key of the item</param>
     public delegate void SimplestringEventDel(Object sender, string key);
 
-
     /// <summary>
-    /// provides abstract, base implementation for typed cache class
+    /// Provides abstract, base implementation for typed cache class
     /// </summary>
-    /// <typeparam name="T">type of Class which will be stored in the cache</typeparam>
+    /// <typeparam name="T">Type of Class which will be stored in the cache</typeparam>
     public abstract class CachingBase <T> where T : class
     {
         /// <summary>
-        /// dictionary used for local resolution of keys as opposed to having to hit 
+        /// Dictionary used for local resolution of keys as opposed to having to hit 
         /// the cache for related counts, contains etc
         /// </summary>
         protected Dictionary<string, string> m_keys;
 
         /// <summary>
-        /// locking mechanism used to enforce thread saftey
+        /// Locking mechanism used to enforce thread saftey
         /// </summary>
         protected ReaderWriterLockSlim m_lock;
 
         /// <summary>
-        /// event for notification of an item's expiration from the cache
+        /// Event for notification of an item's expiration from the cache
         /// </summary>
         public event SimplestringEventDel CacheItemExpired;
 
         /// <summary>
-        /// flag for indicating whether or not to ignore expiration during cleansing of cache
+        /// Flag for indicating whether or not to ignore expiration during cleansing of cache
         /// </summary>
         protected bool m_ignoreExpiration = false;
         
         /// <summary>
-        /// implementation for this property should be provided by the extending class to set the class-level 
+        /// Implementation for this property should be provided by the extending class to set the class-level 
         /// TTL timepsane for items stored in the cache
         /// </summary>
         protected abstract TimeSpan TimeToLive { get; }
@@ -91,6 +90,11 @@ namespace NHINDirect.Caching
         /// <returns>Instance of type <typeparamref name="T"/> if found in cache; otherwise <c>null</c></returns>
         protected virtual T Get(string key)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException("key");
+            }
+
             key = CanonicalKey(key);
 
             // attempt to return the value from the cache;
@@ -98,26 +102,21 @@ namespace NHINDirect.Caching
         }
 
         /// <summary>
-        /// puts an item into the cache using the key and value supplied in parameters
+        /// Puts an item into the cache using the key and value supplied in parameters
         /// </summary>
         /// <remarks>
-        /// update will occurr on item if item is put into the cache that already exists under the same key
+        /// Update will occurr on item if item is put into the cache that already exists under the same key
         /// </remarks>
         /// <param name="key">string containing the unqiue key of the item</param>
         /// <param name="value">value to be stored in the cache</param>
         protected virtual void Put(string key
             , T value)
         {
-            key = CanonicalKey(key);
-            Put(key
-                , value
-                , TimeToLive)
-                ;
+            Put(key, value, TimeToLive);
         }
 
         /// <summary>
         /// Adds an items to the cache using the specified key and ttl
-        /// Remarks:
         /// </summary>
         /// <remarks>
         /// Going to assume that a put with an existing key will not throw an exception but should rather
@@ -130,6 +129,15 @@ namespace NHINDirect.Caching
             , T value
             , TimeSpan ttl)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException("key");
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+
             key = CanonicalKey(key);
             m_lock.EnterUpgradeableReadLock();
 
@@ -173,13 +181,18 @@ namespace NHINDirect.Caching
         /// <remarks>
         /// Only when an item has expired in the cache should it be removed from the cache keys list
         /// </remarks>
-        /// <param name="key">string containing the key of the item that was removed</param>
-        /// <param name="value">object that was removed from the cache</param>
-        /// <param name="reason">readson as to why object was invalidated in the cache</param>
+        /// <param name="key">String containing the key of the item that was removed</param>
+        /// <param name="value">Object that was removed from the cache</param>
+        /// <param name="reason">Reason as to why object was invalidated in the cache</param>
         protected void CachedItemRemovedCallBack(string key
             , object value
             , CacheItemRemovedReason reason)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException("key");
+            }
+
             // if remove all has been called ignore expiration
             if (m_ignoreExpiration || reason != CacheItemRemovedReason.Expired) { return; }
 
@@ -198,11 +211,16 @@ namespace NHINDirect.Caching
         }
 
         /// <summary>
-        /// removes an item from the cache denoted by the key suffix
+        /// Removes an item from the cache denoted by the key suffix
         /// </summary>
-        /// <param name="key">string containing the suffis of the key for the item to be removed</param>
+        /// <param name="key">String containing the suffis of the key for the item to be removed</param>
         protected virtual void Remove(string key)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException("key");
+            }
+
             key = CanonicalKey(key);
 
             m_lock.EnterWriteLock();
@@ -219,7 +237,7 @@ namespace NHINDirect.Caching
         }
 
         /// <summary>
-        /// removes all items from the cache
+        /// Removes all items from the cache
         /// </summary>
         /// <remarks>
         /// If the cache is being cleaned out, it should be safe to assume that a lock is not needed
@@ -255,11 +273,16 @@ namespace NHINDirect.Caching
         }
 
         /// <summary>
-        /// method to raise event if event is subscribed to
+        /// Method to raise event if event is subscribed to
         /// </summary>
-        /// <param name="key">string containing the key of the item in the cache that expired</param>
+        /// <param name="key">String containing the key of the item in the cache that expired</param>
         protected void OnCacheItemExpired(string key)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException("key");
+            }
+
             SimplestringEventDel cacheItemExpired = CacheItemExpired;
             if (cacheItemExpired != null)
             {
