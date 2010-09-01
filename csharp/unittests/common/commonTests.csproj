@@ -53,6 +53,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\DnsClientWithCacheFacts.cs" />
+    <Compile Include="Caching\DnsResponseCacheFacts.cs" />
     <Compile Include="Diagnostics\TestHourly.cs" />
     <Compile Include="Diagnostics\Test24.cs" />
     <Compile Include="Mail\TestMDN.cs" />
@@ -66,12 +68,40 @@
     <Compile Include="Mime\MimeWriterFacts.cs" />
     <Compile Include="Mime\StringSegmentFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestingBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\nhinCommon.csproj">
       <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
       <Name>nhinCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dns\dnsResolver.csproj">
+      <Project>{AE250214-0E85-4C28-90C9-A006440BCE97}</Project>
+      <Name>dnsResolver</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="metadata\dns responses\dns.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="metadata\dns responses\hvnhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="metadata\dns responses\nhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="metadata\dns responses\www.apple.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="metadata\dns responses\www.google.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="metadata\dns responses\www.microsoft.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="metadata\dns responses\www.yahoo.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
