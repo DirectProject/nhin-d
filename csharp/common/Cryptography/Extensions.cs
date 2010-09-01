@@ -176,7 +176,7 @@ namespace NHINDirect.Cryptography
         /// <returns>A string suitable for the value of the <c>micalg</c> parameter</returns>
         public static string AsString(this DigestAlgorithm algorithm)
         {
-            return SMIMEStandard.AsString(algorithm);
+            return SMIMEStandard.ToString(algorithm);
         }
 
         /// <summary>

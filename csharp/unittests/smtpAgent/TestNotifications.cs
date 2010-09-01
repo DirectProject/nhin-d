@@ -19,10 +19,13 @@ namespace SmtpAgentTests
         SmtpAgent m_agent;
         NotificationProducer m_producer;
 
-        public TestNotifications()
+        static TestNotifications()
         {
             AgentTests.AgentTester.EnsureStandardMachineStores();
-
+        }
+        
+        public TestNotifications()
+        {
             m_agent = new SmtpAgent(SmtpAgentSettings.LoadSettings(MakeFilePath("SmtpAgentTestFiles\\TestSmtpAgentConfig.xml")));
             m_producer = new NotificationProducer(m_agent.Settings.Notifications);
         }
