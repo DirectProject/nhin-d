@@ -43,6 +43,14 @@ namespace NHINDirect.SmtpAgent
         {
         }
         
+        //--------------------------------------------------------
+        //
+        // Log Settings
+        //
+        //--------------------------------------------------------
+        /// <summary>
+        /// REQUIRED: Log File Parameters
+        /// </summary>
         [XmlElement("Log")]
         public LogFileSettings LogSettings
         {
@@ -50,6 +58,9 @@ namespace NHINDirect.SmtpAgent
             set;
         }
         
+        /// <summary>
+        /// OPTIONAL: If true, log verbose information & error messages
+        /// </summary>
         [XmlElement]      
         public bool LogVerbose
         {
@@ -62,8 +73,13 @@ namespace NHINDirect.SmtpAgent
                 m_logVerbose = value;
             }
         }
-        
-        [XmlElement("Postmaster")]
+                
+        /// <summary>
+        /// A list of postmasters for the domain.
+        /// NOTE: This is now DEPRECATED
+        /// </summary>
+        //[XmlElement("Postmaster")]
+        [XmlIgnore]
         public string[] Postmasters
         {
             get
@@ -75,41 +91,36 @@ namespace NHINDirect.SmtpAgent
                 m_postmasters = value;
             }
         }
+
+        //--------------------------------------------------------
+        //
+        // Config for connnecting to any Config Web Services
+        // See interfaces in configService
+        //
+        //--------------------------------------------------------
         
-        [XmlElement("Notifications")]
-        public NotificationSettings Notifications
-        {
-            get
-            {
-                if (m_notificationSettings == null)
-                {
-                    m_notificationSettings = new NotificationSettings();
-                }
-                
-                return m_notificationSettings;
-            }
-            set
-            {
-                m_notificationSettings = value;
-            }
-        }
-        
+        /// <summary>
+        /// If this gateway is configured to interact with a DomainManager web Service. 
+        /// </summary>
         [XmlElement("DomainManager")]
-        public ClientSettings DomainManager
+        public ClientSettings DomainManagerService
         {
             get;
             set;
         }
 
         [XmlIgnore]
-        public bool HasDomainManager
+        public bool HasDomainManagerService
         {
             get
             {
-                return (this.DomainManager != null);
+                return (this.DomainManagerService != null);
             }
         }        
         
+        /// <summary>
+        /// If this gateway is configured to interact with an AddressManager web service
+        /// </summary>
         [XmlElement("AddressManager")]
         public ClientSettings AddressManager
         {
@@ -124,8 +135,107 @@ namespace NHINDirect.SmtpAgent
             {
                 return (this.AddressManager != null);
             }
-        }        
-                
+        }
+
+        //--------------------------------------------------------
+        //
+        // Message Processing
+        //
+        //--------------------------------------------------------
+        
+        /// <summary>
+        /// Configure if the Agent should automatically issue MDN messages in reponse
+        /// to MDN requests
+        /// </summary>
+        [XmlElement("Notifications")]
+        public NotificationSettings Notifications
+        {
+            get
+            {
+                if (m_notificationSettings == null)
+                {
+                    m_notificationSettings = new NotificationSettings();
+                }
+
+                return m_notificationSettings;
+            }
+            set
+            {
+                m_notificationSettings = value;
+            }
+        }
+        
+        /// <summary>
+        /// Does this server allow messaging WITHIN the domain?
+        /// If not, then all messages originating from within the domain are considered OUTGOING
+        /// </summary>
+        [XmlElement("InternalMessage")]
+        public InternalMessageSettings InternalMessage
+        {
+            get
+            {
+                if (m_internalMessageSettings == null)
+                {
+                    m_internalMessageSettings = new InternalMessageSettings();
+                }
+                return m_internalMessageSettings;
+            }
+            set
+            {
+                m_internalMessageSettings = value;
+            }
+        }
+        
+        /// <summary>
+        /// Message Routes: 
+        /// If working with an Address Service: an address can have an associated Type
+        /// You can set up routes for address types, where a route deposits a message in a specific folder
+        /// </summary>
+        [XmlArray("IncomingRoutes")]
+        [XmlArrayItem("Route")]
+        public MessageRoute[] IncomingRoutes
+        {
+            get
+            {
+                if (m_incomingRoutes == null)
+                {
+                    m_incomingRoutes = new MessageRoute[0];
+                }
+
+                return m_incomingRoutes;
+            }
+            set
+            {
+                m_incomingRoutes = value;
+            }
+        }
+
+        [XmlIgnore]
+        public bool HasRoutes
+        {
+            get
+            {
+                return (!m_incomingRoutes.IsNullOrEmpty());
+            }
+        }
+
+        [XmlIgnore]
+        internal bool AllowInternalRelay
+        {
+            get
+            {
+                return this.InternalMessage.EnableRelay;
+            }
+        }
+        
+        //--------------------------------------------------------
+        //
+        // Debugging
+        //
+        //--------------------------------------------------------
+        /// <summary>
+        /// (OPTIONAL) save a RAW copy of each message into a folder
+        /// </summary>                
         [XmlElement("RawMessage")]
         public RawMessageSettings RawMessage
         {
@@ -144,6 +254,9 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
+        /// <summary>
+        /// (OPTIONAL) Configure how incoming messages are processed
+        /// </summary>
         [XmlElement("ProcessIncoming")]
         public ProcessIncomingSettings Incoming
         {
@@ -161,7 +274,10 @@ namespace NHINDirect.SmtpAgent
                 m_incomingSettings = value;
             }
         }
-
+        
+        /// <summary>
+        /// OPTIONAL: Configure how outgoing messages are processed
+        /// </summary>
         [XmlElement("ProcessOutgoing")]
         public ProcessOutgoingSettings Outgoing
         {
@@ -180,6 +296,9 @@ namespace NHINDirect.SmtpAgent
             }
         }
 
+        /// <summary>
+        /// Optional: Configure how bad messages are processed
+        /// </summary>
         [XmlElement("BadMessage")]
         public ProcessBadMessageSettings BadMessage
         {
@@ -198,60 +317,6 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
-        [XmlElement("InternalMessage")]
-        public InternalMessageSettings InternalMessage
-        {
-            get
-            {
-                if (m_internalMessageSettings == null)
-                {
-                    m_internalMessageSettings = new InternalMessageSettings();
-                }
-                return m_internalMessageSettings;
-            }
-            set
-            {
-                m_internalMessageSettings = value;
-            }
-        }
-        
-        [XmlIgnore]
-        internal bool AllowInternalRelay
-        {
-            get
-            {
-                return this.InternalMessage.EnableRelay;
-            }
-        }
-                
-        [XmlArray("IncomingRoutes")]
-        [XmlArrayItem("Route")]
-        public MessageRoute[] IncomingRoutes
-        {
-            get
-            {
-                if (m_incomingRoutes == null)
-                {
-                    m_incomingRoutes = new MessageRoute[0];
-                }
-                
-                return m_incomingRoutes;
-            }
-            set
-            {
-                m_incomingRoutes = value;
-            }
-        }
-
-        [XmlIgnore]
-        public bool HasRoutes
-        {
-            get
-            {
-                return (!m_incomingRoutes.IsNullOrEmpty());
-            }
-        }
-                
         public override void Validate()
         {
             base.Validate();
@@ -268,7 +333,11 @@ namespace NHINDirect.SmtpAgent
             this.BadMessage.Validate();
             this.Incoming.Validate();
             this.Outgoing.Validate();
-                        
+            
+            if (this.HasDomainManagerService)
+            {
+                this.DomainManagerService.Validate();
+            }                        
             if (this.HasAddressManager)
             {
                 this.AddressManager.Validate();

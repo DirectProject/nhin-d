@@ -69,6 +69,9 @@ goto :EOF
 :EnsureDirs
 echo Ensuring Directories
 if not exist %dest% md %dest%
+pushd %dest%
+del /q *
+popd
 goto :EOF
 
 @rem -------------------------------
