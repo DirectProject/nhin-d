@@ -277,7 +277,6 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
         }.perform();
     }
 	
-	/*
 	public void testValidMultidomainLdapConfigurationForPKCS12() throws Exception 
 	    {
 	        new MultiDomainTestPlan() 
@@ -305,7 +304,7 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
 	            }
 	        }.perform();
 	    }
-	*/
+	
 	abstract class UniformTestPlan extends TestPlan {
 	    @Override
         protected void assertAnchors(CertificateResolver incomingAnchors) throws AddressException{
@@ -342,7 +341,7 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
         } 
     }   
 	
-	public void testValidUniformLdapConfigurationForPKCS12() throws Exception 
+	public void testValidUniformLdapConfigurationForX509Certificates() throws Exception 
     {
         new UniformTestPlan() 
         {
@@ -369,8 +368,7 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
         }.perform();
     }
     
-	/*
-    public void testValidUniformLdapConfigurationForX509Certificates() throws Exception 
+    public void testValidUniformLdapConfigurationForPKCS12() throws Exception 
     {
         new UniformTestPlan() 
         {            
@@ -397,7 +395,7 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
             }
         }.perform();
     }
-    */
+    
     protected void removeTestFiles(){
         removeFile("LDAPPrivateCertStore");
         removeFile("LDAPTrustAnchorStore");
