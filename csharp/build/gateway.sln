@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nhinToolLib", "..\tools\too
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configConsole", "..\config\console\configConsole.csproj", "{0211EBED-C527-42A9-B89B-E1D32A776837}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnsResolverTests", "..\unittests\dns\dnsResolverTests.csproj", "{27B9597C-906C-4BED-BD4B-0734BF022D23}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -283,6 +285,18 @@ Global
 		{0211EBED-C527-42A9-B89B-E1D32A776837}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{0211EBED-C527-42A9-B89B-E1D32A776837}.Release|Win32.ActiveCfg = Release|Any CPU
 		{0211EBED-C527-42A9-B89B-E1D32A776837}.Release|x64.ActiveCfg = Release|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Release|Win32.ActiveCfg = Release|Any CPU
+		{27B9597C-906C-4BED-BD4B-0734BF022D23}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
