@@ -122,10 +122,11 @@ namespace NHINDirect.Mime
             /// <summary>
             /// The prefix for <c>multipart</c> content.
             /// </summary>
+			public const string Multipart = "multipart";
+            /// <summary>
             /// The <c>multipart/mixed</c> media type.
             /// </summary>
-			public const string Multipart = "multipart";
-			public const string MultipartMixed = "multipart/mixed";
+            public const string MultipartMixed = "multipart/mixed";
 
 		}
         //
@@ -192,7 +193,7 @@ namespace NHINDirect.Mime
         /// Implements initial string comparison for MIME strings
         /// </summary>
         /// <param name="x">The string to test if it starts with <paramref name="y"/></param>
-        /// <param name="y">The string to test if it is an initial substring of <paramref name="x"/>
+        /// <param name="y">The string to test if it is an initial substring of <paramref name="x"/></param>
         /// <returns><c>true</c> if <paramref name="x"/> starts with <paramref name="y"/> under
         /// MIME comparison rules, <c>false</c> otherwise</returns>
         public static bool StartsWith(string x, string y)
@@ -204,7 +205,7 @@ namespace NHINDirect.Mime
         /// Implements string inclusion testing for MIME strings
         /// </summary>
         /// <param name="x">The string to test if it contains <paramref name="y"/></param>
-        /// <param name="y">The string to test if it is contained in <paramref name="x"/>
+        /// <param name="y">The string to test if it is contained in <paramref name="x"/></param>
         /// <returns><c>true</c> if <paramref name="x"/> contains <paramref name="y"/> under
         /// MIME comparison rules, <c>false</c> otherwise</returns>
         public static bool Contains(string x, string y)
