@@ -248,9 +248,6 @@ namespace NHINDirect.Certificates
             return null;
         }
 
-        // TODO: Implement in terms of primitives defined below against X509Certificate2
-        // TODO: certs.Find(c => c.MatchName(name));
-        // TODO: remove duplicate definition of "CN" constant...
         /// <summary>
         /// Returns the first certificate in this collection that matches <paramref name="name"/> by <c>CN</c>
         /// </summary>
