@@ -161,7 +161,7 @@ namespace NHINDirect.Mime
         /// <returns>The split <see cref="StringSegment"/> instances</returns>
         public override IEnumerable<StringSegment> SplitHeader(string headerText, char separator)
         {
-           return MimeParser.ReadHeaderParts(headerText, separator);
+            return StringSegment.Split(headerText, separator);
         }
         
         /// <summary>

@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Net.Mime;
+using System.Collections.Generic;
 
 namespace NHINDirect.Mime
 {
@@ -62,5 +63,36 @@ namespace NHINDirect.Mime
 		{
 		    return MimeStandard.ToString(encoding);
 		}
+
+        // TODO: turn supplied code example into a unit test.
+
+        /// <summary>
+        /// Splits the supplied <see cref="StringSegment"/> by <paramref name="separator"/>, returning an enumeration of <see cref="StringSegment"/> instances for each header subpart.
+        /// </summary>
+        /// <param name="source">Segment to split.</param>
+        /// <param name="separator">The value separator to split on.</param>
+        /// <example>
+        /// <code>
+        /// StringSegment text = new StringSegment("a, b, c;d, e, f:g, e");
+        /// IEnumerable&lt;StringSegment&gt; parts = Split(text, ',');
+        /// foreach(StringSegment part in parts)
+        /// {
+        ///     Console.WriteLine(part);
+        /// }
+        /// // Prints:
+        /// // a
+        /// // b
+        /// // c;d
+        /// // e
+        /// // f:g
+        /// // e
+        /// </code>
+        /// </example>
+        /// <returns>An enumeration of <see cref="StringSegment"/> instances, one for each parsed part.</returns>
+        public static IEnumerable<StringSegment> Split(this StringSegment source, char separator)
+        {
+            return StringSegment.Split(source, separator);
+        }
+
     }
 }
