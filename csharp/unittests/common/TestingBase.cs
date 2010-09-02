@@ -1,70 +1,119 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/* 
+ Copyright (c) 2010, NHIN Direct Project
+ All rights reserved.
+
+ Authors:
+    Chris Lomonico chris.lomonico@surescripts.com
+    John Theisen john.theisen@krypitq.com
+
+  
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+using System;
 
 namespace NHINDirect.Tests
 {
     public class TestingBase
     {
+        // if true dump will be sent to the delegate specified by DumpLine
+        private readonly bool m_dumpEnabled;
 
-        #region protected void DumpError(string msg)
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <Author>Chris Lomonico (mailto:chris.lomonico@surescripts.com)</Author>
-        /// <DateCreated>08.31.2010 7:10:34 AM MST</DateCreated>
-        /// <TFSItem></TFSItem>
-        /// <ReleaseCandidate></ReleaseCandidate>
+        // the lines used to separate error and success respectively
+        private const int PreambleWidth = 50;
+        private static readonly string ErrorLinePreamble = new string('!', PreambleWidth);
+        private static readonly string SuccessLinePreamble = new string('-', PreambleWidth);
+
         /// <summary>
-        /// 
+        /// Default ctor. Will log to <see cref="Console.Out"/>.
         /// </summary>
-        /// <param name="msg"></param>
-        /// <remarks></remarks>
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        protected TestingBase() : this(true)
+        {
+        }
+
+        /// <summary>
+        /// Logs to <see cref="Console.Out"/> if <paramref name="dumpEnabled"/> is <c>true</c>.
+        /// </summary>
+        /// <param name="dumpEnabled"><c>true</c> if dump output will be display</param>
+        protected TestingBase(bool dumpEnabled)
+        {
+            m_dumpEnabled = dumpEnabled;
+        }
+
+        /// <summary>
+        /// Dump the <paramref name="msg"/> to the output with a preamble line of '!'s
+        /// </summary>
+        /// <remarks>
+        /// Will not dump to output if the dump was disable with the ctor set false.
+        /// </remarks>
+        /// <param name="msg">The message to dump</param>
         protected void DumpError(string msg)
         {
-            Console.WriteLine(new string('!', 50));
+            if (!m_dumpEnabled) return;
+
+            DumpLine(ErrorLinePreamble);
             Dump(msg);
         }
-        #endregion
 
-        #region protected void DumpSuccess(string msg)
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <Author>Chris Lomonico (mailto:chris.lomonico@surescripts.com)</Author>
-        /// <DateCreated>08.31.2010 7:48:27 AM MST</DateCreated>
-        /// <TFSItem></TFSItem>
-        /// <ReleaseCandidate></ReleaseCandidate>
         /// <summary>
-        /// 
+        /// Dump the <paramref name="msg"/> to the output with a preamble line of '-'s
         /// </summary>
-        /// <param name="msg"></param>
-        /// <remarks></remarks>
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <remarks>
+        /// Will not dump to output if the dump was disable with the ctor set false.
+        /// </remarks>
+        /// <param name="msg">The message to dump</param>
         protected void DumpSuccess(string msg)
         {
-            Console.WriteLine(new string('-', 50));
+            if (!m_dumpEnabled) return;
+
+            DumpLine(SuccessLinePreamble);
             Dump(msg);
         }
-        #endregion
 
-        #region protected void Dump(string msg)
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// <Author>Chris Lomonico (mailto:chris.lomonico@surescripts.com)</Author>
-        /// <DateCreated>08.31.2010 7:48:26 AM MST</DateCreated>
-        /// <TFSItem></TFSItem>
-        /// <ReleaseCandidate></ReleaseCandidate>
         /// <summary>
-        /// 
+        /// Dump the message created by calling <see cref="string.Format(string,object[])"/>
+        /// with <paramref name="format"/> and <paramref name="args"/>. A preamble of '-'s will
+        /// begin the message.
         /// </summary>
-        /// <param name="msg"></param>
-        /// <remarks></remarks>
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <param name="format">The format of the message</param>
+        /// <param name="args">The values to format</param>
+        protected void DumpSuccess(string format, params object[] args)
+        {
+            DumpSuccess(string.Format(format, args));
+        }
+
+        /// <summary>
+        /// Dump the <paramref name="msg"/> to the output. The output will include the timestamp in UTC.
+        /// </summary>
+        /// <remarks>
+        /// Will not dump to output if the dump was disable with the ctor set false.
+        /// </remarks>
+        /// <param name="msg">The message to dump</param>
         protected void Dump(string msg)
         {
-            Console.WriteLine("{0} - {1}", DateTime.UtcNow.ToString("mm:ss.ff"), msg);
+            if (!m_dumpEnabled) return;
+
+            DumpLine(string.Format("{0:mm:ss.ff} - {1}", DateTime.UtcNow, msg));
         }
-        #endregion
 
+        /// <summary>
+        /// Dump the message created by calling <see cref="string.Format(string,object[])"/> 
+        /// with <paramref name="format"/> and <paramref name="args"/>.
+        /// </summary>
+        /// <param name="format">The format of the message</param>
+        /// <param name="args">The values to format</param>
+        protected void Dump(string format, params object[] args)
+        {
+            Dump(string.Format(format, args));
+        }
+
+        private static void DumpLine(string msg)
+        {
+            Console.Out.WriteLine(msg);
+        }
     }
-
-
 }

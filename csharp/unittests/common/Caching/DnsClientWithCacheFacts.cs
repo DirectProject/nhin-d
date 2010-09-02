@@ -15,22 +15,20 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using Microsoft.Win32;
 
 using DnsResolver;
-using NHINDirect.Caching;
+
 using NHINDirect.Dns;
 
 using Xunit;
 using Xunit.Extensions;
+
 namespace NHINDirect.Tests.Caching
 {
     public class DnsClientWithCacheFacts : TestingBase, IDisposable
     {
+        // set this to true if dump statements are needed for debugging purposes
+        private const bool DumpIsEnabled = false;
 
         private readonly DnsClientWithCache m_client;
         private readonly DnsClient m_clientNoCache;
@@ -63,6 +61,7 @@ namespace NHINDirect.Tests.Caching
         /// Initializes a new instance of the <b>DnsClientWithCacheFacts</b> class.
         /// </summary>
         public DnsClientWithCacheFacts()
+            : base(DumpIsEnabled)
         {
             m_client = new DnsClientWithCache(PublicDns) { Timeout = 10000 };
             m_clientNoCache = new DnsClient(PublicDns) { Timeout = 10000 };
@@ -90,33 +89,32 @@ namespace NHINDirect.Tests.Caching
         [InlineData("dns.hsgincubator.com")]
         public void ResolveAEnsureInCache(string domain)
         {
-            //----------------------------------------------------------------------------------------------------
-            //---try with ResolveCert
-            Dump(string.Format("Attempting to resolve CERT records for [{0}]", domain));
+            // try with ResolveCert
+            Dump("Attempting to resolve CERT records for [{0}]", domain);
+
             IEnumerable<DnsResolver.AddressRecord> results = m_client.ResolveA(domain);
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
                 , DnsResolver.Dns.RecordType.ANAME));
+
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
-            
-            
-
         }
 
         /// <summary>
-        /// confirms ability of code to resolve certs using the dns caching client method ResolveCERT, ensures items are in cache
+        /// Confirms ability of code to resolve certs using the dns caching client method ResolveCERT, ensures items are in cache
         /// </summary>
         /// <param name="domain">domain name to be resolved</param>
         [Theory]
         [PropertyData("CertDomainNames")]
         public void ResolveCertEnsureInCache(string domain)
         {
-            //----------------------------------------------------------------------------------------------------
-            //---try with ResolveCert
-            Dump(string.Format("Attempting to resolve CERT records for [{0}]", domain));
+            // try with ResolveCert
+            Dump("Attempting to resolve CERT records for [{0}]", domain);
+
             IEnumerable<DnsResolver.CertRecord> results = m_client.ResolveCERT(domain);
             Assert.True(results != null, domain);
+
             Dump("ensuring item is stored in cache");
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
                 , DnsResolver.Dns.RecordType.CERT));
@@ -131,11 +129,12 @@ namespace NHINDirect.Tests.Caching
         [PropertyData("CertDomainNames")]
         public void ResolveCERTFromNameServerEnsureInCache(string domain)
         {
-            //----------------------------------------------------------------------------------------------------
-            //---try with ResolveCert
-            Dump(string.Format("Attempting to resolve CERT records for [{0}]", domain));
+            // try with ResolveCert
+            Dump("Attempting to resolve CERT records for [{0}]", domain);
+
             IEnumerable<DnsResolver.CertRecord> results = m_client.ResolveCERTFromNameServer(domain);
             Assert.True(results != null, domain);
+            
             Dump("ensuring item is stored in cache");
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
                 , DnsResolver.Dns.RecordType.CERT));
@@ -152,9 +151,9 @@ namespace NHINDirect.Tests.Caching
         [InlineData("www.microsoft.com")]
         public void ResolveMXEnsureInCache(string domain)
         {
-            //----------------------------------------------------------------------------------------------------
-            //---try with ResolveCert
-            Dump(string.Format("Attempting to resolve MX records for [{0}]", domain));
+            // try with ResolveCert
+            Dump("Attempting to resolve MX records for [{0}]", domain);
+
             IEnumerable<DnsResolver.MXRecord> results = m_client.ResolveMX(domain);
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
@@ -162,7 +161,6 @@ namespace NHINDirect.Tests.Caching
                 , DnsResolver.Dns.RecordType.MX));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
-
         }
         
         /// <summary>
@@ -176,9 +174,9 @@ namespace NHINDirect.Tests.Caching
         [InlineData("www.apple.com")]
         public void ResolveTXTEnsureInCache(string domain)
         {
-            //----------------------------------------------------------------------------------------------------
-            //---try with ResolveCert
-            Dump(string.Format("Attempting to resolve MX records for [{0}]", domain));
+            // try with ResolveCert
+            Dump("Attempting to resolve MX records for [{0}]", domain);
+
             IEnumerable<DnsResolver.TextRecord> results = m_client.ResolveTXT(domain);
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
@@ -186,11 +184,10 @@ namespace NHINDirect.Tests.Caching
                 , DnsResolver.Dns.RecordType.TXT));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
-
         }
 
         /// <summary>
-        /// confirms ability to resolve and cache PTR records
+        /// Confirms ability to resolve and cache PTR records
         /// </summary>
         /// <param name="domain">domain name to be resolved</param>
         [Theory]
@@ -200,9 +197,9 @@ namespace NHINDirect.Tests.Caching
         [InlineData("www.apple.com")]
         public void ResolvePTREnsureInCache(string domain)
         {
-            //----------------------------------------------------------------------------------------------------
-            //---try with ResolveCert
-            Dump(string.Format("Attempting to resolve MX records for [{0}]", domain));
+            // try with ResolveCert
+            Dump("Attempting to resolve MX records for [{0}]", domain);
+
             IEnumerable<DnsResolver.PtrRecord> results = m_client.ResolvePTR(domain);
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
@@ -210,7 +207,6 @@ namespace NHINDirect.Tests.Caching
                 , DnsResolver.Dns.RecordType.PTR));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
-
         }
 
         /// <summary>
@@ -224,9 +220,9 @@ namespace NHINDirect.Tests.Caching
         [InlineData("www.apple.com")]
         public void ResolveNSEnsureInCache(string domain)
         {
-            //----------------------------------------------------------------------------------------------------
-            //---try with ResolveCert
-            Dump(string.Format("Attempting to resolve MX records for [{0}]", domain));
+            // try with ResolveCert
+            Dump("Attempting to resolve MX records for [{0}]", domain);
+
             IEnumerable<DnsResolver.NSRecord> results = m_client.ResolveNS(domain);
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
@@ -234,9 +230,7 @@ namespace NHINDirect.Tests.Caching
                 , DnsResolver.Dns.RecordType.NS));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
-
         }
-
 
         /// <summary>
         /// confirms ability to resolve and cache SOA records
@@ -249,9 +243,8 @@ namespace NHINDirect.Tests.Caching
         [InlineData("www.apple.com")]
         public void ResolveSOAEnsureInCache(string domain)
         {
-            //----------------------------------------------------------------------------------------------------
-            //---try with ResolveCert
-            Dump(string.Format("Attempting to resolve MX records for [{0}]", domain));
+            // try with ResolveCert
+            Dump("Attempting to resolve MX records for [{0}]", domain);
             IEnumerable<DnsResolver.SOARecord> results = m_client.ResolveSOA(domain);
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
@@ -259,8 +252,6 @@ namespace NHINDirect.Tests.Caching
                 , DnsResolver.Dns.RecordType.SOA));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
-
         }
-
     }
 }
