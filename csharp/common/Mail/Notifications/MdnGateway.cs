@@ -36,6 +36,9 @@ namespace NHINDirect.Mail.Notifications
     /// </remarks>
     public class MdnGateway
     {
+        /// <summary>
+        /// The gateway type for gateways to Internet Mail.
+        /// </summary>
         public const string DefaultGatewayType = "smtp";
         
         string m_domain;
