@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net.Mime;
 using System.Net.Mail;
 using NHINDirect.Mime;
 using NHINDirect.Mail;
@@ -77,7 +78,6 @@ namespace NHINDirect.Mail.Notifications
         /// </remarks>
         public enum NotificationType
         {
-
             Processed,
             Displayed,
             Deleted
@@ -199,6 +199,8 @@ namespace NHINDirect.Mail.Notifications
         internal const string Disposition_Deleted = "deleted";
         internal const string Modifier_Error = "error";
         
+        internal const string ReportType = "report-type";
+        internal const string ReportTypeValueNotification = "disposition-notification";
         /// <summary>
         /// Tests the <paramref name="entity"/> to see if it contains an MDN request.
         /// </summary>
@@ -230,7 +232,8 @@ namespace NHINDirect.Mail.Notifications
                 return false;
             }
             
-            return entity.HasMediaType(MDNStandard.MediaType.ReportMessage);
+            ContentType contentType = entity.ParsedContentType;
+            return (contentType.IsMediaType(MDNStandard.MediaType.ReportMessage) && contentType.IsParameter(MDNStandard.ReportType, MDNStandard.ReportTypeValueNotification));
         }
         
         /// <summary>
@@ -271,11 +274,11 @@ namespace NHINDirect.Mail.Notifications
             }
         }
 
-        public static string ToString(SendType mode)
         /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="mode"/>
         /// </summary>
         /// <param name="mode">The mode to translate</param>
         /// <returns>A string representation suitable for inclusion in the sending mode section of the <c>Disposition</c> header value</returns>
+        public static string ToString(SendType mode)
         {
             switch(mode)
             {
@@ -290,11 +293,11 @@ namespace NHINDirect.Mail.Notifications
             }
         }
 
-        public static string ToString(NotificationType type)
         /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="type"/>
         /// </summary>
         /// <param name="mode">The type to translate</param>
         /// <returns>A string representation suitable for inclusion in the disposition type section of the <c>Disposition</c> header value</returns>
+        public static string ToString(NotificationType type)
         {
             switch (type)
             {

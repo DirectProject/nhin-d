@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Net.Mime;
+using NHINDirect.Mail;
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
 using AgentTests;
@@ -81,6 +82,12 @@ Yo. Wassup?";
         {
             ContentType contentType = new ContentType(message.GetContentType());
             Assert.False(NHINDirect.Cryptography.SMIMEStandard.IsContentEncrypted(contentType));
+        }
+
+        internal void ProcessEndToEnd(SmtpAgent agent, Message msg, out OutgoingMessage outgoing, out IncomingMessage incoming)
+        {
+            outgoing = (OutgoingMessage) agent.SecurityAgent.ProcessOutgoing(new MessageEnvelope(msg));
+            incoming = (IncomingMessage) agent.SecurityAgent.ProcessIncoming(new MessageEnvelope(outgoing.SerializeMessage()));
         }
     }
 }

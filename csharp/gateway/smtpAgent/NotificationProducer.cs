@@ -47,13 +47,20 @@ namespace NHINDirect.SmtpAgent
                 throw new ArgumentException();
             }
             
-            foreach(NotificationMessage notificationMessage in this.Produce(envelope))
+            IEnumerable<MailAddress> senders = envelope.DomainRecipients.AsMailAddresses();
+            IEnumerable<NotificationMessage> notifications = envelope.Message.CreateNotificationMessages(senders, this.CreateAck);
+            foreach(NotificationMessage notification in notifications)
             {
-                string filePath = Path.Combine(pickupFolder, notificationMessage.IDValue + ".eml");
-                notificationMessage.Save(filePath);
+                string filePath = Path.Combine(pickupFolder, notification.IDValue + ".eml");
+                notification.Save(filePath);
             }
         }
-
+        
+        /// <summary>
+        /// Generate notification messages (if any) for this source message
+        /// </summary>
+        /// <param name="envelope"></param>
+        /// <returns></returns>
         public IEnumerable<NotificationMessage> Produce(IncomingMessage envelope)
         {
             if (envelope == null)
@@ -61,25 +68,31 @@ namespace NHINDirect.SmtpAgent
                 throw new ArgumentException();
             }
 
-            if (!m_settings.AutoResponse || !envelope.HasDomainRecipients || !envelope.Message.HasNotificationRequest())
+            if (!m_settings.AutoResponse || !envelope.HasDomainRecipients || !envelope.Message.ShouldIssueNotification())
             {
                 yield break;
             }
-            
+
+            IEnumerable<MailAddress> senders = envelope.DomainRecipients.AsMailAddresses();
+            IEnumerable<NotificationMessage> notifications = envelope.Message.CreateNotificationMessages(senders, this.CreateAck);
+            //
+            // We do our own foreach in case we want to inject additional behavior (such as logging) here...
+            //
+            foreach (NotificationMessage notification in notifications)
+            {
+                yield return notification;
+            }
+        }
+        
+        Notification CreateAck(MailAddress address)
+        {
             Notification notification = new Notification(MDNStandard.NotificationType.Processed);
             if (m_settings.HasText)
             {
                 notification.Explanation = m_settings.Text;
             }
-            
-            NotificationMessage notificationMessage = NotificationMessage.CreateNotificationFor(envelope.Message, notification);
-            foreach (NHINDAddress sender in envelope.DomainRecipients)
-            {
-                notificationMessage.FromValue = sender.ToString();
-                notificationMessage.IDValue = Guid.NewGuid().ToString("D");
-                notification.Gateway = new MdnGateway(sender.Host); 
-                yield return notificationMessage;
-            }
+            notification.ReportingAgent = new ReportingUserAgent(address.Host, m_settings.ProductName);            
+            return notification;
         }
     }
 }
