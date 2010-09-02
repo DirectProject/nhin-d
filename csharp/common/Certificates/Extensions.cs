@@ -336,12 +336,6 @@ namespace NHINDirect.Certificates
         //
         //---------------------------------------
         /// <summary>
-        /// Loads certificates from a certifiate store matching the supplied <paramref name="subjectName"/>
-        /// </summary>
-        /// <param name="subjectName">The <c>CN</c> value to test</param>
-        /// <param name="location">The store location</param>
-        /// <returns>The first matching certificate, or <c>null</c> if none match.</returns>
-        /// <summary>
         /// Tests the supplied certificate against a <c>CN</c> value
         /// </summary>
         /// <param name="cert">The certificate to test</param>
@@ -394,11 +388,6 @@ namespace NHINDirect.Certificates
             return (cert.MatchEmailName(name) || cert.MatchName(name));
         }
 
-        /// <summary>
-        /// Extracts the subject name (<c>CN</c>) value from this certificate.
-        /// </summary>
-        /// <param name="cert">The certificate from which to extract the name</param>
-        /// <returns>The <c>CN</c> value or <c>null</c> if not found</returns>
         /// <summary>
         /// Tests the supplied certificate if the subject name begins with the supplied <paramref name="name"/> string
         /// </summary>
