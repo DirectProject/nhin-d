@@ -93,6 +93,7 @@
     <Compile Include="Mail\Notifications\MDNStandard.cs" />
     <Compile Include="Mail\Message.cs" />
     <Compile Include="Mail\MailStandard.cs" />
+    <Compile Include="Mail\Notifications\ReportingUserAgent.cs" />
     <Compile Include="Mail\WrappedMessage.cs" />
     <Compile Include="Mime\Body.cs" />
     <Compile Include="Mime\CharReader.cs" />

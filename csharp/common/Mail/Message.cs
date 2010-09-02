@@ -272,7 +272,6 @@ namespace NHINDirect.Mail
             }
         }
 
-
         /// <summary>Extracts the body and associated MIME <c>Content-*</c> headers as a <see cref="MimeEntity"/></summary>
         /// <remarks>
         /// The source message has MIME and non-MIME headers, and the body is not a complete MIME entity for signing and encryption.

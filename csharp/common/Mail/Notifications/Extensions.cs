@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net.Mail;
 
 namespace NHINDirect.Mail.Notifications
 {
@@ -37,7 +38,31 @@ namespace NHINDirect.Mail.Notifications
             return message.HasHeader(MDNStandard.Headers.DispositionNotificationTo);
         }
         
-        //TODO: would be nicer to return IEnumeration<MailAddress>
+        /// <summary>
+        /// Tests if this message IS an MDN
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static bool IsMDN(this Message message)
+        {
+            return MDNStandard.IsReport(message);
+        }
+        
+        /// <summary>
+        /// Returns true if the user agent should issue a notification for this message.
+        /// </summary>
+        /// <remarks>Tests the message to see if it has a message disposition notification
+        /// request, based on the <c>Disposition-Notification-To</c> header
+        /// Additionally, verifies that the message is NOT itself an MDN. As per RFC 3798, agents should never
+        /// issue an MDN in response to an MDN
+        /// </remarks>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static bool ShouldIssueNotification(this Message message)
+        {
+            return (!message.IsMDN() && message.HasNotificationRequest());
+        }
+                
         /// <summary>
         /// Gets the value of the <c>Disposition-Notification-To</c> header, which indicates where
         /// the original UA requested notification be sent.
@@ -48,6 +73,17 @@ namespace NHINDirect.Mail.Notifications
         {
             return message.Headers.GetValue(MDNStandard.Headers.DispositionNotificationTo);
         }
+
+        /// <summary>
+        /// Gets the mail addresses contained in the <c>Disposition-Notification-To</c> header, which indicates where
+        /// the original UA requested notification be sent.
+        /// </summary>
+        /// <param name="message">The message to get the destination from.</param>
+        /// <returns>a MailAddressCollection, or null if no header was found</returns>
+        public static MailAddressCollection GetNotificationDestinationAddresses(this Message message)
+        {
+            return MailParser.ParseAddressCollection(message.Headers[MDNStandard.Headers.DispositionNotificationTo]);
+        }
         
         /// <summary>
         /// Sets the header values for this message to request message disposition notification.
@@ -55,7 +91,68 @@ namespace NHINDirect.Mail.Notifications
         /// <param name="message">The message for which to set the disposition request headers</param>
         public static void RequestNotification(this Message message)
         {
+            if (message.IsMDN())
+            {
+                throw new NotSupportedException("Cannot request an MDN for an MDN");
+            }
+            
             message.Headers.SetValue(MDNStandard.Headers.DispositionNotificationTo, message.FromValue);
+        }
+                
+        /// <summary>
+        /// Creates an MDN Notification for the given message
+        /// </summary>
+        /// <param name="message">source message</param>
+        /// <param name="notification"></param>
+        /// <returns>Null if no notification should be issued</returns>
+        public static NotificationMessage CreateNotificationMessage(this Message message, MailAddress from, Notification notification)
+        {
+            if (from == null || notification == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (!message.ShouldIssueNotification())
+            {
+                return null;
+            }
+            
+            NotificationMessage notificationMessage = NotificationMessage.CreateNotificationFor(message, notification);
+            if (notificationMessage != null)
+            {
+                notificationMessage.FromValue = from.ToString();
+            }
+            
+            return notificationMessage;
+        }
+        
+        /// <summary>
+        /// Produce notifications for the given message.
+        /// You can alway
+        /// </summary>
+        /// <param name="envelope"></param>
+        /// <returns>An enumerator over notification messages</returns>
+        public static IEnumerable<NotificationMessage> CreateNotificationMessages(this Message message, IEnumerable<MailAddress> senders, Func<MailAddress, Notification> notificationCreator)
+        {
+            if (senders == null || notificationCreator == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            if (!message.ShouldIssueNotification())
+            {
+                yield break;
+            }
+            
+            foreach (MailAddress sender in senders)
+            {
+                Notification notification = notificationCreator(sender);
+                NotificationMessage notificationMessage = message.CreateNotificationMessage(sender, notification);
+                if (notificationMessage  != null)
+                {
+                    yield return notificationMessage;
+                }
+            }
         }
         
         public static string AsString(this MDNStandard.TriggerType type)

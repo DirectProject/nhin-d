@@ -41,9 +41,16 @@ namespace NHINDirect.Mail.Notifications
         
         public static NotificationMessage CreateNotificationFor(Message message, Notification notification)
         {
-            if (message == null)
+            if (message == null || notification == null)
             {
                 throw new ArgumentNullException();
+            }
+            //
+            // Verify that the message is not itself an MDN!
+            //
+            if (message.IsMDN())
+            {
+                throw new ArgumentException("Message is an MDN");
             }
             
             string notifyTo = message.GetNotificationDestination();

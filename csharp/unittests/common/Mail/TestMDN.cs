@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Mime;
+using System.Net.Mail;
 using NHINDirect;
 using NHINDirect.Mime;
 using NHINDirect.Mail;
@@ -27,6 +28,11 @@ using Xunit.Extensions;
 
 namespace NHINDirect.Tests.Mail
 {
+    /// <summary>
+    /// NOTE: Some of the functionality in NHINDirect.Mail.Notifications is exercised from Tests in smtpAgentTests
+    /// Specifically, extension methods such as CreateNotification...
+    /// At some point, we'll move the tests around
+    /// </summary>
     public class TestMDN
     {
         [Fact]
@@ -56,7 +62,7 @@ namespace NHINDirect.Tests.Mail
             Notification notification = new Notification(MDNStandard.NotificationType.Processed);            
             Assert.True(notification.ContentType.IsMediaType(MDNStandard.MediaType.ReportMessage));
             Assert.True(notification.ContentType.IsParameter("report-type", "disposition-notification"));
-            
+                        
             notification = this.CreateProcessedNotification();
             
             MimeEntity[] mdnEntities = notification.ToArray();            
@@ -74,21 +80,46 @@ namespace NHINDirect.Tests.Mail
         [Fact]
         public void TestNotificationMessage()
         {
-            Message source = new Message("bob@nhind.hsgincubator.com", null, "Test message");
-            source.Headers.Add(MDNStandard.Headers.DispositionNotificationTo, "toby@redmond.hsgincubator.com");
-            source.Headers.Add(MailStandard.Headers.MessageID, OriginalID);
+            Message source = this.CreateSourceMessage();
             
             Notification notification = this.CreateProcessedNotification();
-            NotificationMessage notificationMessage = NotificationMessage.CreateNotificationFor(source, notification);
+            NotificationMessage notificationMessage = source.CreateNotificationMessage(new MailAddress(source.FromValue), notification);
+            
+            Assert.True(notificationMessage.IsMDN());
+            Assert.False(notificationMessage.ShouldIssueNotification());
+                                    
             Assert.True(notificationMessage.IsMultiPart);
             Assert.True(notificationMessage.ToValue == source.Headers.GetValue(MDNStandard.Headers.DispositionNotificationTo));
-
+                        
             MimeEntity[] mdnEntities = notificationMessage.GetParts().ToArray();
             this.Verify(mdnEntities);
             
             this.VerifyProcessedNotification(mdnEntities[1], notification);
         }
-
+        
+        [Fact]
+        public void TestNotificationOnNotication()
+        {
+            Message source = this.CreateSourceMessage();
+            Notification notification = this.CreateProcessedNotification();
+            MailAddress from = new MailAddress(source.FromValue);
+            NotificationMessage notificationMessage = source.CreateNotificationMessage(from, notification);
+            //
+            // Shouldn never be able to issue a notification for a notification
+            //
+            Assert.Throws<NotSupportedException>(() => notificationMessage.RequestNotification());
+            Assert.Null(notificationMessage.CreateNotificationMessage(from, notification));
+        }
+        
+        Message CreateSourceMessage()
+        {
+            Message source = new Message("bob@nhind.hsgincubator.com", "toby@redmond.hsgincubator.com", "Test message");
+            source.Headers.Add(MDNStandard.Headers.DispositionNotificationTo, "toby@redmond.hsgincubator.com");
+            source.Headers.Add(MailStandard.Headers.MessageID, OriginalID);
+            
+            return source;
+        }
+                
         void Verify(MimeEntity[] mdnEntities)
         {
             Assert.True(mdnEntities.Length == 2);
