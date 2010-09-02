@@ -4,8 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-    Arien Malec     arien.malec@nhindirect.org
- 
+    
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -18,58 +17,45 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NHINDirect.Mime;
-using NHINDirect.Mail;
 
 namespace NHINDirect.Mail.Notifications
 {
     /// <summary>
-    /// Represents an MDN Gateway as specified by RFC 3798
+    /// Represents a Reporting-UA as specified by RFC 3798
     /// </summary>
     /// <remarks>
-    /// From RFC 3798, 3.2.2, The MDN-Gateway field
-    /// mdn-gateway-field = "MDN-Gateway" ":" mta-name-type ";" mta-name
-    /// ...
-    /// For gateways into Internet Mail, the MTA-name-type will normally be
-    /// "smtp", and the mta-name will be the Internet domain name of the
-    /// gateway.
+    /// From RFC 3798, 3.2.2, The Reporting-UA field
+    /// reporting-ua-field = "Reporting-UA" ":" ua-name ";" ua-product
+    /// 
+    /// For Internet Mail user agents, it is recommended that this field contain both: 
+    /// the DNS name of the particular instance of the MUA that generated the MDN and the
+    /// name of the product
+    /// 
     /// </remarks>
-    public class MdnGateway
+    public class ReportingUserAgent
     {
-        public const string DefaultGatewayType = "smtp";
-        
-        string m_domain;
-        string m_type;
+        string m_name;
+        string m_product;
         
         /// <summary>
-        /// Initializes an instance with the specified <paramref name="domain"/> and the
-        /// default type of "smtp"
+        /// Initializes an instance with the specified user agent name & product name
         /// </summary>
-        /// <param name="domain">The domain name of this MDN Gateway</param>
-        public MdnGateway(string domain)
-            : this(domain, DefaultGatewayType)
-        {
-        }
-
-        /// <summary>
-        /// Initializes an instance with the specified domain and type
-        /// </summary>
-        /// <param name="domain">The domain name of this MDN Gateway</param>
+        /// <param name="domain">The name of this user agent</param>
         /// <param name="type">The gateway type</param>
-        public MdnGateway(string domain, string type)
+        public ReportingUserAgent(string name, string product)
         {
-            this.Domain = domain;
-            this.Type = type;
+            this.Name = name;
+            this.Product = product;
         }
-
+        
         /// <summary>
-        /// Gets the gateway type
+        /// Gets the user agent's domain name
         /// </summary>
-        public string Type
+        public string Name
         {
             get
             {
-                return m_type;
+                return m_name;
             }
             private set
             {
@@ -78,18 +64,18 @@ namespace NHINDirect.Mail.Notifications
                     throw new ArgumentException();
                 }
                 
-                m_type = value;
+                m_name = value;
             }
         }
-
+        
         /// <summary>
-        /// Gets the gateway domain
+        /// Gets user agent's product
         /// </summary>
-        public string Domain
+        public string Product
         {
             get
             {
-                return m_domain;
+                return m_product;
             }
             private set
             {
@@ -98,17 +84,17 @@ namespace NHINDirect.Mail.Notifications
                     throw new ArgumentException();
                 }
                 
-                m_domain = value;
-            }            
+                m_product = value;
+            }
         }
 
         /// <summary>
         /// Returns a string representation following the conventions for RFC 3798
         /// </summary>
-        /// <returns>A string representation of this gateway</returns>
+        /// <returns>A string representation of this reporting user agent</returns>
         public override string ToString()
         {
-            return string.Format("{0};{1}", this.Type, this.Domain);
+            return string.Format("{0};{1}", this.Name, this.Product);
         }
     }
 }

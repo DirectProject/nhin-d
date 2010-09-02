@@ -15,7 +15,7 @@ if %ERRORLEVEL% NEQ 0 goto :Done
 Echo Succeeded
 popd
 
-for %%i in (DevAgentConfig.xml install.bat) do xcopy /y /q /d %%i %destbin%
+for %%i in (DevAgentConfig.xml install.bat simple.eml) do xcopy /y /q /d %%i %destbin%
 
 @rem --------------------------------
 call :PrintHeading "Copying Certificates"

@@ -15,38 +15,32 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.IO;
-using System.Net.Sockets;
-using System.Text;
-using Microsoft.Win32;
-
 using DnsResolver;
 using NHINDirect.Caching;
 
 using Xunit;
-using Xunit.Extensions;
 
 namespace NHINDirect.Tests.Caching
 {
 
     public class DnsResponseCacheFacts : TestingBase
-	{
+    {
+        // set this to true if dump statements are needed for debugging purposes
+        private const bool DumpIsEnabled = false;
 
-        protected static string m_filePath = Environment.CurrentDirectory + @"\metadata\dns responses";
-        protected int m_basettl = 10;
-        protected DnsResponseCache m_drrc;
-        protected List<DnsResponse> m_responses;
-
+        private static readonly string m_filePath = Environment.CurrentDirectory + @"\metadata\dns responses";
+        private int m_basettl = 10;
+        private DnsResponseCache m_drrc;
+        private List<DnsResponse> m_responses;
 
         /// <summary>
-        /// Initializes a new instance of the <b>DnsResponseCache</b> class.
+        /// Initializes a new instance of the <see cref="DnsResponseCache"/> class.
         /// </summary>
-        public DnsResponseCacheFacts()
+        public DnsResponseCacheFacts() : base(DumpIsEnabled)
         {
             m_drrc = new DnsResponseCache();
         }
-
 
         /// <summary>
         /// Gets the MockDomainResponses of the DnsResponseCache
@@ -67,12 +61,12 @@ namespace NHINDirect.Tests.Caching
             }
         }
 
-
         /// <summary>
         /// returns a list of dns response entries that has been loaded from the files that are part of the solution
-        /// Remarks:
-        /// verifies that list has been properly loaded up note that these are only A record responses
         /// </summary>
+        /// <remarks>
+        /// verifies that list has been properly loaded up note that these are only A record responses
+        /// </remarks>
         protected virtual void PopulateMockDnsARecordResponseEntries()
         {
             m_responses = new List<DnsResponse>();
@@ -81,54 +75,46 @@ namespace NHINDirect.Tests.Caching
                 byte[] buff = null;
                 DnsResponse dr = null;
 
-                string fileName = string.Format(@"{0}\{1}.bin", m_filePath, s);
+                string fileName = Path.Combine(m_filePath, s + ".bin");
                 using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
                 {
-                    Dump(string.Format("checking [{0}]", fileName));
+                    Dump("checking [{0}]", fileName);
                     buff = new BinaryReader(fs).ReadBytes((int)new FileInfo(fileName).Length);
                     DnsBufferReader reader = new DnsBufferReader(buff, 0, buff.Count());
-                    //----------------------------------------------------------------------------------------------------
-                    //---get a dr 
+
+                    // get a dr 
                     dr = new DnsResponse(ref reader);
                     m_responses.Add(dr);
                 }
-                //----------------------------------------------------------------------------------------------------
-                //---ensure that the qusetion QName matches the name of the mocked entry
+
+                // ensure that the qusetion QName matches the name of the mocked entry
                 Assert.Equal(s.ToLower(), dr.Question.QName.ToLower());
             }
         }
 
-
         /// <summary>
-        /// simple method to force a specific ttl on the A and CERT records in the responses
+        /// Simple method to force a specific ttl on the A and CERT records in the responses
         /// </summary>
         /// <param name="seconds">int value containing the seconds to set for the ttl</param>
-        /// <param name="responses">list containing DnsResponse entries</param>
         protected virtual void ForceTtlTime(int seconds)
         {
-            //----------------------------------------------------------------------------------------------------
-            //---right now just really dealing with the A and CERT Records; proof of concept, as more if 
-            //---one really feels it is necessary
-            if (m_responses == null)
-            {
-                throw new Exception("List has not been initialized");
-            }
+            // right now just really dealing with the A and CERT Records; proof of concept, as more if 
+            // one really feels it is necessary
+            Assert.True(m_responses != null, "List has not been initialized");
 
-            Dump(string.Format("Forcing ttl for all ANAME records to [{0}] seconds", seconds));
+            Dump("Forcing ttl for all ANAME records to [{0}] seconds", seconds);
+
             foreach (DnsResponse dr in m_responses)
             {
                 foreach (AddressRecord c in dr.AnswerRecords.A)
                 {
                     c.TTL = seconds;
                 }
-
-
             }
         }
 
-
         /// <summary>
-        /// simple test to ensure proper loading of mocked entries
+        /// Simple test to ensure proper loading of mocked entries
         /// </summary>
         [Fact]
         public void ValidatedMockDnsResponsEntries()
@@ -136,81 +122,67 @@ namespace NHINDirect.Tests.Caching
             PopulateMockDnsARecordResponseEntries();
         }
 
-
         /// <summary>
         /// this routine populates the cache with items and confirms that they are in there
         /// </summary>
         public void PopulateBasicCache()
         {
             m_drrc = new DnsResponseCache();
-            Dump(string.Format(new string('-', 50)));
-            //----------------------------------------------------------------------------------------------------
-            //---populate the entires
+
+            DumpSuccess("");
+
+            // populate the entires
             PopulateMockDnsARecordResponseEntries();
             
-            //----------------------------------------------------------------------------------------------------
-            //---force static TTL
+            // force static TTL
             ForceTtlTime(m_basettl);
 
             foreach (DnsResponse dr in m_responses)
             {
                 m_drrc.Put(dr);
             }
-            Dump(string.Format(new string('-', 50)));
-            Dump(string.Format("Checking for {0} items stored in cache"
-                , m_responses.Count()));
-            //----------------------------------------------------------------------------------------------------
-            //---make sure that the cache count reflects 10 entries
-            Assert.Equal(m_responses.Count()
-                , m_drrc.CacheCount);
-            Dump(string.Format(new string('-', 50)));
-            Dump(string.Format("Checking all entries in cache to make sure they exist as expected"));
 
-            //----------------------------------------------------------------------------------------------------
-            //---check the entries to make sure that all are found in the cache
+            DumpSuccess("Checking for {0} items stored in cache", m_responses.Count());
+
+            // make sure that the cache count reflects 10 entries
+            Assert.Equal(m_responses.Count(), m_drrc.CacheCount);
+
+            DumpSuccess("Checking all entries in cache to make sure they exist as expected");
+
+            // check the entries to make sure that all are found in the cache
             foreach (DnsResponse dr in m_responses)
             {
                 DnsResponse res = m_drrc.Get(dr.Question);
-                //----------------------------------------------------------------------------------------------------
-                //---make sure that the expect entry was found
+
+                // make sure that the expect entry was found
                 Assert.NotNull(res);
             }
         }
 
-
         /// <summary>
-        /// test mocks standing up a DnsResponseCache instance, checks to make sure items are stored; verifies single retrieval
+        /// Test mocks standing up a DnsResponseCache instance, checks to make sure items are stored; verifies single retrieval
         /// of each item and ensures that all items can be deleted in one call
         /// </summary>
         [Fact]
         public void CheckBasicCacheFeatures()
         {
-            try
+            //try
             {
-
-                //----------------------------------------------------------------------------------------------------
-                //---populate the cache
+                // populate the cache
                 PopulateBasicCache();
 
-                //----------------------------------------------------------------------------------------------------
-                //---clean out the cache
-                Dump(string.Format(new string('-', 50)));
-                Dump(string.Format("Cleaning Cache out"));
+                // clean out the cache
+                DumpSuccess("Cleaning Cache out");
+
                 m_drrc.RemoveAll();
-                Dump(string.Format("there are [{0}] items left in cache"
-                    , m_drrc.CacheCount));
-                Assert.Equal(0
-                    , m_drrc.CacheCount);
-
+                Dump("There are [{0}] items left in cache", m_drrc.CacheCount);
+                Assert.Equal(0, m_drrc.CacheCount);
             }
-            finally
-            {
-                m_drrc.RemoveAll();
-            }
-
-
+            //finally
+            //{
+            //    m_drrc.RemoveAll();
+            //}
         }
-
 
         /// <summary>
         /// checks to ensure that items can be removed from the cache and that counts match up

@@ -26,7 +26,7 @@ namespace NHINDirect.Mail.Notifications
     {
         MimeEntity m_explanation;
         MimeEntity m_notification;
-        MdnGateway m_reportingAgent;
+        ReportingUserAgent m_reportingAgent;
         MdnGateway m_gateway;
         Disposition m_disposition;
                 
@@ -64,11 +64,10 @@ namespace NHINDirect.Mail.Notifications
             }
         }
         
-        // TODO: should be MUA.
         /// <summary>
         /// The reporting agent that triggered this notification (optional)
         /// </summary>
-        public MdnGateway ReportingAgent
+        public ReportingUserAgent ReportingAgent
         {
             get
             {

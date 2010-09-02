@@ -23,7 +23,10 @@ namespace NHINDirect.SmtpAgent
 {
     public class NotificationSettings
     {
+        const string DefaultText = "Security Agent";
+        
         bool m_autoResponse = false;
+        string m_productName = DefaultText;
         
         public NotificationSettings()
         {
@@ -48,7 +51,7 @@ namespace NHINDirect.SmtpAgent
             get;
             set;
         }
-                
+        
         [XmlIgnore]
         public bool HasText
         {
@@ -58,6 +61,19 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
+        [XmlElement]
+        public string ProductName
+        {
+            get
+            {
+                return m_productName;
+            }
+            set
+            {
+                m_productName = string.IsNullOrEmpty(value) ? DefaultText : value;
+            }
+        }
+                        
         public void Validate()
         {
         }
