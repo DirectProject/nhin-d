@@ -107,13 +107,12 @@ namespace NHINDirect.Mime
             }
         }
         
-        // TODO: rename to IsNamed
         /// <summary>
         /// Tests if this header is named the supplied <paramref name="name"/>
         /// </summary>
         /// <param name="name">The name to test this header's name against</param>
         /// <returns><c>true</c> if the names match by MIME string comparison rules</returns>
-        public bool IsHeaderName(string name)
+        public bool IsNamed(string name)
         {
             if (string.IsNullOrEmpty(name))
             {

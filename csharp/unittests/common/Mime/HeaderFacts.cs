@@ -43,7 +43,7 @@ namespace NHINDirect.Tests.Mime
 		{
 			var pair = new KeyValuePair<string, string>("key", "value");
 			var header = new Header(pair);
-			Assert.Equal(expected, header.IsHeaderName(name));
+			Assert.Equal(expected, header.IsNamed(name));
 		}
 
 		[Theory]
