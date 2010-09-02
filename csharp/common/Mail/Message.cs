@@ -47,21 +47,43 @@ namespace NHINDirect.Mail
             this.Headers.Add(headers);
         }
         
+        /// <summary>
+        /// Initializes an instance with a To header value
+        /// </summary>
+        /// <param name="to">The <c>To</c> header value.</param>
         public Message(string to)
             : this(to, null)
         {
         }
-        
+
+        /// <summary>
+        /// Initializes an instance with a To and From header value
+        /// </summary>
+        /// <param name="to">The <c>To</c> header value.</param>
+        /// <param name="from">The <c>From</c> header value.</param>
         public Message(string to, string from)
         {
             this.AddToFromHeaders(to, from);
         }
-                
+
+        /// <summary>
+        /// Initializes an instance with a To and From header value and body text.
+        /// </summary>
+        /// <param name="to">The <c>To</c> header value.</param>
+        /// <param name="from">The <c>From</c> header value.</param>
+        /// <param name="bodyText">Text for the body, added as <c>text/plain</c></param>
         public Message(string to, string from, string bodyText)
             : this(to, from, bodyText, MimeStandard.MediaType.Default)
         {
         }
-        
+
+        /// <summary>
+        /// Initializes an instance with a To and From header value and body text with a specified content type
+        /// </summary>
+        /// <param name="to">The <c>To</c> header value.</param>
+        /// <param name="from">The <c>From</c> header value.</param>
+        /// <param name="bodyText">Text for the body, added as <c>text/plain</c></param>
+        /// <param name="contentType">The <c>Content-Type</c> media type</param>
         public Message(string to, string from, string bodyText, string contentType)
             : base(bodyText, contentType)
         {
@@ -248,6 +270,9 @@ namespace NHINDirect.Mail
             }
         }
 
+        /// <summary>
+        /// Gets and sets the value for <c>Message-ID</c>
+        /// </summary>
         public string IDValue
         {
             get
@@ -260,6 +285,9 @@ namespace NHINDirect.Mail
             }
         }
 
+        /// <summary>
+        /// Gets and sets the <c>Date</c> header value.
+        /// </summary>
         public string DateValue
         {
             get
@@ -277,7 +305,7 @@ namespace NHINDirect.Mail
         /// The source message has MIME and non-MIME headers, and the body is not a complete MIME entity for signing and encryption.
         /// Takes the source and creates new Message that contains only items relevant to Mime
         /// </remarks>
-        /// <returns></returns>
+        /// <returns>The extacted MIME headers and body as a <see cref="MimeEntity"/></returns>
         public MimeEntity ExtractMimeEntity()
         {
             MimeEntity entity = new MimeEntity();
