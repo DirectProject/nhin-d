@@ -39,8 +39,9 @@ namespace SmtpAgentTests
             Message msg = MailParser.ParseMessage(TestMessage);
             msg.RequestNotification();
             
-            OutgoingMessage outgoing = (OutgoingMessage) m_agent.SecurityAgent.ProcessOutgoing(new MessageEnvelope(msg));            
-            IncomingMessage incoming = (IncomingMessage) m_agent.SecurityAgent.ProcessIncoming(new MessageEnvelope(outgoing.SerializeMessage()));
+            OutgoingMessage outgoing = null;
+            IncomingMessage incoming = null;                        
+            base.ProcessEndToEnd(m_agent, msg, out outgoing, out incoming);
              
             int i = 0;            
             foreach(NotificationMessage notification in m_producer.Produce(incoming))
@@ -51,17 +52,46 @@ namespace SmtpAgentTests
             
             m_agent.Settings.InternalMessage.PickupFolder = Path.GetTempPath();
             Assert.DoesNotThrow(() => m_agent.ProcessMessage(this.LoadMessage(outgoing.SerializeMessage())));
+        }
+
+        //
+        // No MDNS should be produced in these cases
+        //
+        [Fact]        
+        public void TestNoMDNSent()
+        {
+            Message msg = MailParser.ParseMessage(TestMessage);
+            msg.RequestNotification();
+
+            OutgoingMessage outgoing = null;
+            IncomingMessage incoming = null;
+            
+            base.ProcessEndToEnd(m_agent, msg, out outgoing, out incoming);
             //
-            // Nothing should fire in these cases
+            // We have a valid MDN request, but the gateway is configured not to send them
             //
             m_agent.Settings.Notifications.AutoResponse = false;
             Assert.True(CountNotifications(incoming) == 0);
 
-            m_agent.Settings.Notifications.AutoResponse = true;
+            m_agent.Settings.Notifications.AutoResponse = true; // Gateway now enabled to send acks
+            //
+            // The gateway is enabled to send MDNs but one was not requested
+            //
             incoming.Message.Headers.RemoveAt(incoming.Message.Headers.IndexOf(MDNStandard.Headers.DispositionNotificationTo));
             Assert.True(CountNotifications(incoming) == 0);
+            
+            incoming.Message.RequestNotification();
+            NotificationMessage notificationMessage = m_producer.Produce(incoming).First();
+                        
+            this.ProcessEndToEnd(m_agent, notificationMessage, out outgoing, out incoming);
+            
+            Assert.True(incoming.Message.IsMDN());            
+            //
+            // The message is itself an MDN Response! Should not be able to send a response
+            //            
+            Assert.True(CountNotifications(incoming) == 0);
         }
-        
+                        
         int CountNotifications(IncomingMessage incoming)
         {
             int count = 0;
