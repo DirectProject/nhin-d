@@ -175,27 +175,26 @@ namespace NHINDirect.Mime
         }
         
 
-        // TODO: parameter misnamed. sb headerPair...
         /// <summary>
         /// Joins a pair as a header
         /// </summary>
         /// <param name="headerText">The pair where the key is the header name and the value is the header value</param>
         /// <returns>A <see cref="string"/> representation of the header</returns>
-        public override string JoinHeader(KeyValuePair<string, string> headerText)
+        public override string JoinHeader(KeyValuePair<string, string> headerPair)
         {
-            if (string.IsNullOrEmpty(headerText.Key))
+            if (string.IsNullOrEmpty(headerPair.Key))
             {
                 throw new ArgumentException("headerText.Key was null or empty");
             }
-            if (string.IsNullOrEmpty(headerText.Value))
+            if (string.IsNullOrEmpty(headerPair.Value))
             {
 				throw new ArgumentException("headerText.Value was null or empty");
 			}
 
             StringBuilder builder = new StringBuilder();
-            builder.Append(headerText.Key);
+            builder.Append(headerPair.Key);
             builder.Append(MimeStandard.NameValueSeparator);
-            builder.Append(headerText.Value);
+            builder.Append(headerPair.Value);
             return builder.ToString();
         }
     }
