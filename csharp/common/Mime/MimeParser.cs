@@ -110,59 +110,7 @@ namespace NHINDirect.Mime
             return new KeyValuePair<string, string>(name, value);
         }
 
-        // TODO: these methods are more general than indicated -- split into string or stringsegment extension methods...
-        // TODO: turn supplied code example into a unit test.
 
-        /// <summary>
-        /// Splits the supplied string by <paramref name="separator"/>, returning an enumeration of <see cref="StringSegment"/> instances for each header subpart.
-        /// </summary>
-        /// <param name="source">String to split.</param>
-        /// <param name="separator">The value separator to split on.</param>
-        /// <returns>An enumeration of <see cref="StringSegment"/> instances, one for each parsed part.</returns>
-        public static IEnumerable<StringSegment> ReadHeaderParts(string source, char separator)
-        {
-            return ReadHeaderParts(new StringSegment(source), separator);
-        }
-
-        /// <summary>
-        /// Splits the supplied <see cref="StringSegment"/> by <paramref name="separator"/>, returning an enumeration of <see cref="StringSegment"/> instances for each header subpart.
-        /// </summary>
-        /// <param name="source">Segment to split.</param>
-        /// <param name="separator">The value separator to split on.</param>
-        /// <example>
-        /// <code>
-        /// StringSegment text = new StringSegment("a, b, c;d, e, f:g, e");
-        /// IEnumerable&lt;StringSegment&gt; parts = MimeParser.ReadHeaderParts(text, ',');
-        /// foreach(StringSegment part in parts)
-        /// {
-        ///     Console.WriteLine(part);
-        /// }
-        /// // Prints:
-        /// // a
-        /// // b
-        /// // c;d
-        /// // e
-        /// // f:g
-        /// // e
-        /// </code>
-        /// </example>
-        /// <returns>An enumeration of <see cref="StringSegment"/> instances, one for each parsed part.</returns>
-        public static IEnumerable<StringSegment> ReadHeaderParts(StringSegment source, char separator)
-        {
-            int startAt = source.StartIndex;
-            CharReader reader = new CharReader(source);
-            while (reader.ReadTo(separator, true))
-            {
-                yield return new StringSegment(source.Source, startAt, reader.Position - 1); // STRUCTS - fast
-                startAt = reader.Position + 1;
-            }            
-            
-            StringSegment last = new StringSegment(source.Source, startAt, reader.Position);
-            if (!last.IsEmpty)
-            {
-                yield return last;
-            }
-        }
 
         /// <summary>
         /// Parses the supplied string providing a valid block of headers into an enumeration of <see cref="Header"/> instances.
