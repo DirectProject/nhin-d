@@ -16,6 +16,24 @@ _%jamesInstallRoot%/apps/james/SAR-INF/lib_
 
 All jars and transient dependencies should be placed in this directory.
 
+The following is a list of minimum dependencies to run the security and trust agent within James using keystore based certificate store..
+
+* activation-1.1.jar          
+* aopalliance-1.0.jar         
+* apache-mailet-2.4.jar       
+* apache-mailet-base-1.1.jar  
+* bcmail-jdk15-140.jar        
+* bcprov-jdk15-140.jar        
+* commons-codec-1.4.jar
+* commons-io-1.4.jar
+* commons-logging-1.1.1.jar
+* guice-2.0.jar
+* mail-1.4.1.jar
+* nhinAgent-1.0-SNAPSHOT.jar
+* nhin-d-gateways-1.0-SNAPSHOT.jar
+
+Additional dependencies may be required if you are using more sophisticated Cert stores such as LDAP and DNS.
+
 h3. Mailet Configuration
 
 The NHINDSecurityAndTrustMailet is added to the James processing stack by adding specific lines into the James configuration file:
@@ -246,3 +264,23 @@ Example:
       <gateway>mygateway:25</gateway>
    </mailet>
 {code}
+
+h2. Logging
+
+James uses the Avalon logging system and NHIN Direct components use [apache-commons-logging|http://commons.apache.org/logging/index.html] (JCL).  Generally JCL will try to discover an application's configured logging mechanism, so you may be OK with the James logging configuration found in _%jamesInstallRoot%/apps/james/SAR-INF/environment.xml_.  However you are free to change this and set custom log levels and formats.  You can also override JCL to use a different logging sub system such as log4j or JDK 1.4.  Details for configuring JCL can be found on the JCL [guide|http://commons.apache.org/logging/commons-logging-1.1/guide.html].
+
+A quick way to turn on TRACE logging for debugging purposes is to add the following lines to the phoenix.sh shell script and run James interactively with run.sh.
+
+Search the phoenix.sh file for the following text:
+
+{code}
+JVM_OPTS="-Djava.ext.dirs=$JVM_EXT_DIRS" 
+{code}
+
+and change it to: 
+
+{code}
+JVM_OPTS="-Djava.ext.dirs=$JVM_EXT_DIRS -Dorg.apache.commons.logging.Log=org.appache.commons.logging.impl.SimpleLog -Dorg.apache.commons.logging.simplelog.defaultlog=trace"
+{code}
+
+This will configure JCL to output all logging to the console and sets the threshold to trace.
