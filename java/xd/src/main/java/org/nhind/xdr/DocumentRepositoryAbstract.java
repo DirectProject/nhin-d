@@ -101,12 +101,12 @@ public abstract class DocumentRepositoryAbstract {
             
             QName qname = new QName("urn:ihe:iti:xds-b:2007", "ProvideAndRegisterDocumentSet_bRequest");
             String body = XMLUtils.marshal(qname, prdst, ihe.iti.xds_b._2007.ObjectFactory.class);
-            QName sname = new QName("urn:ihe:iti:xds-b:2007", "SubmitObjectsRequest");
+            QName sname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0", "SubmitObjectsRequest");
             SubmitObjectsRequest sor = prdst.getSubmitObjectsRequest();
-            String meta = XMLUtils.marshal(sname, sor, ihe.iti.xds_b._2007.ObjectFactory.class);
+            String meta = XMLUtils.marshal(sname, sor,  oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
             List<String> forwards = provideAndRegister(prdst);
 
-            String rmessageId = fowardMessage(4, body, forwards, replyEmail, prdst, messageId, endpoint, suffix, meta);
+            String rmessageId = fowardMessage( body, forwards, replyEmail, prdst, messageId, endpoint, suffix, meta);
 
             resp = getRepositoryProvideResponse(rmessageId);
 
@@ -193,9 +193,6 @@ public abstract class DocumentRepositoryAbstract {
     /**
      * Forward a message to an email recipient or to an XDR relay endpoint.
      * 
-     * @param type
-     *            ?? TODO What is this? It's not used anywhere down the line. A
-     *            literal value of '4' is being passed here
      * @param body
      *            The message body
      * @param forwards
@@ -215,7 +212,7 @@ public abstract class DocumentRepositoryAbstract {
      * @return a message ID
      * @throws Exception
      */
-    public String fowardMessage(int type, String body, List<String> forwards, String replyEmail, ProvideAndRegisterDocumentSetRequestType prdst, String messageId, String endpoint, String suffix, String meta) throws Exception {
+    public String fowardMessage( String body, List<String> forwards, String replyEmail, ProvideAndRegisterDocumentSetRequestType prdst, String messageId, String endpoint, String suffix, String meta) throws Exception {
 
         try {
             messageId = UUID.randomUUID().toString();
@@ -223,7 +220,7 @@ public abstract class DocumentRepositoryAbstract {
 
             if (requestForward && forwards.size() > 0) {
 
-                forwardRepositoryRequest(type, messageId, forwards, prdst, replyEmail, body, suffix, meta);
+                forwardRepositoryRequest( messageId, forwards, prdst, replyEmail, body, suffix, meta);
             }
 
         } catch (Exception x) {
@@ -253,7 +250,7 @@ public abstract class DocumentRepositoryAbstract {
      *            The XDR metadata
      * @throws Exception
      */
-    private void forwardRepositoryRequest(int type, String messageId, List<String> provideEndpoints, ProvideAndRegisterDocumentSetRequestType prdst, String fromEmail, String body, String suffix, String meta) throws Exception {
+    private void forwardRepositoryRequest( String messageId, List<String> provideEndpoints, ProvideAndRegisterDocumentSetRequestType prdst, String fromEmail, String body, String suffix, String meta) throws Exception {
         try {
             for (String reqEndpoint : provideEndpoints) {
                 if (reqEndpoint.indexOf('@') > 0) {

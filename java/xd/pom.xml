@@ -62,8 +62,22 @@
             <artifactId>commons-lang</artifactId>
             <version>2.5</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.apache.james</groupId>
+            <artifactId>apache-mailet</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.james</groupId>
+            <artifactId>apache-mailet-base</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <artifactId>mail</artifactId>
+            <groupId>javax.mail</groupId>
+            <type>jar</type>
+            <version>1.4.1</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -179,6 +193,9 @@
     </profiles>
 
 </project>
+
+
+
 
 
 
