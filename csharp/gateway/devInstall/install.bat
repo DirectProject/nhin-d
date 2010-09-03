@@ -21,7 +21,7 @@ if %ERRORLEVEL% NEQ 0 goto :Done
 Echo Succeeded
 
 call :PrintHeading "Installing Developer Gateway"
-call registerGateway.bat script 1 %destbin%\DevAgentConfig.xml N
+call registerGateway.bat script 1 "%destbin%\DevAgentConfig.xml" N
 if %ERRORLEVEL% NEQ 0 goto :Done
 popd
 
@@ -33,7 +33,7 @@ goto :Done
 shift
 echo ==============================
 echo.
-echo %*
+echo %~*
 echo.
 echo ==============================
 goto :EOF
