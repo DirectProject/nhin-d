@@ -30,7 +30,8 @@ namespace NHINDirect.Agent.Config
     [XmlType("DnsCertificateStore")]
     public class DnsCertResolverSettings : CertResolverSettings
     {
-        bool m_assumeWildcard = false;
+        bool m_cache = false;
+        bool m_resolveFromRoot = false;
         
         /// <summary>
         /// Creates an instance, normally called from the XML load.
@@ -68,19 +69,38 @@ namespace NHINDirect.Agent.Config
             get;
             set;
         }
-
+        
         /// <summary>
-        /// Does this resolver assume the DNS responser implements wildcard support?
+        /// Cache results to improve lookup performance. Default is false.
         /// </summary>
-        public bool AssumeWildcardSupport
+        [XmlElement]
+        public bool Cache
         {
             get
             {
-                return m_assumeWildcard;
+                return m_cache;
             }
             set
             {
-                m_assumeWildcard = value;
+                m_cache = value;
+            }
+        }
+        
+        /// <summary>
+        /// Resolve certificates directly from the domain's root servers
+        /// This may be required if your configured upstream DNS server does not support Cert record resolution.
+        /// Default is false.
+        /// </summary>
+        [XmlElement]
+        public bool ResolveFromRoot
+        {
+            get
+            {
+                return m_resolveFromRoot;
+            }
+            set
+            {
+                m_resolveFromRoot = value;
             }
         }
         
@@ -102,9 +122,7 @@ namespace NHINDirect.Agent.Config
         public override ICertificateResolver CreateResolver()
         {
             this.Validate();
-            DnsCertResolver resolver = new DnsCertResolver(IPAddress.Parse(this.ServerIP), this.Timeout, this.FallbackDomain);
-            resolver.AssumeWildcardSupport = m_assumeWildcard;
-            return resolver;
+            return new DnsCertResolver(IPAddress.Parse(this.ServerIP), this.Timeout, this.FallbackDomain);
         }
     }
 }

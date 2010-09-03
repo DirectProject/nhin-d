@@ -65,6 +65,11 @@ namespace NHINDirect.SmtpAgent
         {
             get
             {
+                if (string.IsNullOrEmpty(addressType))
+                {
+                    return null;
+                }
+                
                 MessageRoute settings = null;
                 if (!m_routes.TryGetValue(addressType ?? string.Empty, out settings))
                 {
@@ -87,57 +92,65 @@ namespace NHINDirect.SmtpAgent
                 m_routes[setting.AddressType] = setting;
             }
         }
-                
-        public void Route(ISmtpMessage message, MessageEnvelope envelope, Action<ISmtpMessage, MessageRoute> action)
+        
+        /// <summary>
+        /// Outgoing messages are routed based off envelope.Recipients
+        /// </summary>
+        public void Route(ISmtpMessage message, OutgoingMessage envelope, Action<ISmtpMessage, MessageRoute> action)
+        {
+            if (message == null || envelope == null || action == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (envelope.HasRecipients)
+            {
+                this.Route(message, envelope.Recipients, action);
+            }
+        }
+        
+        /// <summary>
+        /// For incoming messages, we only route to DomainRecipients
+        /// </summary>
+        public void Route(ISmtpMessage message, IncomingMessage envelope, Action<ISmtpMessage, MessageRoute> action)
         {
             if (message == null || envelope == null || action == null)
             {
                 throw new ArgumentNullException();
             }
             
-            foreach(NHINDAddress recipient in envelope.DomainRecipients)
+            if (envelope.HasDomainRecipients)
             {
-                if (this.Route(message, recipient, action))
+                this.Route(message, envelope.DomainRecipients, action);
+            }
+        }
+
+        void Route(ISmtpMessage message, NHINDAddressCollection recipients, Action<ISmtpMessage, MessageRoute> action)
+        {
+            Dictionary<string, MessageRoute> matches = new Dictionary<string, MessageRoute>(StringComparer.OrdinalIgnoreCase);
+            int i = 0;
+            while (i < recipients.Count)
+            {
+                NHINDAddress recipient = recipients[i];
+                Address address = recipient.Tag as Address;
+                if (address != null)
                 {
-                    //
-                    // If we routed the message, remove the recipient from the Recipient list to prevent double delivery
-                    //
-                    envelope.Recipients.Remove(recipient);
+                    MessageRoute route = m_routes[address.Type];
+                    if (route != null)
+                    {
+                        matches[address.Type] = route;
+                        recipients.RemoveAt(i);
+                        continue;
+                    }
                 }
-            }
-        }
-        
-        public bool Route(ISmtpMessage message, NHINDAddress recipient, Action<ISmtpMessage, MessageRoute> action)
-        {
-            if (recipient == null)
-            {
-                throw new ArgumentNullException();
-            }
-            
-            Address address = recipient.Tag as Address;
-            if (address == null || !address.HasType)
-            {
-                return false;
-            }
-            
-            return this.Route(message, address.Type, action);
-        }
 
-        public bool Route(ISmtpMessage message, string addressType, Action<ISmtpMessage, MessageRoute> action)
-        {
-            if (message == null || string.IsNullOrEmpty(addressType) || action == null)
-            {
-                throw new ArgumentException();
+                ++i;
             }
 
-            MessageRoute route = m_routes[addressType];
-            if (route == null)
+            foreach (MessageRoute route in matches.Values)
             {
-                return false;
+                action(message, route);
             }
-
-            action(message, route);
-            return true;
         }
         
         public IEnumerator<MessageRoute> GetEnumerator()

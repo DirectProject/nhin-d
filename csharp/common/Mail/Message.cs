@@ -349,5 +349,15 @@ namespace NHINDirect.Mail
                 this.Headers.Add(MailStandard.Headers.From, from);
             }
         }
+
+        /// <summary>
+        /// Parses RFC 5322 message <paramref name="messageText"/> returning a <see cref="Message"/>
+        /// </summary>
+        /// <param name="messageText">The RFC 5322 message text to parse</param>
+        /// <returns>A <see cref="Message"/> containing the parsed message</returns>        
+        public static Message Load(string messageText)
+        {
+            return MailParser.ParseMessage(messageText);
+        }
     }
 }
