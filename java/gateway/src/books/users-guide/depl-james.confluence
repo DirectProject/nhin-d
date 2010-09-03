@@ -280,7 +280,7 @@ JVM_OPTS="-Djava.ext.dirs=$JVM_EXT_DIRS"
 and change it to: 
 
 {code}
-JVM_OPTS="-Djava.ext.dirs=$JVM_EXT_DIRS -Dorg.apache.commons.logging.Log=org.appache.commons.logging.impl.SimpleLog -Dorg.apache.commons.logging.simplelog.defaultlog=trace"
+JVM_OPTS="-Djava.ext.dirs=$JVM_EXT_DIRS -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog -Dorg.apache.commons.logging.simplelog.defaultlog=trace"
 {code}
 
 This will configure JCL to output all logging to the console and sets the threshold to trace.
