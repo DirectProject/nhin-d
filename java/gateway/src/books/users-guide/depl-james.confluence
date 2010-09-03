@@ -91,7 +91,7 @@ The following scenarios are not at all an exhaustive list of deployment configur
 
 This use case describes a scenario where the HISP consists of only one domain, and a deployed instance of James comprises the entire SMTP server stack.
 
-!./images/JamesStandAlone.png!
+!images/JamesStandAlone.png!
 
 Mailet configuration in this use case is fairly simple. 
 
@@ -109,7 +109,7 @@ Because all messages sent from within the domain are delivered locally, the matc
 
 This use case describes a scenario where the HSIP consists of only one domain, mail is stored and retrieve using James, but all incoming and outgoing messages going to and coming from the backbone are handled by an email gateway.  
 
-!./images/JamesStandAloneWithGateway.png!
+!images/JamesStandAloneWithGateway.png!
 
 This model assumes that the gateway is configured to send all incoming messages to James' configured incoming port (default 25).  The mailet configuration is still fairly simple.
 
@@ -137,7 +137,7 @@ Note the use of negative look arounds in the regex.  James does not provide a ma
 
 This use case describes a scenario where the HISP has an existing stand alone email solution such as Postfix.  The email server may not have the ability to inject custom processing modules into the server, but can relay messages to other servers for custom processing.  After the custom email server finishes processing the message, the custom server must send the message back to the original email server (typically on port separate from the main incoming email port).  In this scenario, James is the custom email server.  The standalone email server may or may not be configured to handle local delivery before the custom processor is executed, but an identical mailet configuration can be used for both cases.
 
-!./images/JamesStandAloneProcessingRelay.png!
+!images/JamesStandAloneProcessingRelay.png!
 
 Example:
 
@@ -177,7 +177,7 @@ This assumes that the standalone email server is configured to forward messages 
 
 This use case describes a scenario where the HISP already uses a relay or email gateway for incoming and outgoing messages.  James is injected between the email server and gateway.  The email server is configured to send all outgoing messages to James incoming port, and James RemoteDelivery mailet is configured to send all messages to the relay/gateway.
 
-!./images/JamesStandAloneRelayFlow.png!
+!images/JamesStandAloneRelayFlow.png!
 
 Example:
 
