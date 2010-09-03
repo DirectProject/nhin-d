@@ -559,25 +559,44 @@ namespace NHINDirect.Agent
         }
 
         void DecryptSignedContent(IncomingMessage message)
-        {   
-            MimeEntity decryptedEntity = this.DecryptMessage(message);
-            SignedCms signatures;
-            MimeEntity payload;
+        {
+            SignedCms signatures = null;
+            MimeEntity payload = null;
+            bool success = false;
             
-            if (SMIMEStandard.IsContentEnvelopedSignature(decryptedEntity.ParsedContentType))
+            if (this.m_encryptionEnabled)
             {
-                signatures = m_cryptographer.DeserializeEnvelopedSignature(decryptedEntity);                
-                payload = MimeSerializer.Default.Deserialize<MimeEntity>(signatures.ContentInfo.Content);
-            }                        
-            else if (SMIMEStandard.IsContentMultipartSignature(decryptedEntity.ParsedContentType))
-            {
-                SignedEntity signedEntity = SignedEntity.Load(decryptedEntity);                
-                signatures = m_cryptographer.DeserializeDetachedSignature(signedEntity);
-                payload = signedEntity.Content; 
+                //
+                // Yes, this can be optimized for multiple certs. 
+                // But we will start with the easy to understand simple version
+                //            
+                // Decrypt and parse message body into a signature entity - the envelope that contains our data + signature
+                // We can use the cert of any ONE of the recipients to decrypt
+                // So basically, we'll try until we find one, or we just run out...
+                //
+                foreach (X509Certificate2 cert in message.DomainRecipients.Certificates)
+                {
+                    try
+                    {
+                        success = this.DecryptSignatures(message, cert, out signatures, out payload);
+                        if (success)
+                        {
+                            break;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
             }
             else
             {
-                throw new AgentException(AgentError.UnsignedMessage);
+                success = this.DecryptSignatures(message, null, out signatures, out payload);
+            }
+
+            if (!success || signatures == null || payload == null)
+            {
+                throw new AgentException(AgentError.UntrustedMessage);
             }
             
             message.Signatures = signatures;
@@ -589,43 +608,46 @@ namespace NHINDirect.Agent
             message.Message.Headers = headers.SelectNonMimeHeaders();
             message.Message.UpdateBody(payload); // this will merge in content + content specific mime headers
         }
-
-        MimeEntity DecryptMessage(IncomingMessage message)
+        
+        /// <summary>
+        /// Decrypt (optionally) the given message and try to extract signatures
+        /// </summary>
+        bool DecryptSignatures(IncomingMessage message, X509Certificate2 certificate, out SignedCms signatures, out MimeEntity payload)
         {
             MimeEntity decryptedEntity = null;
-            if (this.m_encryptionEnabled)
+            signatures = null;
+            payload = null;
+            
+            if (certificate != null)
             {
-                //
-                // Yes, this can be optimized heavily for multiple certs. 
-                // But we will start with the easy to understand simple version
-                //            
-                // Decrypt and parse message body into a signature entity - the envelope that contains our data + signature
-                // We can use the cert of any ONE of the recipients to decrypt
-                // So basically, we'll try until we find one, or we just run out...
-                //
-                foreach (X509Certificate2 cert in message.DomainRecipients.Certificates)
-                {
-                    try
-                    {
-                        decryptedEntity = this.m_cryptographer.Decrypt(message.Message, cert);
-                        break;
-                    }
-                    catch
-                    {
-                    }
-                }
+                decryptedEntity = this.m_cryptographer.Decrypt(message.Message, certificate);
             }
             else
             {
                 decryptedEntity = message.Message;
             }
-            
             if (decryptedEntity == null)
             {
-                throw new AgentException(AgentError.UntrustedMessage);
+                return false;
             }
 
-            return decryptedEntity;
+            if (SMIMEStandard.IsContentEnvelopedSignature(decryptedEntity.ParsedContentType))
+            {
+                signatures = m_cryptographer.DeserializeEnvelopedSignature(decryptedEntity);
+                payload = MimeSerializer.Default.Deserialize<MimeEntity>(signatures.ContentInfo.Content);
+            }
+            else if (SMIMEStandard.IsContentMultipartSignature(decryptedEntity.ParsedContentType))
+            {
+                SignedEntity signedEntity = SignedEntity.Load(decryptedEntity);
+                signatures = m_cryptographer.DeserializeDetachedSignature(signedEntity);
+                payload = signedEntity.Content;
+            }
+            else
+            {
+                throw new AgentException(AgentError.UnsignedMessage);
+            }
+            
+            return true;
         }
 
         //-------------------------------------------------------------------
