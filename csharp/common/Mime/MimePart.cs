@@ -53,7 +53,7 @@ namespace NHINDirect.Mime
         /// Initalizes an instance with entity type and raw entity text as a <see cref="StringSegment"/>
         /// </summary>
         /// <param name="type">The entity type for this instance.</param>
-        /// <param name="text">The raw entity text for this entity as a <see cref="StringSegment"/>.</param>
+        /// <param name="segment">The raw entity text for this entity as a <see cref="StringSegment"/>.</param>
         protected EntityPart(T type, StringSegment segment)
 		{
             Type = type;
@@ -134,12 +134,21 @@ namespace NHINDirect.Mime
     /// for the concrete parts.</remarks>
 	public class MimePart : EntityPart<MimePartType>
     {
+        /// <summary>
+        /// Intializes an instance with the supplied <paramref name="type"/>
+        /// </summary>
+        /// <param name="type">The <see cref="MimePartType"/> of this instance.</param>
 		protected MimePart(MimePartType type)
             : base(type)
         {
         }
 
-		protected MimePart(MimePartType type, string text)
+        /// <summary>
+        /// Intializes an instance with the supplied <paramref name="type"/> and body string.
+        /// </summary>
+        /// <param name="type">The <see cref="MimePartType"/> of this instance.</param>
+        /// <param name="text">The body text.</param>
+        protected MimePart(MimePartType type, string text)
 			: base(type, text)
 		{
 		}

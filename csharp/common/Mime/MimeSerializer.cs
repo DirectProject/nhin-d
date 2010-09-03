@@ -152,7 +152,7 @@ namespace NHINDirect.Mime
         /// <remarks>Only the body is written; to be a valid MIME entity, appropriate headers must be written as well</remarks>
         /// <param name="entities">The entities to serialize</param>
         /// <param name="boundary">The mutipart boundary</param>
-        /// <param name="byte[]">The array to which to write the new message document</param>
+        /// <returns>An array of raw serialized data.</returns>
         public virtual byte[] SerializeToBytes(IEnumerable<MimeEntity> entities, string boundary)
         {
             using (MemoryStream stream = new MemoryStream())
@@ -186,7 +186,7 @@ namespace NHINDirect.Mime
         /// Deserializes and parses RFC 5322 or MIME text from <paramref name="reader"/>
         /// </summary>
         /// <typeparam name="T">The entity type to which to deserialize.</typeparam>
-        /// <param name="stream">The <see cref="TextReader"/> providing the source data</param>
+        /// <param name="reader">The <see cref="TextReader"/> providing the source data</param>
         /// <returns>The deserialized and parsed entity</returns>
         public virtual T Deserialize<T>(TextReader reader)
             where T : MimeEntity, new()
@@ -220,7 +220,7 @@ namespace NHINDirect.Mime
         /// Deserializes and parses <paramref name="messageBytes"/>
         /// </summary>
         /// <typeparam name="T">The entity type to which to deserialize.</typeparam>
-        /// <param name="messageText">The <see cref="byte"/> array providing the source data</param>
+        /// <param name="messageBytes">The <see cref="byte"/> array providing the source data</param>
         /// <returns>The deserialized and parsed entity</returns>
         public virtual T Deserialize<T>(byte[] messageBytes)
             where T : MimeEntity, new()

@@ -85,7 +85,7 @@ namespace NHINDirect.Mime
         /// Parses a header string
         /// </summary>
         /// <param name="headerText">The header text to parse.</param>
-        /// <returns>A <see cref="KeyValuePair"/> where the key is the header name, and the value is the header value.</returns>
+        /// <returns>A <see cref="KeyValuePair{T, T}"/> where the key is the header name, and the value is the header value.</returns>
         public static KeyValuePair<string, string> ReadNameValue(string headerText)
         {
             int separatorPosition = IndexOf(headerText, MimeStandard.NameValueSeparator);

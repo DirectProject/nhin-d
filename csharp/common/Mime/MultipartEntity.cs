@@ -21,25 +21,43 @@ using System.Net.Mime;
 
 namespace NHINDirect.Mime
 {
+    /// <summary>
+    /// Represents a MIME multipart entity, with body parts.
+    /// </summary>
     public abstract class MultipartEntity : IEnumerable<MimeEntity>
     {
         ContentType m_contentType;
 
+        /// <summary>
+        /// Initializes a default empty multipart entity with default content type.
+        /// </summary>
         public MultipartEntity()
             : this(MimeStandard.MediaType.MultipartMixed)
         {
         }
         
+        /// <summary>
+        /// Initializes an empty multipart entity with the supplied content type.
+        /// </summary>
+        /// <param name="contentType">The valid content type string</param>
         public MultipartEntity(string contentType)
             : this(new ContentType(contentType))
         {
         }
-        
+
+        /// <summary>
+        /// Initializes an empty multipart entity with the supplied content type.
+        /// </summary>
+        /// <param name="contentType">The content type for this instance.</param>
         public MultipartEntity(ContentType contentType)
         {
             this.ContentType = contentType;
         }
         
+        /// <summary>
+        /// Gets and sets the content type for this entity. Will create a new boundary string if
+        /// one does not already exist.
+        /// </summary>
         public ContentType ContentType
         {
             get
@@ -58,6 +76,9 @@ namespace NHINDirect.Mime
             }     
         }
         
+        /// <summary>
+        /// Gets the boundary string for this instance.
+        /// </summary>
         public string Boundary
         {
             get
@@ -66,6 +87,10 @@ namespace NHINDirect.Mime
             }
         }
 
+        /// <summary>
+        /// Returns the entity corresponding to this instance.
+        /// </summary>
+        /// <returns>The associated entity.</returns>
         public MimeEntity ToEntity()
         {
             MimeEntity entity = new MimeEntity();
@@ -73,6 +98,10 @@ namespace NHINDirect.Mime
             return entity;
         }
 
+        /// <summary>
+        /// Gets an enumerator over the body parts for this entity.
+        /// </summary>
+        /// <returns>An enumerator of body parts for this entity.</returns>
         public abstract IEnumerator<MimeEntity> GetEnumerator();
         
         void EnsureBoundary()
@@ -85,6 +114,11 @@ namespace NHINDirect.Mime
         
         #region IEnumerable Members
 
+        /// <summary>
+        /// Gets the non-generic enumerator for this instance.
+        /// </summary>
+        /// <remarks>Use the typesafe generic enumerator by preference.</remarks>
+        /// <returns>An enumerator of <see cref="MimeEntity"/> body parts.</returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();

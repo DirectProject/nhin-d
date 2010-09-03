@@ -38,10 +38,10 @@ namespace NHINDirect.Mail.Notifications
         string m_product;
         
         /// <summary>
-        /// Initializes an instance with the specified user agent name & product name
+        /// Initializes an instance with the specified user agent name and product name
         /// </summary>
-        /// <param name="domain">The name of this user agent</param>
-        /// <param name="type">The gateway type</param>
+        /// <param name="product">The user agent product</param>
+        /// <param name="name">The user agent name</param>
         public ReportingUserAgent(string name, string product)
         {
             this.Name = name;

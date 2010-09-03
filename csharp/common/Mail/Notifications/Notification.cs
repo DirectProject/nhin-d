@@ -22,6 +22,11 @@ using NHINDirect.Mime;
 
 namespace NHINDirect.Mail.Notifications
 {
+    /// <summary>
+    /// Represents notification (MDN) content
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="NotificationMessage"/> represents the actually sendable MDN</remarks>
     public class Notification : MultipartEntity
     {
         MimeEntity m_explanation;
@@ -30,11 +35,19 @@ namespace NHINDirect.Mail.Notifications
         MdnGateway m_gateway;
         Disposition m_disposition;
                 
+        /// <summary>
+        /// Initializes a new instance of the supplied notification type.
+        /// </summary>
+        /// <param name="notification">The notification disposition for this instance.</param>
         public Notification(MDNStandard.NotificationType notification)
             : this(new Disposition(notification))
         {
         }
         
+        /// <summary>
+        /// Initializes a new instance with the supplied <see cref="Disposition"/>
+        /// </summary>
+        /// <param name="disposition">The notification disposition for this notification.</param>
         public Notification(Disposition disposition)
             : base(MDNStandard.MediaType.DispositionReport)
         {
@@ -47,6 +60,16 @@ namespace NHINDirect.Mail.Notifications
             this.Disposition = disposition;
         }
         
+        /// <summary>
+        /// Gets and sets the body part corresponding to the notification explaination.
+        /// </summary>
+        /// <remarks>
+        /// RFC 3798, section 3, item b:
+        /// <para>
+        /// The first component of the multipart/report contains a human-
+        /// readable explanation of the MDN, as described in [RFC-REPORT].
+        /// </para>
+        /// </remarks>
         public string Explanation
         {
             get
@@ -111,6 +134,9 @@ namespace NHINDirect.Mail.Notifications
             }
         }
         
+        /// <summary>
+        /// Gets and sets the <see cref="Disposition"/> for this instance.
+        /// </summary>
         public Disposition Disposition
         {
             get
@@ -128,6 +154,9 @@ namespace NHINDirect.Mail.Notifications
             }
         }
         
+        /// <summary>
+        /// Gets and sets the value of the error header.
+        /// </summary>
         public string Error
         {
             get
@@ -140,8 +169,15 @@ namespace NHINDirect.Mail.Notifications
             }
         }
         
+        /// <summary>
+        /// The default explanation for notification.
+        /// </summary>
         const string DefaultExplanation = "Your message was successfully {0}";
 
+        /// <summary>
+        /// Returns an enumeration of body parts of the multipart report for this notification.
+        /// </summary>
+        /// <returns>An enumeration of <see cref="MimeEntity"/> body parts.</returns>
         public override IEnumerator<MimeEntity> GetEnumerator()
         {            
             if (string.IsNullOrEmpty(this.Explanation))
