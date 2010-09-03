@@ -360,10 +360,9 @@ namespace NHINDirect.Tests.Caching
                         break;
                     }
                 }
-                Console.Write("\r\n");
+                Dump("");
 
-                Dump(string.Format("[{0}] records in cache after wait"
-                    , m_drrc.CacheCount));
+                Dump("[{0}] records in cache after wait", m_drrc.CacheCount);
 
                 Assert.Equal(0, m_drrc.CacheCount);
             }
