@@ -22,24 +22,60 @@ namespace NHINDirect.Mail
     /// </summary>
     public class MailStandard : MimeStandard
     {
-        //
-        // Common RFC822/5322 Headers
-        //        
+        /// <summary>
+        /// Header values for common RFC822/5322 Headers
+        /// </summary>
         public class Headers
         {
+            /// <summary>
+            /// Header value for the <c>To</c> header
+            /// </summary>
             public const string To = "To";
+            /// <summary>
+            /// Header value for the <c>CC</c> header
+            /// </summary>
             public const string Cc = "Cc";
-            public const string Bcc= "Bcc";
+            /// <summary>
+            /// Header value for the <c>BCC</c> header
+            /// </summary>
+            public const string Bcc = "Bcc";
+            /// <summary>
+            /// Header value for the <c>From</c> header
+            /// </summary>
             public const string From = "From";
+            /// <summary>
+            /// Header value for the <c>Sender</c> header
+            /// </summary>
             public const string Sender = "Sender";
+            /// <summary>
+            /// Header value for the <c>Message-ID</c> header
+            /// </summary>
             public const string MessageID = "Message-ID";
+            /// <summary>
+            /// Header value for the <c>Subject</c> header
+            /// </summary>
             public const string Subject = "Subject";
+            /// <summary>
+            /// Header value for the <c>Date</c> header
+            /// </summary>
             public const string Date = "Date";
+            /// <summary>
+            /// Header value for the <c>Orig-Date</c> header
+            /// </summary>
             public const string OrigDate = "Orig-Date";
+            /// <summary>
+            /// Header value for the <c>In-Reply-To</c> header
+            /// </summary>
             public const string InReplyTo = "In-Reply-To";
+            /// <summary>
+            /// Header value for the <c>References</c> header
+            /// </summary>
             public const string References = "References";
         }
         
+        /// <summary>
+        /// The set of headers that signal the destinations of a message
+        /// </summary>
         public static readonly string[] DestinationHeaders = new[]
         {
             Headers.To, 
@@ -48,18 +84,30 @@ namespace NHINDirect.Mail
             Headers.Bcc
         };
 
+        /// <summary>
+        /// The set of headers that signal the origination of a message
+        /// </summary>
         public static readonly string[] OriginHeaders = new[]
         {
             Headers.From, 
             Headers.Sender,
         };
 
+        /// <summary>
+        /// The separator character for mail address headers
+        /// </summary>
         public const char MailAddressSeparator = ',';
         //
         // MIME Types
         //
+        /// <summary>
+        /// Extension to MediaType for wrapped messages.
+        /// </summary>
 		public new class MediaType : MimeStandard.MediaType
 		{
+            /// <summary>
+            /// The <c>Content-Type</c> for fully wrapped messages
+            /// </summary>
 			public const string WrappedMessage = "message/rfc822";
 		}
     }

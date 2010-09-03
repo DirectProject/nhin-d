@@ -21,22 +21,39 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace NHINDirect.Certificates
 {
+    /// <summary>
+    /// Represents an in-memory store of certificates.
+    /// </summary>
     public class MemoryX509Store : CertificateStore
     {
         X509Certificate2Collection m_certs;
         
+        /// <summary>
+        /// Initializes an empty store.
+        /// </summary>
         public MemoryX509Store()
             : base()
         {
             m_certs = new X509Certificate2Collection();
         }
-        
+
+        /// <summary>
+        /// Initializes a store and adds certificates from a keyfile.
+        /// </summary>
+        /// <param name="filePath">The path to the keyfile</param>
+        /// <param name="password">The keyfile password</param>
+        /// <param name="flags">The <see cref="X509KeyStorageFlags"/> for the keyfile</param>
         public MemoryX509Store(string filePath, string password, X509KeyStorageFlags flags)
             : this()
         {
             this.ImportKeyFile(filePath, password, flags);
         }
-        
+
+        /// <summary>
+        /// Indexes this store by subject name.
+        /// </summary>
+        /// <param name="subjectName">The subject name to retrieve.</param>
+        /// <returns>The collection of certificates for the supplied <paramref name="subjectName"/></returns>
         public override X509Certificate2Collection this[string subjectName]
         {
             get 
@@ -45,11 +62,21 @@ namespace NHINDirect.Certificates
             }
         }
 
+        /// <summary>
+        /// Tests if this store contains the supplied <paramref name="cert"/>
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <returns><c>true</c> if this store contains <paramref name="cert"/>, <c>false</c> if not</returns>
         public override bool Contains(X509Certificate2 cert)
         {
             return m_certs.Contains(cert);
         }
 
+
+        /// <summary>
+        /// Adds the supplied <paramref name="cert"/> to this store 
+        /// </summary>
+        /// <param name="cert">The certificate to add</param>
         public override void Add(X509Certificate2 cert)
         {
             lock(m_certs)
@@ -58,7 +85,11 @@ namespace NHINDirect.Certificates
                 m_certs.Add(cert);
             }
         }
-                
+
+        /// <summary>
+        /// Removes the supplied <paramref name="cert"/> from this store 
+        /// </summary>
+        /// <param name="cert">The certificate to remove</param>
         public override void Remove(X509Certificate2 cert)
         {
             lock(m_certs)
@@ -67,6 +98,10 @@ namespace NHINDirect.Certificates
             }
         }
 
+        /// <summary>
+        /// Gets an enumeration of the certificates for this store.
+        /// </summary>
+        /// <returns>An enumeration of the certificates for this store.</returns>
         public override IEnumerator<X509Certificate2> GetEnumerator()
         {
             X509Certificate2Collection certs;

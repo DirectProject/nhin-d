@@ -605,6 +605,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	    {
 	        ldapStoreConfiguration.setLdapCertPassphrase(ldapCertPassphrase);
 	    }
+
 	    LdapCertificateStoreProvider ldapCertificateStoreProvider = new LdapCertificateStoreProvider(ldapStoreConfiguration,new KeyStoreCertificateStore(new File(cacheStoreName),ldapCertPassphrase, ldapCertPassphrase), new DefaultCertStoreCachePolicy());
 	    return ldapCertificateStoreProvider;
 	}

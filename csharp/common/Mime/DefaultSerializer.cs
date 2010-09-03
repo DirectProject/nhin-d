@@ -178,7 +178,7 @@ namespace NHINDirect.Mime
         /// <summary>
         /// Joins a pair as a header
         /// </summary>
-        /// <param name="headerText">The pair where the key is the header name and the value is the header value</param>
+        /// <param name="headerPair">The pair where the key is the header name and the value is the header value</param>
         /// <returns>A <see cref="string"/> representation of the header</returns>
         public override string JoinHeader(KeyValuePair<string, string> headerPair)
         {

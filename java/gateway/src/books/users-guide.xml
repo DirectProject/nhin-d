@@ -30,5 +30,23 @@
         </section>     
       </sections>
     </chapter>
+    <chapter>
+      <id>deployment</id>
+      <title>Deployment Guide</title>
+      <sections>
+        <section>
+          <id>depl-intro</id>     
+        </section>   
+        <section>
+          <id>smtp-depl-xmlconfig</id>     
+        </section>     
+        <section>
+          <id>depl-smtp</id>     
+        </section>   
+        <section>
+          <id>depl-james</id>     
+        </section>                              
+      </sections>
+    </chapter>    
   </chapters>
 </book>

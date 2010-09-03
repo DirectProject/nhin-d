@@ -102,6 +102,7 @@ namespace NHINDirect.Mail.Notifications
         /// <summary>
         /// Creates an MDN Notification for the given message
         /// </summary>
+        /// <param name="from">Address this notification is from</param>
         /// <param name="message">source message</param>
         /// <param name="notification"></param>
         /// <returns>Null if no notification should be issued</returns>
@@ -127,10 +128,11 @@ namespace NHINDirect.Mail.Notifications
         }
         
         /// <summary>
-        /// Produce notifications for the given message.
-        /// You can alway
+        /// Creates a notification message (MDN) for the given <paramref name="message"/> to the <paramref name="senders"/>.
         /// </summary>
-        /// <param name="envelope"></param>
+        /// <param name="message">The message for which to send notification</param>
+        /// <param name="senders">The message senders to which to send notification</param>
+        /// <param name="notificationCreator">A function creating notification objects from addresses</param>
         /// <returns>An enumerator over notification messages</returns>
         public static IEnumerable<NotificationMessage> CreateNotificationMessages(this Message message, IEnumerable<MailAddress> senders, Func<MailAddress, Notification> notificationCreator)
         {
@@ -154,17 +156,32 @@ namespace NHINDirect.Mail.Notifications
                 }
             }
         }
-        
+
+        /// <summary>
+        /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="type"/>
+        /// </summary>
+        /// <param name="type">The mode to translate</param>
+        /// <returns>A string representation suitable for inclusion in the action mode section of the <c>Disposition</c> header value</returns>
         public static string AsString(this MDNStandard.TriggerType type)
         {
             return MDNStandard.ToString(type);
         }
 
+        /// <summary>
+        /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="type"/>
+        /// </summary>
+        /// <param name="type">The mode to translate</param>
+        /// <returns>A string representation suitable for inclusion in the sending mode section of the <c>Disposition</c> header value</returns>
         public static string AsString(this MDNStandard.SendType type)
         {
             return MDNStandard.ToString(type);
         }
-        
+
+        /// <summary>
+        /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="type"/>
+        /// </summary>
+        /// <param name="type">The type to translate</param>
+        /// <returns>A string representation suitable for inclusion in the disposition type section of the <c>Disposition</c> header value</returns>
         public static string AsString(this MDNStandard.NotificationType type)
         {
             return MDNStandard.ToString(type);

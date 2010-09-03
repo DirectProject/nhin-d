@@ -399,7 +399,7 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
     protected void removeTestFiles(){
         removeFile("LDAPPrivateCertStore");
         removeFile("LDAPTrustAnchorStore");
-        removeFile("NHINKeyStore");
+        removeFile("LdapCacheStore");
     }
     
     protected void removeFile(String filename){

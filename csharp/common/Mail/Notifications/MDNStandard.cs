@@ -78,8 +78,17 @@ namespace NHINDirect.Mail.Notifications
         /// </remarks>
         public enum NotificationType
         {
+            /// <summary>
+            /// Indicates message has been received but not displayed to user.
+            /// </summary>
             Processed,
+            /// <summary>
+            /// Indicates message has been displayed to user (does not imply the message was read, understood, etc.)
+            /// </summary>
             Displayed,
+            /// <summary>
+            /// Indicates message was deleted.
+            /// </summary>
             Deleted
         }
         
@@ -92,8 +101,17 @@ namespace NHINDirect.Mail.Notifications
         /// </remarks>
         public enum ErrorType
         {
+            /// <summary>
+            /// Indicates message had an error.
+            /// </summary>
             Error,
+            /// <summary>
+            /// Indicates failure to deliver.
+            /// </summary>
             Failure,
+            /// <summary>
+            /// Indicates an informative warning
+            /// </summary>
             Warning
         }
         //
@@ -255,6 +273,7 @@ namespace NHINDirect.Mail.Notifications
             return entity.HasMediaType(MDNStandard.MediaType.DispositionNotification);
         }
 
+        /// <summary>
         /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="mode"/>
         /// </summary>
         /// <param name="mode">The mode to translate</param>
@@ -274,6 +293,7 @@ namespace NHINDirect.Mail.Notifications
             }
         }
 
+        /// <summary>
         /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="mode"/>
         /// </summary>
         /// <param name="mode">The mode to translate</param>
@@ -293,9 +313,10 @@ namespace NHINDirect.Mail.Notifications
             }
         }
 
+        /// <summary>
         /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="type"/>
         /// </summary>
-        /// <param name="mode">The type to translate</param>
+        /// <param name="type">The type to translate</param>
         /// <returns>A string representation suitable for inclusion in the disposition type section of the <c>Disposition</c> header value</returns>
         public static string ToString(NotificationType type)
         {
