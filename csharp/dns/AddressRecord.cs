@@ -22,9 +22,17 @@ using System.Net;
 
 namespace DnsResolver
 {
-    //+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //|                    ADDRESS                    |
-    //+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+    // TODO: document if this is just A records or AAAA records as well.
+    /// <summary>
+    /// Represents a DNS A record.
+    /// </summary>
+    /// <remarks>
+    /// RFC 1035, 3.4.1
+    ///+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    ///|                    ADDRESS                    |
+    ///+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </remarks>
     public class AddressRecord : DnsResourceRecord
     {
         uint m_address;
@@ -34,6 +42,9 @@ namespace DnsResolver
         {
         }
         
+        /// <summary>
+        /// Gets and sets the address as a 32-bit integer.
+        /// </summary>
         public uint Address
         {
             get
@@ -58,6 +69,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets the address as an <see cref="IPAddress"/>
+        /// </summary>
         public IPAddress IPAddress
         {
             get
@@ -66,6 +80,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Deserializes an A RR DNS message to an <see cref="AddressRecord"/>
+        /// </summary>
+        /// <param name="reader">The DNS reader</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             this.Address = reader.ReadUint();
