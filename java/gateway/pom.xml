@@ -239,9 +239,9 @@
             <version>3.0.2</version>
             <configuration>
                 <jdk>1.6</jdk>
-			<licenseLocation>
-				${project.basedir}/licenses/clover.license
-			</licenseLocation>
+				<licenseLocation>
+					${project.basedir}/../licenses/clover.license
+				</licenseLocation>
             </configuration>
             <executions>
                 <execution>
@@ -272,10 +272,7 @@
 						<formats>
 							<format>
 								<id>xdoc</id>
-							</format>
-							<format>
-								<id>rtf</id>
-							</format>							
+							</format>						
 						</formats>
 					</book>
 				</books>
@@ -380,7 +377,7 @@
 	            <version>3.0.2</version>
 				<configuration>
 					<licenseLocation>
-						${project.basedir}/licenses/clover.license
+						${project.basedir}/../licenses/clover.license
 					</licenseLocation>
 				</configuration>
 			</plugin>	                         

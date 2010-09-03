@@ -270,7 +270,7 @@
             <configuration>
                 <jdk>1.6</jdk>
 			<licenseLocation>
-				${project.basedir}/licenses/clover.license
+				${project.basedir}/../licenses/clover.license
 			</licenseLocation>
             </configuration>
             <executions>
@@ -391,7 +391,7 @@
 	            <version>3.0.2</version>
 				<configuration>
 					<licenseLocation>
-						${project.basedir}/licenses/clover.license
+						${project.basedir}/../licenses/clover.license
 					</licenseLocation>
 				</configuration>
 			</plugin>	                   
