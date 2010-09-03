@@ -33,7 +33,7 @@ import com.google.inject.ImplementedBy;
 
 /**
  * The SmtpAgent is a generic gateway to the security trust agent that handles message over the SMTP protocol.  It is intended to sit between an SMTP
- * server implementation coupled with an server specific bridge and the security trust bridge.  Because each SMPT server potentially 
+ * server implementation coupled with an server specific bridge and the security trust bridge.  Because each SMTP server potentially 
  * handles custom message processing differently and creates server specific message/SMTP envelope wrappers, bridge implementations are specific
  * to the servers that they are coupled with.  The bridges are responsible for intercepting messages through the SMTP stack, gathers routing information
  * (either from the message routing headers or the SMTP envelope headers), calling the SmtpAgent, and moving processed messages forward through the SMTP

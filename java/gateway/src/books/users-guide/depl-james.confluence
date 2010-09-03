@@ -63,7 +63,7 @@ Elements:
 ||Element||Type||Description||
 |ConfigURL|URL|A URL to the location of the SMTPAgent configuration information.  This information is forwarded to the SmtpAgentFactory to locate and parse the configuration|
 
-The above example tell james to send all messages to the agent using the *All* matcher.  More on matchers later.
+The above example tell James to send all messages to the agent using the *All* matcher.  More on matchers later.
 
 The ConfigURL must be a valid and well formed URL that is addressable by the James application.
 
@@ -231,7 +231,7 @@ The gateway would forward all incoming email to the inbound instance's SMTP port
 
 This use case describes a scenario where the HISP already uses a relay or email gateway for incoming and outgoing messages and supports multiple domains on the its email server.  James is injected between the email server and gateway.  The email server is configured to send all outgoing messages to James incoming port, and James RemoteDelivery mailet is configured to send all messages to the relay/gateway.
 
-In this scenario, it is suggested that the email server not use local delivery for messages coming email clients.  The reason is that each domain may have a sepearate trust policy and local delivered messages would never be sent to the agent for trust policy processing.  If all domains in the HISP mutually trust each other, then local is an acceptable configuration option.
+In this scenario, it is suggested that the email server not use local delivery for messages coming from email clients.  The reason is that each domain may have a sepearate trust policy and local delivered messages would never be sent to the agent for trust policy processing.  If all domains in the HISP mutually trust each other, then local is an acceptable configuration option.
 
 The James and mailet configurations are exactly the same as the previous scenario with one exception.  The outgoing James instance should list all domains managed by the HISP in its matcher.
 
