@@ -45,11 +45,7 @@ namespace AgentTests
         public void GetCertificateWithGoodAddress(string address)
         {
         	var resolver
-        		= new DnsCertResolver(IPAddress.Parse(ServerIP), 5000, "hsgincubator.com")
-        		  	{
-        		  		AssumeWildcardSupport = false
-        		  	};
-
+        		= new DnsCertResolver(IPAddress.Parse(ServerIP), 5000, "hsgincubator.com");
         	X509Certificate2Collection certs = resolver.GetCertificates(new MailAddress(address));
         	Assert.True(certs.Count > 0);
         }
