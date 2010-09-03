@@ -234,7 +234,7 @@ namespace NHINDirect.Mime
         /// Updates this entity with a new entity, updating headers and body as appropriate.
         /// </summary>
         /// <param name="entity">The entity to update.</param>
-        public virtual void ApplyBody(MimeEntity entity)
+        public virtual void UpdateBody(MimeEntity entity)
         {
             if (entity == null)
             {
@@ -282,7 +282,7 @@ namespace NHINDirect.Mime
         /// Updates this entity with the multipart entity, updating headers and body as appropriate.
         /// </summary>
         /// <param name="multipartEntity">The mulitpart entity to update.</param>
-        public void ApplyBody(MultipartEntity multipartEntity)
+        public virtual void UpdateBody(MultipartEntity multipartEntity)
         {
             this.SetParts(multipartEntity);
         }
@@ -390,24 +390,6 @@ namespace NHINDirect.Mime
         public override string ToString()
         {
             return MimeSerializer.Default.Serialize(this);
-        }
-        
-        /// <summary>
-        /// Returns a collection of MIME body parts.
-        /// </summary>
-        /// <remarks>
-        /// Body must be a multipart entity
-        /// </remarks>
-        /// <returns>The collection of body parts.</returns>
-        public virtual MimeEntityCollection ToParts()
-        {
-            if (!this.IsMultiPart)
-            {
-                // TODO: should be MimeException like above...
-                throw new InvalidOperationException();
-            }
-            
-            return new MimeEntityCollection(this.ContentType, this.GetParts());
         }
         
         /// <summary>
