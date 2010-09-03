@@ -219,11 +219,11 @@ namespace AgentTests
                 switch(ext)
                 {
                     default:
-                        certStore.ImportKeyFile(file, X509KeyStorageFlags.DefaultKeySet);
+                        certStore.ImportKeyFile(file, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
                         break;
                     
                     case ".pfx":
-                        certStore.ImportKeyFile(file, "passw0rd!", X509KeyStorageFlags.DefaultKeySet);
+                        certStore.ImportKeyFile(file, "passw0rd!", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
                         break;
                 }
             } 

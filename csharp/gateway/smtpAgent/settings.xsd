@@ -5,8 +5,8 @@
     <xs:complexContent mixed="false">
       <xs:extension base="AgentSettings">
         <xs:sequence>
-          <xs:element minOccurs="0" maxOccurs="1" name="Log" type="LogSettings" />
-          <xs:element minOccurs="1" maxOccurs="1" name="LogVerbose" type="xs:boolean" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Log" type="LogSettings" />
+          <xs:element minOccurs="0" maxOccurs="1" name="LogVerbose" type="xs:boolean" />
           <xs:element minOccurs="0" maxOccurs="1" name="DomainManager" type="ClientSettings" />
           <xs:element minOccurs="0" maxOccurs="1" name="AddressManager" type="ClientSettings" />
           <xs:element minOccurs="0" maxOccurs="1" name="Notifications" type="NotificationSettings" />

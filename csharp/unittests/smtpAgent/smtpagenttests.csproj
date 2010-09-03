@@ -57,6 +57,7 @@
     <Compile Include="TestAgentInit.cs" />
     <Compile Include="TestHandler.cs" />
     <Compile Include="TestNotifications.cs" />
+    <Compile Include="TestRouter.cs" />
     <Compile Include="TestSmtpAgent.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -99,6 +100,10 @@
     <ProjectReference Include="..\..\common\nhinCommon.csproj">
       <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
       <Name>nhinCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\config\store\configStore.csproj">
+      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
+      <Name>configStore</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\gateway\smtpAgent\smtpAgent.csproj">
       <Project>{A9B11AAD-3461-4DDB-A447-91779BD41A78}</Project>
