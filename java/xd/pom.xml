@@ -157,14 +157,9 @@
                 <artifactId>maven-clover2-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <!-- 30 day trial license (expires 25 Sep 2010) -->
-                    <license>
-<![CDATA[pooPRXAJmTNNxqGxbMfwLePBqMtBbBROmlfNFUhOSGOgeR
-mi2KEuPMaHlZwcanTRMjwl2<2KvcFNZF7DPSo11pLI01Un
-NqrmvtOQmQPqQnNmrPpvxqmOpnRooRNQMRtsTVvTMTVsuT
-WuWmnmpmUUnouotqqummmmmUUnouotqqummmmmUUE89EW4
-fobZqUUn]]>
-                    </license>
+					<licenseLocation>
+						${project.basedir}/../licenses/clover.license
+					</licenseLocation>
                 </configuration>
             </plugin>
         </plugins>
