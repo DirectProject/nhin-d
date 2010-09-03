@@ -20,12 +20,20 @@ using System.Text;
 
 namespace DnsResolver
 {
-    /*
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /                     CNAME                     /
-    /                                               /
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-     */
+    /// <summary>
+    /// Represents a CNAME DNS RR
+    /// </summary>
+    /// <remarks>
+    /// See RFC 1035, Section 3.3.1
+    /// 
+    /// Data layout:
+    /// <code>
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                     CNAME                     /
+    /// /                                               /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
+    /// </remarks>
     public class CNameRecord : DnsResourceRecord
     {
         string m_name;
@@ -34,6 +42,9 @@ namespace DnsResolver
         {
         }
         
+        /// <summary>
+        /// Gets and sets the CName as a string (a dotted domain name)
+        /// </summary>
         public string CName
         {
             get
@@ -51,6 +62,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Creates an instance from the DNS message from a DNS reader.
+        /// </summary>
+        /// <param name="reader">The DNS reader</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             m_name = reader.ReadString();
