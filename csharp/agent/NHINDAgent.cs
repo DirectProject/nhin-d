@@ -587,7 +587,7 @@ namespace NHINDirect.Agent
             //
             HeaderCollection headers = message.Message.Headers;
             message.Message.Headers = headers.SelectNonMimeHeaders();
-            message.Message.ApplyBody(payload); // this will merge in content + content specific mime headers
+            message.Message.UpdateBody(payload); // this will merge in content + content specific mime headers
         }
 
         MimeEntity DecryptMessage(IncomingMessage message)
@@ -861,11 +861,11 @@ namespace NHINDirect.Agent
                 //
                 // Alter message content to contain encrypted data
                 //
-                message.Message.ApplyBody(encryptedEntity);
+                message.Message.UpdateBody(encryptedEntity);
             }
             else
             {
-                message.Message.ApplyBody(signedEntity);
+                message.Message.UpdateBody(signedEntity);
             }
         }
 

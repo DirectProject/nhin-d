@@ -234,7 +234,7 @@ namespace NHINDirect.Mime
         /// Updates this entity with a new entity, updating headers and body as appropriate.
         /// </summary>
         /// <param name="entity">The entity to update.</param>
-        public virtual void ApplyBody(MimeEntity entity)
+        public virtual void UpdateBody(MimeEntity entity)
         {
             if (entity == null)
             {
@@ -282,7 +282,7 @@ namespace NHINDirect.Mime
         /// Updates this entity with the multipart entity, updating headers and body as appropriate.
         /// </summary>
         /// <param name="multipartEntity">The mulitpart entity to update.</param>
-        public void ApplyBody(MultipartEntity multipartEntity)
+        public virtual void UpdateBody(MultipartEntity multipartEntity)
         {
             this.SetParts(multipartEntity);
         }
