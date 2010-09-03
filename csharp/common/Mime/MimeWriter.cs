@@ -28,11 +28,19 @@ namespace NHINDirect.Mime
     {        
         TextWriter m_writer;
         
+        /// <summary>
+        /// Initializes an instance with the supplied <see cref="TextWriter"/>
+        /// </summary>
+        /// <param name="writer">The writer to use for this instance.</param>
         public MimeWriter(TextWriter writer)
         {
             SetWriter(writer);
         }
         
+        /// <summary>
+        /// Sets the writer for this instance.
+        /// </summary>
+        /// <param name="writer">The writer to use for this instance.</param>
         public void SetWriter(TextWriter writer)
         {
             if (writer == null)
@@ -43,6 +51,10 @@ namespace NHINDirect.Mime
             m_writer = writer;
         }
 
+        /// <summary>
+        /// Writes a collection of headers.
+        /// </summary>
+        /// <param name="headers">The headers to write.</param>
         public void Write(HeaderCollection headers)
         {
             if (headers == null)
@@ -56,6 +68,10 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Writes a header
+        /// </summary>
+        /// <param name="header">The header to write.</param>
         public void Write(Header header)
         {
             if (header == null)
@@ -66,6 +82,11 @@ namespace NHINDirect.Mime
             WriteLine(header.SourceText);
         }
         
+
+        /// <summary>
+        /// Writes a body
+        /// </summary>
+        /// <param name="body">The body to write.</param>
         public void Write(Body body)
         {
             if (body == null)
@@ -94,6 +115,12 @@ namespace NHINDirect.Mime
 		//    WriteCRLF();
 		//}
                 
+        /// <summary>
+        /// Writes a boundary between body parts of a multipart message.
+        /// </summary>
+        /// <param name="boundary">The boundary string.</param>
+        /// <param name="isLast"><c>true</c> if this is the last part to write so that the
+        /// epilogue will be written, <c>false</c> otherwise.</param>
         public void WriteMimeBoundary(string boundary, bool isLast)
         {
             //
@@ -110,6 +137,10 @@ namespace NHINDirect.Mime
             }
         }
         
+        /// <summary>
+        /// Writes the supplied <see cref="StringSegment"/>
+        /// </summary>
+        /// <param name="text">The segment to write.</param>
         public void Write(StringSegment text)
         {
             string source = text.Source;
@@ -118,24 +149,38 @@ namespace NHINDirect.Mime
                 m_writer.Write(source[i]);
             }
         }
-                
+
+        /// <summary>
+        /// Writes the supplied <see cref="StringSegment"/> with a MIME newline.
+        /// </summary>
+        /// <param name="text">The segment to write.</param>
         public void WriteLine(StringSegment text)
         {
             Write(text);
             WriteCRLF();
         }
-        
+
+        /// <summary>
+        /// Writes the supplied <c>string</c> with a MIME newline.
+        /// </summary>
+        /// <param name="text">The <c>string</c> to write.</param>
         public void WriteLine(string text)
         {
             m_writer.Write(text);
             WriteCRLF();
         }
         
+        /// <summary>
+        /// Writes a MIME compliant newline (CRLF)
+        /// </summary>
         public void WriteCRLF()
         {
             m_writer.Write(MimeStandard.CRLF);
         }        
         
+        /// <summary>
+        /// Closes the writer.
+        /// </summary>
         public void Close()
         {
             if (m_writer != null)
@@ -147,6 +192,9 @@ namespace NHINDirect.Mime
         
         #region IDisposable Members
 
+        /// <summary>
+        /// Frees resources for this instance.
+        /// </summary>
         public void Dispose()
         {
             Close();
