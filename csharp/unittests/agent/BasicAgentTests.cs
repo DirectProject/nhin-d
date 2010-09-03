@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using NHINDirect.Agent;
 using NHINDirect.Cryptography;
@@ -114,7 +115,31 @@ namespace AgentTests
 			m_tester.AgentB.Cryptographer.DigestAlgorithm = digestAlgorithm;
 			m_tester.TestEndToEndFile(fileName);
 		}
-
+        
+        [Fact]
+        public void TestDecryptionFailure()
+        {
+            //
+            // Return the wrong certificate, forcing decryption to fail
+            //
+            NHINDAgent baseAgent = m_tester.AgentB;
+            NHINDAgent badAgent = new NHINDAgent(baseAgent.Domains.Domains.ToArray(), 
+                                                new BadCertResolver(m_tester.AgentA.PrivateCertResolver, baseAgent.PrivateCertResolver, false),  // returns the wrong private certs
+                                                baseAgent.PublicCertResolver, 
+                                                baseAgent.TrustAnchors);
+            m_tester.AgentB = badAgent;
+            Assert.Throws<AgentException>(() => m_tester.TestEndToEndFile("simple.eml"));
+            //
+            // Now, it returns BOTH wrong and right certs, so decryption should eventually succeed
+            //
+            badAgent = new NHINDAgent(baseAgent.Domains.Domains.ToArray(),
+                                                new BadCertResolver(m_tester.AgentA.PrivateCertResolver, baseAgent.PrivateCertResolver, true),  // returns both wrong and right certs
+                                                baseAgent.PublicCertResolver,
+                                                baseAgent.TrustAnchors);
+            m_tester.AgentB = badAgent;
+            Assert.DoesNotThrow(() => m_tester.TestEndToEndFile("simple.eml"));
+        }
+        
 		//void TestEndToEndFail(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
 		//{
 		//    m_tester.AgentA.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;

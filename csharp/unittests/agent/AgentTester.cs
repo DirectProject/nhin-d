@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Net.Mail;
 using NHINDirect.Agent;
 using NHINDirect.Certificates;
 using System.Security.Cryptography.X509Certificates;
@@ -55,6 +56,10 @@ namespace AgentTests
             {
                 return m_agentA;
             }
+            set
+            {
+                m_agentA = value;
+            }
         }
         
         public NHINDAgent AgentB
@@ -62,6 +67,10 @@ namespace AgentTests
             get
             {
                 return m_agentB;
+            }
+            set
+            {
+                m_agentB = value;
             }
         }
         
@@ -275,6 +284,47 @@ namespace AgentTests
                     store.Add(cert);
                 }
             }
+        }
+    }
+    
+    /// <summary>
+    /// Introduces some simple confusion into cert resolution, to force decryption failures
+    /// </summary>
+    public class BadCertResolver : ICertificateResolver
+    {
+        ICertificateResolver m_a;
+        ICertificateResolver m_b;
+        bool m_includeGood;
+                
+        public BadCertResolver(ICertificateResolver a, ICertificateResolver b, bool includeGood)
+        {
+            m_a = a;
+            m_b = b;
+            m_includeGood = includeGood;
+        }
+        
+        public X509Certificate2Collection GetCertificates(MailAddress address)
+        {
+            X509Certificate2Collection certs;
+
+            if (address.Host.Equals("redmond.hsgincubator.com", StringComparison.OrdinalIgnoreCase))
+            {
+                certs = m_b.GetCertificates(new MailAddress(address.User + '@' + "nhind.hsgincubator.com"));
+                if (m_includeGood)
+                {
+                    certs.Add(m_a.GetCertificates(address));
+                }
+            }
+            else
+            {
+                certs = m_a.GetCertificates(new MailAddress(address.User + '@' + "redmond.hsgincubator.com"));
+                if (m_includeGood)
+                {
+                    certs.Add(m_b.GetCertificates(address));
+                }
+            }
+
+            return certs;
         }
     }
 }
