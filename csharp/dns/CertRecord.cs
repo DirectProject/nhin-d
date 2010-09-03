@@ -23,6 +23,10 @@ namespace DnsResolver
 {
     /// <summary>A representation of a CERT RR</summary>
     /// <remarks>
+    /// RFC 4398.
+    ///
+    /// Record format:
+    /// <code>
     ///                     1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
     /// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -32,6 +36,7 @@ namespace DnsResolver
     /// +---------------+            certificate or CRL                 /
     /// /                                                               /
     /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|
+    /// </code>
     /// </remarks>
     public class CertRecord : DnsResourceRecord
     {
@@ -39,16 +44,46 @@ namespace DnsResolver
         /// <summary>
         /// Enumeration of the CERT RR supported certificate types
         /// </summary>
+        /// <remarks>
+        /// RFC 4398, Section 2.1
+        /// </remarks>
         public enum CertificateType
         {
+            /// <summary>
+            /// Reserved certificate type.
+            /// </summary>
             Reserved = 0,
+            /// <summary>
+            /// X509 certificate
+            /// </summary>
             X509 = 1,
+            /// <summary>
+            /// SPKI certificate
+            /// </summary>
             SPKI,
+            /// <summary>
+            /// OpenPGP certificate
+            /// </summary>
             PGP,        // Open PGP
-            IPKIX,      // Url to an X509 data object
-            ISPKI,      // Url of n SPKI certificate
-            IPGP,       // fingerprint + URL of an OpenPGP packet
-            ACPKIX,     // Attribute cert 
+            /// <summary>
+            /// URL to an X.509 data object 
+            /// </summary>
+            IPKIX,      
+            /// <summary>
+            ///  Url of an SPKI certificate
+            /// </summary>
+            ISPKI,
+            /// <summary>
+            /// fingerprint + URL of an OpenPGP packet
+            /// </summary>
+            IPGP,
+            /// <summary>
+            /// Attribute Certificate
+            /// </summary>
+            ACPKIX,
+            /// <summary>
+            /// The URL of an Attribute Certificate
+            /// </summary>
             IACPKIK
         }       
         
@@ -149,6 +184,10 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Deserializes a CERT record from a DNS message on <paramref name="reader"/>
+        /// </summary>
+        /// <param name="reader">The reader providing the DNS message</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             ushort certType = reader.ReadUShort();
