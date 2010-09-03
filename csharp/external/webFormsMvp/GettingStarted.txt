@@ -1,0 +1,15 @@
+This ZIP file only contains the compiled libraries:
+
+  WebFormsMvp.dll  is the main library.
+
+  Helpers/         contains other libraries that help with
+                   development, but aren't actually used in
+                   your application.
+
+  Integrations/    contains useful adapters to connect
+                   WebFormsMvp with other projects like Castle.
+
+For help getting started, check out http://webformsmvp.com
+
+There's also a feature demo app which you can browse at
+http://webformsmvp.codeplex.com/SourceControl/BrowseLatest
