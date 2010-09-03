@@ -392,23 +392,6 @@ namespace NHINDirect.Mime
             return MimeSerializer.Default.Serialize(this);
         }
         
-        /// <summary>
-        /// Returns a collection of MIME body parts.
-        /// </summary>
-        /// <remarks>
-        /// Body must be a multipart entity
-        /// </remarks>
-        /// <returns>The collection of body parts.</returns>
-        public virtual MimeEntityCollection ToParts()
-        {
-            if (!this.IsMultiPart)
-            {
-                // TODO: should be MimeException like above...
-                throw new InvalidOperationException();
-            }
-            
-            return new MimeEntityCollection(this.ContentType, this.GetParts());
-        }
         
         /// <summary>
         /// Serializes the entity to text and saves to the provided file.

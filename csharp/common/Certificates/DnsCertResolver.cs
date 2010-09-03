@@ -150,11 +150,6 @@ namespace NHINDirect.Certificates
         }
         
         /// <summary>
-        /// Indicates if this instance assumes the DNS server supports wildcarding.
-        /// </summary>
-        public bool AssumeWildcardSupport = false;
-        
-        /// <summary>
         /// Resolves X509 certificates for a mail address.
         /// </summary>
         /// <param name="address">The <see cref="MailAddress"/> instance to resolve. Will try the
@@ -173,20 +168,21 @@ namespace NHINDirect.Certificates
                 client.UseUDPFirst = false;
                 client.MaxRetries = m_maxRetries;
                 X509Certificate2Collection certs = null;
-                
+                //
+                // First, try to resolve the full email address directly
+                //                
                 certs = this.ResolveDomain(client, address.Address);
                 if (!certs.IsNullOrEmpty())
                 {
                     return certs;
                 }
-                
-                if (!this.AssumeWildcardSupport)
+                //
+                // No certificates found. Perhaps certificates are available at the the (Domain) level
+                //
+                certs = this.ResolveDomain(client, address.Host);
+                if (!certs.IsNullOrEmpty())
                 {
-                    certs = this.ResolveDomain(client, address.Host);
-                    if (!certs.IsNullOrEmpty())
-                    {
-                        return certs;
-                    }
+                    return certs;
                 }
 
                 if (this.HasFallbackDomain)
@@ -197,14 +193,11 @@ namespace NHINDirect.Certificates
                         return certs;
                     }
                     
-                    if (!this.AssumeWildcardSupport)
+                    certs = this.ResolveExtendedDomain(client, address.Host);
+                    if (!certs.IsNullOrEmpty())
                     {
-                        certs = this.ResolveExtendedDomain(client, address.Host);
-                        if (!certs.IsNullOrEmpty())
-                        {
-                            return certs;
-                        }
-                    }                    
+                        return certs;
+                    }
                 }
             }
             
