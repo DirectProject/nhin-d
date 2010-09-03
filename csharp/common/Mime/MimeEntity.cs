@@ -392,7 +392,6 @@ namespace NHINDirect.Mime
             return MimeSerializer.Default.Serialize(this);
         }
         
-        
         /// <summary>
         /// Serializes the entity to text and saves to the provided file.
         /// </summary>
