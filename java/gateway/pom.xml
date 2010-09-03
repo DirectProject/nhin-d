@@ -252,10 +252,37 @@
                 </execution>
             </executions>
         </plugin>	
+        <!-- DOXIA does not yet copy resources to the generated-site or site location.  Bug
+        DOXIA-355 was submitted in July of 09 and is listed to be resolved in DOXIA 1.2.
+        This plugin a is work around for copying the resources from the book source to 
+        the generate site. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>book</id>
+              <phase>pre-site</phase>
+              <configuration>
+                <tasks>
+                  <copy todir="${project.build.directory}/generated-site/xdoc/users-guide/images/">
+                    <fileset dir="${basedir}/src/books/users-guide/images/"/>
+                  </copy>
+                  <copy todir="${project.build.directory}/site/users-guide/images/">
+                    <fileset dir="${basedir}/src/books/users-guide/images/"/>
+                  </copy>                  
+                </tasks>
+              </configuration>
+              <goals>
+                <goal>run</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>        
 	    <plugin>
 			<groupId>org.apache.maven.doxia</groupId>
 			<artifactId>doxia-maven-plugin</artifactId>
-			<version>1.1.2</version>
+			<version>1.1.3</version>
 			<executions>
 				<execution>
 					<phase>pre-site</phase>
@@ -286,7 +313,7 @@
                 <dependency>
                     <groupId>org.apache.maven.doxia</groupId>
                     <artifactId>doxia-module-confluence</artifactId>
-                    <version>1.0</version>
+                    <version>1.1.3</version>
                 </dependency>				
 			</dependencies>
 		</plugin>                 
