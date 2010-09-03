@@ -9,8 +9,9 @@
     <description>NHIN Direct parent project for java reference implementation components.</description>
     <modules>
         <module>./agent</module>
-        <module>./gateway</module>        
-    </modules>	    
+        <module>./gateway</module>
+    <module>xdmail</module>
+  </modules>
     <developers>
         <developer>
             <name>Greg Meyer</name>
@@ -18,10 +19,10 @@
             <email>gm2552@cerner.com</email>
             <roles>
                 <role>owner</role>
-            </roles>              
-        </developer>           
-     </developers>      
+            </roles>
+        </developer>
+     </developers>
 	 <prerequisites>
 	     <maven>2.0.4</maven>
-	 </prerequisites>        
+	 </prerequisites>
 </project>
