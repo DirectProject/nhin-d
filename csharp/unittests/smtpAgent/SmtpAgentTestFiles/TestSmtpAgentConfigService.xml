@@ -29,9 +29,11 @@
         <Url>http://localhost:6692/CertificateService.svc/Certificates</Url>
       </ClientSettings>
     </ServiceResolver>
+    <!--
     <MachineResolver>
       <Name>NHINDPrivate</Name>
     </MachineResolver>
+    -->
   </PrivateCerts>
   <PublicCerts>
     <!--
@@ -50,6 +52,7 @@
         <Url>http://localhost:6692/CertificateService.svc/Anchors</Url>
       </ClientSettings>
     </ServiceResolver>
+    <!--
     <MachineResolver>
       <Incoming>
         <Name>NHINDAnchors</Name>
@@ -58,6 +61,7 @@
         <Name>NHINDAnchors</Name>
       </Outgoing>
     </MachineResolver>
+   -->
   </Anchors>
   <IncomingRoutes>
     <Route>

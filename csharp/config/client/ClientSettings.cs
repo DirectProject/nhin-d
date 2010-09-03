@@ -100,7 +100,7 @@ namespace NHINDirect.Config.Client
             }
         }
         
-        [XmlElement]
+        [XmlElement("ReceiveTimeout")]
         public int ReceiveTimeoutSeconds
         {
             get
@@ -113,7 +113,7 @@ namespace NHINDirect.Config.Client
             }
         }
 
-        [XmlElement]
+        [XmlElement("SendTimeout")]
         public int SendTimeoutSeconds
         {
             get

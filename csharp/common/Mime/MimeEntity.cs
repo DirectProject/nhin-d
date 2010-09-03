@@ -289,16 +289,6 @@ namespace NHINDirect.Mime
             return MimeSerializer.Default.Serialize(this);
         }
         
-        public virtual MimeEntityCollection ToParts()
-        {
-            if (!this.IsMultiPart)
-            {
-                throw new InvalidOperationException();
-            }
-            
-            return new MimeEntityCollection(this.ContentType, this.GetParts());
-        }
-        
         public void Save(string filePath)
         {
             MimeSerializer.Default.Serialize(this, filePath);
