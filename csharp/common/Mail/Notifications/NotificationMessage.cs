@@ -24,21 +24,38 @@ using NHINDirect.Mail;
 namespace NHINDirect.Mail.Notifications
 {
     /// <summary>
-    /// Can be used to send Message Disposition Notifications, as per RFC 3798
+    /// Represents a message disposition notification (MDN) sent to a message sender, as per RFC 3798
     /// </summary>
     public class NotificationMessage : Message
     {        
+        /// <summary>
+        /// Initializes an MDN to the specified recipient.
+        /// </summary>
+        /// <param name="to">The MDN recipient.</param>
+        /// <param name="notification">The notification to send.</param>
         public NotificationMessage(string to, Notification notification)
             : this(to, null, notification)
         {
         }
-                        
+
+        /// <summary>
+        /// Initializes an MDN to the specified recipient.
+        /// </summary>
+        /// <param name="to">The MDN recipient.</param>
+        /// <param name="from">The original message receiver who is sending the MDN</param>
+        /// <param name="notification">The notification to send.</param>
         public NotificationMessage(string to, string from, Notification notification)
             : base(to, from)
         {
             this.SetParts(notification);
         }                
         
+        /// <summary>
+        /// Takes a message and constructs an MDN.
+        /// </summary>
+        /// <param name="message">The message to send notification about.</param>
+        /// <param name="notification">The notification to create.</param>
+        /// <returns>The MDN.</returns>
         public static NotificationMessage CreateNotificationFor(Message message, Notification notification)
         {
             if (message == null || notification == null)
