@@ -57,6 +57,7 @@
     <Compile Include="ConfigConsole.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SettingsCommands.cs" />
     <Compile Include="TestCommands.cs" />
   </ItemGroup>
   <ItemGroup>

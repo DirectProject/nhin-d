@@ -38,22 +38,22 @@ namespace DnsResolver
 	///     const string ExampleDomain = "example.org";
 	///     var client = new DnsClient(DnsServer);
 	///
-	///     System.Console.WriteLine("Host addresses for " + ExampleDomain);
+	///     Console.WriteLine("Host addresses for " + ExampleDomain);
 	///     foreach(IPAddress addr in client.GetHostAddresses(ExampleDomain)
 	///     {
-	///         System.Console.WriteLine(addr.ToString());
+	///         Console.WriteLine(addr.ToString());
 	///     }
 	///
-	///     System.Console.WriteLine("Name Server addresses for " + ExampleDomain);
+	///     Console.WriteLine("Name Server addresses for " + ExampleDomain);
 	///     foreach(IPAddress addr in client.GetNameServers(ExampleDomain)
 	///     {
-	///         System.Console.WriteLine(addr.ToString());
+	///         Console.WriteLine(addr.ToString());
 	///     }
 	///
 	///     System.Console.WriteLine("Authority Server addresses for " + ExampleDomain);
 	///     foreach(IPAddress addr in client.GetAuthorityServers(ExampleDomain)
 	///     {
-	///         System.Console.WriteLine(addr.ToString());
+	///         Console.WriteLine(addr.ToString());
 	///     }
 	///   </code>
 	/// </example>

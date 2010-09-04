@@ -388,25 +388,14 @@ namespace NHINDirect.SmtpAgent
 
         protected virtual void PostProcessMessage(ISmtpMessage message, MessageEnvelope envelope)
         {
-            bool isOutgoing = envelope is OutgoingMessage;
-            bool relay = false;
-            if (isOutgoing)
+            OutgoingMessage outgoing = envelope as OutgoingMessage;
+            if (outgoing != null)
             {
-                relay = this.PostProcessOutgoing(message, envelope);
+                this.PostProcessOutgoing(message, outgoing);
             }
             else
             {
-                relay = this.PostProcessIncoming(message, envelope);
-            }
-
-            if (relay && envelope.HasRecipients)
-            {
-                message.SetRcptTo(envelope.Recipients);
-                m_diagnostics.LogEnvelopeHeaders(message);
-            }
-            else
-            {
-                message.Abort();
+                this.PostProcessIncoming(message, (IncomingMessage) envelope);
             }
         }
 
@@ -451,14 +440,24 @@ namespace NHINDirect.SmtpAgent
             return envelope;
         }
 
-        bool PostProcessOutgoing(ISmtpMessage message, MessageEnvelope envelope)
+        void PostProcessOutgoing(ISmtpMessage message, OutgoingMessage envelope)
         {
             this.RelayInternal(message, envelope);
+            
             if (envelope.HasRecipients)
             {            
                 this.CopyMessage(message, m_settings.Outgoing);
             }
-            return m_settings.Outgoing.EnableRelay;
+            
+            if (m_settings.Outgoing.EnableRelay && envelope.HasRecipients)
+            {
+                message.SetRcptTo(envelope.Recipients);
+                m_diagnostics.LogEnvelopeHeaders(message);
+            }
+            else
+            {
+                message.Abort();
+            }
         }
 
         // If the message contains trusted internal recipients, drop a copy in the pickup folder, so the message can sent back
@@ -562,15 +561,27 @@ namespace NHINDirect.SmtpAgent
             return envelope;
         }
 
-        bool PostProcessIncoming(ISmtpMessage message, MessageEnvelope envelope)
+        void PostProcessIncoming(ISmtpMessage message, IncomingMessage envelope)
         {
             this.CopyMessage(message, m_settings.Incoming);
 
             m_router.Route(message, envelope, this.CopyMessage);
             
-            this.SendNotifications((IncomingMessage) envelope);
+            this.SendNotifications(envelope);
             
-            return m_settings.Incoming.EnableRelay;
+            if (m_settings.Incoming.EnableRelay && envelope.HasDomainRecipients)
+            {
+                //
+                // We only want the incoming message sent to trusted domain recipients
+                // We are not allow arbitrary relay
+                //
+                message.SetRcptTo(envelope.DomainRecipients);
+                m_diagnostics.LogEnvelopeHeaders(message);
+            }
+            else
+            {
+                message.Abort();
+            }
         }
 
         protected virtual void SendNotifications(IncomingMessage envelope)

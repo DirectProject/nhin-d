@@ -37,12 +37,46 @@ namespace NHINDirect.Agent.Config
     public class AgentSettings
     {
         CryptographerSettings m_cryptographerSettings;
+        bool m_allowNonWrappedIncoming = true;
+        bool m_wrapOutgoing = true;
         
         /// <summary>
         /// Basic constructor (normally called via XML serialization in one of the Load* static methods in this class)
         /// </summary>
         public AgentSettings()
         {
+        }
+        
+        /// <summary>
+        /// By default, the agent will accept messages that are NOT wrapped with message/rfc822 - i.e. sent by any SMIME client
+        /// </summary>
+        [XmlElement]
+        public bool AllowNonWrappedIncoming
+        {
+            get
+            {
+                return m_allowNonWrappedIncoming;
+            }
+            set
+            {
+                m_allowNonWrappedIncoming = value;
+            }
+        }
+        
+        /// <summary>
+        /// By default, the agent will wrap all outgoing messages into message/rfc822 before encrypting/signing
+        /// </summary>
+        [XmlElement]
+        public bool WrapOutgoing
+        {
+            get
+            {
+                return m_wrapOutgoing;
+            }
+            set
+            {
+                m_wrapOutgoing = value;
+            }
         }
         
         /// <summary>
@@ -148,7 +182,11 @@ namespace NHINDirect.Agent.Config
             ICertificateResolver publicCerts = this.PublicCerts.Resolver.CreateResolver();
             ITrustAnchorResolver trustAnchors = this.Anchors.Resolver.CreateResolver();
 
-            return new NHINDAgent(this.Domains, privateCerts, publicCerts, trustAnchors, TrustModel.Default, this.Cryptographer.Create());
+            NHINDAgent agent = new NHINDAgent(this.Domains, privateCerts, publicCerts, trustAnchors, TrustModel.Default, this.Cryptographer.Create());
+            agent.AllowNonWrappedIncoming = m_allowNonWrappedIncoming;
+            agent.WrapMessages = m_wrapOutgoing;
+                        
+            return agent;
         }
         
         /// <summary>

@@ -34,11 +34,9 @@ namespace NHINDirect.Config.Command
     /// </summary>
     public class CertificateCommands
     {
-        CertificateStoreClient m_client;
         
         public CertificateCommands()
         {
-            m_client = ConfigConsole.Settings.CertificateManager.CreateCertificateStoreClient();
         }
         
         /// <summary>
@@ -65,7 +63,7 @@ namespace NHINDirect.Config.Command
             long certificateID = args.GetRequiredValue<int>(0);
             CertificateGetOptions options = GetOptions(args, 1);            
             
-            this.Print(m_client.GetCertificate(certificateID, options));            
+            this.Print(ConfigConsole.Current.CertificateClient.GetCertificate(certificateID, options));            
         }        
         public void Usage_Certificate_ByID_Get()
         {
@@ -79,7 +77,7 @@ namespace NHINDirect.Config.Command
             string owner = args.GetRequiredValue(0);            
             CertificateGetOptions options = GetOptions(args, 1);
             
-            Certificate[] certs = m_client.GetCertificatesForOwner(owner, options);            
+            Certificate[] certs = ConfigConsole.Current.CertificateClient.GetCertificatesForOwner(owner, options);            
             this.Print(certs);
         }
         public void Usage_Certificate_Get()
@@ -94,7 +92,7 @@ namespace NHINDirect.Config.Command
             string owner = args.GetRequiredValue(0);
             EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
             
-            m_client.SetCertificateStatusForOwner(owner, status);
+            ConfigConsole.Current.CertificateClient.SetCertificateStatusForOwner(owner, status);
         }
         public void Usage_Certificate_Status_Set()
         {
@@ -106,7 +104,7 @@ namespace NHINDirect.Config.Command
         {
             long certificateID = args.GetRequiredValue<long>(0);
             
-            m_client.RemoveCertificate(certificateID);
+            ConfigConsole.Current.CertificateClient.RemoveCertificate(certificateID);
         }
         public void Usage_Certificate_Remove()
         {
@@ -121,7 +119,7 @@ namespace NHINDirect.Config.Command
                 string owner = cert.ExtractEmailNameOrName();
                 try
                 {
-                    m_client.AddCertificate(new Certificate(owner, cert));
+                    ConfigConsole.Current.CertificateClient.AddCertificate(new Certificate(owner, cert));
                     Console.WriteLine("Added {0}", cert.Subject);
                 }
                 catch (FaultException<ConfigStoreFault> ex)

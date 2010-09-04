@@ -8,6 +8,7 @@ setlocal
 if "%1"=="script" (
 set dest=%2
 set backup=%3
+set configFileName=%4
 set bin=..\service
 ) else (
 call :AskVariables
@@ -15,6 +16,7 @@ call :AskVariables
 
 if "%dest%"=="" goto :Usage
 if "%bin%"=="" goto :Usage
+if "%configFileName%"=="" goto :Usage
 if "%backup%"=="" goto :Usage
 
 call :Restart
@@ -45,6 +47,9 @@ if "%backup%"=="" set backup=N
 set /P dest=Destination Path [Return: default]
 if "%dest%"=="" set dest=C:\inetpub\nhindConfigService
 
+set /P configFileName=Config File Name? [Return: default]
+if "%configFileName%"=="" set configFileName=web.config
+
 set bin=..\service
 exit /b 0
 
@@ -67,19 +72,21 @@ call :PrintHeading Copying BINS to "%dest%"
 call :CopyFiles *.svc 
 call :CopyFiles *.cs
 call :CopyFiles *.xml 
+call :CopyFiles *.aspx
 call :CopyFiles *.config
+xcopy /y %configFileName% "%dest%\web.config"
 call :CopyFilesRecursive *.dll
 
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------
 :CopyFiles
-for %%i in (%*) do (xcopy /y %%i %dest% || exit /b)
+for %%i in (%*) do (xcopy /y %%i "%dest%" || exit /b)
 goto :EOF
 
 @rem -------------------------------
 :CopyFilesRecursive
-xcopy /y /s %1 %dest%
+xcopy /y /s %1 "%dest%"
 if %ERRORLEVEL% NEQ 0 exit /b
 goto :EOF
 
@@ -100,7 +107,7 @@ goto :Done
 
 @rem -------------------------------
 :Usage
-echo copybins "script" binPath destPath [backup: Y or N]
+echo copybins "script" binPath [backup: Y or N ] [configFileName]
 goto :Done
 
 @rem -------------------------------
