@@ -18,19 +18,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Configuration;
-using NHINDirect.Diagnostics;
 
 namespace NHINDirect.Config.Service
 {
     public class ServiceSettings
     {
         public const string ConfigConnectStringKey = "configStoreConnectString";
-        public const string LogDirectoryKey = "logDirectory";
         public const string QueryTimeoutKey = "queryTimeout";
         
         string m_connectString;
         int m_dbTimeout;
-        LogFileSettings m_logSettings;        
         
         public ServiceSettings()
         {
@@ -50,14 +47,6 @@ namespace NHINDirect.Config.Service
             get
             {
                 return m_dbTimeout;
-            }
-        }
-                
-        public LogFileSettings LogSettings
-        {
-            get
-            {
-                return m_logSettings;
             }
         }
         
@@ -93,10 +82,6 @@ namespace NHINDirect.Config.Service
         void Load()
         {
             m_connectString = this.GetSetting(ServiceSettings.ConfigConnectStringKey);
-            
-            m_logSettings = new LogFileSettings();
-            m_logSettings.SetDefaults();
-            m_logSettings.DirectoryPath = this.GetSetting<string>(LogDirectoryKey, m_logSettings.DirectoryPath);
             
             m_dbTimeout = this.GetSetting<int>(ServiceSettings.QueryTimeoutKey, Config.Store.ConfigStore.DefaultTimeoutSeconds);
             if (m_dbTimeout <= 0)

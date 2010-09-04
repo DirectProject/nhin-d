@@ -559,44 +559,15 @@ namespace NHINDirect.Agent
         }
 
         void DecryptSignedContent(IncomingMessage message)
-        {   
-            MimeEntity decryptedEntity = this.DecryptMessage(message);
-            SignedCms signatures;
-            MimeEntity payload;
-            
-            if (SMIMEStandard.IsContentEnvelopedSignature(decryptedEntity.ParsedContentType))
-            {
-                signatures = m_cryptographer.DeserializeEnvelopedSignature(decryptedEntity);                
-                payload = MimeSerializer.Default.Deserialize<MimeEntity>(signatures.ContentInfo.Content);
-            }                        
-            else if (SMIMEStandard.IsContentMultipartSignature(decryptedEntity.ParsedContentType))
-            {
-                SignedEntity signedEntity = SignedEntity.Load(decryptedEntity);                
-                signatures = m_cryptographer.DeserializeDetachedSignature(signedEntity);
-                payload = signedEntity.Content; 
-            }
-            else
-            {
-                throw new AgentException(AgentError.UnsignedMessage);
-            }
-            
-            message.Signatures = signatures;
-            //
-            // Alter body to contain actual content. Also clean up mime headers on the message that were there to support
-            // signatures etc
-            //
-            HeaderCollection headers = message.Message.Headers;
-            message.Message.Headers = headers.SelectNonMimeHeaders();
-            message.Message.ApplyBody(payload); // this will merge in content + content specific mime headers
-        }
-
-        MimeEntity DecryptMessage(IncomingMessage message)
         {
-            MimeEntity decryptedEntity = null;
+            SignedCms signatures = null;
+            MimeEntity payload = null;
+            bool success = false;
+            
             if (this.m_encryptionEnabled)
             {
                 //
-                // Yes, this can be optimized heavily for multiple certs. 
+                // Yes, this can be optimized for multiple certs. 
                 // But we will start with the easy to understand simple version
                 //            
                 // Decrypt and parse message body into a signature entity - the envelope that contains our data + signature
@@ -607,8 +578,11 @@ namespace NHINDirect.Agent
                 {
                     try
                     {
-                        decryptedEntity = this.m_cryptographer.Decrypt(message.Message, cert);
-                        break;
+                        success = this.DecryptSignatures(message, cert, out signatures, out payload);
+                        if (success)
+                        {
+                            break;
+                        }
                     }
                     catch
                     {
@@ -617,15 +591,63 @@ namespace NHINDirect.Agent
             }
             else
             {
-                decryptedEntity = message.Message;
+                success = this.DecryptSignatures(message, null, out signatures, out payload);
             }
-            
-            if (decryptedEntity == null)
+
+            if (!success || signatures == null || payload == null)
             {
                 throw new AgentException(AgentError.UntrustedMessage);
             }
+            
+            message.Signatures = signatures;
+            //
+            // Alter body to contain actual content. Also clean up mime headers on the message that were there to support
+            // signatures etc
+            //
+            HeaderCollection headers = message.Message.Headers;
+            message.Message.Headers = headers.SelectNonMimeHeaders();
+            message.Message.UpdateBody(payload); // this will merge in content + content specific mime headers
+        }
+        
+        /// <summary>
+        /// Decrypt (optionally) the given message and try to extract signatures
+        /// </summary>
+        bool DecryptSignatures(IncomingMessage message, X509Certificate2 certificate, out SignedCms signatures, out MimeEntity payload)
+        {
+            MimeEntity decryptedEntity = null;
+            signatures = null;
+            payload = null;
+            
+            if (certificate != null)
+            {
+                decryptedEntity = this.m_cryptographer.Decrypt(message.Message, certificate);
+            }
+            else
+            {
+                decryptedEntity = message.Message;
+            }
+            if (decryptedEntity == null)
+            {
+                return false;
+            }
 
-            return decryptedEntity;
+            if (SMIMEStandard.IsContentEnvelopedSignature(decryptedEntity.ParsedContentType))
+            {
+                signatures = m_cryptographer.DeserializeEnvelopedSignature(decryptedEntity);
+                payload = MimeSerializer.Default.Deserialize<MimeEntity>(signatures.ContentInfo.Content);
+            }
+            else if (SMIMEStandard.IsContentMultipartSignature(decryptedEntity.ParsedContentType))
+            {
+                SignedEntity signedEntity = SignedEntity.Load(decryptedEntity);
+                signatures = m_cryptographer.DeserializeDetachedSignature(signedEntity);
+                payload = signedEntity.Content;
+            }
+            else
+            {
+                throw new AgentException(AgentError.UnsignedMessage);
+            }
+            
+            return true;
         }
 
         //-------------------------------------------------------------------
@@ -861,11 +883,11 @@ namespace NHINDirect.Agent
                 //
                 // Alter message content to contain encrypted data
                 //
-                message.Message.ApplyBody(encryptedEntity);
+                message.Message.UpdateBody(encryptedEntity);
             }
             else
             {
-                message.Message.ApplyBody(signedEntity);
+                message.Message.UpdateBody(signedEntity);
             }
         }
 
