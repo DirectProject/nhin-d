@@ -1,18 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.nhind.ccddb;
 
 import junit.framework.TestCase;
 
 /**
- *
+ * 
  * @author vlewis
  */
 public class CCDParserTest extends TestCase {
-    
+
     public CCDParserTest(String testName) {
         super(testName);
     }
@@ -34,8 +29,8 @@ public class CCDParserTest extends TestCase {
         System.out.println("parseCCD");
         String ccdXml = "<ClinicalDocument>Test</ClinicalDocument>";
         CCDParser instance = new CCDParser();
-  //      instance.parseCCD(ccdXml);
-       
+        // instance.parseCCD(ccdXml);
+
     }
 
     /**
@@ -46,9 +41,9 @@ public class CCDParserTest extends TestCase {
         CCDParser instance = new CCDParser();
         String expResult = "";
         String result = instance.getPatientId();
-       // assertEquals(expResult, result);
-        // TODO review the generated test code 
-       
+        // assertEquals(expResult, result);
+        // TODO review the generated test code
+
     }
 
     /**
@@ -59,9 +54,9 @@ public class CCDParserTest extends TestCase {
         CCDParser instance = new CCDParser();
         String expResult = "";
         String result = instance.getOrgId();
-      //  assertEquals(expResult, result);
-        // TODO review the generated test code 
-      
+        // assertEquals(expResult, result);
+        // TODO review the generated test code
+
     }
 
 }
