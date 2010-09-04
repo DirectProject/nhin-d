@@ -6,9 +6,10 @@ package org.nhind.mail.service;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- *
+ * 
  * @author Vincent Lewis
  */
 public class SimplePerson implements Serializable {
@@ -39,7 +40,7 @@ public class SimplePerson implements Serializable {
     private String localId;
     private String localOrg;
     private String ssn;
-    private HashMap otherOrgIds = new HashMap();;
+    private Map otherOrgIds = new HashMap();;
 
     // portal related attribs
     private String npi;
@@ -51,19 +52,22 @@ public class SimplePerson implements Serializable {
     private String systemName;
     private String phoneExt;
 
+    private static final long serialVersionUID = -4738964463278522940L;
+
     public SimplePerson() {
     }
 
-    public HashMap getOtherOrgIds(){
+    public Map getOtherOrgIds() {
         return otherOrgIds;
     }
+
     public String getSSN() {
         return ssn;
     }
+
     public void setSSN(String ssn) {
         this.ssn = ssn;
     }
-
 
     public String getLocalId() {
         return localId;
@@ -77,7 +81,7 @@ public class SimplePerson implements Serializable {
         this.localId = localId;
     }
 
-        public void setLocalOrg(String localOrg) {
+    public void setLocalOrg(String localOrg) {
         this.localOrg = localOrg;
     }
 
@@ -265,10 +269,10 @@ public class SimplePerson implements Serializable {
         this.patientEuid = patientEuid;
     }
 
-
     public String getDepartment() {
         return department;
     }
+
     public void setDepartment(String department) {
         this.department = department;
     }
@@ -276,6 +280,7 @@ public class SimplePerson implements Serializable {
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -283,14 +288,15 @@ public class SimplePerson implements Serializable {
     public String getNpi() {
         return npi;
     }
+
     public void setNpi(String npi) {
         this.npi = npi;
     }
 
-
     public String getSsn() {
         return ssn;
     }
+
     public void setSsn(String ssn) {
         this.ssn = ssn;
     }
@@ -334,7 +340,5 @@ public class SimplePerson implements Serializable {
     public void setPhoneExt(String phoneExt) {
         this.phoneExt = phoneExt;
     }
-
-
 
 }

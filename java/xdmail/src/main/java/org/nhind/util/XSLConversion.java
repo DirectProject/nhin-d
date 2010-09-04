@@ -17,7 +17,7 @@ import javax.xml.transform.stream.StreamSource;
 public class XSLConversion {
     // private static StreamConversion conv;
 
-    private static Hashtable conversions = new Hashtable(10);
+    private static Hashtable<String, Templates> conversions = new Hashtable<String, Templates>(10);
     private static int count = 0;
     static final String SERVERNAME = "XSLEngine";
 
@@ -50,7 +50,7 @@ public class XSLConversion {
 
         long start = System.currentTimeMillis();
         if(conversions.containsKey(mapFile)){
-          Templates temp = (Templates)conversions.get(mapFile);
+          Templates temp = conversions.get(mapFile);
           transformer = temp.newTransformer();
           Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO,"from xsl cache");
         }else{

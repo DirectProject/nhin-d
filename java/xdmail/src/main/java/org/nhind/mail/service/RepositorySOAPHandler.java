@@ -114,6 +114,8 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                 //edit Envelope
                 SOAPEnvelope env = sp.getEnvelope();
                 SOAPHeader sh = env.addHeader();
+                
+                @SuppressWarnings("unused")
                 SOAPBody sb = env.getBody();
 
                 if (action != null) {
