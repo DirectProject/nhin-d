@@ -305,7 +305,16 @@ namespace DnsResolver
         /// <returns><c>true</c> if the current position is a pointer, <c>false</c> otherwise</returns>
         public bool IsPointer()
         {
+            // 0xC0 = 0b11000000, bitmask for pointer octet
             return ((this.Current & 0xC0) != 0);
+        }
+
+        void ReadStringFromPointer()
+        {
+            // rest of string is found elsewhere. go get it.
+            // 0x3FFF = 0b0011111111111111, bitmask for pointer value.
+            int stringStartAt = (this.ReadShort() & 0x3FFF);
+            this.Clone(stringStartAt).ReadStringInternal();
         }
 
         void ReadStringInternal()
@@ -321,9 +330,7 @@ namespace DnsResolver
 
                 if (this.IsPointer())
                 {
-                    // rest of string is found elsewhere. go get it.
-                    int stringStartAt = (this.ReadShort() & 0x3FFF);
-                    this.Clone(stringStartAt).ReadStringInternal();
+                    this.ReadStringFromPointer();
                     break;
                 }
 
