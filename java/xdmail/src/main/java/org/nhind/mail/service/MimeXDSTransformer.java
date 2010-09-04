@@ -9,10 +9,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.activation.DataHandler;
@@ -44,6 +46,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 import org.apache.commons.lang.StringUtils;
 import org.nhind.ccddb.CCDParser;
+import org.nhind.util.MimeType;
 
 /*
  * TODO there is a major assumption within this class and underlying classes.  That is the assumption of single document. 
@@ -62,25 +65,24 @@ import org.nhind.ccddb.CCDParser;
 public class MimeXDSTransformer {
 
     private static final Logger LOGGER = Logger.getLogger(MimeXDSTransformer.class.getName());
-    static final String MIMETYPE_TEXT_PLAIN = "text/plain";
-    static final String MIMETYPE_TEXT_XML = "text/xml";
-    static final String MIMETYPE_CDA = "text/cda+xml";
-    static final String MIMETYPE_CCR = "application/ccr";
-    static final String DEFAULT_LANGUAGE_CODE = "en-us"; // TODO default from
-                                                         // Locale
-    static final String RANDOM_OID_ROOT = "1.3.6.1.4.1.21367.3100.1.2.3";
-    static final String NHINDIRECT_MESSAGE_ID_ASSIGNING_AUTHORITY_NAME = "NHINDirect";
-    static final String NHINDIRECT_ADDR_OID = "1.3.6.1.4.1.21367.3100.1";
-    static final String NHINDIRECT_MESSAGE_ID_ASSIGNING_AUTHORITY_ID = "1.3.6.1.4.1.21367.3100.1.1";
-    static final String NHINDIRECT_MESSAGE_METADATA_CODESYSTEM_ID = "1.3.6.1.4.1.21367.3100.1.2";
-    static final String CODE_UNSPECIFIED = "Unspecified";
-    static final String CODE_CLINICALDATA = "Clinical Data";
-    static final String CODE_CONTENT_TYPE = "Communication";
-    static final String CODE_CONFIDENTIALITY = "N";
-    static final String CODE_FORMAT_TEXT = "TEXT";
-    static final String CODE_FORMAT_CDAR2 = "CDAR2/IHE 1.0";
-    static final String CODE_FORMAT_CCRV1 = "CCR V1.0";
-    static final String CODE_FORMAT_PDF = "PDF";
+
+//    private static final String DEFAULT_LANGUAGE_CODE = "en-us"; // TODO default from
+//                                                         // Locale
+    
+//    private static final String RANDOM_OID_ROOT = "1.3.6.1.4.1.21367.3100.1.2.3";
+//    private static final String NHINDIRECT_MESSAGE_ID_ASSIGNING_AUTHORITY_NAME = "NHINDirect";
+//    private static final String NHINDIRECT_ADDR_OID = "1.3.6.1.4.1.21367.3100.1";
+//    private static final String NHINDIRECT_MESSAGE_ID_ASSIGNING_AUTHORITY_ID = "1.3.6.1.4.1.21367.3100.1.1";
+//    private static final String NHINDIRECT_MESSAGE_METADATA_CODESYSTEM_ID = "1.3.6.1.4.1.21367.3100.1.2";
+//    private static final String CODE_UNSPECIFIED = "Unspecified";
+//    private static final String CODE_CLINICALDATA = "Clinical Data";
+//    private static final String CODE_CONTENT_TYPE = "Communication";
+//    private static final String CODE_CONFIDENTIALITY = "N";
+    private static final String CODE_FORMAT_TEXT = "TEXT";
+    private static final String CODE_FORMAT_CDAR2 = "CDAR2/IHE 1.0";
+//   private static final String CODE_FORMAT_CCRV1 = "CCR V1.0";
+//    private static final String CODE_FORMAT_PDF = "PDF";
+    
     protected String endpoint = null;
     protected String messageId = null;
     protected String relatesTo = null;
@@ -90,8 +92,9 @@ public class MimeXDSTransformer {
     private String remoteHost = null;
     private String pid = null;
     private String from = null;
-    private String suffix = null;
-    private String replyEmail = null;
+    
+//    private String suffix = null;
+//    private String replyEmail = null;
 
     public void forward(String endpoint, MimeMessage mimeMessage) throws Exception {
         ProvideAndRegisterDocumentSetRequestType prds = createRequest(mimeMessage);
@@ -136,133 +139,148 @@ public class MimeXDSTransformer {
         ProvideAndRegisterDocumentSetRequestType prsr = null;
 
         try {
+            Date sentDate = null;
+
+            Address[] froms = null;
+            Address[] recips = null;
+            
             byte[] xdsDocument = null;
+            
+            String subject = null;
             String xdsMimeType = null;
             String xdsFormatCode = null;
-
-            Address[] froms = mimeMessage.getFrom();
-            Address[] recips = mimeMessage.getAllRecipients();
-            String msgContentType = mimeMessage.getContentType();
-
-            String recip = recips[0].toString(); // TODO one recipient for now
+            String msgContentType = null;
+            
+            froms = mimeMessage.getFrom();
+            subject = mimeMessage.getSubject();
+            sentDate = mimeMessage.getSentDate();
+            recips = mimeMessage.getAllRecipients();
+            msgContentType = mimeMessage.getContentType();
+            
             String auth = froms[0].toString(); // TODO one from for now
-            messageId = mimeMessage.getMessageID();
-            Date sentDate = mimeMessage.getSentDate();
-            // String organization = mimeMessage.
-            String subject = mimeMessage.getSubject();
+            String recip = recips[0].toString(); // TODO one recipient for now
 
-            LOGGER.info("messagecontenttype" + msgContentType);
-            if (msgContentType.startsWith("multipart/mixed")) {
-                LOGGER.info("in multipart/mixed");
+            this.messageId = mimeMessage.getMessageID();
+            
+            if (LOGGER.isLoggable(Level.INFO))
+                LOGGER.info("Message content type: " + msgContentType);
+            if (StringUtils.startsWith(msgContentType, "multipart/mixed")) {
+                LOGGER.info("Handling multipart/mixed");
 
                 MimeMultipart mimeMultipart = (MimeMultipart) mimeMessage.getContent();
 
-                // we grab any CDA document attachments and add them to the
-                // submission using OHT
-                for (int partIndex = 0; partIndex < mimeMultipart.getCount(); partIndex++) {
-
-                    BodyPart bodyPart = mimeMultipart.getBodyPart(partIndex);
+                /*
+                 * Grab any CDA document attachments and add them to the
+                 * submission
+                 */
+                for (int i = 0; i < mimeMultipart.getCount(); i++) {
+                    BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+                    
                     String contentType = bodyPart.getContentType();
-                    LOGGER.info("in bodypart size = " + bodyPart.getSize());
+                    
+                    if (LOGGER.isLoggable(Level.INFO))
+                        LOGGER.info("BodyPart size: " + bodyPart.getSize());
                     if (bodyPart.getSize() > 0) {
-
                         String fname = bodyPart.getFileName();
-                        if (fname == null || fname.equals("null")) {
+                        
+                        if (StringUtils.isBlank(fname) || StringUtils.equalsIgnoreCase(fname, "null")) {
                             continue;
                         }
-                        LOGGER.info("file name " + fname);
+                        
+                        if (LOGGER.isLoggable(Level.INFO))
+                            LOGGER.info("File name: " + fname);
                         if (StringUtils.contains(fname, ".zip")) {
                             try {
                                 prsr = getMDMRequest(bodyPart);
-
                             } catch (Exception x) {
-
+                                // TODO
                             }
                         }
 
                         InputStream is = bodyPart.getInputStream();
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                        int j = 0;
                         byte[] buf = new byte[1024];
-                        int i = 0;
-                        while ((i = is.read(buf)) != -1) {
-                            baos.write(buf, 0, i);
+                        
+                        while ((j = is.read(buf)) != -1) {
+                            baos.write(buf, 0, j);
                         }
+                        
                         String contentString = new String(baos.toByteArray());
 
-                        // LOGGER.info("BAOS" +contentString);
                         try {
                             // special handling for recognized content types
-                            if (contentType.startsWith(MIMETYPE_TEXT_PLAIN)) {
-                                if (contentString.trim().length() == 0) {
+                            if (MimeType.TEXT_PLAIN.matches(contentType)) {
+                                if (StringUtils.isBlank(contentString)) {
                                     continue; // skip 'empty' parts
                                 }
+                                
                                 xdsDocument = baos.toByteArray();
-                                xdsMimeType = MIMETYPE_TEXT_PLAIN;
+                                xdsMimeType = MimeType.TEXT_PLAIN.getS1();
                                 xdsFormatCode = CODE_FORMAT_TEXT;
-                            } else if (contentType.startsWith(MIMETYPE_TEXT_XML)) {
-
-                                // its a CDA R2
-                                if (contentString.contains("urn:hl7-org:v3") && contentString.contains("POCD_HD000040")) {
-                                    xdsDocument = baos.toByteArray();
-                                    xdsMimeType = MIMETYPE_TEXT_XML;
+                            } else if (MimeType.TEXT_XML.matches(contentType)) {
+                                if (StringUtils.contains(contentString, "urn:hl7-org:v3")
+                                        && StringUtils.contains(contentString, "POCD_HD000040")) {
+                                    // CDA R2
                                     xdsFormatCode = CODE_FORMAT_CDAR2;
-                                } // its some other XML (maybe a CCR or HL7
-                                  // message) TODO support more XML types
-                                else {
-                                    xdsDocument = baos.toByteArray();
-                                    xdsMimeType = MIMETYPE_TEXT_XML;
+                                } else {
+                                    // Other XML (possible CCR or HL7)
+                                    // TODO: support more XML types
                                     xdsFormatCode = CODE_FORMAT_TEXT;
                                 }
-
-                                // otherwise make best effort passing MIME
-                                // content type thru
+                                
+                                xdsDocument = baos.toByteArray();
+                                xdsMimeType = MimeType.TEXT_XML.getS1();
                             } else {
+                                // Otherwise make best effort passing MIME content type thru
                                 xdsMimeType = contentType;
                                 xdsFormatCode = CODE_FORMAT_TEXT;
                             }
-
-                        } finally {
+                        }  finally {
                             is.close();
                         }
                     }
-
                 }
-
+            } else if (MimeType.TEXT_PLAIN.matches(msgContentType)) {
                 // support for plain mail, no attachments
-            } else if (msgContentType.startsWith(MIMETYPE_TEXT_PLAIN)) {
-                xdsMimeType = MIMETYPE_TEXT_PLAIN;
+                xdsMimeType = MimeType.TEXT_PLAIN.getS1();
                 xdsFormatCode = CODE_FORMAT_TEXT;
                 xdsDocument = ((String) mimeMessage.getContent()).getBytes();
-
-                // form prsr
             } else {
-                throw new MessagingException("message content type " + msgContentType + " is not supported");
+                // form prsr                
+                throw new MessagingException("Message content type " + msgContentType + " is not supported.");
             }
+            
             prsr = getRequest(subject, sentDate, xdsFormatCode, xdsMimeType, xdsDocument, auth, recip);
-
         } catch (Exception x) {
+            // TODO
         }
 
         return prsr;
-
     }
 
-    ProvideAndRegisterDocumentSetRequestType getMDMRequest(BodyPart bodyPart) throws Exception {
-        ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
-        LOGGER.info("in getMDMRequest");
+    protected static ProvideAndRegisterDocumentSetRequestType getMDMRequest(BodyPart bodyPart) throws Exception {
+        LOGGER.info("Inside getMDMRequest");
+        
+        DataHandler dh = null;
         XDMXDSTransformer xxt = new XDMXDSTransformer();
-        DataHandler dh = bodyPart.getDataHandler();
+        ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
+        
+        dh = bodyPart.getDataHandler();
         prsr = xxt.getXDMRequest(dh);
+        
         return prsr;
     }
 
-    ProvideAndRegisterDocumentSetRequestType getRequest(String subject, Date sentDate, String formatCode,
+    protected static ProvideAndRegisterDocumentSetRequestType getRequest(String subject, Date sentDate, String formatCode,
             String mimeType, byte[] doc, String auth, String recip) throws Exception {
-
         ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
+        
         String sdoc = new String(doc);
         CCDParser cp = new CCDParser();
         cp.parseCCD(sdoc);
+        
         String patientId = cp.getPatientId();
         String orgId = cp.getOrgId();
         String date = formatDate(sentDate);
@@ -273,29 +291,27 @@ public class MimeXDSTransformer {
         SubmitObjectsRequest sor = getSubmitObjectsRequest(patientId, orgId, sp, subject, date, docId, subId,
                 formatCode, mimeType, auth, recip);
         prsr.setSubmitObjectsRequest(sor);
+        
+        DataSource source = new ByteArrayDataSource(doc, MimeType.APPLICATION_XML.getS1() + "; charset=UTF-8");
+        DataHandler dhnew = new DataHandler(source);
+
         List<Document> docs = prsr.getDocument();
         Document pdoc = new Document();
-
-        DataSource source = new ByteArrayDataSource(doc, "application/xml; charset=UTF-8");
-        DataHandler dhnew = new DataHandler(source);
+        
         pdoc.setValue(dhnew);
         pdoc.setId(docId);
         docs.add(pdoc);
 
         return prsr;
-
     }
 
-    public SubmitObjectsRequest getSubmitObjectsRequest(String patientId, String orgId, SimplePerson person,
+    protected static SubmitObjectsRequest getSubmitObjectsRequest(String patientId, String orgId, SimplePerson person,
             String subject, String sentDate, String docId, String subId, String formatCode, String mimeType,
             String auth, String recip) {
-
         SubmitObjectsRequest req = new SubmitObjectsRequest();
-
         RegistryObjectListType rolt = new RegistryObjectListType();
 
-        ExtrinsicObjectType eot = getExtrinsicObject(patientId, orgId, person, sentDate, docId, formatCode, mimeType,
-                auth);
+        ExtrinsicObjectType eot = getExtrinsicObject(patientId, orgId, person, sentDate, docId, formatCode, mimeType, auth);
         QName qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "ExtrinsicObject");
         JAXBElement eotj = new JAXBElement(qname, ExtrinsicObjectType.class, eot);
 
@@ -322,96 +338,100 @@ public class MimeXDSTransformer {
         return req;
     }
 
-    protected ExtrinsicObjectType getExtrinsicObject(String patientId, String orgId, SimplePerson person,
+    protected static ExtrinsicObjectType getExtrinsicObject(String patientId, String orgId, SimplePerson person,
             String sentDate, String docId, String formatCode, String mimeType, String auth) {
+        List<String> snames = null;
+        List<String> slotNames = null;
+        List<String> slotValues = null;
+        List<SlotType1> slots = null;
+        List<ClassificationType> classifs = null;
+        List<ExternalIdentifierType> extIds = null;
+        
+        ExtrinsicObjectType document = null;
+        
+        final String obType = "urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1";
 
-        ExtrinsicObjectType document = new ExtrinsicObjectType();
-
-        String obType = "urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1";
-
+        document = new ExtrinsicObjectType();
         document.setId(docId);
         document.setObjectType(obType);
         document.setMimeType(mimeType);
-        List<SlotType1> slots = document.getSlot();
-
+               
+        slots = document.getSlot();
+        extIds = document.getExternalIdentifier();
+        classifs = document.getClassification();
+        
         slots.add(makeSlot("creationTime", sentDate));
+        
         // slots.add(makeSlot("serviceStartTime", formatDate(new Date())));
         // GregorianCalendar gd = new GregorianCalendar();
         // gd.add(gd.YEAR, 100);
         // slots.add(makeSlot("serviceStopTime", formatDate(gd.getTime())));
+        
         slots.add(makeSlot("sourcePatientId", patientId + "^^^&" + orgId));
+        
         if (person != null) {
             slots.add(makePatientSlot("sourcePatientInfo", person, patientId, orgId));
         }
 
-        List<String> slotNames = new ArrayList<String>();
-        if (auth != null) {
-            slotNames.add("authorPerson");
-        }
-        slotNames.add("authorInstitution");
-        slotNames.add("authorRole");
-        List<String> slotValues = new ArrayList<String>();
-        if (auth != null) {
-            slotValues.add(auth);
-        }
-        slotValues.add(orgId);
-        if (auth != null) {
-            slotValues.add(auth + "'s Role");// see if we need this
-        } else {
-            slotValues.add("System");
-        }
-
-        List<String> snames = new ArrayList<String>();
+        snames = new ArrayList<String>();
+        slotNames = new ArrayList<String>();
+        slotValues = new ArrayList<String>();
+        
         if (auth != null) {
             snames.add(null);
+            slotNames.add("authorPerson");
+            slotValues.add(auth);
         }
+        
         snames.add(null);
+        slotNames.add("authorInstitution");
+        slotValues.add(orgId);
+        
         snames.add(null);
-        List<ClassificationType> classifs = document.getClassification();
+        slotNames.add("authorRole");
+        if (auth != null)
+            slotValues.add(auth + "'s Role");// see if we need this
+        else
+            slotValues.add("System");
+
         addClassifications(classifs, docId, "c101", "urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d", null, slotNames,
                 slotValues, snames);
-        slotNames = new ArrayList<String>();
-        slotNames.add("codingScheme");
-        slotValues = new ArrayList<String>();
-        slotValues.add("Connect-a-thon classCodes");
-        snames = new ArrayList<String>();
-        snames.add("History and Physical");
+        
+        snames = Arrays.asList("History and Physical");
+        slotNames = Arrays.asList("codingScheme");
+        slotValues = Arrays.asList("Connect-a-thon classCodes");
+        
         addClassifications(classifs, docId, "c102", "uuid:41a5887f-8865-4c09-adf7-e362475b143a",
                 "History and Physical", slotNames, slotValues, snames);
-        slotNames = new ArrayList<String>();
-        slotNames.add("codingScheme");
-        slotValues = new ArrayList<String>();
-        slotValues.add("Connect-a-thon formatCodes");
-        snames = new ArrayList<String>();
-        snames.add(formatCode);
+        
+        snames = Arrays.asList(formatCode);
+        slotNames = Arrays.asList("codingScheme");
+        slotValues = Arrays.asList("Connect-a-thon formatCodes");
+
         addClassifications(classifs, docId, "c104", "urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d", formatCode,
                 slotNames, slotValues, snames);
-        slotNames = new ArrayList<String>();
-        slotNames.add("codingScheme");
-        slotValues = new ArrayList<String>();
-        slotValues.add("Connect-a-thon healthcareFacilityTypeCodes");
-        snames = new ArrayList<String>();
-        snames.add("OF");
+        
+        snames = Arrays.asList("OF");
+        slotNames = Arrays.asList("codingScheme");
+        slotValues = Arrays.asList("Connect-a-thon healthcareFacilityTypeCodes");
+
         addClassifications(classifs, docId, "c105", "urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1", "OF", slotNames,
                 slotValues, snames);
-        slotNames = new ArrayList<String>();
-        slotNames.add("codingScheme");
-        slotValues = new ArrayList<String>();
-        slotValues.add("Connect-a-thon practiceSettingCodes");
-        snames = new ArrayList<String>();
-        snames.add("Multidisciplinary");
+        
+        snames = Arrays.asList("Multidisciplinary");
+        slotNames = Arrays.asList("codingScheme");
+        slotValues = Arrays.asList("Connect-a-thon practiceSettingCodes");        
+
         addClassifications(classifs, docId, "c106", "urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead",
                 "Multidisciplinary", slotNames, slotValues, snames);
-        slotNames = new ArrayList<String>();
-        slotNames.add("codingScheme");
-        slotValues = new ArrayList<String>();
-        slotValues.add("LOINC");
-        snames = new ArrayList<String>();
-        snames.add("34133-9");
+        
+        snames = Arrays.asList("34133-9");
+        slotNames = Arrays.asList("codingScheme");
+        slotValues = Arrays.asList("LOINC");    
+        
         addClassifications(classifs, docId, "c107", "urn:uuid:f0306f51-975f-434e-a61c-c59651d33983", "34133-9",
                 slotNames, slotValues, snames);
 
-        List<ExternalIdentifierType> extIds = document.getExternalIdentifier();
         addExternalIds(extIds, docId, "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427", "ei01",
                 "XDSDocumentEntry.patientId", patientId + "^^^&" + orgId);
         addExternalIds(extIds, docId, "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab", "ei02",
@@ -420,7 +440,7 @@ public class MimeXDSTransformer {
         return document;
     }
 
-    protected RegistryPackageType getSubmissionSet(String patientId, String orgId, String subject, String sentDate,
+    protected static RegistryPackageType getSubmissionSet(String patientId, String orgId, String subject, String sentDate,
             String subId, String auth, String recip) {
         RegistryPackageType subset = new RegistryPackageType();
 
@@ -482,7 +502,7 @@ public class MimeXDSTransformer {
         return subset;
     }
 
-    protected ClassificationType getClassification(String setId) {
+    protected static ClassificationType getClassification(String setId) {
         ClassificationType ct = new ClassificationType();
         ct.setClassificationNode("urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd");
         ct.setClassifiedObject(setId);
@@ -490,7 +510,7 @@ public class MimeXDSTransformer {
         return ct;
     }
 
-    protected AssociationType1 getAssociation(String setId, String docId) {
+    protected static AssociationType1 getAssociation(String setId, String docId) {
         AssociationType1 at = new AssociationType1();
 
         at.setAssociationType("HasMember");
@@ -501,7 +521,7 @@ public class MimeXDSTransformer {
         return at;
     }
 
-    protected SlotType1 makePatientSlot(String name, SimplePerson patient, String patientId, String orgId) {
+    protected static SlotType1 makePatientSlot(String name, SimplePerson patient, String patientId, String orgId) {
 
         SlotType1 slot = new SlotType1();
         try {
@@ -511,22 +531,47 @@ public class MimeXDSTransformer {
             List<String> vals = values.getValue();
 
             if (patient != null) {
+                StringBuffer sb = null;
+                
+                // <rim:Value>PID-3|pid1^^^domain</rim:Value>
+                sb = new StringBuffer("PID-3|");
+                sb.append(patientId);
+                sb.append("^^^&amp;");
+                sb.append(orgId);
+                sb.append("&amp;ISO");
+                vals.add(sb.toString());
+                
+                // <rim:Value>PID-5|Doe^John^^^</rim:Value>
+                sb = new StringBuffer("PID-5|");
+                sb.append(patient.getLastName());
+                sb.append("^");
+                sb.append(patient.getFirstName());
+                sb.append("^");               
+                sb.append(patient.getMiddleName());
+                vals.add(sb.toString());
+                
+                // <rim:Value>PID-7|19560527</rim:Value>
+                sb = new StringBuffer("PID-7|");
+                sb.append(formatDateFromMDM(patient.getBirthDateTime()));
+                vals.add(sb.toString());
 
-                String value1 = "PID-3|" + patientId + "^^^&amp;" + orgId + "&amp;ISO";// <rim:Value>PID-3|pid1^^^domain</rim:Value>
-                String value2 = "PID-5|" + patient.getLastName() + "^" + patient.getFirstName() + "^"
-                        + patient.getMiddleName();// <rim:Value>PID-5|Doe^John^^^</rim:Value>
-                String value3 = "PID-7|" + formatDateFromMDM(patient.getBirthDateTime());// <rim:Value>PID-7|19560527</rim:Value>
-                String value4 = "PID-8|" + patient.getGenderCode(); // <rim:Value>PID-8|M</rim:Value>
-                String value5 = "PID11|" + patient.getStreetAddress1() + "^" + patient.getCity() + "^^"
-                        + patient.getState() + "^" + patient.getZipCode() + "^" + patient.getCountry();// <rim:Value>PID-11|100
-                                                                                                       // Main
-                                                                                                       // St^^Metropolis^Il^44130^USA</rim:Value>
-
-                vals.add(value1);
-                vals.add(value2);
-                vals.add(value3);
-                vals.add(value4);
-                vals.add(value5);
+                // <rim:Value>PID-8|M</rim:Value>
+                sb = new StringBuffer("PID-8|");
+                sb.append(patient.getGenderCode());
+                vals.add(sb.toString());
+                
+                // <rim:Value>PID-11|100 Main St^^Metropolis^Il^44130^USA</rim:Value>
+                sb = new StringBuffer("PID-11|");
+                sb.append(patient.getStreetAddress1());
+                sb.append("^");
+                sb.append(patient.getCity());
+                sb.append("^^");               
+                sb.append(patient.getState());
+                sb.append("^");               
+                sb.append(patient.getZipCode());
+                sb.append("^");               
+                sb.append(patient.getCountry());
+                vals.add(sb.toString());
             }
         } catch (Exception x) {
             x.printStackTrace();
@@ -535,7 +580,7 @@ public class MimeXDSTransformer {
         return slot;
     }
 
-    protected void addClassifications(List<ClassificationType> classifs, String docId, String id, String scheme,
+    protected static void addClassifications(List<ClassificationType> classifs, String docId, String id, String scheme,
             String rep, List<String> slotNames, List<String> slotValues, List<String> snames) {
 
         ClassificationType ct = new ClassificationType();
@@ -566,16 +611,16 @@ public class MimeXDSTransformer {
 
     }
 
-    protected void addExternalIds(List<ExternalIdentifierType> extIds, String docId, String scheme, String id,
+    protected static void addExternalIds(List<ExternalIdentifierType> extIds, String docId, String scheme, String id,
             String sname, String value) {
-
         ExternalIdentifierType ei = new ExternalIdentifierType();
+        
         extIds.add(ei);
         ei.setRegistryObject(docId);
         ei.setIdentificationScheme(scheme);
         ei.setId(id);
 
-        if (sname != null) {
+        if (StringUtils.isNotBlank(sname)) {
             InternationalStringType name = new InternationalStringType();
             List<LocalizedStringType> names = name.getLocalizedString();
             LocalizedStringType lname = new LocalizedStringType();
@@ -583,11 +628,11 @@ public class MimeXDSTransformer {
             names.add(lname);
             ei.setName(name);
         }
+        
         ei.setValue(value);
-
     }
 
-    protected String formatDate(Date dateVal) {
+    protected static String formatDate(Date dateVal) {
 
         String formout = "yyyyMMddHHmmss";
 
@@ -602,7 +647,7 @@ public class MimeXDSTransformer {
         return ret;
     }
 
-    protected String formatDateFromMDM(String value) {
+    protected static String formatDateFromMDM(String value) {
         String formout = "yyyyMMddHHmmss";
         String formin = "MM/dd/yyyy";
         String ret = value;
@@ -630,6 +675,7 @@ public class MimeXDSTransformer {
         slot.setValueList(values);
         List<String> vals = values.getValue();
         vals.add(value);
+        
         return slot;
     }
 
@@ -649,4 +695,5 @@ public class MimeXDSTransformer {
 
         LOGGER.info(threadData.toString());
     }
+    
 }

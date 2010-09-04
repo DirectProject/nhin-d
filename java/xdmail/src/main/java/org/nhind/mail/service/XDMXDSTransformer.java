@@ -9,10 +9,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -41,17 +39,6 @@ public class XDMXDSTransformer {
     static private String XDM_FILENAME_METADATA = "METADATA.xml";
     static private String XDM_FILENAME_DATA = "DOCUMENT.xml";
     static private String XDM_DIRSPEC_SUBMISSIONROOT = "SUBSET01";
-    /**
-     * TODO this needs to load from a complete mime map resource, demo version is just an example for some common types
-     */
-    static Map<String, String> MIMEMAP = new HashMap<String, String>();
-
-    static {
-        MIMEMAP.put("text/xml", "xml");
-        MIMEMAP.put("application/xml", "xml");
-        MIMEMAP.put("application/pdf", "pdf");
-        MIMEMAP.put("text/plain", "txt");
-    }
 
     /**
      * Reads an XDM ZIP archive and returns a set of XDS submissions.
