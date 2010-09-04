@@ -134,7 +134,7 @@ public class MimeXDSTransformer {
             Address[] recips = mimeMessage.getAllRecipients();
             Address[] froms = mimeMessage.getFrom();
             String recip = recips[0].toString();  //TODO one recipient for now
-            recip="vlewis@lewistower.com";//TODO remove this
+         //   recip="vlewis@lewistower.com";//TODO remove this
             String auth = froms[0].toString();  //TODO one from for now
             messageId = mimeMessage.getMessageID();
             Date sentDate = mimeMessage.getSentDate();
