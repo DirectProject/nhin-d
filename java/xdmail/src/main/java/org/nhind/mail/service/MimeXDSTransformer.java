@@ -442,56 +442,59 @@ public class MimeXDSTransformer {
 
     protected static RegistryPackageType getSubmissionSet(String patientId, String orgId, String subject, String sentDate,
             String subId, String auth, String recip) {
+        List<String> snames = null;
+        List<String> slotNames = null;
+        List<String> slotValues = null;
+        List<SlotType1> slots = null;
+        List<ClassificationType> classifs = null;
+        List<ExternalIdentifierType> extIds = null;
+        
         RegistryPackageType subset = new RegistryPackageType();
 
-        String obType = "urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1";
+        final String obType = "urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1";
 
         subset.setId(subId);
         subset.setObjectType(obType);
-
-        List<SlotType1> slots = subset.getSlot();
+        
+        slots = subset.getSlot();
+        extIds = subset.getExternalIdentifier();
+        classifs = subset.getClassification();
 
         slots.add(makeSlot("submissionTime", sentDate));
         String intendedRecipient = "|" + recip + "^last^first^^^prefix^^^&amp;1.3.6.1.4.1.21367.3100.1&amp;ISO";
         slots.add(makeSlot("intendedRecipient", intendedRecipient));
 
-        List<String> slotNames = new ArrayList<String>();
-        if (auth != null) {
-            slotNames.add("authorPerson");
-        }
-        slotNames.add("authorInstitution");
-        slotNames.add("authorRole");
-        List<String> slotValues = new ArrayList<String>();
-        if (auth != null) {
-            slotValues.add(auth);
-        }
-        slotValues.add(orgId);
-        if (auth != null) {
-            slotValues.add(auth + "'s Role");// see if we need this
-        } else {
-            slotValues.add("System");
-        }
+        snames = new ArrayList<String>();
+        slotNames = new ArrayList<String>();
+        slotValues = new ArrayList<String>();
 
-        List<String> snames = new ArrayList<String>();
         if (auth != null) {
             snames.add(null);
+            slotNames.add("authorPerson");
+            slotValues.add(auth);
         }
+        
         snames.add(null);
+        slotNames.add("authorInstitution");
+        slotValues.add(orgId);
+        
         snames.add(null);
-        List<ClassificationType> classifs = subset.getClassification();
+        slotNames.add("authorRole");
+        if (auth != null)
+            slotValues.add(auth + "'s Role");// see if we need this
+        else 
+            slotValues.add("System");
+
         addClassifications(classifs, subId, "c101", "urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d", null, slotNames,
                 slotValues, snames);
 
-        slotNames = new ArrayList<String>();
-        slotNames.add("codingScheme");
-        slotValues = new ArrayList<String>();
-        slotValues.add("Connect-a-thon contentTypeCodes");
-        snames = new ArrayList<String>();
-        snames.add(subject);
+        snames = Arrays.asList(subject);
+        slotNames = Arrays.asList("codingScheme");
+        slotValues = Arrays.asList("Connect-a-thon contentTypeCodes");
+        
         addClassifications(classifs, subId, "c102", "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500", subject,
                 slotNames, slotValues, snames);
 
-        List<ExternalIdentifierType> extIds = subset.getExternalIdentifier();
         addExternalIds(extIds, subId, "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8", "ei01",
                 "XDSSubmissionSet.uniqueId", subId);
         addExternalIds(extIds, subId, "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832", "ei02",
@@ -512,12 +515,13 @@ public class MimeXDSTransformer {
 
     protected static AssociationType1 getAssociation(String setId, String docId) {
         AssociationType1 at = new AssociationType1();
-
         at.setAssociationType("HasMember");
         at.setSourceObject(setId);
         at.setTargetObject(docId);
+        
         List<SlotType1> slots = at.getSlot();
         slots.add(makeSlot("SubmissionSetStatus", "Original"));
+        
         return at;
     }
 
@@ -582,22 +586,24 @@ public class MimeXDSTransformer {
 
     protected static void addClassifications(List<ClassificationType> classifs, String docId, String id, String scheme,
             String rep, List<String> slotNames, List<String> slotValues, List<String> snames) {
-
         ClassificationType ct = new ClassificationType();
+        
         classifs.add(ct);
         ct.setClassifiedObject(docId);
         ct.setClassificationScheme(scheme);
         ct.setId(id);
         ct.setNodeRepresentation(rep);
+        
         List<SlotType1> slots = ct.getSlot();
         Iterator is = slotNames.iterator();
-        int icount = 0;
+        
+        int i = 0;
         while (is.hasNext()) {
             String slotName = (String) is.next();
-            SlotType1 slot = makeSlot(slotName, (String) slotValues.get(icount));
+            SlotType1 slot = makeSlot(slotName, (String) slotValues.get(i));
             slots.add(slot);
 
-            String sname = (String) snames.get(icount);
+            String sname = (String) snames.get(i);
             if (sname != null) {
                 InternationalStringType name = new InternationalStringType();
                 List<LocalizedStringType> names = name.getLocalizedString();
@@ -606,7 +612,8 @@ public class MimeXDSTransformer {
                 names.add(lname);
                 ct.setName(name);
             }
-            icount++;
+            
+            i++;
         }
 
     }
@@ -633,38 +640,41 @@ public class MimeXDSTransformer {
     }
 
     protected static String formatDate(Date dateVal) {
+        final String formout = "yyyyMMddHHmmss";
 
-        String formout = "yyyyMMddHHmmss";
-
-        SimpleDateFormat dateOut = new SimpleDateFormat(formout);
         String ret = null;
+        SimpleDateFormat dateOut = new SimpleDateFormat(formout);
+        
         try {
-
             ret = dateOut.format(dateVal);
         } catch (Exception x) {
             x.printStackTrace();
         }
+        
         return ret;
     }
 
     protected static String formatDateFromMDM(String value) {
-        String formout = "yyyyMMddHHmmss";
-        String formin = "MM/dd/yyyy";
+        final String formin = "MM/dd/yyyy";
+        final String formout = "yyyyMMddHHmmss";
+        
         String ret = value;
 
         if (StringUtils.contains(value, "+")) {
             value = value.substring(0, value.indexOf("+"));
         }
 
+        Date dateVal = null;
         SimpleDateFormat date = new SimpleDateFormat(formin);
         SimpleDateFormat dateOut = new SimpleDateFormat(formout);
-        Date dateVal = null;
+        
         try {
             dateVal = date.parse(value);
             ret = dateOut.format(dateVal);
         } catch (Exception x) {
             x.printStackTrace();
         }
+        
         return ret;
     }
 
