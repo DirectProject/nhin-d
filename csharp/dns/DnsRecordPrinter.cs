@@ -45,35 +45,35 @@ namespace DnsResolver
             
             if (response.IsNameError)
             {
-                Console.WriteLine("Is Name Error");
+				this.Print("Is Name Error");
                 return;
             }
             
             if (!response.IsSuccess)
             {
-                Console.WriteLine("Failed");
+				this.Print("Failed");
                 return;
             }
             
             if (response.HasAnswerRecords)
             {
-                Console.WriteLine("***ANSWERS***");
+				this.Print("***ANSWERS***");
                 this.Print(response.AnswerRecords);
             }
             else
             {
-                Console.WriteLine("No answers");
+				this.Print("No answers");
             }              
             
             if (response.HasNameServerRecords)
             {
-                Console.WriteLine("***NAME SERVERS***");
+				this.Print("***NAME SERVERS***");
                 this.Print(response.NameServerRecords);
             }
             
             if (response.HasAdditionalRecords)
             {
-                Console.WriteLine("***Additional****");
+				this.Print("***Additional***");
                 this.Print(response.AdditionalRecords);
             }
         }
@@ -161,7 +161,7 @@ namespace DnsResolver
         {
             if (body == null)
             {
-                m_writer.WriteLine("Null A Record Body");
+                this.Print("Null A Record Body");
                 return;
             }
 
@@ -172,7 +172,7 @@ namespace DnsResolver
         {
             if (body == null)
             {
-                m_writer.WriteLine("Null MX Record Body");
+                this.Print("Null MX Record Body");
                 return;
             }
             
@@ -207,30 +207,30 @@ namespace DnsResolver
         
         public void Print(CNameRecord cname)
         {
-            Console.WriteLine(cname.CName);
+			this.Print(cname.CName);
         }
         
         public void Print(SOARecord soa)
         {
-            Console.WriteLine(soa.DomainName);
+			this.Print(soa.DomainName);
         }
         
         public void Print(CertRecord cert)
         {
             if (cert.Cert != null)
             {
-                Console.WriteLine(cert.Cert.Certificate.Subject);
+				this.Print(cert.Cert.Certificate.Subject);
             }
         }
         
         public void Print(NSRecord ns)
         {
-            Console.WriteLine(ns.NameServer);
+			this.Print(ns.NameServer);
         }
         
         void Print(PtrRecord ptr)
         {
-            Console.WriteLine(ptr.Domain);
+            this.Print(ptr.Domain);
         }
         
         void Print<T>(string name, T value)
@@ -252,5 +252,10 @@ namespace DnsResolver
         {
             m_writer.WriteLine("{0}={1}", name, value);
         }
+
+		void Print(string message)
+		{
+			m_writer.WriteLine(message);
+		}
     }
 }
