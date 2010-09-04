@@ -20,65 +20,270 @@ using System.Text;
 
 namespace DnsResolver
 {
+    /// <summary>
+    /// Constants and enumerations for working with the DNS.
+    /// </summary>
     public class Dns
     {
+        /// <summary>
+        /// The standard DNS port
+        /// </summary>
         public const int DNS_PORT = 53;
+        /// <summary>
+        /// The ID for an invalid DNS request.
+        /// </summary>
         public const short INVALID_REQUEST_ID = 0;
+        /// <summary>
+        /// The maximum length for a DNS label
+        /// </summary>
+        /// <remarks>
+        /// RFC 1035, Section 3.1
+        /// </remarks>
         public const int MAXLABELLENGTH = 63;
 
+        /// <summary>
+        /// Record types for DNS RR
+        /// </summary>
         public enum RecordType : short
         {
-            // TYPE
-            ANAME = 1,   // a host address
-            NS = 2,      // an authoritative name server
+            /// <summary>
+            /// Record type for A records, a host address
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            ANAME = 1,
+            /// <summary>
+            /// Record type for NS, an authoritative name server
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            NS = 2,
+            /// <summary>
+            /// Obsolete mail destination
+            /// </summary>
+            /// <remarks>
+            /// Obsoleted by MX, RFC 1035, Section 3.2.2
+            /// </remarks>
             MD = 3,      // a mail destinatoin (obsolete, use MX)
-            MF = 4,      // a mail forwarder (obsolete, use MX)
-            CNAME = 5,   // the canonical name for an alias
-            SOA = 6,     // marks the start of a zone of authority
-            MB = 7,      // a mailbox domain name (EXPERIMENTAL)
-            MG = 8,      // a mail group member (EXPERIMENTAL)
-            MR = 9,      // a mail rename domain name (EXPERIMENTAL)
-            NULL = 10,   // a null RR (EXPERIMENTAL)
-            WKS = 11,    // a well known service description
-            PTR = 12,    // a domain name pointer
-            HINFO = 13,  // host information
-            MINFO = 14,  // mailbox or mail list information
-            MX = 15,     // mail exchange
-            TXT = 16,    // text strings
+            /// <summary>
+            /// Obsolete mail forwarder
+            /// </summary>
+            /// <remarks>
+            /// Obsoleted by MX, RFC 1035, Section 3.2.2
+            /// </remarks>
+            MF = 4,
+            /// <summary>
+            /// Record type for CNAME, the canonical name for an alias
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            CNAME = 5,
+            /// <summary>
+            /// Record type for SOA, Start of Authority: Information about a zone
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            SOA = 6,
+            /// <summary>
+            /// A mailbox domain name (EXPERIMENTALOBSOLETE)
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            MB = 7,
+            /// <summary>
+            /// A mail group member (EXPERIMENTAL/OBSOLETE)
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            MG = 8,
+            /// <summary>
+            /// A mail rename domain (EXPERIMENTAL/OBSOLETE)
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            MR = 9,
+            /// <summary>
+            ///  A null RR (EXPERIMENTAL)
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            NULL = 10,
+            /// <summary>
+            /// A well known service description
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            WKS = 11,
+            /// <summary>
+            /// Record type for PTR, A domain name pointer
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            PTR = 12,
+            /// <summary>
+            /// Host information
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            HINFO = 13,
+            /// <summary>
+            /// Mailbox or mail list information
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            MINFO = 14,
+            /// <summary>
+            /// Record type for MX, mail exchange
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            MX = 15,
+            /// <summary>
+            /// Record type for TXT, text strings
+            /// </summary>
+            /// <remarks>
+            /// RFC 1035, Section 3.2.2
+            /// </remarks>
+            TXT = 16,
+            /// <summary>
+            /// Record type for AAAA, IPv6 address records
+            /// </summary>
+            /// <remarks>
+            /// RFC 3596, Section 2.1
+            /// </remarks>
+            AAAA = 28,
+            /// <summary>
+            /// Record type for SRV, location of services
+            /// </summary>
+            /// <remarks>
+            /// RFC 2782, IANA Considerations
+            /// </remarks>
+            SRV = 33, 
+            /// <summary>
+            /// Record type for CERT records, certificates in the DNS
+            /// </summary>
+            /// <remarks>RFC 4398, Section 2</remarks>
             CERT = 37,   // CERT records
             // QTYPE
-            AXFR = 252,  // A request for a transfer of an entire zone
-            MAILB = 253, // A request for mailbox-related records (MB, MG or MR)
-            MAILA = 254, // A request for mail agent RRs (obsolete - see MX)
-            STAR = 255,  // A request for all records (*)
+            /// <summary>
+            /// Record type for a request for a transfer of an entire zone
+            /// </summary>
+            AXFR = 252,
+            /// <summary>
+            /// Record type for a request for mailbox-related records (MB, MG or MR)
+            /// </summary>
+            MAILB = 253,
+            /// <summary>
+            /// Record type for a request for mail agent RRs (obsolete - see MX)
+            /// </summary>
+            MAILA = 254,
+            /// <summary>
+            /// Record type for a request for all records (*)
+            /// </summary>
+            STAR = 255, 
         }
 
+        /// <summary>
+        /// The class of DNS record, in practice, always IN
+        /// </summary>
         public enum Class : short
         {
             // CLASS
+            /// <summary>
+            /// CLASS constant for IN
+            /// </summary>
+            /// <remarks>RFC 1035, Section 3.2.4</remarks>
             IN = 1,      // the Internet
-            CS = 2,      // the CSNET class (obsolete, used only for examples in some obsolete RFCs)
-            CH = 3,      // the CHAOS class
+            /// <summary>
+            /// Class code for the CSNET class (obsolete, used only for examples in some obsolete RFCs)
+            /// </summary>
+            CS = 2, 
+            /// <summary>
+            /// CLASS code for the CHAOS class (practially obsolete)
+            /// </summary>
+            CH = 3,
+            /// <summary>
+            /// Class code for Hesiod records (practically obsolete).
+            /// </summary>
             HS = 4,      // Hesiod [Dyer 87]
 
             // QCLASS
-            STAR = 255,  // any class (*)
+            /// <summary>
+            /// QCLASS code for any class
+            /// </summary>
+            STAR = 255,
         }
 
+        /// <summary>
+        /// Constants for DNS opcodes used in the header of DNS messages
+        /// </summary>
+        /// <remarks>
+        /// RFC 1035, 4.1.1:
+        /// A four bit field that specifies kind of query in this
+        /// message.  This value is set by the originator of a query
+        /// and copied into the response.
+        /// </remarks>
         public enum OpCode
         {
-            QUERY = 0,   // a standard query 
-            IQUERY = 1,  // an inverse query 
-            STATUS = 2,  // a server status request
+            /// <summary>
+            /// OPCODE for a standard query
+            /// </summary>
+            QUERY = 0,  
+            /// <summary>
+            /// OPCODE for an inverse query
+            /// </summary>
+            IQUERY = 1,  
+            /// <summary>
+            /// OPCODE for a server status request
+            /// </summary>
+            STATUS = 2,
         }
 
+        /// <summary>
+        /// Constants for RCODE, header values used to signal success of response
+        /// </summary>
+        /// <remarks>
+        /// RFC 1035, 4.1.1
+        /// 
+        /// </remarks>
         public enum ResponseCode
         {
+            /// <summary>
+            /// RCODE for no error conditions
+            /// </summary>
             SUCCESS = 0,
+            /// <summary>
+            /// RCODE when the name server was unable to interpret the query
+            /// </summary>
             FORMAT_ERROR = 1,
+            /// <summary>
+            /// RCODE when the server was unable to process the query due to problems with the name server
+            /// </summary>
             SERVER_FAILURE = 2,
+            /// <summary>
+            /// RCODE from authoritative servers, when the domain name does not exist
+            /// </summary>
             NAME_ERROR = 3,
+            /// <summary>
+            /// RCODE when the name server does not implement the requested query
+            /// </summary>
             NOT_IMPLEMENTED = 4,
+            /// <summary>
+            /// RCODE   when the name server refuses to perform the requested operation for policy reasons.
+            /// </summary>
             REFUSED = 5,
         }        
     }
