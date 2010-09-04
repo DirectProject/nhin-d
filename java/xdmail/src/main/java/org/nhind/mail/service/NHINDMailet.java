@@ -38,9 +38,9 @@ public class NHINDMailet extends GenericMailet {
      */
     @Override
     public void service(Mail mail) throws MessagingException {
+        LOGGER.info("NHINDMailet receiving  mail");
+        
         try {
-            System.out.println("TEST MAILET");
-            LOGGER.info("XDRMailet receiving  mail");
             MimeXDSTransformer mxt = new MimeXDSTransformer();
             boolean forwardToXdr = true;// this should be based on some routing
             // lookup
@@ -54,7 +54,7 @@ public class NHINDMailet extends GenericMailet {
             mail.setState(Mail.GHOST);
         } catch (Throwable e) {
             e.printStackTrace();
-            LOGGER.severe("XDRMailet deliver failure" + e.getMessage());
+            LOGGER.severe("NHINDMailet delivery failure" + e.getMessage());
             throw new RuntimeException(e);
         }
     }
