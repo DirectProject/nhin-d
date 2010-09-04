@@ -18,10 +18,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ServiceModel;
-using NHINDirect.Tools.Command;
-using NHINDirect.Config.Store;
 using System.Configuration;
 using System.Xml.Serialization;
+using NHINDirect.Tools.Command;
+using NHINDirect.Config.Store;
+using NHINDirect.Config.Client;
+using NHINDirect.Config.Client.DomainManager;
+using NHINDirect.Config.Client.CertificateService;
 
 namespace NHINDirect.Config.Command
 {
@@ -33,7 +36,9 @@ namespace NHINDirect.Config.Command
         Commands m_commands;
         
         internal ConfigConsole()
-        {            
+        {
+            this.CreateClients();
+
             m_commands = new Commands("ConfigConsole");
             m_commands.Error += PrintError;
             
@@ -42,8 +47,28 @@ namespace NHINDirect.Config.Command
             m_commands.Register(new CertificateCommands());
             m_commands.Register(new AnchorCommands());
             m_commands.Register(new TestCommands());
+            m_commands.Register(new SettingsCommands());            
         }
-                
+
+        internal DomainManagerClient DomainClient;
+        internal AddressManagerClient AddressClient;
+        internal CertificateStoreClient CertificateClient;
+        internal AnchorStoreClient AnchorClient;
+        
+        internal void SetHost(string host, int port)
+        {        
+            Settings.SetHost(host, port);     
+            this.CreateClients();        
+        }
+        
+        void CreateClients()
+        {
+            DomainClient = Settings.DomainManager.CreateDomainManagerClient();
+            AddressClient = Settings.AddressManager.CreateAddressManagerClient();
+            CertificateClient = Settings.CertificateManager.CreateCertificateStoreClient();
+            AnchorClient = Settings.AnchorManager.CreateAnchorStoreClient();
+        }
+        
         internal void Run(string[] args)
         {
             if (args != null && args.Length > 0)
