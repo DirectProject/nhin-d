@@ -33,11 +33,8 @@ namespace NHINDirect.Config.Command
     /// </summary>
     public class AnchorCommands
     {
-        AnchorStoreClient m_client;
-        
         public AnchorCommands()
         {
-            m_client = ConfigConsole.Settings.AnchorManager.CreateAnchorStoreClient();
         }
         
         public void Command_Anchor_Add(string[] args)
@@ -59,7 +56,7 @@ namespace NHINDirect.Config.Command
             long anchorID = args.GetRequiredValue<int>(0);
             CertificateGetOptions options = CertificateCommands.GetOptions(args, 1);
 
-            Anchor[] anchors = m_client.GetAnchors(new long[] { anchorID }, options);
+            Anchor[] anchors = ConfigConsole.Current.AnchorClient.GetAnchors(new long[] { anchorID }, options);
             this.Print(anchors);
         }
         public void Usage_Anchor_ByID_Get()
@@ -74,7 +71,7 @@ namespace NHINDirect.Config.Command
             string owner = args.GetRequiredValue(0);
             CertificateGetOptions options = CertificateCommands.GetOptions(args,1);
      
-            Anchor[] anchors = m_client.GetAnchorsForOwner(owner, options);
+            Anchor[] anchors = ConfigConsole.Current.AnchorClient.GetAnchorsForOwner(owner, options);
             this.Print(anchors);
         }
         public void Usage_Anchors_Get()
@@ -87,7 +84,7 @@ namespace NHINDirect.Config.Command
         public void Command_Anchors_List(string[] args)
         {
             CertificateGetOptions options = CertificateCommands.GetOptions(args, 0);
-            foreach(Anchor anchor in m_client.EnumerateAnchors(10, options))
+            foreach(Anchor anchor in ConfigConsole.Current.AnchorClient.EnumerateAnchors(10, options))
             {
                 this.Print(anchor);
                 CommandUI.PrintSectionBreak();
@@ -104,7 +101,7 @@ namespace NHINDirect.Config.Command
             string owner = args.GetRequiredValue(0);
             EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
 
-            m_client.SetAnchorStatusForOwner(owner, status);
+            ConfigConsole.Current.AnchorClient.SetAnchorStatusForOwner(owner, status);
         }
         public void Usage_Anchor_Status_Set()
         {
@@ -115,7 +112,7 @@ namespace NHINDirect.Config.Command
         public void Command_Anchor_Remove(string[] args)
         {
             long anchorID = args.GetRequiredValue<long>(0);
-            m_client.RemoveAnchor(anchorID);
+            ConfigConsole.Current.AnchorClient.RemoveAnchor(anchorID);
         }
         
         public void Usage_Anchor_Remove()
@@ -130,7 +127,7 @@ namespace NHINDirect.Config.Command
             {
                 try
                 {
-                    m_client.AddAnchor(new Anchor(owner, cert, true, true));
+                    ConfigConsole.Current.AnchorClient.AddAnchor(new Anchor(owner, cert, true, true));
                     Console.WriteLine("Added {0}", cert.Subject);
                 }
                 catch(FaultException<ConfigStoreFault> ex)

@@ -30,14 +30,9 @@ namespace NHINDirect.Config.Command
     public class AddressCommands
     {
         const int DefaultChunkSize = 25;
-        
-        DomainManagerClient m_domainClient;
-        AddressManagerClient m_addressClient;
-        
+                
         public AddressCommands()
         {            
-            m_domainClient = ConfigConsole.Settings.DomainManager.CreateDomainManagerClient();
-            m_addressClient = ConfigConsole.Settings.AddressManager.CreateAddressManagerClient();
         }
         
         public void Command_Address_Add(string[] args)
@@ -50,11 +45,11 @@ namespace NHINDirect.Config.Command
                 displayName = address.DisplayName;
             }
             
-            Domain domain = DomainCommands.DomainGet(m_domainClient, address.Host);
+            Domain domain = DomainCommands.DomainGet(ConfigConsole.Current.DomainClient, address.Host);
             Address newAddress = new Address(domain.ID, address.Address, displayName);
             newAddress.Type = addressType;
             
-            m_addressClient.AddAddress(newAddress);
+            ConfigConsole.Current.AddressClient.AddAddress(newAddress);
         }                
         public void Usage_Address_Add()
         {
@@ -67,14 +62,14 @@ namespace NHINDirect.Config.Command
             string emailAddress = args.GetRequiredValue(0);
             string displayName = args.GetRequiredValue(1);
             
-            Address address = m_addressClient.GetAddress(emailAddress);
+            Address address = ConfigConsole.Current.AddressClient.GetAddress(emailAddress);
             if (address == null)
             {
                 throw new ArgumentException(string.Format("{0} not found", emailAddress));
             }
             
             address.DisplayName = displayName;
-            m_addressClient.UpdateAddress(address);
+            ConfigConsole.Current.AddressClient.UpdateAddress(address);
         }
         
         public void Usage_Address_DisplayName_Set()
@@ -99,7 +94,7 @@ namespace NHINDirect.Config.Command
         public void Command_Address_Remove(string[] args)
         {
             MailAddress address = new MailAddress(args.GetRequiredValue(0));
-            m_addressClient.RemoveAddress(address);
+            ConfigConsole.Current.AddressClient.RemoveAddress(address);
         }
         public void Usage_Address_Remove()
         {
@@ -112,7 +107,7 @@ namespace NHINDirect.Config.Command
             string domainName = args.GetRequiredValue(0);
             int chunkSize = args.GetOptionalValue<int>(1, DefaultChunkSize);
          
-            Print(m_addressClient.EnumerateDomainAddresses(domainName, chunkSize));
+            Print(ConfigConsole.Current.AddressClient.EnumerateDomainAddresses(domainName, chunkSize));
         }        
         public void Usage_Address_List()
         {
@@ -124,7 +119,7 @@ namespace NHINDirect.Config.Command
         public void Command_Address_ListAll(string[] args)
         {
             int chunkSize = args.GetOptionalValue<int>(0, DefaultChunkSize);
-            Print(m_addressClient.EnumerateAddresses(chunkSize));
+            Print(ConfigConsole.Current.AddressClient.EnumerateAddresses(chunkSize));
         }
         public void Usage_Address_ListAll()
         {
@@ -138,14 +133,14 @@ namespace NHINDirect.Config.Command
             MailAddress emailAddress = new MailAddress(args.GetRequiredValue(0));
             EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
             
-            Address address = m_addressClient.GetAddress(emailAddress);
+            Address address = ConfigConsole.Current.AddressClient.GetAddress(emailAddress);
             if (address == null)
             {
                 throw new ArgumentException("Address not found");
             }
             
             address.Status = status;
-            m_addressClient.UpdateAddress(address);
+            ConfigConsole.Current.AddressClient.UpdateAddress(address);
         }        
         public void Usage_Address_Status_Set()
         {
@@ -156,7 +151,7 @@ namespace NHINDirect.Config.Command
         public void Command_Address_Count(string[] args)
         {
             string domainName = args.GetRequiredValue(0);
-            Console.WriteLine("{0} addresses", m_addressClient.GetAddressCount(domainName));
+            Console.WriteLine("{0} addresses", ConfigConsole.Current.AddressClient.GetAddressCount(domainName));
         }
         public void Usage_Address_Count()
         {
@@ -166,7 +161,7 @@ namespace NHINDirect.Config.Command
         
         internal Address GetAddress(string email)
         {
-            return GetAddress(m_addressClient, email);
+            return GetAddress(ConfigConsole.Current.AddressClient, email);
         }
         
         internal static Address GetAddress(AddressManagerClient client, string email)
