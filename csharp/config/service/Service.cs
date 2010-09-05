@@ -19,8 +19,9 @@ using System.Linq;
 using System.Web;
 using System.Configuration;
 using System.ServiceModel;
-using NHINDirect.Diagnostics;
+using System.Diagnostics;
 using NHINDirect.Config.Store;
+using System.Data.Sql;
 
 namespace NHINDirect.Config.Service
 {
@@ -32,21 +33,29 @@ namespace NHINDirect.Config.Service
 
         ServiceSettings m_settings;
         ConfigStore m_store;
-        LogFile m_log;
                 
         public Service()
         {   
             try
             {
                 m_settings = new ServiceSettings();
-                m_log = new LogFile(m_settings.LogSettings.CreateWriter());
-                m_log.WriteLine("Starting Service");
+                this.LogInfo("Starting Service");
                 m_store = new ConfigStore(m_settings.StoreConnectString);
+                this.LogInfo("Service Started Successfully");
             }
             catch(Exception ex)
             {
-                System.Diagnostics.EventLog.WriteEntry("ConfigService", ex.ToString());
-                throw ex;
+                this.LogError(ex);
+                throw;
+            }
+        }
+
+        public string Name 
+        {
+            get
+            {
+                // A property instead of a constant in case we want to make this configurable some day
+                return "ConfigService";
             }
         }
         
@@ -57,15 +66,7 @@ namespace NHINDirect.Config.Service
                 return m_settings;
             }
         }
-        
-        public LogFile Log
-        {
-            get
-            {
-                return m_log;
-            }
-        }
-        
+                
         public ConfigStore Store
         {
             get
@@ -73,10 +74,31 @@ namespace NHINDirect.Config.Service
                 return m_store;
             }
         }
-
+        
+        public void LogInfo(string message)
+        {
+            try
+            {
+                EventLog.WriteEntry(this.Name, message, EventLogEntryType.Information);
+            }
+            catch
+            {
+            }
+        }
+        
+        public void LogError(Exception error)
+        {
+            try
+            {
+                EventLog.WriteEntry(this.Name, error.ToString(), EventLogEntryType.Error);
+            }
+            catch
+            {
+            }            
+        }
+                
         public static FaultException<ConfigStoreFault> CreateFault(Exception ex)
         {
-            Service.Current.Log.WriteError(ex);
             ConfigStoreFault fault = ConfigStoreFault.ToFault(ex);
             return new FaultException<ConfigStoreFault>(fault, new FaultReason(fault.ToString()));
         }

@@ -67,6 +67,7 @@ namespace NHINDirect.Config.Client
                 }
                 m_url = value;
                 m_endpoint = new EndpointAddress(m_url);
+                m_binding = null;
             }
         }
         
@@ -145,6 +146,18 @@ namespace NHINDirect.Config.Client
             }
         }
         
+        public void SetHost(string host, int port)
+        {
+            Uri current = new Uri(this.Url);
+            UriBuilder builder = new UriBuilder(current);
+            builder.Host = host;
+            if (port > 0)
+            {
+                builder.Port = port;
+            }
+            this.Url = builder.ToString();
+        }
+                
         public void Validate()
         {
             if (string.IsNullOrEmpty(this.Url))
