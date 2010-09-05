@@ -75,6 +75,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.nhind.ccddb.CCDParser;
 import org.nhind.util.MimeType;
+import org.nhind.util.XMLUtils;
 
 /*
  * TODO there is a major assumption within this class and underlying classes.  That is the assumption of single document. 
@@ -87,6 +88,7 @@ import org.nhind.util.MimeType;
  */
 
 /**
+ * Transform a MimeMessage into a XDR request.
  * 
  * @author vlewis
  */
@@ -94,22 +96,23 @@ public class MimeXDSTransformer {
 
     private static final Logger LOGGER = Logger.getLogger(MimeXDSTransformer.class.getName());
 
-//    private static final String DEFAULT_LANGUAGE_CODE = "en-us"; // TODO default from
-//                                                         // Locale
+    /*
+     * private static final String DEFAULT_LANGUAGE_CODE  = "en-us"; // TODO default from Locale
+     * private static final String RANDOM_OID_ROOT        = "1.3.6.1.4.1.21367.3100.1.2.3";
+     * private static final String NHINDIRECT_MESSAGE_ID_ASSIGNING_AUTHORITY_NAME = "NHINDirect";
+     * private static final String NHINDIRECT_ADDR_OID    = "1.3.6.1.4.1.21367.3100.1";
+     * private static final String NHINDIRECT_MESSAGE_ID_ASSIGNING_AUTHORITY_I  D = "1.3.6.1.4.1.21367.3100.1.1";
+     * private static final String NHINDIRECT_MESSAGE_METADATA_CODESYSTEM_ID      = "1.3.6.1.4.1.21367.3100.1.2";
+     * private static final String CODE_UNSPECIFIED       = "Unspecified";
+     * private static final String CODE_CLINICALDATA      = "Clinical Data";
+     * private static final String CODE_CONTENT_TYPE      = "Communication";
+     * private static final String CODE_CONFIDENTIALITY   = "N";
+     * private static final String CODE_FORMAT_CCRV1      = "CCR V1.0";
+     * private static final String CODE_FORMAT_PDF        = "PDF";
+     */
     
-//    private static final String RANDOM_OID_ROOT = "1.3.6.1.4.1.21367.3100.1.2.3";
-//    private static final String NHINDIRECT_MESSAGE_ID_ASSIGNING_AUTHORITY_NAME = "NHINDirect";
-//    private static final String NHINDIRECT_ADDR_OID = "1.3.6.1.4.1.21367.3100.1";
-//    private static final String NHINDIRECT_MESSAGE_ID_ASSIGNING_AUTHORITY_ID = "1.3.6.1.4.1.21367.3100.1.1";
-//    private static final String NHINDIRECT_MESSAGE_METADATA_CODESYSTEM_ID = "1.3.6.1.4.1.21367.3100.1.2";
-//    private static final String CODE_UNSPECIFIED = "Unspecified";
-//    private static final String CODE_CLINICALDATA = "Clinical Data";
-//    private static final String CODE_CONTENT_TYPE = "Communication";
-//    private static final String CODE_CONFIDENTIALITY = "N";
     private static final String CODE_FORMAT_TEXT = "TEXT";
     private static final String CODE_FORMAT_CDAR2 = "CDAR2/IHE 1.0";
-//   private static final String CODE_FORMAT_CCRV1 = "CCR V1.0";
-//    private static final String CODE_FORMAT_PDF = "PDF";
     
     protected String endpoint = null;
     protected String messageId = null;
@@ -137,6 +140,11 @@ public class MimeXDSTransformer {
         messageId = UUID.randomUUID().toString();
         to = endpoint;
 
+        // beau
+        QName qname = new QName("urn:ihe:iti:xds_b:_2007", "ProvideAndRegisterDocumentSetRequestType");
+        String sresult = XMLUtils.marshal(qname, prds, ihe.iti.xds_b._2007.ObjectFactory.class);
+        LOGGER.info(sresult);
+        
         setHeaderData();
         DocumentRepositoryService service = new DocumentRepositoryService();
         service.setHandlerResolver(new RepositoryHandlerResolver());
