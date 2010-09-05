@@ -478,9 +478,12 @@ namespace DnsResolver
 
 
         /// <summary>
-        /// Resolves CERT records for <paramref name="domain"/>, first retrieving authoritative
+        /// Resolves CERT records for <paramref name="domain"/> from the authoritative
         /// nameservers for the domain.
         /// </summary>
+        /// <remarks>
+        /// This method may be used if the typical nameserver used does not handle CERT records.
+        /// </remarks>
         /// <param name="domain">The domain for which to retrieve CERT records.</param>
         /// <returns>An enumeration of <see cref="CertRecord"/> instances.</returns>
         public  IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain)
@@ -508,6 +511,18 @@ namespace DnsResolver
             return null;
         }
 
+
+        /// <summary>
+        /// Resolves CERT records for <paramref name="domain"/> from the authoritative
+        /// nameservers for the domain.
+        /// </summary>
+        /// <remarks>
+        /// This method may be used if the typical nameserver used does not handle CERT records.
+        /// </remarks>
+        /// <param name="domain">The domain for which to retrieve CERT records.</param>
+        /// <param name="nameserver">The nameserver from which to retrieve authoratative nameservers
+        /// for the domain.</param>
+        /// <returns>An enumeration of <see cref="CertRecord"/> instances.</returns>
         public virtual IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain, IPAddress nameserver)
         {
             if (string.IsNullOrEmpty(domain) || nameserver == null)
@@ -808,6 +823,9 @@ namespace DnsResolver
 
         #region IDisposable Members
 
+        /// <summary>
+        /// Frees resources for this instance.
+        /// </summary>
         public void Dispose()
         {
             this.Close();
