@@ -28,10 +28,13 @@
 
 package org.nhind.james.mailet;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.logging.Logger;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailetConfig;
 import org.apache.mailet.base.GenericMailet;
@@ -52,13 +55,16 @@ public class NHINDMailet extends GenericMailet {
      */
     private static final Logger LOGGER = Logger.getLogger(NHINDMailet.class.getPackage().getName());
     
-    /*
-     * Relax the OHT IHE Profiles CDA validation to allow meta-data extraction
-     * to work correctly on CDA instances that carry CCD or HITSP C83 extensions
-     */
-    static {
-        System.setProperty("relax.validation", "true");
-    }
+    private String endpointUrl;
+    
+    
+//    /*
+//     * Relax the OHT IHE Profiles CDA validation to allow meta-data extraction
+//     * to work correctly on CDA instances that carry CCD or HITSP C83 extensions
+//     */
+//    static {
+//        System.setProperty("relax.validation", "true");
+//    }
 
     /*
      * (non-Javadoc)
@@ -67,19 +73,25 @@ public class NHINDMailet extends GenericMailet {
      */
     @Override
     public void service(Mail mail) throws MessagingException {
-        LOGGER.info("NHINDMailet receiving  mail");
+        LOGGER.info("Servicing NHINDMailet");
+        
+        if (StringUtils.isBlank(endpointUrl))
+        {
+            LOGGER.severe("NHINDMailet endpoint URL cannot be empty or null.");
+            throw new MessagingException("NHINDMailet endpoint URL cannot be empty or null.");
+        }   
         
         try {
             MimeXDSTransformer mxt = new MimeXDSTransformer();
-            boolean forwardToXdr = true;// this should be based on some routing
-            // lookup
-            String endpoint = "http://localhost:8080/xd/services/DocumentRepository_Service";// ditto
+            
+            boolean forwardToXdr = true; // should be based on some routing lookup
             if (forwardToXdr) {
-                mxt.forward(endpoint, mail.getMessage());
+                mxt.forward(endpointUrl, mail.getMessage());
             } else {
                 // forward it to another email server based on routing
                 // iformation
             }
+            
             mail.setState(Mail.GHOST);
         } catch (Throwable e) {
             e.printStackTrace();
@@ -95,18 +107,15 @@ public class NHINDMailet extends GenericMailet {
      */
     @Override
     public void init() throws MessagingException {
-        System.out.println("TEST MAILET");
+        LOGGER.info("Initializing NHINDMailet");
+        
+        // Get the configuration URL
+        endpointUrl = getInitParameter("EndpointURL");
+        
+        if (StringUtils.isBlank(endpointUrl))
+        {
+            LOGGER.severe("NHINDMailet endpoint URL cannot be empty or null.");
+            throw new MessagingException("NHINDMailet endpoint URL cannot be empty or null.");
+        }   
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.apache.mailet.base.GenericMailet#init(org.apache.mailet.MailetConfig)
-     */
-    @Override
-    public void init(MailetConfig newConfig) throws MessagingException {
-        System.out.println("TEST MAILET CONFIG INIT");
-    }
-
 }

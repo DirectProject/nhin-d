@@ -75,7 +75,6 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.nhind.ccddb.CCDParser;
 import org.nhind.util.MimeType;
-import org.nhind.util.XMLUtils;
 
 /*
  * TODO there is a major assumption within this class and underlying classes.  That is the assumption of single document. 
@@ -139,11 +138,6 @@ public class MimeXDSTransformer {
         action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
         messageId = UUID.randomUUID().toString();
         to = endpoint;
-
-        // beau
-        QName qname = new QName("urn:ihe:iti:xds_b:_2007", "ProvideAndRegisterDocumentSetRequestType");
-        String sresult = XMLUtils.marshal(qname, prds, ihe.iti.xds_b._2007.ObjectFactory.class);
-        LOGGER.info(sresult);
         
         setHeaderData();
         DocumentRepositoryService service = new DocumentRepositoryService();
