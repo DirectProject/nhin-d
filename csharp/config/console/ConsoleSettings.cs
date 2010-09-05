@@ -43,6 +43,14 @@ namespace NHINDirect.Config.Command
             set;
         }
         
+        public void SetHost(string host,  int port)
+        {
+            this.DomainManager.SetHost(host, port);
+            this.AddressManager.SetHost(host, port);
+            this.CertificateManager.SetHost(host, port);
+            this.AnchorManager.SetHost(host, port);
+        }
+        
         public void Validate()
         {
             if (this.DomainManager == null)
