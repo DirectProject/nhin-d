@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhind.mail.service;
+package org.nhind.james.mailet;
 
 import java.util.logging.Logger;
 
@@ -35,6 +35,7 @@ import javax.mail.MessagingException;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailetConfig;
 import org.apache.mailet.base.GenericMailet;
+import org.nhind.mail.service.MimeXDSTransformer;
 
 /**
  * An Apache James Mailet that converts clinical messages into IHE
