@@ -23,7 +23,7 @@ namespace DnsResolver
 {
 
     /// <summary>
-    /// Represents an SOA DNS RDATA
+    /// Represents an SOA DNS RR
     /// </summary>
     /// <remarks>
     /// RFC 1035, 
@@ -86,11 +86,29 @@ namespace DnsResolver
         {
         }
         
+        /// <summary>
+        /// Initializes an instance with the supplied values.
+        /// </summary>
+        /// <param name="name">The domain name for which this is a record</param>
+        /// <param name="domainName">The domain name of the name server that was the primary source for this zone</param>
+        /// <param name="responsibleName">Email mailbox of the hostmaster</param>
+        /// <param name="serialNumber">Version number of the original copy of the zone.</param>
         public SOARecord(string name, string domainName, string responsibleName, int serialNumber)
             : this(name, domainName, responsibleName, serialNumber, 0, 0, 0, 0)
         {
         }
-        
+
+        /// <summary>
+        /// Initializes an instance with the supplied values.
+        /// </summary>
+        /// <param name="name">The domain name for which this is a record</param>
+        /// <param name="domainName">The domain name of the name server that was the primary source for this zone</param>
+        /// <param name="responsibleName">Email mailbox of the hostmaster</param>
+        /// <param name="serialNumber">Version number of the original copy of the zone.</param>
+        /// <param name="refresh">Number of seconds before the zone should be refreshed.</param>
+        /// <param name="retry">Number of seconds before failed refresh should be retried.</param>
+        /// <param name="expire">Number of seconds before records should be expired if not refreshed</param>
+        /// <param name="minimum">Minimum TTL for this zone.</param>
         public SOARecord(string name, string domainName, string responsibleName, int serialNumber, int refresh, int retry, int expire, int minimum)
             : base(name, Dns.RecordType.SOA)
         {
@@ -99,6 +117,9 @@ namespace DnsResolver
             this.SerialNumber = serialNumber;
         }
         
+        /// <summary>
+        /// The domain name of the name server that was the primary source for this zone
+        /// </summary>
         public string DomainName
         {
             get
@@ -185,6 +206,11 @@ namespace DnsResolver
             set;
         }
 
+        /// <summary>
+        /// Tests equality between this SOA record and the other <paramref name="record"/>.
+        /// </summary>
+        /// <param name="record">The other record.</param>
+        /// <returns><c>true</c> if the RRs are equal, <c>false</c> otherwise.</returns>
         public override bool Equals(DnsResourceRecord record)
         {
             if (!base.Equals(record))
@@ -208,7 +234,11 @@ namespace DnsResolver
                 &&  this.Minimum == soaRecord.Minimum 
             );
         }
-        
+
+        /// <summary>
+        /// Writes this RR in DNS wire format to the <paramref name="buffer"/>
+        /// </summary>
+        /// <param name="buffer">The buffer to which DNS wire data are written</param>
         protected override void SerializeRecordData(DnsBuffer buffer)
         {
             buffer.AddDomainName(m_mname);
@@ -219,7 +249,11 @@ namespace DnsResolver
             buffer.AddInt(this.Expire);
             buffer.AddInt(this.Minimum);
         }
-        
+
+        /// <summary>
+        /// Reads data into this RR from the DNS wire format data in <paramref name="reader"/>
+        /// </summary>
+        /// <param name="reader">Reader in which wire format data for this RR is already buffered.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             this.DomainName = reader.ReadDomainName();
