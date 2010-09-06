@@ -262,7 +262,11 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
             // show included values
             String values = msg.getSOAPBody().getTextContent();
             LOGGER.info("Included values:" + values);
-        } catch (Exception e) {
+        } catch (SOAPException e) {
+            LOGGER.info("Unable to dump soap message");
+            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.info("Unable to dump soap message");
             e.printStackTrace();
         }
     }
@@ -286,7 +290,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         try {
             @SuppressWarnings("unused")
             SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
-            // dumpSOAPMessage(msg);
+            
             if (context.getMessage().getSOAPBody().getFault() != null) {
                 String detailName = null;
                 try {
@@ -326,7 +330,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
      * Extract header values from a ThreadData object.
      */
     protected void getHeaderData() {
-        Long threadId = new Long(Thread.currentThread().getId());
+        Long threadId = Long.valueOf(Thread.currentThread().getId());
         LOGGER.fine("GTHREAD ID " + threadId);
 
         ThreadData threadData = new ThreadData(threadId);
@@ -344,7 +348,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
      * Build a ThreadData object with header information.
      */
     protected void setHeaderData() {
-        Long threadId = new Long(Thread.currentThread().getId());
+        Long threadId = Long.valueOf(Thread.currentThread().getId());
         LOGGER.fine("GTHREAD ID " + threadId);
         
         ThreadData threadData = new ThreadData(threadId);

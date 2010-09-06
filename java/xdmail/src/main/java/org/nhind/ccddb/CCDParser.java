@@ -7,7 +7,8 @@ package org.nhind.ccddb;
 import java.io.ByteArrayInputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.nhind.util.XSLConversion;
+
+import org.nhind.mail.util.XSLConversion;
 
 /**
  *

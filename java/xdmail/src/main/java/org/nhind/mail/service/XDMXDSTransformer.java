@@ -33,7 +33,9 @@ import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
@@ -48,14 +50,13 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.util.ByteArrayDataSource;
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 
 import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExternalIdentifierType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 
-import org.nhind.util.XMLUtils;
+import org.nhind.mail.util.XMLUtils;
 
 /**
  *
@@ -66,25 +67,26 @@ public class XDMXDSTransformer {
     private static final Logger LOGGER = Logger.getLogger(XDMXDSTransformer.class.getName());
     static private String XDM_FILENAME_METADATA = "METADATA.xml";
     static private String XDM_FILENAME_DATA = "DOCUMENT.xml";
-    static private String XDM_DIRSPEC_SUBMISSIONROOT = "SUBSET01";
+    
+    // static private String XDM_DIRSPEC_SUBMISSIONROOT = "SUBSET01";
 
     /**
      * Reads an XDM ZIP archive and returns a set of XDS submissions.
      */
     public ProvideAndRegisterDocumentSetRequestType getXDMRequest(DataHandler dh) throws Exception {
-        ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
-        ZipFile zipFile = null;
-        LOGGER.info("in getMDMRequest 2");
+        LOGGER.info("Inside getXDMRequest(DataHandler)");
 
         File archiveFile = fileFromDataHandler(dh);
         return getXDMRequest(archiveFile);
     }
 
     public ProvideAndRegisterDocumentSetRequestType getXDMRequest(File archiveFile) throws Exception {
-        ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
-        ZipFile zipFile = null;
-        LOGGER.info("in getMDMRequest 2");
+        LOGGER.info("Inside getXDMRequest(File)");
+        
         String docId = null;
+        ZipFile zipFile = null;
+        ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
+        
         try {
 
             zipFile = new ZipFile(archiveFile, ZipFile.OPEN_READ);
@@ -110,7 +112,7 @@ public class XDMXDSTransformer {
                         }
                         in.close();
                         LOGGER.info("metadata " + baos.toString());
-                        QName qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0", "SubmitObjectsRequest");
+
                         SubmitObjectsRequest sor = (SubmitObjectsRequest) XMLUtils.unmarshal(baos.toString(), oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
                         prsr.setSubmitObjectsRequest(sor);
                         docId = getDocId(sor);
@@ -217,18 +219,35 @@ public class XDMXDSTransformer {
         return result;
     }
 
-    File fileFromDataHandler(DataHandler dh) throws Exception {
+    protected File fileFromDataHandler(DataHandler dh) throws Exception {
+        File f = null;
+        OutputStream out = null;      
+        InputStream inputStream = null;
+        
+        final String fileName = "outFile.java";
 
-        File f = new File("outFile.java");
-        InputStream inputStream = dh.getInputStream();
-        OutputStream out = new FileOutputStream(f);
-        byte buf[] = new byte[1024];
-        int len;
-        while ((len = inputStream.read(buf)) > 0) {
-            out.write(buf, 0, len);
+        try {
+            f = new File(fileName);
+            inputStream = dh.getInputStream();
+            out = new FileOutputStream(f);
+            byte buf[] = new byte[1024];
+            int len;
+            while ((len = inputStream.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+        } catch (FileNotFoundException e) {
+            LOGGER.warning("File not found - " + fileName);
+            throw e;
+        } catch (IOException e) {
+            LOGGER.warning("Exception thrown while trying to read file from DataHandler object");
+            throw e;
+        } finally {
+            if (inputStream != null)
+                inputStream.close();
+            if (out != null)
+                out.close();
         }
-        out.close();
-        inputStream.close();
+        
         return f;
     }
 }
