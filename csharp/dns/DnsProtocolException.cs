@@ -42,7 +42,7 @@ namespace DnsResolver
         /// DNS label was longer than specified
         /// </summary>
         LabelTooLong,
-        /// <summary>
+        StringTooLong,
         /// Request ID did not match Response ID
         /// </summary>
         RequestIDMismatch,

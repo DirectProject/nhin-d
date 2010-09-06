@@ -33,7 +33,13 @@ namespace DnsResolver
         {
             // nothing
         }
-
+        
+        public TextRecord(string name, IList<string> strings)
+            : base(name, Dns.RecordType.TXT)
+        {
+            this.Strings = strings;
+        }
+        
         public IList<string> Strings
         {
             get
@@ -59,6 +65,49 @@ namespace DnsResolver
             }
         }
 
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+
+            TextRecord textRecord = record as TextRecord;
+            if (textRecord == null)
+            {
+                return false;
+            }
+            
+            if (this.HasStrings != textRecord.HasStrings || m_strings.Count != textRecord.Strings.Count)
+            {
+                return false;
+            }
+            
+            for (int i = 0, count = m_strings.Count; i < count; ++i)
+            {
+                if (!string.Equals(m_strings[i], textRecord.Strings[i], StringComparison.Ordinal))
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            foreach(string text in this.m_strings)
+            {
+                if (text.Length > byte.MaxValue)
+                {
+                    throw new DnsProtocolException(DnsProtocolError.StringTooLong);
+                }
+                
+                buffer.AddByte((byte) text.Length);
+                buffer.AddChars(text);
+            }
+        }
+        
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             List<string> stringList = new List<string>();
@@ -75,7 +124,7 @@ namespace DnsResolver
                 stringList.Add(sb.ToString());
             }
 
-            Strings = stringList;
+            this.Strings = stringList;
         }
     }
 }

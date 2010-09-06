@@ -68,7 +68,7 @@ namespace DnsResolver
         /// <param name="reader">The DNS reader</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
-            m_name = reader.ReadString();
+            m_name = reader.ReadDomainName();
         }
     }
 }

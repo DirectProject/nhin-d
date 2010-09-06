@@ -40,7 +40,8 @@ namespace DnsResolver
         /// RFC 1035, Section 3.1
         /// </remarks>
         public const int MAXLABELLENGTH = 63;
-
+        public const int NOCACHE = 0;   // TTL of 0
+        
         /// <summary>
         /// Record types for DNS RR
         /// </summary>
@@ -195,7 +196,7 @@ namespace DnsResolver
             /// </summary>
             STAR = 255, 
         }
-
+        
         /// <summary>
         /// The class of DNS record, in practice, always IN
         /// </summary>
@@ -285,6 +286,16 @@ namespace DnsResolver
             /// RCODE   when the name server refuses to perform the requested operation for policy reasons.
             /// </summary>
             REFUSED = 5,
+        }
+        
+        public static int Compare(string x, string y)
+        {
+            return string.Compare(x, y, StringComparison.OrdinalIgnoreCase);
         }        
+        
+        public static bool Equals(string x, string y)
+        {
+            return string.Equals(x, y, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

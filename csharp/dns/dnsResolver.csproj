@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DnsMessage.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="DnsBuffer.cs" />
     <Compile Include="DnsBufferReader.cs" />

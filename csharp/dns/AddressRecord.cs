@@ -42,6 +42,12 @@ namespace DnsResolver
         {
         }
         
+        public AddressRecord(string name, uint address)
+            : base(name, Dns.RecordType.ANAME)
+        {
+            this.Address = address;
+        }
+
         /// <summary>
         /// Gets and sets the address as a 32-bit integer.
         /// </summary>
@@ -62,7 +68,7 @@ namespace DnsResolver
                     m_address = value;
                     m_ipAddress = address;
                 }
-                catch(Exception ex)
+                catch(Exception ex) 
                 {
                     throw new DnsProtocolException(DnsProtocolError.InvalidARecord, ex);
                 }
@@ -80,10 +86,27 @@ namespace DnsResolver
             }
         }
 
-        /// <summary>
-        /// Deserializes an A RR DNS message to an <see cref="AddressRecord"/>
-        /// </summary>
-        /// <param name="reader">The DNS reader</param>
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+            
+            AddressRecord addressRecord = record as AddressRecord;
+            if (addressRecord == null)
+            {
+                return false;
+            }
+            
+            return (this.Address == addressRecord.Address);
+        }
+        
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            buffer.AddUint(this.Address);
+        }
+        
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             this.Address = reader.ReadUint();

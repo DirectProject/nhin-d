@@ -47,7 +47,7 @@ namespace DnsResolver
     /// </remarks>
     public class DnsQuestion
     {
-        string m_qname;
+        string m_domain;
         
         internal DnsQuestion()
         {
@@ -55,38 +55,35 @@ namespace DnsResolver
 
         internal DnsQuestion(ref DnsBufferReader reader)
         {
-            this.Parse(ref reader);
+            this.Deserialize(ref reader);
         }
         
-        /// <summary>
-        /// Initializes an instance of an Internet DNS question with specified QNAME (<paramref name="qName"/>),
+        public DnsQuestion(string domain, Dns.RecordType type)
+            : this(domain, type, Dns.Class.IN)
         /// and question type (<paramref name="qType"/>).
         /// </summary>
         /// <param name="qName">The QNAME</param>
         /// <param name="qType">The question type</param>
-        public DnsQuestion(string qName, Dns.RecordType qType)
-            : this(qName, qType, Dns.Class.IN)
         {
         }
 
-        /// <summary>
+        public DnsQuestion(string domain, Dns.RecordType type, Dns.Class qClass)
         /// Initializes an instance of a question with specified domain (<paramref name="qName"/>),
         /// question type (<paramref name="qType"/>), and class (<paramref name="qClass"/>
         /// </summary>
         /// <param name="qName">The QNAME</param>
         /// <param name="qType">The question type</param>
         /// <param name="qClass">The question class</param>
-        public DnsQuestion(string qName, Dns.RecordType qType, Dns.Class qClass)
         {
-            this.QName = qName;
-            this.QType = qType;
-            this.QClass = qClass;
+            this.Domain = domain;
+            this.Type = type;
+            this.Class = qClass;
         }
         
         /// <summary>
         /// Gets and sets the domain name.
         /// </summary>
-        /// <remarks>
+        public string Domain
         /// This is actually a domain name, rather than a QNAME, despite the method name.
         /// 
         /// It gets transformed to a QNAME in the underlying code.
@@ -101,11 +98,10 @@ namespace DnsResolver
         /// padding is used.
         /// </para>
         /// </remarks>
-        public string QName
         {
             get
             {
-                return this.m_qname;
+                return this.m_domain;
             }
             set
             {
@@ -113,18 +109,17 @@ namespace DnsResolver
                 {
                     throw new DnsProtocolException(DnsProtocolError.InvalidQName);
                 }
-                
-                this.m_qname = value;
+                    
+                this.m_domain = value;
             }
         }
 
         /// <summary>
         /// Gets and sets the QTYPE
         /// </summary>
-        /// <remarks>
+        public Dns.RecordType Type
         /// See <see cref="Dns.RecordType"/> for details.
         /// </remarks>
-        public Dns.RecordType QType
         {
             get;
             set;
@@ -133,10 +128,9 @@ namespace DnsResolver
         /// <summary>
         /// Gets and sets the QClass
         /// </summary>
-        /// <remarks>
+        public Dns.Class Class
         /// See <see cref="Dns.Class"/> for details.
         /// </remarks>
-        public Dns.Class QClass
         {
             get;
             set;
@@ -155,24 +149,24 @@ namespace DnsResolver
             }
             
             return (
-                    string.Equals(question.QName, this.QName, StringComparison.OrdinalIgnoreCase)
-                &&  question.QType == this.QType
-                &&  question.QClass == this.QClass
+                    Dns.Equals(question.Domain, this.Domain)
+                &&  question.Type == this.Type
+                &&  question.Class == this.Class
             );
         }
         
-        internal void Parse(ref DnsBufferReader reader)
+        internal void Deserialize(ref DnsBufferReader reader)
         {
-            this.QName = reader.ReadString();
-            this.QType = (Dns.RecordType) reader.ReadShort();
-            this.QClass = (Dns.Class) reader.ReadShort();
+            this.Domain = reader.ReadDomainName();
+            this.Type = (Dns.RecordType) reader.ReadShort();
+            this.Class = (Dns.Class) reader.ReadShort();
         }
 
-        internal void ToBytes(DnsBuffer buffer)
+        internal void Serialize(DnsBuffer buffer)
         {
-            buffer.AddPath(this.QName);
-            buffer.AddShort((short)QType);
-            buffer.AddShort((short)QClass);
+            buffer.AddDomainName(this.Domain);
+            buffer.AddShort((short)Type);
+            buffer.AddShort((short)Class);
         }
     }
 }

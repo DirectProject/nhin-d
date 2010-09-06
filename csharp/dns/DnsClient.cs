@@ -109,7 +109,8 @@ namespace DnsResolver
         /// Default timeout in milliseconds.
         /// </summary>
         public const int DefaultTimeoutMs = 2000; // 2 seconds
-
+        public const int UDPMaxBuffer = 0x10000;
+        
         IPEndPoint m_dnsServer;
         Socket m_udpSocket;
         DnsBuffer m_requestBuffer;
@@ -164,7 +165,7 @@ namespace DnsResolver
 		/// A <see cref="IPEndPoint"/>
 		/// </param>
         public DnsClient(IPEndPoint server)
-            : this(server, DnsClient.DefaultTimeoutMs, 0x10000)
+            : this(server, DnsClient.DefaultTimeoutMs, UDPMaxBuffer)
         {
         }
         
@@ -739,7 +740,7 @@ namespace DnsResolver
         void SerializeRequest(DnsRequest request)
         {
             m_requestBuffer.Clear();
-            request.ToBytes(m_requestBuffer);
+            request.Serialize(m_requestBuffer);
         }
 
         DnsResponse DeserializeResponse()

@@ -33,6 +33,12 @@ namespace DnsResolver
         {
         }
         
+        public NSRecord(string name, string nameserver)
+            : base(name, Dns.RecordType.NS)
+        {
+            this.NameServer = nameserver;
+        }
+        
         public string NameServer
         {
             get
@@ -50,9 +56,30 @@ namespace DnsResolver
             }
         }
 
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+            
+            NSRecord nsRecord = record as NSRecord;
+            if (nsRecord == null)
+            {
+                return false;
+            }
+            
+            return (Dns.Equals(m_nameserver, nsRecord.NameServer));
+        }
+        
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            buffer.AddDomainName(m_nameserver);
+        }
+        
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
-            this.NameServer = reader.ReadString();
+            this.NameServer = reader.ReadDomainName();
         }
     }
 }

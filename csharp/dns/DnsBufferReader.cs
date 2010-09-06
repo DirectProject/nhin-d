@@ -41,6 +41,10 @@ namespace DnsResolver
         /// <param name="count">The number of bytes read into in the buffer.</param>
         public DnsBufferReader(byte[] buffer, int startAt, int count)
         {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException();
+            }
             m_buffer = buffer;
             m_count = count;
             m_index = startAt;
@@ -57,6 +61,11 @@ namespace DnsResolver
         /// <param name="sb">A <see cref="StringBuilder"/> for reading strings, will be destructively altered by this reader</param>
         public DnsBufferReader(byte[] buffer, int startAt, int count, StringBuilder sb)
         {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
             m_buffer = buffer;
             m_count = count;
             m_index = startAt;
@@ -257,14 +266,16 @@ namespace DnsResolver
             return this.ReadBytes(m_count - m_index);
         }
 
-        /// <summary>
-        /// Reads a raw string from the remainder of the buffer, not accounting for pointers
-        /// </summary>
-        /// <returns>The string corresponding to the remainder of the buffer</returns>
-        public string ReadStringRaw()
+        public string ReadString()
+        {
+            return this.ReadString(m_count);
+        }
+
+        public string ReadString(int endAt)
         {
             StringBuilder sb = this.EnsureStringBuilder();
-            while (m_index < m_count)
+            int maxIndex = Math.Min(m_count, endAt);
+            while (m_index < maxIndex)
             {
                 sb.Append(this.ReadChar());
             }
@@ -272,18 +283,17 @@ namespace DnsResolver
             return sb.ToString();
         }
 
-        /// <summary>
+        public string ReadDomainName()
         /// Reads a string from the current buffer, accounting for pointers, and advances the buffer.
         /// </summary>
         /// <returns>The string from the current buffer</returns>
-        public string ReadString()
         {
             StringBuilder sb = this.EnsureStringBuilder();
-            this.ReadStringInternal();
+            this.ReadLabel();
             return sb.ToString();
         }
 
-        /// <summary>
+        void ReadLabel()
         /// Tests if the current index position is a pointer label.
         /// </summary>
         /// <remarks>RFC 1035, 4.1.4, Message compression:
@@ -317,7 +327,6 @@ namespace DnsResolver
             this.Clone(stringStartAt).ReadStringInternal();
         }
 
-        void ReadStringInternal()
         {
             while (true)
             {
@@ -331,6 +340,7 @@ namespace DnsResolver
                 if (this.IsPointer())
                 {
                     this.ReadStringFromPointer();
+                    this.Clone(stringStartAt).ReadLabel();
                     break;
                 }
 

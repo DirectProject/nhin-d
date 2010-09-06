@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
+using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 
 namespace DnsResolver
@@ -53,9 +55,6 @@ namespace DnsResolver
             return extendedName;
         }
 
-        const string SubjectNamePrefix = "CN=";
-        const string EmailNamePrefix = "E=";
-
         /// <summary>
         /// Extracts the email or subject name from the certificate.
         /// </summary>
@@ -64,28 +63,31 @@ namespace DnsResolver
         /// the email name is not found, or null if neither is found.</returns>
         public static string ExtractEmailNameOrName(this X509Certificate2 cert)
         {
-            string[] parts = cert.Subject.Split(',');
-            if (parts != null)
+            string name = cert.GetNameInfo(X509NameType.EmailName, false);
+            if (string.IsNullOrEmpty(name))
             {
-                for (int i = 0; i < parts.Length; ++i)
-                {
-                    string prefix = EmailNamePrefix;
-                    int index = parts[i].IndexOf(prefix);
-                    if (index < 0)
-                    {
-                        prefix = SubjectNamePrefix;
-                        index = parts[i].IndexOf(prefix);
-                    }
-                    if (index >= 0)
-                    {
-                        return parts[i].Substring(index + prefix.Length).Trim();
-                    }
-                }
+                name = cert.GetNameInfo(X509NameType.SimpleName, false);
             }
 
-            return null;
+            return name;
         }
-
-
+        
+        public static uint ToIPV4(this IPAddress address)
+        {
+            if (address.AddressFamily != AddressFamily.InterNetwork)
+            {
+                throw new NotSupportedException();
+            }
+            
+            //return (uint) address.Address; // This property is obsolete!
+            
+            byte[] ipBytes = address.GetAddressBytes();
+            if (ipBytes == null || ipBytes.Length != 4)
+            {
+                throw new NotSupportedException();
+            }
+            
+            return (uint) (ipBytes[0] << 24 | (ipBytes[1] << 16) | (ipBytes[2] << 8) | (ipBytes[3] << 0));
+        }
     }
 }
