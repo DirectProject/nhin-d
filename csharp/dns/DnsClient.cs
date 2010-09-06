@@ -64,7 +64,7 @@ namespace DnsResolver
 	///     const string LocalDnsIp = "127.0.0.1";
 	///     const string ExampleDomain = "bob.example.org"; // for bob@example.org
 	///     var client = new DnsClient(LocalDnsIp);
-	///     try { IEnumerable<CertRecord> certrecs = client.ResolveCERT(ExampleDomain); }
+	///     try { IEnumerable&lt;CertRecord&gt; certrecs = client.ResolveCERT(ExampleDomain); }
 	///     catch (DnsException error)
 	///     {
 	///         //handle error
@@ -78,7 +78,7 @@ namespace DnsResolver
 	///         }
 	///     }
 	///    </code>
-	///   </example
+	/// </example>
     /// <example>
     ///   This example uses the full power of the DnsClient library to resolve CERT records.
 	///   <code>
@@ -91,7 +91,7 @@ namespace DnsResolver
 	///     {
 	///         // handle error
 	///     }
-	///     if (resp != null && resp.HasAnswerRecords)
+	///     if (resp != null &amp;&amp; resp.HasAnswerRecords)
 	///     {
 	///         foreach (var certrec in response.AnswerRecords.CERT)
 	///         {
@@ -105,6 +105,9 @@ namespace DnsResolver
 	/// </example>
     public class DnsClient : IDisposable
     {
+        /// <summary>
+        /// Default timeout in milliseconds.
+        /// </summary>
         public const int DefaultTimeoutMs = 2000; // 2 seconds
 
         IPEndPoint m_dnsServer;
@@ -265,7 +268,10 @@ namespace DnsResolver
                 m_maxRetries = value;
             }
         }
-        
+
+        /// <summary>
+        /// Event to which to subscribe for notification of errors.
+        /// </summary>
         public event Action<DnsClient, Exception> Error;
         
 		
@@ -415,7 +421,7 @@ namespace DnsResolver
 		/// <summary>
 		/// Convenience method resolving and returning MX RRs. 
 		/// </summary>
-		/// <param name="domain">
+		/// <param name="emailDomain">
 		/// The domain name to resolve.
 		/// </param>
 		/// <returns>
@@ -438,7 +444,7 @@ namespace DnsResolver
 		/// The domain name to resolve.
 		/// </param>
 		/// <returns>
-		/// An enumeration of TXT Records. See <see cref="TXTRecord"/>
+		/// An enumeration of TXT Records. See <see cref="TextRecord"/>
 		/// </returns>
         public IEnumerable<TextRecord> ResolveTXT(string domain)
         {
@@ -470,6 +476,16 @@ namespace DnsResolver
             return response.AnswerRecords.CERT;
         }
 
+
+        /// <summary>
+        /// Resolves CERT records for <paramref name="domain"/> from the authoritative
+        /// nameservers for the domain.
+        /// </summary>
+        /// <remarks>
+        /// This method may be used if the typical nameserver used does not handle CERT records.
+        /// </remarks>
+        /// <param name="domain">The domain for which to retrieve CERT records.</param>
+        /// <returns>An enumeration of <see cref="CertRecord"/> instances.</returns>
         public  IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain)
         {
             IEnumerable<IPAddress> nameServers = this.GetNameServers(domain);
@@ -495,6 +511,18 @@ namespace DnsResolver
             return null;
         }
 
+
+        /// <summary>
+        /// Resolves CERT records for <paramref name="domain"/> from the authoritative
+        /// nameservers for the domain.
+        /// </summary>
+        /// <remarks>
+        /// This method may be used if the typical nameserver used does not handle CERT records.
+        /// </remarks>
+        /// <param name="domain">The domain for which to retrieve CERT records.</param>
+        /// <param name="nameserver">The nameserver from which to retrieve authoratative nameservers
+        /// for the domain.</param>
+        /// <returns>An enumeration of <see cref="CertRecord"/> instances.</returns>
         public virtual IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain, IPAddress nameserver)
         {
             if (string.IsNullOrEmpty(domain) || nameserver == null)
@@ -795,6 +823,9 @@ namespace DnsResolver
 
         #region IDisposable Members
 
+        /// <summary>
+        /// Frees resources for this instance.
+        /// </summary>
         public void Dispose()
         {
             this.Close();
