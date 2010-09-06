@@ -572,6 +572,9 @@ public class MimeXDSTransformer {
         return at;
     }
 
+    /*
+     * TODO: What should happen if patient is null?
+     */
     protected static SlotType1 makePatientSlot(String name, SimplePerson patient, String patientId, String orgId) {
         List<String> vals = null;
         SlotType1 slot = new SlotType1();
@@ -630,6 +633,10 @@ public class MimeXDSTransformer {
 
     protected static void addClassifications(List<ClassificationType> classifs, String docId, String id, String scheme,
             String rep, List<String> slotNames, List<String> slotValues, List<String> snames) {
+        if (classifs == null) {
+            throw new IllegalArgumentException("Must include a live reference to a ClassificationType list");
+        }
+        
         ClassificationType ct = new ClassificationType();
         
         classifs.add(ct);
@@ -664,6 +671,9 @@ public class MimeXDSTransformer {
 
     protected static void addExternalIds(List<ExternalIdentifierType> extIds, String docId, String scheme, String id,
             String sname, String value) {
+        if (extIds == null)
+            throw new IllegalArgumentException("Must include a live reference to an ExternalIdentifierType list");
+        
         ExternalIdentifierType ei = new ExternalIdentifierType();
         
         extIds.add(ei);
