@@ -22,10 +22,17 @@ using System.IO;
 
 namespace DnsResolver
 {
+    /// <summary>
+    /// Prints a textual representation of DNS transactions (request, response, records, etc.)
+    /// </summary>
     public class DnsRecordPrinter
     {
         TextWriter m_writer;
         
+        /// <summary>
+        /// Initializes the printer with <paramref name="writer"/>
+        /// </summary>
+        /// <param name="writer">The <see cref="TextWriter"/> used for output</param>
         public DnsRecordPrinter(TextWriter writer)
         {
             if (writer == null)
@@ -36,6 +43,10 @@ namespace DnsResolver
             this.m_writer = writer;
         }
         
+        /// <summary>
+        /// Prints a DNS response.
+        /// </summary>
+        /// <param name="response">The response to print</param>
         public void Print(DnsResponse response)
         {
             if (response == null)
@@ -78,6 +89,10 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Prints a collection of DNS RRs
+        /// </summary>
+        /// <param name="records">The RRs to print</param>
         public void Print(DnsResourceRecordCollection records)
         {
             if (records == null || records.Count == 0)
@@ -92,6 +107,10 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Prints an array of RRs.
+        /// </summary>
+        /// <param name="records">The RRs to print</param>
         public void Print(DnsResourceRecord[] records)
         {
             if (records == null || records.Length == 0)
@@ -106,6 +125,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Prints an RR
+        /// </summary>
+        /// <param name="record">The RR to print</param>
         public void Print(DnsResourceRecord record)
         {
             if (record == null)
@@ -157,6 +180,10 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Prints an A RR
+        /// </summary>
+        /// <param name="body">The RR to print</param>
         public void Print(AddressRecord body)
         {
             if (body == null)
@@ -167,7 +194,11 @@ namespace DnsResolver
 
             this.Print("IPAddress", body.IPAddress.ToString());
         }
-        
+
+        /// <summary>
+        /// Prints an MX RR
+        /// </summary>
+        /// <param name="body">The RR to print</param>
         public void Print(MXRecord body)
         {
             if (body == null)
@@ -179,7 +210,11 @@ namespace DnsResolver
             this.Print("Exchange", body.Exchange);
             this.Print("Preferrence", body.Preference);
         }
-        
+
+        /// <summary>
+        /// Prints a TXT RR
+        /// </summary>
+        /// <param name="body">The RR to print</param>
         public void Print(TextRecord body)
         {
             if (body == null)
@@ -205,16 +240,28 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Prints a CNAME RR
+        /// </summary>
+        /// <param name="cname">The RR to print</param>
         public void Print(CNameRecord cname)
         {
 			this.Print(cname.CName);
         }
         
+        /// <summary>
+        /// Prints a SOA RR
+        /// </summary>
+        /// <param name="soa">The RR to print</param>
         public void Print(SOARecord soa)
         {
 			this.Print(soa.DomainName);
         }
         
+        /// <summary>
+        /// Prints a CERT RR
+        /// </summary>
+        /// <param name="cert">The RR to print</param>
         public void Print(CertRecord cert)
         {
             if (cert.Cert != null)
@@ -223,16 +270,24 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Prints an NS RR
+        /// </summary>
+        /// <param name="ns">The RR to print</param>
         public void Print(NSRecord ns)
         {
 			this.Print(ns.NameServer);
         }
         
+        /// <summary>
+        /// Prints a PTR RR
+        /// </summary>
+        /// <param name="ptr">The RR to print</param>
         void Print(PtrRecord ptr)
         {
             this.Print(ptr.Domain);
         }
-        
+
         void Print<T>(string name, T value)
         {
             this.Print(name, value.ToString());
@@ -247,7 +302,7 @@ namespace DnsResolver
         {
             this.Print(name, value.ToString());
         }
-        
+
         void Print(string name, string value)
         {
             m_writer.WriteLine("{0}={1}", name, value);
