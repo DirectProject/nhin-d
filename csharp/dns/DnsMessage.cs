@@ -23,8 +23,8 @@ using System.Threading;
 namespace DnsResolver
 {
     /// <summary>
-    /// A base DNS message, consisting of a header & a question
-    /// Actual DNS messages are DNSRequest & DnsResponse
+    /// A base DNS message, consisting of a header and a question
+    /// Actual DNS messages are DNSRequest and DnsResponse
     /// </summary>
     public class DnsMessage
     {

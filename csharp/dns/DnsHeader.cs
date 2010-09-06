@@ -60,9 +60,10 @@ namespace DnsResolver
         short m_nameServerAnswerCount;
         short m_additionalAnswerCount;
         
-        internal DnsHeader()
+        /// <summary>
         /// Initializes an empty DNS header
         /// </summary>
+        internal DnsHeader()
         {
         }
         
@@ -87,23 +88,28 @@ namespace DnsResolver
         /// to match up replies to outstanding queries.
         /// </para>
         /// </remarks>
+        public ushort UniqueID {get;set;}
         /// <summary>
         /// The QR field expressed as a <see cref="bool"/>
         /// </summary>
         /// <remarks>RFC 1035, Section 4.1.1, QR, specifies if this is a request (<c>true</c>) or response
         /// <c>false</c></remarks>
+        public bool IsRequest { get; set; }
         /// <summary>
         /// The OPCODE for this message
         /// </summary>
         /// <remarks>See remarks for <see cref="OpCode"/></remarks>
+        public Dns.OpCode OpCode {get; set;}
         /// <summary>
         /// The AA field expressed as a <see cref="bool"/>
         /// </summary>
         /// <remarks>RFC 1035, Section 4.1.1, AA</remarks>
+        public bool IsAuthoritativeAnswer {get;set;}
         /// <summary>
         /// The TC field expressed as a <see cref="bool"/>
         /// </summary>
         /// <remarks>RFC 1035, Section 4.1.1, TC</remarks>
+        public bool IsTruncated {get; set;}
         /// <summary>
         /// The RD field expressed as a <see cref="bool"/>
         /// </summary>
@@ -114,6 +120,7 @@ namespace DnsResolver
         /// the name server to pursue the query recursively.
         /// Recursive query support is optional.
         /// </para></remarks>
+        public bool IsRecursionDesired {get; set;}
         /// <summary>
         /// The RA field expressed as a <see cref="bool"/>
         /// </summary>
@@ -122,11 +129,12 @@ namespace DnsResolver
         /// response, and denotes whether recursive query support is
         /// available in the name server.</para>
         /// </remarks>
+        public bool IsRecursionAvailable {get; set;}
         /// <summary>
         /// The RCODE for this header
         /// </summary>
         /// <remarks>See remarks for <see cref="ResponseCode"/></remarks>
-
+        public Dns.ResponseCode ResponseCode {get; set;}
         /// <summary>
         /// Gets and sets the number of entries in the question section (QDCOUNT header value)
         /// </summary>

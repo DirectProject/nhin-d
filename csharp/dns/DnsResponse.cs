@@ -21,6 +21,9 @@ using System.Text;
 
 namespace DnsResolver
 {
+    /// <summary>
+    /// Server response
+    /// </summary>
     public class DnsResponse : DnsMessage
     {
         DnsResourceRecordCollection m_answerRecords;

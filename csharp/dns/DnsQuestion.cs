@@ -60,20 +60,10 @@ namespace DnsResolver
         
         public DnsQuestion(string domain, Dns.RecordType type)
             : this(domain, type, Dns.Class.IN)
-        /// and question type (<paramref name="qType"/>).
-        /// </summary>
-        /// <param name="qName">The QNAME</param>
-        /// <param name="qType">The question type</param>
         {
         }
 
         public DnsQuestion(string domain, Dns.RecordType type, Dns.Class qClass)
-        /// Initializes an instance of a question with specified domain (<paramref name="qName"/>),
-        /// question type (<paramref name="qType"/>), and class (<paramref name="qClass"/>
-        /// </summary>
-        /// <param name="qName">The QNAME</param>
-        /// <param name="qType">The question type</param>
-        /// <param name="qClass">The question class</param>
         {
             this.Domain = domain;
             this.Type = type;
@@ -82,10 +72,9 @@ namespace DnsResolver
         
         /// <summary>
         /// Gets and sets the domain name.
-        /// </summary>
-        public string Domain
         /// This is actually a domain name, rather than a QNAME, despite the method name.
-        /// 
+        /// </summary>
+        /// <remarks>
         /// It gets transformed to a QNAME in the underlying code.
         /// 
         /// RFC 1035, Section 4.1.2
@@ -98,6 +87,7 @@ namespace DnsResolver
         /// padding is used.
         /// </para>
         /// </remarks>
+        public string Domain
         {
             get
             {
@@ -117,9 +107,10 @@ namespace DnsResolver
         /// <summary>
         /// Gets and sets the QTYPE
         /// </summary>
-        public Dns.RecordType Type
+        /// <remarks>
         /// See <see cref="Dns.RecordType"/> for details.
         /// </remarks>
+        public Dns.RecordType Type
         {
             get;
             set;
@@ -128,9 +119,10 @@ namespace DnsResolver
         /// <summary>
         /// Gets and sets the QClass
         /// </summary>
-        public Dns.Class Class
+        /// <remarks>
         /// See <see cref="Dns.Class"/> for details.
         /// </remarks>
+        public Dns.Class Class
         {
             get;
             set;
