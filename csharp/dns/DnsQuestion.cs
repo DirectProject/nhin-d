@@ -58,11 +58,22 @@ namespace DnsResolver
             this.Deserialize(ref reader);
         }
         
+        /// <summary>
+        /// Initializes an instance for the specified domain and type
+        /// </summary>
+        /// <param name="domain">The domain we are querying.</param>
+        /// <param name="type">The record type we are querying.</param>
         public DnsQuestion(string domain, Dns.RecordType type)
             : this(domain, type, Dns.Class.IN)
         {
         }
 
+        /// <summary>
+        /// Initializes an instance for the specified domain and type
+        /// </summary>
+        /// <param name="domain">The domain we are querying.</param>
+        /// <param name="type">The record type we are querying.</param>
+        /// <param name="qClass">Use to define a non Internet DNS query</param>
         public DnsQuestion(string domain, Dns.RecordType type, Dns.Class qClass)
         {
             this.Domain = domain;
