@@ -185,9 +185,12 @@ namespace DnsResolver
         }
 
         /// <summary>
-        /// Compares all fields except TTL , since that can vary
+        /// Tests equality between this RR and the other <paramref name="record"/>
         /// </summary>
-        /// <returns>true if equal</returns>
+        /// <remarks>
+        /// Compares all fields except TTL , since that can vary
+        /// </remarks>
+        /// <returns><c>true</c> if equal</returns>
         public virtual bool Equals(DnsResourceRecord record)
         {
             if (record == null)
