@@ -26,6 +26,21 @@ namespace DnsResolver
       /                   PTRDNAME                    /
       +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
      */
+
+    /// <summary>
+    /// Represents a PTR DNS RR
+    /// </summary>
+    /// <remarks>
+    /// RFC 1035, 
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                   PTRDNAME                    /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    ///
+    /// where:
+    ///
+    /// PTRDNAME        A &lt;domain-name&gt; which points to some location in the
+    ///                domain name space.
+    /// </remarks>
     public class PtrRecord : DnsResourceRecord
     {    
         string m_domain;

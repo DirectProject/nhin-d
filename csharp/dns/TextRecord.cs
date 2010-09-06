@@ -21,10 +21,21 @@ using System.Text;
 
 namespace DnsResolver
 {
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    // /                   TXT-DATA                    /
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-
+    /// <summary>Represents a TXT RR RDATA value</summary>
+    /// <remarks>
+    /// RFC 1035, 3.3.14, TXT RDATA format
+    /// <code>
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                   TXT-DATA                    /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
+    /// where:
+    /// TXT-DATA        One or more &lt;character-string&gt;s.
+    /// <para>
+    /// TXT RRs are used to hold descriptive text.  The semantics of the text
+    /// depends on the domain where it is found.
+    /// </para>
+    /// </remarks>
     public class TextRecord : DnsResourceRecord
     {
         IList<string> m_strings;
@@ -57,6 +68,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets if this TXT RR has strings associated with it.
+        /// </summary>
         public bool HasStrings
         {
             get
