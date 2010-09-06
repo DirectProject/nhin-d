@@ -21,10 +21,21 @@ using System.Text;
 
 namespace DnsResolver
 {
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    // /                   TXT-DATA                    /
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-
+    /// <summary>Represents a TXT RR</summary>
+    /// <remarks>
+    /// RFC 1035, 3.3.14, TXT RDATA format
+    /// <code>
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                   TXT-DATA                    /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
+    /// where:
+    /// TXT-DATA        One or more &lt;character-string&gt;s.
+    /// <para>
+    /// TXT RRs are used to hold descriptive text.  The semantics of the text
+    /// depends on the domain where it is found.
+    /// </para>
+    /// </remarks>
     public class TextRecord : DnsResourceRecord
     {
         IList<string> m_strings;
@@ -34,6 +45,9 @@ namespace DnsResolver
             // nothing
         }
 
+        /// <summary>
+        /// Returns the strings for the TXT RR
+        /// </summary>
         public IList<string> Strings
         {
             get
@@ -51,6 +65,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets if this TXT RR has strings associated with it.
+        /// </summary>
         public bool HasStrings
         {
             get
@@ -59,6 +76,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Updates this instance with raw wire data from the reader.
+        /// </summary>
+        /// <param name="reader">The reader with buffer data for the TXT RR pre-loaded.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             List<string> stringList = new List<string>();

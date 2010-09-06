@@ -32,6 +32,9 @@ namespace DnsResolver
         {
         }
 
+        /// <summary>
+        /// Gets and sets the raw data for this RR
+        /// </summary>
         public byte[] RecordBytes
         {
             get
@@ -49,6 +52,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Reads values into this instance from the reader
+        /// </summary>
+        /// <param name="reader">A reader which has a buffer already filled with raw data for this RR.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             this.RecordBytes = reader.ReadBytes(this.RecordDataLength);
