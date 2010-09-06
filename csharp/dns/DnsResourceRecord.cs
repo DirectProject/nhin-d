@@ -1,0 +1,351 @@
+﻿/* 
+ Copyright (c) 2010, NHIN Direct Project
+ All rights reserved.
+
+ Authors:
+    Umesh Madan     umeshma@microsoft.com
+    Sean Nolan      seannol@microsoft.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace DnsResolver
+{
+    //                                  1  1  1  1  1  1
+    //    0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
+    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    //  |                                               |
+    //  /                                               /
+    //  /                      NAME                     /
+    //  |                                               |
+    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    //  |                      TYPE                     |
+    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    //  |                     CLASS                     |
+    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    //  |                      TTL                      |
+    //  |                                               |
+    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    //  |                   RDLENGTH                    |
+    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--|
+    //  /                     RDATA                     /
+    //  /                                               /
+    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    
+    public abstract class DnsResourceRecord
+    {
+        static Func<Dns.RecordType, DnsResourceRecord> s_recordObjectFactory = DnsResourceRecord.CreateRecordObject;
+        DnsResourceRecordHeader m_header;        
+        
+        internal DnsResourceRecord()
+        {
+        }
+
+        protected DnsResourceRecord(string name, Dns.RecordType type)
+            : this(name, type, Dns.NOCACHE)
+        {
+        }
+
+        protected DnsResourceRecord(string name, Dns.RecordType type, int ttl)
+        {
+            this.Name = name;
+            this.Type = type;
+            this.Class = Dns.Class.IN;
+            this.TTL = ttl;
+        }
+        
+        //
+        // NAME
+        //
+        public string Name
+        {
+            get
+            {
+                return m_header.Name;  
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new DnsProtocolException(DnsProtocolError.InvalidRecordName);
+                }
+                m_header.Name = value;
+            }
+        }
+        
+        /// <summary>
+        /// Dns Record Type
+        /// </summary>
+        public Dns.RecordType Type
+        {
+            get
+            {
+                return m_header.Type;
+            }
+            set
+            {
+                this.m_header.Type = value;
+            }
+        }
+
+        /// <summary>
+        /// Record Class
+        /// </summary>
+        public Dns.Class Class
+        {
+            get
+            {
+                return m_header.Class;
+            }
+            set
+            {
+                m_header.Class = value;
+            }
+        }
+
+        /// <summary>
+        /// Record TTL - in seconds
+        /// </summary>
+        public int TTL
+        {
+            get
+            {
+                return m_header.TTL;
+            }
+            set
+            {
+                m_header.TTL = value;
+            }
+        }
+                
+        /// <summary>
+        /// Length of the record data
+        /// </summary>
+        public short RecordDataLength
+        {
+            get
+            {
+                return m_header.RecordDataLength;
+            }
+            set
+            {
+                m_header.RecordDataLength = value;
+            }
+        }
+                
+        internal void Deserialize(ref DnsResourceRecordHeader header, ref DnsBufferReader reader)
+        {
+            m_header = header;
+            this.DeserializeRecordData(ref reader);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj as DnsResourceRecord);
+        }
+        
+        /// <summary>
+        /// Compares all fields except TTL , since that can vary
+        /// </summary>
+        /// <returns>true if equal</returns>
+        public virtual bool Equals(DnsResourceRecord record)
+        {
+            if (record == null)
+            {
+                return false;
+            }
+            
+            return (
+                    this.Type == record.Type
+                &&  this.Class == record.Class
+                &&  Dns.Equals(this.Name, record.Name)
+            );
+        }
+                
+        public void Serialize(DnsBuffer buffer)
+        {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            m_header.Serialize(buffer);
+            int headerSize = buffer.Count;
+            int recordLengthOffset = headerSize - sizeof(short);
+            this.SerializeRecordData(buffer);
+            this.RecordDataLength = (short) (buffer.Count - headerSize);
+            
+            buffer.Buffer[recordLengthOffset++] = (byte) ((short) this.RecordDataLength >> 8);
+            buffer.Buffer[recordLengthOffset] = ((byte)(this.RecordDataLength));            
+        }
+                
+        public static DnsResourceRecord Deserialize(ref DnsBufferReader reader)
+        {
+            //
+            // We have to parse the header before we can figure out what kind of record this is
+            //
+            DnsResourceRecordHeader header = new DnsResourceRecordHeader();
+            header.Deserialize(ref reader);
+
+            DnsResourceRecord record = DnsResourceRecord.CreateRecordObject(header.Type);
+            record.Deserialize(ref header, ref reader);
+
+            return record;
+        }
+
+        protected virtual void SerializeRecordData(DnsBuffer buffer)
+        {
+            throw new NotSupportedException();
+        }
+
+        protected abstract void DeserializeRecordData(ref DnsBufferReader reader);
+
+        public static DnsResourceRecord CreateRecordObject(Dns.RecordType recordType)
+        {
+            DnsResourceRecord record;
+            switch (recordType)
+            {
+                default:
+                    record = new RawRecord();
+                    break;
+
+                case Dns.RecordType.ANAME:
+                    record = new AddressRecord();
+                    break;
+
+                case Dns.RecordType.NS:
+                    record = new NSRecord();
+                    break;
+
+                case Dns.RecordType.CNAME:
+                    record = new CNameRecord();
+                    break;
+
+                case Dns.RecordType.SOA:
+                    record = new SOARecord();
+                    break;
+
+                case Dns.RecordType.TXT:
+                    record = new TextRecord();
+                    break;
+
+                case Dns.RecordType.MX:
+                    record = new MXRecord();
+                    break;
+                
+                case Dns.RecordType.PTR:
+                    record = new PtrRecord();
+                    break;
+                    
+                case Dns.RecordType.CERT:
+                    record = new CertRecord();
+                    break;
+            }
+            
+            return record;
+        }
+        
+        public static Func<Dns.RecordType, DnsResourceRecord> ResourceRecordFactory
+        {
+            get
+            {
+                return s_recordObjectFactory;
+            }
+            set
+            {
+                s_recordObjectFactory = value ?? DnsResourceRecord.CreateRecordObject;
+            }
+        }
+        
+        internal struct DnsResourceRecordHeader
+        {
+            string m_name;
+            int m_ttl;
+            short m_recordDataLength;
+            
+            internal string Name
+            {
+                get
+                {
+                    return m_name;
+                }
+                set
+                {
+                    if (value == null)
+                    {
+                        throw new DnsProtocolException(DnsProtocolError.InvalidRecordName);
+                    }
+                    
+                    m_name = value;
+                }
+            }
+            
+            internal Dns.RecordType Type;
+            
+            internal int TTL
+            {
+                get
+                {
+                    return m_ttl;
+                }
+                set
+                {
+                    if (value < 0)
+                    {
+                        throw new DnsProtocolException(DnsProtocolError.InvalidTTL);
+                    }
+                    
+                    m_ttl = value;
+                }
+            }
+            
+            internal Dns.Class Class;
+            
+            internal short RecordDataLength
+            {
+                get
+                {
+                    return m_recordDataLength;
+                }
+                set
+                {
+                    if (value <= 0)
+                    {
+                        throw new DnsProtocolException(DnsProtocolError.InvalidRecordSize);
+                    }
+
+                    m_recordDataLength = value;
+                }
+            }
+            
+            internal void Serialize(DnsBuffer buffer)
+            {
+                buffer.AddDomainName(this.Name);
+                buffer.AddShort((short) this.Type);
+                buffer.AddShort((short) this.Class);
+                buffer.AddInt(this.TTL);
+                buffer.AddShort(this.RecordDataLength);
+            }
+            
+            internal void Deserialize(ref DnsBufferReader reader)
+            {
+                this.Name = reader.ReadDomainName();
+                this.Type = (Dns.RecordType) reader.ReadShort();
+
+                this.Class = (Dns.Class) reader.ReadShort();
+                this.TTL = reader.ReadInt();
+                this.RecordDataLength = reader.ReadShort();
+            }
+        }
+    }    
+}
