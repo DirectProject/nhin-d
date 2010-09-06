@@ -27,6 +27,7 @@ namespace DnsResolver
         Failed,
         MaxAttemptsReached,
         LabelTooLong,
+        StringTooLong,
         RequestIDMismatch,
         InvalidQuestionCount,
         InvalidQName,

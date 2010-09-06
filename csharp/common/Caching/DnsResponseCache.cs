@@ -50,8 +50,8 @@ namespace NHINDirect.Caching
             }
 
             return string.Format("{0}.{1}"
-                    , question.QType
-                    , question.QName ?? "unknown").ToLower();
+                    , question.Type
+                    , question.Domain ?? "unknown").ToLower();
         }
         
         /// <summary>

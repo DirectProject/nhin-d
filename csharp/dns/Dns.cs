@@ -20,12 +20,19 @@ using System.Text;
 
 namespace DnsResolver
 {
+    /// <summary>
+    /// Enums taken from DnsRFCs. Please reference them
+    /// </summary>
     public class Dns
     {
         public const int DNS_PORT = 53;
         public const short INVALID_REQUEST_ID = 0;
         public const int MAXLABELLENGTH = 63;
-
+        public const int NOCACHE = 0;   // TTL of 0
+        
+        /// <summary>
+        /// Dns Record Type
+        /// </summary>
         public enum RecordType : short
         {
             // TYPE
@@ -52,7 +59,10 @@ namespace DnsResolver
             MAILA = 254, // A request for mail agent RRs (obsolete - see MX)
             STAR = 255,  // A request for all records (*)
         }
-
+        
+        /// <summary>
+        /// Dns Record Class
+        /// </summary>
         public enum Class : short
         {
             // CLASS
@@ -80,6 +90,16 @@ namespace DnsResolver
             NAME_ERROR = 3,
             NOT_IMPLEMENTED = 4,
             REFUSED = 5,
+        }
+        
+        public static int Compare(string x, string y)
+        {
+            return string.Compare(x, y, StringComparison.OrdinalIgnoreCase);
         }        
+        
+        public static bool Equals(string x, string y)
+        {
+            return string.Equals(x, y, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

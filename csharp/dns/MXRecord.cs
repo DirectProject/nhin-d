@@ -36,6 +36,18 @@ namespace DnsResolver
         {
         }
         
+        public MXRecord(string name, string exchange)
+            : this(name, exchange, 10)
+        {
+        }
+        
+        public MXRecord(string name, string exchange, short preference)
+            : base(name, Dns.RecordType.MX)
+        {
+            this.Preference = preference;
+            this.Exchange = exchange;
+        }
+        
         public short Preference
         {
             get;
@@ -59,10 +71,35 @@ namespace DnsResolver
             }
         }
 
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+            
+            MXRecord mxRecord = record as MXRecord;
+            if (mxRecord == null)
+            {
+                return false;
+            }
+            
+            return (
+                    Dns.Equals(m_exchange, mxRecord.m_exchange)
+                &&  this.Preference == mxRecord.Preference
+            );
+        }
+        
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            buffer.AddShort(this.Preference);
+            buffer.AddDomainName(m_exchange);
+        }
+        
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
-            Preference = reader.ReadShort();
-            Exchange = reader.ReadString();
+            this.Preference = reader.ReadShort();
+            this.Exchange = reader.ReadDomainName();
         }
     }
 }

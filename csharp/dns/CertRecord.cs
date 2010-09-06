@@ -62,6 +62,15 @@ namespace DnsResolver
         {
         }
         
+        public CertRecord(DnsX509Cert cert)
+            : base(cert.Name, Dns.RecordType.CERT)
+        {
+            this.Cert = cert;
+            this.CertType = CertificateType.X509;
+            this.KeyTag = cert.KeyTag;
+            this.Algorithm = 5;  // RFC 4034
+        }
+        
         /// <summary>
         /// Gets and sets the certificate type
         /// </summary>
@@ -72,7 +81,7 @@ namespace DnsResolver
             {
                 return m_certType;
             }
-            set
+            internal set
             {
                 m_certType = value;
             }
@@ -87,7 +96,7 @@ namespace DnsResolver
             {
                 return m_keyTag;
             }
-            set
+            internal set
             {
                 m_keyTag = value;
             }
@@ -102,7 +111,7 @@ namespace DnsResolver
             {
                 return m_algorithm;
             }
-            set
+            internal set
             {
                 m_algorithm = value;
             }
@@ -137,7 +146,13 @@ namespace DnsResolver
             }          
             set
             {
+                if (value == null)
+                {
+                    throw new ArgumentNullException();
+                }
+                
                 m_cert = value;
+                m_certData = value.GetData();
             }  
         }
         
@@ -148,7 +163,36 @@ namespace DnsResolver
                 m_cert = new DnsX509Cert(m_certData, m_keyTag);
             }
         }
+
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+            
+            CertRecord certRecord = record as CertRecord;
+            if (certRecord == null)
+            {
+                return false;
+            }
+            
+            return (
+                    this.m_algorithm == certRecord.m_algorithm
+                &&  this.m_certType == certRecord.m_certType
+                &&  this.m_keyTag == certRecord.m_keyTag
+                &&  Dns.Equals(this.Cert.Name, certRecord.Cert.Name)
+            );
+        }
         
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            buffer.AddUshort((ushort) m_certType);
+            buffer.AddUshort(m_keyTag);
+            buffer.AddByte(m_algorithm);
+            buffer.AddBytes(m_certData);
+        }   
+             
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             ushort certType = reader.ReadUShort();
@@ -159,7 +203,7 @@ namespace DnsResolver
             m_certType = (CertificateType) certType;
             m_keyTag = reader.ReadUShort();
             m_algorithm = reader.ReadByte();
-            m_certData = reader.ReadBytes(this.RecordDataLength - 5);
+            m_certData = reader.ReadBytes(this.RecordDataLength - 5); // 5 == # of bytes we've already read (certType, keytag etc)
             
             this.EnsureDnsCert();            
         }

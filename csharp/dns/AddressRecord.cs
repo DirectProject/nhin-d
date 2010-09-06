@@ -34,6 +34,15 @@ namespace DnsResolver
         {
         }
         
+        public AddressRecord(string name, uint address)
+            : base(name, Dns.RecordType.ANAME)
+        {
+            this.Address = address;
+        }
+
+        /// <summary>
+        /// The Raw IP4 address 
+        /// </summary>
         public uint Address
         {
             get
@@ -51,13 +60,16 @@ namespace DnsResolver
                     m_address = value;
                     m_ipAddress = address;
                 }
-                catch(Exception ex)
+                catch(Exception ex) 
                 {
                     throw new DnsProtocolException(DnsProtocolError.InvalidARecord, ex);
                 }
             }
         }
         
+        /// <summary>
+        /// Parsed IP4 address
+        /// </summary>
         public IPAddress IPAddress
         {
             get
@@ -66,6 +78,27 @@ namespace DnsResolver
             }
         }
 
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+            
+            AddressRecord addressRecord = record as AddressRecord;
+            if (addressRecord == null)
+            {
+                return false;
+            }
+            
+            return (this.Address == addressRecord.Address);
+        }
+        
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            buffer.AddUint(this.Address);
+        }
+        
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             this.Address = reader.ReadUint();

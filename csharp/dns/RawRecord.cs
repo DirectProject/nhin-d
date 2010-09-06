@@ -31,7 +31,13 @@ namespace DnsResolver
         internal RawRecord()
         {
         }
-
+        
+        public RawRecord(string name, Dns.RecordType type, byte[] record)
+            : base(name, type)
+        {
+            this.RecordBytes = record;
+        }
+        
         public byte[] RecordBytes
         {
             get
@@ -49,6 +55,40 @@ namespace DnsResolver
             }
         }
 
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+
+            RawRecord rawRecord = record as RawRecord;
+            if (rawRecord == null)
+            {
+                return false;
+            }
+            
+            if (rawRecord.m_bytes.Length != m_bytes.Length)
+            {
+                return false;
+            }
+            
+            for (int i = 0; i < m_bytes.Length; ++i)
+            {
+                if (m_bytes[i] != rawRecord.m_bytes[i])               
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            buffer.AddBytes(m_bytes);
+        }
+        
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             this.RecordBytes = reader.ReadBytes(this.RecordDataLength);

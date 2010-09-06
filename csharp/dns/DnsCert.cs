@@ -163,6 +163,11 @@ namespace DnsResolver
             }
         }
         
+        public byte[] GetData()
+        {
+            return m_cert.Export(X509ContentType.Cert);
+        }
+        
         /// <summary>
         /// Exports this record as a DNS CERT RR.
         /// </summary>

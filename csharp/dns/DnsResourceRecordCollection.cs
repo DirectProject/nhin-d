@@ -119,6 +119,10 @@ namespace DnsResolver
             }
         }
         
+        internal void Serialize(DnsBuffer buffer)
+        {
+        }
+        
         internal void Deserialize(int recordCount, ref DnsBufferReader reader)
         {
             if (recordCount < 0)

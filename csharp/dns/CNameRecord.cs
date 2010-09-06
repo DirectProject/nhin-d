@@ -53,7 +53,7 @@ namespace DnsResolver
 
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
-            m_name = reader.ReadString();
+            m_name = reader.ReadDomainName();
         }
     }
 }

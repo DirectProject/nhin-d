@@ -22,65 +22,13 @@ using System.Threading;
 
 namespace DnsResolver
 {
-    public class DnsRequest
+    public class DnsRequest : DnsMessage
     {
-        internal DnsHeader m_header;
-        internal DnsQuestion m_question;
-
         public DnsRequest(Dns.RecordType qType, string qName)
+            : base(qType, qName)
         {
-            m_header = new DnsHeader();
-
-            m_header.IsRequest = true;
-            m_header.OpCode = Dns.OpCode.QUERY;
-
-            m_header.IsAuthoritativeAnswer = false;
-            m_header.IsTruncated = false;
-            m_header.IsRecursionDesired = true;
-            m_header.IsRecursionAvailable = false;
-            m_header.ResponseCode = Dns.ResponseCode.SUCCESS;
-            m_header.QuestionCount = 1;
-            m_header.AnswerCount = 0;
-            m_header.NameServerAnswerCount = 0;
-            m_header.AdditionalAnswerCount = 0;
-
-            m_question = new DnsQuestion(qName, qType, Dns.Class.IN);
         }
-        
-        public DnsHeader Header
-        {
-            get
-            {
-                return m_header;
-            }
-        }
-        
-        public DnsQuestion Question
-        {
-            get
-            {
-                return m_question;
-            }            
-        }
-        
-        public ushort RequestID
-        {
-            get
-            {
-                return m_header.UniqueID;
-            }
-            set
-            {
-                m_header.UniqueID = value;
-            }
-        }
-        
-        internal void ToBytes(DnsBuffer buffer)
-        {
-            m_header.ToBytes(buffer);
-            m_question.ToBytes(buffer);
-        }        
-        
+                
         public static DnsRequest CreateA(string domain)
         {
             return new DnsRequest(Dns.RecordType.ANAME, domain);

@@ -97,7 +97,7 @@ namespace DnsResolverTests
     		DnsResponse matches = m_client.Resolve(request);
 
 			Assert.NotNull(matches);
-			Assert.True(matches.HasAnswerRecords, string.Format("{0}:{1}", request.Question.QType, request.Question.QName));
+			Assert.True(matches.HasAnswerRecords, string.Format("{0}:{1}", request.Question.Type, request.Question.Domain));
     	}
     }
 }

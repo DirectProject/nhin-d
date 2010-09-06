@@ -35,7 +35,7 @@ namespace DnsResolver
 
     public class DnsQuestion
     {
-        string m_qname;
+        string m_domain;
         
         internal DnsQuestion()
         {
@@ -43,27 +43,29 @@ namespace DnsResolver
 
         internal DnsQuestion(ref DnsBufferReader reader)
         {
-            this.Parse(ref reader);
+            this.Deserialize(ref reader);
         }
         
-        public DnsQuestion(string qName, Dns.RecordType qType)
-            : this(qName, qType, Dns.Class.IN)
+        public DnsQuestion(string domain, Dns.RecordType type)
+            : this(domain, type, Dns.Class.IN)
         {
         }
         
-        public DnsQuestion(string qName, Dns.RecordType qType, Dns.Class qClass)
+        public DnsQuestion(string domain, Dns.RecordType type, Dns.Class qClass)
         {
-            this.QName = qName;
-            this.QType = qType;
-            this.QClass = qClass;
+            this.Domain = domain;
+            this.Type = type;
+            this.Class = qClass;
         }
         
-        // QNAME
-        public string QName
+        /// <summary>
+        /// Domain being searched for
+        /// </summary>
+        public string Domain
         {
             get
             {
-                return this.m_qname;
+                return this.m_domain;
             }
             set
             {
@@ -71,20 +73,24 @@ namespace DnsResolver
                 {
                     throw new DnsProtocolException(DnsProtocolError.InvalidQName);
                 }
-                
-                this.m_qname = value;
+                    
+                this.m_domain = value;
             }
         }
 
-        // QTYPE
-        public Dns.RecordType QType
+        /// <summary>
+        /// Type of record you are looking for
+        /// </summary>
+        public Dns.RecordType Type
         {
             get;
             set;
         }
         
-        // QCLASS 
-        public Dns.Class QClass
+        /// <summary>
+        /// Class of record (always IN)
+        /// </summary>
+        public Dns.Class Class
         {
             get;
             set;
@@ -98,24 +104,24 @@ namespace DnsResolver
             }
             
             return (
-                    string.Equals(question.QName, this.QName, StringComparison.OrdinalIgnoreCase)
-                &&  question.QType == this.QType
-                &&  question.QClass == this.QClass
+                    Dns.Equals(question.Domain, this.Domain)
+                &&  question.Type == this.Type
+                &&  question.Class == this.Class
             );
         }
         
-        internal void Parse(ref DnsBufferReader reader)
+        internal void Deserialize(ref DnsBufferReader reader)
         {
-            this.QName = reader.ReadString();
-            this.QType = (Dns.RecordType) reader.ReadShort();
-            this.QClass = (Dns.Class) reader.ReadShort();
+            this.Domain = reader.ReadDomainName();
+            this.Type = (Dns.RecordType) reader.ReadShort();
+            this.Class = (Dns.Class) reader.ReadShort();
         }
 
-        internal void ToBytes(DnsBuffer buffer)
+        internal void Serialize(DnsBuffer buffer)
         {
-            buffer.AddPath(this.QName);
-            buffer.AddShort((short)QType);
-            buffer.AddShort((short)QClass);
+            buffer.AddDomainName(this.Domain);
+            buffer.AddShort((short)Type);
+            buffer.AddShort((short)Class);
         }
     }
 }

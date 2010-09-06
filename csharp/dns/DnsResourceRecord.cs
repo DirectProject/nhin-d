@@ -50,6 +50,20 @@ namespace DnsResolver
         internal DnsResourceRecord()
         {
         }
+
+        protected DnsResourceRecord(string name, Dns.RecordType type)
+            : this(name, type, Dns.NOCACHE)
+        {
+        }
+
+        protected DnsResourceRecord(string name, Dns.RecordType type, int ttl)
+        {
+            this.Name = name;
+            this.Type = type;
+            this.Class = Dns.Class.IN;
+            this.TTL = ttl;
+        }
+        
         //
         // NAME
         //
@@ -61,14 +75,17 @@ namespace DnsResolver
             }
             set
             {
-                if (value == null)
+                if (string.IsNullOrEmpty(value))
                 {
                     throw new DnsProtocolException(DnsProtocolError.InvalidRecordName);
                 }
                 m_header.Name = value;
             }
         }
-        // TYPE
+        
+        /// <summary>
+        /// Dns Record Type
+        /// </summary>
         public Dns.RecordType Type
         {
             get
@@ -81,7 +98,9 @@ namespace DnsResolver
             }
         }
 
-        // CLASS
+        /// <summary>
+        /// Record Class
+        /// </summary>
         public Dns.Class Class
         {
             get
@@ -94,7 +113,9 @@ namespace DnsResolver
             }
         }
 
-        // TTL
+        /// <summary>
+        /// Record TTL - in seconds
+        /// </summary>
         public int TTL
         {
             get
@@ -106,9 +127,10 @@ namespace DnsResolver
                 m_header.TTL = value;
             }
         }
-        
-        
-        // RDLENGTH
+                
+        /// <summary>
+        /// Length of the record data
+        /// </summary>
         public short RecordDataLength
         {
             get
@@ -120,28 +142,73 @@ namespace DnsResolver
                 m_header.RecordDataLength = value;
             }
         }
-
+                
         internal void Deserialize(ref DnsResourceRecordHeader header, ref DnsBufferReader reader)
         {
             m_header = header;
             this.DeserializeRecordData(ref reader);
         }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj as DnsResourceRecord);
+        }
         
-        protected abstract void DeserializeRecordData(ref DnsBufferReader reader);
-        
-        internal static DnsResourceRecord Deserialize(ref DnsBufferReader reader)
+        /// <summary>
+        /// Compares all fields except TTL , since that can vary
+        /// </summary>
+        /// <returns>true if equal</returns>
+        public virtual bool Equals(DnsResourceRecord record)
+        {
+            if (record == null)
+            {
+                return false;
+            }
+            
+            return (
+                    this.Type == record.Type
+                &&  this.Class == record.Class
+                &&  Dns.Equals(this.Name, record.Name)
+            );
+        }
+                
+        public void Serialize(DnsBuffer buffer)
+        {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            m_header.Serialize(buffer);
+            int headerSize = buffer.Count;
+            int recordLengthOffset = headerSize - sizeof(short);
+            this.SerializeRecordData(buffer);
+            this.RecordDataLength = (short) (buffer.Count - headerSize);
+            
+            buffer.Buffer[recordLengthOffset++] = (byte) ((short) this.RecordDataLength >> 8);
+            buffer.Buffer[recordLengthOffset] = ((byte)(this.RecordDataLength));            
+        }
+                
+        public static DnsResourceRecord Deserialize(ref DnsBufferReader reader)
         {
             //
             // We have to parse the header before we can figure out what kind of record this is
             //
             DnsResourceRecordHeader header = new DnsResourceRecordHeader();
-            header.Parse(ref reader);
+            header.Deserialize(ref reader);
 
             DnsResourceRecord record = DnsResourceRecord.CreateRecordObject(header.Type);
             record.Deserialize(ref header, ref reader);
 
             return record;
         }
+
+        protected virtual void SerializeRecordData(DnsBuffer buffer)
+        {
+            throw new NotSupportedException();
+        }
+
+        protected abstract void DeserializeRecordData(ref DnsBufferReader reader);
 
         public static DnsResourceRecord CreateRecordObject(Dns.RecordType recordType)
         {
@@ -224,6 +291,7 @@ namespace DnsResolver
             }
             
             internal Dns.RecordType Type;
+            
             internal int TTL
             {
                 get
@@ -240,7 +308,9 @@ namespace DnsResolver
                     m_ttl = value;
                 }
             }
+            
             internal Dns.Class Class;
+            
             internal short RecordDataLength
             {
                 get
@@ -257,10 +327,19 @@ namespace DnsResolver
                     m_recordDataLength = value;
                 }
             }
-
-            internal void Parse(ref DnsBufferReader reader)
+            
+            internal void Serialize(DnsBuffer buffer)
             {
-                this.Name = reader.ReadString();
+                buffer.AddDomainName(this.Name);
+                buffer.AddShort((short) this.Type);
+                buffer.AddShort((short) this.Class);
+                buffer.AddInt(this.TTL);
+                buffer.AddShort(this.RecordDataLength);
+            }
+            
+            internal void Deserialize(ref DnsBufferReader reader)
+            {
+                this.Name = reader.ReadDomainName();
                 this.Type = (Dns.RecordType) reader.ReadShort();
 
                 this.Class = (Dns.Class) reader.ReadShort();

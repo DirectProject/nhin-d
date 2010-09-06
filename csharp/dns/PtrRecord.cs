@@ -33,7 +33,13 @@ namespace DnsResolver
         internal PtrRecord()
         {
         }
-
+        
+        public PtrRecord(string name, string domain)
+            : base(name, Dns.RecordType.PTR)
+        {
+            this.Domain = domain;
+        }
+        
         public string Domain
         {
             get
@@ -50,10 +56,31 @@ namespace DnsResolver
                 m_domain = value;
             }
         }
-        
+
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+
+            PtrRecord ptrRecord = record as PtrRecord;
+            if (ptrRecord == null)
+            {
+                return false;
+            }
+            
+            return (Dns.Equals(this.m_domain, ptrRecord.m_domain));
+        }
+
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            buffer.AddDomainName(m_domain);
+        }   
+             
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
-            this.Domain = reader.ReadString();
+            this.Domain = reader.ReadDomainName();
         }
     }
 }

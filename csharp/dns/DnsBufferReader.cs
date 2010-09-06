@@ -29,6 +29,10 @@ namespace DnsResolver
 
         public DnsBufferReader(byte[] buffer, int startAt, int count)
         {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException();
+            }
             m_buffer = buffer;
             m_count = count;
             m_index = startAt;
@@ -37,6 +41,11 @@ namespace DnsResolver
 
         public DnsBufferReader(byte[] buffer, int startAt, int count, StringBuilder sb)
         {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
             m_buffer = buffer;
             m_count = count;
             m_index = startAt;
@@ -161,10 +170,16 @@ namespace DnsResolver
             return this.ReadBytes(m_count - m_index);
         }
 
-        public string ReadStringRaw()
+        public string ReadString()
+        {
+            return this.ReadString(m_count);
+        }
+
+        public string ReadString(int endAt)
         {
             StringBuilder sb = this.EnsureStringBuilder();
-            while (m_index < m_count)
+            int maxIndex = Math.Min(m_count, endAt);
+            while (m_index < maxIndex)
             {
                 sb.Append(this.ReadChar());
             }
@@ -172,14 +187,14 @@ namespace DnsResolver
             return sb.ToString();
         }
 
-        public string ReadString()
+        public string ReadDomainName()
         {
             StringBuilder sb = this.EnsureStringBuilder();
-            this.ReadStringInternal();
+            this.ReadLabel();
             return sb.ToString();
         }
 
-        void ReadStringInternal()
+        void ReadLabel()
         {
             while (true)
             {
@@ -194,7 +209,7 @@ namespace DnsResolver
                 {
                     // rest of string is found elsewhere. go get it.
                     int stringStartAt = (this.ReadShort() & 0x3FFF);
-                    this.Clone(stringStartAt).ReadStringInternal();
+                    this.Clone(stringStartAt).ReadLabel();
                     break;
                 }
 

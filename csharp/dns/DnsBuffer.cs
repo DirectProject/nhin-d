@@ -21,7 +21,7 @@ using System.Text;
 
 namespace DnsResolver
 {
-    internal class DnsBuffer
+    public class DnsBuffer
     {
         byte[] m_buffer;
         int m_count;
@@ -105,10 +105,11 @@ namespace DnsResolver
 
             this.ReserveCapacity(items.Length);
             System.Buffer.BlockCopy(items, 0, m_buffer, m_count, items.Length);
+            m_count += items.Length;
         }
         
         /// <summary>
-        /// Add the given string as ASCII bytes
+        /// Add the given string to the buffer as ASCII bytes
         /// </summary>
         public void AddChars(string item)
         {
@@ -118,7 +119,13 @@ namespace DnsResolver
             }
             this.AddChars(item, 0, item.Length);
         }
-
+        
+        /// <summary>
+        /// Add the given string to the buffer as ASCII bytes, starting at the given position
+        /// </summary>
+        /// <param name="item">item to add</param>
+        /// <param name="startAt">position to start at</param>
+        /// <param name="length"># of characters to add</param>
         public void AddChars(string item, int startAt, int length)
         {
             if (item == null || startAt < 0 || length < 0)
@@ -143,7 +150,6 @@ namespace DnsResolver
         /// <summary>
         /// Adds the short in network order
         /// </summary>
-        /// <param name="value"></param>
         public void AddShort(short value)
         {
             this.ReserveCapacity(2);
@@ -154,7 +160,6 @@ namespace DnsResolver
         /// <summary>
         /// Adds a ushort in network order
         /// </summary>
-        /// <param name="value"></param>
         public void AddUshort(ushort value)
         {
             this.ReserveCapacity(2);
@@ -167,6 +172,15 @@ namespace DnsResolver
         /// </summary>
         /// <param name="value"></param>
         public void AddInt(int value)
+        {
+            this.ReserveCapacity(4);
+            this.AddByteNoCheck((byte)(value >> 24));
+            this.AddByteNoCheck((byte)(value >> 16));
+            this.AddByteNoCheck((byte)(value >> 8));
+            this.AddByteNoCheck((byte)(value));
+        }
+        
+        public void AddUint(uint value)
         {
             this.ReserveCapacity(4);
             this.AddByteNoCheck((byte)(value >> 24));
@@ -210,7 +224,11 @@ namespace DnsResolver
             this.AddChars(source, startAt, length);
         }
         
-        public void AddPath(string path)
+        /// <summary>
+        /// Add a domain name (path)...
+        /// </summary>
+        /// <param name="path"></param>
+        public void AddDomainName(string path)
         {
             if (string.IsNullOrEmpty(path))
             {

@@ -53,6 +53,19 @@ namespace DnsResolver
         {
         }
         
+        public SOARecord(string name, string domainName, string responsibleName, int serialNumber)
+            : this(name, domainName, responsibleName, serialNumber, 0, 0, 0, 0)
+        {
+        }
+        
+        public SOARecord(string name, string domainName, string responsibleName, int serialNumber, int refresh, int retry, int expire, int minimum)
+            : base(name, Dns.RecordType.SOA)
+        {
+            this.DomainName = domainName;
+            this.ResponsibleName = responsibleName;
+            this.SerialNumber = serialNumber;
+        }
+        
         public string DomainName
         {
             get
@@ -112,10 +125,45 @@ namespace DnsResolver
             set;
         }
 
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+
+            SOARecord soaRecord = record as SOARecord;
+            if (soaRecord == null)
+            {
+                return false;
+            }
+            
+            return (
+                    Dns.Equals(m_mname, soaRecord.m_mname)
+                &&  Dns.Equals(m_rname, soaRecord.m_rname)
+                &&  this.SerialNumber == soaRecord.SerialNumber
+                &&  this.Refresh == soaRecord.Refresh
+                &&  this.Retry == soaRecord.Retry
+                &&  this.Expire == soaRecord.Expire
+                &&  this.Minimum == soaRecord.Minimum 
+            );
+        }
+        
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            buffer.AddDomainName(m_mname);
+            buffer.AddDomainName(m_rname);
+            buffer.AddInt(this.SerialNumber);
+            buffer.AddInt(this.Refresh);
+            buffer.AddInt(this.Retry);
+            buffer.AddInt(this.Expire);
+            buffer.AddInt(this.Minimum);
+        }
+        
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
-            this.DomainName = reader.ReadString();
-            this.ResponsibleName = reader.ReadString();
+            this.DomainName = reader.ReadDomainName();
+            this.ResponsibleName = reader.ReadDomainName();
             this.SerialNumber = reader.ReadInt();
             this.Refresh = reader.ReadInt();
             this.Retry = reader.ReadInt();

@@ -88,7 +88,7 @@ namespace NHINDirect.Tests.Caching
                 }
 
                 // ensure that the qusetion QName matches the name of the mocked entry
-                Assert.Equal(s.ToLower(), dr.Question.QName.ToLower());
+                Assert.Equal(s.ToLower(), dr.Question.Domain.ToLower());
             }
         }
 
@@ -204,7 +204,7 @@ namespace NHINDirect.Tests.Caching
 
                 //----------------------------------------------------------------------------------------------------
                 //--make sure that the item is in there based on the response (should be cause it was tested above)
-                Dump(string.Format("By Dns Response - checking to make sure that [{0}] is in cache", dr.Question.QName));
+                Dump(string.Format("By Dns Response - checking to make sure that [{0}] is in cache", dr.Question.Domain));
                 Assert.NotNull(m_drrc.Get(dr));
 
                 //----------------------------------------------------------------------------------------------------
@@ -219,7 +219,7 @@ namespace NHINDirect.Tests.Caching
 
                 //----------------------------------------------------------------------------------------------------
                 //---make sure that the item is not in there by the dns response
-                Dump(string.Format("By Dns Response - checking to make sure that [{0}] is in NOT cache", dr.Question.QName));
+                Dump(string.Format("By Dns Response - checking to make sure that [{0}] is in NOT cache", dr.Question.Domain));
                 Assert.Null(m_drrc.Get(dr));
 
                 //----------------------------------------------------------------------------------------------------
@@ -228,7 +228,7 @@ namespace NHINDirect.Tests.Caching
 
                 //----------------------------------------------------------------------------------------------------
                 //--make sure that the item is in there based on the response (should be cause it was tested above)
-                Dump(string.Format("By Question - checking to make sure that [{0}] is in cache", dr.Question.QName));
+                Dump(string.Format("By Question - checking to make sure that [{0}] is in cache", dr.Question.Domain));
                 Assert.NotNull(m_drrc.Get(dr.Question));
 
                 //----------------------------------------------------------------------------------------------------
@@ -243,7 +243,7 @@ namespace NHINDirect.Tests.Caching
 
                 //----------------------------------------------------------------------------------------------------
                 //---make sure that the item is not in there by the dns response
-                Dump(string.Format("By Question - checking to make sure that [{0}] is in NOT cache", dr.Question.QName));
+                Dump(string.Format("By Question - checking to make sure that [{0}] is in NOT cache", dr.Question.Domain));
                 Assert.Null(m_drrc.Get(dr.Question));
 
 
@@ -327,7 +327,7 @@ namespace NHINDirect.Tests.Caching
 
                 //----------------------------------------------------------------------------------------------------
                 //---make a copy of the list for tracking when items are expired from the cche
-                Dictionary<string, DnsResponse> copy = m_responses.ToDictionary(k => string.Format("{0}.{1}", k.Question.QType.ToString(), k.Question.QName).ToLower());
+                Dictionary<string, DnsResponse> copy = m_responses.ToDictionary(k => string.Format("{0}.{1}", k.Question.Type.ToString(), k.Question.Domain).ToLower());
 
                 //----------------------------------------------------------------------------------------------------
                 //---add an event handler for cache item expired, we want to watch for when an item has ticked out

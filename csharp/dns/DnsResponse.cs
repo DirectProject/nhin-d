@@ -21,59 +21,17 @@ using System.Text;
 
 namespace DnsResolver
 {
-    public class DnsResponse
+    public class DnsResponse : DnsMessage
     {
-        DnsHeader m_header;
-        DnsQuestion m_question;
         DnsResourceRecordCollection m_answerRecords;
         DnsResourceRecordCollection m_nameServerRecords;
         DnsResourceRecordCollection m_additionalRecords;
 
         public DnsResponse(ref DnsBufferReader reader)
+            : base(ref reader)
         {
-            this.Parse(ref reader);
         }
-        
-        public bool IsSuccess
-        {
-            get
-            {
-                return (this.m_header != null && m_header.ResponseCode == Dns.ResponseCode.SUCCESS);
-            }
-        }
-        
-        public bool IsNameError
-        {
-            get
-            {
-                return (this.m_header != null && m_header.ResponseCode == Dns.ResponseCode.NAME_ERROR);
-            }
-        }
-        
-        public DnsHeader Header
-        {
-            get
-            {
-                return m_header;
-            }
-        }
-
-        public ushort RequestID
-        {
-            get
-            {
-                return m_header.UniqueID;
-            }
-        }
-
-        public DnsQuestion Question
-        {
-            get
-            {
-                return m_question;
-            }
-        }
-        
+                        
         public DnsResourceRecordCollection AnswerRecords
         {
             get
@@ -134,11 +92,58 @@ namespace DnsResolver
                 return (m_additionalRecords != null && m_additionalRecords.Count > 0);
             }
         }
-                                
-        internal void Parse(ref DnsBufferReader reader)
+
+        public override void Serialize(DnsBuffer buffer)
         {
-            m_header = new DnsHeader(ref reader);
-            m_question = new DnsQuestion(ref reader);
+            this.UpdateAnswerCounts();
+            
+            base.Serialize(buffer);
+            
+            if (this.HasAnswerRecords)            
+            {
+                this.AnswerRecords.Serialize(buffer);
+            }
+            if (this.HasNameServerRecords)
+            {
+                this.NameServerRecords.Serialize(buffer);
+            }
+            if (this.HasAdditionalRecords)
+            {
+                this.AdditionalRecords.Serialize(buffer);
+            }
+        } 
+        
+        void UpdateAnswerCounts()
+        {
+            if (this.HasAnswerRecords)
+            {
+                if (this.AnswerRecords.Count > short.MaxValue)
+                {
+                    throw new DnsProtocolException(DnsProtocolError.InvalidAnswerCount);
+                }
+                this.Header.AnswerCount = (short)this.AnswerRecords.Count;
+            }
+            if (this.HasNameServerRecords)
+            {
+                if (this.NameServerRecords.Count > short.MaxValue)
+                {
+                    throw new DnsProtocolException(DnsProtocolError.InvalidNameServerAnswerCount);
+                }
+                this.Header.NameServerAnswerCount = (short)this.NameServerRecords.Count;
+            }
+            if (this.HasAdditionalRecords)
+            {
+                if (this.AdditionalRecords.Count > short.MaxValue)
+                {
+                    throw new DnsProtocolException(DnsProtocolError.InvalidAdditionalAnswerCount);
+                }
+                this.Header.AdditionalAnswerCount = (short)this.AdditionalRecords.Count;
+            }
+        }
+        
+        protected override void Deserialize(ref DnsBufferReader reader)
+        {
+            base.Deserialize(ref reader);
             if (reader.IsDone)
             {
                 //
@@ -147,9 +152,18 @@ namespace DnsResolver
                 return;
             }
             
-            this.AnswerRecords.Deserialize(this.Header.AnswerCount, ref reader);
-            this.NameServerRecords.Deserialize(this.Header.NameServerAnswerCount, ref reader);
-            this.AdditionalRecords.Deserialize(this.Header.AdditionalAnswerCount, ref reader);
+            if (this.Header.AnswerCount > 0)
+            {
+                this.AnswerRecords.Deserialize(this.Header.AnswerCount, ref reader);
+            }
+            if (this.Header.NameServerAnswerCount > 0)
+            {
+                this.NameServerRecords.Deserialize(this.Header.NameServerAnswerCount, ref reader);
+            }
+            if (this.Header.AdditionalAnswerCount > 0)
+            {
+                this.AdditionalRecords.Deserialize(this.Header.AdditionalAnswerCount, ref reader);
+            }
         }
     }
 }
