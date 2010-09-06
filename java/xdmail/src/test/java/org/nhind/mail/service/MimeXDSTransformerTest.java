@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.nhind.mail.service;
 
 import java.io.InputStream;
@@ -9,17 +5,20 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
+
 import junit.framework.TestCase;
 import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
-
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExternalIdentifierType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
+
 import org.nhind.util.XMLUtils;
 
-
 /**
- *
+ * 
  * @author vlewis
  */
 public class MimeXDSTransformerTest extends TestCase {
@@ -37,10 +36,11 @@ public class MimeXDSTransformerTest extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
     }
+
     /**
      * Test of getSubmitObjectsRequest method, of class MimeXDSTransformer.
      */
-    public void testGetSubmitObjectsRequest() throws Exception{
+    public void testGetSubmitObjectsRequest() throws Exception {
         System.out.println("getSubmitObjectsRequest");
         String patientId = "AAA";
         String orgId = "BBB";
@@ -53,22 +53,24 @@ public class MimeXDSTransformerTest extends TestCase {
         String expResult = getTestSubmit();
         String docId = "eabf9010-c6e4-49e9-ae5a-b62368977cf1";
         String subId = "eabf9010-c6e4-49e9-ae5a-b62368977cf2";
-        String sentDate =  "20100101000000";
+        String sentDate = "20100101000000";
         String from = "vlewis@lewistower.com";
         String auth = "vlewis@lewistower.com";
-        SubmitObjectsRequest result = instance.getSubmitObjectsRequest(patientId, orgId, person, subject,sentDate,docId,subId, formatCode, mimeType, from, auth);
+        SubmitObjectsRequest result = instance.getSubmitObjectsRequest(patientId, orgId, person, subject, sentDate,
+                docId, subId, formatCode, mimeType, from, auth);
 
-        //getSubmitObjectsRequest(String patientId, String orgId, SimplePerson person, String subject, String sentDate, String docId, String subId, String formatCode, String mimeType) {
+        // getSubmitObjectsRequest(String patientId, String orgId, SimplePerson
+        // person, String subject, String sentDate, String docId, String subId,
+        // String formatCode, String mimeType) {
         QName qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0", "SubmitObjectsRequest");
 
         String sresult = XMLUtils.marshal(qname, result, oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
         System.out.println(sresult);
 
-       // assertEquals(expResult, sresult);
+        // assertEquals(expResult, sresult);
 
     }
 
-  
     /**
      * Test of makePatientSlot method, of class MimeXDSTransformer.
      */
@@ -81,10 +83,9 @@ public class MimeXDSTransformerTest extends TestCase {
         MimeXDSTransformer instance = new MimeXDSTransformer();
         SlotType1 expResult = null;
         SlotType1 result = instance.makePatientSlot(name, patient, patientId, orgId);
-        //TODO  make this work
-       // assertEquals(expResult, result);
-    
-      
+        // TODO make this work
+        // assertEquals(expResult, result);
+
     }
 
     /**
@@ -92,23 +93,23 @@ public class MimeXDSTransformerTest extends TestCase {
      */
     public void testAddClassifications() {
         System.out.println("addClassifications");
-        List classifs = new ArrayList();
+        List<ClassificationType> classifs = new ArrayList<ClassificationType>();
         String docId = "A";
         String id = "B";
         String scheme = "C";
         String rep = "D";
-        ArrayList slotNames = null;
-        ArrayList slotValues = null;
-        ArrayList snames = null;
-         slotNames = new ArrayList();
+        List<String> slotNames = null;
+        List<String> slotValues = null;
+        List<String> snames = null;
+        slotNames = new ArrayList<String>();
         slotNames.add("codingScheme");
-        slotValues = new ArrayList();
+        slotValues = new ArrayList<String>();
         slotValues.add("eventCodeList");
-        snames = new ArrayList();
+        snames = new ArrayList<String>();
         snames.add("12345");
         MimeXDSTransformer instance = new MimeXDSTransformer();
         instance.addClassifications(classifs, docId, id, scheme, rep, slotNames, slotValues, snames);
-      
+
     }
 
     /**
@@ -116,7 +117,7 @@ public class MimeXDSTransformerTest extends TestCase {
      */
     public void testAddExternalIds() {
         System.out.println("addExternalIds");
-        List extIds = new ArrayList();
+        List<ExternalIdentifierType> extIds = new ArrayList<ExternalIdentifierType>();
         String docId = "A";
         String scheme = "B";
         String id = "C";
@@ -124,7 +125,7 @@ public class MimeXDSTransformerTest extends TestCase {
         String value = "E";
         MimeXDSTransformer instance = new MimeXDSTransformer();
         instance.addExternalIds(extIds, docId, scheme, id, sname, value);
-     
+
     }
 
     /**
@@ -133,17 +134,18 @@ public class MimeXDSTransformerTest extends TestCase {
     public void testFormatDate() {
         System.out.println("formatDate");
         Date edate = null;
-        try{
-         edate = DatatypeFactory.newInstance().newXMLGregorianCalendar("2010-08-26T00:00:00.000-05:00").toGregorianCalendar().getTime();
-        }catch(Exception x){
+        try {
+            edate = DatatypeFactory.newInstance().newXMLGregorianCalendar("2010-08-26T00:00:00.000-05:00")
+                    .toGregorianCalendar().getTime();
+        } catch (Exception x) {
 
         }
-       
+
         MimeXDSTransformer instance = new MimeXDSTransformer();
         String expResult = "20100826010000";
         String result = instance.formatDate(edate);
         assertEquals(expResult, result);
-       
+
     }
 
     /**
@@ -169,9 +171,9 @@ public class MimeXDSTransformerTest extends TestCase {
         MimeXDSTransformer instance = new MimeXDSTransformer();
         SlotType1 expResult = null;
         SlotType1 result = instance.makeSlot(name, value);
-        //TODO make this work
-     //   assertEquals(expResult, result);
-        
+        // TODO make this work
+        // assertEquals(expResult, result);
+
     }
 
     private SimplePerson getSimplePerson() {
@@ -201,7 +203,8 @@ public class MimeXDSTransformerTest extends TestCase {
         }
         return ret;
     }
-      private String getTestSubmit() throws Exception {
+
+    private String getTestSubmit() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/submitobjectrequest.xml");
         byte[] theBytes = new byte[is.available()];
         is.read(theBytes);

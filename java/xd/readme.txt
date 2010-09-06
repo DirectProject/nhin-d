@@ -2,13 +2,6 @@ Greetings
 
 BUILD PROCESS
 
-In order to run the XDR/XDM unit tests in a standalone java jdk,The java mail api must be in the classpath. The simplest way I know how to do this is 
-to download the zipped api from:
-
- http://www.oracle.com/technetwork/java/index-138643.html
-
-then get the mailapi.jar and the smpt.jar in the zip and place it into your $JAVA_HOME/jre/lib/ext directory.  
-
 Currently there is one primary junit test which operates on the XDR class during
 the "maven install" build. The java\xd\src\main\resources\request.xml is the source for the XDR
 ProvideAndRegister message. By editting the email portion (currently vlewis@lewistower.com) of the intendedRecipient slot

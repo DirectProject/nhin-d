@@ -121,11 +121,11 @@ namespace DnsResolver
         }
         
         /// <summary>
-        /// Add the given string to the buffer as ASCII bytes, starting at the given position
+        /// Add a subset of the given string as ASCII bytes, starting at a zero-based index position.
         /// </summary>
-        /// <param name="item">item to add</param>
-        /// <param name="startAt">position to start at</param>
-        /// <param name="length"># of characters to add</param>
+        /// <param name="item">The string from which to add characters</param>
+        /// <param name="length">The number of characters to add</param>
+        /// <param name="startAt">The zero-based postition of <paramref name="item"/> to start reading from</param>
         public void AddChars(string item, int startAt, int length)
         {
             if (item == null || startAt < 0 || length < 0)
