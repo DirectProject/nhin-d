@@ -21,7 +21,7 @@ using System.Text;
 
 namespace DnsResolver
 {
-    /// <summary>A representation of a CERT RR</summary>
+    /// <summary>A representation of CERT DNS RDATA</summary>
     /// <remarks>
     /// RFC 4398.
     ///

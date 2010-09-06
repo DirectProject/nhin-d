@@ -21,10 +21,23 @@ using System.Text;
 
 namespace DnsResolver
 {
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //                   NSDNAME                        /
-    //                                                  /
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// <summary>
+    /// Represents NS DNS RDATA
+    /// </summary>
+    /// <remarks>
+    /// RFC 1035, Section 3.3.11, NS RDATA format
+    /// <code>
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                   NSDNAME                     /
+    /// /                                               /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
+    ///
+    /// where:
+    /// 
+    /// NSDNAME         A &lt;domain-name&gt; which specifies a host which should be
+    ///                 authoritative for the specified class and domain.
+    /// </remarks>
     public class NSRecord : DnsResourceRecord
     {
         string m_nameserver;

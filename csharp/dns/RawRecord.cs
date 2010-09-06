@@ -22,7 +22,7 @@ using System.Text;
 namespace DnsResolver
 {
     /// <summary>
-    /// A record we did not know how to parse
+    /// RDATA for a record we did not know how to parse
     /// </summary>
     public class RawRecord : DnsResourceRecord
     {
@@ -33,6 +33,7 @@ namespace DnsResolver
         }
         
         /// <summary>
+        /// Gets and sets the raw data for this RR
         /// Not all DNS Record are mapped to a custom object by this library. 
         /// Dns Records not specifically parsed are turned into RawRecord objects
         /// </summary>
