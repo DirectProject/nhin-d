@@ -21,22 +21,38 @@ using System.Text;
 
 namespace DnsResolver
 {
-    //                                     1  1  1  1  1  1
-    //       0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
-    //     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //     |                      ID                       |
-    //     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //     |QR|   Opcode  |AA|TC|RD|RA|   Z    |   RCODE   |
-    //     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //     |                    QDCOUNT                    |
-    //     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //     |                    ANCOUNT                    |
-    //     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //     |                    NSCOUNT                    |
-    //     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //     |                    ARCOUNT                    |
-    //     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-
+    /// <summary></summary>
+    /// <remarks>
+    /// RFC 1035.
+    /// 4. Messages, 4.1 Format:
+    /// <para>
+    /// All communications inside of the domain protocol are carried in a single
+    /// format called a message.  The top level format of message is divided
+    /// into 5 sections...
+    /// The header section is always present.  The header includes fields that
+    /// specify which of the remaining sections are present, and also specify
+    /// whether the message is a query or a response, a standard query or some
+    /// other opcode, etc.
+    /// </para>
+    /// 4.1.1. Header section format.
+    /// <code>
+    ///                                 1  1  1  1  1  1
+    ///   0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                      ID                       |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |QR|   Opcode  |AA|TC|RD|RA|   Z    |   RCODE   |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                    QDCOUNT                    |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                    ANCOUNT                    |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                    NSCOUNT                    |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                    ARCOUNT                    |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
+    /// </remarks>
     public class DnsHeader
     {
         short m_questionCount;
@@ -44,25 +60,86 @@ namespace DnsResolver
         short m_nameServerAnswerCount;
         short m_additionalAnswerCount;
         
+        /// <summary>
+        /// Initializes an empty DNS header
+        /// </summary>
         public DnsHeader()
         {
         }
         
+        /// <summary>
+        /// Initializes a DNS header filled from the specified <paramref name="reader"/>
+        /// </summary>
+        /// <param name="reader">The reader containing raw data for the header.</param>
         internal DnsHeader(ref DnsBufferReader reader)
         {
             this.Parse(ref reader);
         }
                 
+        /// <summary>
+        /// The unique ID for this header
+        /// </summary>
+        /// <remarks>
+        /// RFC 1035, Section 4.1.1
+        /// <para>
+        /// A 16 bit identifier assigned by the program that
+        /// generates any kind of query.  This identifier is copied
+        /// the corresponding reply and can be used by the requester
+        /// to match up replies to outstanding queries.
+        /// </para>
+        /// </remarks>
         public ushort UniqueID; // ID
+        /// <summary>
+        /// The QR field expressed as a <see cref="bool"/>
+        /// </summary>
+        /// <remarks>RFC 1035, Section 4.1.1, QR, specifies if this is a request (<c>true</c>) or response
+        /// <c>false</c></remarks>
         public bool IsRequest; // QR
+        /// <summary>
+        /// The OPCODE for this message
+        /// </summary>
+        /// <remarks>See remarks for <see cref="OpCode"/></remarks>
         public Dns.OpCode OpCode; // OpCode (4 bits)
+        /// <summary>
+        /// The AA field expressed as a <see cref="bool"/>
+        /// </summary>
+        /// <remarks>RFC 1035, Section 4.1.1, AA</remarks>
         public bool IsAuthoritativeAnswer; // AA
+        /// <summary>
+        /// The TC field expressed as a <see cref="bool"/>
+        /// </summary>
+        /// <remarks>RFC 1035, Section 4.1.1, TC</remarks>
         public bool IsTruncated; // TC
+        /// <summary>
+        /// The RD field expressed as a <see cref="bool"/>
+        /// </summary>
+        /// <remarks>RFC 1035, Section 4.1.1, RD
+        /// <para>
+        /// This bit may be set in a query and
+        /// is copied into the response.  If RD is set, it directs
+        /// the name server to pursue the query recursively.
+        /// Recursive query support is optional.
+        /// </para></remarks>
         public bool IsRecursionDesired; // RD
+        /// <summary>
+        /// The RA field expressed as a <see cref="bool"/>
+        /// </summary>
+        /// <remarks>RFC 1035, Section 4.1.1, RA
+        /// <para>This bit is set or cleared in a
+        /// response, and denotes whether recursive query support is
+        /// available in the name server.</para>
+        /// </remarks>
         public bool IsRecursionAvailable; // RA
+        /// <summary>
+        /// The RCODE for this header
+        /// </summary>
+        /// <remarks>See remarks for <see cref="ResponseCode"/></remarks>
         public Dns.ResponseCode ResponseCode; // RCODE (4 bits)
 
-        // QDCOUNT
+        /// <summary>
+        /// Gets and sets the number of entries in the question section (QDCOUNT header value)
+        /// </summary>
+        /// <remarks>RFC 1035, Section 4.1.1, QDCOUNT</remarks>
         public short QuestionCount
         {
             get
@@ -80,7 +157,10 @@ namespace DnsResolver
             }
         }
 
-        // ANCOUNT
+        /// <summary>
+        /// Gets and sets the number of entries in the answer section (ADCOUNT header value)
+        /// </summary>
+        /// <remarks>RFC 1035, Section 4.1.1, ADCOUNT</remarks>
         public short AnswerCount
         {
             get
@@ -98,7 +178,10 @@ namespace DnsResolver
             }
         }
 
-        // NSCOUNT
+        /// <summary>
+        /// Gets and sets the number of entries in the nameserver section (NSCOUNT header value)
+        /// </summary>
+        /// <remarks>RFC 1035, Section 4.1.1, NSCOUNT</remarks>
         public short NameServerAnswerCount
         {
             get
@@ -116,7 +199,10 @@ namespace DnsResolver
             }
         }
 
-        // ARCOUNT
+        /// <summary>
+        /// Gets and sets the number of entries in the additional answer section (ARCOUNT header value)
+        /// </summary>
+        /// <remarks>RFC 1035, Section 4.1.1, ARCOUNT</remarks>
         public short AdditionalAnswerCount
         {
             get
