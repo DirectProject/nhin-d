@@ -35,6 +35,8 @@ import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -92,7 +94,7 @@ import org.nhind.util.MimeType;
  * @author vlewis
  */
 public class MimeXDSTransformer {
-
+    
     private static final Logger LOGGER = Logger.getLogger(MimeXDSTransformer.class.getName());
 
     /*
@@ -140,7 +142,21 @@ public class MimeXDSTransformer {
         to = endpoint;
         
         setHeaderData();
-        DocumentRepositoryService service = new DocumentRepositoryService();
+        
+        URL url = null;
+        
+        try {
+            url = new URL(ihe.iti.xds_b._2007.DocumentRepositoryService.class.getResource(""),
+                    "/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl");
+        } catch (MalformedURLException e) {
+            LOGGER.severe("Unable to access WSDL");
+            e.printStackTrace();
+            throw e;
+        }
+        
+        DocumentRepositoryService service = new DocumentRepositoryService(url, new QName("urn:ihe:iti:xds-b:2007",
+                "DocumentRepository_Service"));
+        
         service.setHandlerResolver(new RepositoryHandlerResolver());
         DocumentRepositoryPortType port = service.getDocumentRepositoryPortSoap12(new MTOMFeature(true, 1));
 
@@ -151,10 +167,14 @@ public class MimeXDSTransformer {
         bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
 
         RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(prds);
+        
         String test = rrt.getStatus();
+        
         if (StringUtils.contains(test, "Failure")) {
             throw new Exception("Failure Returned from XDR forward");
         }
+        
+        LOGGER.info("Handling complete");
     }
 
     /**
