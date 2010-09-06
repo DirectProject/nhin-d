@@ -27,41 +27,81 @@ namespace DnsResolver
     /// </summary>
     public class DnsRequest : DnsMessage
     {
-        public DnsRequest(Dns.RecordType qType, string qName)
-            : base(qType, qName)
+        /// <summary>
+        /// Initializes a query for domain 
+        /// </summary>
+        /// <param name="qType">The record type to query</param>
+        /// <param name="domain">The domain to query.</param>
+        public DnsRequest(Dns.RecordType qType, string domain)
+            : base(qType, domain)
         {
         }
                 
+        /// <summary>
+        /// Creates a new A request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateA(string domain)
         {
             return new DnsRequest(Dns.RecordType.ANAME, domain);
         }
-        
+
+        /// <summary>
+        /// Creates a new PTR request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreatePTR(string domain)
         {
             return new DnsRequest(Dns.RecordType.PTR, domain);
         }
 
+        /// <summary>
+        /// Creates a new NS request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateNS(string domain)
         {
             return new DnsRequest(Dns.RecordType.NS, domain);
         }
-        
+
+        /// <summary>
+        /// Creates a new MX request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateMX(string domain)
         {
             return new DnsRequest(Dns.RecordType.MX, domain);
         }
-        
+
+        /// <summary>
+        /// Creates a new TXT request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateTXT(string domain)
         {
             return new DnsRequest(Dns.RecordType.TXT, domain);
         }
-                
+
+        /// <summary>
+        /// Creates a new CERT request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateCERT(string domain)
         {
             return new DnsRequest(Dns.RecordType.CERT, domain);
         }
-        
+
+        /// <summary>
+        /// Creates a new SOA request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateSOA(string domain)
         {
             return new DnsRequest(Dns.RecordType.SOA, domain);

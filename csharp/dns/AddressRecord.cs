@@ -41,6 +41,11 @@ namespace DnsResolver
         {
         }
         
+        /// <summary>
+        /// Initializes a new instance with the supplied data.
+        /// </summary>
+        /// <param name="name">the domain name for which this is a record</param>
+        /// <param name="address">The address as a 32-bit integer</param>
         public AddressRecord(string name, uint address)
             : base(name, Dns.RecordType.ANAME)
         {
@@ -85,6 +90,11 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Tests equality between this TXT record and the other <paramref name="record"/>.
+        /// </summary>
+        /// <param name="record">The other record.</param>
+        /// <returns><c>true</c> if the RRs are equal, <c>false</c> otherwise.</returns>
         public override bool Equals(DnsResourceRecord record)
         {
             if (!base.Equals(record))
@@ -100,12 +110,20 @@ namespace DnsResolver
             
             return (this.Address == addressRecord.Address);
         }
-        
+
+        /// <summary>
+        /// Writes this RR in DNS wire format to the <paramref name="buffer"/>
+        /// </summary>
+        /// <param name="buffer">The buffer to which DNS wire data are written</param>
         protected override void SerializeRecordData(DnsBuffer buffer)
         {
             buffer.AddUint(this.Address);
         }
-        
+
+        /// <summary>
+        /// Reads data into this RR from the DNS wire format data in <paramref name="reader"/>
+        /// </summary>
+        /// <param name="reader">Reader in which wire format data for this RR is already buffered.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             this.Address = reader.ReadUint();

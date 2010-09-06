@@ -97,6 +97,10 @@ namespace DnsResolver
         {
         }
         
+        /// <summary>
+        /// Initializes an instance with the supplied certificate.
+        /// </summary>
+        /// <param name="cert">The certificate for this record.</param>
         public CertRecord(DnsX509Cert cert)
             : base(cert.Name, Dns.RecordType.CERT)
         {
@@ -199,6 +203,11 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Tests equality between this CERT record and the other <paramref name="record"/>.
+        /// </summary>
+        /// <param name="record">The other record.</param>
+        /// <returns><c>true</c> if the RRs are equal, <c>false</c> otherwise.</returns>
         public override bool Equals(DnsResourceRecord record)
         {
             if (!base.Equals(record))
@@ -219,15 +228,23 @@ namespace DnsResolver
                 &&  Dns.Equals(this.Cert.Name, certRecord.Cert.Name)
             );
         }
-        
+
+        /// <summary>
+        /// Writes this RR in DNS wire format to the <paramref name="buffer"/>
+        /// </summary>
+        /// <param name="buffer">The buffer to which DNS wire data are written</param>
         protected override void SerializeRecordData(DnsBuffer buffer)
         {
             buffer.AddUshort((ushort) m_certType);
             buffer.AddUshort(m_keyTag);
             buffer.AddByte(m_algorithm);
             buffer.AddBytes(m_certData);
-        }   
-             
+        }
+
+        /// <summary>
+        /// Reads data into this RR from the DNS wire format data in <paramref name="reader"/>
+        /// </summary>
+        /// <param name="reader">Reader in which wire format data for this RR is already buffered.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             ushort certType = reader.ReadUShort();

@@ -291,11 +291,17 @@ namespace DnsResolver
             REFUSED = 5,
         }
         
+        /// <summary>
+        /// Implements string comparison for DNS values (e.g., domain names)
+        /// </summary>
         public static int Compare(string x, string y)
         {
             return string.Compare(x, y, StringComparison.OrdinalIgnoreCase);
-        }        
-        
+        }
+
+        /// <summary>
+        /// Implements string equality for DNS values (e.g., domain names)
+        /// </summary>
         public static bool Equals(string x, string y)
         {
             return string.Equals(x, y, StringComparison.OrdinalIgnoreCase);
