@@ -21,7 +21,7 @@ using System.Text;
 
 namespace DnsResolver
 {
-    /// <summary>Represents a TXT RR RDATA value</summary>
+    /// <summary>Represents a TXT RR</summary>
     /// <remarks>
     /// RFC 1035, 3.3.14, TXT RDATA format
     /// <code>
@@ -45,12 +45,20 @@ namespace DnsResolver
             // nothing
         }
         
+        /// <summary>
+        /// Initializes a new instance with the supplied strings.
+        /// </summary>
+        /// <param name="name">the domain name for which this is a record</param>
+        /// <param name="strings">The strings held by this TXT RR</param>
         public TextRecord(string name, IList<string> strings)
             : base(name, Dns.RecordType.TXT)
         {
             this.Strings = strings;
         }
         
+        /// <summary>
+        /// Gets and sets the strings held by this RR.
+        /// </summary>
         public IList<string> Strings
         {
             get
@@ -79,6 +87,12 @@ namespace DnsResolver
             }
         }
 
+
+        /// <summary>
+        /// Tests equality between this TXT record and the other <paramref name="record"/>.
+        /// </summary>
+        /// <param name="record">The other record.</param>
+        /// <returns><c>true</c> if the RRs are equal, <c>false</c> otherwise.</returns>
         public override bool Equals(DnsResourceRecord record)
         {
             if (!base.Equals(record))
@@ -108,6 +122,10 @@ namespace DnsResolver
             return true;
         }
         
+        /// <summary>
+        /// Writes this RR in DNS wire format to the <paramref name="buffer"/>
+        /// </summary>
+        /// <param name="buffer">The buffer to which DNS wire data are written</param>
         protected override void SerializeRecordData(DnsBuffer buffer)
         {
             foreach(string text in this.m_strings)
@@ -122,6 +140,10 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Reads data into this RR from the DNS wire format data in <paramref name="reader"/>
+        /// </summary>
+        /// <param name="reader">Reader in which wire format data for this RR is already buffered.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             List<string> stringList = new List<string>();
