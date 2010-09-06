@@ -23,7 +23,7 @@ namespace DnsResolver
 {
 
     /// <summary>
-    /// Represents an SOA DNS RR
+    /// Represents an SOA DNS RDATA
     /// </summary>
     /// <remarks>
     /// RFC 1035, 

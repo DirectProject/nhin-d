@@ -21,7 +21,7 @@ using System.Text;
 namespace DnsResolver
 {
     /// <summary>
-    /// Represents a CNAME DNS RR
+    /// Represents a CNAME DNS RDATA
     /// </summary>
     /// <remarks>
     /// See RFC 1035, Section 3.3.1

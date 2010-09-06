@@ -22,7 +22,7 @@ using System.Text;
 namespace DnsResolver
 {
     /// <summary>
-    /// A record we did not know how to parse
+    /// RDATA for a record we did not know how to parse
     /// </summary>
     public class RawRecord : DnsResourceRecord
     {
