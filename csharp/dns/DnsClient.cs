@@ -109,6 +109,10 @@ namespace DnsResolver
         /// Default timeout in milliseconds.
         /// </summary>
         public const int DefaultTimeoutMs = 2000; // 2 seconds
+
+        /// <summary>
+        /// Maximum buffer size for UDP transactions.
+        /// </summary>
         public const int UDPMaxBuffer = 0x10000;
         
         IPEndPoint m_dnsServer;
