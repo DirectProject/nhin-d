@@ -87,7 +87,7 @@ namespace DnsResolver
         }
         
         /// <summary>
-        /// Initializes an instance with the supplied values.
+        /// Initializes an instance with the supplied values and default values for refresh, retry, expire and minimum.
         /// </summary>
         /// <param name="name">The domain name for which this is a record</param>
         /// <param name="domainName">The domain name of the name server that was the primary source for this zone</param>
