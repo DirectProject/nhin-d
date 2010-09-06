@@ -46,12 +46,20 @@ namespace DnsResolver
         {
         }
         
+        /// <summary>
+        /// Initializes an instance with the supplied data.
+        /// </summary>
+        /// <param name="name">The domain name for which this is a record</param>
+        /// <param name="nameserver">The authoritative nameserver for this domain.</param>
         public NSRecord(string name, string nameserver)
             : base(name, Dns.RecordType.NS)
         {
             this.NameServer = nameserver;
         }
         
+        /// <summary>
+        /// The authoritative nameserver for this domain.
+        /// </summary>
         public string NameServer
         {
             get
@@ -69,6 +77,11 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Tests equality between this NS record and the other <paramref name="record"/>.
+        /// </summary>
+        /// <param name="record">The other record.</param>
+        /// <returns><c>true</c> if the RRs are equal, <c>false</c> otherwise.</returns>
         public override bool Equals(DnsResourceRecord record)
         {
             if (!base.Equals(record))
@@ -84,12 +97,20 @@ namespace DnsResolver
             
             return (Dns.Equals(m_nameserver, nsRecord.NameServer));
         }
-        
+
+        /// <summary>
+        /// Writes this RR in DNS wire format to the <paramref name="buffer"/>
+        /// </summary>
+        /// <param name="buffer">The buffer to which DNS wire data are written</param>
         protected override void SerializeRecordData(DnsBuffer buffer)
         {
             buffer.AddDomainName(m_nameserver);
         }
-        
+
+        /// <summary>
+        /// Reads data into this RR from the DNS wire format data in <paramref name="reader"/>
+        /// </summary>
+        /// <param name="reader">Reader in which wire format data for this RR is already buffered.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             this.NameServer = reader.ReadDomainName();
