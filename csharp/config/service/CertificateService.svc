@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="NHINDirect.Config.Service.CertificateService" CodeBehind="CertificateService.svc.cs" %>
