@@ -72,10 +72,7 @@
 	</Target>
 	
 	<Target Name="test-gateway" DependsOnTargets="build-gateway">
-		<Warning Text="The gateway tests are integration tests and require the gateway/agent to be installed" />
-		<!-- these are require external processes to be running - commented out for now
 		<xunitproject ProjectFile="unittests\gateway.xunit" />
-		-->
 	</Target>
 
 	<Target Name="test-xds" DependsOnTargets="build-xds">

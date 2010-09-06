@@ -65,16 +65,10 @@ namespace DnsResolver
         /// <param name="name">the domain name for which this is a record</param>
         /// <param name="type">the record type</param>
         protected DnsResourceRecord(string name, Dns.RecordType type)
-            : this(name, type, Dns.NOCACHE)
-        {
-        }
-
-        protected DnsResourceRecord(string name, Dns.RecordType type, int ttl)
         {
             this.Name = name;
             this.Type = type;
             this.Class = Dns.Class.IN;
-            this.TTL = ttl;
         }
         
         //
@@ -207,7 +201,11 @@ namespace DnsResolver
                 &&  Dns.Equals(this.Name, record.Name)
             );
         }
-                
+
+        /// <summary>
+        /// Serialize this DnsResourceRecord into the given buffer, as per the DNS RFC
+        /// </summary>
+        /// <param name="buffer">buffer to write into</param>
         public void Serialize(DnsBuffer buffer)
         {
             if (buffer == null)
@@ -224,7 +222,12 @@ namespace DnsResolver
             buffer.Buffer[recordLengthOffset++] = (byte) ((short) this.RecordDataLength >> 8);
             buffer.Buffer[recordLengthOffset] = ((byte)(this.RecordDataLength));            
         }
-                
+        
+        /// <summary>
+        /// Deserialize the buffer into a DnsResourceRecord object
+        /// </summary>
+        /// <param name="reader">reader over a buffer containing raw Dns record bytes</param>
+        /// <returns>DnsResourceRecord</returns>                
         public static DnsResourceRecord Deserialize(ref DnsBufferReader reader)
         {
             //
@@ -238,14 +241,27 @@ namespace DnsResolver
 
             return record;
         }
-
+        
+        /// <summary>
+        /// Override to serialize record specific information
+        /// </summary>
+        /// <param name="buffer"></param>        
         protected virtual void SerializeRecordData(DnsBuffer buffer)
         {
             throw new NotSupportedException();
         }
-
+        
+        /// <summary>
+        /// Override to deserialize record specific information
+        /// </summary>
+        /// <param name="reader"></param>
         protected abstract void DeserializeRecordData(ref DnsBufferReader reader);
-
+        
+        /// <summary>
+        /// Factory for DnsResourceRecord objects
+        /// </summary>
+        /// <param name="recordType"></param>
+        /// <returns></returns>
         public static DnsResourceRecord CreateRecordObject(Dns.RecordType recordType)
         {
             DnsResourceRecord record;

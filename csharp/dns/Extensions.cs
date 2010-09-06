@@ -72,6 +72,11 @@ namespace DnsResolver
             return name;
         }
         
+        /// <summary>
+        /// Extracts the raw 4 byte IP address from this object. This method compensates for the obsolete .Address property on IPAddress
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public static uint ToIPV4(this IPAddress address)
         {
             if (address.AddressFamily != AddressFamily.InterNetwork)

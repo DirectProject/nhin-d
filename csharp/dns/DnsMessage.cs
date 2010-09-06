@@ -31,6 +31,11 @@ namespace DnsResolver
         DnsHeader m_header;
         DnsQuestion m_question;
 
+        /// <summary>
+        /// Instantiates a Dns Message
+        /// </summary>
+        /// <param name="qType"></param>
+        /// <param name="qName"></param>
         protected DnsMessage(Dns.RecordType qType, string qName)
         {
             m_header = new DnsHeader();
@@ -51,22 +56,18 @@ namespace DnsResolver
             m_question = new DnsQuestion(qName, qType, Dns.Class.IN);
         }
         
+        /// <summary>
+        /// Instantiates a new message object by deserializing from the given reader
+        /// </summary>
+        /// <param name="reader"></param>
         protected DnsMessage(ref DnsBufferReader reader)
         {
             this.Deserialize(ref reader);
         }
         
-        protected DnsMessage(DnsBuffer buffer)
-        {
-            if (buffer == null)
-            {
-                throw new ArgumentNullException();
-            }
-            
-            DnsBufferReader reader = buffer.CreateReader();
-            this.Deserialize(ref reader);
-        }
-        
+        /// <summary>
+        /// Gets the Dns Header for this message
+        /// </summary>        
         public DnsHeader Header
         {
             get
@@ -75,6 +76,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets the Dns Question included in this message
+        /// </summary>
         public DnsQuestion Question
         {
             get
@@ -83,6 +87,9 @@ namespace DnsResolver
             }            
         }
         
+        /// <summary>
+        /// Gets or sets this message's request ID
+        /// </summary>
         public ushort RequestID
         {
             get
@@ -95,6 +102,9 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Returns true if this message indicates a Successful operation
+        /// </summary>
         public bool IsSuccess
         {
             get
@@ -102,19 +112,16 @@ namespace DnsResolver
                 return (this.m_header != null && m_header.ResponseCode == Dns.ResponseCode.SUCCESS);
             }
         }
-
+        
+        /// <summary>
+        /// Returns true if this message indicates that the domain name being queries was not found
+        /// </summary>
         public bool IsNameError
         {
             get
             {
                 return (this.m_header != null && m_header.ResponseCode == Dns.ResponseCode.NAME_ERROR);
             }
-        }
-        
-        public void Serialize()
-        {
-            DnsBuffer buffer = new DnsBuffer(DnsClient.UDPMaxBuffer);
-            this.Serialize(buffer);
         }
         
         /// <summary>
@@ -130,7 +137,11 @@ namespace DnsResolver
             m_header.Serialize(buffer);
             m_question.Serialize(buffer);
         }
-                
+        
+        /// <summary>
+        /// Deserialize this message
+        /// </summary>
+        /// <param name="reader"></param>        
         protected virtual void Deserialize(ref DnsBufferReader reader)
         {
             m_header = new DnsHeader(ref reader);
