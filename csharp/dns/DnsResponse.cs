@@ -22,7 +22,7 @@ using System.Text;
 namespace DnsResolver
 {
     /// <summary>
-    /// Server response
+    /// Represents a DNS server response.
     /// </summary>
     public class DnsResponse : DnsMessage
     {
@@ -31,14 +31,18 @@ namespace DnsResolver
         DnsResourceRecordCollection m_additionalRecords;
 
         /// <summary>
-        /// Instantiate a new DnsResponse
+        /// Instantiate a new instance with the provided <paramref name="reader"/>
         /// </summary>
-        /// <param name="reader"></param>
+        /// <param name="reader">The reader that has been initialized with the response buffer.</param>
         public DnsResponse(ref DnsBufferReader reader)
             : base(ref reader)
         {
         }
                         
+        /// <summary>
+        /// Gets the answer records for this response.
+        /// </summary>
+        /// <value>A possibly empty collection of answer records.</value>
         public DnsResourceRecordCollection AnswerRecords
         {
             get
@@ -51,6 +55,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets if this response has answer records.
+        /// </summary>
         public bool HasAnswerRecords
         {
             get
@@ -59,6 +66,11 @@ namespace DnsResolver
             }
         }        
         
+
+        /// <summary>
+        /// Gets NS records for this response.
+        /// </summary>
+        /// <value>A possibly empty collection of NS records.</value>
         public DnsResourceRecordCollection NameServerRecords
         {
             get
@@ -72,6 +84,9 @@ namespace DnsResolver
             
         }
 
+        /// <summary>
+        /// Gets if this response has nameserver records.
+        /// </summary>
         public bool HasNameServerRecords
         {
             get
@@ -80,6 +95,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Gets other records (not A or NS) for this reponse
+        /// </summary>
+        /// <value>A possibly empty collection of records.</value>
         public DnsResourceRecordCollection AdditionalRecords
         {
             get
@@ -92,6 +111,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets if this response has non-A or NS records.
+        /// </summary>
         public bool HasAdditionalRecords
         {
             get
@@ -101,9 +123,9 @@ namespace DnsResolver
         }
         
         /// <summary>
-        /// Serialize this DnsResponse
+        /// Serialize this DnsResponse to the buffer as DNS wire format data.
         /// </summary>
-        /// <param name="buffer"></param>
+        /// <param name="buffer">The buffer to which to serialize</param>
         public override void Serialize(DnsBuffer buffer)
         {
             this.UpdateAnswerCounts();
@@ -152,6 +174,10 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Reads DNS wire format data to this response.
+        /// </summary>
+        /// <param name="reader">The reader that has already buffered response data.</param>
         protected override void Deserialize(ref DnsBufferReader reader)
         {
             base.Deserialize(ref reader);
