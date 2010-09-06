@@ -51,7 +51,6 @@ namespace DnsResolver
             m_stringBuilder = null;
         }
 
-        // TODO: Not used. Remove?
         /// <summary>
         /// Initializes an instance with a buffer, starting postion, count and a <see cref="StringBuilder"/>
         /// </summary>
@@ -265,12 +264,13 @@ namespace DnsResolver
         {
             return this.ReadBytes(m_count - m_index);
         }
-
-        public string ReadString()
-        {
-            return this.ReadString(m_count);
-        }
-
+        
+        /// <summary>
+        /// Reads a raw string. The string does not have a leading length byte nor are pointers resolved
+        /// Reads till the end of
+        /// </summary>
+        /// <param name="endAt">Index of the byte up to which we pull in the string</param>
+        /// <returns></returns>
         public string ReadString(int endAt)
         {
             StringBuilder sb = this.EnsureStringBuilder();
@@ -283,17 +283,17 @@ namespace DnsResolver
             return sb.ToString();
         }
 
-        public string ReadDomainName()
+        /// <summary>
         /// Reads a string from the current buffer, accounting for pointers, and advances the buffer.
         /// </summary>
         /// <returns>The string from the current buffer</returns>
+        public string ReadDomainName()
         {
             StringBuilder sb = this.EnsureStringBuilder();
             this.ReadLabel();
             return sb.ToString();
         }
-
-        void ReadLabel()
+        /// <summary>
         /// Tests if the current index position is a pointer label.
         /// </summary>
         /// <remarks>RFC 1035, 4.1.4, Message compression:
@@ -313,20 +313,13 @@ namespace DnsResolver
         /// </para>
         /// </remarks>
         /// <returns><c>true</c> if the current position is a pointer, <c>false</c> otherwise</returns>
-        public bool IsPointer()
+        bool IsPointer()
         {
             // 0xC0 = 0b11000000, bitmask for pointer octet
             return ((this.Current & 0xC0) != 0);
         }
 
-        void ReadStringFromPointer()
-        {
-            // rest of string is found elsewhere. go get it.
-            // 0x3FFF = 0b0011111111111111, bitmask for pointer value.
-            int stringStartAt = (this.ReadShort() & 0x3FFF);
-            this.Clone(stringStartAt).ReadStringInternal();
-        }
-
+        void ReadLabel()
         {
             while (true)
             {
@@ -339,7 +332,9 @@ namespace DnsResolver
 
                 if (this.IsPointer())
                 {
-                    this.ReadStringFromPointer();
+                    // rest of string is found elsewhere. go get it.
+                    // 0x3FFF = 0b0011111111111111, bitmask for pointer value.
+                    int stringStartAt = (this.ReadShort() & 0x3FFF);
                     this.Clone(stringStartAt).ReadLabel();
                     break;
                 }

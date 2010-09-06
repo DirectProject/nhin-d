@@ -22,6 +22,9 @@ using System.Threading;
 
 namespace DnsResolver
 {
+    /// <summary>
+    /// A Dns Request (query) issued to the server
+    /// </summary>
     public class DnsRequest : DnsMessage
     {
         public DnsRequest(Dns.RecordType qType, string qName)

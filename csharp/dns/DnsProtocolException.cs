@@ -42,7 +42,11 @@ namespace DnsResolver
         /// DNS label was longer than specified
         /// </summary>
         LabelTooLong,
+        /// <summary>
+        /// The Raw String was longer than specified
+        /// </summary>
         StringTooLong,
+        /// <summary>
         /// Request ID did not match Response ID
         /// </summary>
         RequestIDMismatch,
@@ -55,7 +59,7 @@ namespace DnsResolver
         /// </summary>
         InvalidQName,
         /// <summary>
-        /// TODO: Umesh needs to doc this.
+        /// If the domain name was mangled and could not serialized correctly
         /// </summary>
         InvalidPath,
         /// <summary>

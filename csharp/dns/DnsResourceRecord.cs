@@ -58,7 +58,12 @@ namespace DnsResolver
         internal DnsResourceRecord()
         {
         }
-
+        
+        /// <summary>
+        /// Instantiates a new Dns Resource Record
+        /// </summary>
+        /// <param name="name">the domain name for which this is a record</param>
+        /// <param name="type">the record type</param>
         protected DnsResourceRecord(string name, Dns.RecordType type)
             : this(name, type, Dns.NOCACHE)
         {
@@ -185,11 +190,6 @@ namespace DnsResolver
             this.DeserializeRecordData(ref reader);
         }
 
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj as DnsResourceRecord);
-        }
-        
         /// <summary>
         /// Compares all fields except TTL , since that can vary
         /// </summary>
