@@ -21,13 +21,29 @@ using System.Text;
 
 namespace DnsResolver
 {
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    // |                  PREFERENCE                   |
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    // /                   EXCHANGE                    /
-    // /                                               /
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-
+    
+    /// <summary>
+    /// Represents RDATA for an MX DNS RR.
+    /// </summary>
+    /// <remarks>
+    /// RFC 1035, 3.3.9. MX RDATA format
+    /// <code>
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                  PREFERENCE                   |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                   EXCHANGE                    /
+    /// /                                               /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
+    /// where:
+    ///
+    /// PREFERENCE      A 16 bit integer which specifies the preference given to
+    ///                 this RR among others at the same owner.  Lower values
+    ///                 are preferred.
+    ///
+    /// EXCHANGE        A %lt;domain-name%gt; which specifies a host willing to act as
+    ///                 a mail exchange for the owner name.
+    /// </remarks>
     public class MXRecord : DnsResourceRecord
     {
         string m_exchange;
@@ -36,12 +52,20 @@ namespace DnsResolver
         {
         }
         
+        /// <summary>
+        /// Gets and sets the preference value.
+        /// </summary>
+        /// <value>A 16-bit integer, where lower values are higher precedence</value>
         public short Preference
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// The mail exchange (SMTP server) domain name
+        /// </summary>
+        /// <value>A <see cref="string"/> representation of the domain name.</value>
         public string Exchange
         {
             get
@@ -59,6 +83,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Reads values into this instance from the reader
+        /// </summary>
+        /// <param name="reader">A reader which has a buffer already filled with raw data for the RDATA.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             Preference = reader.ReadShort();
