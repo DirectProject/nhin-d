@@ -21,7 +21,7 @@ using System.Text;
 
 namespace DnsResolver
 {
-    /// <summary>Represents a TXT RR</summary>
+    /// <summary>Represents a TXT RR RDATA value</summary>
     /// <remarks>
     /// RFC 1035, 3.3.14, TXT RDATA format
     /// <code>

@@ -23,9 +23,8 @@ using System.Net;
 namespace DnsResolver
 {
 
-    // TODO: document if this is just A records or AAAA records as well.
     /// <summary>
-    /// Represents a DNS A record.
+    /// Represents a DNS A record RDATA
     /// </summary>
     /// <remarks>
     /// RFC 1035, 3.4.1
