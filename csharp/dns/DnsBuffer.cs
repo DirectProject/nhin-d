@@ -21,17 +21,29 @@ using System.Text;
 
 namespace DnsResolver
 {
+    /// <summary>
+    /// A raw data buffer with utilities facilitating reading and writing of DNS wire format data.
+    /// </summary>
     public class DnsBuffer
     {
         byte[] m_buffer;
         int m_count;
 
+        /// <summary>
+        /// Initializes a buffer with the requested capacity.
+        /// </summary>
+        /// <param name="capacity">The capacity of this buffer in <c>byte</c>s</param>
         public DnsBuffer(int capacity)
         {
             m_buffer = new byte[capacity];
             m_count = 0;
         }
         
+        /// <summary>
+        /// Returns the byte at the zero-based index position in this buffer.
+        /// </summary>
+        /// <param name="index">The zero-based index position to access.</param>
+        /// <returns>The <c>byte</c> at the requested index.</returns>
         public byte this[int index]
         {
             get
@@ -51,7 +63,10 @@ namespace DnsResolver
                 m_buffer[index] = value;
             }
         }
-        
+
+        /// <summary>
+        /// Gets the underying buffer.
+        /// </summary>
         public byte[] Buffer
         {
             get
@@ -60,6 +75,9 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Count of <c>byte</c>s added to this buffer.
+        /// </summary>
         public int Count
         {
             get
@@ -77,6 +95,9 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// The capacity of this buffer in <c>byte</c>s
+        /// </summary>
         public int Capacity
         {
             get
@@ -85,17 +106,30 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Adds a <c>byte</c> value to the buffer, first ensuring the buffer has capacity.
+        /// </summary>
+        /// <param name="item">The raw <c>byte</c> to add.</param>
         public void AddByte(byte item)
         {
             this.EnsureCapacity();
             m_buffer[m_count++] = item;
         }
 
+
+        /// <summary>
+        /// Adds a <c>byte</c> value to the buffer without ensuring the buffer has capacity.
+        /// </summary>
+        /// <param name="item">The raw <c>byte</c> to add.</param>
         public void AddByteNoCheck(byte item)
         {
             m_buffer[m_count++] = item;
         }
 
+        /// <summary>
+        /// Adds raw <c>byte</c> values to the buffer.
+        /// </summary>
+        /// <param name="items">The raw data to add.</param>
         public void AddBytes(byte[] items)
         {
             if (items == null)
@@ -146,31 +180,33 @@ namespace DnsResolver
             }
             m_count = newCount;
         }
-        
+
         /// <summary>
-        /// Adds the short in network order
+        /// Add a <c>short</c> in network order
         /// </summary>
+        /// <param name="value">The value to add to the buffer.</param>
         public void AddShort(short value)
         {
             this.ReserveCapacity(2);
             this.AddByteNoCheck((byte)((short)value >> 8));
             this.AddByteNoCheck((byte)(value));
         }
-        
+
         /// <summary>
-        /// Adds a ushort in network order
+        /// Add a <c>ushort</c> in network order
         /// </summary>
+        /// <param name="value">The value to add to the buffer.</param>
         public void AddUshort(ushort value)
         {
             this.ReserveCapacity(2);
             this.AddByteNoCheck((byte)(value >> 8));
             this.AddByteNoCheck((byte)(value));
         }
-        
+
         /// <summary>
-        /// Add an int in network order
+        /// Add a <c>int</c> in network order
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">The value to add to the buffer.</param>
         public void AddInt(int value)
         {
             this.ReserveCapacity(4);
@@ -179,7 +215,11 @@ namespace DnsResolver
             this.AddByteNoCheck((byte)(value >> 8));
             this.AddByteNoCheck((byte)(value));
         }
-        
+
+        /// <summary>
+        /// Add a <c>uint</c> in network order
+        /// </summary>
+        /// <param name="value">The value to add to the buffer.</param>
         public void AddUint(uint value)
         {
             this.ReserveCapacity(4);
@@ -188,7 +228,11 @@ namespace DnsResolver
             this.AddByteNoCheck((byte)(value >> 8));
             this.AddByteNoCheck((byte)(value));
         }
-        
+
+        /// <summary>
+        /// Add a <c>long</c> in network order
+        /// </summary>
+        /// <param name="value">The value to add to the buffer.</param>
         public void AddLong(long value)
         {
             this.AddInt((int) value >> 32);
@@ -208,6 +252,12 @@ namespace DnsResolver
             this.AddLabel(label, 0, label.Length);
         }
 
+        /// <summary>
+        /// Adds a subset of a string as a DNS label.
+        /// </summary>
+        /// <param name="source">The source string from which to add characters</param>
+        /// <param name="startAt">The zero-based starting position from which to add characters.</param>
+        /// <param name="length">The number of characters to add.</param>
         public void AddLabel(string source, int startAt, int length)
         {
             if (source == null || length <= 0)
@@ -225,9 +275,9 @@ namespace DnsResolver
         }
         
         /// <summary>
-        /// Add a domain name (path)...
+        /// Add a domain name (QNAME, path)...
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">The string representation of the domain name to add</param>
         public void AddDomainName(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -266,11 +316,17 @@ namespace DnsResolver
             this.AddByte((byte) 0);
         }
         
+        /// <summary>
+        /// Clears this buffer. Does not erase data.
+        /// </summary>
         public void Clear()
         {
             m_count = 0;
         }
 
+        /// <summary>
+        /// Clears and erases data from this buffer.
+        /// </summary>
         public void Erase()
         {
             this.Clear();
@@ -280,6 +336,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Ensures this buffer has at least one byte of free capacity.
+        /// </summary>
         public void EnsureCapacity()
         {
             if (m_count == m_buffer.Length)
@@ -288,6 +347,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Ensures this buffer has at least <paramref name="newItemCount"/> capacity.
+        /// </summary>
+        /// <param name="newItemCount">The number of <c>byte</c>s for which to ensure capacity.</param>
         public void ReserveCapacity(int newItemCount)
         {
             int capacity = m_count + newItemCount;
@@ -297,6 +360,10 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Creates a reader for this buffer.
+        /// </summary>
+        /// <returns>The newly initialized reader</returns>
         public DnsBufferReader CreateReader()
         {
             return new DnsBufferReader(m_buffer, 0, m_count);
