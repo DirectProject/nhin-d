@@ -26,6 +26,21 @@ namespace DnsResolver
       /                   PTRDNAME                    /
       +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
      */
+
+    /// <summary>
+    /// Represents a PTR DNS RR
+    /// </summary>
+    /// <remarks>
+    /// RFC 1035, 
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                   PTRDNAME                    /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    ///
+    /// where:
+    ///
+    /// PTRDNAME        A &lt;domain-name&gt; which points to some location in the
+    ///                domain name space.
+    /// </remarks>
     public class PtrRecord : DnsResourceRecord
     {    
         string m_domain;
@@ -34,6 +49,10 @@ namespace DnsResolver
         {
         }
 
+        /// <summary>
+        /// Gets and sets the domain name (PTRDNAME)
+        /// </summary>
+        /// <value>A <see cref="string"/> representation of the domain name.</value>
         public string Domain
         {
             get
@@ -50,7 +69,11 @@ namespace DnsResolver
                 m_domain = value;
             }
         }
-        
+
+        /// <summary>
+        /// Reads values into this instance from the reader
+        /// </summary>
+        /// <param name="reader">A reader which has a buffer already filled with raw data for this RR.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             this.Domain = reader.ReadString();

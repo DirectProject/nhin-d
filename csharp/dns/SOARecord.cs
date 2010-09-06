@@ -21,29 +21,62 @@ using System.Text;
 
 namespace DnsResolver
 {
-    /*
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /                     MNAME                     /
-    /                                               /
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /                     RNAME                     /
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                    SERIAL                     |
-    |                                               |
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                    REFRESH                    |
-    |                                               |
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                     RETRY                     |
-    |                                               |
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                    EXPIRE                     |
-    |                                               |
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    |                    MINIMUM                    |
-    |                                               |
-    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    */
+
+    /// <summary>
+    /// Represents an SOA DNS RR
+    /// </summary>
+    /// <remarks>
+    /// RFC 1035, 
+    /// <code>
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                     MNAME                     /
+    /// /                                               /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                     RNAME                     /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                    SERIAL                     |
+    /// |                                               |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                    REFRESH                    |
+    /// |                                               |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                     RETRY                     |
+    /// |                                               |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                    EXPIRE                     |
+    /// |                                               |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                    MINIMUM                    |
+    /// |                                               |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
+    /// 
+    /// where:
+    /// 
+    /// MNAME           The &lt;domain-name&gt; of the name server that was the
+    ///                 original or primary source of data for this zone.
+    /// 
+    /// RNAME           A &lt;domain-name&gt; which specifies the mailbox of the
+    ///                 person responsible for this zone.
+    /// 
+    /// SERIAL          The unsigned 32 bit version number of the original copy
+    ///                 of the zone.  Zone transfers preserve this value.  This
+    ///                 value wraps and should be compared using sequence space
+    ///                 arithmetic.
+    /// 
+    /// REFRESH         A 32 bit time interval before the zone should be
+    ///                 refreshed.
+    /// 
+    /// RETRY           A 32 bit time interval that should elapse before a
+    ///                 failed refresh should be retried.
+    /// 
+    /// EXPIRE          A 32 bit time value that specifies the upper limit on
+    ///                 the time interval that can elapse before the zone is no
+    ///                 longer authoritative.
+    ///                 
+    /// MINIMUM         The unsigned 32 bit minimum TTL field that should be
+    ///                 exported with any RR from this zone.
+    /// </remarks>
     public class SOARecord : DnsResourceRecord
     {
         string m_mname;
@@ -53,6 +86,10 @@ namespace DnsResolver
         {
         }
         
+        /// <summary>
+        /// Gets and sets the domain name for this SOA (MNAME)
+        /// </summary>
+        /// <value>A <see cref="string"/> representation of the domain name</value>
         public string DomainName
         {
             get
@@ -68,7 +105,11 @@ namespace DnsResolver
                 m_mname = value;
             }
         }
-        
+
+        /// <summary>
+        /// Gets and sets the mailbox of the responsible name for this SOA (MNAME)
+        /// </summary>
+        /// <value>A <see cref="string"/> representation of the email or mailbox name (generally hostmaster)</value>
         public string ResponsibleName
         {
             get
@@ -86,32 +127,59 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets and sets the serial number for this SOA (SERIAL)
+        /// </summary>
         public int SerialNumber
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// Gets and sets the refresh interval
+        /// </summary>
+        /// <value>A 32-bit value representing number of seconds</value>
         public int Refresh
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// Gets and sets the retry interval
+        /// </summary>
+        /// <value>A 32-bit value representing number of seconds</value>
         public int Retry
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// Gets and sets the expiry interval
+        /// </summary>
+        /// <value>A 32-bit value representing number of seconds</value>
         public int Expire
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// Gets and sets the minimum TTL
+        /// </summary>
+        /// <value>A 32-bit value representing number of seconds</value>
         public int Minimum
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Reads values into this instance from the reader
+        /// </summary>
+        /// <param name="reader">A reader which has a buffer already filled with raw data for this RR.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             this.DomainName = reader.ReadString();

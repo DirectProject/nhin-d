@@ -21,10 +21,23 @@ using System.Text;
 
 namespace DnsResolver
 {
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //                   NSDNAME                        /
-    //                                                  /
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// <summary>
+    /// Represents NS DNS RDATA
+    /// </summary>
+    /// <remarks>
+    /// RFC 1035, Section 3.3.11, NS RDATA format
+    /// <code>
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                   NSDNAME                     /
+    /// /                                               /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
+    ///
+    /// where:
+    /// 
+    /// NSDNAME         A &lt;domain-name&gt; which specifies a host which should be
+    ///                 authoritative for the specified class and domain.
+    /// </remarks>
     public class NSRecord : DnsResourceRecord
     {
         string m_nameserver;
@@ -33,6 +46,10 @@ namespace DnsResolver
         {
         }
         
+        /// <summary>
+        /// Gets and sets the nameserver for the class and domain
+        /// </summary>
+        /// <value>A <see cref="string"/> representation of the nameserver domain</value>
         public string NameServer
         {
             get
@@ -50,6 +67,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Reads values into this instance from the reader
+        /// </summary>
+        /// <param name="reader">A reader which has a buffer already filled with raw data for this RR.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             this.NameServer = reader.ReadString();
