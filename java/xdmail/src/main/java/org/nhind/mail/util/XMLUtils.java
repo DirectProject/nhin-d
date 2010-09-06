@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhind.util;
+package org.nhind.mail.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
@@ -88,7 +88,7 @@ public class XMLUtils {
      *            The factory class.
      * @return an object representation of the string.
      */
-    public static Object unmarshal(String xml, Class factory) {
+    public static Object unmarshal(String xml, Class factory) throws JAXBException {
         javax.xml.bind.JAXBContext jaxbCtx = null;
 
         try {
@@ -96,6 +96,7 @@ public class XMLUtils {
         } catch (JAXBException e) {
             LOGGER.info("Failed to create JAXBContext object");
             e.printStackTrace();
+            throw e;
         }
 
         return unmarshal(xml, jaxbCtx);

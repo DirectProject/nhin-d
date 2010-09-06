@@ -29,14 +29,11 @@
 package org.nhind.mail.service;
 
 import ihe.iti.xds_b._2007.DocumentRepositoryPortType;
-import ihe.iti.xds_b._2007.DocumentRepositoryService;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,9 +54,6 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.soap.MTOMFeature;
-import javax.xml.ws.soap.SOAPBinding;
 
 import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.AssociationType1;
@@ -76,7 +70,8 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 import org.apache.commons.lang.StringUtils;
 import org.nhind.ccddb.CCDParser;
-import org.nhind.util.MimeType;
+import org.nhind.mail.util.DocumentRepositoryUtils;
+import org.nhind.mail.util.MimeType;
 
 /*
  * TODO there is a major assumption within this class and underlying classes.  That is the assumption of single document. 
@@ -120,6 +115,7 @@ public class MimeXDSTransformer {
     protected String relatesTo = null;
     protected String action = null;
     protected String to = null;
+    
     private String thisHost = null;
     private String remoteHost = null;
     private String pid = null;
@@ -128,44 +124,47 @@ public class MimeXDSTransformer {
 //    private String suffix = null;
 //    private String replyEmail = null;
 
+    /**
+     * Entry point for the MimeXDSTransformer class. This will forward a given MimeMessage to the given XDR endpoint.
+     * @param endpoint A URL representing an XDR endpoint.
+     * @param mimeMessage The MimeMessage object to transform.
+     * @throws Exception
+     */
     public void forward(String endpoint, MimeMessage mimeMessage) throws Exception {
+        if (StringUtils.isBlank(endpoint))
+            throw new IllegalArgumentException("Endpoint must not be blank");
+        if (mimeMessage == null)
+            throw new IllegalArgumentException("MimeMessage must not be null");
+        
         ProvideAndRegisterDocumentSetRequestType prds = createRequest(mimeMessage);
         forwardRequest(endpoint, prds);
     }
 
-    private void forwardRequest(String endpoint, ProvideAndRegisterDocumentSetRequestType prds) throws Exception {
-
+    protected void forwardRequest(String endpoint, ProvideAndRegisterDocumentSetRequestType prds) throws Exception {
+        if (StringUtils.isBlank(endpoint))
+            throw new IllegalArgumentException("Endpoint must not be blank");
+        if (prds == null)
+            throw new IllegalArgumentException("ProvideAndRegisterDocumentSetRequestType must not be null");
+        
         LOGGER.info(" SENDING TO ENDPOINT " + endpoint);
-        relatesTo = messageId;
-        action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
-        messageId = UUID.randomUUID().toString();
-        to = endpoint;
+        
+        this.relatesTo = this.messageId;
+        this.action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
+        this.messageId = UUID.randomUUID().toString();
+        this.to = endpoint;
         
         setHeaderData();
         
-        URL url = null;
+        DocumentRepositoryPortType port = null;
         
         try {
-            url = new URL(ihe.iti.xds_b._2007.DocumentRepositoryService.class.getResource(""),
-                    "/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl");
-        } catch (MalformedURLException e) {
-            LOGGER.severe("Unable to access WSDL");
+            port = DocumentRepositoryUtils.getDocumentRepositoryPortType(endpoint);
+        } catch (Exception e) {
+            LOGGER.warning("Unable to create port");
             e.printStackTrace();
             throw e;
         }
         
-        DocumentRepositoryService service = new DocumentRepositoryService(url, new QName("urn:ihe:iti:xds-b:2007",
-                "DocumentRepository_Service"));
-        
-        service.setHandlerResolver(new RepositoryHandlerResolver());
-        DocumentRepositoryPortType port = service.getDocumentRepositoryPortSoap12(new MTOMFeature(true, 1));
-
-        BindingProvider bp = (BindingProvider) port;
-        SOAPBinding binding = (SOAPBinding) bp.getBinding();
-        binding.setMTOMEnabled(true);
-
-        bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
-
         RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(prds);
         
         String test = rrt.getStatus();
@@ -267,7 +266,7 @@ public class MimeXDSTransformer {
                                 }
                                 
                                 xdsDocument = baos.toByteArray();
-                                xdsMimeType = MimeType.TEXT_PLAIN.getS1();
+                                xdsMimeType = MimeType.TEXT_PLAIN.getType();
                                 xdsFormatCode = CODE_FORMAT_TEXT;
                             } else if (MimeType.TEXT_XML.matches(contentType)) {
                                 if (StringUtils.contains(contentString, "urn:hl7-org:v3")
@@ -281,7 +280,7 @@ public class MimeXDSTransformer {
                                 }
                                 
                                 xdsDocument = baos.toByteArray();
-                                xdsMimeType = MimeType.TEXT_XML.getS1();
+                                xdsMimeType = MimeType.TEXT_XML.getType();
                             } else {
                                 // Otherwise make best effort passing MIME content type thru
                                 xdsMimeType = contentType;
@@ -294,7 +293,7 @@ public class MimeXDSTransformer {
                 }
             } else if (MimeType.TEXT_PLAIN.matches(msgContentType)) {
                 // support for plain mail, no attachments
-                xdsMimeType = MimeType.TEXT_PLAIN.getS1();
+                xdsMimeType = MimeType.TEXT_PLAIN.getType();
                 xdsFormatCode = CODE_FORMAT_TEXT;
                 xdsDocument = ((String) mimeMessage.getContent()).getBytes();
             } else {
@@ -313,12 +312,10 @@ public class MimeXDSTransformer {
     protected static ProvideAndRegisterDocumentSetRequestType getMDMRequest(BodyPart bodyPart) throws Exception {
         LOGGER.info("Inside getMDMRequest");
         
-        DataHandler dh = null;
-        XDMXDSTransformer xxt = new XDMXDSTransformer();
-        ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
+        DataHandler dh = bodyPart.getDataHandler();
         
-        dh = bodyPart.getDataHandler();
-        prsr = xxt.getXDMRequest(dh);
+        XDMXDSTransformer xxt = new XDMXDSTransformer();
+        ProvideAndRegisterDocumentSetRequestType prsr = xxt.getXDMRequest(dh);
         
         return prsr;
     }
@@ -342,7 +339,7 @@ public class MimeXDSTransformer {
                 formatCode, mimeType, auth, recip);
         prsr.setSubmitObjectsRequest(sor);
         
-        DataSource source = new ByteArrayDataSource(doc, MimeType.APPLICATION_XML.getS1() + "; charset=UTF-8");
+        DataSource source = new ByteArrayDataSource(doc, MimeType.APPLICATION_XML.getType() + "; charset=UTF-8");
         DataHandler dhnew = new DataHandler(source);
 
         List<Document> docs = prsr.getDocument();
@@ -576,59 +573,56 @@ public class MimeXDSTransformer {
     }
 
     protected static SlotType1 makePatientSlot(String name, SimplePerson patient, String patientId, String orgId) {
-
+        List<String> vals = null;
         SlotType1 slot = new SlotType1();
-        try {
-            slot.setName(name);
-            ValueListType values = new ValueListType();
-            slot.setValueList(values);
-            List<String> vals = values.getValue();
+        ValueListType values = new ValueListType();
+        
+        slot.setName(name);
+        slot.setValueList(values);
+        vals = values.getValue();
 
-            if (patient != null) {
-                StringBuffer sb = null;
-                
-                // <rim:Value>PID-3|pid1^^^domain</rim:Value>
-                sb = new StringBuffer("PID-3|");
-                sb.append(patientId);
-                sb.append("^^^&amp;");
-                sb.append(orgId);
-                sb.append("&amp;ISO");
-                vals.add(sb.toString());
-                
-                // <rim:Value>PID-5|Doe^John^^^</rim:Value>
-                sb = new StringBuffer("PID-5|");
-                sb.append(patient.getLastName());
-                sb.append("^");
-                sb.append(patient.getFirstName());
-                sb.append("^");               
-                sb.append(patient.getMiddleName());
-                vals.add(sb.toString());
-                
-                // <rim:Value>PID-7|19560527</rim:Value>
-                sb = new StringBuffer("PID-7|");
-                sb.append(formatDateFromMDM(patient.getBirthDateTime()));
-                vals.add(sb.toString());
+        if (patient != null) {
+            StringBuffer sb = null;
 
-                // <rim:Value>PID-8|M</rim:Value>
-                sb = new StringBuffer("PID-8|");
-                sb.append(patient.getGenderCode());
-                vals.add(sb.toString());
-                
-                // <rim:Value>PID-11|100 Main St^^Metropolis^Il^44130^USA</rim:Value>
-                sb = new StringBuffer("PID-11|");
-                sb.append(patient.getStreetAddress1());
-                sb.append("^");
-                sb.append(patient.getCity());
-                sb.append("^^");               
-                sb.append(patient.getState());
-                sb.append("^");               
-                sb.append(patient.getZipCode());
-                sb.append("^");               
-                sb.append(patient.getCountry());
-                vals.add(sb.toString());
-            }
-        } catch (Exception x) {
-            x.printStackTrace();
+            // <rim:Value>PID-3|pid1^^^domain</rim:Value>
+            sb = new StringBuffer("PID-3|");
+            sb.append(patientId);
+            sb.append("^^^&amp;");
+            sb.append(orgId);
+            sb.append("&amp;ISO");
+            vals.add(sb.toString());
+
+            // <rim:Value>PID-5|Doe^John^^^</rim:Value>
+            sb = new StringBuffer("PID-5|");
+            sb.append(patient.getLastName());
+            sb.append("^");
+            sb.append(patient.getFirstName());
+            sb.append("^");
+            sb.append(patient.getMiddleName());
+            vals.add(sb.toString());
+
+            // <rim:Value>PID-7|19560527</rim:Value>
+            sb = new StringBuffer("PID-7|");
+            sb.append(formatDateFromMDM(patient.getBirthDateTime()));
+            vals.add(sb.toString());
+
+            // <rim:Value>PID-8|M</rim:Value>
+            sb = new StringBuffer("PID-8|");
+            sb.append(patient.getGenderCode());
+            vals.add(sb.toString());
+
+            // <rim:Value>PID-11|100 Main St^^Metropolis^Il^44130^USA</rim:Value>
+            sb = new StringBuffer("PID-11|");
+            sb.append(patient.getStreetAddress1());
+            sb.append("^");
+            sb.append(patient.getCity());
+            sb.append("^^");
+            sb.append(patient.getState());
+            sb.append("^");
+            sb.append(patient.getZipCode());
+            sb.append("^");
+            sb.append(patient.getCountry());
+            vals.add(sb.toString());
         }
 
         return slot;
@@ -740,7 +734,7 @@ public class MimeXDSTransformer {
     }
 
     protected void setHeaderData() {
-        Long threadId = new Long(Thread.currentThread().getId());
+        Long threadId = Long.valueOf(Thread.currentThread().getId());
         LOGGER.info("THREAD ID " + threadId);
 
         ThreadData threadData = new ThreadData(threadId);

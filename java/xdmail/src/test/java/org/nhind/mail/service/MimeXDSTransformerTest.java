@@ -1,5 +1,7 @@
 package org.nhind.mail.service;
 
+import ihe.iti.xds_b._2007.DocumentRepositoryPortType;
+
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExternalIdentifierType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 
-import org.nhind.util.XMLUtils;
+import org.nhind.mail.util.XMLUtils;
 
 /**
  * 
@@ -37,6 +39,48 @@ public class MimeXDSTransformerTest extends TestCase {
         super.tearDown();
     }
 
+    /**
+     * Test the forward method will null values.
+     */
+    public void testForwardWithNulls() {
+        MimeXDSTransformer transformer = new MimeXDSTransformer();
+        
+        try {
+            transformer.forward(null, null);
+            fail("Exception not thrown");
+        } catch (Exception e) {
+            assertTrue(true);
+        }
+        
+        try {
+            transformer.forward("endpoint", null);
+            fail("Exception not thrown");
+        } catch (Exception e) {
+            assertTrue(true);
+        } 
+    }
+    
+    /**
+     * Test the forwardRequest method will null values.
+     */
+    public void testForwardRequestWithNulls() {
+        MimeXDSTransformer transformer = new MimeXDSTransformer();
+        
+        try {
+            transformer.forwardRequest(null, null);
+            fail("Exception not thrown");
+        } catch (Exception e) {
+            assertTrue(true);
+        }
+        
+        try {
+            transformer.forwardRequest("endpoint", null);
+            fail("Exception not thrown");
+        } catch (Exception e) {
+            assertTrue(true);
+        } 
+    }  
+    
     /**
      * Test of getSubmitObjectsRequest method, of class MimeXDSTransformer.
      */

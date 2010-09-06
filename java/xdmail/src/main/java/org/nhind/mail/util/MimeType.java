@@ -26,47 +26,62 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhind.util;
+package org.nhind.mail.util;
 
 import org.apache.commons.lang.StringUtils;
 
 /**
+ * Enumeration of commonly used MIME types.
+ * 
  * @author beau
- *
  */
 public enum MimeType {
 
-    TEXT_PLAIN("text/plain"),
-    TEXT_XML("text/xml"),
-    TEXT_CDA_XML("text/cda+xml"),
-    APPLICATION_CCR("application/ccr"),
-    APPLICATION_XML("application/xml"),
+    TEXT_PLAIN("text/plain"), 
+    TEXT_XML("text/xml"), 
+    TEXT_CDA_XML("text/cda+xml"), 
+    APPLICATION_CCR("application/ccr"), 
+    APPLICATION_XML("application/xml"), 
     APPLICATION_PDF("application/pdf");
 
-    private String s1;
-    
-    private MimeType(String s1) {
-        this.s1 = s1;
+    private String type;
 
-    }
-    
-    public boolean matches(String s1) {
-        return StringUtils.startsWith(s1, this.s1);
+    /**
+     * Enumeration constructor.
+     * 
+     * @param type
+     *            The MIME type.
+     */
+    private MimeType(String type) {
+        this.type = type;
+
     }
 
     /**
-     * @return the s1
+     * Determine if the input matches the current element by first comparing
+     * equalsIgnoreCase and then comparing startsWith.
+     * 
+     * @param type
+     *            The MIME type to compare.
+     * @return true if the string is a reasonable match, false otherwise.
      */
-    public String getS1() {
-        return s1;
+    public boolean matches(String type) {
+        if (StringUtils.equalsIgnoreCase(type, this.type))
+            return true;
+        if (StringUtils.startsWith(type, this.type))
+            return true;
+
+        return false;
     }
 
     /**
-     * @param s1
-     *            the s1 to set
+     * Return the type.
+     * 
+     * @return the type.
      */
-    public void setS1(String s1) {
-        this.s1 = s1;
+    public String getType() {
+        return type;
     }
+
 
 }

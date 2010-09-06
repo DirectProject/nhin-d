@@ -28,15 +28,12 @@
 
 package org.nhind.james.mailet;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.logging.Logger;
 
 import javax.mail.MessagingException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.mailet.Mail;
-import org.apache.mailet.MailetConfig;
 import org.apache.mailet.base.GenericMailet;
 import org.nhind.mail.service.MimeXDSTransformer;
 
@@ -47,25 +44,14 @@ import org.nhind.mail.service.MimeXDSTransformer;
  * (ITI-41).
  */
 public class NHINDMailet extends GenericMailet {
-
-    MailetConfig mc = null;
+    
+    private String endpointUrl;
     
     /**
      * Class logger
      */
     private static final Logger LOGGER = Logger.getLogger(NHINDMailet.class.getPackage().getName());
     
-    private String endpointUrl;
-    
-    
-//    /*
-//     * Relax the OHT IHE Profiles CDA validation to allow meta-data extraction
-//     * to work correctly on CDA instances that carry CCD or HITSP C83 extensions
-//     */
-//    static {
-//        System.setProperty("relax.validation", "true");
-//    }
-
     /*
      * (non-Javadoc)
      * 
