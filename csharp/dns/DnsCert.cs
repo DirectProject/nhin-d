@@ -163,6 +163,10 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Return a byte array containing the certificate exported as .DER (.CER) 
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetData()
         {
             return m_cert.Export(X509ContentType.Cert);

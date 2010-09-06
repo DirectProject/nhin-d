@@ -30,6 +30,10 @@ namespace DnsResolver
         DnsResourceRecordCollection m_nameServerRecords;
         DnsResourceRecordCollection m_additionalRecords;
 
+        /// <summary>
+        /// Instantiate a new DnsResponse
+        /// </summary>
+        /// <param name="reader"></param>
         public DnsResponse(ref DnsBufferReader reader)
             : base(ref reader)
         {
@@ -95,7 +99,11 @@ namespace DnsResolver
                 return (m_additionalRecords != null && m_additionalRecords.Count > 0);
             }
         }
-
+        
+        /// <summary>
+        /// Serialize this DnsResponse
+        /// </summary>
+        /// <param name="buffer"></param>
         public override void Serialize(DnsBuffer buffer)
         {
             this.UpdateAnswerCounts();

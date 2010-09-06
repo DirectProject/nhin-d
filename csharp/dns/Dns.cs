@@ -40,7 +40,10 @@ namespace DnsResolver
         /// RFC 1035, Section 3.1
         /// </remarks>
         public const int MAXLABELLENGTH = 63;
-        public const int NOCACHE = 0;   // TTL of 0
+        /// <summary>
+        /// TTL of 0
+        /// </summary>
+        public const int NOCACHE = 0;   
         
         /// <summary>
         /// Record types for DNS RR
