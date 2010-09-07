@@ -240,10 +240,11 @@ public class MimeXDSTransformer {
                             LOGGER.info("File name: " + fname);
                         if (StringUtils.contains(fname, ".zip")) {
                             try {
-                                prsr = getMDMRequest(bodyPart);
-                                //TODO should be a return here I think
+                                prsr = getXDMRequest(bodyPart);
+                                 LOGGER.info("returning XDM based request");
+                                return prsr;
                             } catch (Exception x) {
-                                // TODO
+                                // TODO, probably not an XDM
                             }
                         }
 
@@ -310,7 +311,7 @@ public class MimeXDSTransformer {
         return prsr;
     }
 
-    protected static ProvideAndRegisterDocumentSetRequestType getMDMRequest(BodyPart bodyPart) throws Exception {
+    protected static ProvideAndRegisterDocumentSetRequestType getXDMRequest(BodyPart bodyPart) throws Exception {
         LOGGER.info("Inside getMDMRequest");
         
         DataHandler dh = bodyPart.getDataHandler();
