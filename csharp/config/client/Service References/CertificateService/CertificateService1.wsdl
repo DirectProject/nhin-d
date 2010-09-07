@@ -98,6 +98,15 @@
   <wsdl:message name="IAnchorStore_AddAnchors_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetAnchor_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAnchor" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetAnchor_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAnchorResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetAnchor_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:message name="IAnchorStore_GetAnchors_InputMessage">
     <wsdl:part name="parameters" element="tns:GetAnchors" />
   </wsdl:message>
@@ -222,6 +231,11 @@
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchors" message="tns:IAnchorStore_AddAnchors_InputMessage" />
       <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchorsResponse" message="tns:IAnchorStore_AddAnchors_OutputMessage" />
       <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchorsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_AddAnchors_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAnchor">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchor" message="tns:IAnchorStore_GetAnchor_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorResponse" message="tns:IAnchorStore_GetAnchor_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_GetAnchor_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetAnchors">
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchors" message="tns:IAnchorStore_GetAnchors_InputMessage" />
