@@ -45,6 +45,9 @@ import org.nhind.mail.service.MimeXDSTransformer;
  */
 public class NHINDMailet extends GenericMailet {
     
+    /**
+     * Local XDR endpoint.
+     */
     private String endpointUrl;
     
     /**
@@ -75,7 +78,7 @@ public class NHINDMailet extends GenericMailet {
                 mxt.forward(endpointUrl, mail.getMessage());
             } else {
                 // forward it to another email server based on routing
-                // iformation
+                // information
             }
             
             mail.setState(Mail.GHOST);
