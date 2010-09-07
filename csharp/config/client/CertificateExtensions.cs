@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
+using NHINDirect.Certificates;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client.CertificateService;
 
@@ -25,10 +26,16 @@ namespace NHINDirect.Config.Client.CertificateService
 {
     public static class CertificateExtensions
     {
-        static CertificateGetOptions FullCertData = new CertificateGetOptions
+        internal static CertificateGetOptions FullCertData = new CertificateGetOptions
         {
             IncludeData = true,
             IncludePrivateKey = true
+        };
+
+        internal static CertificateGetOptions CertInfo = new CertificateGetOptions
+        {
+            IncludeData = false,
+            IncludePrivateKey = false
         };
         
         public static void AddCertificate(this CertificateStoreClient client, Certificate cert)
@@ -39,6 +46,27 @@ namespace NHINDirect.Config.Client.CertificateService
             }
             
             client.AddCertificates(new Certificate[] {cert});
+        }
+
+        public static bool Contains(this CertificateStoreClient client, X509Certificate2 certificate)
+        {
+            if (certificate == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            return client.Contains(certificate.ExtractEmailNameOrName(), certificate.Thumbprint);
+        }
+
+        public static bool Contains(this CertificateStoreClient client, string owner, string thumbprint)
+        {
+            if (string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(thumbprint))
+            {
+                throw new ArgumentException();
+            }
+
+            Certificate cert = client.GetCertificate(owner, thumbprint, CertificateExtensions.CertInfo);
+            return (cert != null);
         }
 
         public static Certificate GetCertificate(this CertificateStoreClient client, string owner, string thumbprint)

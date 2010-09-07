@@ -21,6 +21,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.IO;
 using System.Net.Mail;
 using System.ServiceModel;
+using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client;
@@ -43,7 +44,7 @@ namespace NHINDirect.Config.Command
             string filePath = args.GetRequiredValue(1);
             string password = args.GetOptionalValue(2, string.Empty);
             
-            this.PushCerts(owner, CertificateCommands.LoadCerts(filePath, password));
+            PushCerts(owner, CertificateCommands.LoadCerts(filePath, password), false);
         }
         public void Usage_Anchor_Add()
         {
@@ -120,15 +121,42 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Remove anchors with given ID");
             Console.WriteLine("    anchorID");
         }
-        
-        void PushCerts(string owner, IEnumerable<X509Certificate2> certs)
+
+        public void Command_Anchor_Resolve(string[] args)
         {
+            MailAddress owner = new MailAddress(args.GetRequiredValue(0));
+            CertificateGetOptions options = CertificateCommands.GetOptions(args, 1);
+
+            Anchor[] anchors = ConfigConsole.Current.AnchorClient.GetAnchorsForOwner(owner.Address, options);
+            if (anchors.IsNullOrEmpty())
+            {
+                anchors = ConfigConsole.Current.AnchorClient.GetAnchorsForOwner(owner.Host, options);
+            }
+            this.Print(anchors);
+        }
+        public void Usage_Anchor_Resolve()
+        {
+            Console.WriteLine("Resolves anchors for an owner - like the Smtp Gateway would.");
+            Console.WriteLine("    owner [options]");
+            CertificateCommands.PrintOptionsUsage();
+        }
+        
+        internal static void PushCerts(string owner, IEnumerable<X509Certificate2> certs, bool checkForDupes)
+        {
+            AnchorStoreClient client = ConfigConsole.Current.AnchorClient;
             foreach (X509Certificate2 cert in certs)
             {
                 try
                 {
-                    ConfigConsole.Current.AnchorClient.AddAnchor(new Anchor(owner, cert, true, true));
-                    Console.WriteLine("Added {0}", cert.Subject);
+                    if (!checkForDupes || !client.Contains(owner, cert))
+                    {
+                        client.AddAnchor(new Anchor(owner, cert, true, true));
+                        Console.WriteLine("Added {0}", cert.Subject);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Exists {0}", cert.ExtractEmailNameOrName());
+                    }
                 }
                 catch(FaultException<ConfigStoreFault> ex)
                 {
@@ -136,6 +164,10 @@ namespace NHINDirect.Config.Command
                     {
                         Console.WriteLine("Exists {0}", cert.Subject);
                     }
+                    else
+                    {
+                        throw;
+                    }                    
                 }
             }
         }
