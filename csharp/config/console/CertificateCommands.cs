@@ -158,6 +158,17 @@ namespace NHINDirect.Config.Command
             }
         }
 
+        internal static void PushCerts(IEnumerable<X509Certificate2> certs, bool checkForDupes, EntityStatus status)
+        {
+            PushCerts(certs, checkForDupes);
+            var owners = (from cert in certs
+                          select cert.ExtractEmailNameOrName()).Distinct();
+            foreach (string owner in owners)
+            {
+                ConfigConsole.Current.CertificateClient.SetCertificateStatusForOwner(owner, EntityStatus.Enabled);
+            }
+        }
+
         internal static MemoryX509Store LoadCerts(string filePath, string password)
         {
             MemoryX509Store certStore = new MemoryX509Store();

@@ -171,6 +171,12 @@ namespace NHINDirect.Config.Command
                 }
             }
         }
+
+        internal static void PushCerts(string owner, IEnumerable<X509Certificate2> certs, bool checkForDupes, EntityStatus status)
+        {
+            PushCerts(owner, certs, checkForDupes);
+            ConfigConsole.Current.AnchorClient.SetAnchorStatusForOwner(owner, EntityStatus.Enabled);
+        }
         
         void Print(Anchor[] anchors)
         {
