@@ -191,7 +191,7 @@
                     <detectJavaApiLink>true</detectJavaApiLink>
                     <detectLinks>true</detectLinks>
                     <source>1.6</source>
-                    <show>public</show>
+                    <show>protected</show>
                 </configuration>
             </plugin>
             <plugin>

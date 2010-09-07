@@ -44,6 +44,9 @@ public enum MimeType {
     APPLICATION_XML("application/xml"), 
     APPLICATION_PDF("application/pdf");
 
+    /**
+     * The MIME type.
+     */
     private String type;
 
     /**

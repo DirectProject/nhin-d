@@ -125,9 +125,13 @@ public class MimeXDSTransformer {
 //    private String replyEmail = null;
 
     /**
-     * Entry point for the MimeXDSTransformer class. This will forward a given MimeMessage to the given XDR endpoint.
-     * @param endpoint A URL representing an XDR endpoint.
-     * @param mimeMessage The MimeMessage object to transform.
+     * Entry point for the MimeXDSTransformer class. This will forward a given
+     * MimeMessage to the given XDR endpoint.
+     * 
+     * @param endpoint
+     *            A URL representing an XDR endpoint.
+     * @param mimeMessage
+     *            The MimeMessage object to transform.
      * @throws Exception
      */
     public void forward(String endpoint, MimeMessage mimeMessage) throws Exception {
@@ -140,6 +144,16 @@ public class MimeXDSTransformer {
         forwardRequest(endpoint, prds);
     }
 
+    /**
+     * Forward a given ProvideAndRegisterDocumentSetRequestType object to the
+     * given XDR endpoint.
+     * 
+     * @param endpoint
+     *            A URL representing an XDR endpoint.
+     * @param prds
+     *            The ProvideAndRegisterDocumentSetRequestType object.
+     * @throws Exception
+     */
     protected void forwardRequest(String endpoint, ProvideAndRegisterDocumentSetRequestType prds) throws Exception {
         if (StringUtils.isBlank(endpoint))
             throw new IllegalArgumentException("Endpoint must not be blank");
@@ -311,6 +325,14 @@ public class MimeXDSTransformer {
         return prsr;
     }
 
+    /**
+     * Get an XDM Request from a BodyPart object.
+     * 
+     * @param bodyPart
+     *            The BodyPart object containing the XDM request.
+     * @return a ProvideAndRegisterDocumentSetRequestType object.
+     * @throws Exception
+     */
     protected static ProvideAndRegisterDocumentSetRequestType getXDMRequest(BodyPart bodyPart) throws Exception {
         LOGGER.info("Inside getMDMRequest");
         
@@ -322,6 +344,17 @@ public class MimeXDSTransformer {
         return prsr;
     }
 
+    /**
+     * @param subject
+     * @param sentDate
+     * @param formatCode
+     * @param mimeType
+     * @param doc
+     * @param auth
+     * @param recip
+     * @return
+     * @throws Exception
+     */
     protected static ProvideAndRegisterDocumentSetRequestType getRequest(String subject, Date sentDate, String formatCode,
             String mimeType, byte[] doc, String auth, String recip) throws Exception {
         ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
@@ -354,6 +387,20 @@ public class MimeXDSTransformer {
         return prsr;
     }
 
+    /**
+     * @param patientId
+     * @param orgId
+     * @param person
+     * @param subject
+     * @param sentDate
+     * @param docId
+     * @param subId
+     * @param formatCode
+     * @param mimeType
+     * @param auth
+     * @param recip
+     * @return
+     */
     protected static SubmitObjectsRequest getSubmitObjectsRequest(String patientId, String orgId, SimplePerson person,
             String subject, String sentDate, String docId, String subId, String formatCode, String mimeType,
             String auth, String recip) {
@@ -387,6 +434,17 @@ public class MimeXDSTransformer {
         return req;
     }
 
+    /**
+     * @param patientId
+     * @param orgId
+     * @param person
+     * @param sentDate
+     * @param docId
+     * @param formatCode
+     * @param mimeType
+     * @param auth
+     * @return
+     */
     protected static ExtrinsicObjectType getExtrinsicObject(String patientId, String orgId, SimplePerson person,
             String sentDate, String docId, String formatCode, String mimeType, String auth) {
         List<String> snames = null;
@@ -489,6 +547,16 @@ public class MimeXDSTransformer {
         return document;
     }
 
+    /**
+     * @param patientId
+     * @param orgId
+     * @param subject
+     * @param sentDate
+     * @param subId
+     * @param auth
+     * @param recip
+     * @return
+     */
     protected static RegistryPackageType getSubmissionSet(String patientId, String orgId, String subject, String sentDate,
             String subId, String auth, String recip) {
         List<String> snames = null;
@@ -554,6 +622,13 @@ public class MimeXDSTransformer {
         return subset;
     }
 
+    /**
+     * Create a ClassificationType object using the given ID.
+     * 
+     * @param setId
+     *            The ID to set within the ClassificationType object.
+     * @return a ClassificationType object with the given ID.
+     */
     protected static ClassificationType getClassification(String setId) {
         ClassificationType ct = new ClassificationType();
         ct.setClassificationNode("urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd");
@@ -562,6 +637,17 @@ public class MimeXDSTransformer {
         return ct;
     }
 
+    /**
+     * Create an AssociationType1 object using the given source object ID and
+     * document ID.
+     * 
+     * @param setId
+     *            The source object ID.
+     * @param docId
+     *            The target object ID.
+     * @return an AssociationType1 object with the given source object ID and
+     *         document ID.
+     */
     protected static AssociationType1 getAssociation(String setId, String docId) {
         AssociationType1 at = new AssociationType1();
         at.setAssociationType("HasMember");
@@ -574,8 +660,18 @@ public class MimeXDSTransformer {
         return at;
     }
 
-    /*
-     * TODO: What should happen if patient is null?
+    /**
+     * Create a SlotType1 object using the provided patient information.
+     * 
+     * @param name
+     *            The slot name.
+     * @param patient
+     *            The SimplePerson object representing a patient.
+     * @param patientId
+     *            The patient ID.
+     * @param orgId
+     *            The organization ID.
+     * @return a SlotType1 object containing the provided patient data.
      */
     protected static SlotType1 makePatientSlot(String name, SimplePerson patient, String patientId, String orgId) {
         List<String> vals = null;
@@ -586,6 +682,9 @@ public class MimeXDSTransformer {
         slot.setValueList(values);
         vals = values.getValue();
 
+        /*
+         * TODO: What should happen if patient is null?
+         */
         if (patient != null) {
             StringBuffer sb = null;
 
@@ -633,6 +732,16 @@ public class MimeXDSTransformer {
         return slot;
     }
 
+    /**
+     * @param classifs
+     * @param docId
+     * @param id
+     * @param scheme
+     * @param rep
+     * @param slotNames
+     * @param slotValues
+     * @param snames
+     */
     protected static void addClassifications(List<ClassificationType> classifs, String docId, String id, String scheme,
             String rep, List<String> slotNames, List<String> slotValues, List<String> snames) {
         if (classifs == null) {
@@ -671,6 +780,14 @@ public class MimeXDSTransformer {
 
     }
 
+    /**
+     * @param extIds
+     * @param docId
+     * @param scheme
+     * @param id
+     * @param sname
+     * @param value
+     */
     protected static void addExternalIds(List<ExternalIdentifierType> extIds, String docId, String scheme, String id,
             String sname, String value) {
         if (extIds == null)
@@ -695,6 +812,10 @@ public class MimeXDSTransformer {
         ei.setValue(value);
     }
 
+    /**
+     * @param dateVal
+     * @return
+     */
     protected static String formatDate(Date dateVal) {
         final String formout = "yyyyMMddHHmmss";
 
@@ -710,6 +831,10 @@ public class MimeXDSTransformer {
         return ret;
     }
 
+    /**
+     * @param value
+     * @return
+     */
     protected static String formatDateFromMDM(String value) {
         final String formin = "MM/dd/yyyy";
         final String formout = "yyyyMMddHHmmss";
@@ -734,6 +859,15 @@ public class MimeXDSTransformer {
         return ret;
     }
 
+    /**
+     * Create a SlotType1 object using the given name and value.
+     * 
+     * @param name
+     *            The slot name.
+     * @param value
+     *            The slot value.
+     * @return a SlotType1 object.
+     */
     protected static SlotType1 makeSlot(String name, String value) {
         SlotType1 slot = new SlotType1();
         slot.setName(name);
@@ -745,6 +879,12 @@ public class MimeXDSTransformer {
         return slot;
     }
 
+    /**
+     * Set header data.
+     * 
+     * TODO: Investigate the usefulness of this method. It sets null known null
+     * values.
+     */
     protected void setHeaderData() {
         Long threadId = Long.valueOf(Thread.currentThread().getId());
         LOGGER.info("THREAD ID " + threadId);
