@@ -57,6 +57,7 @@
     <Compile Include="Caching\DnsResponseCacheFacts.cs" />
     <Compile Include="Diagnostics\TestHourly.cs" />
     <Compile Include="Diagnostics\Test24.cs" />
+    <Compile Include="Mail\RoundTripFacts.cs" />
     <Compile Include="Mail\TestMDN.cs" />
     <Compile Include="Mime\BodyFacts.cs" />
     <Compile Include="Mime\CharReaderFacts.cs" />
