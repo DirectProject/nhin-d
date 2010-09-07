@@ -18,44 +18,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
+using NHINDirect.Certificates;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client.CertificateService;
 
 namespace NHINDirect.Config.Client.CertificateService
 {
     public static class AnchorExtensions
-    {
-        static CertificateGetOptions FullCertData = new CertificateGetOptions
-        {
-            IncludeData = true,
-            IncludePrivateKey = true
-        };
-        
+    {        
         public static void AddAnchor(this AnchorStoreClient client, Anchor anchor)
         {
             client.AddAnchors(new Anchor[] {anchor});
         }
         
+        public static bool Contains(this AnchorStoreClient client, string owner, X509Certificate2 certificate)
+        {
+            if (certificate == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            return client.Contains(owner, certificate.Thumbprint);
+        }
+
+        public static bool Contains(this AnchorStoreClient client, string owner, string thumbprint)
+        {
+            if (string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(thumbprint))
+            {
+                throw new ArgumentException();
+            }
+
+            Anchor anchor = client.GetAnchor(owner, thumbprint, CertificateExtensions.CertInfo);
+            return (anchor != null);
+        }
+        
         public static Anchor[] GetIncomingAnchors(this AnchorStoreClient client, string owner)
         {
-            return client.GetIncomingAnchors(owner, FullCertData);
+            return client.GetIncomingAnchors(owner, CertificateExtensions.FullCertData);
         }
 
         public static Anchor[] GetIncomingAnchors(this AnchorStoreClient client, string owner, EntityStatus status)
         {
-            CertificateGetOptions options = FullCertData.Clone();
+            CertificateGetOptions options = CertificateExtensions.FullCertData.Clone();
             options.Status = status;
             return client.GetIncomingAnchors(owner, options);
         }
 
         public static Anchor[] GetOutgoingAnchors(this AnchorStoreClient client, string owner)
         {
-            return client.GetOutgoingAnchors(owner, FullCertData);
+            return client.GetOutgoingAnchors(owner, CertificateExtensions.FullCertData);
         }
 
         public static Anchor[] GetOutgoingAnchors(this AnchorStoreClient client, string owner, EntityStatus status)
         {
-            CertificateGetOptions options = FullCertData.Clone();
+            CertificateGetOptions options = CertificateExtensions.FullCertData.Clone();
             options.Status = status;
             return client.GetOutgoingAnchors(owner, options);
         }
@@ -77,7 +93,7 @@ namespace NHINDirect.Config.Client.CertificateService
         
         public static IEnumerable<Anchor> EnumerateAnchors(this AnchorStoreClient client, int chunkSize)
         {
-            return client.EnumerateAnchors(chunkSize, FullCertData);
+            return client.EnumerateAnchors(chunkSize, CertificateExtensions.FullCertData);
         }
 
         public static IEnumerable<Anchor> EnumerateAnchors(this AnchorStoreClient client, int chunkSize, CertificateGetOptions options)
@@ -107,7 +123,7 @@ namespace NHINDirect.Config.Client.CertificateService
 
         public static IEnumerable<X509Certificate2> EnumerateX509Certificates(this AnchorStoreClient client, int chunkSize)
         {
-            foreach (Anchor cert in client.EnumerateAnchors(chunkSize, FullCertData))
+            foreach (Anchor cert in client.EnumerateAnchors(chunkSize, CertificateExtensions.FullCertData))
             {
                 yield return cert.ToX509Certificate();
             }

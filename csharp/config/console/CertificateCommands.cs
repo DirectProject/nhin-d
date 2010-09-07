@@ -33,8 +33,7 @@ namespace NHINDirect.Config.Command
     /// Commands to manage certificates
     /// </summary>
     public class CertificateCommands
-    {
-        
+    {        
         public CertificateCommands()
         {
         }
@@ -49,7 +48,7 @@ namespace NHINDirect.Config.Command
             string password = args.GetOptionalValue(1, string.Empty);
             
             MemoryX509Store certStore = LoadCerts(filePath, password);            
-            this.PushCerts(certStore);
+            PushCerts(certStore, false);
         }
         
         public void Usage_Certificate_Add()
@@ -111,16 +110,43 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Remove certificate with given ID");
             Console.WriteLine("    certificateID");
         }
-        
-        void PushCerts(IEnumerable<X509Certificate2> certs)
+
+        public void Command_Certificate_Resolve(string[] args)
         {
+            MailAddress owner = new MailAddress(args.GetRequiredValue(0));
+            CertificateGetOptions options = GetOptions(args, 1);
+
+            Certificate[] certs = ConfigConsole.Current.CertificateClient.GetCertificatesForOwner(owner.Address, options);
+            if (certs.IsNullOrEmpty())
+            {
+                certs = ConfigConsole.Current.CertificateClient.GetCertificatesForOwner(owner.Host, options);
+            }
+            this.Print(certs);
+        }
+        public void Usage_Certificate_Resolve()
+        {
+            Console.WriteLine("Resolves certificates for an owner - like the Smtp Gateway would.");
+            Console.WriteLine("    owner [options]");
+            PrintOptionsUsage();
+        }
+        
+        internal static void PushCerts(IEnumerable<X509Certificate2> certs, bool checkForDupes)
+        {
+            CertificateStoreClient client = ConfigConsole.Current.CertificateClient;
             foreach (X509Certificate2 cert in certs)
             {
                 string owner = cert.ExtractEmailNameOrName();
                 try
                 {
-                    ConfigConsole.Current.CertificateClient.AddCertificate(new Certificate(owner, cert));
-                    Console.WriteLine("Added {0}", cert.Subject);
+                    if (!checkForDupes || !client.Contains(cert))
+                    {
+                        client.AddCertificate(new Certificate(owner, cert));                    
+                        Console.WriteLine("Added {0}", cert.Subject);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Exists {0}", cert.Subject);
+                    }
                 }
                 catch (FaultException<ConfigStoreFault> ex)
                 {
@@ -129,6 +155,28 @@ namespace NHINDirect.Config.Command
                         Console.WriteLine("Exists {0}", cert.Subject);
                     }
                 }
+            }
+        }
+
+        internal static MemoryX509Store LoadCerts(string filePath, string password)
+        {
+            MemoryX509Store certStore = new MemoryX509Store();
+            LoadCerts(certStore, filePath, password);
+            return certStore;
+        }
+
+        internal static void LoadCerts(MemoryX509Store certStore, string filePath, string password)
+        {
+            string ext = Path.GetExtension(filePath) ?? string.Empty;
+            switch (ext.ToLower())
+            {
+                default:
+                    certStore.ImportKeyFile(filePath, X509KeyStorageFlags.Exportable);
+                    break;
+
+                case ".pfx":
+                    certStore.ImportKeyFile(filePath, password, X509KeyStorageFlags.Exportable);
+                    break;
             }
         }
         
@@ -178,24 +226,6 @@ namespace NHINDirect.Config.Command
                 X509Certificate2 x509 = cert.ToX509Certificate();
                 Print(x509);
             }
-        }
-        
-        internal static MemoryX509Store LoadCerts(string filePath, string password)
-        {
-            MemoryX509Store certStore = new MemoryX509Store();
-            string ext = Path.GetExtension(filePath) ?? string.Empty;
-            switch (ext.ToLower())
-            {
-                default:
-                    certStore.ImportKeyFile(filePath, X509KeyStorageFlags.Exportable);
-                    break;
-
-                case ".pfx":
-                    certStore.ImportKeyFile(filePath, password, X509KeyStorageFlags.Exportable);
-                    break;
-            }
-            
-            return certStore;
         }
                 
         internal static void Print(X509Certificate2Collection certs)
