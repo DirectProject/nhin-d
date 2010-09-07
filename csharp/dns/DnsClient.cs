@@ -50,7 +50,7 @@ namespace DnsResolver
 	///         Console.WriteLine(addr.ToString());
 	///     }
 	///
-	///     System.Console.WriteLine("Authority Server addresses for " + ExampleDomain);
+	///     Console.WriteLine("Authority Server addresses for " + ExampleDomain);
 	///     foreach(IPAddress addr in client.GetAuthorityServers(ExampleDomain)
 	///     {
 	///         Console.WriteLine(addr.ToString());
