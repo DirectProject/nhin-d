@@ -301,9 +301,15 @@ public class MimeXDSTransformerTest extends TestCase {
     public void testFormatDateFromMDM() {
         LOGGER.info("Begin testFormatDateFromMDM");
 
-        String value = "01/01/2000";
+        String value = null;
+        String result = null; 
+        
+        value = "01/01/2000";
+        result = MimeXDSTransformer.formatDateFromMDM(value);
+        assertEquals("Output does not match expected", "20000101000000", result);
 
-        String result = MimeXDSTransformer.formatDateFromMDM(value);
+        value = "01/01/2000+1000";
+        result = MimeXDSTransformer.formatDateFromMDM(value);
         assertEquals("Output does not match expected", "20000101000000", result);
     }
 
@@ -325,6 +331,11 @@ public class MimeXDSTransformerTest extends TestCase {
         assertEquals("List size does not match expected", 1, result.getValueList().getValue().size());
         assertEquals("Value does not match expected value", value, result.getValueList().getValue().get(0));
     }
+
+    /*
+     * Begin private methods
+     * -----------------------------------------------------------------
+     */
 
     /**
      * Helper method to create a SimplePerson object.
@@ -374,6 +385,7 @@ public class MimeXDSTransformerTest extends TestCase {
      * @return a mock SubmitObjectRequest string.
      * @throws Exception
      */
+    @SuppressWarnings("unused")
     private String getTestSubmit() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/submitobjectrequest.xml");
         byte[] theBytes = new byte[is.available()];

@@ -64,12 +64,15 @@ import org.nhind.mail.util.XMLUtils;
  */
 public class XDMXDSTransformer {
 
-    private static final Logger LOGGER = Logger.getLogger(XDMXDSTransformer.class.getName());
     static private String XDM_FILENAME_METADATA = "METADATA.xml";
     static private String XDM_FILENAME_DATA = "DOCUMENT.xml";
-    
     // static private String XDM_DIRSPEC_SUBMISSIONROOT = "SUBSET01";
 
+    /**
+     * Class logger.
+     */
+    private static final Logger LOGGER = Logger.getLogger(XDMXDSTransformer.class.getName());
+    
     /**
      * Reads an XDM ZIP archive and returns a set of XDS submissions.
      * 
@@ -175,7 +178,7 @@ public class XDMXDSTransformer {
             if (type.equals("oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType")) {
                 ret = getDocId((ExtrinsicObjectType) value);
             }
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, elem.getDeclaredType().getName() + elem.getValue().toString());
+            LOGGER.info(elem.getDeclaredType().getName() + elem.getValue().toString());
         }
         return ret;
     }
@@ -203,9 +206,9 @@ public class XDMXDSTransformer {
      * @param subsetFilespec
      * @return
      */
-    private boolean matchName(String zname, String subsetDirspec, String subsetFilespec) {
-
+    static boolean matchName(String zname, String subsetDirspec, String subsetFilespec) {
         boolean ret = false;
+
         String zipFilespec = subsetDirspec + "\\" + subsetFilespec.replace('/', '\\');
         ret = zname.equals(zipFilespec);
         if (!ret) {
