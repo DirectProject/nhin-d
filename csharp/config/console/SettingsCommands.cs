@@ -56,12 +56,12 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("    host [port]");
             Console.WriteLine("E.g. foomachine OR foomachine 83");
         }
-        
-        
+                
         string GetHost(string url)
         {
             Uri uri = new Uri(url);
-            return (uri.Host);
+            return (uri.Host + ':' + uri.Port);
         }
+
     }
 }

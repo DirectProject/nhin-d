@@ -193,6 +193,22 @@
       <xs:sequence />
     </xs:complexType>
   </xs:element>
+  <xs:element name="GetAnchor">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="thumbprint" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAnchorResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAnchorResult" nillable="true" type="tns:Anchor" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="GetAnchors">
     <xs:complexType>
       <xs:sequence>

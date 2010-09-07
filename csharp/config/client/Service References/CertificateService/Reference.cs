@@ -228,6 +228,11 @@ namespace NHINDirect.Config.Client.CertificateService {
             "aultFault", Name="ConfigStoreFault")]
         void AddAnchors(NHINDirect.Config.Store.Anchor[] anchors);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchor", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorConfigStoreFa" +
+            "ultFault", Name="ConfigStoreFault")]
+        NHINDirect.Config.Store.Anchor GetAnchor(string owner, string thumbprint, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsConfigStoreF" +
             "aultFault", Name="ConfigStoreFault")]
@@ -305,6 +310,10 @@ namespace NHINDirect.Config.Client.CertificateService {
         
         public void AddAnchors(NHINDirect.Config.Store.Anchor[] anchors) {
             base.Channel.AddAnchors(anchors);
+        }
+        
+        public NHINDirect.Config.Store.Anchor GetAnchor(string owner, string thumbprint, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
+            return base.Channel.GetAnchor(owner, thumbprint, options);
         }
         
         public NHINDirect.Config.Store.Anchor[] GetAnchors(long[] anchorIDs, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
