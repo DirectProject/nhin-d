@@ -5,11 +5,16 @@ using System.Text;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using NHINDirect;
+using NHINDirect.Config.Store;
 using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
 
 namespace NHINDirect.Config.Command
 {
+    /// <summary>
+    /// Commands to install unit test certificates. 
+    /// These are stop-gap and make LOTS of assumptions about paths, names, etc...
+    /// </summary>
     public class TestCommands
     {
         public TestCommands()
@@ -120,16 +125,16 @@ namespace NHINDirect.Config.Command
 
             string redmondCertsPath = MakeCertificatesPath(basePath, "redmond");
             string nhindCertsPath = MakeCertificatesPath(basePath, "nhind");
-            
-            CertificateCommands.PushCerts(LoadCerts(redmondCertsPath, "Private"), true);
-            CertificateCommands.PushCerts(LoadCerts(nhindCertsPath, "Private"), true);
+
+            CertificateCommands.PushCerts(LoadCerts(redmondCertsPath, "Private"), true, EntityStatus.Enabled);
+            CertificateCommands.PushCerts(LoadCerts(nhindCertsPath, "Private"), true, EntityStatus.Enabled);
             
             Console.WriteLine("Installing Anchors in config service");
 
-            AnchorCommands.PushCerts("redmond.hsgincubator.com", LoadCerts(redmondCertsPath, "IncomingAnchors"), true);
-            AnchorCommands.PushCerts("redmond.hsgincubator.com", LoadCerts(redmondCertsPath, "OutgoingAnchors"), true);
-            AnchorCommands.PushCerts("nhind.hsgincubator.com", LoadCerts(nhindCertsPath, "IncomingAnchors"), true);
-            AnchorCommands.PushCerts("nhind.hsgincubator.com", LoadCerts(nhindCertsPath, "OutgoingAnchors"), true);
-        }
+            AnchorCommands.PushCerts("redmond.hsgincubator.com", LoadCerts(redmondCertsPath, "IncomingAnchors"), true, EntityStatus.Enabled);
+            AnchorCommands.PushCerts("redmond.hsgincubator.com", LoadCerts(redmondCertsPath, "OutgoingAnchors"), true, EntityStatus.Enabled);
+            AnchorCommands.PushCerts("nhind.hsgincubator.com", LoadCerts(nhindCertsPath, "IncomingAnchors"), true, EntityStatus.Enabled);
+            AnchorCommands.PushCerts("nhind.hsgincubator.com", LoadCerts(nhindCertsPath, "OutgoingAnchors"), true, EntityStatus.Enabled);
+        }        
     }
 }
