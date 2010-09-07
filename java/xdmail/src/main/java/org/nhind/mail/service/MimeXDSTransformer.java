@@ -241,6 +241,7 @@ public class MimeXDSTransformer {
                         if (StringUtils.contains(fname, ".zip")) {
                             try {
                                 prsr = getMDMRequest(bodyPart);
+                                //TODO should be a return here I think
                             } catch (Exception x) {
                                 // TODO
                             }
