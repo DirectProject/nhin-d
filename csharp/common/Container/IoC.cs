@@ -16,8 +16,10 @@ namespace NHINDirect.Container
 		/// that will vary between different companies' implementations of the gateway and agent.
 		///</summary>
 		///<param name="resolver">The container to use as the resolver</param>
+		///<returns>Returns a reference to the resolver so it can be used in method chaining.</returns>
 		///<exception cref="ArgumentNullException">Throw if <paramref name="resolver"/> was null</exception>
-		public static void Initialize(IDependencyResolver resolver)
+		public static T Initialize<T>(T resolver)
+			where T : class, IDependencyResolver
 		{
 			if (resolver == null)
 			{
@@ -25,6 +27,8 @@ namespace NHINDirect.Container
 			}
 
 			m_resolver = resolver;
+
+			return resolver;
 		}
 
 		///<summary>
@@ -32,7 +36,7 @@ namespace NHINDirect.Container
 		///</summary>
 		///<typeparam name="T"></typeparam>
 		///<returns></returns>
-		///<exception cref="InvalidOperationException">Is throws if <see cref="Initialize"/> was </exception>
+		///<exception cref="InvalidOperationException">Is throws if <see cref="Initialize{T}"/> was </exception>
 		public static T Resolve<T>()
 		{
 			if (m_resolver == null)
