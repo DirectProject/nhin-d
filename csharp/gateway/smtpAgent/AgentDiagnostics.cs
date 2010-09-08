@@ -14,12 +14,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Diagnostics;
+
 using NHINDirect.Agent;
 using NHINDirect.Certificates;
+using NHINDirect.Container;
 using NHINDirect.Diagnostics;
 
 namespace NHINDirect.SmtpAgent
@@ -27,37 +27,39 @@ namespace NHINDirect.SmtpAgent
     internal class AgentDiagnostics
     {
         const string EventLogName = "nhinMessageSink";
+
+    	private readonly ILogger m_logger;
+        private readonly bool m_logVerbose; 
         
-        LogFile m_log;
-        bool m_logVerbose; 
-        
-        internal AgentDiagnostics(LogFile log, bool logVerbose)
+        internal AgentDiagnostics(bool logVerbose)
         {
-            m_log = log;
+        	m_logger = IoC.Resolve<ILogFactory>().GetLogger(GetType());
             m_logVerbose = logVerbose;
         }
-        
-        internal LogFile Log
-        {
-            get
-            {
-                return m_log;
-            }
-        }
+
+		[Obsolete("We should use a different logger for each different class")]
+		internal ILogger Log
+		{
+			get
+			{
+				return m_logger;
+			}
+		}
 
         internal void LogStatus(string message)
         {
             if (m_logVerbose)
             {
-                m_log.WriteLine(message);
+				m_logger.Debug(message);
             }
         }
         
-        internal void LogError(Exception ex)
+        internal void LogError(string message, Exception ex)
         {
-            m_log.WriteError(ex);
+            m_logger.Error(message, ex);
         }
-        
+
+        [Obsolete("This may not be in use")]
         internal static void WriteEventLog(string message)
         {
             EventLog.WriteEntry(EventLogName, message);
@@ -72,11 +74,11 @@ namespace NHINDirect.SmtpAgent
         {
             if (m_logVerbose)
             {
-                m_log.WriteError(this.BuildVerboseErrorMessage("OUTGOING", message, error));
+                m_logger.Error(this.BuildVerboseErrorMessage("OUTGOING", message, error));
             }
             else
             {
-                this.LogError(error);
+                this.LogError("OnOutgoingError", error);
             }
         }
 
@@ -84,17 +86,17 @@ namespace NHINDirect.SmtpAgent
         {
             if (m_logVerbose)
             {
-                m_log.WriteError(this.BuildVerboseErrorMessage("INCOMING", message, error));
+                m_logger.Error(this.BuildVerboseErrorMessage("INCOMING", message, error));
             }
             else
             {
-                this.LogError(error);
+                this.LogError("OnIncomingError", error);
             }
         }
 
         internal void OnDnsError(DnsCertResolver service, Exception error)
         {
-            this.LogError(error);
+            this.LogError("OnDnsError", error);
         }
         
         internal void LogEnvelopeHeaders(ISmtpMessage message)

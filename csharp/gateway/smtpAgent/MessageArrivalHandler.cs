@@ -130,15 +130,17 @@ namespace NHINDirect.SmtpAgent
                 throw;
             }
         }
-                
+
+        [Obsolete("Use IoC.")]        
         public void WriteLog(string message)
         {
-            this.Agent.Log.WriteLine(message);
+            this.Agent.Log.Debug(message);
         }
-        
-        public void WriteError(string message)
+
+		[Obsolete("Use IoC.")]
+		public void WriteError(string message)
         {
-            this.Agent.Log.WriteError(message);
+            this.Agent.Log.Error(message);
         }
         
         SmtpAgent CreateAgent(string configFilePath)
