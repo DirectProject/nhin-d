@@ -14,9 +14,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using Health.Net.Diagnostics.NLog;
+using NHINDirect.Diagnostics;
 
-namespace Health.Net.Diagnostics
+namespace Health.Net.Diagnostics.NLog
 {
 	/// <summary>
 	/// This substitutes for a container managing the loading of a different
