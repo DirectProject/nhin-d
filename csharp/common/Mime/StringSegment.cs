@@ -348,8 +348,13 @@ namespace NHINDirect.Mime
         /// </code>
         /// </example>
         /// <returns>An enumeration of <see cref="StringSegment"/> instances, one for each parsed part.</returns>
-        public static IEnumerable<StringSegment> Split(StringSegment source, char separator)
+        internal static IEnumerable<StringSegment> Split(StringSegment source, char separator)
         {
+			if (source.IsNull || source.IsEmpty)
+			{
+				yield break;
+			}
+
             int startAt = source.StartIndex;
             CharReader reader = new CharReader(source);
             while (reader.ReadTo(separator, true))
@@ -364,7 +369,5 @@ namespace NHINDirect.Mime
                 yield return last;
             }
         }
-
-
     }
 }
