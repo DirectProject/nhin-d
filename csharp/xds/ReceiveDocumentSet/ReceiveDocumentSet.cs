@@ -5,13 +5,12 @@ using System.ServiceModel.Channels;
 using System.Text;
 using System.Xml;
 
-using Health.Net.Diagnostics;
-
+using NHINDirect.Diagnostics;
 using NHINDirect.XDS.Common;
 
 namespace NHINDirect.XDS
 {
-    public class ReceiveDocumentSet : IReceiveDocumentSet
+	public class ReceiveDocumentSet : IReceiveDocumentSet
     {
         Message IReceiveDocumentSet.ReceiveDocumentSet(Message msgRequest)
         {
@@ -21,7 +20,7 @@ namespace NHINDirect.XDS
             XDSHelper xdsHelper = null;
             StringDictionary stringDictionary = null;
 
-            ILogger logger = LogManager.GetLogger("XDS");
+        	ILogger logger = LogManager.GetLogger("XDS");
 
             try
             {
