@@ -14,20 +14,19 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Configuration;
+
+using NHINDirect.Config.Store;
 
 namespace NHINDirect.Config.Service
 {
     public class ServiceSettings
     {
-        public const string ConfigConnectStringKey = "configStoreConnectString";
+        public const string ConfigConnectStringKey = "configStore";
         public const string QueryTimeoutKey = "queryTimeout";
         
         string m_connectString;
-        int m_dbTimeout;
+        TimeSpan m_dbTimeout;
         
         public ServiceSettings()
         {
@@ -42,7 +41,7 @@ namespace NHINDirect.Config.Service
             }
         }
         
-        public int QueryTimeout
+        public TimeSpan QueryTimeout
         {
             get
             {
@@ -52,7 +51,7 @@ namespace NHINDirect.Config.Service
         
         public string GetSetting(string name)
         {
-            string value = ConfigurationSettings.AppSettings[name];
+            string value = ConfigurationManager.AppSettings[name];
             if (string.IsNullOrEmpty(value))
             {
                 throw new ConfigurationErrorsException(string.Format("Service Setting {0} not found", name));
@@ -61,30 +60,18 @@ namespace NHINDirect.Config.Service
             return value;
         }
         
-        public T GetSetting<T>(string name)
-        {
-            return (T) Convert.ChangeType(this.GetSetting(name), typeof(T));
-        }
-        
-        public T GetSetting<T>(string name, T defaultValue)
-        {
-            try
-            {
-                return this.GetSetting<T>(name);
-            }
-            catch
-            {
-            }
-            
-            return defaultValue;
-        }
-                
         void Load()
         {
-            m_connectString = this.GetSetting(ServiceSettings.ConfigConnectStringKey);
-            
-            m_dbTimeout = this.GetSetting<int>(ServiceSettings.QueryTimeoutKey, Config.Store.ConfigStore.DefaultTimeoutSeconds);
-            if (m_dbTimeout <= 0)
+        	m_connectString = ConfigurationManager.ConnectionStrings[ConfigConnectStringKey].ConnectionString;
+
+        	TimeSpan timeout;
+        	if (!TimeSpan.TryParse(GetSetting(QueryTimeoutKey), out timeout))
+        	{
+        		timeout = ConfigStore.DefaultTimeout;
+        	}
+
+        	m_dbTimeout = timeout;
+            if (m_dbTimeout.Ticks <= 0)
             {
                 throw new ArgumentException("Invalid query timeout in config");
             }
