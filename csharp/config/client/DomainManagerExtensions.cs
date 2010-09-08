@@ -24,6 +24,12 @@ namespace NHINDirect.Config.Client.DomainManager
 {
     public static class DomainManagerExtensions
     {
+        public static bool DomainExists(this DomainManagerClient client, string domainName)
+        {
+            Domain domain = client.GetDomain(domainName);
+            return (domain != null);
+        }
+        
         public static Domain GetDomain(this DomainManagerClient client, string domainName, EntityStatus? status)
         {
             if (string.IsNullOrEmpty(domainName))
