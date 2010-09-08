@@ -35,8 +35,17 @@ namespace NHINDirect.Config.Command
         
         public DomainCommands()
         {
-        }     
+        }
+
+        //---------------------------------------
+        //
+        // Commands
+        //
+        //---------------------------------------
         
+        /// <summary>
+        /// Add a domain
+        /// </summary>
         public void Command_Domain_Add(string[] args)
         {            
             Domain domain = new Domain(args.GetRequiredValue(0));
@@ -55,9 +64,14 @@ namespace NHINDirect.Config.Command
         public void Usage_Domain_Add()
         {
             Console.WriteLine("Add a new domain.");
-            Console.WriteLine("    domainName [status]");            
+            Console.WriteLine("    domainName [status]");
+            Console.WriteLine("\t domainName: New domain name");
+            Console.WriteLine("\t status {0}", Extensions.EntityStatusString);
         }
         
+        /// <summary>
+        /// Retrieve a domain
+        /// </summary>
         public void Command_Domain_Get(string[] args)
         {
             string name = args.GetRequiredValue(0);
@@ -69,6 +83,9 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("    domainName");
         }
         
+        /// <summary>
+        /// How many domains exist? 
+        /// </summary>
         public void Command_Domain_Count(string[] args)
         {
             Console.WriteLine("{0} domains", ConfigConsole.Current.DomainClient.GetDomainCount());
@@ -77,7 +94,10 @@ namespace NHINDirect.Config.Command
         {
             Console.WriteLine("Retrieve # of domains.");
         }
-                        
+        
+        /// <summary>
+        /// Set the status for a domain
+        /// </summary>                        
         public void Command_Domain_Status_Set(string[] args)
         {
             string name = args.GetRequiredValue(0);
@@ -90,9 +110,14 @@ namespace NHINDirect.Config.Command
         public void Usage_Domain_Status_Set()
         {
             Console.WriteLine("Change a domain's status");
-            Console.WriteLine("    domainName Status({0})", Extensions.EntityStatusString);
+            Console.WriteLine("    domainName status");
+            Console.WriteLine("\t domainName: Set status for this domain");
+            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString); 
         }
-
+        
+        /// <summary>
+        /// Set the status for all addresses in a domain
+        /// </summary>
         public void Command_Domain_Address_Status_Set(string[] args)
         {
             string name = args.GetRequiredValue(0);
@@ -104,9 +129,13 @@ namespace NHINDirect.Config.Command
         public void Usage_Domain_Address_Status_Set()
         {
             Console.WriteLine("Set the status of all addresses in this domain");
-            Console.WriteLine("    domainaddressstatusset Status ({0})", Extensions.EntityStatusString);
+            Console.WriteLine("    domainName status");
+            Console.WriteLine("\t domainName: Set status for this domain");
+            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString);
         }
         
+        // We think this is no longer needed. Remove when confirmed
+        /*
         public void Command_Domain_Postmaster_Get(string[] args)
         {
             string name = args.GetRequiredValue(0);
@@ -138,7 +167,11 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Set the postmaster address for a domain. The address must have been already created.");
             Console.WriteLine("    postmasterEmail");
         }
+        */
         
+        /// <summary>
+        /// Remove domain
+        /// </summary>
         public void Command_Domain_Remove(string[] args)
         {
             ConfigConsole.Current.DomainClient.RemoveDomain(args.GetRequiredValue(0));
@@ -147,6 +180,7 @@ namespace NHINDirect.Config.Command
         {
             Console.WriteLine("Remove a domain.");
             Console.WriteLine("    domainName");
+            Console.WriteLine("\t domainName: remove this domain");
         }
         
         public void Command_Domain_List(string[] args)
@@ -157,8 +191,13 @@ namespace NHINDirect.Config.Command
         public void Usage_Domain_List()
         {
             Console.WriteLine("List all domains");
-            Console.WriteLine("    domainlist");
         }
+
+        //---------------------------------------
+        //
+        // Implementation
+        //
+        //---------------------------------------
         
         Domain DomainGet(string name)
         {
