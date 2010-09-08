@@ -118,7 +118,7 @@ namespace NHINDirect.SmtpAgent
             m_settings.Validate();
 
         	SimpleDependencyResolver resolver = new SimpleDependencyResolver();
-        	resolver.Register<ILogFactory>(() => new NLogFactory());
+        	resolver.Register<ILogFactory>(new NLogFactory(m_settings.LogSettings));
         	IoC.Initialize(resolver);
 
         	m_logger = IoC.Resolve<ILogFactory>().GetLogger(GetType());
