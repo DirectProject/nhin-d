@@ -53,9 +53,12 @@ namespace NHINDirect.Agent
             {
                 foreach (NHINDAddress addr in this)
                 {
-                    foreach (X509Certificate2 cert in addr.Certificates)
+                    if (addr.HasCertificates)
                     {
-                        yield return cert;
+                        foreach (X509Certificate2 cert in addr.Certificates)
+                        {
+                            yield return cert;
+                        }
                     }
                 }
             }

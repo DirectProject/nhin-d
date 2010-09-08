@@ -12,15 +12,8 @@ set configFile=%~f1
 )
 
 if NOT "%srcbin%" == "" call copybins.bat %destbin%
+if NOT "%configFile%" == "" xcopy /y "%configFile%" "%destbin%\DevAgentConfig.xml"
 
-if "%configFile%" == "" (
-set configFile=DevAgentConfig.xml
-) else (
-xcopy /y "%configFile%" "%destbin%"
-set configFile=%~nx1%
-)
-
-call :PrintHeading Config File "%destbin%\%configFile%"
 
 @rem --------------------------------
 pushd %destbin%
@@ -31,7 +24,7 @@ if %ERRORLEVEL% NEQ 0 goto :Done
 Echo Succeeded
 
 call :PrintHeading "Installing Developer Gateway"
-call registerGateway.bat script 1 "%destbin%\%configFile%" N
+call registerGateway.bat script 1 "%destbin%\DevAgentConfig.xml" N
 if %ERRORLEVEL% NEQ 0 goto :Done
 popd
 

@@ -30,6 +30,7 @@ if %ERRORLEVEL% NEQ 0 goto :Error
 pushd %bin%
 call :CopyBins
 popd
+xcopy /y %configFileName% "%dest%\web.config"
 
 goto :Done
 
@@ -74,7 +75,6 @@ call :CopyFiles *.cs
 call :CopyFiles *.xml 
 call :CopyFiles *.aspx
 call :CopyFiles *.config
-xcopy /y %configFileName% "%dest%\web.config"
 call :CopyFilesRecursive *.dll
 
 exit /b %ERRORLEVEL%
