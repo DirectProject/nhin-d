@@ -1,3 +1,31 @@
+/* 
+ * Copyright (c) 2010, NHIN Direct Project
+ * All rights reserved.
+ *  
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright 
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.  
+ * 3. Neither the name of the the NHIN Direct Project (nhindirect.org)
+ *    nor the names of its contributors may be used to endorse or promote products 
+ *    derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY 
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY 
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package org.nhind.mail.service;
 
 import java.io.InputStream;
@@ -273,9 +301,15 @@ public class MimeXDSTransformerTest extends TestCase {
     public void testFormatDateFromMDM() {
         LOGGER.info("Begin testFormatDateFromMDM");
 
-        String value = "01/01/2000";
+        String value = null;
+        String result = null; 
+        
+        value = "01/01/2000";
+        result = MimeXDSTransformer.formatDateFromMDM(value);
+        assertEquals("Output does not match expected", "20000101000000", result);
 
-        String result = MimeXDSTransformer.formatDateFromMDM(value);
+        value = "01/01/2000+1000";
+        result = MimeXDSTransformer.formatDateFromMDM(value);
         assertEquals("Output does not match expected", "20000101000000", result);
     }
 
@@ -297,6 +331,11 @@ public class MimeXDSTransformerTest extends TestCase {
         assertEquals("List size does not match expected", 1, result.getValueList().getValue().size());
         assertEquals("Value does not match expected value", value, result.getValueList().getValue().get(0));
     }
+
+    /*
+     * Begin private methods
+     * -----------------------------------------------------------------
+     */
 
     /**
      * Helper method to create a SimplePerson object.
@@ -346,6 +385,7 @@ public class MimeXDSTransformerTest extends TestCase {
      * @return a mock SubmitObjectRequest string.
      * @throws Exception
      */
+    @SuppressWarnings("unused")
     private String getTestSubmit() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/submitobjectrequest.xml");
         byte[] theBytes = new byte[is.available()];
