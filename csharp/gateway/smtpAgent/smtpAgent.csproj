@@ -130,6 +130,10 @@
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>configStore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\diagnostics\diagnostics.csproj">
+      <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
+      <Name>diagnostics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dns\dnsResolver.csproj">
       <Project>{AE250214-0E85-4C28-90C9-A006440BCE97}</Project>
       <Name>dnsResolver</Name>
