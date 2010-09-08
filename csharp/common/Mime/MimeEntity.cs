@@ -71,6 +71,7 @@ namespace NHINDirect.Mime
             }
             
             this.ContentType = contentType;
+            this.Body = body;
         }
         
         /// <summary>
