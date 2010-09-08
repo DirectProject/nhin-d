@@ -42,7 +42,15 @@ namespace NHINDirect.Config.Command
             Domain domain = new Domain(args.GetRequiredValue(0));
             domain.Status = args.GetOptionalEnum<EntityStatus>(1, EntityStatus.New);
             
-            ConfigConsole.Current.DomainClient.AddDomain(domain);
+            if (ConfigConsole.Current.DomainClient.DomainExists(domain.Name))
+            {
+                Console.WriteLine("Exists {0}", domain);
+            }
+            else
+            {
+                ConfigConsole.Current.DomainClient.AddDomain(domain);
+                Console.WriteLine("Added {0}", domain);
+            }
         }                   
         public void Usage_Domain_Add()
         {
@@ -85,7 +93,7 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("    domainName Status({0})", Extensions.EntityStatusString);
         }
 
-        public void Command_DomainAddress_Status_Set(string[] args)
+        public void Command_Domain_Address_Status_Set(string[] args)
         {
             string name = args.GetRequiredValue(0);
             EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
@@ -93,7 +101,7 @@ namespace NHINDirect.Config.Command
             Domain domain = this.DomainGet(name);
             ConfigConsole.Current.AddressClient.SetDomainAddressesStatus(domain.ID, status);
         }
-        public void Usage_DomainAddress_Status_Set()
+        public void Usage_Domain_Address_Status_Set()
         {
             Console.WriteLine("Set the status of all addresses in this domain");
             Console.WriteLine("    domainaddressstatusset Status ({0})", Extensions.EntityStatusString);

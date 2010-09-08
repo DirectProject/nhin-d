@@ -45,11 +45,19 @@ namespace NHINDirect.Config.Command
                 displayName = address.DisplayName;
             }
             
-            Domain domain = DomainCommands.DomainGet(ConfigConsole.Current.DomainClient, address.Host);
-            Address newAddress = new Address(domain.ID, address.Address, displayName);
-            newAddress.Type = addressType;
-            
-            ConfigConsole.Current.AddressClient.AddAddress(newAddress);
+            if (ConfigConsole.Current.AddressClient.AddressExists(address))
+            {
+                Console.WriteLine("Exists {0}", address);
+            }
+            else
+            {
+                Domain domain = DomainCommands.DomainGet(ConfigConsole.Current.DomainClient, address.Host);
+                Address newAddress = new Address(domain.ID, address.Address, displayName);
+                newAddress.Type = addressType;
+                
+                ConfigConsole.Current.AddressClient.AddAddress(newAddress);
+                Console.WriteLine("Added {0}", address);
+            }
         }                
         public void Usage_Address_Add()
         {

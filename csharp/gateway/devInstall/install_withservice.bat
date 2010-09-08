@@ -26,7 +26,7 @@ echo Installing Certs in Configuration Service
 echo.
 echo ****
 pushd %destbin%
-call nhinConfigConsole.exe Test_Certs_InstallInService
+call nhinConfigConsole.exe batch setupdomains.txt
 popd
 goto :EOF
 
