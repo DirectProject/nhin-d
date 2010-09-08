@@ -22,7 +22,7 @@ namespace DnsResolverTests
         
 		public BasicResolverTests()
 		{
-			m_client = new DnsClient(PublicDns) {Timeout = 10000};
+			m_client = new DnsClient(PublicDns) {Timeout = TimeSpan.FromSeconds(10) };
 		}
 
 		public void Dispose()

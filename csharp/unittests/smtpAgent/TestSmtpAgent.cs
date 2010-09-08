@@ -71,7 +71,7 @@ namespace SmtpAgentTests
             m_agent.Settings.InternalMessage.EnableRelay = false;
         }
 
-        [Fact(Skip="Need Config Service to run  this")]
+        [Fact(Skip="Need Config Service to run this")]
         //[Fact]
         public void TestEndToEndBad()
         {

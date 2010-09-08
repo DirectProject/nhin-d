@@ -46,7 +46,7 @@ namespace SmtpAgentTests
                 yield return new[] { "TestSmtpAgentConfigService.xml" };
             }
         }
-        
+
         [Theory(Skip = "Requires Config Service to be running on the local server")]
         [PropertyData("ConfigFileNames")]
         public void TestWithService(string fileName)

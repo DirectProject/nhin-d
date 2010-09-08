@@ -63,8 +63,8 @@ namespace NHINDirect.Tests.Caching
         public DnsClientWithCacheFacts()
             : base(DumpIsEnabled)
         {
-            m_client = new DnsClientWithCache(PublicDns) { Timeout = 10000 };
-            m_clientNoCache = new DnsClient(PublicDns) { Timeout = 10000 };
+            m_client = new DnsClientWithCache(PublicDns) { Timeout = TimeSpan.FromSeconds(10) };
+			m_clientNoCache = new DnsClient(PublicDns) { Timeout = TimeSpan.FromSeconds(10) };
         }
 
         /// <summary>

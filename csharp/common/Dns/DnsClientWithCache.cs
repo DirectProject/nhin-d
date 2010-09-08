@@ -110,16 +110,16 @@ namespace NHINDirect.Dns
         /// <param name="server">
         /// A <see cref="IPEndPoint"/>
         /// </param>
-        /// <param name="timeoutMillis">
-        /// Timeout in milliseconds.
+        /// <param name="timeout">
+        /// Timeout value.
         /// </param>
         /// <param name="maxBufferSize">
         /// Maximum buffer size.
         /// </param>
         public DnsClientWithCache(IPEndPoint server
-            , int timeoutMillis
+            , TimeSpan timeout
             , int maxBufferSize)
-            : base(server, timeoutMillis, maxBufferSize)
+            : base(server, timeout, maxBufferSize)
         {
             Initialize();
         }

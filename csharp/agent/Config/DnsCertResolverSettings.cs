@@ -53,8 +53,8 @@ namespace NHINDirect.Agent.Config
         /// <summary>
         /// The timeout interval used by the resolver.
         /// </summary>
-        [XmlElement]
-        public int Timeout
+        [XmlElement("Timeout")]
+        public int TimeoutMilliseconds
         {
             get;
             set;
@@ -122,7 +122,8 @@ namespace NHINDirect.Agent.Config
         public override ICertificateResolver CreateResolver()
         {
             this.Validate();
-            return new DnsCertResolver(IPAddress.Parse(this.ServerIP), this.Timeout, this.FallbackDomain);
+            return new DnsCertResolver(IPAddress.Parse(this.ServerIP), 
+				TimeSpan.FromMilliseconds(this.TimeoutMilliseconds), this.FallbackDomain);
         }
     }
 }
