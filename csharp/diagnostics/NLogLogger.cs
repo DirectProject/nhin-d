@@ -15,6 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
+using NHINDirect.Diagnostics;
+
 using NLog;
 
 namespace Health.Net.Diagnostics.NLog
@@ -28,9 +30,9 @@ namespace Health.Net.Diagnostics.NLog
 			m_logger = mLogger;
 		}
 
-		public bool IsDebugEnabled()
+		public bool IsDebugEnabled
 		{
-			return m_logger.IsDebugEnabled;
+			get { return m_logger.IsDebugEnabled; }
 		}
 
 		public void Debug(string message)
@@ -48,9 +50,9 @@ namespace Health.Net.Diagnostics.NLog
 			m_logger.DebugException(message, exception);
 		}
 
-		public bool IsErrorEnabled()
+		public bool IsErrorEnabled
 		{
-			return m_logger.IsErrorEnabled;
+			get { return m_logger.IsErrorEnabled; }
 		}
 
 		public void Error(string message)
@@ -68,9 +70,9 @@ namespace Health.Net.Diagnostics.NLog
 			m_logger.ErrorException(message, exception);
 		}
 
-		public bool IsFatalEnabled()
+		public bool IsFatalEnabled
 		{
-			return m_logger.IsFatalEnabled;
+			get { return m_logger.IsFatalEnabled; }
 		}
 
 		public void Fatal(string message)
@@ -88,9 +90,9 @@ namespace Health.Net.Diagnostics.NLog
 			m_logger.FatalException(message, exception);
 		}
 
-		public bool IsInfoEnabled()
+		public bool IsInfoEnabled
 		{
-			return m_logger.IsInfoEnabled;
+			get { return m_logger.IsInfoEnabled; }
 		}
 
 		public void Info(string message)
@@ -108,9 +110,9 @@ namespace Health.Net.Diagnostics.NLog
 			m_logger.InfoException(message, exception);
 		}
 
-		public bool IsTraceEnabled()
+		public bool IsTraceEnabled
 		{
-			return m_logger.IsTraceEnabled;
+			get { return m_logger.IsTraceEnabled; }
 		}
 
 		public void Trace(string message)
@@ -128,9 +130,9 @@ namespace Health.Net.Diagnostics.NLog
 			m_logger.TraceException(message, exception);
 		}
 
-		public bool IsWarnEnabled()
+		public bool IsWarnEnabled
 		{
-			return m_logger.IsWarnEnabled;
+			get { return m_logger.IsWarnEnabled; }
 		}
 
 		public void Warn(string message)

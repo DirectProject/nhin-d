@@ -14,13 +14,22 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
+
+using NHINDirect.Diagnostics;
+
 namespace Health.Net.Diagnostics.NLog
 {
-	internal class NLogFactory : ILogFactory
+	public class NLogFactory : ILogFactory
 	{
 		public ILogger GetLogger(string name)
 		{
 			return new NLogLogger(global::NLog.LogManager.GetLogger(name));
+		}
+
+		public ILogger GetLogger(Type loggerType)
+		{
+			return GetLogger(loggerType.FullName);
 		}
 	}
 }
