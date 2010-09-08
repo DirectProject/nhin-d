@@ -273,6 +273,9 @@ namespace NHINDirect.SmtpAgent
             DnsCertResolver dnsResolver = m_agent.PublicCertResolver as DnsCertResolver;
             if (dnsResolver != null)
             {
+				// make sure to clear this out so we're not multi-subscribed
+            	dnsResolver.Error -= m_diagnostics.OnDnsError;
+
                 dnsResolver.Error += m_diagnostics.OnDnsError;
             }
 

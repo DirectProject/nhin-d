@@ -105,12 +105,9 @@ namespace DnsResolver
 	/// </example>
     public class DnsClient : IDisposable
     {
-        /// <summary>
-        /// Default timeout in milliseconds.
-        /// </summary>
-        public const int DefaultTimeoutMs = 2000; // 2 seconds
+		private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(2);
 
-        /// <summary>
+		/// <summary>
         /// Maximum buffer size for UDP transactions.
         /// </summary>
         public const int UDPMaxBuffer = 0x10000;
@@ -120,7 +117,7 @@ namespace DnsResolver
         DnsBuffer m_requestBuffer;
         DnsBuffer m_responseBuffer;
         DnsBuffer m_lengthBuffer;
-        int m_timeout;
+        TimeSpan m_timeout;
         int m_maxRetries = 3;
         Random m_requestIDGenerator;
         
@@ -169,7 +166,7 @@ namespace DnsResolver
 		/// A <see cref="IPEndPoint"/>
 		/// </param>
         public DnsClient(IPEndPoint server)
-            : this(server, DnsClient.DefaultTimeoutMs, UDPMaxBuffer)
+            : this(server, DnsClient.DefaultTimeout, UDPMaxBuffer)
         {
         }
         
@@ -180,13 +177,13 @@ namespace DnsResolver
 		/// <param name="server">
 		/// A <see cref="IPEndPoint"/>
 		/// </param>
-		/// <param name="timeoutMillis">
-		/// Timeout in milliseconds.
+		/// <param name="timeout">
+		/// Timeout value.
 		/// </param>
 		/// <param name="maxBufferSize">
 		/// Maximum buffer size.
 		/// </param>
-        public DnsClient(IPEndPoint server, int timeoutMillis, int maxBufferSize)
+        public DnsClient(IPEndPoint server, TimeSpan timeout, int maxBufferSize)
         {         
             if (server == null)
             {
@@ -197,7 +194,7 @@ namespace DnsResolver
             m_lengthBuffer = new DnsBuffer(2);
             m_requestBuffer = new DnsBuffer(1024);
             m_responseBuffer = new DnsBuffer(maxBufferSize);
-            this.Timeout = timeoutMillis;
+            this.Timeout = timeout;
             this.UseUDPFirst = true;
             m_requestIDGenerator = new Random();
         }
@@ -233,10 +230,10 @@ namespace DnsResolver
         }
         
 		/// <summary>
-		/// Timeout interval in milliseconds for DNS requests. 
+		/// Timeout interval for DNS requests. 
 		/// </summary>
-		/// <value>An integer representation of the number of milliseconds before timeout.</value>
-        public int Timeout
+		/// <value>A positive value indicating the span before timeout</value>
+        public TimeSpan Timeout
         {
             get
             {
@@ -244,7 +241,7 @@ namespace DnsResolver
             }
             set
             {
-                if (value <= 0)
+                if (value.Ticks <= 0)
                 {
                     throw new ArgumentException();
                 }
@@ -252,8 +249,12 @@ namespace DnsResolver
                 m_timeout = value;
             }
         }
-        
-		
+
+		private int TimeoutInMilliseconds
+		{
+			get { return (int)Timeout.TotalMilliseconds; }
+		}
+
 		/// <summary>
 		/// The number of retries to attempt.
 		/// </summary>
@@ -763,14 +764,14 @@ namespace DnsResolver
             if (m_udpSocket == null)
             {
                 m_udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                m_udpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, this.m_timeout);
+                m_udpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, TimeoutInMilliseconds);
             }
             m_udpSocket.SendTo(m_requestBuffer.Buffer, m_requestBuffer.Count, SocketFlags.None, m_dnsServer);
 
             m_responseBuffer.Count = m_udpSocket.Receive(m_responseBuffer.Buffer);
         }
-        
-        //--------------------------------------------
+
+		//--------------------------------------------
         //
         // TCP Transport
         //
@@ -779,7 +780,7 @@ namespace DnsResolver
         {
             using(Socket tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
-                tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, this.m_timeout);
+                tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, TimeoutInMilliseconds);
                 
                 tcpSocket.Connect(m_dnsServer);
                 
