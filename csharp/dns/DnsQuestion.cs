@@ -106,7 +106,7 @@ namespace DnsResolver
             }
             set
             {
-                if (value == null)
+                if (string.IsNullOrEmpty(value))
                 {
                     throw new DnsProtocolException(DnsProtocolError.InvalidQName);
                 }

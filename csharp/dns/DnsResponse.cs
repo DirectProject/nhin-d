@@ -29,15 +29,29 @@ namespace DnsResolver
         DnsResourceRecordCollection m_answerRecords;
         DnsResourceRecordCollection m_nameServerRecords;
         DnsResourceRecordCollection m_additionalRecords;
-
+        
+        public DnsResponse()
+        {
+        }
+        
         /// <summary>
         /// Instantiate a new instance with the provided <paramref name="reader"/>
         /// </summary>
         /// <param name="reader">The reader that has been initialized with the response buffer.</param>
-        public DnsResponse(ref DnsBufferReader reader)
+        public DnsResponse(DnsBufferReader reader)
             : base(ref reader)
         {
         }
+        
+        /// <summary>
+        /// Construct a response to a request
+        /// </summary>
+        /// <param name="request"></param>
+        public DnsResponse(DnsRequest request)
+            : base()
+        {
+            this.Init(request);
+         }        
                         
         /// <summary>
         /// Gets the answer records for this response.
@@ -122,6 +136,18 @@ namespace DnsResolver
             }
         }
         
+        public void Init(DnsRequest request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            this.RequestID = request.RequestID;
+            this.Header.IsRecursionDesired = request.Header.IsRecursionDesired;
+            this.Header.IsRequest = false;
+        }
+                
         /// <summary>
         /// Serialize this DnsResponse to the buffer as DNS wire format data.
         /// </summary>
@@ -200,6 +226,15 @@ namespace DnsResolver
             if (this.Header.AdditionalAnswerCount > 0)
             {
                 this.AdditionalRecords.Deserialize(this.Header.AdditionalAnswerCount, ref reader);
+            }
+        }
+
+        public override void Validate()
+        {
+            base.Validate();            
+            if (!this.Header.IsRequest)              
+            {
+                throw new DnsProtocolException(DnsProtocolError.InvalidResponse);
             }
         }
     }
