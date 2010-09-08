@@ -94,7 +94,7 @@ namespace NHINDirect.SmtpAgent
             }
         }
 
-        internal void OnDnsError(DnsCertResolver service, Exception error)
+        internal void OnDnsError(ICertificateResolver resolver, Exception error)
         {
             this.LogError("OnDnsError", error);
         }
