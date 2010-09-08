@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Reflection;
 
 namespace NHINDirect.Tools.Command
@@ -149,16 +150,24 @@ namespace NHINDirect.Tools.Command
             string input;            
             while ((input = CommandUI.GetInput()) != null)
             {
-                if (input.Length == 0)
+                if (input.Length > 0)
                 {
-                    continue;
+                    this.Run(input);
                 }
+            }
+        }
+        
+        public void Run(string commandLine)
+        {
+            if (string.IsNullOrEmpty(commandLine))
+            {
+                return;
+            }
 
-                string[] args = input.ParseAsCommandLine().ToArray();
-                if(!args.IsNullOrEmpty())
-                {
-                    this.Run(args);
-                }
+            string[] args = commandLine.ParseAsCommandLine().ToArray();
+            if (!args.IsNullOrEmpty())
+            {
+                this.Run(args);
             }
         }
         
@@ -379,14 +388,62 @@ namespace NHINDirect.Tools.Command
             {
                 this.Bind(name).ShowUsage();
             }
-        }
-        
+        }        
         public void Usage_Help()
         {
             Console.WriteLine("Show help");
             Console.WriteLine("help ['all' | name]");
             Console.WriteLine("   all: All commands");
             Console.WriteLine("   name: This command name or names with this PREFIX"); 
-        }        
+        }
+        
+        public void Command_Batch(string[] args)
+        {
+            string filePath = args.GetRequiredValue(0);
+            bool echo = args.GetOptionalValue<bool>(1, true);
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException(filePath);
+            }
+            
+            using(StreamReader reader = new StreamReader(filePath))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    line = line.Trim();
+                    if (!string.IsNullOrEmpty(line) && !line.StartsWith("//"))
+                    {
+                        if (echo && !line.StartsWith("echo", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Console.WriteLine(line);
+                        }
+                        this.Run(line);
+                    }
+                }
+            }
+        }
+        public void Usage_Batch()
+        {
+            Console.WriteLine("Run a series of commands from a file");
+            Console.WriteLine("Each command is on its own line. Comments begin with //");
+            Console.WriteLine("   filepath [echo command (default true)]");
+        }
+        
+        public void Command_Echo(string[] args)
+        {
+            if (args.IsNullOrEmpty())
+            {
+                return;
+            }
+            foreach(string arg in args)
+            {
+                Console.WriteLine(arg);
+            }
+        }
+        public void Usage_Echo()
+        {
+            Console.WriteLine("Echo the args to the console");
+        }
     }    
 }
