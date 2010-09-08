@@ -28,6 +28,8 @@
 
 package org.nhind.james.mailet;
 
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+
 import java.util.logging.Logger;
 
 import javax.mail.MessagingException;
@@ -78,6 +80,19 @@ public class NHINDMailet extends GenericMailet {
         try {            
             boolean forwardToXdr = true; // should be based on some routing lookup
             if (forwardToXdr) {
+                
+                // TODO: Multiple recipient pseudocode
+                //
+                // List<ProvideAndRegisterDocumentSetRequestType> requests = 
+                //                  MimeXDSTransformer.createRequest(mail.getMessage());
+                // 
+                // for (ProvideAndRegisterDocumentSetRequestType request : requests) {
+                //     String ack = DocumentRepositoryUtils.forward(endpointUrl, request);
+                //     
+                //     if (!isSuccessful(ack))
+                //         ??
+                // }                
+                
                 getMimeXDSTransformer().forward(endpointUrl, mail.getMessage());
             } else {
                 // forward it to another email server based on routing

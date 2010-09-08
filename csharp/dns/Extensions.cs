@@ -61,7 +61,7 @@ namespace DnsResolver
         /// <param name="cert">The certificate instance this extension method is attached to</param>
         /// <returns>The email name associated with the certificate, the subject name if
         /// the email name is not found, or null if neither is found.</returns>
-        public static string ExtractEmailNameOrName(this X509Certificate2 cert)
+        public static string ExtractName(this X509Certificate2 cert)
         {
             string name = cert.GetNameInfo(X509NameType.EmailName, false);
             if (string.IsNullOrEmpty(name))

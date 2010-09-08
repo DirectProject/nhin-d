@@ -387,7 +387,7 @@ public class MimeXDSTransformerTest extends TestCase {
      */
     @SuppressWarnings("unused")
     private String getTestSubmit() throws Exception {
-        InputStream is = this.getClass().getResourceAsStream("/submitobjectrequest.xml");
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("submitobjectrequest.xml");
         byte[] theBytes = new byte[is.available()];
         is.read(theBytes);
         return new String(theBytes);
