@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.IO;
 using System.Reflection;
 
@@ -253,6 +254,17 @@ namespace NHINDirect.Tools.Command
                     select name);
         }
 
+        public IEnumerable<string> MatchCommandNames(string pattern)
+        {
+            Regex regex = new Regex(pattern);
+            //
+            // Do a prefix match. Note: if needed, we can speed this up since the name array is sorted. 
+            //
+            return (from name in this.CommandNames
+                    where regex.IsMatch(name)
+                    select name);
+        }
+
         void Exit(int code)
         {
             Environment.Exit(code);
@@ -355,6 +367,10 @@ namespace NHINDirect.Tools.Command
         {
             Console.WriteLine("Exit the application");
         }
+        
+        /// <summary>
+        /// Show help
+        /// </summary>
         public void Command_Help(string[] args)
         {
             string cmdName = null;
@@ -395,8 +411,39 @@ namespace NHINDirect.Tools.Command
             Console.WriteLine("help ['all' | name]");
             Console.WriteLine("   all: All commands");
             Console.WriteLine("   name: This command name or names with this PREFIX"); 
+            Console.WriteLine();
+            Console.WriteLine("search [pattern]");
+            Usage_Search();
         }
         
+        /// <summary>
+        /// Search for a command containing the given pattern
+        /// </summary>
+        /// <param name="args"></param>
+        public void Command_Search(string[] args)
+        {
+            string pattern = args.GetOptionalValue(0, null);
+            if (string.IsNullOrEmpty(pattern))
+            {
+                ShowAllUsage();
+                return;
+            }
+            
+            pattern = pattern.Replace("*", ".*");
+            foreach (string name in this.MatchCommandNames(pattern))
+            {
+                this.Bind(name).ShowUsage();
+            }
+        }
+        public void Usage_Search()
+        {
+            Console.WriteLine("Search for commands matching the given wildcard pattern");
+            Console.WriteLine("    pattern");
+            Console.WriteLine("\t pattern: (optional) pattern, containing '*' wildcards");
+        }
+        /// <summary>
+        /// Run commands in a batch
+        /// </summary>
         public void Command_Batch(string[] args)
         {
             string filePath = args.GetRequiredValue(0);
