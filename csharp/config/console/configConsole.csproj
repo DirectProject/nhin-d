@@ -69,6 +69,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\dns\dnsResolver.csproj">
+      <Project>{AE250214-0E85-4C28-90C9-A006440BCE97}</Project>
+      <Name>dnsResolver</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\tools\toolutil\nhinToolLib.csproj">
       <Project>{D46A743B-E82F-45F7-87CB-29DBBFF9B9A0}</Project>
       <Name>nhinToolLib</Name>
