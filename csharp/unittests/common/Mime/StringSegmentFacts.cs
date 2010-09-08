@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Linq;
 
 using NHINDirect.Mime;
 
@@ -279,6 +280,17 @@ namespace NHINDirect.Tests.Mime
 			segment.Union(segment2);
 			Assert.Equal(expectedStart, segment.StartIndex);
 			Assert.Equal(expectedEnd, segment.EndIndex);
+		}
+
+		[Theory]
+		[InlineData(0, null)]
+		[InlineData(0, "")]
+		[InlineData(1, "0")]
+		[InlineData(2, "0,1")]
+		[InlineData(3, "0,1,2")]
+		public void Split(int expectedCount, string value)
+		{
+			Assert.Equal(expectedCount, StringSegment.Split(value, ',').Count());
 		}
 	}
 }
