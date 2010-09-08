@@ -64,14 +64,21 @@ import org.nhind.mail.util.XMLUtils;
  */
 public class XDMXDSTransformer {
 
-    private static final Logger LOGGER = Logger.getLogger(XDMXDSTransformer.class.getName());
     static private String XDM_FILENAME_METADATA = "METADATA.xml";
     static private String XDM_FILENAME_DATA = "DOCUMENT.xml";
-    
     // static private String XDM_DIRSPEC_SUBMISSIONROOT = "SUBSET01";
 
     /**
+     * Class logger.
+     */
+    private static final Logger LOGGER = Logger.getLogger(XDMXDSTransformer.class.getName());
+    
+    /**
      * Reads an XDM ZIP archive and returns a set of XDS submissions.
+     * 
+     * @param dh
+     * @return
+     * @throws Exception
      */
     public ProvideAndRegisterDocumentSetRequestType getXDMRequest(DataHandler dh) throws Exception {
         LOGGER.info("Inside getXDMRequest(DataHandler)");
@@ -80,6 +87,11 @@ public class XDMXDSTransformer {
         return getXDMRequest(archiveFile);
     }
 
+    /**
+     * @param archiveFile
+     * @return
+     * @throws Exception
+     */
     public ProvideAndRegisterDocumentSetRequestType getXDMRequest(File archiveFile) throws Exception {
         LOGGER.info("Inside getXDMRequest(File)");
         
@@ -150,7 +162,11 @@ public class XDMXDSTransformer {
         return prsr;
     }
 
-    String getDocId(SubmitObjectsRequest sor) {
+    /**
+     * @param sor
+     * @return
+     */
+    protected String getDocId(SubmitObjectsRequest sor) {
         String ret = null;
         RegistryObjectListType rol = sor.getRegistryObjectList();
         List extensible = rol.getIdentifiable();
@@ -162,12 +178,16 @@ public class XDMXDSTransformer {
             if (type.equals("oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType")) {
                 ret = getDocId((ExtrinsicObjectType) value);
             }
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, elem.getDeclaredType().getName() + elem.getValue().toString());
+            LOGGER.info(elem.getDeclaredType().getName() + elem.getValue().toString());
         }
         return ret;
     }
 
-    String getDocId(ExtrinsicObjectType eot) {
+    /**
+     * @param eot
+     * @return
+     */
+    protected String getDocId(ExtrinsicObjectType eot) {
         String ret = null;
         List<ExternalIdentifierType> eits= eot.getExternalIdentifier();
         Iterator<ExternalIdentifierType> ieits = eits.iterator();
@@ -180,9 +200,15 @@ public class XDMXDSTransformer {
         return ret;
     }
 
-    private boolean matchName(String zname, String subsetDirspec, String subsetFilespec) {
-
+    /**
+     * @param zname
+     * @param subsetDirspec
+     * @param subsetFilespec
+     * @return
+     */
+    static boolean matchName(String zname, String subsetDirspec, String subsetFilespec) {
         boolean ret = false;
+
         String zipFilespec = subsetDirspec + "\\" + subsetFilespec.replace('/', '\\');
         ret = zname.equals(zipFilespec);
         if (!ret) {
@@ -192,6 +218,12 @@ public class XDMXDSTransformer {
         return ret;
     }
 
+    /**
+     * @param zipFile
+     * @param subsetDirspec
+     * @param subsetFilespec
+     * @return
+     */
     private ZipEntry getXDMZipEntry(ZipFile zipFile, String subsetDirspec, String subsetFilespec) {
         ZipEntry result = null;
         // String zipFilespec = XDM_DIRSPEC_SUBMISSIONROOT + "\\" + subsetDirspec + "\\" + subsetFilespec.replace('/', '\\');
@@ -205,8 +237,11 @@ public class XDMXDSTransformer {
     }
 
     /**
-     * Given a full ZipEntry filespec, extracts the name of the folder (if present) under the IHE_XDM root
-     * specified by IHE XDM.
+     * Given a full ZipEntry filespec, extracts the name of the folder (if
+     * present) under the IHE_XDM root specified by IHE XDM.
+     * 
+     * @param zipEntryName
+     * @return
      */
     private String getSubmissionSetDirspec(String zipEntryName) {
         String result = null;
@@ -219,11 +254,17 @@ public class XDMXDSTransformer {
         return result;
     }
 
+    /**
+     * @param dh
+     * @return
+     * @throws Exception
+     */
     protected File fileFromDataHandler(DataHandler dh) throws Exception {
         File f = null;
         OutputStream out = null;      
         InputStream inputStream = null;
         
+        // TODO: outFile.java?
         final String fileName = "outFile.java";
 
         try {

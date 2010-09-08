@@ -162,6 +162,18 @@ namespace NHINDirect.Config.Service
             }
         }
         
+        public Anchor GetAnchor(string owner, string thumbprint, CertificateGetOptions options)
+        {
+            try
+            {
+                return this.ApplyGetOptions(Service.Current.Store.Anchors.Get(owner, thumbprint), options);
+            }
+            catch(Exception ex)
+            {
+                throw Service.CreateFault(ex);
+            }
+        }
+                      
         public Anchor[] GetAnchors(long[] anchorIDs, CertificateGetOptions options)
         {
             try

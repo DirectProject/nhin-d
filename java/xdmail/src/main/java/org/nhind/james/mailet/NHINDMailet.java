@@ -45,7 +45,15 @@ import org.nhind.mail.service.MimeXDSTransformer;
  */
 public class NHINDMailet extends GenericMailet {
     
+    /**
+     * Local XDR endpoint.
+     */
     private String endpointUrl;
+    
+    /**
+     * MimeXDSTransformer object.
+     */
+    private MimeXDSTransformer mimeXDSTransformer;
     
     /**
      * Class logger
@@ -67,15 +75,13 @@ public class NHINDMailet extends GenericMailet {
             throw new MessagingException("NHINDMailet endpoint URL cannot be empty or null.");
         }   
         
-        try {
-            MimeXDSTransformer mxt = new MimeXDSTransformer();
-            
+        try {            
             boolean forwardToXdr = true; // should be based on some routing lookup
             if (forwardToXdr) {
-                mxt.forward(endpointUrl, mail.getMessage());
+                getMimeXDSTransformer().forward(endpointUrl, mail.getMessage());
             } else {
                 // forward it to another email server based on routing
-                // iformation
+                // information
             }
             
             mail.setState(Mail.GHOST);
@@ -103,5 +109,21 @@ public class NHINDMailet extends GenericMailet {
             LOGGER.severe("NHINDMailet endpoint URL cannot be empty or null.");
             throw new MessagingException("NHINDMailet endpoint URL cannot be empty or null.");
         }   
+    }
+    
+    protected String getEndpointUrl() {
+        return this.endpointUrl;
+    }
+    
+    protected void setMimeXDSTransformer(MimeXDSTransformer mimeXDSTransformer) {
+        this.mimeXDSTransformer = mimeXDSTransformer;
+    }
+    
+    protected MimeXDSTransformer getMimeXDSTransformer() {
+        if (this.mimeXDSTransformer == null) {
+            this.mimeXDSTransformer = new MimeXDSTransformer();
+        }
+        
+        return this.mimeXDSTransformer;
     }
 }

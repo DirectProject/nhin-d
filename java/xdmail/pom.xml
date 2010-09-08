@@ -61,7 +61,7 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.5</version>
-        </dependency>
+        </dependency>     
     </dependencies>
 
     <build>
@@ -191,7 +191,7 @@
                     <detectJavaApiLink>true</detectJavaApiLink>
                     <detectLinks>true</detectLinks>
                     <source>1.6</source>
-                    <show>public</show>
+                    <show>protected</show>
                 </configuration>
             </plugin>
             <plugin>
