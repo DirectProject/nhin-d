@@ -275,8 +275,12 @@ public class MimeXDSTransformer {
                         String contentString = new String(baos.toByteArray());
 
                         try {
+                            LOGGER.info("Content type is " + contentType);
+
                             // special handling for recognized content types
                             if (MimeType.TEXT_PLAIN.matches(contentType)) {
+                                LOGGER.info("Matched type TEXT_PLAIN");
+                                
                                 if (StringUtils.isBlank(contentString)) {
                                     continue; // skip 'empty' parts
                                 }
@@ -285,11 +289,16 @@ public class MimeXDSTransformer {
                                 xdsMimeType = MimeType.TEXT_PLAIN.getType();
                                 xdsFormatCode = CODE_FORMAT_TEXT;
                             } else if (MimeType.TEXT_XML.matches(contentType)) {
+                                LOGGER.info("Matched type TEXT_XML");
+                                
                                 if (StringUtils.contains(contentString, "urn:hl7-org:v3")
                                         && StringUtils.contains(contentString, "POCD_HD000040")) {
-                                    // CDA R2
+                                    LOGGER.info("Matched format CODE_FORMAT_CDAR2");
+                                    
                                     xdsFormatCode = CODE_FORMAT_CDAR2;
                                 } else {
+                                    LOGGER.info("Defaulted to format CODE_FORMAT_TEXT");
+                                    
                                     // Other XML (possible CCR or HL7)
                                     // TODO: support more XML types
                                     xdsFormatCode = CODE_FORMAT_TEXT;
@@ -298,6 +307,8 @@ public class MimeXDSTransformer {
                                 xdsDocument = baos.toByteArray();
                                 xdsMimeType = MimeType.TEXT_XML.getType();
                             } else {
+                                LOGGER.info("Did not match a type");
+                                
                                 // Otherwise make best effort passing MIME content type thru
                                 xdsMimeType = contentType;
                                 xdsFormatCode = CODE_FORMAT_TEXT;

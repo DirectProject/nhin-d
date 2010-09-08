@@ -260,6 +260,13 @@
             </plugin>
         </plugins>
     </reporting>
-
+    
+    <distributionManagement>
+        <site>
+            <id>nhind-site</id>
+            <name>NHIN Direct API publication site</name>
+            <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xdmail/${project.version}</url>
+        </site>
+    </distributionManagement>
 </project>
 

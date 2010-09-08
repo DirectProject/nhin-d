@@ -36,6 +36,7 @@ import javax.mail.MessagingException;
 import junit.framework.TestCase;
 
 import org.apache.mailet.MailetConfig;
+import org.nhind.mail.service.MimeXDSTransformer;
 import org.nhind.testutils.MockMailetConfig;
 
 /**
@@ -88,13 +89,6 @@ public class NHINDMailetTest extends TestCase {
         MailetConfig mailetConfig = new MockMailetConfig(params, "MailetName");
 
         try {
-            mailet.init();
-            fail("Exception not thrown");
-        } catch (Exception e) {
-            assertTrue(true);
-        }
-
-        try {
             mailet.init(mailetConfig);
         } catch (MessagingException e) {
             fail("Test setup failed");
@@ -106,6 +100,39 @@ public class NHINDMailetTest extends TestCase {
         } catch (MessagingException e) {
             fail("Exception thrown");
         }
+
+        try {
+            params.clear();
+            params.put("EndpointURL", "");
+            mailet.init();
+            fail("Exception not thrown");
+        } catch (MessagingException e) {
+            assertTrue(true);
+        }
+
+        try {
+            params.clear();
+            mailet.init();
+            fail("Exception not thrown");
+        } catch (MessagingException e) {
+            assertTrue(true);
+        }
+    }
+
+    /**
+     * Test the getMimeXDSTransformer and setMimeXDSTransformer methods.
+     */
+    public void testGetSetMimeXDSTransformer() {
+        NHINDMailet mailet = new NHINDMailet();
+        MimeXDSTransformer transformer = null;
+
+        transformer = mailet.getMimeXDSTransformer();
+        assertTrue("MimeXDSTransformer is null", transformer != null);
+
+        transformer = new MimeXDSTransformer();
+        mailet.setMimeXDSTransformer(transformer);
+        MimeXDSTransformer output = mailet.getMimeXDSTransformer();
+        assertTrue("Output references a different object", transformer == output);
     }
 
 }
