@@ -29,16 +29,30 @@ namespace DnsResolver
         DnsResourceRecordCollection m_answerRecords;
         DnsResourceRecordCollection m_nameServerRecords;
         DnsResourceRecordCollection m_additionalRecords;
-
+        
+        public DnsResponse()
+        {
+        }
+        
         /// <summary>
         /// Instantiate a new DnsResponse
         /// </summary>
         /// <param name="reader"></param>
-        public DnsResponse(ref DnsBufferReader reader)
+        public DnsResponse(DnsBufferReader reader)
             : base(ref reader)
         {
         }
-                        
+        
+        /// <summary>
+        /// Construct a response to a request
+        /// </summary>
+        /// <param name="request"></param>
+        public DnsResponse(DnsRequest request)
+            : base()
+        {
+            this.Init(request);
+        }
+        
         public DnsResourceRecordCollection AnswerRecords
         {
             get
@@ -100,6 +114,18 @@ namespace DnsResolver
             }
         }
         
+        public void Init(DnsRequest request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            this.RequestID = request.RequestID;
+            this.Header.IsRecursionDesired = request.Header.IsRecursionDesired;
+            this.Header.IsRequest = false;
+        }
+                
         /// <summary>
         /// Serialize this DnsResponse
         /// </summary>
@@ -174,6 +200,15 @@ namespace DnsResolver
             if (this.Header.AdditionalAnswerCount > 0)
             {
                 this.AdditionalRecords.Deserialize(this.Header.AdditionalAnswerCount, ref reader);
+            }
+        }
+
+        public override void Validate()
+        {
+            base.Validate();            
+            if (!this.Header.IsRequest)              
+            {
+                throw new DnsProtocolException(DnsProtocolError.InvalidResponse);
             }
         }
     }

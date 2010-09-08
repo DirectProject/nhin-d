@@ -745,8 +745,7 @@ namespace DnsResolver
 
         DnsResponse DeserializeResponse()
         {
-            DnsBufferReader reader = new DnsBufferReader(m_responseBuffer.Buffer, 0, m_responseBuffer.Count);
-            return new DnsResponse(ref reader);
+            return new DnsResponse(m_responseBuffer.CreateReader());
         }
                 
         //--------------------------------------------
@@ -789,8 +788,10 @@ namespace DnsResolver
                 // First, receive the response message length
                 //
                 m_lengthBuffer.Clear();
-                tcpSocket.Receive(m_lengthBuffer.Buffer, m_lengthBuffer.Capacity, SocketFlags.None);
-                ushort responseSize = (ushort)(m_lengthBuffer.Buffer[0] << 8 | m_lengthBuffer.Buffer[1]);  // Network order
+                m_lengthBuffer.Count = tcpSocket.Receive(m_lengthBuffer.Buffer, m_lengthBuffer.Capacity, SocketFlags.None);
+                
+                DnsBufferReader reader = m_lengthBuffer.CreateReader();
+                ushort responseSize = reader.ReadUShort();
                 //
                 // Now receive the real response
                 //
