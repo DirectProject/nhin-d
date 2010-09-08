@@ -109,12 +109,7 @@ namespace SmtpAgentTests
                         
         int CountNotifications(IncomingMessage incoming)
         {
-            int count = 0;
-            foreach (NotificationMessage notification in m_producer.Produce(incoming))
-            {
-                ++count;
-            }
-            return count;
+        	return m_producer.Produce(incoming).Count();
         }
     }
 }
