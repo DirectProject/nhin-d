@@ -8,9 +8,12 @@ set destbin=%~dp0
 ) else (
 set srcbin=..\..\bin\debug
 set destbin=C:\inetpub\nhinGateway
+set configFile=%~f1
 )
 
 if NOT "%srcbin%" == "" call copybins.bat %destbin%
+if NOT "%configFile%" == "" xcopy /y "%configFile%" "%destbin%\DevAgentConfig.xml"
+
 
 @rem --------------------------------
 pushd %destbin%
@@ -33,7 +36,7 @@ goto :Done
 shift
 echo ==============================
 echo.
-echo %~*
+echo %*
 echo.
 echo ==============================
 goto :EOF

@@ -26,7 +26,42 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package org.nhind.testutils;
+
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.mailet.MailetConfig;
+import org.apache.mailet.MailetContext;
+
 /**
- * Apach James mailets for intercepting and processing messages using XDS translation/forwarding.
+ * Mock MailetConfig object.
+ * 
+ * @author beau
  */
-package org.nhind.james.mailet;
+public class MockMailetConfig implements MailetConfig {
+    private final Map<String, String> initParameters;
+    private final String mailetName;
+
+    public MockMailetConfig(Map<String, String> initParameters, String mailetName) {
+        this.initParameters = initParameters;
+        this.mailetName = mailetName;
+    }
+
+    public String getInitParameter(String param) {
+        return initParameters.get(param);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Iterator getInitParameterNames() {
+        return initParameters.keySet().iterator();
+    }
+
+    public MailetContext getMailetContext() {
+        return null;
+    }
+
+    public String getMailetName() {
+        return mailetName;
+    }
+}

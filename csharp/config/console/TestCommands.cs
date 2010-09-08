@@ -5,11 +5,16 @@ using System.Text;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using NHINDirect;
+using NHINDirect.Config.Store;
 using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
 
 namespace NHINDirect.Config.Command
 {
+    /// <summary>
+    /// Commands to install unit test certificates. 
+    /// These are stop-gap and make LOTS of assumptions about paths, names, etc...
+    /// </summary>
     public class TestCommands
     {
         public TestCommands()
@@ -18,19 +23,31 @@ namespace NHINDirect.Config.Command
         
         public void Command_Test_Certs_Install(string[] args)
         {
-            string path = args.GetOptionalValue(0, null);
-            EnsureStandardMachineStores(path ?? Directory.GetCurrentDirectory());
+            string path = args.GetOptionalValue(0, Directory.GetCurrentDirectory());
+            string storetype = args.GetOptionalValue(1, "local").ToLower();
+            EnsureStandardMachineStores(path);
         }
         public void Usage_Test_Certs_Install()
         {
             Console.WriteLine("Install test certs into machine stores");
+            Console.WriteLine("   [local (default) | service]");
+        }
+
+        public void Command_Test_Certs_InstallInService(string[] args)
+        {
+            string path = args.GetOptionalValue(0, Directory.GetCurrentDirectory());
+            EnsureStandardCertsInService(path);
+        }
+        public void Usage_Test_Certs_InstallInService()
+        {
+            Console.WriteLine("Install test certs into config service");
         }
         
         static string MakeCertificatesPath(string basePath, string agentFolder)
         {
             return Path.Combine(basePath, Path.Combine("Certificates", agentFolder));
         }
-
+                
         internal static void EnsureStandardMachineStores(string path)
         {
             SystemX509Store.CreateAll();
@@ -79,22 +96,14 @@ namespace NHINDirect.Config.Command
 
             MemoryX509Store certStore = new MemoryX509Store();
             string[] files = Directory.GetFiles(folderPath);
-            for (int i = 0; i < files.Length; ++i)
+            if (files.IsNullOrEmpty())
             {
-                string file = files[i];
-                string ext = Path.GetExtension(file) ?? string.Empty;
-                switch (ext.ToLower())
-                {
-                    default:
-                        certStore.ImportKeyFile(file, X509KeyStorageFlags.MachineKeySet);
-                        break;
-
-                    case ".pfx":
-                        certStore.ImportKeyFile(file, "passw0rd!", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
-                        break;
-                }
+                throw new ArgumentException("Empty directory");
             }
-
+            foreach(string file in files)
+            {
+                CertificateCommands.LoadCerts(certStore, file, "passw0rd!");
+            }
             return certStore;
         }
 
@@ -109,5 +118,23 @@ namespace NHINDirect.Config.Command
                 }
             }
         }
+        
+        internal static void EnsureStandardCertsInService(string basePath)
+        {
+            Console.WriteLine("Installing Private Certs in config service");
+
+            string redmondCertsPath = MakeCertificatesPath(basePath, "redmond");
+            string nhindCertsPath = MakeCertificatesPath(basePath, "nhind");
+
+            CertificateCommands.PushCerts(LoadCerts(redmondCertsPath, "Private"), true, EntityStatus.Enabled);
+            CertificateCommands.PushCerts(LoadCerts(nhindCertsPath, "Private"), true, EntityStatus.Enabled);
+            
+            Console.WriteLine("Installing Anchors in config service");
+
+            AnchorCommands.PushCerts("redmond.hsgincubator.com", LoadCerts(redmondCertsPath, "IncomingAnchors"), true, EntityStatus.Enabled);
+            AnchorCommands.PushCerts("redmond.hsgincubator.com", LoadCerts(redmondCertsPath, "OutgoingAnchors"), true, EntityStatus.Enabled);
+            AnchorCommands.PushCerts("nhind.hsgincubator.com", LoadCerts(nhindCertsPath, "IncomingAnchors"), true, EntityStatus.Enabled);
+            AnchorCommands.PushCerts("nhind.hsgincubator.com", LoadCerts(nhindCertsPath, "OutgoingAnchors"), true, EntityStatus.Enabled);
+        }        
     }
 }

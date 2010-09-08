@@ -33,6 +33,10 @@ namespace NHINDirect.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
+        Anchor GetAnchor(string owner, string thumbprint, CertificateGetOptions options);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
         Anchor[] GetAnchors(long[] anchorIDs, CertificateGetOptions options);
 
         [OperationContract]
