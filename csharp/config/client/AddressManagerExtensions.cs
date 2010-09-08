@@ -24,6 +24,12 @@ namespace NHINDirect.Config.Client.DomainManager
 {
     public static class AddressManagerExtensions
     {
+        public static bool AddressExists(this AddressManagerClient client, MailAddress emailAddress)
+        {
+            Address address = client.GetAddress(emailAddress);
+            return (address != null);
+        }
+        
         public static void AddAddress(this AddressManagerClient client, Address address)
         {
             if (address == null)
