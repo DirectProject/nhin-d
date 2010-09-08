@@ -30,29 +30,23 @@ namespace DnsResolver
     {
         DnsHeader m_header;
         DnsQuestion m_question;
-
+        
+        protected DnsMessage()
+        {
+            m_header = new DnsHeader();
+            m_question = new DnsQuestion();       
+            this.Clear();
+        }
+        
         /// <summary>
         /// Instantiates a Dns Message
         /// </summary>
         /// <param name="qType"></param>
         /// <param name="qName"></param>
         protected DnsMessage(Dns.RecordType qType, string qName)
+            : this()
         {
-            m_header = new DnsHeader();
-
-            m_header.IsRequest = true;
-            m_header.OpCode = Dns.OpCode.QUERY;
-
-            m_header.IsAuthoritativeAnswer = false;
-            m_header.IsTruncated = false;
-            m_header.IsRecursionDesired = true;
-            m_header.IsRecursionAvailable = false;
-            m_header.ResponseCode = Dns.ResponseCode.SUCCESS;
             m_header.QuestionCount = 1;
-            m_header.AnswerCount = 0;
-            m_header.NameServerAnswerCount = 0;
-            m_header.AdditionalAnswerCount = 0;
-
             m_question = new DnsQuestion(qName, qType, Dns.Class.IN);
         }
         
@@ -64,7 +58,7 @@ namespace DnsResolver
         {
             this.Deserialize(ref reader);
         }
-        
+                        
         /// <summary>
         /// Gets the Dns Header for this message
         /// </summary>        
@@ -125,6 +119,23 @@ namespace DnsResolver
         }
         
         /// <summary>
+        /// Reset...
+        /// </summary>
+        public virtual void Clear()
+        {
+            m_header.IsRequest = true;
+            m_header.OpCode = Dns.OpCode.QUERY;
+            m_header.IsAuthoritativeAnswer = false;
+            m_header.IsTruncated = false;
+            m_header.IsRecursionDesired = true;
+            m_header.IsRecursionAvailable = false;
+            m_header.ResponseCode = Dns.ResponseCode.SUCCESS;
+            m_header.AnswerCount = 0;
+            m_header.NameServerAnswerCount = 0;
+            m_header.AdditionalAnswerCount = 0;
+        }
+
+        /// <summary>
         /// Serialize this Dns Message into the given DnsBuffer
         /// </summary>
         /// <param name="buffer">buffer to serialize into</param>
@@ -146,6 +157,18 @@ namespace DnsResolver
         {
             m_header = new DnsHeader(ref reader);
             m_question = new DnsQuestion(ref reader);
+        }
+        
+        public virtual void Validate()
+        { 
+            if (m_header == null)
+            {
+                throw new DnsProtocolException(DnsProtocolError.InvalidHeader);
+            }
+            if (m_question == null)
+            {
+                throw new DnsProtocolException(DnsProtocolError.InvalidQuestion);
+            }
         }
     }
 }

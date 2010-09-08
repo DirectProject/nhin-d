@@ -27,11 +27,43 @@ namespace DnsResolver
     /// </summary>
     public class DnsRequest : DnsMessage
     {
-        public DnsRequest(Dns.RecordType qType, string qName)
-            : base(qType, qName)
+        public DnsRequest(Dns.RecordType type, string qName)
+            : base(type, qName)
+        {
+            this.Header.IsRequest = true;
+            this.Header.IsTruncated = false;
+            this.Header.ResponseCode = Dns.ResponseCode.SUCCESS;
+        }
+        
+        public DnsRequest(DnsBufferReader reader)
+            : base(ref reader)
         {
         }
-                
+
+        protected override void Deserialize(ref DnsBufferReader reader)
+        {
+            base.Deserialize(ref reader);
+            
+            this.Validate();            
+        }   
+        
+        public override void Validate()
+        {
+            base.Validate();
+            
+            DnsHeader header = this.Header;
+            if (
+                    !header.IsRequest
+                || header.AnswerCount != 0
+                || header.AdditionalAnswerCount != 0
+                || header.NameServerAnswerCount != 0
+                || header.IsTruncated
+            )                
+            {
+                throw new DnsProtocolException(DnsProtocolError.InvalidRequest);
+            }
+        }
+             
         public static DnsRequest CreateA(string domain)
         {
             return new DnsRequest(Dns.RecordType.ANAME, domain);
