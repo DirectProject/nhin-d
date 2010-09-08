@@ -1,5 +1,5 @@
 ﻿<ConsoleSettings>
-  <DomainManager>
+   <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
   <AddressManager>
@@ -14,7 +14,7 @@
   <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
-  <!--
+<!--
   <AddressManager>
     <Url>http://localhost:6692/DomainManagerService.svc/Addresses</Url>
   </AddressManager>

@@ -64,7 +64,9 @@ public class SimplePerson implements Serializable {
     private String localId;
     private String localOrg;
     private String ssn;
-    private Map otherOrgIds = new HashMap();;
+    
+    // TODO: What does this hold? String, String? Need to specify in declaration.
+    private Map otherOrgIds = new HashMap();
 
     // portal related attribs
     private String npi;
@@ -80,11 +82,15 @@ public class SimplePerson implements Serializable {
 
     public SimplePerson() {
     }
-
+    
     public Map getOtherOrgIds() {
         return otherOrgIds;
     }
 
+    public void setOtherOrgIds(Map otherOrgIds) {
+        this.otherOrgIds = otherOrgIds;
+    }
+    
     public String getSSN() {
         return ssn;
     }

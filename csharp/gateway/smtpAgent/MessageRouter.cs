@@ -135,7 +135,7 @@ namespace NHINDirect.SmtpAgent
                 Address address = recipient.Tag as Address;
                 if (address != null)
                 {
-                    MessageRoute route = m_routes[address.Type];
+                    MessageRoute route = this[address.Type];
                     if (route != null)
                     {
                         matches[address.Type] = route;

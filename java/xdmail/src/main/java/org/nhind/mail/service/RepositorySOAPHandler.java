@@ -83,7 +83,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     private static final Logger LOGGER = Logger.getLogger(RepositorySOAPHandler.class.getPackage().getName());
     
     /**
-     * Is called after constructing the handler and before executing any othe method.
+     * Is called after constructing the handler and before executing any other method.
      */
     @PostConstruct
     public void init() {
