@@ -116,7 +116,7 @@ namespace DnsResolver
                 }
 
                 m_cert = value;
-                m_name = m_cert.ExtractEmailNameOrName();
+                m_name = m_cert.ExtractName();
                 if (string.IsNullOrEmpty(m_name))
                 {
                     throw new NotSupportedException();

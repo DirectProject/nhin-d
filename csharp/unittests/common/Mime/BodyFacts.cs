@@ -4,6 +4,7 @@
 
  Authors:
     John Theisen    jtheisen@kryptiq.com
+    Arien Malec     arien.malec@nhindirect.org
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -29,5 +30,28 @@ namespace NHINDirect.Tests.Mime
 			Assert.Equal(0, body.SourceText.Length);
 			Assert.Equal("", body.Text);
 		}
+
+        [Fact]
+        public void BodyFromStringShouldHaveMatchingText()
+        {
+            string bText = "Hello, world";
+            Body b = new Body(bText);
+            Assert.Equal(bText, b.Text);
+            Assert.Equal(bText, b.SourceText.ToString());
+            Assert.Equal(bText, b.ToString());
+        }
+
+        [Fact]
+        public void BodyFromStringSegmentShouldHaveMatchingText()
+        {
+            string s = "abcHello, worlddef";
+            string bText = "Hello, world";
+            StringSegment ss = new StringSegment(s, 3, 14);
+            Body b = new Body(ss);
+            Assert.Equal(bText, b.Text);
+            Assert.Equal(bText, b.SourceText.ToString());
+            Assert.Equal(bText, b.ToString());
+        }
+
 	}
 }

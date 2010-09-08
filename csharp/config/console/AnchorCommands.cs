@@ -38,6 +38,15 @@ namespace NHINDirect.Config.Command
         {
         }
         
+        //---------------------------------------
+        //
+        // Commands
+        //
+        //---------------------------------------
+
+        /// <summary>
+        /// Import and add an anchor
+        /// </summary>
         public void Command_Anchor_Add(string[] args)
         {
             string owner = args.GetRequiredValue(0);
@@ -49,9 +58,16 @@ namespace NHINDirect.Config.Command
         public void Usage_Anchor_Add()
         {
             Console.WriteLine("Import an anchor certificate from a file and push it into the store.");
+            Console.WriteLine("The anchor is used for both incoming & outgoing trust.");
             Console.WriteLine("    owner filepath [password]");
+            Console.WriteLine("\t owner: Anchor owner");
+            Console.WriteLine("\t filePath: path fo the certificate file. Can be .DER, .CER or .PFX");
+            Console.WriteLine("\t password: (optional) file password");
         }
         
+        /// <summary>
+        /// Retrieve an anchor by its ID
+        /// </summary>
         public void Command_Anchor_ByID_Get(string[] args)
         {
             long anchorID = args.GetRequiredValue<int>(0);
@@ -66,7 +82,10 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("    anchorID [options]");
             CertificateCommands.PrintOptionsUsage();
         }
-                
+        
+        /// <summary>
+        /// Get all anchors for an owner
+        /// </summary>
         public void Command_Anchors_Get(string[] args)
         {
             string owner = args.GetRequiredValue(0);
@@ -79,12 +98,19 @@ namespace NHINDirect.Config.Command
         {
             Console.WriteLine("Get all anchors for an owner.");
             Console.WriteLine("  owner [options]");
+            Console.WriteLine("\t owner: Anchor owner");
             CertificateCommands.PrintOptionsUsage();
         }
         
+        /// <summary>
+        /// List ALL anchors
+        /// </summary>
         public void Command_Anchors_List(string[] args)
         {
             CertificateGetOptions options = CertificateCommands.GetOptions(args, 0);
+            //
+            // TODO: Give the ability to "more" through this list
+            //
             foreach(Anchor anchor in ConfigConsole.Current.AnchorClient.EnumerateAnchors(10, options))
             {
                 this.Print(anchor);
@@ -96,7 +122,10 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("List all anchors");
             CertificateCommands.PrintOptionsUsage();
         }
-
+        
+        /// <summary>
+        /// Set the status of all anchors for an owner
+        /// </summary>
         public void Command_Anchor_Status_Set(string[] args)
         {
             string owner = args.GetRequiredValue(0);
@@ -108,8 +137,13 @@ namespace NHINDirect.Config.Command
         {
             Console.WriteLine("Set the status for ALL anchors for an owner.");
             Console.WriteLine("    owner");
+            Console.WriteLine("\t owner: Anchor owner");
+            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString);
         }
         
+        /// <summary>
+        /// Remove an anchor
+        /// </summary>
         public void Command_Anchor_Remove(string[] args)
         {
             long anchorID = args.GetRequiredValue<long>(0);
@@ -121,7 +155,10 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Remove anchors with given ID");
             Console.WriteLine("    anchorID");
         }
-
+        
+        /// <summary>
+        /// Mirrors what the production gateway would do
+        /// </summary>
         public void Command_Anchor_Resolve(string[] args)
         {
             MailAddress owner = new MailAddress(args.GetRequiredValue(0));
@@ -138,9 +175,15 @@ namespace NHINDirect.Config.Command
         {
             Console.WriteLine("Resolves anchors for an owner - like the Smtp Gateway would.");
             Console.WriteLine("    owner [options]");
+            Console.WriteLine("\t owner: Anchor owner");
             CertificateCommands.PrintOptionsUsage();
         }
-        
+
+        //---------------------------------------
+        //
+        // Implementation details
+        //
+        //---------------------------------------               
         internal static void PushCerts(string owner, IEnumerable<X509Certificate2> certs, bool checkForDupes)
         {
             AnchorStoreClient client = ConfigConsole.Current.AnchorClient;

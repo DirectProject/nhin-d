@@ -34,7 +34,15 @@ namespace NHINDirect.Config.Command
         public AddressCommands()
         {            
         }
-        
+
+        //---------------------------------------
+        //
+        // Commands
+        //
+        //---------------------------------------
+        /// <summary>
+        /// Add a new email address
+        /// </summary>
         public void Command_Address_Add(string[] args)
         {
             MailAddress address = new MailAddress(args.GetRequiredValue(0));            
@@ -62,9 +70,16 @@ namespace NHINDirect.Config.Command
         public void Usage_Address_Add()
         {
             Console.WriteLine("Add a new email address. The address domain must already exist.");
-            Console.WriteLine("    emailAddress [addressType (default:SMTP)] [displayName]");
+            Console.WriteLine("    emailAddress [addressType] [displayName]");
+            Console.WriteLine("\t emailAddress: valid email address. Verifies that the domain already exists.");
+            Console.WriteLine("\t addressType: (optional) such as XDR. Used for routing. default:SMTP");
+            Console.WriteLine("\t displayName: (optional)");
         }
         
+        /// <summary>
+        /// Set the display name for an address
+        /// </summary>
+        /// <param name="args"></param>
         public void Command_Address_DisplayName_Set(string[] args)
         {
             string emailAddress = args.GetRequiredValue(0);
@@ -78,14 +93,18 @@ namespace NHINDirect.Config.Command
             
             address.DisplayName = displayName;
             ConfigConsole.Current.AddressClient.UpdateAddress(address);
-        }
-        
+        }        
         public void Usage_Address_DisplayName_Set()
         {
             Console.WriteLine("Set the display name for the given address");
             Console.WriteLine("    emailAddress displayname");
+            Console.WriteLine("\t emailAddress: existing email address.");
+            Console.WriteLine("\t displayname: new display name.");
         }
         
+        /// <summary>
+        /// Retrieve an existing address
+        /// </summary>
         public void Command_Address_Get(string[] args)
         {
             MailAddress email = new MailAddress(args.GetRequiredValue(0));
@@ -98,7 +117,10 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Retrieve an existing address.");
             Console.WriteLine("    emailAddress");
         }
-                
+        
+        /// <summary>
+        /// Remove an existing email address
+        /// </summary>
         public void Command_Address_Remove(string[] args)
         {
             MailAddress address = new MailAddress(args.GetRequiredValue(0));
@@ -110,6 +132,9 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("    emailAddress");
         }
         
+        /// <summary>
+        /// List all email addresses in a domain
+        /// </summary>
         public void Command_Address_List(string[] args)
         {
             string domainName = args.GetRequiredValue(0);
@@ -121,9 +146,14 @@ namespace NHINDirect.Config.Command
         {
             Console.WriteLine("List addresses for a domain.");
             Console.WriteLine("   domainName [chunkSize]");
-            Console.WriteLine("\tchunkSize: Number of addresses to download from service at a time.");
+            Console.WriteLine("\t domainName: list addresses for this domain");
+            Console.WriteLine("\tchunkSize: (optional) Number of addresses to download from service at a time. Default is {0}", DefaultChunkSize);
         }
-
+        
+        /// <summary>
+        /// List all email addresses
+        /// </summary>
+        /// <param name="args"></param>
         public void Command_Address_ListAll(string[] args)
         {
             int chunkSize = args.GetOptionalValue<int>(0, DefaultChunkSize);
@@ -136,6 +166,10 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("\tchunkSize: Number of addresses to download from service at a time.");
         }
         
+        /// <summary>
+        /// Set the status of a specific email address
+        /// </summary>
+        /// <param name="args"></param>
         public void Command_Address_Status_Set(string[] args)
         {
             MailAddress emailAddress = new MailAddress(args.GetRequiredValue(0));
@@ -154,8 +188,13 @@ namespace NHINDirect.Config.Command
         {
             Console.WriteLine("Set the status of an address");
             Console.WriteLine("    emailAddress status");
+            Console.WriteLine("\t emailAddress: set the status of this address");
+            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString);
         }
-
+        
+        /// <summary>
+        /// Return # of addresses in a domain
+        /// </summary>
         public void Command_Address_Count(string[] args)
         {
             string domainName = args.GetRequiredValue(0);
@@ -166,6 +205,12 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Retrieve # of addresses in given domain.");
             Console.WriteLine("  domainName");
         }
+
+        //---------------------------------------
+        //
+        // Impl
+        //
+        //---------------------------------------
         
         internal Address GetAddress(string email)
         {
