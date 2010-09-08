@@ -88,7 +88,7 @@ public class XMLUtils {
      *            The factory class.
      * @return an object representation of the string.
      */
-    public static Object unmarshal(String xml, Class factory) throws JAXBException {
+    public static Object unmarshal(String xml, Class<?> factory) throws JAXBException {
         javax.xml.bind.JAXBContext jaxbCtx = null;
 
         try {

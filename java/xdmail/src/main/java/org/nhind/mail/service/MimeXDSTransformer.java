@@ -60,6 +60,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.AssociationType1;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExternalIdentifierType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.InternationalStringType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.LocalizedStringType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
@@ -72,6 +73,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nhind.ccddb.CCDParser;
 import org.nhind.mail.util.DocumentRepositoryUtils;
 import org.nhind.mail.util.MimeType;
+import org.nhind.mail.util.XMLUtils;
 
 /*
  * TODO there is a major assumption within this class and underlying classes.  That is the assumption of single document. 
@@ -90,6 +92,9 @@ import org.nhind.mail.util.MimeType;
  */
 public class MimeXDSTransformer {
     
+    /**
+     * Class logger.
+     */
     private static final Logger LOGGER = Logger.getLogger(MimeXDSTransformer.class.getName());
 
     /*
@@ -120,9 +125,6 @@ public class MimeXDSTransformer {
     private String remoteHost = null;
     private String pid = null;
     private String from = null;
-    
-//    private String suffix = null;
-//    private String replyEmail = null;
 
     /**
      * Entry point for the MimeXDSTransformer class. This will forward a given
@@ -179,6 +181,12 @@ public class MimeXDSTransformer {
             throw e;
         }
         
+        // Inspect the message
+        //
+        // QName qname = new QName("urn:ihe:iti:xds-b:2007", "ProvideAndRegisterDocumentSet_bRequest");
+        // String body = XMLUtils.marshal(qname, prds, ihe.iti.xds_b._2007.ObjectFactory.class);
+        // LOGGER.info(body);
+        
         RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(prds);
         
         String test = rrt.getStatus();
@@ -190,6 +198,8 @@ public class MimeXDSTransformer {
         LOGGER.info("Handling complete");
     }
 
+    
+    
     /**
      * Transform a MimeMessage object into a
      * ProvideAndRegisterDocumentSetRequestType object.
@@ -255,7 +265,7 @@ public class MimeXDSTransformer {
                         if (StringUtils.contains(fname, ".zip")) {
                             try {
                                 prsr = getXDMRequest(bodyPart);
-                                 LOGGER.info("returning XDM based request");
+                                LOGGER.info("returning XDM based request");
                                 return prsr;
                             } catch (Exception x) {
                                 // TODO, probably not an XDM
@@ -417,29 +427,35 @@ public class MimeXDSTransformer {
             String auth, String recip) {
         SubmitObjectsRequest req = new SubmitObjectsRequest();
         RegistryObjectListType rolt = new RegistryObjectListType();
-
+        List<JAXBElement<? extends IdentifiableType>> elems = rolt.getIdentifiable();
+        
+        LOGGER.info("Creating ExtrinsicObjectType object inside getSubmitObjectsRequest");
         ExtrinsicObjectType eot = getExtrinsicObject(patientId, orgId, person, sentDate, docId, formatCode, mimeType, auth);
         QName qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "ExtrinsicObject");
-        JAXBElement eotj = new JAXBElement(qname, ExtrinsicObjectType.class, eot);
+        JAXBElement<ExtrinsicObjectType> eotj = new JAXBElement<ExtrinsicObjectType>(qname, ExtrinsicObjectType.class, eot);
 
+        LOGGER.info("Creating RegistryPackageType object inside getSubmitObjectsRequest");        
         RegistryPackageType rpt = getSubmissionSet(patientId, orgId, subject, sentDate, subId, auth, recip);
         qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "RegistryPackage");
-        JAXBElement rptj = new JAXBElement(qname, RegistryPackageType.class, rpt);
+        JAXBElement<RegistryPackageType> rptj = new JAXBElement<RegistryPackageType>(qname, RegistryPackageType.class, rpt);
 
+        LOGGER.info("Creating ClassificationType object inside getSubmitObjectsRequest");    
         ClassificationType clas = getClassification(rpt.getId());
         qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "Classification");
-        JAXBElement clasj = new JAXBElement(qname, ClassificationType.class, clas);
+        JAXBElement<ClassificationType> clasj = new JAXBElement<ClassificationType>(qname, ClassificationType.class, clas);
 
+        LOGGER.info("Creating AssociationType1 object inside getSubmitObjectsRequest");    
         AssociationType1 ass = getAssociation(rpt.getId(), eot.getId());
         qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "Association");
-        JAXBElement assj = new JAXBElement(qname, AssociationType1.class, ass);
+        JAXBElement<AssociationType1> assj = new JAXBElement<AssociationType1>(qname, AssociationType1.class, ass);
 
-        List elems = rolt.getIdentifiable();
+        LOGGER.info("Building JAXBElements list");    
         elems.add(eotj);
         elems.add(rptj);
         elems.add(clasj);
         elems.add(assj);
 
+        LOGGER.info("Building SubmitObjectsRequest object");    
         req.setRegistryObjectList(rolt);
 
         return req;
@@ -518,35 +534,30 @@ public class MimeXDSTransformer {
         snames = Arrays.asList("History and Physical");
         slotNames = Arrays.asList("codingScheme");
         slotValues = Arrays.asList("Connect-a-thon classCodes");
-        
         addClassifications(classifs, docId, "c102", "uuid:41a5887f-8865-4c09-adf7-e362475b143a",
                 "History and Physical", slotNames, slotValues, snames);
         
         snames = Arrays.asList(formatCode);
         slotNames = Arrays.asList("codingScheme");
         slotValues = Arrays.asList("Connect-a-thon formatCodes");
-
         addClassifications(classifs, docId, "c104", "urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d", formatCode,
                 slotNames, slotValues, snames);
         
         snames = Arrays.asList("OF");
         slotNames = Arrays.asList("codingScheme");
         slotValues = Arrays.asList("Connect-a-thon healthcareFacilityTypeCodes");
-
         addClassifications(classifs, docId, "c105", "urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1", "OF", slotNames,
                 slotValues, snames);
         
         snames = Arrays.asList("Multidisciplinary");
         slotNames = Arrays.asList("codingScheme");
         slotValues = Arrays.asList("Connect-a-thon practiceSettingCodes");        
-
         addClassifications(classifs, docId, "c106", "urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead",
                 "Multidisciplinary", slotNames, slotValues, snames);
         
         snames = Arrays.asList("34133-9");
         slotNames = Arrays.asList("codingScheme");
         slotValues = Arrays.asList("LOINC");    
-        
         addClassifications(classifs, docId, "c107", "urn:uuid:f0306f51-975f-434e-a61c-c59651d33983", "34133-9",
                 slotNames, slotValues, snames);
 

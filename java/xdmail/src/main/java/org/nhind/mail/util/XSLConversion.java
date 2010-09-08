@@ -96,7 +96,7 @@ public class XSLConversion {
                          * Use the TransformerFactory to instantiate a Template
                          * that is thread safe for use in generating Transfomers
                          */
-                        InputStream is = this.getClass().getResourceAsStream(mapFile);
+                        InputStream is = this.getClass().getClassLoader().getResourceAsStream(mapFile);
 
                         if (is == null) {
                             LOGGER.info("Mapfile did not read " + mapFile);
