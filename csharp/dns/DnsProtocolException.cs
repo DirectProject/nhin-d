@@ -126,6 +126,22 @@ namespace DnsResolver
         /// CERT RR was invalid
         /// </summary>
         InvalidCertRecord,
+        /// <summary>
+        /// Invalid Request
+        /// </summary>
+        InvalidRequest,
+        /// <summary>
+        /// Invalid message header
+        /// </summary>
+        InvalidHeader,
+        /// <summary>
+        /// Invalid question in message
+        /// </summary>
+        InvalidQuestion,
+        /// <summary>
+        /// Invalid response message
+        /// </summary>
+        InvalidResponse
     }
 
     /// <summary>
