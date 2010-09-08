@@ -14,28 +14,23 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
-using System.Net.Mail;
 using System.IO;
+
+using Health.Net.Diagnostics.NLog;
+
 using NHINDirect.Agent;
-using NHINDirect.Agent.Config;
 using NHINDirect.Certificates;
+using NHINDirect.Container;
 using NHINDirect.Diagnostics;
-using NHINDirect.Mail;
-using NHINDirect.Mime;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client.DomainManager;
 using System.Diagnostics;
-using CDO;
-using ADODB;
 
 namespace NHINDirect.SmtpAgent
 {    
     public class SmtpAgent
     {
+    	ILogger m_logger;
         SmtpAgentSettings m_settings;
         NHINDAgent m_agent;
         DomainPostmasters m_postmasters;
@@ -62,13 +57,14 @@ namespace NHINDirect.SmtpAgent
             }
         }
 
-        public LogFile Log
-        {
-            get
-            {
-                return m_diagnostics.Log;
-            }
-        }
+		[Obsolete("We should use a different logger for each different class")]
+		public ILogger Log
+		{
+			get
+			{
+				return m_logger;
+			}
+		}
                 
         public NHINDAgent SecurityAgent
         {
@@ -108,7 +104,7 @@ namespace NHINDirect.SmtpAgent
         /// </summary>
         public void LogStatus(string message)
         {
-            m_diagnostics.LogStatus(message);
+			m_logger.Info(message);
         }
 
         //---------------------------------------------------
@@ -120,8 +116,14 @@ namespace NHINDirect.SmtpAgent
         {
             m_settings = settings;
             m_settings.Validate();
-            
-            m_diagnostics = new AgentDiagnostics(new LogFile(m_settings.LogSettings.CreateWriter()), m_settings.LogVerbose);
+
+        	SimpleDependencyResolver resolver = new SimpleDependencyResolver();
+        	resolver.Register<ILogFactory>(() => new NLogFactory());
+        	IoC.Initialize(resolver);
+
+        	m_logger = IoC.Resolve<ILogFactory>().GetLogger(GetType());
+
+            m_diagnostics = new AgentDiagnostics(m_settings.LogVerbose);
             m_configService = new ConfigService(m_settings);
             
             this.LogStatus("Init_Begin");
@@ -148,8 +150,7 @@ namespace NHINDirect.SmtpAgent
             }
             catch (Exception error)
             {
-                this.LogStatus("Init_Failed");
-                m_diagnostics.LogError(error);
+				m_logger.Error("Init_Failed", error);
                 throw;
             }
         }
@@ -331,7 +332,7 @@ namespace NHINDirect.SmtpAgent
             catch (Exception ex)
             {
                 this.RejectMessage(message);
-                m_diagnostics.LogError(ex);
+                m_logger.Error("While processing message", ex);
                 throw;
             }
         }
@@ -601,7 +602,7 @@ namespace NHINDirect.SmtpAgent
             }
             catch (Exception ex)
             {
-                m_diagnostics.LogError(ex);
+                m_logger.Error("While sending notification", ex);
             }
         }
 
@@ -657,7 +658,7 @@ namespace NHINDirect.SmtpAgent
             }
             catch (Exception ex)
             {
-                m_diagnostics.LogError(ex);
+                m_logger.Error("While copying message", ex);
             }
         }
     }
