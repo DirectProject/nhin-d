@@ -55,8 +55,6 @@
   <ItemGroup>
     <Compile Include="Caching\DnsClientWithCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseCacheFacts.cs" />
-    <Compile Include="Diagnostics\TestHourly.cs" />
-    <Compile Include="Diagnostics\Test24.cs" />
     <Compile Include="Mail\RoundTripFacts.cs" />
     <Compile Include="Mail\TestMDN.cs" />
     <Compile Include="Mime\BodyFacts.cs" />
@@ -103,6 +101,9 @@
     <Content Include="metadata\dns responses\www.yahoo.com.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Diagnostics\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
