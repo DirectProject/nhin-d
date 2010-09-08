@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace NHINDirect.Diagnostics
@@ -134,14 +131,14 @@ namespace NHINDirect.Diagnostics
             
         }
         
-        /// <summary>
-        /// Creates a writer instance using these settings.
-        /// </summary>
-        /// <returns></returns>
-        public LogWriter CreateWriter()
-        {
-            this.Validate();
-            return new LogWriter(this.DirectoryPath, this.NamePrefix, this.Ext, this.FileChangeFrequency, this.UseUTC);
-        }
+        // <summary>
+        // Creates a writer instance using these settings.
+        // </summary>
+        // <returns></returns>
+		//public LogWriter CreateWriter()
+		//{
+		//    this.Validate();
+		//    return new LogWriter(this.DirectoryPath, this.NamePrefix, this.Ext, this.FileChangeFrequency, this.UseUTC);
+		//}
     }
 }
