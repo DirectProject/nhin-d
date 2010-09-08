@@ -8,8 +8,8 @@
     <ProjectGuid>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Health.Net.Diagnostics</RootNamespace>
-    <AssemblyName>Health.Net.Diagnostics</AssemblyName>
+    <RootNamespace>Health.Net.Diagnostics.NLog</RootNamespace>
+    <AssemblyName>Health.Net.Diagnostics.NLog</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -49,12 +49,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ILogFactory.cs" />
-    <Compile Include="ILogger.cs" />
     <Compile Include="LogManager.cs" />
-    <Compile Include="NLog\NLogFactory.cs" />
-    <Compile Include="NLog\NLogLogger.cs" />
+    <Compile Include="NLogFactory.cs" />
+    <Compile Include="NLogLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\common\nhinCommon.csproj">
+      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
+      <Name>nhinCommon</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
