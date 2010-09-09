@@ -274,7 +274,7 @@ namespace NHINDirect.Mime
         /// <param name="headerText">The string to split.</param>
         /// <param name="separator">The <see cref="char"/> to split by.</param>
         /// <returns>The split <see cref="StringSegment"/> instances</returns>
-        public abstract IEnumerable<StringSegment> SplitHeader(string headerText, char separator);
+        public abstract IEnumerable<StringSegment> SplitHeaderValue(string headerText, char separator);
 
         /// <summary>
         /// Splits a header string <paramref name="headerText"/> into header name and value.

@@ -158,7 +158,7 @@ namespace NHINDirect.Mime
         /// <param name="headerText">The string to split.</param>
         /// <param name="separator">The <see cref="char"/> to split by.</param>
         /// <returns>The split <see cref="StringSegment"/> instances</returns>
-        public override IEnumerable<StringSegment> SplitHeader(string headerText, char separator)
+        public override IEnumerable<StringSegment> SplitHeaderValue(string headerText, char separator)
         {
             return StringSegment.Split(headerText, separator);
         }
