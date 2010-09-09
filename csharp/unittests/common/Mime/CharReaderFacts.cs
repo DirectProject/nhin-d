@@ -4,6 +4,7 @@
 
  Authors:
     John Theisen     john.theisen@kryptiq.com
+    Arien Malec      arien.malec@nhindirect.org
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -106,7 +107,13 @@ namespace NHINDirect.Tests.Mime
             Assert.Equal('1', reader.Read());
         }
 
-
-
+        [Fact]
+        public void GetSegmentShouldReturnSegment()
+        {
+            string source = "abc:123";
+            CharReader reader = new CharReader(source);
+            Assert.Equal("abc", reader.GetSegment(0, 2).ToString());
+            Assert.Equal("123", reader.GetSegment(4, 6).ToString());
+        }
 	}
 }
