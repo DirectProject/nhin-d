@@ -60,7 +60,7 @@ namespace NHINDirect.Mime
 		/// </summary>
 		/// <param name="source">The text to construct the buffer from.</param>
 		/// <param name="position">The initial position of the buffer</param>
-		/// <param name="maxPosition">The maximim position to scan of the buffer.</param>
+		/// <param name="maxPosition">The maximum position to which to scan the buffer.</param>
     	private CharReader(string source, int position, int maxPosition)
     	{
 			if (string.IsNullOrEmpty(source))
@@ -106,11 +106,11 @@ namespace NHINDirect.Mime
         }
 
 		/// <summary>
-		/// Read up to the end
+		/// Read up the specified character, or to the end, skippng escaped characters.
 		/// </summary>
-		/// <param name="chTo"></param>
-		/// <param name="ignoreEscape"></param>
-		/// <returns></returns>
+		/// <param name="chTo">The character to read to</param>
+		/// <param name="ignoreEscape">Indicates if the reader should skip escape characters</param>
+		/// <returns><c>true</c> if the character was found, <c>false</c> if not, and reader is at end</returns>
 		public bool ReadTo(char chTo, bool ignoreEscape)
 		{
 			char ch;

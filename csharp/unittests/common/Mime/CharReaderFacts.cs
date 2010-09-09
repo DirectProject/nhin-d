@@ -42,5 +42,71 @@ namespace NHINDirect.Tests.Mime
 		{
 			Assert.Throws<ArgumentException>(() => new CharReader(source));
 		}
+
+        [Fact]
+        public void CharReaderShouldReadCharacters()
+        {
+            string source = "abc";
+            CharReader reader = new CharReader(source);
+            Assert.False(reader.IsDone);
+            Assert.Equal('a', reader.Read());
+            Assert.Equal('b', reader.Read());
+            Assert.Equal('c', reader.Read());
+            Assert.Equal(CharReader.EOF, reader.Read());
+            Assert.True(reader.IsDone);
+        }
+
+        [Fact]
+        public void CharReaderShouldReadToCharacter()
+        {
+            StringSegment source = new StringSegment("abc:123");
+            CharReader reader = new CharReader(source);
+            reader.ReadTo(':', false);
+            Assert.Equal(3, reader.Position);
+        }
+
+        [Fact]
+        public void CharReaderShouldSkipEscape()
+        {
+            string source = "a\\:c:123";
+            CharReader reader = new CharReader(source);
+
+            reader.ReadTo(':', true);
+            Assert.Equal(4, reader.Position);
+        }
+
+        [Fact]
+        public void CharReaderNotAtEndIfFindsCharacter()
+        {
+            string source = "abc:123";
+            CharReader reader = new CharReader(source);
+
+            bool found = reader.ReadTo(':', false);
+            Assert.True(found);
+            Assert.False(reader.IsDone);
+        }
+
+        [Fact]
+        public void CharReaderShouldBeAtEndIfItDoesNotFindChar()
+        {
+            string source = "abc:123";
+            CharReader reader = new CharReader(source);
+
+            bool found = reader.ReadTo('?', false);
+            Assert.False(found);
+            Assert.True(reader.IsDone);
+        }
+
+        [Fact]
+        public void CharReaderKeepsReadingAfterFoundPosition()
+        {
+            string source = "abc:123";
+            CharReader reader = new CharReader(source);
+            reader.ReadTo(':', false);
+            Assert.Equal('1', reader.Read());
+        }
+
+
+
 	}
 }
