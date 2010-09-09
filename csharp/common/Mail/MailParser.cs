@@ -264,7 +264,7 @@ namespace NHINDirect.Mail
                 throw new ArgumentNullException("collection");
             }
 
-            foreach (StringSegment part in MimeSerializer.Default.SplitHeader(headerValue, MailStandard.MailAddressSeparator))
+            foreach (StringSegment part in MimeSerializer.Default.SplitHeaderValue(headerValue, MailStandard.MailAddressSeparator))
             {
                 if (!part.IsEmpty)
                 {
@@ -302,7 +302,7 @@ namespace NHINDirect.Mail
             recipients = recipients.Replace("SMTP:", string.Empty);
 
             TCollection collection = new TCollection();
-            foreach (StringSegment part in MimeSerializer.Default.SplitHeader(recipients, ';'))
+            foreach (StringSegment part in MimeSerializer.Default.SplitHeaderValue(recipients, ';'))
             {
                 if (!part.IsEmpty)
                 {
