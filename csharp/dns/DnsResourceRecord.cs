@@ -213,7 +213,7 @@ namespace DnsResolver
         {
             if (buffer == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("buffer");
             }
             
             m_header.Serialize(buffer);

@@ -55,7 +55,7 @@ namespace NHINDirect.Config.Client.DomainManager
         {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
             
             return client.GetDomain(address.Host);

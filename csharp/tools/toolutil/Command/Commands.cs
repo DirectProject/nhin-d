@@ -112,7 +112,7 @@ namespace NHINDirect.Tools.Command
         {
             if (instance == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("instance");
             }
                                    
             Type type = instance.GetType();

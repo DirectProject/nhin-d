@@ -68,7 +68,7 @@ namespace NHINDirect.Mime
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("value");
                 }
                 
                 m_contentType = value;

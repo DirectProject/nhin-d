@@ -72,7 +72,7 @@ namespace NHINDirect.Agent
         {
             if (validator == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("validator");
             }
             
             m_certChainValidator = validator;

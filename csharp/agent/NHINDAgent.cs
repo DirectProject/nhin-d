@@ -455,7 +455,7 @@ namespace NHINDirect.Agent
         {
             if (envelope == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("envelope");
             }
             
             return this.ProcessIncoming(new IncomingMessage(envelope));

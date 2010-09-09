@@ -42,7 +42,7 @@ namespace NHINDirect.Config.Client.CertificateService
         {
             if (cert == null)
             {
-                throw new ArgumentNullException();  
+                throw new ArgumentNullException("cert");  
             }
             
             client.AddCertificates(new Certificate[] {cert});

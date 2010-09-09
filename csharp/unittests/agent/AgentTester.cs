@@ -40,9 +40,14 @@ namespace AgentTests
         
         public AgentTester(NHINDAgent agentA, NHINDAgent agentB)
         {
-            if (agentA == null || agentB == null)
+            if (agentA == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("agentA");
+            }
+
+            if (agentB == null)
+            {
+                throw new ArgumentNullException("agentB");
             }
             
             m_agentA = agentA;

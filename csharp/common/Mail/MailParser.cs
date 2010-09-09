@@ -188,7 +188,7 @@ namespace NHINDirect.Mail
         /// </param>
         public static void ParseAddressCollection<T, TCollection>(TCollection collection, Header header, Func<string, T> constructor)
             where T : MailAddress
-            where TCollection : IList<T>
+            where TCollection : class, IList<T>
         {
             if (header == null)
             {
@@ -197,7 +197,7 @@ namespace NHINDirect.Mail
 
             if (collection == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("collection");
             }
             
             ParseAddressCollection<T, TCollection>(collection, header.Value, constructor);

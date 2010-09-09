@@ -32,7 +32,7 @@ namespace NHINDirect.Tools.Command
         {
             if (args == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("args");
             }
 
             m_rawArgs = args;

@@ -187,7 +187,7 @@ namespace DnsResolver
         {         
             if (server == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("server");
             }   
             
             this.m_dnsServer = server;

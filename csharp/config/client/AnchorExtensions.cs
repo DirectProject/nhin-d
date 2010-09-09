@@ -35,7 +35,7 @@ namespace NHINDirect.Config.Client.CertificateService
         {
             if (certificate == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("certificate");
             }
             
             return client.Contains(owner, certificate.Thumbprint);

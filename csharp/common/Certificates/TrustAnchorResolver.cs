@@ -85,9 +85,13 @@ namespace NHINDirect.Certificates
         /// <param name="incomingAnchors">The resolver to use for resolving trust anchors for incoming messages</param>
         public TrustAnchorResolver(ICertificateResolver outgoingAnchors, ICertificateResolver incomingAnchors)
         {
-            if (outgoingAnchors == null || incomingAnchors == null)
+            if (outgoingAnchors == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("outgoingAnchors");
+            }
+            if (incomingAnchors == null)
+            {
+                throw new ArgumentNullException("incomingAnchors");
             }
             
             m_outgoingAnchors = outgoingAnchors;

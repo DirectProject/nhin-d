@@ -44,7 +44,7 @@ namespace NHINDirect.Agent
         {
             if (signer == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("signer");
             }            
             
             m_signer = signer;

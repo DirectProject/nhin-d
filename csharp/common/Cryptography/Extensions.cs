@@ -48,7 +48,7 @@ namespace NHINDirect.Cryptography
         {
             if (matcher == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("matcher");
             }
             
             for (int i = 0, count = signers.Count; i < count; ++i)

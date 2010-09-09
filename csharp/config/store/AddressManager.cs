@@ -57,7 +57,7 @@ namespace NHINDirect.Config.Store
         {
             if (addresses == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("addresses");
             }
             
             using (ConfigDatabase db = this.Store.CreateContext())

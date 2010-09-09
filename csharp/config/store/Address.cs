@@ -176,7 +176,7 @@ namespace NHINDirect.Config.Store
         {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
             
             return this.Match(address.Address);

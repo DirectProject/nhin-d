@@ -43,7 +43,7 @@ namespace NHINDirect.SmtpAgent
         {
             if (message == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("message");
             }
             m_message = message;
         }

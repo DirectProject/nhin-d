@@ -42,7 +42,7 @@ namespace NHINDirect.SmtpAgent
         {
             if (certClientSettings == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("certClientSettings");
             }
             
             m_certClientSettings = certClientSettings;

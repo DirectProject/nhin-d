@@ -116,7 +116,7 @@ namespace NHINDirect.Cryptography
         {
             if (contentType == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("contentType");
             }
 
             return (   contentType.IsMediaType(CmsEnvelopeMediaType) 

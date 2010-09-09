@@ -239,7 +239,7 @@ namespace NHINDirect.Mime
         {
             if (entity == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("entity");
             }
             
             this.ClearParsedHeaders();

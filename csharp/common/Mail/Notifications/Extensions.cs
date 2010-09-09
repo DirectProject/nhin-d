@@ -108,9 +108,14 @@ namespace NHINDirect.Mail.Notifications
         /// <returns>Null if no notification should be issued</returns>
         public static NotificationMessage CreateNotificationMessage(this Message message, MailAddress from, Notification notification)
         {
-            if (from == null || notification == null)
+            if (from == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("from");
+            }
+
+            if (notification == null)
+            {
+                throw new ArgumentNullException("notification");
             }
 
             if (!message.ShouldIssueNotification())
