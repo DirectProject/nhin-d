@@ -83,7 +83,7 @@ namespace NHINDirect.Tests.Caching
                     DnsBufferReader reader = new DnsBufferReader(buff, 0, buff.Count());
 
                     // get a dr 
-                    dr = new DnsResponse(ref reader);
+                    dr = new DnsResponse(reader);
                     m_responses.Add(dr);
                 }
 

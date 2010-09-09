@@ -4,7 +4,6 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-    Sean Nolan      seannol@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -16,66 +15,83 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Net;
+using System.Net.Sockets;
+using DnsResolver;
 
-namespace DnsResolver
+namespace DnsResponder
 {
-    /// <summary>
-    /// Represents a CNAME DNS RDATA
-    /// </summary>
-    /// <remarks>
-    /// See RFC 1035, Section 3.3.1
-    /// 
-    /// Data layout:
-    /// <code>
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// /                     CNAME                     /
-    /// /                                               /
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// </code>
-    /// </remarks>
-    public class CNameRecord : DnsResourceRecord
+    public abstract class DnsResponder
     {
-        string m_name;
+        DnsServer m_server;
         
-        internal CNameRecord()
+        public DnsResponder(DnsServer server)
         {
+            if (server == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            m_server = server;
         }
         
-        /// <summary>
-        /// Gets and sets the CName as a string (a dotted domain name)
-        /// </summary>
-        public string CName
+        public DnsServer Server
         {
             get
             {
-                return m_name;
+                return m_server;
             }
-            set
+        }
+        
+        public DnsServerSettings Settings
+        {
+            get
             {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new DnsProtocolException(DnsProtocolError.InvalidCNameRecord);
-                }
-                
-                m_name = value;
+                return m_server.Settings;
             }
         }
-        /// <summary>
-        /// Serialize the CName record
-        /// </summary>
-        /// <param name="buffer"></param>
-        protected override void SerializeRecordData(DnsBuffer buffer)
+
+        public event Action<DnsResponder, DnsRequest> Received;
+        public event Action<DnsResponder, DnsResponse> Responding;
+        
+        public DnsResponse ProcessRequest(DnsRequest request)
         {
-            buffer.AddDomainName(m_name);
+            if (request == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            if (request.Header.QuestionCount < 1)
+            {
+                throw new DnsProtocolException(DnsProtocolError.InvalidQuestionCount);
+            }
+            
+            return m_server.Store.Get(request);
         }
-        /// <summary>
-        /// Creates an instance from the DNS message from a DNS reader.
-        /// </summary>
-        /// <param name="reader">The DNS reader</param>
-        protected override void DeserializeRecordData(ref DnsBufferReader reader)
+
+        public DnsResponse ProcessError(DnsRequest request, DnsStandard.ResponseCode code)
         {
-            m_name = reader.ReadDomainName();
+            DnsResponse errorResponse = new DnsResponse(request);
+            errorResponse.Header.ResponseCode = code;
+            return errorResponse;
+        }
+        
+        protected void NotifyReceived(DnsRequest request)
+        {
+            if (this.Received != null)
+            {
+                this.Received.SafeInvoke(this, request);
+            }
+        }
+        
+        protected void NotifyResponse(DnsResponse response)
+        {
+            if (this.Responding != null)
+            {
+                this.Responding.SafeInvoke(this, response);
+            }
         }
     }
 }

@@ -71,7 +71,7 @@ namespace DnsResolver
         /// this RR among others at the same owner.  Lower values
         /// are preferred.</param>
         public MXRecord(string name, string exchange, short preference)
-            : base(name, Dns.RecordType.MX)
+            : base(name, DnsStandard.RecordType.MX)
         {
             this.Preference = preference;
             this.Exchange = exchange;
@@ -128,7 +128,7 @@ namespace DnsResolver
             }
             
             return (
-                    Dns.Equals(m_exchange, mxRecord.m_exchange)
+                    DnsStandard.Equals(m_exchange, mxRecord.m_exchange)
                 &&  this.Preference == mxRecord.Preference
             );
         }

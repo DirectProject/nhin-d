@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net.Sockets;
 
 namespace DnsResolver
 {
@@ -278,7 +279,7 @@ namespace DnsResolver
                 throw new ArgumentException("value was less than 1", "length");
             }
 
-            if (length > Dns.MAXLABELLENGTH)
+            if (length > DnsStandard.MaxLabelLength)
             {
                 throw new DnsProtocolException(DnsProtocolError.LabelTooLong);
             }
