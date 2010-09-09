@@ -26,6 +26,17 @@ namespace NHINDirect.Mime
     /// <summary>
     /// Represents a MIME entity -- the collection of MIME headers and the associated body.
     /// </summary>
+    /// <example>
+    /// The following constructs a multipart entity with two subparts:
+    /// <code>
+    /// MimeEntity e = new MimeEntity();
+    /// MimeEntityCollection c = new MimeEntityCollection("multipart/mixed");
+    /// c.Entities.Add(new MimeEntity("Text part", "text/plain"));
+    /// c.Entities.Add(new MimeEntity("<html><body><p>Hello, World!</p></body></html>", "text/html"));
+    /// e.UpdateBody(c);
+    /// </code>
+    /// 
+    /// </example>
     public class MimeEntity
     {
         HeaderCollection m_headers;
