@@ -4,7 +4,6 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-    Sean Nolan      seannol@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -16,66 +15,45 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Net;
+using DnsResolver;
 
-namespace DnsResolver
+namespace DnsResponder
 {
     /// <summary>
-    /// Represents a CNAME DNS RDATA
+    /// TEST CODE!! Remove
     /// </summary>
-    /// <remarks>
-    /// See RFC 1035, Section 3.3.1
-    /// 
-    /// Data layout:
-    /// <code>
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// /                     CNAME                     /
-    /// /                                               /
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// </code>
-    /// </remarks>
-    public class CNameRecord : DnsResourceRecord
+    public class RelayStore : IDnsStore
     {
-        string m_name;
+        IPAddress m_serverIP;
         
-        internal CNameRecord()
+        public RelayStore(string serverIP)
         {
+            m_serverIP = IPAddress.Parse(serverIP);
         }
         
-        /// <summary>
-        /// Gets and sets the CName as a string (a dotted domain name)
-        /// </summary>
-        public string CName
+        public DnsResponse Get(DnsRequest request)
         {
-            get
+            ushort requestID = request.RequestID;
+            DnsResponse response = null;
+            try
             {
-                return m_name;
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
+                using (DnsClient client = new DnsClient(m_serverIP))
                 {
-                    throw new DnsProtocolException(DnsProtocolError.InvalidCNameRecord);
+                    response = client.Resolve(request);
                 }
-                
-                m_name = value;
             }
-        }
-        /// <summary>
-        /// Serialize the CName record
-        /// </summary>
-        /// <param name="buffer"></param>
-        protected override void SerializeRecordData(DnsBuffer buffer)
-        {
-            buffer.AddDomainName(m_name);
-        }
-        /// <summary>
-        /// Creates an instance from the DNS message from a DNS reader.
-        /// </summary>
-        /// <param name="reader">The DNS reader</param>
-        protected override void DeserializeRecordData(ref DnsBufferReader reader)
-        {
-            m_name = reader.ReadDomainName();
+            finally
+            {
+                if (response != null)
+                {
+                    response.RequestID = requestID;
+                }            
+                request.RequestID = requestID;
+            }
+            return response;
         }
     }
 }

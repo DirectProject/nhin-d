@@ -47,7 +47,7 @@ namespace DnsResolver
         /// <param name="name">the domain name for which this is a record</param>
         /// <param name="address">The address as a 32-bit integer</param>
         public AddressRecord(string name, uint address)
-            : base(name, Dns.RecordType.ANAME)
+            : base(name, DnsStandard.RecordType.ANAME)
         {
             this.Address = address;
         }

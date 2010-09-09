@@ -71,3 +71,9 @@ csharp/config/service.sln
 csharp/config/service/ve-4D36.tmp
 csharp/config/store/configStore.sln
 csharp/external/xunit/xunit.console.sln
+glob:csharp/agent/Config/AgentSettings.xsd
+glob:csharp/config/install/umeshma3.config
+glob:csharp/config/install/umeshma4.config
+glob:csharp/config/service/ve-5E8C.tmp
+glob:csharp/config/service/ve-7A85.tmp
+glob:csharp/config/service/ve-8472.tmp

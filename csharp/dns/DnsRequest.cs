@@ -32,11 +32,59 @@ namespace DnsResolver
         /// </summary>
         /// <param name="qType">The record type to query</param>
         /// <param name="domain">The domain to query.</param>
-        public DnsRequest(Dns.RecordType qType, string domain)
-            : base(qType, domain)
+        public DnsRequest(DnsStandard.RecordType qType, string domain)
+            : this(new DnsQuestion(domain, qType))
         {
         }
-                
+        
+        /// <summary>
+        /// Construct a new Dns Question
+        /// </summary>
+        public DnsRequest(DnsQuestion question)
+            : base(question)
+        {
+            this.Header.IsRequest = true;
+            this.Header.IsTruncated = false;
+            this.Header.ResponseCode = DnsStandard.ResponseCode.Success;
+        }
+        /// <summary>
+        /// Construct a new Dns request object by parsing the data supplied by the given reader
+        /// </summary>
+        public DnsRequest(DnsBufferReader reader)
+            : base(ref reader)
+        {
+        }
+        
+        /// <summary>
+        /// Deserialize the dns request using the given reader
+        /// </summary>
+        /// <param name="reader"></param>
+        protected override void Deserialize(ref DnsBufferReader reader)
+        {
+            base.Deserialize(ref reader);            
+            this.Validate();            
+        }   
+        
+        /// <summary>
+        /// Validate the request. Throws DnsProtcolException if validation fails
+        /// </summary>        
+        public override void Validate()
+        {
+            base.Validate();
+            
+            DnsHeader header = this.Header;
+            if (
+                    !header.IsRequest
+                || header.AnswerCount != 0
+                || header.AdditionalAnswerCount != 0
+                || header.NameServerAnswerCount != 0
+                || header.IsTruncated
+            )                
+            {
+                throw new DnsProtocolException(DnsProtocolError.InvalidRequest);
+            }
+        }
+             
         /// <summary>
         /// Creates a new A request (query)
         /// </summary>
@@ -44,7 +92,7 @@ namespace DnsResolver
         /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateA(string domain)
         {
-            return new DnsRequest(Dns.RecordType.ANAME, domain);
+            return new DnsRequest(DnsStandard.RecordType.ANAME, domain);
         }
 
         /// <summary>
@@ -54,7 +102,7 @@ namespace DnsResolver
         /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreatePTR(string domain)
         {
-            return new DnsRequest(Dns.RecordType.PTR, domain);
+            return new DnsRequest(DnsStandard.RecordType.PTR, domain);
         }
 
         /// <summary>
@@ -64,7 +112,7 @@ namespace DnsResolver
         /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateNS(string domain)
         {
-            return new DnsRequest(Dns.RecordType.NS, domain);
+            return new DnsRequest(DnsStandard.RecordType.NS, domain);
         }
 
         /// <summary>
@@ -74,7 +122,7 @@ namespace DnsResolver
         /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateMX(string domain)
         {
-            return new DnsRequest(Dns.RecordType.MX, domain);
+            return new DnsRequest(DnsStandard.RecordType.MX, domain);
         }
 
         /// <summary>
@@ -84,7 +132,7 @@ namespace DnsResolver
         /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateTXT(string domain)
         {
-            return new DnsRequest(Dns.RecordType.TXT, domain);
+            return new DnsRequest(DnsStandard.RecordType.TXT, domain);
         }
 
         /// <summary>
@@ -94,7 +142,7 @@ namespace DnsResolver
         /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateCERT(string domain)
         {
-            return new DnsRequest(Dns.RecordType.CERT, domain);
+            return new DnsRequest(DnsStandard.RecordType.CERT, domain);
         }
 
         /// <summary>
@@ -104,7 +152,7 @@ namespace DnsResolver
         /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateSOA(string domain)
         {
-            return new DnsRequest(Dns.RecordType.SOA, domain);
+            return new DnsRequest(DnsStandard.RecordType.SOA, domain);
         }
     }
 }

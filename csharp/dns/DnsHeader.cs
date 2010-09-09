@@ -71,7 +71,7 @@ namespace DnsResolver
         /// Initializes a DNS header filled from the specified <paramref name="reader"/>
         /// </summary>
         /// <param name="reader">The reader containing raw data for the header.</param>
-        internal DnsHeader(ref DnsBufferReader reader)
+        public DnsHeader(ref DnsBufferReader reader)
         {
             this.Deserialize(ref reader);
         }
@@ -99,7 +99,7 @@ namespace DnsResolver
         /// The OPCODE for this message
         /// </summary>
         /// <remarks>See remarks for <see cref="OpCode"/></remarks>
-        public Dns.OpCode OpCode {get; set;}
+        public DnsStandard.OpCode OpCode {get; set;}
         /// <summary>
         /// The AA field expressed as a <see cref="bool"/>
         /// </summary>
@@ -134,7 +134,7 @@ namespace DnsResolver
         /// The RCODE for this header
         /// </summary>
         /// <remarks>See remarks for <see cref="ResponseCode"/></remarks>
-        public Dns.ResponseCode ResponseCode {get; set;}
+        public DnsStandard.ResponseCode ResponseCode {get; set;}
         /// <summary>
         /// Gets and sets the number of entries in the question section (QDCOUNT header value)
         /// </summary>
@@ -220,7 +220,24 @@ namespace DnsResolver
                 m_additionalAnswerCount = value;
             }
         }
-
+        
+        /// <summary>
+        /// Init the Header with some standardized defaults
+        /// </summary>
+        internal void Init()
+        {
+            this.IsRequest = true;
+            this.OpCode = DnsStandard.OpCode.Query;
+            this.IsAuthoritativeAnswer = false;
+            this.IsTruncated = false;
+            this.IsRecursionDesired = true;
+            this.IsRecursionAvailable = false;
+            this.ResponseCode = DnsStandard.ResponseCode.Success;
+            this.AnswerCount = 0;
+            this.NameServerAnswerCount = 0;
+            this.AdditionalAnswerCount = 0;
+        }
+        
         internal void Deserialize(ref DnsBufferReader buffer)
         {
             this.UniqueID = buffer.ReadUShort();
@@ -228,14 +245,14 @@ namespace DnsResolver
             byte b = buffer.ReadByte();
 
             this.IsRequest = ((b & 0x80) == 0);
-            this.OpCode = (Dns.OpCode)(byte)((b >> 3) & 0x0F);
+            this.OpCode = (DnsStandard.OpCode)(byte)((b >> 3) & 0x0F);
             this.IsAuthoritativeAnswer = ((b & 0x04) != 0);
             this.IsTruncated = ((b & 0x02) != 0);
             this.IsRecursionDesired = ((b & 0x01) != 0);
 
             b = buffer.ReadByte();
             this.IsRecursionAvailable = ((b & 0x80) != 0);
-            this.ResponseCode = (Dns.ResponseCode) (byte)(b & 0x0F);
+            this.ResponseCode = (DnsStandard.ResponseCode) (byte)(b & 0x0F);
 
             this.QuestionCount = buffer.ReadShort();
             this.AnswerCount = buffer.ReadShort();

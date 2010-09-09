@@ -4,7 +4,6 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-    Sean Nolan      seannol@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -16,66 +15,68 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Net;
+using System.Net.Sockets;
 
-namespace DnsResolver
+namespace DnsResponder
 {
-    /// <summary>
-    /// Represents a CNAME DNS RDATA
-    /// </summary>
-    /// <remarks>
-    /// See RFC 1035, Section 3.3.1
-    /// 
-    /// Data layout:
-    /// <code>
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// /                     CNAME                     /
-    /// /                                               /
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// </code>
-    /// </remarks>
-    public class CNameRecord : DnsResourceRecord
+    public class ProcessingContext
     {
-        string m_name;
-        
-        internal CNameRecord()
+        TcpServer m_listener;
+        Socket m_socket;
+        long m_socketID;
+
+        public ProcessingContext()
         {
         }
-        
-        /// <summary>
-        /// Gets and sets the CName as a string (a dotted domain name)
-        /// </summary>
-        public string CName
+
+        public TcpServer Listener
         {
             get
             {
-                return m_name;
+                return m_listener;
             }
-            set
+        }
+
+        public Socket Socket
+        {
+            get
             {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new DnsProtocolException(DnsProtocolError.InvalidCNameRecord);
-                }
-                
-                m_name = value;
+                return m_socket;
             }
         }
-        /// <summary>
-        /// Serialize the CName record
-        /// </summary>
-        /// <param name="buffer"></param>
-        protected override void SerializeRecordData(DnsBuffer buffer)
+
+        internal long SocketID
         {
-            buffer.AddDomainName(m_name);
+            get
+            {
+                return m_socketID;
+            }
         }
-        /// <summary>
-        /// Creates an instance from the DNS message from a DNS reader.
-        /// </summary>
-        /// <param name="reader">The DNS reader</param>
-        protected override void DeserializeRecordData(ref DnsBufferReader reader)
+        
+        internal bool HasValidSocket
         {
-            m_name = reader.ReadDomainName();
+            get
+            {
+                return (m_socketID > 0 && m_socket != null);
+            }
+        }
+        
+        internal void Init(TcpServer listener, Socket socket, long socketID)
+        {
+            m_listener = listener;
+            m_socket = socket;
+            m_socketID = socketID;
+        }
+
+        public virtual void Clear()
+        {
+            m_listener = null;
+            m_socketID = -1;
+            m_socket = null;
         }
     }
 }
