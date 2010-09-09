@@ -349,7 +349,7 @@ namespace NHINDirect.Agent
             {
                 if (value < TrustEnforcementStatus.Success)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value has a non-successful status", "value");
                 }
                 this.m_minTrustRequirement = value;
             }

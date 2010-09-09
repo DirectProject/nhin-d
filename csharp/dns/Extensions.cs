@@ -22,9 +22,13 @@ namespace DnsResolver
         /// <returns>The dotted domain name representing the email address for lookup</returns>
         public static string ConstructEmailDnsDomainName(this string dnsDomain, string localPart)
         {
-            if (string.IsNullOrEmpty(dnsDomain) || string.IsNullOrEmpty(localPart))
+            if (string.IsNullOrEmpty(dnsDomain))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value null or empty", "dnsDomain");
+            }
+            if (string.IsNullOrEmpty(localPart))
+            {
+                throw new ArgumentException("value null or empty", "localPart");
             }
 
             string extendedName;

@@ -75,7 +75,7 @@ namespace NHINDirect.Agent
         {
             if (string.IsNullOrEmpty(domain))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "domain");
             }
             
             return m_managedDomains.ContainsKey(domain);

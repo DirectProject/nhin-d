@@ -104,7 +104,7 @@ namespace NHINDirect.SmtpAgent
         {
             if (string.IsNullOrEmpty(messageText))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "messageText");
             }
 
             m_message.SetMessageText(messageText, true);

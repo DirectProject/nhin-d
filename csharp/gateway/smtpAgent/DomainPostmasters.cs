@@ -51,9 +51,13 @@ namespace NHINDirect.SmtpAgent
             }
             internal set
             {
-                if (string.IsNullOrEmpty(domain) || value == null)
+                if (value == null)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentNullException("value");
+                }
+                if (string.IsNullOrEmpty(domain))
+                {
+                    throw new ArgumentException("domain was null or empty", "domain");
                 }
                 
                 m_postmasters[domain] = value;

@@ -43,7 +43,7 @@ namespace DnsResolver
         {
             if (string.IsNullOrEmpty(certificate))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "certificate");
             }
 
             // This will also create a key tag

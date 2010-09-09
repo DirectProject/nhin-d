@@ -44,7 +44,7 @@ namespace NHINDirect.SmtpAgent
         {
             if (string.IsNullOrEmpty(pickupFolder))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value null or empty", "pickupFolder");
             }
             
             IEnumerable<MailAddress> senders = envelope.DomainRecipients.AsMailAddresses();

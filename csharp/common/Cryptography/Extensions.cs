@@ -90,7 +90,7 @@ namespace NHINDirect.Cryptography
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "name");
             }
 
             return signers.Find(x => (x.Certificate.MatchName(name) || x.Certificate.MatchEmailName(name)));

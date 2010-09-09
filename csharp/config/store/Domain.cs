@@ -136,7 +136,7 @@ namespace NHINDirect.Config.Store
         {
             if (string.IsNullOrEmpty(domainName))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "domainName");
             }
             try
             {

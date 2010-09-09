@@ -52,7 +52,7 @@ namespace NHINDirect.Config.Client.CertificateService
         {
             if (certificate == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("certificate");
             }
 
             return client.Contains(certificate.ExtractEmailNameOrName(), certificate.Thumbprint);
@@ -60,9 +60,13 @@ namespace NHINDirect.Config.Client.CertificateService
 
         public static bool Contains(this CertificateStoreClient client, string owner, string thumbprint)
         {
-            if (string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(thumbprint))
+            if (string.IsNullOrEmpty(owner))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "owner");
+            }
+            if (string.IsNullOrEmpty(thumbprint))
+            {
+                throw new ArgumentException("value was null or empty", "thumbprint");
             }
 
             Certificate cert = client.GetCertificate(owner, thumbprint, CertificateExtensions.CertInfo);

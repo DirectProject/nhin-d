@@ -75,7 +75,7 @@ namespace NHINDirect.Tools.Command
         {
             if (string.IsNullOrEmpty(appName))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value null or empty", "appName");
             }
             m_appName = appName;
             m_instances = new List<object>();

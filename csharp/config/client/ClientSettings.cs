@@ -63,7 +63,7 @@ namespace NHINDirect.Config.Client
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value was null or empty", "value");
                 }
                 m_url = value;
                 m_endpoint = new EndpointAddress(m_url);

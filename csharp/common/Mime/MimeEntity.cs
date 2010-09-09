@@ -65,9 +65,13 @@ namespace NHINDirect.Mime
         /// <param name="contentType">The content type string</param>
         public MimeEntity(Body body, string contentType)
         {
-            if (body == null || contentType == null)
+            if (body == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("body");
+            }
+            if (contentType == null)
+            {
+                throw new ArgumentNullException("contentType");
             }
             
             this.ContentType = contentType;
