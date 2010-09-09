@@ -109,11 +109,6 @@ namespace DnsResolver
         /// Default timeout in milliseconds.
         /// </summary>
         public const int DefaultTimeoutMs = 2000; // 2 seconds
-
-        /// <summary>
-        /// Maximum buffer size for UDP transactions.
-        /// </summary>
-        public const int UDPMaxBuffer = 0x10000;
         
         IPEndPoint m_dnsServer;
         Socket m_udpSocket;
@@ -132,7 +127,7 @@ namespace DnsResolver
 		/// </param>
 		/// <example><c>var client = new DnsClient("8.8.8.8");</c></example>
         public DnsClient(string server)
-            : this(server, Dns.DNS_PORT)
+            : this(server, DnsStandard.DnsPort)
         {
         }
         
@@ -158,7 +153,7 @@ namespace DnsResolver
 		/// The IPAddress of the DNS server. A <see cref="IPAddress"/>
 		/// </param>
         public DnsClient(IPAddress server)
-            : this(new IPEndPoint(server, Dns.DNS_PORT))
+            : this(new IPEndPoint(server, DnsStandard.DnsPort))
         {
         }
         
@@ -169,7 +164,7 @@ namespace DnsResolver
 		/// A <see cref="IPEndPoint"/>
 		/// </param>
         public DnsClient(IPEndPoint server)
-            : this(server, DnsClient.DefaultTimeoutMs, UDPMaxBuffer)
+            : this(server, DnsClient.DefaultTimeoutMs, DnsStandard.MaxUdpMessageLength * 2)
         {
         }
         
@@ -183,10 +178,10 @@ namespace DnsResolver
 		/// <param name="timeoutMillis">
 		/// Timeout in milliseconds.
 		/// </param>
-		/// <param name="maxBufferSize">
-		/// Maximum buffer size.
+		/// <param name="maxUdpBufferSize">
+		/// Maximum buffer size to use for UDP communication.
 		/// </param>
-        public DnsClient(IPEndPoint server, int timeoutMillis, int maxBufferSize)
+        public DnsClient(IPEndPoint server, int timeoutMillis, int maxUdpBufferSize)
         {         
             if (server == null)
             {
@@ -196,7 +191,7 @@ namespace DnsResolver
             this.m_dnsServer = server;
             m_lengthBuffer = new DnsBuffer(2);
             m_requestBuffer = new DnsBuffer(1024);
-            m_responseBuffer = new DnsBuffer(maxBufferSize);
+            m_responseBuffer = new DnsBuffer(maxUdpBufferSize);
             this.Timeout = timeoutMillis;
             this.UseUDPFirst = true;
             m_requestIDGenerator = new Random();
@@ -303,6 +298,10 @@ namespace DnsResolver
             bool useUDPFirst = this.UseUDPFirst;
             int attempt = 0;
             int maxAttempts = this.m_maxRetries + 1;
+            if (!useUDPFirst)
+            {
+                attempt = maxAttempts - 1;
+            }
             while (attempt < maxAttempts)
             {
                 attempt++;
@@ -713,11 +712,11 @@ namespace DnsResolver
                     default:
                         break;
 
-                    case Dns.RecordType.NS:
+                    case DnsStandard.RecordType.NS:
                         serverName = ((NSRecord)record).NameServer;
                         break;
 
-                    case Dns.RecordType.SOA:
+                    case DnsStandard.RecordType.SOA:
                         serverName = ((SOARecord)record).DomainName;
                         break;
                 }
@@ -764,6 +763,7 @@ namespace DnsResolver
                 m_udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 m_udpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, this.m_timeout);
             }
+
             m_udpSocket.SendTo(m_requestBuffer.Buffer, m_requestBuffer.Count, SocketFlags.None, m_dnsServer);
 
             m_responseBuffer.Count = m_udpSocket.Receive(m_responseBuffer.Buffer);
@@ -793,6 +793,10 @@ namespace DnsResolver
                 //
                 m_lengthBuffer.Clear();
                 m_lengthBuffer.Count = tcpSocket.Receive(m_lengthBuffer.Buffer, m_lengthBuffer.Capacity, SocketFlags.None);
+                if (m_lengthBuffer.Count == 0)
+                {
+                    throw new DnsProtocolException(DnsProtocolError.Failed);
+                }
                 
                 DnsBufferReader reader = m_lengthBuffer.CreateReader();
                 ushort responseSize = reader.ReadUShort();
@@ -803,8 +807,7 @@ namespace DnsResolver
                 if (m_responseBuffer.Count != responseSize)
                 {
                     throw new DnsProtocolException(DnsProtocolError.Failed);
-                }
-                
+                }                
             }
         }
                 

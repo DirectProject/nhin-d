@@ -146,35 +146,35 @@ namespace DnsResolver
                 default:
                     break;
                 
-                case Dns.RecordType.ANAME:
+                case DnsStandard.RecordType.ANAME:
                     this.Print((AddressRecord) record);
                     break;
 
-                case Dns.RecordType.NS:
+                case DnsStandard.RecordType.NS:
                     this.Print((NSRecord)record);
                     break;
                 
-                case Dns.RecordType.CNAME:
+                case DnsStandard.RecordType.CNAME:
                     this.Print((CNameRecord) record);
                     break;
                     
-                case Dns.RecordType.SOA:
+                case DnsStandard.RecordType.SOA:
                     this.Print((SOARecord) record);
                     break;
                         
-                case Dns.RecordType.MX:
+                case DnsStandard.RecordType.MX:
                     this.Print((MXRecord) record);
                     break;               
                 
-                case Dns.RecordType.PTR:
+                case DnsStandard.RecordType.PTR:
                     this.Print((PtrRecord) record);
                     break;
                     
-                case Dns.RecordType.TXT:
+                case DnsStandard.RecordType.TXT:
                     this.Print((TextRecord) record);
                     break;      
                 
-                case Dns.RecordType.CERT:
+                case DnsStandard.RecordType.CERT:
                     this.Print((CertRecord) record);                                       
                     break;
             }

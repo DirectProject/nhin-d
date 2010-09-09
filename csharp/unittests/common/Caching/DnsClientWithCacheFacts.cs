@@ -95,7 +95,7 @@ namespace NHINDirect.Tests.Caching
             IEnumerable<DnsResolver.AddressRecord> results = m_client.ResolveA(domain);
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.Dns.RecordType.ANAME));
+                , DnsResolver.DnsStandard.RecordType.ANAME));
 
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
@@ -117,7 +117,7 @@ namespace NHINDirect.Tests.Caching
 
             Dump("ensuring item is stored in cache");
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.Dns.RecordType.CERT));
+                , DnsResolver.DnsStandard.RecordType.CERT));
             Assert.NotNull(res);
         }
 
@@ -137,7 +137,7 @@ namespace NHINDirect.Tests.Caching
             
             Dump("ensuring item is stored in cache");
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.Dns.RecordType.CERT));
+                , DnsResolver.DnsStandard.RecordType.CERT));
             Assert.NotNull(res);
         }
 
@@ -158,7 +158,7 @@ namespace NHINDirect.Tests.Caching
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.Dns.RecordType.MX));
+                , DnsResolver.DnsStandard.RecordType.MX));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }
@@ -181,7 +181,7 @@ namespace NHINDirect.Tests.Caching
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.Dns.RecordType.TXT));
+                , DnsResolver.DnsStandard.RecordType.TXT));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }
@@ -204,7 +204,7 @@ namespace NHINDirect.Tests.Caching
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.Dns.RecordType.PTR));
+                , DnsResolver.DnsStandard.RecordType.PTR));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }
@@ -227,7 +227,7 @@ namespace NHINDirect.Tests.Caching
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.Dns.RecordType.NS));
+                , DnsResolver.DnsStandard.RecordType.NS));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }
@@ -249,7 +249,7 @@ namespace NHINDirect.Tests.Caching
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.Dns.RecordType.SOA));
+                , DnsResolver.DnsStandard.RecordType.SOA));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }

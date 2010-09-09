@@ -266,7 +266,7 @@ namespace DnsResolver
                 throw new ArgumentException();
             }
 
-            if (length > Dns.MAXLABELLENGTH)
+            if (length > DnsStandard.MaxLabelLength)
             {
                 throw new DnsProtocolException(DnsProtocolError.LabelTooLong);
             }

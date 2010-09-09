@@ -4,7 +4,6 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-    Sean Nolan      seannol@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -16,66 +15,21 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading;
 
-namespace DnsResolver
+namespace DnsResponder
 {
-    /// <summary>
-    /// Represents a CNAME DNS RDATA
-    /// </summary>
-    /// <remarks>
-    /// See RFC 1035, Section 3.3.1
-    /// 
-    /// Data layout:
-    /// <code>
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// /                     CNAME                     /
-    /// /                                               /
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// </code>
-    /// </remarks>
-    public class CNameRecord : DnsResourceRecord
+    public interface IServerApplication
     {
-        string m_name;
-        
-        internal CNameRecord()
-        {
-        }
+        ProcessingContext CreateContext();
+        void ReleaseContext(ProcessingContext context);
         
         /// <summary>
-        /// Gets and sets the CName as a string (a dotted domain name)
+        /// Process message, process connnection...
         /// </summary>
-        public string CName
-        {
-            get
-            {
-                return m_name;
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new DnsProtocolException(DnsProtocolError.InvalidCNameRecord);
-                }
-                
-                m_name = value;
-            }
-        }
-        /// <summary>
-        /// Serialize the CName record
-        /// </summary>
-        /// <param name="buffer"></param>
-        protected override void SerializeRecordData(DnsBuffer buffer)
-        {
-            buffer.AddDomainName(m_name);
-        }
-        /// <summary>
-        /// Creates an instance from the DNS message from a DNS reader.
-        /// </summary>
-        /// <param name="reader">The DNS reader</param>
-        protected override void DeserializeRecordData(ref DnsBufferReader reader)
-        {
-            m_name = reader.ReadDomainName();
-        }
+        /// <param name="context"></param>
+        void Process(ProcessingContext context);
     }
 }

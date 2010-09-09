@@ -63,6 +63,10 @@ namespace DnsResolver
         /// </summary>
         InvalidPath,
         /// <summary>
+        /// A label contained in a path had an unsupported label type
+        /// </summary>
+        InvalidLabelType,
+        /// <summary>
         /// Answer count (ADCOUNT) was set to an invalid value.
         /// </summary>
         InvalidAnswerCount,

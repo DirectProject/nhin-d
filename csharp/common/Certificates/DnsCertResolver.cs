@@ -217,7 +217,7 @@ namespace NHINDirect.Certificates
             }
             catch (DnsServerException dnsEx)
             {
-                if (dnsEx.ResponseCode != DnsResolver.Dns.ResponseCode.REFUSED)
+                if (dnsEx.ResponseCode != DnsResolver.DnsStandard.ResponseCode.Refused)
                 {
                     throw;
                 }
