@@ -266,9 +266,9 @@ namespace DnsResolver
             }
             set
             {
-                if (value <= 0)
+                if (value < 1)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value was less than 1", "value");
                 }
                 
                 m_maxRetries = value;
@@ -531,9 +531,13 @@ namespace DnsResolver
         /// <returns>An enumeration of <see cref="CertRecord"/> instances.</returns>
         public virtual IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain, IPAddress nameserver)
         {
-            if (string.IsNullOrEmpty(domain) || nameserver == null)
+            if (string.IsNullOrEmpty(domain))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "domain");
+            }
+            if (nameserver == null)
+            {
+                throw new ArgumentNullException("nameserver");
             }
             
             using (DnsClient client = new DnsClient(nameserver))

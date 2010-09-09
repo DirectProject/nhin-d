@@ -104,7 +104,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("db");
             }
             if (string.IsNullOrEmpty(name))
             {
@@ -136,7 +136,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("db");
             }
             if (names.IsNullOrEmpty())
             {
@@ -182,7 +182,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("db");
             }
             if (domain == null)
             {

@@ -129,7 +129,7 @@ namespace NHINDirect.SmtpAgent
         {
             if (string.IsNullOrEmpty(filePath))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "filePath");
             }
             
             m_message.SaveToFile(filePath);

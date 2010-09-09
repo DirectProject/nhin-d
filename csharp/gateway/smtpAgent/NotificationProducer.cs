@@ -65,7 +65,7 @@ namespace NHINDirect.SmtpAgent
         {
             if (envelope == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("envelope");
             }
 
             if (!m_settings.AutoResponse || !envelope.HasDomainRecipients || !envelope.Message.ShouldIssueNotification())

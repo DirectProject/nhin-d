@@ -122,7 +122,7 @@ namespace NHINDirect.Config.Client.DomainManager
         {
             if (string.IsNullOrEmpty(emailAddress))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "emailAddress");
             }
             
             client.RemoveAddresses(new string[] {emailAddress});
@@ -130,9 +130,9 @@ namespace NHINDirect.Config.Client.DomainManager
         
         public static IEnumerable<Address> EnumerateDomainAddresses(this AddressManagerClient client, string domainName, int chunkSize)
         {
-            if (chunkSize <= 0)
+            if (chunkSize < 1)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was less than 1", "chunkSize");
             }
 
             string lastAddress = null;
@@ -154,9 +154,9 @@ namespace NHINDirect.Config.Client.DomainManager
 
         public static IEnumerable<Address> EnumerateAddresses(this AddressManagerClient client, int chunkSize)
         {
-            if (chunkSize <= 0)
+            if (chunkSize < 1)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was less than 1", "chunkSize");
             }
 
             string lastAddress = null;

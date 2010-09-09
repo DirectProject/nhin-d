@@ -92,7 +92,7 @@ namespace NHINDirect.Config.Store
         {
             if (emailAddresses.IsNullOrEmpty())
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "emailAddresses");
             }
             //
             // We cannot precompile this (throws at runtime) because emailAddresses.Length can change at runtime

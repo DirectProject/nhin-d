@@ -414,7 +414,7 @@ namespace NHINDirect.Agent
         {
             if (string.IsNullOrEmpty(messageText))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "messageText");
             }
 
             return this.ProcessIncoming(new IncomingMessage(messageText));
@@ -474,7 +474,7 @@ namespace NHINDirect.Agent
         {
             if (message == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("message");
             }
 
             try
@@ -669,7 +669,7 @@ namespace NHINDirect.Agent
         {
             if (string.IsNullOrEmpty(messageText))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "messageText");
             }
 
             OutgoingMessage message = new OutgoingMessage(this.WrapMessage(messageText));
@@ -732,7 +732,7 @@ namespace NHINDirect.Agent
         {
             if (message == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("message");
             }
 
             try

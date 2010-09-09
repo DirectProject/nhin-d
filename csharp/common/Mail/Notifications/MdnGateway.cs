@@ -98,7 +98,7 @@ namespace NHINDirect.Mail.Notifications
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value was null or empty", "value");
                 }
                 
                 m_domain = value;

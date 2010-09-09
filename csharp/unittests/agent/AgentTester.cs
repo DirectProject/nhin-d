@@ -213,7 +213,7 @@ namespace AgentTests
         {
             if (string.IsNullOrEmpty(folderPath))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "folderPath");
             }
             
             if (!Directory.Exists(folderPath))

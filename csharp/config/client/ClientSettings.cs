@@ -80,9 +80,9 @@ namespace NHINDirect.Config.Client
             }
             set
             {
-                if (value <= 0)
+                if (value < 1)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value was less than 1", "value");
                 }
                 m_maxReceivedMessageSize = value;
             }
