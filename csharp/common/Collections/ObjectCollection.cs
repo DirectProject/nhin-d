@@ -116,7 +116,7 @@ namespace NHINDirect.Collections
         {
             if (filter == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("filter");
             }
 
             int i = 0;
@@ -145,7 +145,7 @@ namespace NHINDirect.Collections
         {
             if (item == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("item");
             }
             base.InsertItem(index, item);
             this.Notify(CollectionChangeType.Add, item);
@@ -160,7 +160,7 @@ namespace NHINDirect.Collections
         {
             if (item == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("item");
             }
             
             base.SetItem(index, item);

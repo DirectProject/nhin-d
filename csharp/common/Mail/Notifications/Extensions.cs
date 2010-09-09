@@ -141,9 +141,13 @@ namespace NHINDirect.Mail.Notifications
         /// <returns>An enumerator over notification messages</returns>
         public static IEnumerable<NotificationMessage> CreateNotificationMessages(this Message message, IEnumerable<MailAddress> senders, Func<MailAddress, Notification> notificationCreator)
         {
-            if (senders == null || notificationCreator == null)
+            if (senders == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("senders");
+            }
+            if (notificationCreator == null)
+            {
+                throw new ArgumentNullException("notificationCreator");
             }
             
             if (!message.ShouldIssueNotification())

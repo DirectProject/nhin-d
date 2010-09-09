@@ -150,7 +150,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
 
             return db.Anchors.Get(lastCertID, maxResults);
@@ -168,7 +168,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             if (string.IsNullOrEmpty(owner))
             {
@@ -247,7 +247,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             if (string.IsNullOrEmpty(owner))            
             {
@@ -273,7 +273,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
 
             db.Anchors.ExecUpdateStatus(owner, status);
@@ -293,7 +293,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             if (certificateIDs.IsNullOrEmpty())
             {
@@ -320,7 +320,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             if (string.IsNullOrEmpty(owner))
             {
@@ -351,7 +351,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             if (string.IsNullOrEmpty(ownerName))
             {

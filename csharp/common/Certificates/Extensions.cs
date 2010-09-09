@@ -131,7 +131,7 @@ namespace NHINDirect.Certificates
         {
             if (newCerts == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("newCerts");
             }
 
             foreach (X509Certificate2 cert in newCerts)
@@ -149,7 +149,7 @@ namespace NHINDirect.Certificates
         {
             if (newCerts == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("newCerts");
             }
             
             foreach(X509Certificate2 cert in newCerts)
@@ -195,7 +195,7 @@ namespace NHINDirect.Certificates
         {
             if (matcher == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("matcher");
             }
             
             for (int i = 0, count = certs.Count; i < count; ++i)
@@ -553,7 +553,7 @@ namespace NHINDirect.Certificates
         {
             if (newOids == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("newOids");
             }
             
             for (int i = 0, count = newOids.Count; i < count; ++i)
@@ -571,7 +571,7 @@ namespace NHINDirect.Certificates
         {
             if (newOids == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("newOids");
             }
 
             foreach(Oid oid in oids)

@@ -223,7 +223,7 @@ namespace DnsResolver
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("value");
                 }
                 m_dnsServer = value;
             }            
@@ -295,7 +295,7 @@ namespace DnsResolver
         {
             if (request == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("request");
             }
             
             request.RequestID = this.NextID();
@@ -615,7 +615,7 @@ namespace DnsResolver
         {
             if (hostNamesOrAddresses == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("hostNamesOrAddresses");
             }
 
             foreach (string hostName in hostNamesOrAddresses)

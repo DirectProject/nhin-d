@@ -91,7 +91,7 @@ namespace NHINDirect.SmtpAgent
         {
             if (recipients == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("recipients");
             }
             
             if (this.HasEnvelope)

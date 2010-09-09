@@ -252,7 +252,7 @@ namespace NHINDirect.Mail
         /// </param>
         public static void ParseAddressCollection<T, TCollection>(TCollection collection, string headerValue, Func<string, T> constructor)
             where T : MailAddress
-            where TCollection : IList<T>
+            where TCollection : class, IList<T>
         {
             if (string.IsNullOrEmpty(headerValue))
             {
@@ -261,7 +261,7 @@ namespace NHINDirect.Mail
 
             if (collection == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("collection");
             }
 
             foreach (StringSegment part in MimeSerializer.Default.SplitHeader(headerValue, MailStandard.MailAddressSeparator))

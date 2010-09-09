@@ -99,7 +99,7 @@ namespace NHINDirect.Agent
         {
             if (message == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("message");
             }
             
             if (!message.HasSignatures)
@@ -145,7 +145,7 @@ namespace NHINDirect.Agent
         {
             if (message == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("message");
             }
             
             NHINDAddress sender = message.Sender;

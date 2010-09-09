@@ -62,7 +62,7 @@ namespace DnsResolver
         {
             if (buffer == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("buffer");
             }
             
             m_buffer = buffer;
