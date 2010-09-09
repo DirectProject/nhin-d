@@ -260,9 +260,14 @@ namespace DnsResolver
         /// <param name="length">The number of characters to add.</param>
         public void AddLabel(string source, int startAt, int length)
         {
-            if (source == null || length <= 0)
+            if (source == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("source");
+            }
+
+            if (length < 1)
+            {
+                throw new ArgumentException("value was less than 1", "length");
             }
 
             if (length > Dns.MAXLABELLENGTH)
@@ -282,7 +287,7 @@ namespace DnsResolver
         {
             if (string.IsNullOrEmpty(path))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "path");
             }
             //
             // Zero length labels are allowed

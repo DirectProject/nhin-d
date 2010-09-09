@@ -65,7 +65,7 @@ namespace NHINDirect.Mail
         {
             if (string.IsNullOrEmpty(folderPath))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "folderPath");
             }
             
             SmtpClient smtpClient = new SmtpClient();

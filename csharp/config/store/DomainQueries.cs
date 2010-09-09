@@ -81,7 +81,7 @@ namespace NHINDirect.Config.Store
         {
             if (domains.IsNullOrEmpty())
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "domains");
             }
             //
             // We cannot precompile this (throws at runtime) because domains.Length can change at runtime

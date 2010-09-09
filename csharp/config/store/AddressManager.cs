@@ -187,7 +187,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("db");
             }
 
             this.VerifyEmailAddresses(emailAddresses);

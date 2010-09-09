@@ -118,9 +118,14 @@ namespace NHINDirect.Config.Client.CertificateService
 
         public static IEnumerable<Certificate> EnumerateCertificates(this CertificateStoreClient client, int chunkSize, CertificateGetOptions options)
         {
-            if (chunkSize <= 0 || options == null)
+            if (options == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("options");
+            }
+
+            if (chunkSize < 1)
+            {
+                throw new ArgumentException("value was less than 1", "chunkSize");
             }
 
             long lastID = -1;

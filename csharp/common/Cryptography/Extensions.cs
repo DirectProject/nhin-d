@@ -97,7 +97,7 @@ namespace NHINDirect.Cryptography
         }
 
         /// <summary>
-        /// Searches this collection for the first signature whose certificate has <paramref name="thumprint"/>
+        /// Searches this collection for the first signature whose certificate has <paramref name="thumbprint"/>
         /// </summary>
         /// <param name="signers">This collection to search</param>
         /// <param name="thumbprint">The certificate thumbprint to match against.</param>
@@ -106,7 +106,7 @@ namespace NHINDirect.Cryptography
         {
             if (string.IsNullOrEmpty(thumbprint))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "thumbprint");
             }
 
             return signers.Find(x => x.Certificate.Thumbprint == thumbprint);

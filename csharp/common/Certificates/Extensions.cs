@@ -274,7 +274,7 @@ namespace NHINDirect.Certificates
         {
             if (string.IsNullOrEmpty(thumbprint))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "thumbprint");
             }
 
             return certs.Find(x => x.Thumbprint == thumbprint);
@@ -345,7 +345,7 @@ namespace NHINDirect.Certificates
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "name");
             }
 
             string distinguishedName = cert.GetNameInfo(X509NameType.SimpleName, false);
@@ -366,7 +366,7 @@ namespace NHINDirect.Certificates
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "name");
             }
             
             string distinguishedName = cert.GetNameInfo(X509NameType.EmailName, false);
@@ -398,7 +398,7 @@ namespace NHINDirect.Certificates
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "name");
             }
 
             string distinguishedName = cert.GetNameInfo(X509NameType.SimpleName, false);
@@ -487,7 +487,7 @@ namespace NHINDirect.Certificates
         {
             if (string.IsNullOrEmpty(friendlyName))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "friendlyName");
             }
             
             X509ExtensionCollection extensions = cert.Extensions;

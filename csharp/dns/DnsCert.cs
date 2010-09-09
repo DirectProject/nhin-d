@@ -69,8 +69,9 @@ namespace DnsResolver
         {
             if (certificate == null || certificate.Length == 0)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "certificate");
             }
+
             // This will also create a key tag
             this.Certificate = new X509Certificate2(certificate);
         }

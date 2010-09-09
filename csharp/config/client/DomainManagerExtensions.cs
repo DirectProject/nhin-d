@@ -73,9 +73,9 @@ namespace NHINDirect.Config.Client.DomainManager
 
         public static IEnumerable<Domain> EnumerateDomains(this DomainManagerClient client, int chunkSize)
         {
-            if (chunkSize <= 0)
+            if (chunkSize < 1)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was less than 1", "chunkSize");
             }
 
             string lastDomain = null;
