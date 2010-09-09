@@ -163,7 +163,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
 
             return db.Domains.ExecGet(lastDomain, maxResults);
@@ -208,7 +208,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             
             if (string.IsNullOrEmpty(name))

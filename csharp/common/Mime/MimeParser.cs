@@ -221,7 +221,7 @@ namespace NHINDirect.Mime
         {
             if (bodyLines == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("bodyLines");
             }
             
             if (string.IsNullOrEmpty(boundary))
@@ -371,7 +371,7 @@ namespace NHINDirect.Mime
         {
             if (lines == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("lines");
             }
             
             MimePartType expectedPartType = MimePartType.Header;

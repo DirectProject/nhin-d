@@ -192,9 +192,13 @@ namespace DnsResolver
         /// <param name="dnsDomain">The domain name to use for the address.</param>
         public void Export(TextWriter writer, string dnsDomain)
         {
-            if (writer == null || string.IsNullOrEmpty(dnsDomain))
+            if (writer == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("writer");
+            }
+            if (string.IsNullOrEmpty(dnsDomain))
+            {
+                throw new ArgumentException("value was null or empty", "dnsDomain");
             }
 
             string exported = this.NormalizeOutputCertString(Convert.ToBase64String(m_cert.Export(X509ContentType.Cert)));

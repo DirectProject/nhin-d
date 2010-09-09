@@ -149,7 +149,7 @@ namespace DnsResolver
         {
             if (item == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("item");
             }
             this.AddChars(item, 0, item.Length);
         }
@@ -162,9 +162,17 @@ namespace DnsResolver
         /// <param name="startAt">The zero-based postition of <paramref name="item"/> to start reading from</param>
         public void AddChars(string item, int startAt, int length)
         {
-            if (item == null || startAt < 0 || length < 0)
+            if (item == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("item");
+            }
+            if (startAt < 0)
+            {
+                throw new ArgumentException("value was less than 0", "startAt");
+            }
+            if (length < 0)
+            {
+                throw new ArgumentException("value was less than 0", "length");
             }
             
             if (length == 0)
@@ -247,7 +255,7 @@ namespace DnsResolver
         {
             if (label == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("label");
             }
             this.AddLabel(label, 0, label.Length);
         }

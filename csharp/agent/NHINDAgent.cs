@@ -712,7 +712,7 @@ namespace NHINDirect.Agent
         {
             if (envelope == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("envelope");
             }
             
             OutgoingMessage message = new OutgoingMessage(envelope);

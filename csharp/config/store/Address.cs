@@ -202,7 +202,7 @@ namespace NHINDirect.Config.Store
         {
             if (source == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("source");
             }
             this.DisplayName = source.DisplayName;
             this.Status = source.Status;

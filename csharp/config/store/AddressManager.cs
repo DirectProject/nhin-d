@@ -75,7 +75,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             
             if (address == null)
@@ -104,7 +104,7 @@ namespace NHINDirect.Config.Store
         {
             if (addresses == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("addresses");
             }
             using (ConfigDatabase db = this.Store.CreateContext())
             {
@@ -120,7 +120,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
 
             if (address == null)
@@ -211,7 +211,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
 
             return db.Addresses.ExecGet(lastAddressID, maxResults);
@@ -229,7 +229,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
 
             return db.Addresses.ExecGet(domainID, lastAddressID, maxResults);
@@ -257,7 +257,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             
             if (status == null)
@@ -322,7 +322,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             
             this.VerifyEmailAddresses(emailAddresses);

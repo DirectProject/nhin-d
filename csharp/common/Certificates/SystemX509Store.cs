@@ -77,7 +77,7 @@ namespace NHINDirect.Certificates
         {
             if (cert == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("cert");
             }
 
             lock (m_store)

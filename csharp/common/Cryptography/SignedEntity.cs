@@ -58,7 +58,7 @@ namespace NHINDirect.Cryptography
         {
             if (parts == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("parts");
             }
             
             int count = 0;
@@ -95,7 +95,7 @@ namespace NHINDirect.Cryptography
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("value");
                 }
                 
                 m_content = value;
@@ -115,7 +115,7 @@ namespace NHINDirect.Cryptography
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("value");
                 }
                 
                 if (!SMIMEStandard.IsDetachedSignature(value))
@@ -145,7 +145,7 @@ namespace NHINDirect.Cryptography
         {
             if (source == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("source");
             }
 
             if (!source.IsMultiPart)

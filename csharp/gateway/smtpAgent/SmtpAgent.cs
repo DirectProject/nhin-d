@@ -431,7 +431,7 @@ namespace NHINDirect.SmtpAgent
         {
             if (message == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("message");
             }
             
             return this.ProcessOutgoing(message, message.GetEnvelope());
@@ -551,7 +551,7 @@ namespace NHINDirect.SmtpAgent
         {
             if (message == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("message");
             }
             
             return this.ProcessIncoming(message, message.GetEnvelope());

@@ -78,7 +78,7 @@ namespace NHINDirect.Config.Store
             {
                 if (address == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("address");
                 }
 
                 Anchor[] anchors = null;

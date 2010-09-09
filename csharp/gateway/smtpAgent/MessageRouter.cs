@@ -98,9 +98,17 @@ namespace NHINDirect.SmtpAgent
         /// </summary>
         public void Route(ISmtpMessage message, OutgoingMessage envelope, Action<ISmtpMessage, MessageRoute> action)
         {
-            if (message == null || envelope == null || action == null)
+            if (message == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("message");
+            }
+            if (envelope == null)
+            {
+                throw new ArgumentNullException("envelope");
+            }
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
             }
 
             if (envelope.HasRecipients)
@@ -114,9 +122,17 @@ namespace NHINDirect.SmtpAgent
         /// </summary>
         public void Route(ISmtpMessage message, IncomingMessage envelope, Action<ISmtpMessage, MessageRoute> action)
         {
-            if (message == null || envelope == null || action == null)
+            if (message == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("message");
+            }
+            if (envelope == null)
+            {
+                throw new ArgumentNullException("envelope");
+            }
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
             }
             
             if (envelope.HasDomainRecipients)

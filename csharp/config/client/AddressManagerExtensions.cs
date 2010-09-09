@@ -44,7 +44,7 @@ namespace NHINDirect.Config.Client.DomainManager
         {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
 
             client.UpdateAddresses(new Address[] { address });
@@ -59,7 +59,7 @@ namespace NHINDirect.Config.Client.DomainManager
         {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
 
             return client.GetAddress(address.Address, status);

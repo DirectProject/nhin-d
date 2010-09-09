@@ -64,7 +64,7 @@ namespace NHINDirect.Certificates
         {
             if (certs == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("certs");
             }
             this.Certificates = certs.GetAllCertificates();
         }
@@ -82,7 +82,7 @@ namespace NHINDirect.Certificates
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("value");
                 }
 
                 this.m_certs = value;
@@ -98,7 +98,7 @@ namespace NHINDirect.Certificates
         {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
 
             return this.m_certs;
