@@ -136,7 +136,7 @@ namespace NHINDirect.Cryptography
             }
             
             return (IsContentCms(contentType)
-                    &&  contentType.IsParameter(SmimeTypeParameterKey, EnvelopedDataSmimeType));
+                    &&  contentType.HasParameter(SmimeTypeParameterKey, EnvelopedDataSmimeType));
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace NHINDirect.Cryptography
             }
 
             return (IsContentCms(contentType)
-                    &&  contentType.IsParameter(SmimeTypeParameterKey, SignedDataSmimeType));
+                    &&  contentType.HasParameter(SmimeTypeParameterKey, SignedDataSmimeType));
         }
         
         /// <summary>
