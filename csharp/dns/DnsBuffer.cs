@@ -134,7 +134,7 @@ namespace DnsResolver
         {
             if (items == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("items");
             }
 
             this.ReserveCapacity(items.Length);

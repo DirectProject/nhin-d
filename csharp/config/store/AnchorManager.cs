@@ -99,7 +99,7 @@ namespace NHINDirect.Config.Store
         {
             if (anchors == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("anchors");
             }
             using (ConfigDatabase db = this.Store.CreateContext())
             {

@@ -34,7 +34,7 @@ namespace NHINDirect.SmtpAgent
         {
             if (clientSettings == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("clientSettings");
             }
             
             m_incomingResolver = new CertificateResolver(new AnchorIndex(clientSettings, true));

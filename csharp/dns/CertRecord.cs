@@ -187,7 +187,7 @@ namespace DnsResolver
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("value");
                 }
                 
                 m_cert = value;

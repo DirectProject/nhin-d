@@ -76,7 +76,7 @@ namespace NHINDirect.Collections
         {
             if (items == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("items");
             }
             
             foreach(T item in items)

@@ -40,7 +40,7 @@ namespace NHINDirect.Cryptography
         {
             if (content == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("content");
             }
             
             Content = content;

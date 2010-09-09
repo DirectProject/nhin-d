@@ -43,7 +43,7 @@ namespace NHINDirect.SmtpAgent
         {
             if (settings == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("settings");
             }
             
             this.Init(settings);

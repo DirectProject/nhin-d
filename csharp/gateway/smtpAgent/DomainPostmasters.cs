@@ -66,7 +66,7 @@ namespace NHINDirect.SmtpAgent
             {
                 if (address == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("address");
                 }
                 
                 return this[address.Host];

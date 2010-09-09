@@ -43,7 +43,7 @@ namespace NHINDirect.Mime
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("value");
                 }
 
                 System.Threading.Interlocked.Exchange(ref s_default, value);

@@ -50,7 +50,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             
             db.Domains.InsertOnSubmit(new Domain(name));

@@ -147,7 +147,7 @@ namespace NHINDirect.Mail.Notifications
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("value");
                 }
                 m_notification.Headers.SetValue(MDNStandard.Headers.Disposition, value.ToString());
                 m_disposition = value;

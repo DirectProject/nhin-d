@@ -40,7 +40,7 @@ namespace NHINDirect.Certificates
         {
             if (store == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("store");
             }
             
             m_store = store;

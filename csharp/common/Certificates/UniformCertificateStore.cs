@@ -37,7 +37,7 @@ namespace NHINDirect.Certificates
         {
             if (cert == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("cert");
             }
             
             X509Certificate2Collection certs = new X509Certificate2Collection();

@@ -34,7 +34,7 @@ namespace NHINDirect.Mail
         {
             if (message == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("message");
             }
             
             Message wrappedMessage = new Message();

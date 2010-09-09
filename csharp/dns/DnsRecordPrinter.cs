@@ -37,7 +37,7 @@ namespace DnsResolver
         {
             if (writer == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("writer");
             }
             
             this.m_writer = writer;

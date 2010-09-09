@@ -41,7 +41,7 @@ namespace NHINDirect.Mail
         {
             if (headers == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("headers");
             }
             
             this.Headers.Add(headers);

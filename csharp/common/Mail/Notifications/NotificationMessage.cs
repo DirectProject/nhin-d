@@ -58,9 +58,14 @@ namespace NHINDirect.Mail.Notifications
         /// <returns>The MDN.</returns>
         public static NotificationMessage CreateNotificationFor(Message message, Notification notification)
         {
-            if (message == null || notification == null)
+            if (message == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("message");
+            }
+
+            if (notification == null)
+            {
+                throw new ArgumentNullException("notification");
             }
             //
             // Verify that the message is not itself an MDN!

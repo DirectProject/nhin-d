@@ -60,7 +60,7 @@ namespace NHINDirect.Config.Store
         {
             if (certs == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("certs");
             }            
             using (ConfigDatabase db = this.Store.CreateContext())
             {

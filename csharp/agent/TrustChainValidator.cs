@@ -100,7 +100,7 @@ namespace NHINDirect.Agent
         {
             if (certificate == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("certificate");
             }
 
             // if there are no anchors we should always fail

@@ -141,7 +141,7 @@ namespace NHINDirect.Mime
         {
             if (lines == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("lines");
             }
 
             Header header = null;

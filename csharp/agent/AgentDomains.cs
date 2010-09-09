@@ -59,7 +59,7 @@ namespace NHINDirect.Agent
         {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
             
             return this.IsManaged(address.Host);
