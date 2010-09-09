@@ -23,28 +23,31 @@ namespace DnsResolver
     /// <summary>
     /// Constants and enumerations for working with the DNS.
     /// </summary>
-    public class Dns
+    public class DnsStandard
     {
         /// <summary>
         /// The standard DNS port
         /// </summary>
-        public const int DNS_PORT = 53;
+        public const int DnsPort = 53;
         /// <summary>
         /// The ID for an invalid DNS request.
         /// </summary>
-        public const short INVALID_REQUEST_ID = 0;
+        public const short InvalidRequestID = 0;
         /// <summary>
         /// The maximum length for a DNS label
         /// </summary>
         /// <remarks>
         /// RFC 1035, Section 3.1
         /// </remarks>
-        public const int MAXLABELLENGTH = 63;
+        public const int MaxLabelLength = 63;
         /// <summary>
         /// TTL of 0
         /// </summary>
-        public const int NOCACHE = 0;   
-        
+        public const int NoCache = 0;   
+        /// <summary>
+        /// Maximum size of a UDP Message
+        /// </summary>
+        public const int MaxUdpMessageLength = 512; // bytes      
         /// <summary>
         /// Record types for DNS RR
         /// </summary>
@@ -245,15 +248,15 @@ namespace DnsResolver
             /// <summary>
             /// OPCODE for a standard query
             /// </summary>
-            QUERY = 0,  
+            Query = 0,  
             /// <summary>
             /// OPCODE for an inverse query
             /// </summary>
-            IQUERY = 1,  
+            IQuery = 1,  
             /// <summary>
             /// OPCODE for a server status request
             /// </summary>
-            STATUS = 2,
+            Status = 2,
         }
 
         /// <summary>
@@ -268,27 +271,27 @@ namespace DnsResolver
             /// <summary>
             /// RCODE for no error conditions
             /// </summary>
-            SUCCESS = 0,
+            Success = 0,
             /// <summary>
             /// RCODE when the name server was unable to interpret the query
             /// </summary>
-            FORMAT_ERROR = 1,
+            FormatError = 1,
             /// <summary>
             /// RCODE when the server was unable to process the query due to problems with the name server
             /// </summary>
-            SERVER_FAILURE = 2,
+            ServerFailure = 2,
             /// <summary>
             /// RCODE from authoritative servers, when the domain name does not exist
             /// </summary>
-            NAME_ERROR = 3,
+            NameError = 3,
             /// <summary>
             /// RCODE when the name server does not implement the requested query
             /// </summary>
-            NOT_IMPLEMENTED = 4,
+            NotImplemented = 4,
             /// <summary>
             /// RCODE   when the name server refuses to perform the requested operation for policy reasons.
             /// </summary>
-            REFUSED = 5,
+            Refused = 5,
         }
         
         /// <summary>

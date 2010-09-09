@@ -67,7 +67,7 @@ namespace DnsResolver
         {
             get
             {
-                return this.Enumerate<AddressRecord>(Dns.RecordType.ANAME);
+                return this.Enumerate<AddressRecord>(DnsStandard.RecordType.ANAME);
             }
         }
 
@@ -78,7 +78,7 @@ namespace DnsResolver
         {
             get
             {
-                return this.Enumerate<PtrRecord>(Dns.RecordType.PTR);
+                return this.Enumerate<PtrRecord>(DnsStandard.RecordType.PTR);
             }
         }
 
@@ -89,7 +89,7 @@ namespace DnsResolver
         {
             get
             {
-                return this.Enumerate<NSRecord>(Dns.RecordType.NS);
+                return this.Enumerate<NSRecord>(DnsStandard.RecordType.NS);
             }
         }
 
@@ -100,7 +100,7 @@ namespace DnsResolver
         {
             get
             {
-                return this.Enumerate<MXRecord>(Dns.RecordType.MX);
+                return this.Enumerate<MXRecord>(DnsStandard.RecordType.MX);
             }
         }
 
@@ -111,7 +111,7 @@ namespace DnsResolver
         {
             get
             {
-                return this.Enumerate<TextRecord>(Dns.RecordType.TXT);
+                return this.Enumerate<TextRecord>(DnsStandard.RecordType.TXT);
             }
         }
 
@@ -122,7 +122,7 @@ namespace DnsResolver
         {
             get
             {
-                return this.Enumerate<CertRecord>(Dns.RecordType.CERT);
+                return this.Enumerate<CertRecord>(DnsStandard.RecordType.CERT);
             }
         }
 
@@ -133,7 +133,7 @@ namespace DnsResolver
         {
             get
             {
-                return this.Enumerate<SOARecord>(Dns.RecordType.SOA);
+                return this.Enumerate<SOARecord>(DnsStandard.RecordType.SOA);
             }
         }
         
@@ -143,7 +143,7 @@ namespace DnsResolver
         /// <typeparam name="T">The RR type</typeparam>
         /// <param name="type">The RR type to enumerate</param>
         /// <returns>The enumeration of RRs of the specified type.</returns>
-        public IEnumerable<T> Enumerate<T>(Dns.RecordType type)
+        public IEnumerable<T> Enumerate<T>(DnsStandard.RecordType type)
             where T : DnsResourceRecord
         {
             foreach(DnsResourceRecord record in this)
@@ -161,6 +161,10 @@ namespace DnsResolver
         
         internal void Serialize(DnsBuffer buffer)
         {
+            for (int i = 0, count = this.Count; i < count; ++i)
+            {
+                this[i].Serialize(buffer);
+            }
         }
         
         internal void Deserialize(int recordCount, ref DnsBufferReader reader)

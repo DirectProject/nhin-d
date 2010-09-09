@@ -40,7 +40,7 @@ namespace DnsResolver
         /// <param name="name"></param>
         /// <param name="type"></param>
         /// <param name="record"></param>
-        public RawRecord(string name, Dns.RecordType type, byte[] record)
+        public RawRecord(string name, DnsStandard.RecordType type, byte[] record)
             : base(name, type)
         {
             this.RecordBytes = record;

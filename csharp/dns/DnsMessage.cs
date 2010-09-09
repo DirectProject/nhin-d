@@ -31,11 +31,12 @@ namespace DnsResolver
         DnsHeader m_header;
         DnsQuestion m_question;
         
+        /// <summary>
+        /// Construct a new Dns message
+        /// </summary>
         protected DnsMessage()
+            : this(new DnsQuestion())
         {
-            m_header = new DnsHeader();
-            m_question = new DnsQuestion();       
-            this.Clear();
         }
         
         /// <summary>
@@ -43,13 +44,37 @@ namespace DnsResolver
         /// </summary>
         /// <param name="qType"></param>
         /// <param name="qName"></param>
-        protected DnsMessage(Dns.RecordType qType, string qName)
-            : this()
+        protected DnsMessage(DnsStandard.RecordType qType, string qName)
+            : this(new DnsQuestion(qName, qType, DnsStandard.Class.IN))
         {
-            m_header.QuestionCount = 1;
-            m_question = new DnsQuestion(qName, qType, Dns.Class.IN);
         }
         
+        /// <summary>
+        /// Instantiates a Dns message
+        /// </summary>
+        /// <param name="question"></param>
+        protected DnsMessage(DnsQuestion question)
+            : this(new DnsHeader(), question)
+        {
+            m_header.Init();  // Since we created the header, we'll init it with some defaults
+        }
+        
+        /// <summary>
+        /// Instantiates a message with the given header and question
+        /// </summary>
+        /// <param name="header">the header - take as is, assumed configured correctly</param>
+        /// <param name="question">question to ask</param>        
+        protected DnsMessage(DnsHeader header, DnsQuestion question)
+        {
+            if (header == null || question == null)
+            {
+                throw new ArgumentNullException();
+            }
+            m_header = header;
+            m_header.QuestionCount = 1;
+            m_question = question;
+        }
+                
         /// <summary>
         /// Instantiates a new message object by deserializing from the given reader
         /// </summary>
@@ -79,6 +104,14 @@ namespace DnsResolver
             {
                 return m_question;
             }            
+            protected set 
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException();
+                }
+                m_question = value;
+            }
         }
         
         /// <summary>
@@ -103,7 +136,7 @@ namespace DnsResolver
         {
             get
             {
-                return (this.m_header != null && m_header.ResponseCode == Dns.ResponseCode.SUCCESS);
+                return (this.m_header != null && m_header.ResponseCode == DnsStandard.ResponseCode.Success);
             }
         }
         
@@ -114,7 +147,7 @@ namespace DnsResolver
         {
             get
             {
-                return (this.m_header != null && m_header.ResponseCode == Dns.ResponseCode.NAME_ERROR);
+                return (this.m_header != null && m_header.ResponseCode == DnsStandard.ResponseCode.NameError);
             }
         }
         
@@ -123,16 +156,7 @@ namespace DnsResolver
         /// </summary>
         public virtual void Clear()
         {
-            m_header.IsRequest = true;
-            m_header.OpCode = Dns.OpCode.QUERY;
-            m_header.IsAuthoritativeAnswer = false;
-            m_header.IsTruncated = false;
-            m_header.IsRecursionDesired = true;
-            m_header.IsRecursionAvailable = false;
-            m_header.ResponseCode = Dns.ResponseCode.SUCCESS;
-            m_header.AnswerCount = 0;
-            m_header.NameServerAnswerCount = 0;
-            m_header.AdditionalAnswerCount = 0;
+            m_header.Init();
         }
 
         /// <summary>
@@ -159,6 +183,9 @@ namespace DnsResolver
             m_question = new DnsQuestion(ref reader);
         }
         
+        /// <summary>
+        /// Validates the message. Throws DnsProtcolException if validation fails
+        /// </summary>
         public virtual void Validate()
         { 
             if (m_header == null)

@@ -110,7 +110,7 @@ namespace DnsResolver
         /// <param name="expire">Number of seconds before records should be expired if not refreshed</param>
         /// <param name="minimum">Minimum TTL for this zone.</param>
         public SOARecord(string name, string domainName, string responsibleName, int serialNumber, int refresh, int retry, int expire, int minimum)
-            : base(name, Dns.RecordType.SOA)
+            : base(name, DnsStandard.RecordType.SOA)
         {
             this.DomainName = domainName;
             this.ResponsibleName = responsibleName;
@@ -225,8 +225,8 @@ namespace DnsResolver
             }
             
             return (
-                    Dns.Equals(m_mname, soaRecord.m_mname)
-                &&  Dns.Equals(m_rname, soaRecord.m_rname)
+                    DnsStandard.Equals(m_mname, soaRecord.m_mname)
+                &&  DnsStandard.Equals(m_rname, soaRecord.m_rname)
                 &&  this.SerialNumber == soaRecord.SerialNumber
                 &&  this.Refresh == soaRecord.Refresh
                 &&  this.Retry == soaRecord.Retry

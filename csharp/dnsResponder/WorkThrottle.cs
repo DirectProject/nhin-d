@@ -4,7 +4,6 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-    Sean Nolan      seannol@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -16,66 +15,63 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading;
 
-namespace DnsResolver
+namespace DnsResponder
 {
-    /// <summary>
-    /// Represents a CNAME DNS RDATA
-    /// </summary>
-    /// <remarks>
-    /// See RFC 1035, Section 3.3.1
-    /// 
-    /// Data layout:
-    /// <code>
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// /                     CNAME                     /
-    /// /                                               /
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// </code>
-    /// </remarks>
-    public class CNameRecord : DnsResourceRecord
+    public interface IWorkLoadThrottle
     {
-        string m_name;
-        
-        internal CNameRecord()
+        void Wait();
+        void Completed();
+    }
+    
+    public class NullThrottle : IWorkLoadThrottle
+    {
+        public void Wait()
+        {            
+        }
+
+        public void Completed()
         {
         }
+    }
+    
+    public class WorkThrottle : IWorkLoadThrottle
+    {
+        Semaphore m_semaphore;
         
-        /// <summary>
-        /// Gets and sets the CName as a string (a dotted domain name)
-        /// </summary>
-        public string CName
+        public WorkThrottle(int maxParallel)
         {
-            get
+            m_semaphore = new Semaphore(maxParallel, maxParallel);
+        }        
+        
+        public event Action<WorkThrottle, Exception> Error;
+        
+        public void Wait()
+        {
+            m_semaphore.WaitOne();
+        }
+        
+        public void Wait(int timeout)
+        {
+            m_semaphore.WaitOne(timeout);
+        }
+
+        public void Completed()
+        {
+            try
             {
-                return m_name;
+                m_semaphore.Release();
             }
-            set
+            catch (Exception ex)
             {
-                if (string.IsNullOrEmpty(value))
+                if (this.Error != null)
                 {
-                    throw new DnsProtocolException(DnsProtocolError.InvalidCNameRecord);
+                    this.Error.SafeInvoke(this, ex);
                 }
-                
-                m_name = value;
             }
-        }
-        /// <summary>
-        /// Serialize the CName record
-        /// </summary>
-        /// <param name="buffer"></param>
-        protected override void SerializeRecordData(DnsBuffer buffer)
-        {
-            buffer.AddDomainName(m_name);
-        }
-        /// <summary>
-        /// Creates an instance from the DNS message from a DNS reader.
-        /// </summary>
-        /// <param name="reader">The DNS reader</param>
-        protected override void DeserializeRecordData(ref DnsBufferReader reader)
-        {
-            m_name = reader.ReadDomainName();
         }
     }
 }
