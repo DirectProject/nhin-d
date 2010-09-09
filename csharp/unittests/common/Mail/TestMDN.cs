@@ -61,7 +61,7 @@ namespace NHINDirect.Tests.Mail
         {
             Notification notification = new Notification(MDNStandard.NotificationType.Processed);            
             Assert.True(notification.ContentType.IsMediaType(MDNStandard.MediaType.ReportMessage));
-            Assert.True(notification.ContentType.IsParameter("report-type", "disposition-notification"));
+            Assert.True(notification.ContentType.HasParameter("report-type", "disposition-notification"));
                         
             notification = this.CreateProcessedNotification();
             

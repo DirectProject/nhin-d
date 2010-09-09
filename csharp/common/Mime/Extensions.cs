@@ -35,7 +35,6 @@ namespace NHINDirect.Mime
             return (MimeStandard.Equals(contentType.MediaType, mediaType));
         }
         
-        //TODO: should be HasParameter...
         /// <summary>
         /// Tests if this content type has the named parameter and parameter value.
         /// </summary>
@@ -43,7 +42,7 @@ namespace NHINDirect.Mime
         /// <param name="parameter">The parameter name to test</param>
         /// <param name="value">The parameter value to test</param>
         /// <returns><c>true</c> if the content type has the named parameter with the parameter value</returns>
-        public static bool IsParameter(this ContentType contentType, string parameter, string value)
+        public static bool HasParameter(this ContentType contentType, string parameter, string value)
         {
             string paramValue = contentType.Parameters[parameter];
             if (paramValue == null)

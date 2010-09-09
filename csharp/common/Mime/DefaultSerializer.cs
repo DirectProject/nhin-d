@@ -103,7 +103,6 @@ namespace NHINDirect.Mime
         }
 
 
-        // TODO: Name should indicate function: SerializeMutipart or some such...
         /// <summary>
         /// Seralizes an enumeration of <paramref name="entities"/> as a multipart body.
         /// </summary>
