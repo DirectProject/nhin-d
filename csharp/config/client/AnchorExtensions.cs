@@ -43,9 +43,13 @@ namespace NHINDirect.Config.Client.CertificateService
 
         public static bool Contains(this AnchorStoreClient client, string owner, string thumbprint)
         {
-            if (string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(thumbprint))
+            if (string.IsNullOrEmpty(owner))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "owner");
+            }
+            if (string.IsNullOrEmpty(thumbprint))
+            {
+                throw new ArgumentException("value was null or empty", "thumbprint");
             }
 
             Anchor anchor = client.GetAnchor(owner, thumbprint, CertificateExtensions.CertInfo);

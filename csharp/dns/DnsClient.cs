@@ -241,9 +241,9 @@ namespace DnsResolver
             }
             set
             {
-                if (value.Ticks <= 0)
+                if (value.Ticks < 1)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value less than 1", "value");
                 }
                 
                 m_timeout = value;

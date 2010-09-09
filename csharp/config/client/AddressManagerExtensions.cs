@@ -74,7 +74,7 @@ namespace NHINDirect.Config.Client.DomainManager
         {
             if (string.IsNullOrEmpty(emailAddress))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "emailAddress");
             }
             
             Address[] addresses = client.GetAddresses(new string[] {emailAddress}, status);

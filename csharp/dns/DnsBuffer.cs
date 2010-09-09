@@ -88,7 +88,7 @@ namespace DnsResolver
             {
                 if (value < 0 || value > m_buffer.Length)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentOutOfRangeException("value", "value less than 0 or greater than the buffer length");
                 }
 
                 m_count = value;

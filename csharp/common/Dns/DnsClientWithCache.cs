@@ -167,9 +167,13 @@ namespace NHINDirect.Dns
         /// <param name="nameserver">Nameserver to use during resolution</param>
         public override IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain, IPAddress nameserver)
         {
-            if (string.IsNullOrEmpty(domain) || nameserver == null)
+            if (string.IsNullOrEmpty(domain))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "domain");
+            }
+            if (nameserver == null)
+            {
+                throw new ArgumentNullException("nameserver");
             }
 
             using (DnsClientWithCache client = new DnsClientWithCache(nameserver))

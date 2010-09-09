@@ -36,7 +36,7 @@ namespace NHINDirect.Mail
         {
             if (string.IsNullOrEmpty(domain))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "domain");
             }
 
             return MailStandard.Equals(address.Host, domain);

@@ -89,7 +89,7 @@ namespace AgentTests
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value null or empty", "value");
                 }
                 
                 if (!Directory.Exists(value))

@@ -34,7 +34,7 @@ namespace NHINDirect.Config.Client.DomainManager
         {
             if (string.IsNullOrEmpty(domainName))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "domainName");
             }
 
             Domain[] domains = client.GetDomains(new string[] { domainName }, status);

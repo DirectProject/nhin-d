@@ -258,7 +258,7 @@ namespace NHINDirect.Certificates
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "name");
             }
             
             return certs.Find(x => x.MatchName(name));

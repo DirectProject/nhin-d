@@ -59,7 +59,7 @@ namespace NHINDirect.Mail
         {
             if (string.IsNullOrEmpty(message))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "message");
             }
             
             Message wrappedMessage = new Message();

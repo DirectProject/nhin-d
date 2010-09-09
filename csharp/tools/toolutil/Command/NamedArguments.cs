@@ -95,7 +95,7 @@ namespace NHINDirect.Tools.Command
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value null or empty", "name");
             }
 
             if (value == null)
