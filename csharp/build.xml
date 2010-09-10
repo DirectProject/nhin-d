@@ -1,0 +1,84 @@
+<Project DefaultTargets="build-all" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<!-- MSBuild documentation found at http://msdn.microsoft.com/en-us/library/0k6kkbsd.aspx -->
+	
+	<!-- Tigris - external\Tigris\MSBuildTasks.msi be installed http://msbuildtasks.tigris.org/ -->
+	<!-- After installation the help file is at [Program Files]\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.chm -->
+	<!-- <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/> -->
+	
+	<!-- this imports the xunit and xunitproject tasks -->
+	<UsingTask AssemblyFile="external\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunitproject" />
+
+	<!-- place any strings/properties here that are likely to be used more than once -->
+	<PropertyGroup>
+		<agent_solution>.\build\agent.sln</agent_solution>
+		<gateway_solution>.\build\gateway.sln</gateway_solution>
+		<xds_solution>.\xds\ReceiveDocumentSet\ReceiveDocumentSet.sln</xds_solution>
+	</PropertyGroup>
+
+	<!-- Aliases -->
+	<Target Name="build" DependsOnTargets="build-all" />
+	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway;build-xds" />
+
+	<Target Name="clean" DependsOnTargets="clean-all" />
+	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xds" />
+
+	<Target Name="test" DependsOnTargets="test-all" />
+	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xds" />
+
+	<Target Name="build-agent">
+		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=Debug" />
+	</Target>
+
+	<Target Name="clean-agent">
+		<MSBuild Projects="$(agent_solution)" Targets="Clean" />
+	</Target>
+
+	<Target Name="build-agent-help" DependsOnTargets="build-agent">
+		<Exec Command="build\sc_help.bat bin\debug\nhinAgent.dll" />
+	</Target>
+
+	<Target Name="build-gateway">
+		<CallTarget Targets="build-gateway32" Condition=" '$(PROCESSOR_ARCHITECTURE)' == 'x86' " />
+		<CallTarget Targets="build-gateway64" Condition=" '$(PROCESSOR_ARCHITECTURE)' == 'AMD64' " />
+	</Target>
+
+	<Target Name="build-gateway32">
+		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=Debug;Platform=Win32" />
+	</Target>
+
+	<Target Name="build-gateway64">
+		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=Debug;Platform=x64" />
+	</Target>
+
+	<Target Name="clean-gateway">
+		<!-- common files may have been removed, so... ugly but rebuild them and then clean them! The pain of a
+		     shared bin folder. -->
+		<!-- <MSBuild Projects="$(gateway_solution)" Targets="build" Properties="Configuration=Debug;Architecture=Any CPU" /> -->
+		<MSBuild Projects="$(gateway_solution)" Targets="clean" Properties="Configuration=Debug;Architecture=Any CPU" />
+	</Target>
+	
+	<Target Name="clean-xds">
+		<MSBuild Projects="$(xds_solution)" Targets="Clean" />
+	</Target>
+	
+	<Target Name="build-xds">
+		<MSBuild Projects="$(xds_solution)" Targets="Build" Properties="Configuration=Debug" />
+	</Target>
+
+	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
+	<Target Name="test-agent" DependsOnTargets="build-agent">
+		<xunitproject ProjectFile="unittests\agent.xunit" />
+	</Target>
+	
+	<Target Name="test-gateway" DependsOnTargets="build-gateway">
+		<xunitproject ProjectFile="unittests\gateway.xunit" />
+	</Target>
+
+	<Target Name="test-xds" DependsOnTargets="build-xds">
+		<!-- TODO - no unit tests in the XDS project currently
+		<xunitproject ProjectFile="unittests\xds.xunit" />
+		-->
+	</Target>
+	
+</Project>
