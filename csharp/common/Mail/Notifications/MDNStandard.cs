@@ -251,7 +251,7 @@ namespace NHINDirect.Mail.Notifications
             }
             
             ContentType contentType = entity.ParsedContentType;
-            return (contentType.IsMediaType(MDNStandard.MediaType.ReportMessage) && contentType.IsParameter(MDNStandard.ReportType, MDNStandard.ReportTypeValueNotification));
+            return (contentType.IsMediaType(MDNStandard.MediaType.ReportMessage) && contentType.HasParameter(MDNStandard.ReportType, MDNStandard.ReportTypeValueNotification));
         }
         
         /// <summary>

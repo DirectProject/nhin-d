@@ -52,7 +52,7 @@ namespace DnsResolver
         /// <param name="name">The domain name for which this is a record</param>
         /// <param name="nameserver">The authoritative nameserver for this domain.</param>
         public NSRecord(string name, string nameserver)
-            : base(name, Dns.RecordType.NS)
+            : base(name, DnsStandard.RecordType.NS)
         {
             this.NameServer = nameserver;
         }
@@ -95,7 +95,7 @@ namespace DnsResolver
                 return false;
             }
             
-            return (Dns.Equals(m_nameserver, nsRecord.NameServer));
+            return (DnsStandard.Equals(m_nameserver, nsRecord.NameServer));
         }
 
         /// <summary>

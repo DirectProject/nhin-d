@@ -51,13 +51,13 @@ namespace DnsResolver
     /// </remarks>
     public class DnsServerException : DnsException
     {
-        Dns.ResponseCode m_responseCode;
+        DnsStandard.ResponseCode m_responseCode;
         
         /// <summary>
         /// Initializes an instace with the specified <paramref name="responseCode"/>
         /// </summary>
         /// <param name="responseCode">The server response code that triggered this exception.</param>
-        public DnsServerException(Dns.ResponseCode responseCode)
+        public DnsServerException(DnsStandard.ResponseCode responseCode)
         {
             m_responseCode = responseCode;
         }
@@ -65,7 +65,7 @@ namespace DnsResolver
         /// <summary>
         /// The response code that triggered this exception.
         /// </summary>
-        public Dns.ResponseCode ResponseCode
+        public DnsStandard.ResponseCode ResponseCode
         {
             get
             {
