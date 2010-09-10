@@ -10,14 +10,17 @@ namespace NHINDirect.Diagnostics
     public class LogFileSettings
     {
         /// <summary>
-        /// Initializes an instance with a default log rotation interval, local time, and
+        /// Initializes an instance with a default log rotation interval, and
         /// an extension of .log
         /// </summary>
         public LogFileSettings()
         {
-            this.FileChangeFrequency = 24;
-            this.UseUTC = false;
-            this.Ext = "log";
+            FileChangeFrequency = 24;
+            Ext = "log";
+            Level = LoggingLevel.Error;
+
+            EventLogSource = "nhin";
+            EventLogLevel = LoggingLevel.Fatal;
         }
         
         /// <summary>
@@ -28,7 +31,7 @@ namespace NHINDirect.Diagnostics
         [XmlElement]
         public string DirectoryPath
         {
-            get;set;
+            get; set;
         }
 
         /// <summary>
@@ -38,8 +41,7 @@ namespace NHINDirect.Diagnostics
         [XmlElement]
         public string NamePrefix
         {
-            get;
-            set;
+            get; set;
         }
 
         /// <summary>
@@ -49,8 +51,7 @@ namespace NHINDirect.Diagnostics
         [XmlElement]
         public string Ext
         {
-            get;
-            set;
+            get; set;
         }
 
         /// <summary>
@@ -60,20 +61,36 @@ namespace NHINDirect.Diagnostics
         [XmlElement]
         public int FileChangeFrequency
         {
-            get;
-            set;
+            get; set;
         }
 
-        /// <summary>
-        /// Gets and sets if these settings define UTC for logging
-        /// </summary>
+        ///<summary>
+        /// Defines the minimum level of logging for the log files.
+        ///</summary>
         [XmlElement]
-        public bool UseUTC
+        public LoggingLevel Level
         {
-            get;
-            set;
+            get; set;
         }
-        
+
+        ///<summary>
+        /// The minimum level for logging to the event log.
+        ///</summary>
+        [XmlElement]
+        public LoggingLevel EventLogLevel
+        {
+            get; set;
+        }
+
+        ///<summary>
+        /// The source name used when writing to the event log.
+        ///</summary>
+        [XmlElement]
+        public string EventLogSource
+        {
+            get; set;
+        }
+
         /// <summary>
         /// Validates settings, throwing an exception if settings are invalid.
         /// </summary>
@@ -96,49 +113,10 @@ namespace NHINDirect.Diagnostics
             {
                 throw new ArgumentException("FileIntervalHours not specified");
             }
-        }
-
-        /// <summary>
-        /// Sets default values for properties.
-        /// </summary>
-        public void SetDefaults()
-        {           
-            if (string.IsNullOrEmpty(this.NamePrefix))
+            if (this.Level == 0)
             {
-                this.NamePrefix = this.GetProcessName();
-            }
-            
-            if (string.IsNullOrEmpty(this.DirectoryPath))
-            {
-                this.DirectoryPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "LogFiles");
-                System.IO.Directory.CreateDirectory(this.DirectoryPath);
+                throw new ArgumentException("Level not specified");
             }
         }
-        
-        string GetProcessName()
-        {
-            try
-            {
-                using (System.Diagnostics.Process process = System.Diagnostics.Process.GetCurrentProcess())
-                {
-                    return System.IO.Path.GetFileNameWithoutExtension(process.MainModule.ModuleName);
-                }
-            }
-            catch
-            {
-                return "Unknown";
-            }
-            
-        }
-        
-        // <summary>
-        // Creates a writer instance using these settings.
-        // </summary>
-        // <returns></returns>
-		//public LogWriter CreateWriter()
-		//{
-		//    this.Validate();
-		//    return new LogWriter(this.DirectoryPath, this.NamePrefix, this.Ext, this.FileChangeFrequency, this.UseUTC);
-		//}
     }
 }

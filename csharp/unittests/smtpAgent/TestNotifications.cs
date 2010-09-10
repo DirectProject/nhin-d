@@ -13,26 +13,22 @@ Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
-using NHINDirect;
+
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
 using NHINDirect.Mail;
 using NHINDirect.Mail.Notifications;
-using AgentTests;
+
 using Xunit;
-using Xunit.Extensions;
 
 namespace SmtpAgentTests
 {
     public class TestNotifications : SmtpAgentTester
     {
-        SmtpAgent m_agent;
-        NotificationProducer m_producer;
+        readonly SmtpAgent m_agent;
+        readonly NotificationProducer m_producer;
 
         static TestNotifications()
         {
@@ -62,7 +58,7 @@ namespace SmtpAgentTests
             foreach(NotificationMessage notification in m_producer.Produce(incoming))
             {
                 NHINDAddress sender = incoming.DomainRecipients[i++];
-                Assert.True(MailStandard.Equals(sender.Address, notification.FromValue));
+                Assert.Equal(sender.Address, notification.FromValue, MailStandard.Comparer);
             }            
             
             m_agent.Settings.InternalMessage.PickupFolder = Path.GetTempPath();

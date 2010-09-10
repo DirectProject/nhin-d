@@ -14,6 +14,7 @@ ALL CERTIFICATE RESOLUTION IS DONE LOCALLY USING MACHINE CERT STORES
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>testGateway</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
+    <Level>Debug</Level>
   </Log>
   <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
