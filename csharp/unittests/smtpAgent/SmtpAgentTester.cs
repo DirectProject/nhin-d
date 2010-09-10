@@ -14,17 +14,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Net.Mime;
+
 using NHINDirect.Mail;
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
-using AgentTests;
+
 using Xunit;
-using Xunit.Extensions;
 
 namespace SmtpAgentTests
 {

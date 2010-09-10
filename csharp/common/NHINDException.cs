@@ -14,9 +14,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NHINDirect
 {
@@ -71,6 +68,7 @@ namespace NHINDirect
         /// </summary>
         /// <param name="error">The error type for this instance.</param>
         public NHINDException(T error)
+            : base(FormatMessage(error, ""))
         {
             m_error = error;
         }
@@ -81,7 +79,7 @@ namespace NHINDirect
         /// <param name="error">The error type for this instance.</param>
         /// <param name="message">The message that describes the error. </param>
         public NHINDException(T error, string message)
-            : base(message)
+            : base(FormatMessage(error, message))
         {
             m_error = error;
         }
@@ -104,11 +102,27 @@ namespace NHINDirect
         /// <param name="message">The message that describes the error. </param>
         /// <param name="innerException">The inner exception reference.</param>
         public NHINDException(T error, string message, Exception innerException)
-            : base(message, innerException)
+            : base(FormatMessage(error, message), innerException)
         {
             m_error = error;
         }
-        
+
+        /// <summary>
+        /// Private helper method to format the message passed to the base exception ctor.
+        /// </summary>
+        /// <param name="error">The error object</param>
+        /// <param name="message">The message</param>
+        /// <returns>Returns a formatted error message</returns>
+        private static string FormatMessage(T error, string message)
+        {
+            string msg = "Error=" + error;
+            if (!string.IsNullOrEmpty(message))
+            {
+                msg += Environment.NewLine + message;
+            }
+            return msg;
+        }
+
         /// <summary>
         /// The specific error type for this instance.
         /// </summary>
@@ -122,15 +136,6 @@ namespace NHINDirect
             {
                 m_error = value;
             }
-        }
-
-        /// <summary>
-        /// Creates and returns a string representation of the current exception.
-        /// </summary>
-        /// <returns>A string representation of the current exception.</returns>
-        public override string ToString()
-        {
-            return string.Format("ERROR={0};\r\n", m_error, base.ToString());
         }
     }
 }

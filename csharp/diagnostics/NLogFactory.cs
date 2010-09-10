@@ -22,22 +22,12 @@ using NHINDirect.Diagnostics;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+using NLog.Win32.Targets;
 
 namespace Health.Net.Diagnostics.NLog
 {
 	public class NLogFactory : ILogFactory
 	{
-		public NLogFactory()
-			: this(new LogFileSettings
-			       	{
-			       		DirectoryPath = Environment.CurrentDirectory,
-						Ext = ".log",
-                        FileChangeFrequency = 24,
-						NamePrefix = "xds"
-					})
-		{
-		}
-
 		// TODO: not sure if this is the way we want to configure the logger, however, this
 		// honors the principle of being a code based configuration vs XML/file based.
 		public NLogFactory(LogFileSettings settings)
@@ -56,10 +46,26 @@ namespace Health.Net.Diagnostics.NLog
 				  		ArchiveNumbering = FileTarget.ArchiveNumberingMode.Rolling
 				  	};
 
-			SimpleConfigurator.ConfigureForTargetLogging(target, LogLevel.Debug);
+            LogLevel level = ConvertLogLevel(settings.Level);
+            SimpleConfigurator.ConfigureForTargetLogging(target, level);
+
+            // if the event log level is specified, then we will log the the Application EventLog.
+            // Default is to only log Fatal messages.
+            if (settings.EventLogLevel != LoggingLevel.Off)
+            {
+                EventLogTarget eventLogTarget
+                    = new EventLogTarget
+                          {
+                              Layout = "${logger}: ${message}${newline}${exception:format=ToString}",
+                              Source = settings.EventLogSource,
+                              Log = "Application",
+                          };
+                LogLevel eventLogLevel = ConvertLogLevel(settings.EventLogLevel);
+                SimpleConfigurator.ConfigureForTargetLogging(eventLogTarget, eventLogLevel);
+            }
 		}
 
-		public ILogger GetLogger(string name)
+	    public ILogger GetLogger(string name)
 		{
 			return new NLogLogger(LogManager.GetLogger(name));
 		}
@@ -80,5 +86,28 @@ namespace Health.Net.Diagnostics.NLog
 		{
 			return "." + settings.Ext.TrimStart('.');
 		}
-	}
+
+        private static LogLevel ConvertLogLevel(LoggingLevel level)
+        {
+            switch (level)
+            {
+                case LoggingLevel.Off:
+                    return LogLevel.Off;
+                case LoggingLevel.Debug:
+                    return LogLevel.Debug;
+                case LoggingLevel.Error:
+                    return LogLevel.Error;
+                case LoggingLevel.Fatal:
+                    return LogLevel.Fatal;
+                case LoggingLevel.Info:
+                    return LogLevel.Info;
+                case LoggingLevel.Trace:
+                    return LogLevel.Trace;
+                case LoggingLevel.Warn:
+                    return LogLevel.Warn;
+            }
+
+            throw new ArgumentOutOfRangeException("level", "Unknown value for LoggingLevel - " + level);
+        }
+    }
 }

@@ -15,7 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Text;
-using System.Diagnostics;
 
 using NHINDirect.Agent;
 using NHINDirect.Certificates;
@@ -29,16 +28,13 @@ namespace NHINDirect.SmtpAgent
         const string EventLogName = "nhinMessageSink";
 
     	private readonly ILogger m_logger;
-        private readonly bool m_logVerbose; 
         
-        internal AgentDiagnostics(bool logVerbose)
+        internal AgentDiagnostics()
         {
         	m_logger = IoC.Resolve<ILogFactory>().GetLogger(GetType());
-            m_logVerbose = logVerbose;
         }
 
-		[Obsolete("We should use a different logger for each different class")]
-		internal ILogger Log
+		private ILogger Log
 		{
 			get
 			{
@@ -46,64 +42,50 @@ namespace NHINDirect.SmtpAgent
 			}
 		}
 
-        internal void LogStatus(string message)
-        {
-            if (m_logVerbose)
-            {
-				m_logger.Debug(message);
-            }
-        }
-        
-        internal void LogError(string message, Exception ex)
-        {
-            m_logger.Error(message, ex);
-        }
+        //internal static void WriteEventLog(string message)
+        //{
+        //    EventLog.WriteEntry(EventLogName, message);
+        //}
 
-        [Obsolete("This may not be in use")]
-        internal static void WriteEventLog(string message)
-        {
-            EventLog.WriteEntry(EventLogName, message);
-        }
-
-        internal static void WriteEventLog(Exception ex)
-        {
-            EventLog.WriteEntry(EventLogName, ex.ToString(), EventLogEntryType.Error);
-        }
+        //internal static void WriteEventLog(Exception ex)
+        //{
+        //    EventLog.WriteEntry(EventLogName, ex.ToString(), EventLogEntryType.Error);
+        //}
         
         internal void OnOutgoingError(OutgoingMessage message, Exception error)
         {
-            if (m_logVerbose)
+            if (Log.IsDebugEnabled)
             {
-                m_logger.Error(this.BuildVerboseErrorMessage("OUTGOING", message, error));
+                Log.Error(this.BuildVerboseErrorMessage("OUTGOING", message, error));
             }
             else
             {
-                this.LogError("OnOutgoingError", error);
+                Log.Error("OnOutgoingError", error);
             }
         }
 
         internal void OnIncomingError(IncomingMessage message, Exception error)
         {
-            if (m_logVerbose)
+            if (Log.IsDebugEnabled)
             {
-                m_logger.Error(this.BuildVerboseErrorMessage("INCOMING", message, error));
+                Log.Error(this.BuildVerboseErrorMessage("INCOMING", message, error));
             }
             else
             {
-                this.LogError("OnIncomingError", error);
+                Log.Error("OnIncomingError", error);
             }
         }
 
         internal void OnDnsError(ICertificateResolver resolver, Exception error)
         {
-            this.LogError("OnDnsError", error);
+            Log.Error("OnDnsError", error);
         }
         
         internal void LogEnvelopeHeaders(ISmtpMessage message)
         {       
-            if (m_logVerbose && message.HasEnvelope)
+            if (Log.IsDebugEnabled && message.HasEnvelope)
             {     
-                this.LogStatus(this.SummarizeEnvelopeHeaders(message));
+                Log.Debug(this.SummarizeEnvelopeHeaders(message));
             }
         }
         
@@ -127,25 +109,20 @@ namespace NHINDirect.SmtpAgent
         {
             if (envelope.HasRecipients)
             {
-                builder.AppendFormat("RECIPIENTS={0}", envelope.Recipients.ToString());
-                builder.AppendLine();
+                builder.Append("RECIPIENTS=").AppendLine(envelope.Recipients);
             }
             if (envelope.HasDomainRecipients)
             {
-                builder.AppendFormat("DOMAIN RECIPIENTS={0}", envelope.DomainRecipients.ToString());
-                builder.AppendLine();
+                builder.Append("DOMAIN RECIPIENTS=").AppendLine(envelope.DomainRecipients);
             }
             if (envelope.HasRejectedRecipients)
             {
-                builder.AppendFormat("REJECTED RECIPIENTS={0}", envelope.RejectedRecipients.ToString());
-                builder.AppendLine();
-                builder.AppendFormat("NO CERTS={0}", this.CollectNoCertInformation(envelope.RejectedRecipients));
-                builder.AppendLine();
+                builder.Append("REJECTED RECIPIENTS=").AppendLine(envelope.RejectedRecipients);
+                builder.Append("NO CERTS=").AppendLine(this.CollectNoCertInformation(envelope.RejectedRecipients));
             }
             if (envelope.HasRejectedRecipients)
             {
-                builder.AppendFormat("OTHER RECIPIENTS={0}", envelope.OtherRecipients.ToString());
-                builder.AppendLine();
+                builder.Append("OTHER RECIPIENTS=").AppendLine(envelope.OtherRecipients);
             }
         }
         
@@ -161,8 +138,7 @@ namespace NHINDirect.SmtpAgent
             {
                 if (!recipient.HasCertificates)
                 {
-                    builder.Append(recipient.Address);
-                    builder.Append(';');
+                    builder.Append(recipient.Address).Append(';');
                 }
             }
             

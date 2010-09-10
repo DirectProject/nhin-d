@@ -81,6 +81,7 @@
     <Compile Include="Diagnostics\LogFileSettings.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Diagnostics\LoggingLevel.cs" />
     <Compile Include="Dns\DnsClientWithCache.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Container\IDependencyResolver.cs" />

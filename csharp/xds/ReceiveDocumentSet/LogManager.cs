@@ -16,8 +16,14 @@ namespace NHINDirect.XDS
 	{
 		static LogManager()
 		{
+		    LogFileSettings settings
+		        = new LogFileSettings
+		              {
+		                  NamePrefix = "xds"
+		              };
+
 			IoC.Initialize(new SimpleDependencyResolver())
-				.Register<ILogFactory>(new NLogFactory());
+				.Register<ILogFactory>(new NLogFactory(settings));
 		}
 
 		/// <summary>

@@ -8,6 +8,7 @@
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>smtpAgent</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
+    <Level>Debug</Level>
   </Log>
   <Domain>nhind.hsgincubator.com</Domain>
   <PrivateCerts>
