@@ -178,7 +178,7 @@ namespace DnsResolver
 		/// <param name="maxUdpBufferSize">
 		/// Maximum buffer size to use for UDP communication.
 		/// </param>
-        public DnsClient(IPEndPoint server, TimeSpan timeout, int maxBufferSize)
+        public DnsClient(IPEndPoint server, TimeSpan timeout, int maxUdpBufferSize)
         {         
             if (server == null)
             {
