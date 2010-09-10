@@ -42,7 +42,8 @@ public enum MimeType {
     TEXT_CDA_XML("text/cda+xml"), 
     APPLICATION_CCR("application/ccr"), 
     APPLICATION_XML("application/xml"), 
-    APPLICATION_PDF("application/pdf");
+    APPLICATION_PDF("application/pdf"),
+    MULTIPART_MIXED("multipart/mixed");
 
     /**
      * The MIME type.
