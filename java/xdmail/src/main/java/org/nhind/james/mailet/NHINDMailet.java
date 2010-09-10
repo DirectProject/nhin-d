@@ -30,6 +30,7 @@ package org.nhind.james.mailet;
 
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.mail.MessagingException;
@@ -70,35 +71,32 @@ public class NHINDMailet extends GenericMailet {
     @Override
     public void service(Mail mail) throws MessagingException {
         LOGGER.info("Servicing NHINDMailet");
-        
-        if (StringUtils.isBlank(endpointUrl))
-        {
+
+        if (StringUtils.isBlank(endpointUrl)) {
             LOGGER.severe("NHINDMailet endpoint URL cannot be empty or null.");
             throw new MessagingException("NHINDMailet endpoint URL cannot be empty or null.");
-        }   
-        
-        try {            
-            boolean forwardToXdr = true; // should be based on some routing lookup
+        }
+
+        try {
+            boolean forwardToXdr = true; // should be based on some routing
+            
             if (forwardToXdr) {
-                
-                // TODO: Multiple recipient pseudocode
-                //
-                // List<ProvideAndRegisterDocumentSetRequestType> requests = 
-                //                  MimeXDSTransformer.createRequest(mail.getMessage());
-                // 
-                // for (ProvideAndRegisterDocumentSetRequestType request : requests) {
-                //     String ack = DocumentRepositoryUtils.forward(endpointUrl, request);
-                //     
-                //     if (!isSuccessful(ack))
-                //         ??
-                // }                
-                
-                getMimeXDSTransformer().forward(endpointUrl, mail.getMessage());
+                List<ProvideAndRegisterDocumentSetRequestType> requests = MimeXDSTransformer.createRequests(mail
+                        .getMessage());
+
+                for (ProvideAndRegisterDocumentSetRequestType request : requests) {
+                    @SuppressWarnings("unused")
+                    String response = getMimeXDSTransformer().forwardRequest(endpointUrl, request);
+
+                    // if (!isSuccessful(response))
+                    // ??
+                }
+
             } else {
                 // forward it to another email server based on routing
                 // information
             }
-            
+
             mail.setState(Mail.GHOST);
         } catch (Throwable e) {
             e.printStackTrace();

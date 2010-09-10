@@ -33,6 +33,7 @@ import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,45 +74,26 @@ import org.apache.commons.lang.StringUtils;
 import org.nhind.ccddb.CCDParser;
 import org.nhind.mail.util.DocumentRepositoryUtils;
 import org.nhind.mail.util.MimeType;
-import org.nhind.mail.util.XMLUtils;
 
 /*
- * TODO there is a major assumption within this class and underlying classes.  That is the assumption of single document. 
- * This means that a message body (not attachment) has one document, an attachment has one document or one XDM and an XDM 
- * has one document.
- * Obviously this needs to be enhanced per the appropriate specs.
- * Also, for XDR purposes there is an assumption that the doc is CDA if its body or attached. XDM does not make this assumption.
- * As we go to XDD , this will be easy to fix. 
- * Thanks , Vince Lewis
+ * FIXME
+ * 
+ * The system currently handles multiple documents and recipients. 
+ * 
+ * Each document is placed into its own ProvideAndRegisterDocumentSetRequestType 
+ * object, and correspondingly its own SOAP message. 
+ * 
+ * ProvideAndRegisterDocumentSetRequestType allows for multiple documents in a 
+ * single request, and this class should eventually be updated to support this.
  */
 
 /**
- * Transform a MimeMessage into a XDR request.
+ * Transform a MimeMessage into a XDS request.
  * 
  * @author vlewis
  */
 public class MimeXDSTransformer {
-    
-    /**
-     * Class logger.
-     */
-    private static final Logger LOGGER = Logger.getLogger(MimeXDSTransformer.class.getName());
 
-    /*
-     * private static final String DEFAULT_LANGUAGE_CODE  = "en-us"; // TODO default from Locale
-     * private static final String RANDOM_OID_ROOT        = "1.3.6.1.4.1.21367.3100.1.2.3";
-     * private static final String NHINDIRECT_MESSAGE_ID_ASSIGNING_AUTHORITY_NAME = "NHINDirect";
-     * private static final String NHINDIRECT_ADDR_OID    = "1.3.6.1.4.1.21367.3100.1";
-     * private static final String NHINDIRECT_MESSAGE_ID_ASSIGNING_AUTHORITY_I  D = "1.3.6.1.4.1.21367.3100.1.1";
-     * private static final String NHINDIRECT_MESSAGE_METADATA_CODESYSTEM_ID      = "1.3.6.1.4.1.21367.3100.1.2";
-     * private static final String CODE_UNSPECIFIED       = "Unspecified";
-     * private static final String CODE_CLINICALDATA      = "Clinical Data";
-     * private static final String CODE_CONTENT_TYPE      = "Communication";
-     * private static final String CODE_CONFIDENTIALITY   = "N";
-     * private static final String CODE_FORMAT_CCRV1      = "CCR V1.0";
-     * private static final String CODE_FORMAT_PDF        = "PDF";
-     */
-    
     private static final String CODE_FORMAT_TEXT = "TEXT";
     private static final String CODE_FORMAT_CDAR2 = "CDAR2/IHE 1.0";
     
@@ -125,26 +107,11 @@ public class MimeXDSTransformer {
     private String remoteHost = null;
     private String pid = null;
     private String from = null;
-
+    
     /**
-     * Entry point for the MimeXDSTransformer class. This will forward a given
-     * MimeMessage to the given XDR endpoint.
-     * 
-     * @param endpoint
-     *            A URL representing an XDR endpoint.
-     * @param mimeMessage
-     *            The MimeMessage object to transform.
-     * @throws Exception
+     * Class logger.
      */
-    public void forward(String endpoint, MimeMessage mimeMessage) throws Exception {
-        if (StringUtils.isBlank(endpoint))
-            throw new IllegalArgumentException("Endpoint must not be blank");
-        if (mimeMessage == null)
-            throw new IllegalArgumentException("MimeMessage must not be null");
-        
-        ProvideAndRegisterDocumentSetRequestType prds = createRequest(mimeMessage);
-        forwardRequest(endpoint, prds);
-    }
+    private static final Logger LOGGER = Logger.getLogger(MimeXDSTransformer.class.getName());
 
     /**
      * Forward a given ProvideAndRegisterDocumentSetRequestType object to the
@@ -156,7 +123,7 @@ public class MimeXDSTransformer {
      *            The ProvideAndRegisterDocumentSetRequestType object.
      * @throws Exception
      */
-    protected void forwardRequest(String endpoint, ProvideAndRegisterDocumentSetRequestType prds) throws Exception {
+    public String forwardRequest(String endpoint, ProvideAndRegisterDocumentSetRequestType prds) throws Exception {
         if (StringUtils.isBlank(endpoint))
             throw new IllegalArgumentException("Endpoint must not be blank");
         if (prds == null)
@@ -189,163 +156,170 @@ public class MimeXDSTransformer {
         
         RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(prds);
         
-        String test = rrt.getStatus();
+        String response = rrt.getStatus();
         
-        if (StringUtils.contains(test, "Failure")) {
+        if (StringUtils.contains(response, "Failure")) {
             throw new Exception("Failure Returned from XDR forward");
         }
         
         LOGGER.info("Handling complete");
+        
+        return response;
     }
 
-    
-    
     /**
-     * Transform a MimeMessage object into a
-     * ProvideAndRegisterDocumentSetRequestType object.
-     * 
      * @param mimeMessage
-     *            The MimeMessage to be transformed.
-     * @return a ProvideAndRegisterDocumentSetRequestType object.
+     * @return
+     * @throws MessagingException
+     * @throws IOException
      */
-    private ProvideAndRegisterDocumentSetRequestType createRequest(MimeMessage mimeMessage) {
-        ProvideAndRegisterDocumentSetRequestType prsr = null;
+    public static List<ProvideAndRegisterDocumentSetRequestType> createRequests(MimeMessage mimeMessage)
+            throws MessagingException, IOException {
+        List<ProvideAndRegisterDocumentSetRequestType> requests = new ArrayList<ProvideAndRegisterDocumentSetRequestType>();
+
+        byte[] xdsDocument = null;
+        String xdsMimeType = null;
+        String xdsFormatCode = null;
 
         try {
-            Date sentDate = null;
+            String subject = mimeMessage.getSubject();
+            Date sentDate = mimeMessage.getSentDate();
 
-            Address[] froms = null;
-            Address[] recips = null;
-            
-            byte[] xdsDocument = null;
-            
-            String subject = null;
-            String xdsMimeType = null;
-            String xdsFormatCode = null;
-            String msgContentType = null;
-            
-            froms = mimeMessage.getFrom();
-            subject = mimeMessage.getSubject();
-            sentDate = mimeMessage.getSentDate();
-            recips = mimeMessage.getAllRecipients();
-            msgContentType = mimeMessage.getContentType();
-            
-            String auth = froms[0].toString(); // TODO one from for now
-            String recip = recips[0].toString(); // TODO one recipient for now
+            String from = mimeMessage.getFrom()[0].toString();
+            Address[] recipients = mimeMessage.getAllRecipients();
 
-            this.messageId = mimeMessage.getMessageID();
-            
-            if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.info("Message content type: " + msgContentType);
-            if (StringUtils.startsWith(msgContentType, "multipart/mixed")) {
+            if (MimeType.TEXT_PLAIN.matches(mimeMessage.getContentType())) {
+                LOGGER.info("Handling plain mail (no attachments)");
+
+                xdsFormatCode = CODE_FORMAT_TEXT;
+                xdsMimeType = MimeType.TEXT_PLAIN.getType();
+                xdsDocument = ((String) mimeMessage.getContent()).getBytes();
+
+                List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, sentDate, xdsFormatCode,
+                        xdsMimeType, xdsDocument, from, recipients);
+                requests.addAll(items);
+            } else if (MimeType.MULTIPART_MIXED.matches(mimeMessage.getContentType())) {
                 LOGGER.info("Handling multipart/mixed");
 
                 MimeMultipart mimeMultipart = (MimeMultipart) mimeMessage.getContent();
 
-                /*
-                 * Grab any CDA document attachments and add them to the
-                 * submission
-                 */
+                // For each BodyPart
                 for (int i = 0; i < mimeMultipart.getCount(); i++) {
                     BodyPart bodyPart = mimeMultipart.getBodyPart(i);
-                    
-                    String contentType = bodyPart.getContentType();
-                    
+
+                    // Skip empty BodyParts
+                    if (bodyPart.getSize() <= 0) {
+                        LOGGER.warning("Empty body, skipping");
+                        continue;
+                    }
+
+                    // Skip empty file names
+                    if (StringUtils.isBlank(bodyPart.getFileName())
+                            || StringUtils.equalsIgnoreCase(bodyPart.getFileName(), "null")) {
+                        LOGGER.warning("Filename is blank, skipping");
+                        continue;
+                    }
+
                     if (LOGGER.isLoggable(Level.INFO))
-                        LOGGER.info("BodyPart size: " + bodyPart.getSize());
-                    if (bodyPart.getSize() > 0) {
-                        String fname = bodyPart.getFileName();
-                        
-                        if (StringUtils.isBlank(fname) || StringUtils.equalsIgnoreCase(fname, "null")) {
-                            continue;
-                        }
-                        
-                        if (LOGGER.isLoggable(Level.INFO))
-                            LOGGER.info("File name: " + fname);
-                        if (StringUtils.contains(fname, ".zip")) {
-                            try {
-                                prsr = getXDMRequest(bodyPart);
-                                LOGGER.info("returning XDM based request");
-                                return prsr;
-                            } catch (Exception x) {
-                                // TODO, probably not an XDM
-                            }
-                        }
+                        LOGGER.info("File name: " + bodyPart.getFileName());
 
-                        InputStream is = bodyPart.getInputStream();
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-                        int j = 0;
-                        byte[] buf = new byte[1024];
-                        
-                        while ((j = is.read(buf)) != -1) {
-                            baos.write(buf, 0, j);
-                        }
-                        
-                        String contentString = new String(baos.toByteArray());
-
+                    if (StringUtils.contains(bodyPart.getFileName(), ".zip")) {
                         try {
-                            LOGGER.info("Content type is " + contentType);
+                            LOGGER.info("Bodypart is an XDM request");
 
-                            // special handling for recognized content types
-                            if (MimeType.TEXT_PLAIN.matches(contentType)) {
-                                LOGGER.info("Matched type TEXT_PLAIN");
-                                
-                                if (StringUtils.isBlank(contentString)) {
-                                    continue; // skip 'empty' parts
-                                }
-                                
-                                xdsDocument = baos.toByteArray();
-                                xdsMimeType = MimeType.TEXT_PLAIN.getType();
-                                xdsFormatCode = CODE_FORMAT_TEXT;
-                            } else if (MimeType.TEXT_XML.matches(contentType)) {
-                                LOGGER.info("Matched type TEXT_XML");
-                                
-                                if (StringUtils.contains(contentString, "urn:hl7-org:v3")
-                                        && StringUtils.contains(contentString, "POCD_HD000040")) {
-                                    LOGGER.info("Matched format CODE_FORMAT_CDAR2");
-                                    
-                                    xdsFormatCode = CODE_FORMAT_CDAR2;
-                                } else {
-                                    LOGGER.info("Defaulted to format CODE_FORMAT_TEXT");
-                                    
-                                    // Other XML (possible CCR or HL7)
-                                    // TODO: support more XML types
-                                    xdsFormatCode = CODE_FORMAT_TEXT;
-                                }
-                                
-                                xdsDocument = baos.toByteArray();
-                                xdsMimeType = MimeType.TEXT_XML.getType();
-                            } else {
-                                LOGGER.info("Did not match a type");
-                                
-                                // Otherwise make best effort passing MIME content type thru
-                                xdsMimeType = contentType;
-                                xdsFormatCode = CODE_FORMAT_TEXT;
-                            }
-                        }  finally {
-                            is.close();
+                            ProvideAndRegisterDocumentSetRequestType request = getXDMRequest(bodyPart);
+                            requests.add(request);
+                        } catch (Exception x) {
+                            LOGGER.warning("Handling of assumed XDM request failed, skipping");
                         }
+
+                        continue;
+                    }
+
+                    InputStream inputStream = bodyPart.getInputStream();
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+                    int data = 0;
+                    byte[] buffer = new byte[1024];
+                    while ((data = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, data);
+                    }
+
+                    String contentString = new String(outputStream.toByteArray());
+
+                    LOGGER.info("Content type is " + bodyPart.getContentType());
+
+                    // special handling for recognized content types
+                    if (MimeType.TEXT_PLAIN.matches(bodyPart.getContentType())) {
+                        LOGGER.info("Matched type TEXT_PLAIN");
+
+                        if (StringUtils.isBlank(contentString)) {
+                            continue; // skip 'empty' parts
+                        }
+
+                        xdsFormatCode = CODE_FORMAT_TEXT;
+                        xdsMimeType = MimeType.TEXT_PLAIN.getType();
+                        xdsDocument = outputStream.toByteArray();
+
+                        List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, mimeMessage
+                                .getSentDate(), xdsFormatCode, xdsMimeType, xdsDocument, from, recipients);
+                        requests.addAll(items);
+                    } else if (MimeType.TEXT_XML.matches(bodyPart.getContentType())) {
+                        LOGGER.info("Matched type TEXT_XML");
+
+                        if (StringUtils.contains(contentString, "urn:hl7-org:v3")
+                                && StringUtils.contains(contentString, "POCD_HD000040")) {
+                            LOGGER.info("Matched format CODE_FORMAT_CDAR2");
+
+                            xdsFormatCode = CODE_FORMAT_CDAR2;
+                            xdsMimeType = MimeType.TEXT_XML.getType();
+                            xdsDocument = outputStream.toByteArray();
+                        } else {
+                            // Other XML (possible CCR or HL7)
+                            LOGGER.info("Defaulted to format CODE_FORMAT_TEXT");
+
+                            xdsFormatCode = CODE_FORMAT_TEXT;
+                            xdsMimeType = MimeType.TEXT_XML.getType();
+                            xdsDocument = outputStream.toByteArray();
+                        }
+
+                        // TODO: support more XML types
+
+                        List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, mimeMessage
+                                .getSentDate(), xdsFormatCode, xdsMimeType, xdsDocument, from, recipients);
+                        requests.addAll(items);
+                    } else {
+                        LOGGER.info("Did not match a type");
+
+                        // Otherwise make best effort passing MIME content type
+
+                        xdsFormatCode = CODE_FORMAT_TEXT;
+                        xdsMimeType = bodyPart.getContentType();
+                        xdsDocument = outputStream.toByteArray();
+
+                        List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, mimeMessage
+                                .getSentDate(), xdsFormatCode, xdsMimeType, xdsDocument, from, recipients);
+                        requests.addAll(items);
                     }
                 }
-            } else if (MimeType.TEXT_PLAIN.matches(msgContentType)) {
-                // support for plain mail, no attachments
-                xdsMimeType = MimeType.TEXT_PLAIN.getType();
-                xdsFormatCode = CODE_FORMAT_TEXT;
-                xdsDocument = ((String) mimeMessage.getContent()).getBytes();
             } else {
-                // form prsr                
-                throw new MessagingException("Message content type " + msgContentType + " is not supported.");
+                LOGGER
+                        .warning("Message content type (" + mimeMessage.getContentType()
+                                + ") is not supported, skipping");
             }
-            
-            prsr = getRequest(subject, sentDate, xdsFormatCode, xdsMimeType, xdsDocument, auth, recip);
-        } catch (Exception x) {
-            // TODO
+        } catch (MessagingException e) {
+            LOGGER.severe("Unexpected MessagingException occured while handling MimeMessage");
+            e.printStackTrace();
+            throw e;
+        } catch (IOException e) {
+            LOGGER.severe("Unexpected IOException occured while handling MimeMessage");
+            e.printStackTrace();
+            throw e;
         }
 
-        return prsr;
+        return requests;
     }
-
+    
     /**
      * Get an XDM Request from a BodyPart object.
      * 
@@ -363,6 +337,34 @@ public class MimeXDSTransformer {
         ProvideAndRegisterDocumentSetRequestType prsr = xxt.getXDMRequest(dh);
         
         return prsr;
+    }
+    
+    /**
+     * @param subject
+     * @param sentDate
+     * @param formatCode
+     * @param mimeType
+     * @param doc
+     * @param auth
+     * @param recipients
+     * @return
+     */
+    protected static List<ProvideAndRegisterDocumentSetRequestType> getRequests(String subject, Date sentDate,
+            String formatCode, String mimeType, byte[] doc, String auth, Address[] recipients) {
+        List<ProvideAndRegisterDocumentSetRequestType> requests = new ArrayList<ProvideAndRegisterDocumentSetRequestType>();
+
+        for (Address recipient : recipients) {
+            try {
+                ProvideAndRegisterDocumentSetRequestType request = getRequest(subject, sentDate, formatCode, mimeType,
+                        doc, auth, recipient.toString());
+                requests.add(request);
+            } catch (Exception e) {
+                LOGGER.warning("Error creating ProvideAndRegisterDocumentSetRequestType object, skipping");
+                e.printStackTrace();
+            }
+        }
+
+        return requests;
     }
 
     /**
@@ -779,11 +781,11 @@ public class MimeXDSTransformer {
         ct.setNodeRepresentation(rep);
         
         List<SlotType1> slots = ct.getSlot();
-        Iterator is = slotNames.iterator();
+        Iterator<String> is = slotNames.iterator();
         
         int i = 0;
         while (is.hasNext()) {
-            String slotName = (String) is.next();
+            String slotName = is.next();
             SlotType1 slot = makeSlot(slotName, (String) slotValues.get(i));
             slots.add(slot);
 

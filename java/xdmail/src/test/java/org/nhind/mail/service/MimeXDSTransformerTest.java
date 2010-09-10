@@ -93,27 +93,6 @@ public class MimeXDSTransformerTest extends TestCase {
     }
 
     /**
-     * Test the forward method will null values.
-     */
-    public void testForwardWithNulls() {
-        MimeXDSTransformer transformer = new MimeXDSTransformer();
-
-        try {
-            transformer.forward(null, null);
-            fail("Exception not thrown");
-        } catch (Exception e) {
-            assertTrue(true);
-        }
-
-        try {
-            transformer.forward("endpoint", null);
-            fail("Exception not thrown");
-        } catch (Exception e) {
-            assertTrue(true);
-        }
-    }
-
-    /**
      * Test the forwardRequest method will null values.
      */
     public void testForwardRequestWithNulls() {
