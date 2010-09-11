@@ -35,7 +35,6 @@ import java.lang.management.ManagementFactory;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -55,6 +54,9 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.SOAPFaultException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -78,9 +80,9 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     private static boolean first = true;
 
     /**
-     * Class logger
+     * Class logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(RepositorySOAPHandler.class.getPackage().getName());
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(RepositorySOAPHandler.class);
     
     /**
      * Is called after constructing the handler and before executing any other method.
@@ -97,7 +99,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                // sysprop.putAll(properties);
                // LOGGER.info(properties.toString());
             } catch (Exception exception) {
-                LOGGER.info("Problem with properties file");
+                LOGGER.warn("Problem with properties file");
             }
         }
     }
@@ -331,7 +333,8 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
      */
     protected void getHeaderData() {
         Long threadId = Long.valueOf(Thread.currentThread().getId());
-        LOGGER.fine("GTHREAD ID " + threadId);
+        if (LOGGER.isTraceEnabled())
+            LOGGER.trace("GTHREAD ID " + threadId);
 
         ThreadData threadData = new ThreadData(threadId);
         messageId = threadData.getMessageId();
@@ -349,7 +352,8 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
      */
     protected void setHeaderData() {
         Long threadId = Long.valueOf(Thread.currentThread().getId());
-        LOGGER.fine("GTHREAD ID " + threadId);
+        if (LOGGER.isTraceEnabled())
+            LOGGER.trace("GTHREAD ID " + threadId);
         
         ThreadData threadData = new ThreadData(threadId);
         threadData.setReplyAddress(endpoint);

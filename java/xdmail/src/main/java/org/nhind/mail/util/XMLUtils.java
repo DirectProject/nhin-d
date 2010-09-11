@@ -30,12 +30,14 @@ package org.nhind.mail.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Utility methods for XML related activities.
@@ -47,7 +49,7 @@ public class XMLUtils {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(XMLUtils.class.getPackage().getName());
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(XMLUtils.class);
 
     /**
      * Marshal an object into an XML string.
@@ -72,8 +74,7 @@ public class XMLUtils {
             StringBuffer sb = sw.getBuffer();
             ret = new String(sb);
         } catch (Exception ex) {
-            LOGGER.info("Failed to marshal message");
-            ex.printStackTrace();
+            LOGGER.warn("Failed to marshal message", ex);
         }
 
         return ret;
@@ -94,8 +95,7 @@ public class XMLUtils {
         try {
             jaxbCtx = javax.xml.bind.JAXBContext.newInstance(factory);
         } catch (JAXBException e) {
-            LOGGER.info("Failed to create JAXBContext object");
-            e.printStackTrace();
+            LOGGER.error("Failed to create JAXBContext object", e);
             throw e;
         }
 
@@ -121,8 +121,8 @@ public class XMLUtils {
             javax.xml.bind.Unmarshaller unmarshaller = jaxbCtx.createUnmarshaller();
             ret = unmarshaller.unmarshal(byteArrayInputStream);
         } catch (Exception ex) {
-            LOGGER.info("Failed to unmarshal message: " + xml.substring(0, 50));
-            ex.printStackTrace();
+            if (LOGGER.isWarnEnabled())
+                LOGGER.warn("Failed to unmarshal message: " + xml.substring(0, 50), ex);
         }
 
         return ret;

@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
@@ -47,6 +46,8 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.InternationalStringType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhind.mail.util.MimeType;
 import org.nhind.mail.util.XMLUtils;
 
@@ -60,8 +61,8 @@ public class MimeXDSTransformerTest extends TestCase {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(MimeXDSTransformerTest.class.getName());
-
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(MimeXDSTransformerTest.class);
+    
     /**
      * Constructor.
      * 

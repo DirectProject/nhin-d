@@ -32,9 +32,11 @@ import ihe.iti.xds_b._2007.DocumentRepositoryPortType;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Logger;
 
 import junit.framework.TestCase;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Test class for methods in the DocumentRepositoryUtils class.
@@ -46,7 +48,7 @@ public class DocumentRepositoryUtilsTest extends TestCase {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(DocumentRepositoryUtilsTest.class.getName());
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(DocumentRepositoryUtilsTest.class);
 
     /**
      * Constructor.
@@ -103,12 +105,12 @@ public class DocumentRepositoryUtilsTest extends TestCase {
             url = new URL(DocumentRepositoryUtilsTest.class.getResource("."),
                     "../../../../XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl");
         } catch (MalformedURLException e) {
-            LOGGER.severe("Unable to access WSDL");
-            e.printStackTrace();
+            LOGGER.error("Unable to access WSDL", e);
             fail("Exception thrown");
         }
         
         try {
+            @SuppressWarnings("unused")
             DocumentRepositoryPortType port = DocumentRepositoryUtils.getDocumentRepositoryPortType("endpoint", url);
         } catch (Exception e) {
             e.printStackTrace();

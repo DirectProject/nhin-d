@@ -42,8 +42,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -71,6 +69,8 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhind.ccddb.CCDParser;
 import org.nhind.mail.util.DocumentRepositoryUtils;
 import org.nhind.mail.util.MimeType;
@@ -111,7 +111,7 @@ public class MimeXDSTransformer {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(MimeXDSTransformer.class.getName());
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(MimeXDSTransformer.class);
 
     /**
      * Forward a given ProvideAndRegisterDocumentSetRequestType object to the
@@ -143,8 +143,7 @@ public class MimeXDSTransformer {
         try {
             port = DocumentRepositoryUtils.getDocumentRepositoryPortType(endpoint);
         } catch (Exception e) {
-            LOGGER.warning("Unable to create port");
-            e.printStackTrace();
+            LOGGER.error("Unable to create port", e);
             throw e;
         }
         
@@ -209,18 +208,18 @@ public class MimeXDSTransformer {
 
                     // Skip empty BodyParts
                     if (bodyPart.getSize() <= 0) {
-                        LOGGER.warning("Empty body, skipping");
+                        LOGGER.warn("Empty body, skipping");
                         continue;
                     }
 
                     // Skip empty file names
                     if (StringUtils.isBlank(bodyPart.getFileName())
                             || StringUtils.equalsIgnoreCase(bodyPart.getFileName(), "null")) {
-                        LOGGER.warning("Filename is blank, skipping");
+                        LOGGER.warn("Filename is blank, skipping");
                         continue;
                     }
 
-                    if (LOGGER.isLoggable(Level.INFO))
+                    if (LOGGER.isInfoEnabled())
                         LOGGER.info("File name: " + bodyPart.getFileName());
 
                     if (StringUtils.contains(bodyPart.getFileName(), ".zip")) {
@@ -230,7 +229,7 @@ public class MimeXDSTransformer {
                             ProvideAndRegisterDocumentSetRequestType request = getXDMRequest(bodyPart);
                             requests.add(request);
                         } catch (Exception x) {
-                            LOGGER.warning("Handling of assumed XDM request failed, skipping");
+                            LOGGER.warn("Handling of assumed XDM request failed, skipping");
                         }
 
                         continue;
@@ -303,17 +302,14 @@ public class MimeXDSTransformer {
                     }
                 }
             } else {
-                LOGGER
-                        .warning("Message content type (" + mimeMessage.getContentType()
-                                + ") is not supported, skipping");
+                if (LOGGER.isWarnEnabled())
+                    LOGGER.warn("Message content type (" + mimeMessage.getContentType() + ") is not supported, skipping");
             }
         } catch (MessagingException e) {
-            LOGGER.severe("Unexpected MessagingException occured while handling MimeMessage");
-            e.printStackTrace();
+            LOGGER.error("Unexpected MessagingException occured while handling MimeMessage", e);
             throw e;
         } catch (IOException e) {
-            LOGGER.severe("Unexpected IOException occured while handling MimeMessage");
-            e.printStackTrace();
+            LOGGER.error("Unexpected IOException occured while handling MimeMessage", e);
             throw e;
         }
 
@@ -354,13 +350,14 @@ public class MimeXDSTransformer {
         List<ProvideAndRegisterDocumentSetRequestType> requests = new ArrayList<ProvideAndRegisterDocumentSetRequestType>();
 
         for (Address recipient : recipients) {
+            String realRecipient = StringUtils.replace(recipient.toString(), "@xd.", "@");
+            
             try {
                 ProvideAndRegisterDocumentSetRequestType request = getRequest(subject, sentDate, formatCode, mimeType,
-                        doc, auth, recipient.toString());
+                        doc, auth, realRecipient);
                 requests.add(request);
             } catch (Exception e) {
-                LOGGER.warning("Error creating ProvideAndRegisterDocumentSetRequestType object, skipping");
-                e.printStackTrace();
+                LOGGER.warn("Error creating ProvideAndRegisterDocumentSetRequestType object, skipping", e);
             }
         }
 

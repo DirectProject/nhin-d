@@ -41,7 +41,6 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -53,8 +52,11 @@ import javax.xml.bind.JAXBElement;
 import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExternalIdentifierType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhind.mail.util.XMLUtils;
 
 /**
@@ -70,7 +72,7 @@ public class XDMXDSTransformer {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(XDMXDSTransformer.class.getName());
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(XDMXDSTransformer.class);
     
     /**
      * Reads an XDM ZIP archive and returns a set of XDS submissions.
@@ -168,16 +170,19 @@ public class XDMXDSTransformer {
     protected String getDocId(SubmitObjectsRequest sor) {
         String ret = null;
         RegistryObjectListType rol = sor.getRegistryObjectList();
-        List extensible = rol.getIdentifiable();
-        Iterator iext = extensible.iterator();
+        List<JAXBElement<? extends IdentifiableType>> extensible = rol.getIdentifiable();
+        Iterator<JAXBElement<? extends IdentifiableType>> iext = extensible.iterator();
         while (iext.hasNext()) {
-            JAXBElement elem = (JAXBElement) iext.next();
+            JAXBElement<? extends IdentifiableType> elem = (JAXBElement<? extends IdentifiableType>) iext.next();
             String type = elem.getDeclaredType().getName();
             Object value = elem.getValue();
+            
             if (type.equals("oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType")) {
                 ret = getDocId((ExtrinsicObjectType) value);
             }
-            LOGGER.info(elem.getDeclaredType().getName() + elem.getValue().toString());
+            
+            if (LOGGER.isInfoEnabled())
+                LOGGER.info(elem.getDeclaredType().getName() + elem.getValue().toString());
         }
         return ret;
     }
@@ -223,6 +228,7 @@ public class XDMXDSTransformer {
      * @param subsetFilespec
      * @return
      */
+    @SuppressWarnings("unused")
     private ZipEntry getXDMZipEntry(ZipFile zipFile, String subsetDirspec, String subsetFilespec) {
         ZipEntry result = null;
         // String zipFilespec = XDM_DIRSPEC_SUBMISSIONROOT + "\\" + subsetDirspec + "\\" + subsetFilespec.replace('/', '\\');
@@ -276,10 +282,10 @@ public class XDMXDSTransformer {
                 out.write(buf, 0, len);
             }
         } catch (FileNotFoundException e) {
-            LOGGER.warning("File not found - " + fileName);
+            LOGGER.error("File not found - " + fileName, e);
             throw e;
         } catch (IOException e) {
-            LOGGER.warning("Exception thrown while trying to read file from DataHandler object");
+            LOGGER.error("Exception thrown while trying to read file from DataHandler object", e);
             throw e;
         } finally {
             if (inputStream != null)
