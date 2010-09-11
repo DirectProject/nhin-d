@@ -31,11 +31,12 @@ package org.nhind.james.mailet;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.mail.MessagingException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.base.GenericMailet;
 import org.nhind.mail.service.MimeXDSTransformer;
@@ -59,9 +60,9 @@ public class NHINDMailet extends GenericMailet {
     private MimeXDSTransformer mimeXDSTransformer;
     
     /**
-     * Class logger
+     * Class logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(NHINDMailet.class.getPackage().getName());
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(NHINDMailet.class);
     
     /*
      * (non-Javadoc)
@@ -73,7 +74,7 @@ public class NHINDMailet extends GenericMailet {
         LOGGER.info("Servicing NHINDMailet");
 
         if (StringUtils.isBlank(endpointUrl)) {
-            LOGGER.severe("NHINDMailet endpoint URL cannot be empty or null.");
+            LOGGER.error("NHINDMailet endpoint URL cannot be empty or null.");
             throw new MessagingException("NHINDMailet endpoint URL cannot be empty or null.");
         }
 
@@ -100,7 +101,7 @@ public class NHINDMailet extends GenericMailet {
             mail.setState(Mail.GHOST);
         } catch (Throwable e) {
             e.printStackTrace();
-            LOGGER.severe("NHINDMailet delivery failure" + e.getMessage());
+            LOGGER.error("NHINDMailet delivery failure" + e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -119,7 +120,7 @@ public class NHINDMailet extends GenericMailet {
         
         if (StringUtils.isBlank(endpointUrl))
         {
-            LOGGER.severe("NHINDMailet endpoint URL cannot be empty or null.");
+            LOGGER.error("NHINDMailet endpoint URL cannot be empty or null.");
             throw new MessagingException("NHINDMailet endpoint URL cannot be empty or null.");
         }   
     }
