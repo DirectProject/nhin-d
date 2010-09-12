@@ -62,7 +62,7 @@ public class XMLUtils {
      *            The factory class.
      * @return a marshaled string from the object.
      */
-    public static String marshal(QName altName, Object jaxb, Class factory) {
+    public static String marshal(QName altName, Object jaxb, Class<?> factory) {
         String ret = null;
 
         try {

@@ -57,6 +57,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhind.mail.util.MimeType;
 import org.nhind.mail.util.XMLUtils;
 
 /**
@@ -65,9 +66,8 @@ import org.nhind.mail.util.XMLUtils;
  */
 public class XDMXDSTransformer {
 
-    static private String XDM_FILENAME_METADATA = "METADATA.xml";
-    static private String XDM_FILENAME_DATA = "DOCUMENT.xml";
-    // static private String XDM_DIRSPEC_SUBMISSIONROOT = "SUBSET01";
+    private static final String XDM_FILENAME_DATA = "DOCUMENT.xml";
+    private static final String XDM_FILENAME_METADATA = "METADATA.xml";
 
     /**
      * Class logger.
@@ -145,7 +145,7 @@ public class XDMXDSTransformer {
                         List<Document> docs = prsr.getDocument();
                         Document pdoc = new Document();
 
-                        DataSource source = new ByteArrayDataSource(baos.toByteArray(), "application/xml; charset=UTF-8");
+                        DataSource source = new ByteArrayDataSource(baos.toByteArray(), MimeType.APPLICATION_XML.getType() + "; charset=UTF-8");
                         DataHandler dhnew = new DataHandler(source);
                         pdoc.setValue(dhnew);
                         pdoc.setId(docId);
@@ -220,25 +220,6 @@ public class XDMXDSTransformer {
             ret = zname.equals(zipFilespec);
         }
         return ret;
-    }
-
-    /**
-     * @param zipFile
-     * @param subsetDirspec
-     * @param subsetFilespec
-     * @return
-     */
-    @SuppressWarnings("unused")
-    private ZipEntry getXDMZipEntry(ZipFile zipFile, String subsetDirspec, String subsetFilespec) {
-        ZipEntry result = null;
-        // String zipFilespec = XDM_DIRSPEC_SUBMISSIONROOT + "\\" + subsetDirspec + "\\" + subsetFilespec.replace('/', '\\');
-        String zipFilespec = subsetDirspec + "\\" + subsetFilespec.replace('/', '\\');
-        result = zipFile.getEntry(zipFilespec);
-        if (result == null) {
-            zipFilespec = zipFilespec.replace('\\', '/');
-            result = zipFile.getEntry(zipFilespec);
-        }
-        return result;
     }
 
     /**
