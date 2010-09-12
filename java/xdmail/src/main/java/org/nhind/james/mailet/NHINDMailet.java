@@ -125,14 +125,30 @@ public class NHINDMailet extends GenericMailet {
         }   
     }
     
+    /**
+     * Return the value of endpointUrl.
+     * 
+     * @return the value of endpointUrl.
+     */
     protected String getEndpointUrl() {
         return this.endpointUrl;
     }
     
+    /**
+     * Set the value of mimeXDSTransformer.
+     * 
+     * @param mimeXDSTransformer
+     *            The value of mimeXDSTransformer.
+     */
     protected void setMimeXDSTransformer(MimeXDSTransformer mimeXDSTransformer) {
         this.mimeXDSTransformer = mimeXDSTransformer;
     }
-    
+
+    /**
+     * Get the value of mimeXDSTransfomer.
+     * 
+     * @return the value of mimeXDSTransformer, or a new object if null.
+     */
     protected MimeXDSTransformer getMimeXDSTransformer() {
         if (this.mimeXDSTransformer == null) {
             this.mimeXDSTransformer = new MimeXDSTransformer();

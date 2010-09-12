@@ -61,7 +61,8 @@ import org.nhind.mail.util.MimeType;
 import org.nhind.mail.util.XMLUtils;
 
 /**
- *
+ * Class for handling the transformation of XDM to XDS.
+ * 
  * @author vlewis
  */
 public class XDMXDSTransformer {
@@ -75,10 +76,11 @@ public class XDMXDSTransformer {
     private static final Log LOGGER = LogFactory.getFactory().getInstance(XDMXDSTransformer.class);
     
     /**
-     * Reads an XDM ZIP archive and returns a set of XDS submissions.
+     * Reads an XDM ZIP archive and returns an XDS submission.
      * 
      * @param dh
-     * @return
+     *            The DataHandler object.
+     * @return a ProvideAndRegisterDocumentSetRequestType object.
      * @throws Exception
      */
     public ProvideAndRegisterDocumentSetRequestType getXDMRequest(DataHandler dh) throws Exception {
@@ -89,8 +91,11 @@ public class XDMXDSTransformer {
     }
 
     /**
+     * Reads an XDM ZIP archive and returns an XDS submission.
+     * 
      * @param archiveFile
-     * @return
+     *            The archive file.
+     * @return a ProvideAndRegisterDocumentSetRequestType object.
      * @throws Exception
      */
     public ProvideAndRegisterDocumentSetRequestType getXDMRequest(File archiveFile) throws Exception {
@@ -164,10 +169,14 @@ public class XDMXDSTransformer {
     }
 
     /**
+     * Get the document ID from a SubmitObjectsRequest object.
+     * 
      * @param sor
-     * @return
+     *            The SubmitObjectsRequest object from which to retrieve the
+     *            document ID.
+     * @return a document ID.
      */
-    protected String getDocId(SubmitObjectsRequest sor) {
+    protected static String getDocId(SubmitObjectsRequest sor) {
         String ret = null;
         RegistryObjectListType rol = sor.getRegistryObjectList();
         List<JAXBElement<? extends IdentifiableType>> extensible = rol.getIdentifiable();
@@ -188,10 +197,14 @@ public class XDMXDSTransformer {
     }
 
     /**
+     * Get the document ID from an EntrinsicObjectType object.
+     * 
      * @param eot
-     * @return
+     *            The EntrinsicObjectType object from which to retrieve the
+     *            document ID.
+     * @return a document ID.
      */
-    protected String getDocId(ExtrinsicObjectType eot) {
+    protected static String getDocId(ExtrinsicObjectType eot) {
         String ret = null;
         List<ExternalIdentifierType> eits= eot.getExternalIdentifier();
         Iterator<ExternalIdentifierType> ieits = eits.iterator();
@@ -205,10 +218,15 @@ public class XDMXDSTransformer {
     }
 
     /**
+     * Determine whether a filename matches the subset directory and file name.
+     * 
      * @param zname
+     *            The name to compare.
      * @param subsetDirspec
+     *            The subset directory name.
      * @param subsetFilespec
-     * @return
+     *            The subset file name.
+     * @return true if the names match, false otherwise.
      */
     static boolean matchName(String zname, String subsetDirspec, String subsetFilespec) {
         boolean ret = false;
@@ -227,7 +245,8 @@ public class XDMXDSTransformer {
      * present) under the IHE_XDM root specified by IHE XDM.
      * 
      * @param zipEntryName
-     * @return
+     *            The ZIP entry name.
+     * @return the name of the folder.
      */
     private String getSubmissionSetDirspec(String zipEntryName) {
         String result = null;
@@ -241,8 +260,11 @@ public class XDMXDSTransformer {
     }
 
     /**
+     * Create a File object from the given DataHandler object.
+     * 
      * @param dh
-     * @return
+     *            The DataHandler object.
+     * @return a File object created from the DataHandler object.
      * @throws Exception
      */
     protected File fileFromDataHandler(DataHandler dh) throws Exception {

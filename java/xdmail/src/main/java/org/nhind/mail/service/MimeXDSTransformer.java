@@ -167,8 +167,14 @@ public class MimeXDSTransformer {
     }
 
     /**
+     * Create a list of ProvideAndRegisterDocumentSetRequestType objects based
+     * from the provide MimeMessage object. Each request will contain a single
+     * recipient and document. Multiple requests may be returned for the same
+     * recipient.
+     * 
      * @param mimeMessage
-     * @return
+     *            The MimeMessage object from which to create the XDS requests.
+     * @return a list of ProvideAndRegisterDocumentSetRequestType objects
      * @throws MessagingException
      * @throws IOException
      */
@@ -334,16 +340,29 @@ public class MimeXDSTransformer {
         
         return prsr;
     }
-    
+
     /**
+     * Create a list of ProvideAndRegisterDocumentSetRequestType objects from
+     * the provided data for each of the provided recipients.
+     * 
+     * The proof-of-concept code will look for recipients that match
+     * (.*)@xd\.(.*) and transform them to $1@$2 before creating the request.
+     * 
      * @param subject
+     *            The message subject.
      * @param sentDate
+     *            The message sent date.
      * @param formatCode
+     *            The document format code.
      * @param mimeType
+     *            The document MIME type.
      * @param doc
+     *            The document as an array of bytes.
      * @param auth
+     *            The author of the document.
      * @param recipients
-     * @return
+     *            The list of recipients to receive the XDS request.
+     * @return a list of ProvideAndRegisterDocumentSetRequestType objects.
      */
     protected static List<ProvideAndRegisterDocumentSetRequestType> getRequests(String subject, Date sentDate,
             String formatCode, String mimeType, byte[] doc, String auth, Address[] recipients) {
@@ -365,14 +384,24 @@ public class MimeXDSTransformer {
     }
 
     /**
+     * Create a single ProvideAndRegisterDocumentSetRequestType objects from the
+     * provided data.
+     * 
      * @param subject
+     *            The message subject.
      * @param sentDate
+     *            The message sent date.
      * @param formatCode
+     *            The document format code.
      * @param mimeType
+     *            The document MIME type.
      * @param doc
+     *            The document as an array of bytes.
      * @param auth
+     *            The author of the document.
      * @param recip
-     * @return
+     *            The recipient of the document.
+     * @return a single ProvideAndRegisterDocumentSetRequestType object.
      * @throws Exception
      */
     protected static ProvideAndRegisterDocumentSetRequestType getRequest(String subject, Date sentDate, String formatCode,
@@ -408,18 +437,32 @@ public class MimeXDSTransformer {
     }
 
     /**
+     * Create a SubmitObjectsRequest object for the XDS request using the
+     * provided data.
+     * 
      * @param patientId
+     *            The patient ID for the document.
      * @param orgId
+     *            The organization ID for the document.
      * @param person
+     *            The SimplePerson object for the document.
      * @param subject
+     *            The message subject.
      * @param sentDate
+     *            The message sent date.
      * @param docId
+     *            The unique document ID.
      * @param subId
+     *            The submission ID.
      * @param formatCode
+     *            The document format code.
      * @param mimeType
+     *            The document MIME type.
      * @param auth
+     *            The document author.
      * @param recip
-     * @return
+     *            The recipient of the document.
+     * @return a SubmitObjectsRequest object.
      */
     protected static SubmitObjectsRequest getSubmitObjectsRequest(String patientId, String orgId, SimplePerson person,
             String subject, String sentDate, String docId, String subId, String formatCode, String mimeType,
@@ -461,15 +504,26 @@ public class MimeXDSTransformer {
     }
 
     /**
+     * Create an EntrinsicObjectType object for the XDS request using the
+     * provided data.
+     * 
      * @param patientId
+     *            The patient ID for the document.
      * @param orgId
+     *            The organization ID for the document.
      * @param person
+     *            The SimplePerson object for the document.
      * @param sentDate
+     *            The message sent date.
      * @param docId
+     *            The unique document ID.
      * @param formatCode
+     *            The document format code.
      * @param mimeType
+     *            The document MIME type.
      * @param auth
-     * @return
+     *            The document author.
+     * @return an EntrinsicObjectType object.
      */
     protected static ExtrinsicObjectType getExtrinsicObject(String patientId, String orgId, SimplePerson person,
             String sentDate, String docId, String formatCode, String mimeType, String auth) {
@@ -494,12 +548,7 @@ public class MimeXDSTransformer {
         classifs = document.getClassification();
         
         slots.add(makeSlot("creationTime", sentDate));
-        
-        // slots.add(makeSlot("serviceStartTime", formatDate(new Date())));
-        // GregorianCalendar gd = new GregorianCalendar();
-        // gd.add(gd.YEAR, 100);
-        // slots.add(makeSlot("serviceStopTime", formatDate(gd.getTime())));
-        
+              
         slots.add(makeSlot("sourcePatientId", patientId + "^^^&" + orgId));
         
         if (person != null) {
@@ -569,14 +618,24 @@ public class MimeXDSTransformer {
     }
 
     /**
+     * Create a RegistryPackageType object for the XDS request from the provided
+     * data.
+     * 
      * @param patientId
+     *            The patient ID for the document.
      * @param orgId
+     *            The organization ID for the document.
      * @param subject
+     *            The message subject.
      * @param sentDate
+     *            The message sent date.
      * @param subId
+     *            The submission ID.
      * @param auth
+     *            The document author.
      * @param recip
-     * @return
+     *            The recipient of the document.
+     * @return a RegistryPackageType object.
      */
     protected static RegistryPackageType getSubmissionSet(String patientId, String orgId, String subject, String sentDate,
             String subId, String auth, String recip) {
@@ -754,14 +813,25 @@ public class MimeXDSTransformer {
     }
 
     /**
+     * Add a ClassificationType object to the provided list of
+     * ClassificationType objects, created from the provided data.
+     * 
      * @param classifs
+     *            The list of ClassificationType objects to append to.
      * @param docId
+     *            The document ID.
      * @param id
+     *            The classification ID.
      * @param scheme
+     *            The classification scheme.
      * @param rep
+     *            The node representation.
      * @param slotNames
+     *            The list of slot names.
      * @param slotValues
+     *            The list of slot values.
      * @param snames
+     *            The localized strings.
      */
     protected static void addClassifications(List<ClassificationType> classifs, String docId, String id, String scheme,
             String rep, List<String> slotNames, List<String> slotValues, List<String> snames) {
@@ -802,12 +872,21 @@ public class MimeXDSTransformer {
     }
 
     /**
+     * Add a ExternalIdentifierType object to the provided list of
+     * ExternalIdentifierType objects, created from the provided data.
+     * 
      * @param extIds
+     *            The list of ExternalIdentifierType objects to append to.
      * @param docId
+     *            The document ID.
      * @param scheme
+     *            The identification scheme.
      * @param id
+     *            The external identifier ID.
      * @param sname
+     *            The localized string.
      * @param value
+     *            The external identifier value.
      */
     protected static void addExternalIds(List<ExternalIdentifierType> extIds, String docId, String scheme, String id,
             String sname, String value) {
@@ -834,8 +913,11 @@ public class MimeXDSTransformer {
     }
 
     /**
+     * Format a date using yyyyMMddHHmmss.
+     * 
      * @param dateVal
-     * @return
+     *            The date to format.
+     * @return a formatted date object as a String.
      */
     protected static String formatDate(Date dateVal) {
         final String formout = "yyyyMMddHHmmss";
@@ -853,8 +935,12 @@ public class MimeXDSTransformer {
     }
 
     /**
+     * Transform a String representation of a date from MM/dd/yyyy to
+     * yyyyMMddHHmmss.
+     * 
      * @param value
-     * @return
+     *            The date as a String to transform.
+     * @return the formatted date as a String.
      */
     protected static String formatDateFromMDM(String value) {
         final String formin = "MM/dd/yyyy";

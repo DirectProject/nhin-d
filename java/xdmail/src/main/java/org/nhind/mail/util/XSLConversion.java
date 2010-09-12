@@ -46,7 +46,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
+ * XSL conversion utilities.
  */
 public class XSLConversion {
 
@@ -65,9 +65,13 @@ public class XSLConversion {
     }
 
     /**
+     * Perform the XSL conversion using the provided map file and message.
+     * 
      * @param mapFile
+     *            The map file.
      * @param message
-     * @return
+     *            The message.
+     * @return an XSL conversion.
      * @throws Exception
      */
     public String run(String mapFile, String message) throws Exception {

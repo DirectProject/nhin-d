@@ -201,6 +201,9 @@
                     <detectLinks>true</detectLinks>
                     <source>1.6</source>
                     <show>protected</show>
+                    <excludePackageNames>
+                        oasis.names.tc.ebxml_regrep.xsd:ihe.iti.xds_b._2007
+                   </excludePackageNames>                            
                 </configuration>
             </plugin>
             <plugin>
