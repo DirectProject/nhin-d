@@ -50,7 +50,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class XSLConversion {
 
-    static final String SERVERNAME = "XSLEngine";
+    /**
+     * Hashtable of map files to templates.
+     */
     private static Hashtable<String, Templates> conversions = new Hashtable<String, Templates>(10);
 
     /**

@@ -48,6 +48,7 @@ import javax.xml.ws.WebServiceContext;
 import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
@@ -96,7 +97,7 @@ public class DocumentRegistry {
      */
     public String parseRegistry(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
         SubmitObjectsRequest sor = prdst.getSubmitObjectsRequest();
-        return parseRegistryData(sor, PNR);
+        return parseRegistryData(sor);
     }
 
     /**
@@ -105,27 +106,24 @@ public class DocumentRegistry {
      * 
      * @param sor
      *            The SubmitObjectsRequest object to parse.
-     * @param ttype
-     *            ?? TODO unused param
      * @return a mime-type.
      * @throws Exception
      */
-    protected String parseRegistryData(SubmitObjectsRequest sor, int ttype) throws Exception {
+    protected String parseRegistryData(SubmitObjectsRequest sor) throws Exception {
         String ret = null;
 
         try {
             if (sor != null) {
                 RegistryObjectListType rol = sor.getRegistryObjectList();
-                List extensible = rol.getIdentifiable();
-                Iterator iext = extensible.iterator();
+                List<JAXBElement<? extends IdentifiableType>> extensible = rol.getIdentifiable();
+                Iterator<JAXBElement<? extends IdentifiableType>> iext = extensible.iterator();
                 while (iext.hasNext()) {
-                    JAXBElement elem = (JAXBElement) iext.next();
+                    JAXBElement<? extends IdentifiableType> elem = iext.next();
                     String type = elem.getDeclaredType().getName();
                     Object value = elem.getValue();
                     if (type.equals("oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType")) {
                         ret = parseDocument((ExtrinsicObjectType) value);
                     } else if (type.equals("oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType")) {
-                        // parseSubmissionSet((RegistryPackageType) value);
                         forwards = getForwards((RegistryPackageType) value);
                     }  else if (type.equals("oasis.names.tc.ebxml_regrep.xsd.rim._3.AssociationType1")) {
                     }
@@ -253,13 +251,16 @@ public class DocumentRegistry {
                 }
             }
         }
+        
         return forwards;
     }
     
     /**
+     * Parse a list of ClassificationType objects for an author.
      * 
      * @param classes
-     * @return
+     *            A list of ClassificationType objects.
+     * @return an author.
      * @throws Exception
      */
     public static String parseClassifications(List<ClassificationType> classes) throws Exception {
@@ -296,23 +297,24 @@ public class DocumentRegistry {
     private String parseDocument(ExtrinsicObjectType document) throws Exception {
         sourceObjectId = document.getId();
 
-        String objectType = document.getObjectType();
         String mimeType = document.getMimeType();
-        String firstName = null;
-        String lastName = null;
-        String streetAddress = null;
-        String gender = null;
-        String city = null;
-        String state = null;
-        String zip = null;
-        String birth = null;
-        String creationDate = null;
-        String startDate = null;
-        String stopDate = null;
-        String lang = null;
-        String reposId = null;
+        
+        @SuppressWarnings("unused") String objectType = document.getObjectType();
+        @SuppressWarnings("unused") String firstName = null;
+        @SuppressWarnings("unused") String lastName = null;
+        @SuppressWarnings("unused") String streetAddress = null;
+        @SuppressWarnings("unused") String gender = null;
+        @SuppressWarnings("unused") String city = null;
+        @SuppressWarnings("unused") String state = null;
+        @SuppressWarnings("unused") String zip = null;
+        @SuppressWarnings("unused") String birth = null;
+        @SuppressWarnings("unused") String creationDate = null;
+        @SuppressWarnings("unused") String startDate = null;
+        @SuppressWarnings("unused") String stopDate = null;
+        @SuppressWarnings("unused") String lang = null;
+        @SuppressWarnings("unused") String reposId = null;
 
-        boolean repos = false;
+        @SuppressWarnings("unused") boolean repos = false;
         
         for (SlotType1 slot : document.getSlot()) {
             if (slot.getName().equals("creationTime")) {
@@ -385,66 +387,6 @@ public class DocumentRegistry {
     }
 
     /**
-     * Parse the data out of a RegistryPackageType object.
-     * 
-     * @param set
-     *            The RegistryPackageType object to parse.
-     * @throws Exception
-     */
-    @SuppressWarnings("unused")
-    private void parseSubmissionSet(RegistryPackageType set) throws Exception {
-
-        try {
-
-            String setId = set.getId();
-            String objectType = set.getObjectType();
-
-            String submissionDate = null;
-            String setName = null;
-            String setDesc = null;
-            String reposId = null;
-            String recipient = null;
-            boolean repos = false;
-            nhdirect = false;
-
-            for (SlotType1 slot : set.getSlot()) {
-                if (slot.getName().equals("submissionTime")) {
-                    try {
-                        submissionDate = slot.getValueList().getValue().get(0);
-                    } catch (Exception x) {
-                        submissionDate = null;
-                    }
-
-                } else if (slot.getName().equals("repositoryUniqueId")) {
-                    reposId = slot.getValueList().getValue().get(0);
-                    repos = true;
-                } else if (slot.getName().equals("intendedRecipient")) {
-                    recipient = slot.getValueList().getValue().get(0);
-                    nhdirect = true;
-                }
-            }
-            try {
-                setName = set.getName().getLocalizedString().get(0).getValue();
-            } catch (Exception x) {
-                setName = "unknown";
-            }
-
-            try {
-                setDesc = set.getDescription().getLocalizedString().get(0).getValue();
-            } catch (Exception x) {
-                setDesc = "";
-            }
-
-
-        } catch (Exception x) {
-            x.printStackTrace();
-         
-            throw (x);
-        }
-
-    }
-
-    /**
      * Format a string representing a date.
      * 
      * @param value
@@ -513,7 +455,9 @@ public class DocumentRegistry {
     }
     
     /**
-     * @return
+     * Get the value of forwards.
+     * 
+     * @return the values of forwards.
      */
     public List<String> getForwards() {
         return forwards;
