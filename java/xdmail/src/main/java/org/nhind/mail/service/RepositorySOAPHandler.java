@@ -52,12 +52,10 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
 /**
- * This class handles the SOAP-Requests before they reach the
- * Web Service Operation. It is possible to read and manipulate
- * the SOAP-Message.
- *
+ * This class handles the SOAP-Requests before they reach the Web Service
+ * Operation. It is possible to read and manipulate the SOAP-Message.
+ * 
  * @author Siegfried Bolz
  */
 public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
@@ -78,33 +76,39 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     private static final Log LOGGER = LogFactory.getFactory().getInstance(RepositorySOAPHandler.class);
     
     /**
-     * Is called after constructing the handler and before executing any other method.
+     * Is called after constructing the handler and before executing any other
+     * method.
      */
     @PostConstruct
     public void init() {
     }
 
-    /* (non-Javadoc)
-     * @see javax.xml.ws.handler.Handler#close(javax.xml.ws.handler.MessageContext)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * javax.xml.ws.handler.Handler#close(javax.xml.ws.handler.MessageContext)
      */
     @Override
     public void close(MessageContext messageContext) {
     }
 
     /**
-     * Is executed before this handler is being destroyed -
-     * means after close() has been executed.
+     * Is executed before this handler is being destroyed - means after close()
+     * has been executed.
      */
     @PreDestroy
     public void destroy() {
     }
 
     /**
-     * This method handles the incoming and outgoing SOAP-Message.
-     * It's an excellent point to manipulate the SOAP.
-     *
+     * This method handles the incoming and outgoing SOAP-Message. It's an
+     * excellent point to manipulate the SOAP.
+     * 
      * @param SOAPMessageContext
-     * @return boolean
+     *            The SOAPMessageContext object.
+     * 
+     * @return true if successful handling, false otherwise.
      */
     @Override
     public boolean handleMessage(SOAPMessageContext context) {
@@ -172,7 +176,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
     /**
-     * Returns the <code>Set</code> of supported SOAP headers
+     * Returns the <code>Set</code> of supported SOAP headers.
      */
     @Override
     public Set<QName> getHeaders() {
@@ -191,10 +195,11 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
     /**
-     * Returns the message encoding (e.g. utf-8)
-     *
+     * Returns the message encoding (e.g. utf-8).
+     * 
      * @param msg
-     * @return
+     *            The SOAPMessage object.
+     * @return the message encoding.
      * @throws javax.xml.soap.SOAPException
      */
     protected String getMessageEncoding(SOAPMessage msg) throws SOAPException {
@@ -206,9 +211,10 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
     /**
-     * Dump SOAP Message to console
-     *
+     * Dump SOAP Message to console.
+     * 
      * @param msg
+     *            The SOAPMessage object.
      */
     protected void dumpSOAPMessage(SOAPMessage msg) {
         if (msg == null) {
@@ -238,9 +244,10 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
 
     /**
      * Handles SOAP-Errors.
-     *
+     * 
      * @param context
-     * @return
+     *            the SOAPMessageContext object.
+     * @return true for successful fault handling.
      */
     @Override
     public boolean handleFault(SOAPMessageContext context) {
@@ -262,10 +269,11 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                     detailName = context.getMessage().getSOAPBody().getFault().getDetail().getFirstChild().getLocalName();
                     LOGGER.info("detailName=" + detailName);
                 } catch (Exception e) {
+                    LOGGER.warn("Error extracting detailName", e);
                 }
             }
         } catch (SOAPException e) {
-            e.printStackTrace();
+            LOGGER.warn("Error handling fault", e);
         }
 
         return true;
@@ -312,7 +320,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     /**
      * Get the current process ID.
      * 
-     * @return the current process ID
+     * @return the current process ID.
      */
     public String getPID() {
         String processName =

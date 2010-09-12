@@ -10,7 +10,8 @@ import org.nhind.mail.util.XMLUtils;
 import org.nhind.mail.util.XSLConversion;
 
 /**
- *
+ * Utilities for parsing a CCD file.
+ * 
  * @author vlewis
  */
 public class CCDParser {
@@ -25,8 +26,14 @@ public class CCDParser {
      */
     private static final Log LOGGER = LogFactory.getFactory().getInstance(CCDParser.class);
     
+    /**
+     * Parse a CCD xml string.
+     * 
+     * @param ccdXml
+     *            The String representation of a CCD request.
+     * @throws Exception
+     */
     public void parseCCD(String ccdXml) throws Exception {
-   
         XSLConversion xsl = new XSLConversion();
         String dbXml = xsl.run(MAP_FILE, ccdXml);
         LOGGER.trace(dbXml);
@@ -36,10 +43,20 @@ public class CCDParser {
         orgId = patient.getFACILITYID();
     }
 
+    /**
+     * Return the value of patientId.
+     * 
+     * @return the value of patientId.
+     */
     public String getPatientId() {
         return patientId;
     }
 
+    /**
+     * Return the value of orgId.
+     * 
+     * @return the value of orgId.
+     */
     public String getOrgId(){
         return orgId;
     }
