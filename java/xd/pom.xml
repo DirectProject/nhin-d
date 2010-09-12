@@ -16,8 +16,9 @@
     </organization>
 
     <scm>
-        <url>http://code.google.com/p/nhin-d/source/browse/#hg/java/xd</url>
-        <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/xd</connection>
+        <url>https://nhin-d.googlecode.com/hg/java/xd/</url>
+        <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/xd
+        </connection>
     </scm>
 
     <issueManagement>
@@ -76,6 +77,14 @@
     </dependencies>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+                <version>RELEASE</version>
+            </extension>
+        </extensions>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -126,7 +135,8 @@
                             <wsdlFiles>
                                 <wsdlFile>XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl</wsdlFile>
                             </wsdlFiles>
-                            <staleFile>${project.build.directory}/jaxws/stale/XDS.b_DocumentRepositoryWSDLSynchMTOM.stale</staleFile>
+                            <staleFile>${project.build.directory}/jaxws/stale/XDS.b_DocumentRepositoryWSDLSynchMTOM.stale
+                            </staleFile>
                         </configuration>
                         <id>wsimport-generate-XDS.b_DocumentRepositoryWSDLSynchMTOM</id>
                         <phase>generate-sources</phase>
@@ -140,7 +150,8 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <sourceDestDir>${project.build.directory}/generated-sources/jaxws-wsimport</sourceDestDir>
+                    <sourceDestDir>${project.build.directory}/generated-sources/jaxws-wsimport
+                    </sourceDestDir>
                     <xnocompile>true</xnocompile>
                     <verbose>true</verbose>
                     <extension>true</extension>
@@ -150,12 +161,21 @@
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover2-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.0.2</version>
                 <configuration>
-					<licenseLocation>
-						${project.basedir}/../licenses/clover.license
-					</licenseLocation>
+                    <jdk>1.6</jdk>
+                    <licenseLocation>
+                        ${project.basedir}/../licenses/clover.license
+                    </licenseLocation>
                 </configuration>
+                <executions>
+                    <execution>
+                        <phase>pre-site</phase>
+                        <goals>
+                            <goal>instrument</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 
@@ -186,7 +206,8 @@
                                 with the similar property as sun.boot.class.path in Sun's JDK.
                             -->
                             <compilerArguments>
-                                <bootclasspath>${settings.localRepository}/javax/javaee-endorsed-api/6.0/javaee-endorsed-api-6.0.jar${path.separator}${sun.boot.class.path}</bootclasspath>
+                                <bootclasspath>${settings.localRepository}/javax/javaee-endorsed-api/6.0/javaee-endorsed-api-6.0.jar${path.separator}${sun.boot.class.path}
+                                </bootclasspath>
                             </compilerArguments>
                         </configuration>
                         <dependencies>
@@ -211,6 +232,99 @@
             </pluginRepositories>
         </profile>
     </profiles>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.6.1</version>
+                <configuration>
+                    <charset>UTF-8</charset>
+                    <docencoding>UTF-8</docencoding>
+                    <docfilessubdirs>true</docfilessubdirs>
+                    <detectJavaApiLink>true</detectJavaApiLink>
+                    <detectLinks>true</detectLinks>
+                    <source>1.6</source>
+                    <show>protected</show>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <configuration>
+                    <targetJdk>1.6</targetJdk>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-changelog-plugin</artifactId>
+                <configuration>
+                    <dates>
+                        <!-- Insert the date of the most recent release -->
+                        <date>2007-01-01</date>
+                    </dates>
+                    <outputEncoding>UTF-8</outputEncoding>
+                    <type>date</type>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>clirr-maven-plugin</artifactId>
+                <configuration>
+                    <minSeverity>info</minSeverity>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>1.2</version>
+                <configuration>
+                    <effort>Max</effort>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>taglist-maven-plugin</artifactId>
+                <configuration>
+                    <tags>
+                        <tag>FIXME</tag>
+                        <tag>TODO</tag>
+                        <tag>WARN</tag>
+                        <tag>@deprecated</tag>
+                    </tags>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-clover2-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <licenseLocation>
+                        ${project.basedir}/../licenses/clover.license
+                    </licenseLocation>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <distributionManagement>
+        <site>
+            <id>nhind-site</id>
+            <name>NHIN Direct API publication site</name>
+            <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xd/${project.version}
+            </url>
+        </site>
+    </distributionManagement>
 
 </project>
 

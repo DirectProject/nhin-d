@@ -66,6 +66,7 @@ public class SimplePerson implements Serializable {
     private String ssn;
     
     // TODO: What does this hold? String, String? Need to specify in declaration.
+    @SuppressWarnings("unchecked")
     private Map otherOrgIds = new HashMap();
 
     // portal related attribs
@@ -83,10 +84,12 @@ public class SimplePerson implements Serializable {
     public SimplePerson() {
     }
     
+    @SuppressWarnings("unchecked")
     public Map getOtherOrgIds() {
         return otherOrgIds;
     }
 
+    @SuppressWarnings("unchecked")
     public void setOtherOrgIds(Map otherOrgIds) {
         this.otherOrgIds = otherOrgIds;
     }
