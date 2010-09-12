@@ -15,8 +15,8 @@
     <url>http://maven.apache.org</url>
 
     <scm>
-        <url>https://nhin-d.googlecode.com/hg/java/gateway/</url>
-        <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/gateway
+        <url>https://nhin-d.googlecode.com/hg/java/xdmail/</url>
+        <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/xdmail
         </connection>
     </scm>
     

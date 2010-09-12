@@ -28,11 +28,10 @@
 
 package org.nhind.ccddb;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhind.mail.service.MimeXDSTransformerTest;
-
-import junit.framework.TestCase;
 
 /**
  * 
