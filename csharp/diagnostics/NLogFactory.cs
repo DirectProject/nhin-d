@@ -22,6 +22,7 @@ using NHINDirect.Diagnostics;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+using NLog.Targets.Compound;
 using NLog.Win32.Targets;
 
 namespace Health.Net.Diagnostics.NLog
@@ -32,7 +33,7 @@ namespace Health.Net.Diagnostics.NLog
 		// honors the principle of being a code based configuration vs XML/file based.
 		public NLogFactory(LogFileSettings settings)
 		{
-			FileTarget target
+			Target target
 				= new FileTarget
 				  	{
 				  		Layout = "${longdate} [${threadid}] ${level} ${logger} - ${message}",
@@ -46,8 +47,10 @@ namespace Health.Net.Diagnostics.NLog
 				  		ArchiveNumbering = FileTarget.ArchiveNumberingMode.Rolling
 				  	};
 
+            LoggingConfiguration config = new LoggingConfiguration();
+
             LogLevel level = ConvertLogLevel(settings.Level);
-            SimpleConfigurator.ConfigureForTargetLogging(target, level);
+            config.LoggingRules.Add(new LoggingRule("*", level, target));
 
             // if the event log level is specified, then we will log the the Application EventLog.
             // Default is to only log Fatal messages.
@@ -60,9 +63,12 @@ namespace Health.Net.Diagnostics.NLog
                               Source = settings.EventLogSource,
                               Log = "Application",
                           };
+
                 LogLevel eventLogLevel = ConvertLogLevel(settings.EventLogLevel);
-                SimpleConfigurator.ConfigureForTargetLogging(eventLogTarget, eventLogLevel);
+                config.LoggingRules.Add(new LoggingRule("*", eventLogLevel, eventLogTarget));
             }
+
+		    LogManager.Configuration = config;
 		}
 
 	    public ILogger GetLogger(string name)
