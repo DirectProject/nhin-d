@@ -28,8 +28,13 @@
 
 package org.nhind.mail.service;
 
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+
+import java.io.File;
+import java.net.URL;
 import java.util.List;
 
+import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
@@ -41,6 +46,9 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Test class for methods in the XDMXDSTransformer class.
  * 
@@ -48,6 +56,11 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType;
  */
 public class XDMXDSTransformerTest extends TestCase {
 
+    /**
+     * Class logger.
+     */
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(XDMXDSTransformerTest.class);
+    
     /**
      * Constructor
      * 
@@ -225,5 +238,61 @@ public class XDMXDSTransformerTest extends TestCase {
         output = XDMXDSTransformer.getDocId(input);
         assertEquals("Output does not match expected", null, output);
     }
-
+    
+    /**
+     * Test the getXDMRequest method.
+     */
+    public void testGetXDMRequest_File() {
+        LOGGER.info("Begin testGetXDMRequest_File");
+        
+        File input = getSampleXdmAsFile();
+        ProvideAndRegisterDocumentSetRequestType output = null;
+        XDMXDSTransformer transformer = new XDMXDSTransformer();
+                
+        try {
+            output = transformer.getXDMRequest(input);
+            assertTrue("Output is null", output != null);
+        } catch (Exception e) {
+            fail("Exception thrown");
+        }
+    }
+    
+    public void testGetXDMRequest_DataHandler() {
+        LOGGER.info("Begin testGetXDMRequest_DataHandler");
+        
+        DataHandler input = getSampleXdmAsDataHandler();
+        ProvideAndRegisterDocumentSetRequestType output = null;
+        XDMXDSTransformer transformer = new XDMXDSTransformer();
+                
+        try {
+            output = transformer.getXDMRequest(input);
+            assertTrue("Output is null", output != null);
+        } catch (Exception e) {
+            fail("Exception thrown");
+        }
+    }
+    
+    /**
+     * Return a sample XDM file as a File.
+     * 
+     * @return a sample XDM file.
+     */
+    private static File getSampleXdmAsFile() {
+        URL url = XDMXDSTransformer.class.getClassLoader().getResource("samplexdm.zip");
+        File file = new File(url.getPath());
+        
+        return file;
+    }
+    
+    /**
+     * Return a sample XDM file as a DataHandler.
+     * 
+     * @return a sample XDM file.
+     */
+    private static DataHandler getSampleXdmAsDataHandler() {
+        URL url = XDMXDSTransformer.class.getClassLoader().getResource("samplexdm.zip");
+        DataHandler dh = new DataHandler(url);
+        
+        return dh;
+    }
 }
