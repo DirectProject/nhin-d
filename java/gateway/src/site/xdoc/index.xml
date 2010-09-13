@@ -12,7 +12,7 @@
     <body>
         <section name="Overview">
             <p>
-               The NHIND Direct Gateway module consists of protocol bridges between the NHIN Direct backbone protocol 
+               The NHIN Direct Gateway module consists of protocol bridges between the NHIN Direct backbone protocol 
                and security and trust agent.  Bridges integrate with the protocol implementation using implementation 
                specific configuration methods.  Take, for example, the Apache James SMTP implementation.  The gateway
                module provides a James bridge in the form of a James mailet called NHINDSecurityAndTrustMailet.  The 

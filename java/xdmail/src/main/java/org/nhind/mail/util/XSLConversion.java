@@ -46,11 +46,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
+ * XSL conversion utilities.
  */
 public class XSLConversion {
 
-    static final String SERVERNAME = "XSLEngine";
+    /**
+     * Hashtable of map files to templates.
+     */
     private static Hashtable<String, Templates> conversions = new Hashtable<String, Templates>(10);
 
     /**
@@ -65,9 +67,13 @@ public class XSLConversion {
     }
 
     /**
+     * Perform the XSL conversion using the provided map file and message.
+     * 
      * @param mapFile
+     *            The map file.
      * @param message
-     * @return
+     *            The message.
+     * @return an XSL conversion.
      * @throws Exception
      */
     public String run(String mapFile, String message) throws Exception {
