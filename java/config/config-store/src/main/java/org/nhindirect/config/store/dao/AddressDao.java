@@ -23,6 +23,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 import java.util.List;
 
 import org.nhindirect.config.store.Address;
+import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 
 public interface AddressDao {
@@ -36,7 +37,11 @@ public interface AddressDao {
 	
 	public void delete(String name);
 	
-	public List<Address> getAddresses(String name, EntityStatus status);
+	public Address get(String name);
+	
+	public List<Address> listAddresses(List<String> names, EntityStatus status);
+	
+	public List<Address> getByDomain(Domain domain, EntityStatus status);
 	
 	public List<Address> listAddresses(String name, int count);
 
