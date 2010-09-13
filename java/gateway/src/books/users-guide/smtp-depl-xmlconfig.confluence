@@ -45,7 +45,7 @@ Describes the storage mechanism for trust anchors.
 Attributes:
 
 ||Attribute||Description||
-|type|The type of the anchor store.  Uniform: All domains use the same anchors for all addresses.  Multidomain: Each domain defines its own discrete set of trust anchors. 
+|type|The type of the anchor store.  Uniform: All domains use the same anchors for all addresses.  Multidomain: Each domain defines its own discrete set of trust anchors.|
 |storeType|The storage media of the trust anchors.  Valid types: LDAP, Keystore|
 |ldapURL|The url to the LDAP server.  Consists of the protocol, host, and port.  Multiple URLs can be define and are comma delimeted.  Example: ldap://somehost:389|
 |ldapUser|The user name credential for connecting to the LDAP store.  May be empty if the LDAP server allows anonymous binding.|

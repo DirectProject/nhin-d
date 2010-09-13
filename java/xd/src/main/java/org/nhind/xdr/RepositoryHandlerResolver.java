@@ -36,7 +36,8 @@ import javax.xml.ws.handler.HandlerResolver;
 import javax.xml.ws.handler.PortInfo;
 
 /**
- *
+ * Message handler resolver.
+ * 
  * @author Vincent Lewis
  */
 public class RepositoryHandlerResolver implements HandlerResolver{

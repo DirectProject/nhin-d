@@ -29,12 +29,9 @@
 package org.nhind.xdr;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -43,12 +40,9 @@ import javax.annotation.PreDestroy;
 import javax.servlet.ServletRequest;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
@@ -56,16 +50,14 @@ import javax.xml.soap.SOAPPart;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-import javax.xml.ws.soap.SOAPFaultException;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * This class handles the SOAP-Requests before they reach the
- * Web Service Operation. It is possible to read and manipulate
- * the SOAP-Message.
- *
+ * This class handles the SOAP-Requests before they reach the Web Service
+ * Operation. It is possible to read and manipulate the SOAP-Message.
+ * 
  * @author Siegfried Bolz
  */
 public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
@@ -79,54 +71,45 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     protected String thisHost;
     protected String pid;
     protected String from;
-    private static boolean first = true;
 
     /**
-     * Class logger
+     * Class logger.
      */
     private static final Logger LOGGER = Logger.getLogger(RepositorySOAPHandler.class.getPackage().getName());
     
     /**
-     * Is called after constructing the handler and before executing any othe method.
+     * Is called after constructing the handler and before executing any othe
+     * method.
      */
     @PostConstruct
     public void init() {
-        if (first) {
-
-            first = false;
-         //   Properties properties = new Properties();
-            try {
-               // loadProperties("system.properties", properties);
-               // Properties sysprop = System.getProperties();
-               // sysprop.putAll(properties);
-               // LOGGER.info(properties.toString());
-            } catch (Exception exception) {
-                LOGGER.info("Problem with properties file");
-            }
-        }
     }
 
-    /* (non-Javadoc)
-     * @see javax.xml.ws.handler.Handler#close(javax.xml.ws.handler.MessageContext)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * javax.xml.ws.handler.Handler#close(javax.xml.ws.handler.MessageContext)
      */
     @Override
     public void close(MessageContext messageContext) {
     }
 
     /**
-     * Is executed before this handler is being destroyed -
-     * means after close() has been executed.
+     * Is executed before this handler is being destroyed - means after close()
+     * has been executed.
      */
     @PreDestroy
     public void destroy() {
     }
 
     /**
-     * This method handles the incoming and outgoing SOAP-Message.
-     * It's an excellent point to manipulate the SOAP.
-     *
+     * This method handles the incoming and outgoing SOAP-Message. It's an
+     * excellent point to manipulate the SOAP.
+     * 
      * @param SOAPMessageContext
-     * @return boolean
+     *            The SOAPMessageContext object.
+     * @return true for successful handling, false otherwise.
      */
     @Override
     public boolean handleMessage(SOAPMessageContext context) {
@@ -139,13 +122,14 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                 getHeaderData();
 
                 SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
-                //  dumpSOAPMessage(msg);
+                // dumpSOAPMessage(msg);
 
                 SOAPPart sp = msg.getSOAPPart();
 
-                //edit Envelope
+                // edit Envelope
                 SOAPEnvelope env = sp.getEnvelope();
                 SOAPHeader sh = env.addHeader();
+                @SuppressWarnings("unused")
                 SOAPBody sb = env.getBody();
 
                 if (action != null) {
@@ -167,9 +151,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                     SOAPHeaderElement efrom = sh.addHeaderElement(qname);
                     SOAPElement address = efrom.addChildElement(child);
                     address.setValue(from);
-
                 }
-
                 if (messageId != null) {
                     QName qname = new QName("http://www.w3.org/2005/08/addressing", "MessageID");
                     SOAPHeaderElement message = sh.addHeaderElement(qname);
@@ -180,7 +162,6 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                     SOAPHeaderElement sto = sh.addHeaderElement(qname);
                     sto.setValue(to);
                 }
-
 
             } else {
                 // INBOUND
@@ -211,9 +192,11 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                 //edit Envelope
                 SOAPEnvelope env = sp.getEnvelope();
                 SOAPHeader sh = env.getHeader();
-                Iterator it = sh.extractAllHeaderElements();
+                
+                @SuppressWarnings("unchecked")
+                Iterator<Node> it = sh.extractAllHeaderElements();
                 while (it.hasNext()) {
-                    Node header = (Node) it.next();
+                    Node header = it.next();
                     LOGGER.info(header.getNodeName());
 
                     if (header.toString().indexOf("MessageID") >= 0) {
@@ -267,19 +250,7 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
     /**
-     * @param fileName
-     * @param properties
-     * @throws IOException
-     */
-    @SuppressWarnings("unused")
-    private void loadProperties(String fileName, Properties properties) throws IOException {
-
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("META-INF/" + fileName);
-        properties.load(inputStream);
-    }
-
-    /**
-     * Returns the <code>Set</code> of supported SOAP headers
+     * Returns the <code>Set</code> of supported SOAP headers.
      */
     @Override
     public Set<QName> getHeaders() {
@@ -298,10 +269,11 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
     /**
-     * Returns the message encoding (e.g. utf-8)
-     *
+     * Returns the message encoding (e.g. utf-8).
+     * 
      * @param msg
-     * @return
+     *            The SOAPMessage object.
+     * @return the message encoding.
      * @throws javax.xml.soap.SOAPException
      */
     protected String getMessageEncoding(SOAPMessage msg) throws SOAPException {
@@ -313,9 +285,10 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
     /**
-     * Dump SOAP Message to console
-     *
+     * Dump SOAP Message to console.
+     * 
      * @param msg
+     *            The SOAPMessage object.
      */
     protected void dumpSOAPMessage(SOAPMessage msg) {
         if (msg == null) {
@@ -341,9 +314,10 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
 
     /**
      * Handles SOAP-Errors.
-     *
+     * 
      * @param context
-     * @return
+     *            The SOAPMessageContext object.
+     * @return true for successful fault handling, false otherwise.
      */
     @Override
     public boolean handleFault(SOAPMessageContext context) {
@@ -372,26 +346,6 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         }
 
         return true;
-    }
-
-    /**
-     * @param faultString
-     * @param clientFault
-     * @return
-     */
-    @SuppressWarnings("unused")
-    private SOAPFaultException createSOAPFaultException(String faultString,
-            Boolean clientFault) {
-        try {
-            String faultCode = clientFault ? "Client" : "Server";
-            SOAPFault fault = SOAPFactory.newInstance().createFault();
-            fault.setFaultString(faultString);
-            fault.setFaultCode(new QName(SOAPConstants.URI_NS_SOAP_ENVELOPE, faultCode));
-            return new SOAPFaultException(fault);
-        } catch (SOAPException e) {
-            throw new RuntimeException("Error creating SOAP Fault message, faultString: " + faultString);
-        }
-
     }
 
     /**
@@ -440,5 +394,4 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                 ManagementFactory.getRuntimeMXBean().getName();
         return processName.split("@")[0];
     }
-} // .EOF
-
+}
