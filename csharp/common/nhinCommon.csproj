@@ -78,6 +78,7 @@
     <Compile Include="Cryptography\SMIMEStandard.cs" />
     <Compile Include="Diagnostics\ILogFactory.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
+    <Compile Include="Diagnostics\Log.cs" />
     <Compile Include="Diagnostics\LogFileSettings.cs">
       <SubType>Code</SubType>
     </Compile>
