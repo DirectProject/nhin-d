@@ -10,8 +10,13 @@ namespace NHINDirect.XDS
 {
     public class XDSHelper
     {
-    	private readonly ILogger m_logger = LogManager.GetLogger("XDS");
+        private readonly ILogger m_logger;
         bool IsSchemaError = false;
+
+        public XDSHelper()
+        {
+            m_logger = Log.For(this);
+        }
 
 		//To create slots for meta data.
         public XmlDocument CreateRepositoryMetadata(XmlDocument xmlDocMsgBody, string slotName, string slotValue, string documentID)
