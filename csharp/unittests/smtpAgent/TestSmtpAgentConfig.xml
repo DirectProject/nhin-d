@@ -12,7 +12,7 @@
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>testSmtpAgent</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
-    <Level>Debug</Level>
+    <Level>Trace</Level>
   </Log>
   <Cryptographer>
     <DefaultEncryption>AES128</DefaultEncryption>
