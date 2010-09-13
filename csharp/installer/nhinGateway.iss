@@ -25,28 +25,19 @@ SolidCompression=yes
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "..\bin\debug\dnsResolver.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\nhinCommon.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\nhinAgent.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\nhinSmtpAgent.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\Interop.ADODB.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\Interop.CDO.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\nhinConfigClient.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\nhinConfigStore.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\nhinToolLib.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\nhinConfigConsole.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Excludes: "xunit*.dll,*tests.dll"; Flags: ignoreversion
 Source: "..\bin\debug\*.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\gateway\install\regasm.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\gateway\install\registerGateway.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\gateway\install\regsvr.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\gateway\install\unregisterGateway.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\gateway\devInstall\DevAgentConfig.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\gateway\devInstall\install.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\gateway\devInstall\simple.eml"; DestDir: "{app}\Samples"; Flags: ignoreversion
+Source: "..\bin\debug\*.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\debug\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs
+Source: "..\bin\debug\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: ignoreversion
+
+Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Flags: ignoreversion
+
+Source: "..\gateway\devInstall\install*.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\gateway\devInstall\*.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\gateway\devInstall\simple.eml"; DestDir: "{app}\Samples"; Flags: ignoreversion
+
 Source: "..\external\microsoft\vcredist\*"; DestDir: "{app}\Libraries"; Flags: ignoreversion recursesubdirs
 
 [Icons]
@@ -54,7 +45,7 @@ Name: "{group}\{cm:UninstallProgram,NHIN .NET Gateway}"; Filename: "{uninstallex
 
 [Run]
 Filename: "{app}\Libraries\install_redist.bat"; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked
-Filename: "{app}\install.bat"; Description: "Register NHIN Direct Gateway"; Flags: postinstall shellexec;
+Filename: "{app}\install.bat"; Parameters: "nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall shellexec;
 
 [UninstallRun]
 Filename: "{app}\unregisterGateway.bat"; Flags: shellexec;
