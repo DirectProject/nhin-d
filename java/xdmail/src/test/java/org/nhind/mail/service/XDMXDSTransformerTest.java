@@ -28,7 +28,18 @@
 
 package org.nhind.mail.service;
 
+import java.util.List;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
 import junit.framework.TestCase;
+import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExternalIdentifierType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType;
 
 /**
  * Test class for methods in the XDMXDSTransformer class.
@@ -94,6 +105,125 @@ public class XDMXDSTransformerTest extends TestCase {
         subsetFilespec = "FILE/SPEC";
         output = XDMXDSTransformer.matchName(zname, subsetDirspec, subsetFilespec);
         assertEquals("Output does not match expected", false, output);
+    }
+    
+    /**
+     * Test the getSubmissionSetDirspec method.
+     */
+    public void testGetSubmissionSetDirspec() {
+        String input = null;
+        String output = null;
+        
+        input = "123";
+        output = XDMXDSTransformer.getSubmissionSetDirspec(input);
+        assertEquals("Output does not match expected", "123", output);
+        
+        input = "123\\456";
+        output = XDMXDSTransformer.getSubmissionSetDirspec(input);
+        assertEquals("Output does not match expected", "123", output);
+        
+        input = "123\\456\\789";
+        output = XDMXDSTransformer.getSubmissionSetDirspec(input);
+        assertEquals("Output does not match expected", "123", output);
+        
+        input = "";
+        output = XDMXDSTransformer.getSubmissionSetDirspec(input);
+        assertEquals("Output does not match expected", "", output);
+        
+        input = null;
+        output = XDMXDSTransformer.getSubmissionSetDirspec(input);
+        assertEquals("Output does not match expected", null, output);
+    }
+    
+    /**
+     * Test the getDocId(ExtrinsicObjectType) method.
+     */
+    public void testGetDocId_ExtrinsicObjectType() {
+        String output = null;
+        ExtrinsicObjectType input = null;
+        ExternalIdentifierType eit = null;
+        List<ExternalIdentifierType> externalIdentifiers = null;
+        
+        eit = new ExternalIdentifierType();
+        eit.setIdentificationScheme("urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab");
+        eit.setValue("eitValue");
+        
+        input = new ExtrinsicObjectType();
+        externalIdentifiers = input.getExternalIdentifier();
+        externalIdentifiers.add(eit);
+        
+        output = XDMXDSTransformer.getDocId(input);
+        assertEquals("Output does not match expected", "eitValue", output);
+        
+        eit = new ExternalIdentifierType();
+        eit.setIdentificationScheme("urn:uuid:incorrecd-uuid");
+        eit.setValue("eitValue");
+        
+        input = new ExtrinsicObjectType();
+        externalIdentifiers = input.getExternalIdentifier();
+        externalIdentifiers.add(eit);
+        
+        output = XDMXDSTransformer.getDocId(input);
+        assertEquals("Output does not match expected", null, output);       
+        
+        input = new ExtrinsicObjectType();
+        externalIdentifiers = input.getExternalIdentifier();
+        
+        output = XDMXDSTransformer.getDocId(input);
+        assertEquals("Output does not match expected", null, output);        
+    }
+    
+    /**
+     * Test the getDocId(SubmitObjectsRequest) method.
+     */
+    public void testGetDocId_SubmitObjectsRequest() {
+        QName qname = null;
+        String output = null;
+        SubmitObjectsRequest input = null;
+        ExternalIdentifierType eit = null;
+        RegistryObjectListType registryObject = null;
+        RegistryPackageType registryPackageType = null;
+        ExtrinsicObjectType extrinsicObjectType = null;
+        List<ExternalIdentifierType> externalIdentifiers = null;
+        JAXBElement<ExtrinsicObjectType> jaxbExtrinsicObject = null;
+        JAXBElement<RegistryPackageType> jaxbRegistryPackageTypeObject = null;
+        List<JAXBElement<? extends IdentifiableType>> identifiableList = null;
+        
+        registryObject = new RegistryObjectListType();
+        identifiableList = registryObject.getIdentifiable();
+        
+        eit = new ExternalIdentifierType();
+        eit.setIdentificationScheme("urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab");
+        eit.setValue("eitValue");
+        
+        extrinsicObjectType = new ExtrinsicObjectType();
+        externalIdentifiers = extrinsicObjectType.getExternalIdentifier();
+        externalIdentifiers.add(eit);
+        
+        qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "ExtrinsicObject");
+        jaxbExtrinsicObject = new JAXBElement<ExtrinsicObjectType>(qname, ExtrinsicObjectType.class, extrinsicObjectType);
+        
+        registryPackageType = new RegistryPackageType();
+        
+        qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "RegistryPackage");
+        jaxbRegistryPackageTypeObject = new JAXBElement<RegistryPackageType>(qname, RegistryPackageType.class, registryPackageType);
+        
+        identifiableList.add(jaxbRegistryPackageTypeObject);
+        identifiableList.add(jaxbExtrinsicObject);
+        
+        input = new SubmitObjectsRequest();
+        input.setRegistryObjectList(registryObject);
+        
+        output = XDMXDSTransformer.getDocId(input);
+        assertEquals("Output does not match expected", "eitValue", output);
+        
+        registryObject = new RegistryObjectListType();
+                
+        input = new SubmitObjectsRequest();
+        input.setRegistryObjectList(registryObject);
+        
+        output = XDMXDSTransformer.getDocId(input);
+        assertEquals("Output does not match expected", null, output);
     }
 
 }

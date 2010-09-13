@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -56,6 +55,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhind.mail.util.MimeType;
@@ -116,9 +116,7 @@ public class XDMXDSTransformer {
         ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
         
         try {
-
             zipFile = new ZipFile(archiveFile, ZipFile.OPEN_READ);
-
 
             Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
             ZipEntry zipEntry = null;
@@ -145,7 +143,6 @@ public class XDMXDSTransformer {
                         prsr.setSubmitObjectsRequest(sor);
                         docId = getDocId(sor);
 
-
                     } else if (matchName(zname, subsetDirspec, XDM_FILENAME_DATA)) {
 
                         InputStream in = zipFile.getInputStream(zipEntry);
@@ -167,6 +164,7 @@ public class XDMXDSTransformer {
                         docs.add(pdoc);
                     }
                 }
+                
                 ((Document)prsr.getDocument().get(0)).setId(zname);
             }
         } finally {
@@ -190,19 +188,21 @@ public class XDMXDSTransformer {
         String ret = null;
         RegistryObjectListType rol = sor.getRegistryObjectList();
         List<JAXBElement<? extends IdentifiableType>> extensible = rol.getIdentifiable();
-        Iterator<JAXBElement<? extends IdentifiableType>> iext = extensible.iterator();
-        while (iext.hasNext()) {
-            JAXBElement<? extends IdentifiableType> elem = (JAXBElement<? extends IdentifiableType>) iext.next();
+        
+        for (JAXBElement<? extends IdentifiableType> elem : extensible) {
             String type = elem.getDeclaredType().getName();
             Object value = elem.getValue();
             
-            if (type.equals("oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType")) {
+            if (StringUtils.equals(type, "oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType")) {
                 ret = getDocId((ExtrinsicObjectType) value);
             }
             
+            ///CLOVER:OFF
             if (LOGGER.isTraceEnabled())
-                LOGGER.trace(elem.getDeclaredType().getName() + " " + elem.getValue().toString());
+                LOGGER.trace(type + " " + value.toString());
+            ///CLOVER:ON
         }
+        
         return ret;
     }
 
@@ -216,14 +216,15 @@ public class XDMXDSTransformer {
      */
     protected static String getDocId(ExtrinsicObjectType eot) {
         String ret = null;
-        List<ExternalIdentifierType> eits= eot.getExternalIdentifier();
-        Iterator<ExternalIdentifierType> ieits = eits.iterator();
-        while(ieits.hasNext()){
-            ExternalIdentifierType eit = ieits.next();
-            if(eit.getIdentificationScheme().equals("urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab")){
-             ret = eit.getValue();
+        
+        List<ExternalIdentifierType> eits = eot.getExternalIdentifier();
+        
+        for (ExternalIdentifierType eit : eits) {
+            if (eit.getIdentificationScheme().equals("urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab")) {
+                ret = eit.getValue();
             }
         }
+        
         return ret;
     }
 
@@ -258,13 +259,11 @@ public class XDMXDSTransformer {
      *            The ZIP entry name.
      * @return the name of the folder.
      */
-    private String getSubmissionSetDirspec(String zipEntryName) {
+    protected static String getSubmissionSetDirspec(String zipEntryName) {
         String result = null;
         if (zipEntryName != null) {
             String[] components = zipEntryName.split("\\\\");
-
             result = components[0];
-
         }
         return result;
     }
