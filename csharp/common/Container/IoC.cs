@@ -4,7 +4,7 @@ namespace NHINDirect.Container
 {
 	///<summary>
 	/// This is the global dispatch class for plugging in an Inversion of Control
-	/// container. 
+	/// container. This class is making use of the static gateway pattern.
 	///</summary>
 	public static class IoC
 	{
