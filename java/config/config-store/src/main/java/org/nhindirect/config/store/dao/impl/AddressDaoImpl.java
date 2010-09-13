@@ -30,74 +30,67 @@ import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
-import org.nhindirect.config.store.dao.DomainDao;
-
+import org.nhindirect.config.store.dao.AddressDao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Default Spring/JPA implemenation
  * @author ppyette
  *
  */
 @Repository
-public class DomainDaoImpl implements DomainDao {
-	
+public class AddressDaoImpl implements AddressDao {
+
     @PersistenceContext
+    @Autowired
     private EntityManager entityManager;
 
-    private static final Log log = LogFactory.getLog(DomainDaoImpl.class);
+    private static final Log log = LogFactory.getLog(AddressDaoImpl.class);
        
-
 	/* (non-Javadoc)
-	 * @see org.nhindirect.config.store.dao.DomainDao#count()
+	 * @see org.nhindirect.config.store.dao.AddressDao#count()
 	 */
-    // @Transactional(readOnly = true)
+    @Transactional(readOnly = true)
 	public int count() {
 		if (log.isDebugEnabled()) log.debug("Enter");
-		Long result = (Long) entityManager.createQuery("select count(d) from Domain d").getSingleResult();
+		Long result = (Long) entityManager.createQuery("select count(d) from Address a").getSingleResult();
 		if (log.isDebugEnabled()) log.debug("Exit: " + result.intValue());
 		return result.intValue();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.nhindirect.config.store.dao.DomainDao#add(org.nhindirect.config.store.Domain)
+	 * @see org.nhindirect.config.store.dao.AddressDao#add(org.nhindirect.config.store.Address)
 	 */
     @Transactional(readOnly = false)
-	public void add(Domain item) {
+	public void add(Address item) {
     	if (log.isDebugEnabled()) log.debug("Enter");
 	    
     	if (item != null) {
     		item.setCreateTime(Calendar.getInstance());
     		item.setUpdateTime(item.getCreateTime());
-    		
+    		entityManager.persist(item);
+    	}
 
-    		// Avoid a Constraint Violation if we have 0L as an id
-    		if (((item.getPostmasterEmailAddressId()) != null) &&
-    			(item.getPostmasterEmailAddressId().longValue() == 0)) {
-    			item.setPostmasterEmailAddressId((Long)null);
-    		}	 
-    		
-	    	entityManager.persist(item);
-	    }
-		
     	if (log.isDebugEnabled()) log.debug("Exit");
 	}
 
 	/* (non-Javadoc)
-	 * @see org.nhindirect.config.store.dao.DomainDao#update(org.nhindirect.config.store.Domain)
+	 * @see org.nhindirect.config.store.dao.AddressDao#update(org.nhindirect.config.store.Address)
 	 */
     @Transactional(readOnly = false)
-	public void update(Domain item) {
+	public void update(Address item) {
     	if (log.isDebugEnabled()) log.debug("Enter");
 	    
     	if (item != null) {
-    		Domain inDb = entityManager.find(Domain.class, item.getId());
-    		inDb.setDomainName(item.getDomainName());
-    		inDb.setPostmasterEmailAddressId(item.getPostmasterEmailAddressId());
+    		Address inDb = entityManager.find(Address.class, item.getId());
+    		inDb.setDisplayName(item.getDisplayName());
+    		inDb.setDomain(item.getDomain());
+    		inDb.setEmailAddress(item.getEmailAddress());
+    		inDb.setType(item.getType());
     		inDb.setStatus(item.getStatus());
     		inDb.setUpdateTime(Calendar.getInstance());
     		entityManager.merge(inDb);
@@ -107,57 +100,62 @@ public class DomainDaoImpl implements DomainDao {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.nhindirect.config.store.dao.DomainDao#save(org.nhindirect.config.store.Domain)
+	 * @see org.nhindirect.config.store.dao.AddressDao#save(org.nhindirect.config.store.Address)
 	 */
     @Transactional(readOnly = false)
-	public void save(Domain item) {		
-    	update(item);
+	public void save(Address item) {
+		update(item);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.nhindirect.config.store.dao.DomainDao#delete(java.lang.String)
+	 * @see org.nhindirect.config.store.dao.AddressDao#delete(java.lang.String)
 	 */
+    //TODO Check to see if this address is a postmaster Address and remove it from Domain prior to deletion
     @Transactional(readOnly = false)
 	public void delete(String name) {
     	if (log.isDebugEnabled()) log.debug("Enter");
     	
 	    int count = 0;
     	if (name != null) {
-    		Query delete = entityManager.createQuery("DELETE FROM Domain d WHERE d.domainName = ?1");
+    		Query delete = entityManager.createQuery("DELETE FROM Address a WHERE a.emailAddress = ?1");
     		delete.setParameter(1, name);
     		count = delete.executeUpdate();
     	}
 
 	    if (log.isDebugEnabled()) log.debug("Exit: " + count + " records deleted");
+
 	}
-    
+
+	/* (non-Javadoc)
+	 * @see org.nhindirect.config.store.dao.AddressDao#listAddresses(java.lang.String, int)
+	 */
     @Transactional(readOnly = true)
-    public Domain getDomainByName(String name) {
+	public List<Address> listAddresses(String name, int count) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+    @Transactional(readOnly = true)
+	public Address get(String name) {
     	if (log.isDebugEnabled()) log.debug("Enter");
     	
-    	Domain result = null;
+    	Address result = null;
     	
     	if (name != null) {
-    		Query select = entityManager.createQuery("SELECT DISTINCT d from Domain d WHERE d.domainName = ?1");
-			result = (Domain) select.setParameter(1, name).getSingleResult();
+    		Query select = entityManager.createQuery("SELECT DISTINCT a from Address a d WHERE a.emailAddress = ?1");
+			result = (Address) select.setParameter(1, name).getSingleResult();
     	}
     	
 	    if (log.isDebugEnabled()) log.debug("Exit");
 	    return result;
-    }
+	}
 
 
-	/* (non-Javadoc)
-	 * @see org.nhindirect.config.store.dao.DomainDao#getDomains(java.lang.String, org.nhindirect.config.store.EntityStatus)
-	 * 
-	 * Convert the list of names into a String to be used in an IN clause (i.e. {"One", "Two", "Three"} --> ('One', 'Two', 'Three'))
-	 */
-    @SuppressWarnings("unchecked")
-	@Transactional(readOnly = true)
-	public List<Domain> getDomains(List<String> names, EntityStatus status) {
+    @Transactional(readOnly = true)
+	public List<Address> listAddresses(List<String> names, EntityStatus status) {
     	if (log.isDebugEnabled()) log.debug("Enter");
     	
-    	List<Domain> result = null;
+    	List<Address> result = null;
     	Query select = null;
     	if (names != null) {
     		StringBuffer nameList = new StringBuffer("(");
@@ -170,7 +168,7 @@ public class DomainDaoImpl implements DomainDao {
     			        .append("'");
     		}
     		nameList.append(")");
-    		String query = "SELECT d from Domain d WHERE d.domainName IN " + nameList.toString();
+    		String query = "SELECT a from Address a WHERE a.emailAddress IN " + nameList.toString();
     		
     		if (status != null) {
     			select = entityManager.createQuery(query + " AND d.status = ?1");
@@ -183,11 +181,11 @@ public class DomainDaoImpl implements DomainDao {
     	else {
     		if (status != null)
     		{
-    			select = entityManager.createQuery("SELECT d from Domain d WHERE d.status = ?1");
+    			select = entityManager.createQuery("SELECT a from Address a WHERE a.status = ?1");
     	    	select.setParameter(1, status);
     		}
     		else {
-    			select = entityManager.createQuery("SELECT d from Domain d");
+    			select = entityManager.createQuery("SELECT a from Address a");
     		}
     		
     	}
@@ -195,52 +193,62 @@ public class DomainDaoImpl implements DomainDao {
     	@SuppressWarnings("rawtypes")
 		List rs = select.getResultList();
     	if ((rs.size() != 0) &&
-    	    (rs.get(0) instanceof Domain)) {
-    		result = (List<Domain>)rs;
+    	    (rs.get(0) instanceof Address)) {
+    		result = (List<Address>)rs;
     	}
     	else {
-    		result = new ArrayList<Domain>();
+    		result = new ArrayList<Address>();
     	}
     	
 	    if (log.isDebugEnabled()) log.debug("Exit");
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nhindirect.config.store.dao.DomainDao#listDomains(java.lang.String, int)
-	 * 
-	 */
-    //TODO  I'm not sure if this is doing the right thing.  I suspect that the real intent is to do some kind of db paging
     @Transactional(readOnly = true)
-	public List<Domain> listDomains(String name, int count) {
+	public List<Address> getByDomain(Domain domain, EntityStatus status) {
     	if (log.isDebugEnabled()) log.debug("Enter");
     	
-    	List<Domain> result = null;
+    	List<Address> result = null;
     	Query select = null;
-    	if (name != null) {
-    		select = entityManager.createQuery("SELECT d from Domain d WHERE d.domainName = ?1");
-    	    select.setParameter(1, name);
+    	if (domain != null) {
+    		String query = "SELECT a from Address a WHERE a.domain = ?1";
+    		
+    		if (status != null) {
+    			select = entityManager.createQuery(query + " AND d.status = ?2");
+    	    	select.setParameter(1, domain);
+    			select.setParameter(2, status);
+    		}
+    		else {
+    			select = entityManager.createQuery(query);
+    			select.setParameter(1, domain);
+    		}
     	}
     	else {
-    		select = entityManager.createQuery("SELECT d from Domain d");
-    	}
-    	
-    	// assuming that a count of zero really means no limit
-    	if (count > 0) {
-    		select.setMaxResults(count);
+    		if (status != null)
+    		{
+    			select = entityManager.createQuery("SELECT a from Address a WHERE a.status = ?1");
+    	    	select.setParameter(1, status);
+    		}
+    		else {
+    			select = entityManager.createQuery("SELECT a from Address a");
+    		}  		
     	}
     	
     	@SuppressWarnings("rawtypes")
 		List rs = select.getResultList();
     	if ((rs.size() != 0) &&
-    	    (rs.get(0) instanceof Domain)) {
-    		result = (List<Domain>)rs;
+    	    (rs.get(0) instanceof Address)) {
+    		result = (List<Address>)rs;
+    	}
+    	else {
+    		result = new ArrayList<Address>();
     	}
     	
-	    if (log.isDebugEnabled()) log.debug("Exit");
-		return result;
+    	if (log.isDebugEnabled()) log.debug("Exit");
+    	return result;
 	}
-
+    
+    
 	public EntityManager getEntityManager() {
 		return entityManager;
 	}
