@@ -18,23 +18,20 @@ using System.Text;
 
 using NHINDirect.Agent;
 using NHINDirect.Certificates;
-using NHINDirect.Container;
 using NHINDirect.Diagnostics;
 
 namespace NHINDirect.SmtpAgent
 {
     internal class AgentDiagnostics
     {
-        const string EventLogName = "nhinMessageSink";
-
     	private readonly ILogger m_logger;
         
         internal AgentDiagnostics()
         {
-        	m_logger = IoC.Resolve<ILogFactory>().GetLogger(GetType());
+        	m_logger = Log.For(this);
         }
 
-		private ILogger Log
+		private ILogger Logger
 		{
 			get
 			{
@@ -42,50 +39,40 @@ namespace NHINDirect.SmtpAgent
 			}
 		}
 
-        //internal static void WriteEventLog(string message)
-        //{
-        //    EventLog.WriteEntry(EventLogName, message);
-        //}
-
-        //internal static void WriteEventLog(Exception ex)
-        //{
-        //    EventLog.WriteEntry(EventLogName, ex.ToString(), EventLogEntryType.Error);
-        //}
-        
         internal void OnOutgoingError(OutgoingMessage message, Exception error)
         {
-            if (Log.IsDebugEnabled)
+            if (Logger.IsDebugEnabled)
             {
-                Log.Error(this.BuildVerboseErrorMessage("OUTGOING", message, error));
+                Logger.Error(this.BuildVerboseErrorMessage("OUTGOING", message, error));
             }
             else
             {
-                Log.Error("OnOutgoingError", error);
+                Logger.Error("OnOutgoingError", error);
             }
         }
 
         internal void OnIncomingError(IncomingMessage message, Exception error)
         {
-            if (Log.IsDebugEnabled)
+            if (Logger.IsDebugEnabled)
             {
-                Log.Error(this.BuildVerboseErrorMessage("INCOMING", message, error));
+                Logger.Error(this.BuildVerboseErrorMessage("INCOMING", message, error));
             }
             else
             {
-                Log.Error("OnIncomingError", error);
+                Logger.Error("OnIncomingError", error);
             }
         }
 
         internal void OnDnsError(ICertificateResolver resolver, Exception error)
         {
-            Log.Error("OnDnsError", error);
+            Logger.Error("OnDnsError", error);
         }
         
         internal void LogEnvelopeHeaders(ISmtpMessage message)
         {       
-            if (Log.IsDebugEnabled && message.HasEnvelope)
+            if (Logger.IsDebugEnabled && message.HasEnvelope)
             {     
-                Log.Debug(this.SummarizeEnvelopeHeaders(message));
+                Logger.Debug(this.SummarizeEnvelopeHeaders(message));
             }
         }
         
