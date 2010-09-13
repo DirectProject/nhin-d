@@ -41,6 +41,7 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -87,7 +88,16 @@ public class XDMXDSTransformer {
         LOGGER.info("Inside getXDMRequest(DataHandler)");
 
         File archiveFile = fileFromDataHandler(dh);
-        return getXDMRequest(archiveFile);
+        ProvideAndRegisterDocumentSetRequestType request = getXDMRequest(archiveFile);
+        
+        boolean delete = archiveFile.delete();
+        
+        if (delete)
+            LOGGER.info("Deleted temporary work file " + archiveFile.getAbsolutePath());
+        else
+            LOGGER.warn("Unable to delete temporary work file " + archiveFile.getAbsolutePath());
+        
+        return request;
     }
 
     /**
@@ -115,7 +125,7 @@ public class XDMXDSTransformer {
 
             // load the ZIP archive into memory
             while (zipEntries.hasMoreElements()) {
-                LOGGER.info("in zipEntries");
+                LOGGER.trace("in zipEntries");
                 zipEntry = zipEntries.nextElement();
                 String zname = zipEntry.getName();
                 if (!zipEntry.isDirectory()) { //&& zipEntry.getName().startsWith(XDM_DIRSPEC_SUBMISSIONROOT)) {
@@ -129,7 +139,7 @@ public class XDMXDSTransformer {
                             baos.write(buffer, 0, bytesRead);
                         }
                         in.close();
-                        LOGGER.info("metadata " + baos.toString());
+                        LOGGER.trace("metadata " + baos.toString());
 
                         SubmitObjectsRequest sor = (SubmitObjectsRequest) XMLUtils.unmarshal(baos.toString(), oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
                         prsr.setSubmitObjectsRequest(sor);
@@ -146,7 +156,7 @@ public class XDMXDSTransformer {
                             baos.write(buffer, 0, bytesRead);
                         }
                         in.close();
-                        LOGGER.info("xml data " + baos.toString());
+                        LOGGER.trace("xml data " + baos.toString());
                         List<Document> docs = prsr.getDocument();
                         Document pdoc = new Document();
 
@@ -190,8 +200,8 @@ public class XDMXDSTransformer {
                 ret = getDocId((ExtrinsicObjectType) value);
             }
             
-            if (LOGGER.isInfoEnabled())
-                LOGGER.info(elem.getDeclaredType().getName() + elem.getValue().toString());
+            if (LOGGER.isTraceEnabled())
+                LOGGER.trace(elem.getDeclaredType().getName() + " " + elem.getValue().toString());
         }
         return ret;
     }
@@ -272,8 +282,7 @@ public class XDMXDSTransformer {
         OutputStream out = null;      
         InputStream inputStream = null;
         
-        // TODO: outFile.java?
-        final String fileName = "outFile.java";
+        final String fileName = "xdmail-" + UUID.randomUUID().toString() + ".zip";
 
         try {
             f = new File(fileName);
@@ -296,6 +305,8 @@ public class XDMXDSTransformer {
             if (out != null)
                 out.close();
         }
+        
+        LOGGER.info("Created temporary work file " + f.getAbsolutePath());
         
         return f;
     }
