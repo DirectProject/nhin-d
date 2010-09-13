@@ -130,7 +130,7 @@ public abstract class DocumentRepositoryAbstract {
             String meta = XMLUtils.marshal(sname, sor,  oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
             List<String> forwards = provideAndRegister(prdst);
 
-            String rmessageId = fowardMessage( body, forwards, replyEmail, prdst, messageId, endpoint, suffix, meta);
+            String rmessageId = fowardMessage( body, forwards, replyEmail, prdst, messageId, suffix, meta);
 
             resp = getRepositoryProvideResponse(rmessageId);
 
@@ -227,8 +227,6 @@ public abstract class DocumentRepositoryAbstract {
      *            The ProvideAndRegisterDocumentSetRequestType object
      * @param messageId
      *            The message ID
-     * @param endpoint
-     *            ?? TODO Unused param
      * @param suffix
      *            The file extension of the XDR document
      * @param meta
@@ -236,7 +234,7 @@ public abstract class DocumentRepositoryAbstract {
      * @return a message ID
      * @throws Exception
      */
-    public String fowardMessage( String body, List<String> forwards, String replyEmail, ProvideAndRegisterDocumentSetRequestType prdst, String messageId, String endpoint, String suffix, String meta) throws Exception {
+    public String fowardMessage( String body, List<String> forwards, String replyEmail, ProvideAndRegisterDocumentSetRequestType prdst, String messageId, String suffix, String meta) throws Exception {
 
         try {
             messageId = UUID.randomUUID().toString();
@@ -255,9 +253,8 @@ public abstract class DocumentRepositoryAbstract {
     }
 
     /**
-     * @param type
-     *            ?? TODO What is this? It's not used anywhere down the line. A
-     *            literal value of '4' is being passed here
+     * Forward a message to an email recipient or to an XDR relay endpoint.
+     * 
      * @param messageId
      *            The message ID
      * @param provideEndpoints

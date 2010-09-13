@@ -39,8 +39,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -55,19 +55,21 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhind.mail.util.MimeType;
 import org.nhind.mail.util.XMLUtils;
 
 /**
- *
+ * Class for handling the transformation of XDM to XDS.
+ * 
  * @author vlewis
  */
 public class XDMXDSTransformer {
 
-    static private String XDM_FILENAME_METADATA = "METADATA.xml";
-    static private String XDM_FILENAME_DATA = "DOCUMENT.xml";
-    // static private String XDM_DIRSPEC_SUBMISSIONROOT = "SUBSET01";
+    private static final String XDM_FILENAME_DATA = "DOCUMENT.xml";
+    private static final String XDM_FILENAME_METADATA = "METADATA.xml";
 
     /**
      * Class logger.
@@ -75,22 +77,35 @@ public class XDMXDSTransformer {
     private static final Log LOGGER = LogFactory.getFactory().getInstance(XDMXDSTransformer.class);
     
     /**
-     * Reads an XDM ZIP archive and returns a set of XDS submissions.
+     * Reads an XDM ZIP archive and returns an XDS submission.
      * 
      * @param dh
-     * @return
+     *            The DataHandler object.
+     * @return a ProvideAndRegisterDocumentSetRequestType object.
      * @throws Exception
      */
     public ProvideAndRegisterDocumentSetRequestType getXDMRequest(DataHandler dh) throws Exception {
         LOGGER.info("Inside getXDMRequest(DataHandler)");
 
         File archiveFile = fileFromDataHandler(dh);
-        return getXDMRequest(archiveFile);
+        ProvideAndRegisterDocumentSetRequestType request = getXDMRequest(archiveFile);
+        
+        boolean delete = archiveFile.delete();
+        
+        if (delete)
+            LOGGER.info("Deleted temporary work file " + archiveFile.getAbsolutePath());
+        else
+            LOGGER.warn("Unable to delete temporary work file " + archiveFile.getAbsolutePath());
+        
+        return request;
     }
 
     /**
+     * Reads an XDM ZIP archive and returns an XDS submission.
+     * 
      * @param archiveFile
-     * @return
+     *            The archive file.
+     * @return a ProvideAndRegisterDocumentSetRequestType object.
      * @throws Exception
      */
     public ProvideAndRegisterDocumentSetRequestType getXDMRequest(File archiveFile) throws Exception {
@@ -101,16 +116,14 @@ public class XDMXDSTransformer {
         ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
         
         try {
-
             zipFile = new ZipFile(archiveFile, ZipFile.OPEN_READ);
-
 
             Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
             ZipEntry zipEntry = null;
 
             // load the ZIP archive into memory
             while (zipEntries.hasMoreElements()) {
-                LOGGER.info("in zipEntries");
+                LOGGER.trace("in zipEntries");
                 zipEntry = zipEntries.nextElement();
                 String zname = zipEntry.getName();
                 if (!zipEntry.isDirectory()) { //&& zipEntry.getName().startsWith(XDM_DIRSPEC_SUBMISSIONROOT)) {
@@ -124,12 +137,11 @@ public class XDMXDSTransformer {
                             baos.write(buffer, 0, bytesRead);
                         }
                         in.close();
-                        LOGGER.info("metadata " + baos.toString());
+                        LOGGER.trace("metadata " + baos.toString());
 
                         SubmitObjectsRequest sor = (SubmitObjectsRequest) XMLUtils.unmarshal(baos.toString(), oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
                         prsr.setSubmitObjectsRequest(sor);
                         docId = getDocId(sor);
-
 
                     } else if (matchName(zname, subsetDirspec, XDM_FILENAME_DATA)) {
 
@@ -141,17 +153,18 @@ public class XDMXDSTransformer {
                             baos.write(buffer, 0, bytesRead);
                         }
                         in.close();
-                        LOGGER.info("xml data " + baos.toString());
+                        LOGGER.trace("xml data " + baos.toString());
                         List<Document> docs = prsr.getDocument();
                         Document pdoc = new Document();
 
-                        DataSource source = new ByteArrayDataSource(baos.toByteArray(), "application/xml; charset=UTF-8");
+                        DataSource source = new ByteArrayDataSource(baos.toByteArray(), MimeType.APPLICATION_XML.getType() + "; charset=UTF-8");
                         DataHandler dhnew = new DataHandler(source);
                         pdoc.setValue(dhnew);
                         pdoc.setId(docId);
                         docs.add(pdoc);
                     }
                 }
+                
                 ((Document)prsr.getDocument().get(0)).setId(zname);
             }
         } finally {
@@ -164,51 +177,67 @@ public class XDMXDSTransformer {
     }
 
     /**
+     * Get the document ID from a SubmitObjectsRequest object.
+     * 
      * @param sor
-     * @return
+     *            The SubmitObjectsRequest object from which to retrieve the
+     *            document ID.
+     * @return a document ID.
      */
-    protected String getDocId(SubmitObjectsRequest sor) {
+    protected static String getDocId(SubmitObjectsRequest sor) {
         String ret = null;
         RegistryObjectListType rol = sor.getRegistryObjectList();
         List<JAXBElement<? extends IdentifiableType>> extensible = rol.getIdentifiable();
-        Iterator<JAXBElement<? extends IdentifiableType>> iext = extensible.iterator();
-        while (iext.hasNext()) {
-            JAXBElement<? extends IdentifiableType> elem = (JAXBElement<? extends IdentifiableType>) iext.next();
+        
+        for (JAXBElement<? extends IdentifiableType> elem : extensible) {
             String type = elem.getDeclaredType().getName();
             Object value = elem.getValue();
             
-            if (type.equals("oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType")) {
+            if (StringUtils.equals(type, "oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType")) {
                 ret = getDocId((ExtrinsicObjectType) value);
             }
             
-            if (LOGGER.isInfoEnabled())
-                LOGGER.info(elem.getDeclaredType().getName() + elem.getValue().toString());
+            ///CLOVER:OFF
+            if (LOGGER.isTraceEnabled())
+                LOGGER.trace(type + " " + value.toString());
+            ///CLOVER:ON
         }
+        
         return ret;
     }
 
     /**
+     * Get the document ID from an EntrinsicObjectType object.
+     * 
      * @param eot
-     * @return
+     *            The EntrinsicObjectType object from which to retrieve the
+     *            document ID.
+     * @return a document ID.
      */
-    protected String getDocId(ExtrinsicObjectType eot) {
+    protected static String getDocId(ExtrinsicObjectType eot) {
         String ret = null;
-        List<ExternalIdentifierType> eits= eot.getExternalIdentifier();
-        Iterator<ExternalIdentifierType> ieits = eits.iterator();
-        while(ieits.hasNext()){
-            ExternalIdentifierType eit = ieits.next();
-            if(eit.getIdentificationScheme().equals("urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab")){
-             ret = eit.getValue();
+        
+        List<ExternalIdentifierType> eits = eot.getExternalIdentifier();
+        
+        for (ExternalIdentifierType eit : eits) {
+            if (eit.getIdentificationScheme().equals("urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab")) {
+                ret = eit.getValue();
             }
         }
+        
         return ret;
     }
 
     /**
+     * Determine whether a filename matches the subset directory and file name.
+     * 
      * @param zname
+     *            The name to compare.
      * @param subsetDirspec
+     *            The subset directory name.
      * @param subsetFilespec
-     * @return
+     *            The subset file name.
+     * @return true if the names match, false otherwise.
      */
     static boolean matchName(String zname, String subsetDirspec, String subsetFilespec) {
         boolean ret = false;
@@ -223,45 +252,28 @@ public class XDMXDSTransformer {
     }
 
     /**
-     * @param zipFile
-     * @param subsetDirspec
-     * @param subsetFilespec
-     * @return
-     */
-    @SuppressWarnings("unused")
-    private ZipEntry getXDMZipEntry(ZipFile zipFile, String subsetDirspec, String subsetFilespec) {
-        ZipEntry result = null;
-        // String zipFilespec = XDM_DIRSPEC_SUBMISSIONROOT + "\\" + subsetDirspec + "\\" + subsetFilespec.replace('/', '\\');
-        String zipFilespec = subsetDirspec + "\\" + subsetFilespec.replace('/', '\\');
-        result = zipFile.getEntry(zipFilespec);
-        if (result == null) {
-            zipFilespec = zipFilespec.replace('\\', '/');
-            result = zipFile.getEntry(zipFilespec);
-        }
-        return result;
-    }
-
-    /**
      * Given a full ZipEntry filespec, extracts the name of the folder (if
      * present) under the IHE_XDM root specified by IHE XDM.
      * 
      * @param zipEntryName
-     * @return
+     *            The ZIP entry name.
+     * @return the name of the folder.
      */
-    private String getSubmissionSetDirspec(String zipEntryName) {
+    protected static String getSubmissionSetDirspec(String zipEntryName) {
         String result = null;
         if (zipEntryName != null) {
             String[] components = zipEntryName.split("\\\\");
-
             result = components[0];
-
         }
         return result;
     }
 
     /**
+     * Create a File object from the given DataHandler object.
+     * 
      * @param dh
-     * @return
+     *            The DataHandler object.
+     * @return a File object created from the DataHandler object.
      * @throws Exception
      */
     protected File fileFromDataHandler(DataHandler dh) throws Exception {
@@ -269,8 +281,7 @@ public class XDMXDSTransformer {
         OutputStream out = null;      
         InputStream inputStream = null;
         
-        // TODO: outFile.java?
-        final String fileName = "outFile.java";
+        final String fileName = "xdmail-" + UUID.randomUUID().toString() + ".zip";
 
         try {
             f = new File(fileName);
@@ -293,6 +304,8 @@ public class XDMXDSTransformer {
             if (out != null)
                 out.close();
         }
+        
+        LOGGER.info("Created temporary work file " + f.getAbsolutePath());
         
         return f;
     }
