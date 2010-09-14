@@ -17,66 +17,75 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Net;
-using System.Net.Sockets;
 
 namespace DnsResponder
 {
-    public class ProcessingContext
+    public class SynchronizedObjectPool<T> : ObjectPool<T>
     {
-        TcpServer m_listener;
-        Socket m_socket;
-        long m_socketID;
-
-        public ProcessingContext()
+        public SynchronizedObjectPool()
+            : base()
         {
         }
 
-        public TcpServer Listener
+        public SynchronizedObjectPool(int maxSize)
+            : base(maxSize)
+        {
+        }
+
+        public override int MaxSize
         {
             get
             {
-                return m_listener;
+                return base.MaxSize;
+            }
+            set
+            {
+                lock (m_stack)
+                {
+                    base.MaxSize = value;
+                }
             }
         }
 
-        public Socket Socket
+        public override T Get()
         {
-            get
+            lock (m_stack)
             {
-                return m_socket;
+                return base.Get();
             }
         }
 
-        internal long SocketID
+        public void Put(T value)
         {
-            get
+            lock (m_stack)
             {
-                return m_socketID;
+                base.Put(value);
             }
         }
-        
-        internal bool HasValidSocket
+    }
+    
+    public class ObjectAllocator<T> : SynchronizedObjectPool<T>
+        where T : new()
+    {
+        public ObjectAllocator()
+            : base()
         {
-            get
-            {
-                return (m_socketID > 0 && m_socket != null);
-            }
-        }
-        
-        internal void Init(TcpServer listener, Socket socket, long socketID)
-        {
-            m_listener = listener;
-            m_socket = socket;
-            m_socketID = socketID;
         }
 
-        public virtual void Clear()
+        public ObjectAllocator(int maxSize)
+            : base(maxSize)
         {
-            m_listener = null;
-            m_socketID = -1;
-            m_socket = null;
         }
+
+        public override T Get()
+        {
+            T item = base.Get();
+            if (item == null)
+            {
+                item = new T();
+            }
+            
+            return item;
+        }    
     }
 }
