@@ -207,7 +207,8 @@ namespace DnsResponder
             SocketAsyncEventArgs args = m_asyncArgsPool.Get();
             if (args == null)
             {
-                args = this.AllocAsyncArgs();
+                args = new SocketAsyncEventArgs();
+                this.InitAcceptArgs(args);
             }
             else
             {
@@ -216,8 +217,7 @@ namespace DnsResponder
 
             return args;
         }
-        
-        protected abstract SocketAsyncEventArgs AllocAsyncArgs();
+        protected abstract void InitAcceptArgs(SocketAsyncEventArgs args);
         protected void AcceptCompleted(SocketAsyncEventArgs args)
         {
             args.AcceptSocket = null;
