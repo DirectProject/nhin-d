@@ -23,9 +23,9 @@ using System.Net.Sockets;
 
 namespace DnsResponder
 {
-    public class DnsTcpContext : ProcessingContext
+    public class DnsTcpContext : TcpContext
     {
-        DnsServer m_server;
+        DnsResponderTCP m_responder;
         DnsBuffer m_buffer;
         DnsBuffer m_sizeBuffer;
         
@@ -34,14 +34,9 @@ namespace DnsResponder
         /// This constructor can also be used to build contexts for pooling
         /// </summary>
         /// <param name="server"></param>        
-        public DnsTcpContext(DnsServer server)
+        public DnsTcpContext()
         {
-            if (server == null)
-            {
-                throw new ArgumentNullException();
-            }
-            m_server = server;
-            m_buffer = new DnsBuffer(server.Settings.InitialBufferSize);
+            m_buffer = new DnsBuffer(DnsStandard.MaxUdpMessageLength);
             m_sizeBuffer = new DnsBuffer(2);
         }
         
@@ -52,15 +47,19 @@ namespace DnsResponder
                 return m_buffer;
             }
         }
-        
-        public DnsServer Server
+
+        public DnsResponderTCP Responder
         {
             get
             {
-                return m_server;
+                if (m_responder == null)
+                {
+                    throw new InvalidOperationException("Not initialized");
+                }
+                return m_responder;
             }
         }
-                
+
         public IPEndPoint Endpoint
         {
             get
@@ -68,12 +67,23 @@ namespace DnsResponder
                 return this.Socket.RemoteEndPoint as IPEndPoint;
             }
         }
+        
+        public void Init(DnsResponderTCP responder)
+        {
+            if (responder == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            m_responder = responder;
+            this.ReserveCapacity(responder.Settings.TcpServerSettings.ReadBufferSize);
+        }
                                 
         public void ReserveCapacity(int count)
         {
             m_buffer.ReserveCapacity(count);
         }
-
+        
         public override void Clear()
         {
             m_buffer.Clear();
@@ -85,27 +95,21 @@ namespace DnsResponder
         // Receive
         //        
         //-----------------------
-
+        
         /// <summary>
-        /// Synchronous receive Dns Message into this.DnsBuffer over TCP
-        /// TCP messages are preceded by a 2 byte message SIZE 
+        /// Receive bytes into this context's built in buffer
         /// </summary>
-        public void ReceiveMessage()
-        {
-            ushort requestSize = this.ReceiveSize();
-            if (requestSize > m_server.Settings.MaxRequestSize || requestSize == 0)
-            {
-                throw new DnsServerException(DnsStandard.ResponseCode.Refused);
-            }
-            
-            this.Receive(m_buffer, requestSize);            
-        }
-
+        /// <param name="count"></param>
         public void Receive(int count)
         {
             this.Receive(m_buffer, count);
         }
-
+        
+        /// <summary>
+        /// Receive bytes into the given buffer
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="count"></param>
         public void Receive(DnsBuffer buffer, int count)
         {
             if (buffer == null)
@@ -115,34 +119,25 @@ namespace DnsResponder
             
             buffer.Clear();
             buffer.ReserveCapacity(count);
-            int countRead = this.Socket.Receive(buffer.Buffer, count, SocketFlags.None);
-            if (countRead != count)
+            if (!base.Receive(buffer.Buffer, count))
             {
                 throw new DnsServerException(DnsStandard.ResponseCode.Refused);
             }
-            buffer.Count = countRead;
+            buffer.Count = count;
         }
                 
         /// <summary>
         /// Synchronous receive of a request
         /// </summary>
-        public DnsRequest ReceiveRequest()
-        {
-            this.ReceiveMessage();
-            return this.DeserializeRequest();
-        }
-        
-        public DnsHeader DeserializeHeader()
-        {
-            DnsBufferReader reader = m_buffer.CreateReader();
-            return new DnsHeader(ref reader);
-        }
-        
-        public DnsRequest DeserializeRequest()
-        {
-            DnsRequest request = new DnsRequest(m_buffer.CreateReader());
-            this.Validate(request);
-            return request;
+        public void ReceiveRequest()
+        {            
+            ushort requestSize = this.ReceiveSize();
+            if (requestSize <= 0 || requestSize > this.Responder.Settings.MaxRequestSize)
+            {
+                throw new DnsServerException(DnsStandard.ResponseCode.Refused);
+            }
+
+            this.Receive(m_buffer, requestSize);
         }
         
         ushort ReceiveSize()
@@ -151,30 +146,14 @@ namespace DnsResponder
             DnsBufferReader reader = m_sizeBuffer.CreateReader();
             return reader.ReadUShort();
         }
-                
-        void Validate(DnsRequest request)
-        {
-            request.Validate();
-            if (request.Header.QuestionCount > m_server.Settings.MaxQuestionCount)
-            {
-                throw new DnsServerException(DnsStandard.ResponseCode.Refused);
-            }
-        }
-        
+                        
         //----------------
         //
         // Send
         //
         //----------------        
-        public void SendResponse(DnsResponse response)
+        public void SendResponse()
         {       
-            this.Serialize(response);     
-            if (m_buffer.Count > ushort.MaxValue)
-            {
-                response.Truncate();
-                this.Serialize(response);
-            }
-
             this.SendSize((ushort)m_buffer.Count);
             this.Send(m_buffer);
         }

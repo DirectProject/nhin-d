@@ -26,18 +26,17 @@ namespace DnsResponder
 {
     public class DnsServerSettings
     {
-        // Todo: These are just made up right now
         public const short DefaultMaxRequestSize = 1024 * 16;
-        public const short DefaultTcpBufferSize = 1024;
         public const byte DefaultMaxQuestionCount = 1;
         
         IPAddress m_address;
         IPEndPoint m_endpoint;
         int m_port = DnsStandard.DnsPort;
-        SocketServerSettings m_serverSettings;
+        SocketServerSettings m_tcpServerSettings;
+        SocketServerSettings m_udpServerSettings;
         short m_maxRequestSize = DefaultMaxRequestSize;
         byte m_maxQuestionCount = DefaultMaxQuestionCount;
-        short m_initialBufferSize = DefaultTcpBufferSize;
+        short m_initialBufferSize = DnsStandard.MaxUdpMessageLength;
         
         public DnsServerSettings()
         {
@@ -86,15 +85,15 @@ namespace DnsResponder
         }
         
         [XmlElement]        
-        public SocketServerSettings ServerSettings
+        public SocketServerSettings TcpServerSettings
         {
             get
             {
-                if (m_serverSettings == null)
+                if (m_tcpServerSettings == null)
                 {
-                    m_serverSettings = new SocketServerSettings();
+                    m_tcpServerSettings = new SocketServerSettings();
                 }
-                return m_serverSettings;
+                return m_tcpServerSettings;
             }
             set
             {
@@ -103,7 +102,29 @@ namespace DnsResponder
                     throw new ArgumentNullException();
                 }
                 
-                m_serverSettings = value;
+                m_tcpServerSettings = value;
+            }
+        }
+
+        [XmlElement]
+        public SocketServerSettings UdpServerSettings
+        {
+            get
+            {
+                if (m_udpServerSettings == null)
+                {
+                    m_udpServerSettings = new SocketServerSettings();
+                }
+                return m_udpServerSettings;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException();
+                }
+
+                m_udpServerSettings = value;
             }
         }            
 
@@ -132,28 +153,10 @@ namespace DnsResponder
                 m_maxRequestSize = value;
             }
         }
-                
-        [XmlElement]
-        public short InitialBufferSize
-        {
-            get
-            {
-                return m_initialBufferSize;
-            }
-            set
-            {
-                if (value <= 0)
-                {
-                    throw new ArgumentException();
-                }
-                
-                m_initialBufferSize = value;
-            }
-        }
-        
+                        
         public void Validate()
         {
-            this.ServerSettings.Validate();
+            this.TcpServerSettings.Validate();
             if (m_maxQuestionCount <= 0)
             {
                 throw new ArgumentException("MaxQuestionCount");
@@ -161,10 +164,6 @@ namespace DnsResponder
             if (m_maxRequestSize <= 0)
             {
                 throw new ArgumentException("MaxRequestSize");
-            }
-            if (m_initialBufferSize <= 0)
-            {
-                throw new ArgumentException("InitialBufferSize");
             }
         }
     }
