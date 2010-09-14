@@ -93,7 +93,7 @@ namespace NHINDirect.Config.Command
             FaultException<ConfigStoreFault> fault = ex as FaultException<ConfigStoreFault>;
             if (fault != null)
             {
-                CommandUI.PrintBold(string.Format("CONFIGSTOREERROR={0}", fault.Detail.Error));
+                CommandUI.PrintBold("CONFIGSTOREERROR={0}", fault.Detail.Error);
                 Console.WriteLine(fault.Detail.Message);
                 CommandUI.PrintSectionBreak();
                 Console.WriteLine(fault.ToString());
