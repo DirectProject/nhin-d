@@ -17,54 +17,77 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DnsResolver;
+using System.Threading;
+using System.Net;
+using System.Net.Sockets;
 
 namespace DnsResponder
 {
-    public class DnsResponderUDP : DnsResponder, IServerApplication<DnsUdpContext>
+    public class TcpContext
     {
-        UdpServer<DnsUdpContext> m_server; 
-              
-        public DnsResponderUDP(DnsServer server)
-            : base(server)
+        Socket m_socket;
+        long m_socketID;
+
+        public TcpContext()
         {
-            m_server = new UdpServer<DnsUdpContext>(server.Settings.Endpoint, server.Settings.UdpServerSettings, this);
         }
-        
-        public UdpServer<DnsUdpContext> Server
+
+        public Socket Socket
         {
             get
             {
-                return m_server;
+                return m_socket;
+            }
+        }
+
+        internal long SocketID
+        {
+            get
+            {
+                return m_socketID;
             }
         }
         
-        public override void Start()
+        internal bool HasValidSocket
         {
-            m_server.Start();   
+            get
+            {
+                return (m_socketID > 0 && m_socket != null);
+            }
+        }
+        
+        internal void Init(Socket socket, long socketID)
+        {
+            m_socket = socket;
+            m_socketID = socketID;
         }
 
-        public override void Stop()
+        /// <summary>
+        /// Clear gets called when Contexts are POOLED. 
+        /// Override in your custom context
+        /// </summary>
+        public virtual void Clear()
         {
-            m_server.Stop();
+            m_socketID = -1;
+            m_socket = null;
         }
 
-        public bool Process(DnsUdpContext context)
+        /// <summary>
+        /// Synchronously read count bytes into the given buffer. 
+        /// Return true if count bytes was successfully read
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public bool Receive(byte[] buffer, int count)
         {
-            if (context == null)
+            if (buffer == null)
             {
                 throw new ArgumentNullException();
-            }            
-            
-            DnsResponse response = base.ProcessRequest(context.Buffer);            
-            if (response != null)
-            {
-                context.Init();                
-                base.Serialize(response, context.Buffer, DnsStandard.MaxUdpMessageLength);
-                context.SendResponse();
             }
-            
-            return true;
-        }
+
+            int countRead = this.Socket.Receive(buffer, count, SocketFlags.None);
+            return (countRead == count);
+        }       
     }
 }

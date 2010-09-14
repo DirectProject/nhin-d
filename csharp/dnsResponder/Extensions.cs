@@ -83,6 +83,25 @@ namespace DnsResponder
         {
             socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.SendTimeout, timeout);
         }
+        
+        public static void ClearBuffer(this SocketAsyncEventArgs args)
+        {
+            args.SetBuffer(null, 0, 0);
+        }
+        
+        public static void SafeInvoke(this Action action)
+        {
+            if (action != null)
+            {
+                try
+                {
+                    action();
+                }
+                catch
+                {
+                }
+            }
+        }
 
         public static void SafeInvoke<T1>(this Action<T1> action, T1 arg1)
         {

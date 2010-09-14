@@ -25,25 +25,54 @@ namespace DnsResponder
 {
     public class SocketServerSettings
     {
-        /// <summary>
-        /// TODO: These are made up...
-        /// </summary>
-        public const short DefaultMaxPendingConnnections = 64;
+        public const short DefaultMaxConnectionBacklog = 64;
         public const short DefaultMaxActiveRequests = 64;
-
-        short m_maxPendingConnections = DefaultMaxPendingConnnections;
+        public const short DefaultMaxOutstandingAccepts = 16;
+        public const short DefaultReadBufferSize = 1024;
+        
+        short m_maxOutstandingAccepts = DefaultMaxOutstandingAccepts;
+        short m_maxConnectionBacklog = DefaultMaxConnectionBacklog;
         short m_maxActiveRequests = DefaultMaxActiveRequests;
-
+        short m_maxPooledContexts = DefaultMaxActiveRequests;
+        short m_readBufferSize = DefaultReadBufferSize;
+        
         public SocketServerSettings()
         {
         }
         
+        /// <summary>
+        /// Have these many asynchronous "Accept" or Receive calls already in place, so that actual request/connect acceptance 
+        /// does not become a bottleneck
+        /// </summary>
         [XmlElement]
-        public short MaxPendingConnections
+        public short MaxOutstandingAccepts
         {
             get
             {
-                return m_maxPendingConnections;
+                return m_maxOutstandingAccepts;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentException();
+                }
+                
+                m_maxOutstandingAccepts = value;
+            }
+        }
+        
+        /// <summary>
+        /// Connections not already accepted are Queued automatically by Winsock until they can be accepted by Winsock
+        /// Set this to some reasonable limit between 20-200. Note: if you specify too high a number, .NET will automatically
+        /// constrain the # based on OS restrictions. 
+        /// </summary>
+        [XmlElement]
+        public short MaxConnectionBacklog
+        {
+            get
+            {
+                return m_maxConnectionBacklog;
             }
             set
             {
@@ -52,10 +81,13 @@ namespace DnsResponder
                     throw new ArgumentException();
                 }
 
-                m_maxPendingConnections = value;
+                m_maxConnectionBacklog = value;
             }
         }
 
+        /// <summary>
+        /// Max requests you simultaneously want to handle. The socket server will automatically impose this limit
+        /// </summary>
         [XmlElement]
         public short MaxActiveRequests
         {
@@ -73,8 +105,31 @@ namespace DnsResponder
                 m_maxActiveRequests = value;
             }
         }
-
-
+        
+        [XmlElement]
+        public short ReadBufferSize
+        {
+            get
+            {
+                return m_readBufferSize;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentException();
+                }
+                
+                m_readBufferSize = value;
+            }
+        }
+        
+        //--------------------------------------
+        //
+        // Self explanatory Socket Timeouts
+        //
+        //--------------------------------------
+        
         [XmlElement]
         public int SendTimeout
         {
@@ -95,10 +150,27 @@ namespace DnsResponder
             get;
             set;
         }
-                
+        
+        [XmlIgnore]
+        internal bool IsThrottled
+        {
+            get
+            {
+                return (m_maxActiveRequests > 0 && m_maxActiveRequests < short.MaxValue);
+            }
+        }
+        
+        //
+        // Validation Etc
+        //                                
         public virtual void Validate()
         {
-            if (m_maxPendingConnections <= 0)
+            if (m_maxOutstandingAccepts <= 0)
+            {
+                throw new ArgumentException("MaxOutstandingAccepts");
+            }
+            
+            if (m_maxConnectionBacklog <= 0)
             {
                 throw new ArgumentException("MaxPendingConnections");
             }
@@ -106,6 +178,11 @@ namespace DnsResponder
             if (m_maxActiveRequests <= 0)
             {
                 throw new ArgumentException("MaxActiveRequests");
+            }
+            
+            if (m_readBufferSize <= 0)
+            {
+                throw new ArgumentException("ReadBufferSize");
             }
         }
 
@@ -121,14 +198,20 @@ namespace DnsResponder
             }
         }
         
-        internal IWorkLoadThrottle CreateThrottle()
+        internal IWorkLoadThrottle CreateRequestThrottle()
         {
-            if (m_maxActiveRequests > 0 && m_maxActiveRequests < int.MaxValue)
+            if (this.IsThrottled)
             {
                 return new WorkThrottle(m_maxActiveRequests);
             }
             
             return new NullThrottle();
         } 
+        
+        internal IWorkLoadThrottle CreateAcceptThrottle()
+        {
+            return new WorkThrottle(m_maxOutstandingAccepts);
+        }
+        
     }
 }

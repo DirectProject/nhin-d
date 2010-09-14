@@ -15,11 +15,11 @@ namespace DnsResponder
     {
         static void Main(string[] args)
         {
-            TcpTest test = new TcpTest();
-            test.Run();
+            ServerTest test = new ServerTest();
+            test.Run(true);
             
+            Console.WriteLine("Shutdown complete. Hit return to exit");            
             Console.ReadLine();
         }
     }    
-    
 }
