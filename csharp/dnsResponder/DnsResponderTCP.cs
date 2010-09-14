@@ -27,82 +27,57 @@ namespace DnsResponder
     /// <summary>
     /// Simple DNS TCP Responder
     /// </summary>
-    public class DnsResponderTCP : DnsResponder, IServerApplication
+    public class DnsResponderTCP : DnsResponder, IServerApplication<DnsTcpContext>
     {
-        SynchronizedObjectPool<DnsTcpContext> m_contextPool;
+        TcpServer<DnsTcpContext> m_tcpServer;
         
         public DnsResponderTCP(DnsServer server)
             : base(server)
         {
-            m_contextPool = new SynchronizedObjectPool<DnsTcpContext>(this.Settings.ServerSettings.MaxActiveRequests);
+            m_tcpServer = new TcpServer<DnsTcpContext>(this.Settings.Endpoint, this.Settings.TcpServerSettings, this);
+        }
+
+        public TcpServer<DnsTcpContext> TcpServer
+        {
+            get
+            {
+                return m_tcpServer;
+            }
         }
         
-        public ProcessingContext CreateContext()
+        public override void Start()
         {
-            DnsTcpContext context = m_contextPool.Get();
+            m_tcpServer.Start();
+        }
+
+        public override void Stop()
+        {
+            m_tcpServer.Stop();
+        }
+
+        public bool Process(DnsTcpContext context)
+        {
             if (context == null)
             {
-                context = new DnsTcpContext(this.Server);
+                throw new ArgumentNullException();
             }
-            else
-            {
-                context.Clear();
-            }
+
+            context.Init(this);
             
-            return context;
-        }
-
-        public void ReleaseContext(ProcessingContext context)
-        {
-            m_contextPool.Put((DnsTcpContext) context);
-        }
-
-        public void Process(ProcessingContext context)
-        {
-            //
-            // All unhandled (or loggable) instructions fall through to the SocketServer
-            //
-            this.ProcessRequest((DnsTcpContext) context);
-        }
-                
-        void ProcessRequest(DnsTcpContext context)
-        {
             //
             // If we fail at parsing or receiving the request, then any exceptions will get logged and
             // the socket will be silently closed
             // 
-            DnsRequest request = context.ReceiveRequest();  // pool requests object if neeeded
-            base.NotifyReceived(request);
-            
-            try
+            context.ReceiveRequest();
+                                        
+            DnsResponse response = base.ProcessRequest(context.DnsBuffer);
+            if (response != null)
             {
-                DnsResponse response = base.ProcessRequest(request);
-                if (response == null || !response.IsSuccess)
-                {
-                    throw new DnsServerException(DnsStandard.ResponseCode.NameError);
-                }
-                
-                base.NotifyResponse(response);
-                
-                context.SendResponse(response);
+                base.Serialize(response, context.DnsBuffer, ushort.MaxValue);
+                context.SendResponse();
             }
-            catch (DnsProtocolException)
-            {
-                this.ProcessError(context, request, DnsStandard.ResponseCode.FormatError);
-            }
-            catch (DnsServerException serverEx)
-            {
-                this.ProcessError(context, request, serverEx.ResponseCode);
-            }
-        }
-
-        void ProcessError(DnsTcpContext context, DnsRequest request, DnsStandard.ResponseCode code)
-        {
-            DnsResponse errorResponse = base.ProcessError(request, code);
             
-            base.NotifyResponse(errorResponse);
-            
-            context.SendResponse(errorResponse);
+            return true;
         }
     }
 }

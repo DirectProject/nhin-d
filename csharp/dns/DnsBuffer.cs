@@ -29,7 +29,15 @@ namespace DnsResolver
     {
         byte[] m_buffer;
         int m_count;
-
+        
+        /// <summary>
+        /// Initializes a buffer with capacity == DnsStandard.MaxUdpMessageLength
+        /// </summary>
+        public DnsBuffer()
+            : this(DnsStandard.MaxUdpMessageLength)
+        {
+        }
+        
         /// <summary>
         /// Initializes a buffer with the requested capacity.
         /// </summary>
