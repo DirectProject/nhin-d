@@ -21,15 +21,15 @@ using System.Threading;
 
 namespace DnsResponder
 {
-    public interface IServerApplication
+    public interface IServerApplication<TContext>
     {
-        ProcessingContext CreateContext();
-        void ReleaseContext(ProcessingContext context);
-        
         /// <summary>
-        /// Process message, process connnection...
+        /// Return true if synchronously processed and completed. 
+        /// If so, resources such as any allocated sockets will be shutdown
+        /// To process asynchronously, return false and then call SocketServer.ProcessingComplete(context)
         /// </summary>
         /// <param name="context"></param>
-        void Process(ProcessingContext context);
-    }
+        /// <returns></returns>
+        bool Process(TContext context);
+    }    
 }

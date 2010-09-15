@@ -24,13 +24,11 @@ namespace NHINDirect.Config.Command
         public void Command_Test_Certs_Install(string[] args)
         {
             string path = args.GetOptionalValue(0, Directory.GetCurrentDirectory());
-            string storetype = args.GetOptionalValue(1, "local").ToLower();
             EnsureStandardMachineStores(path);
         }
         public void Usage_Test_Certs_Install()
         {
             Console.WriteLine("Install test certs into machine stores");
-            Console.WriteLine("   [local (default) | service]");
         }
 
         public void Command_Test_Certs_InstallInService(string[] args)
@@ -102,7 +100,7 @@ namespace NHINDirect.Config.Command
             }
             foreach(string file in files)
             {
-                CertificateCommands.LoadCerts(certStore, file, "passw0rd!");
+                CertificateCommands.LoadCerts(certStore, file, "passw0rd!", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
             }
             return certStore;
         }

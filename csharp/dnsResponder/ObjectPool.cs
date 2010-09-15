@@ -42,7 +42,7 @@ namespace DnsResponder
             }
         }
         
-        public int MaxSize
+        public virtual int MaxSize
         {
             get
             {
@@ -110,34 +110,6 @@ namespace DnsResponder
         }
     }
     
-    public class SynchronizedObjectPool<T> : ObjectPool<T>
-    {
-        public SynchronizedObjectPool()
-            : base()
-        {
-        }
-        
-        public SynchronizedObjectPool(int maxSize)
-            : base(maxSize)
-        {            
-        }
-        
-        public override T Get()
-        {
-            lock(m_stack)
-            {
-                return base.Get();
-            }
-        }
-
-        public void Put(T value)
-        {
-            lock(m_stack)
-            {
-                base.Put(value);
-            }
-        }
-    }
     
     /// <summary>
     /// The weak pool lives off a Weak References and can be GC'd safely under memory pressure
@@ -147,7 +119,8 @@ namespace DnsResponder
     {
         WeakReference m_inner;
         
-        public WeakPool()
+        public WeakPool(int maxSize)
+            : base(maxSize)
         {
             m_inner = new WeakReference(Create());
         }

@@ -53,9 +53,30 @@ namespace DnsResponder
             }
         }
 
-        public event Action<DnsResponder, DnsRequest> Received;
-        public event Action<DnsResponder, DnsResponse> Responding;
+        public event Action<DnsRequest> Received;
+        public event Action<DnsResponse> Responding;
         
+        public abstract void Start();
+        public abstract void Stop();
+        
+        public DnsResponse ProcessRequest(Buffer buffer)
+        {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException();
+            }
+            return this.ProcessRequest(this.DeserializeRequest(buffer.Bytes, buffer.Count));
+        }
+        
+        public DnsResponse ProcessRequest(DnsBuffer buffer)
+        {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException();
+            }
+            return this.ProcessRequest(this.DeserializeRequest(buffer.Buffer, buffer.Count));
+        }
+                
         public DnsResponse ProcessRequest(DnsRequest request)
         {
             if (request == null)
@@ -63,34 +84,73 @@ namespace DnsResponder
                 throw new ArgumentNullException();
             }
             
-            if (request.Header.QuestionCount < 1)
-            {
-                throw new DnsProtocolException(DnsProtocolError.InvalidQuestionCount);
-            }
+            this.Received.SafeInvoke(request);
             
-            return m_server.Store.Get(request);
+            DnsResponse response = null;
+            try
+            {
+                this.Validate(request);
+
+                response = m_server.Store.Get(request);
+                if (response == null || !response.IsSuccess)
+                {
+                    throw new DnsServerException(DnsStandard.ResponseCode.NameError);
+                }                
+            }
+            catch (DnsProtocolException)
+            {
+                response = this.ProcessError(request, DnsStandard.ResponseCode.FormatError);
+            }
+            catch (DnsServerException serverEx)
+            {
+                response = this.ProcessError(request, serverEx.ResponseCode);
+            }
+
+            this.Responding.SafeInvoke(response);
+            
+            return response;
         }
 
-        public DnsResponse ProcessError(DnsRequest request, DnsStandard.ResponseCode code)
+        DnsResponse ProcessError(DnsRequest request, DnsStandard.ResponseCode code)
         {
             DnsResponse errorResponse = new DnsResponse(request);
             errorResponse.Header.ResponseCode = code;
             return errorResponse;
         }
-        
-        protected void NotifyReceived(DnsRequest request)
+
+        protected DnsRequest DeserializeRequest(byte[] buffer, int requestSize)
         {
-            if (this.Received != null)
+            if (requestSize <= 0 || requestSize > this.Settings.MaxRequestSize)
             {
-                this.Received.SafeInvoke(this, request);
+                throw new DnsServerException(DnsStandard.ResponseCode.Refused);
+            }
+
+            return new DnsRequest(new DnsBufferReader(buffer, 0, requestSize));
+        }
+                
+        protected void Serialize(DnsResponse response, DnsBuffer buffer, int maxResponse)
+        {
+            buffer.Clear();
+            response.Serialize(buffer);
+            if (buffer.Count > maxResponse)
+            {
+                response.Truncate();
+                buffer.Clear();
+                response.Serialize(buffer);
             }
         }
-        
-        protected void NotifyResponse(DnsResponse response)
+
+        protected void Validate(DnsRequest request)
         {
-            if (this.Responding != null)
+            request.Validate();
+            if (request.Header.QuestionCount < 1)
             {
-                this.Responding.SafeInvoke(this, response);
+                throw new DnsProtocolException(DnsProtocolError.InvalidQuestionCount);
+            }
+
+            if (request.Header.QuestionCount > m_server.Settings.MaxQuestionCount)
+            {
+                throw new DnsServerException(DnsStandard.ResponseCode.Refused);
             }
         }
     }
