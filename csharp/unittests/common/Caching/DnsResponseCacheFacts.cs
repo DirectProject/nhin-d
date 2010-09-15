@@ -92,6 +92,11 @@ namespace NHINDirect.Tests.Caching
             }
         }
 
+        protected virtual void ConvertDnsResponseToBin()
+        {
+
+        }
+
         /// <summary>
         /// Simple method to force a specific ttl on the A and CERT records in the responses
         /// </summary>
