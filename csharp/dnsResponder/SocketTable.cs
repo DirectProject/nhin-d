@@ -83,12 +83,26 @@ namespace DnsResponder
             }
         }
         
-        public void Remove(long socketID)
+        public bool Remove(long socketID)
         {
-            lock(m_socketTable)
+            try
             {
-                m_socketTable.Remove(socketID);
+                lock(m_socketTable)
+                {
+                    m_socketTable.Remove(socketID);
+                    return true;
+                }
             }
+            catch
+            {
+            }
+            
+            return false;
+        }
+        
+        public void Shutdown(long socketID)
+        {
+            this.Shutdown(socketID, -1);
         }
         
         public void Shutdown(long socketID, int timeout)

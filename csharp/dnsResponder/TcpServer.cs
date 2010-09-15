@@ -25,28 +25,37 @@ namespace DnsResponder
 {
     /// <summary>
     /// A *SIMPLE* (emphasis) socket server that lets you build a perfectly adequate MULTI-THREADED Request/Response server 
-    /// that is easy to debug and program
+    /// that is easy to debug and program.
+    /// 
+    /// The job of this class is reliably, scalably and asynchronously listen for socket connections
+    /// It also supports request throttling, socket management and cleanup.
+    /// 
+    /// It hands off sockets to you, at which point you can do as you please. 
     /// </summary>        
-    public class TcpServer
+    public class TcpServer<TContext>
+        where TContext : TcpContext, new()
     {
         SocketServerSettings m_settings;
-        IServerApplication m_application;
+        IServerApplication<TContext> m_application;
 
         Socket m_listenerSocket;
         SocketTable m_activeSockets;
-
+        ObjectAllocator<TContext> m_contextPool;
+        SynchronizedObjectPool<SocketAsyncEventArgs> m_asyncArgsPool;
+        
         Thread m_listenerThread;
+        WorkThrottle m_acceptThrottle;
         IWorkLoadThrottle m_connectionThrottle;
-        WaitCallback m_handlerCallback;
+        WaitCallback m_forcedAsyncCallback;
                 
         bool m_running = false;
 
-        public TcpServer(IPEndPoint endpoint, SocketServerSettings settings, IServerApplication application)
-            : this(endpoint, settings, application, settings.CreateThrottle())
+        public TcpServer(IPEndPoint endpoint, SocketServerSettings settings, IServerApplication<TContext> application)
+            : this(endpoint, settings, application, settings.CreateRequestThrottle())
         {
         }
         
-        public TcpServer(IPEndPoint endpoint, SocketServerSettings settings, IServerApplication application, IWorkLoadThrottle connectionThrottle)
+        public TcpServer(IPEndPoint endpoint, SocketServerSettings settings, IServerApplication<TContext> application, IWorkLoadThrottle connectionThrottle)
         {
             if (endpoint == null || application == null || settings == null || connectionThrottle == null)
             {
@@ -56,21 +65,40 @@ namespace DnsResponder
             settings.Validate();            
             m_settings = settings;
 
+            m_activeSockets = new SocketTable();
+            m_forcedAsyncCallback = new WaitCallback(this.ForcedAsyncComplete);
+    
             m_listenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             m_listenerSocket.Bind(endpoint);
-                        
-            m_activeSockets = new SocketTable();
+            
+            m_acceptThrottle = new WorkThrottle(m_settings.MaxOutstandingAccepts);
+            m_contextPool = new ObjectAllocator<TContext>(m_settings.MaxActiveRequests);
+            m_asyncArgsPool = new SynchronizedObjectPool<SocketAsyncEventArgs>(m_settings.MaxActiveRequests);
             m_connectionThrottle = connectionThrottle;
-            m_handlerCallback = new WaitCallback(this.InvokeProcessConnection);
-
             m_application = application;
             
             m_listenerThread = new Thread(this.Run);
         }
         
-        public event Action<TcpServer, Socket> ConnectionAccepted;
-        public event Action<TcpServer, Socket> ConnectionClosed;        
-        public event Action<TcpServer, Exception> Error;
+        public SocketServerSettings Settings
+        {
+            get
+            {
+                return m_settings;
+            }
+        }
+        
+        public SocketTable ActionConnections
+        {
+            get
+            {
+                return m_activeSockets;
+            }
+        }
+        
+        public event Action<Socket> ConnectionAccepted;
+        public event Action<Socket> ConnectionClosed;
+        public event Action<Exception> Error;
         
         /// <summary>
         /// Start the server
@@ -78,7 +106,8 @@ namespace DnsResponder
         public void Start()
         {
             m_running = true;
-            m_listenerSocket.Listen(m_settings.MaxPendingConnections);
+            m_listenerSocket.Listen(m_settings.MaxConnectionBacklog);
+
             m_listenerThread.Start();
         }
         
@@ -91,7 +120,7 @@ namespace DnsResponder
         }
         
         /// <summary>
-        /// Stop the server. Stops all open connections
+        /// Stop the server. Stops all open connections, and waits for a clean shutdown
         /// </summary>
         public bool Stop(int timeout)
         {
@@ -112,10 +141,7 @@ namespace DnsResponder
         }
         
         /// <summary>
-        /// Main thread.
-        /// 1. Accepts Socket connections
-        /// 2. Queues them for Asynchronous processing
-        /// 
+        /// Thread for accepting Socket connections
         /// </summary>                                
         void Run()
         {
@@ -124,24 +150,12 @@ namespace DnsResponder
                 try
                 {
                     m_connectionThrottle.Wait();
-                    
-                    Socket socket = m_listenerSocket.Accept();
-                    this.NotifyAccepted(socket);
-                    
-                    try
+                    if (m_running)
                     {
-                        m_settings.ConfigureSocket(socket); // set up timeouts etc
-                        
-                        this.Dispatch(socket);  
-                        
-                        socket = null;
-                    }
-                    finally
-                    {
-                        if (socket != null)
+                        m_acceptThrottle.Wait();
+                        if (m_running)
                         {
-                            socket.SafeClose();
-                            this.NotifyClosed(socket);
+                            this.StartAccept();
                         }
                     }
                 }
@@ -160,70 +174,162 @@ namespace DnsResponder
             }    
         }
         
-        /// <summary>
-        /// Dispatch the new socket by queueing a request
-        /// </summary>
-        /// <param name="socket"></param>
-        void Dispatch(Socket socket)
+        void StartAccept()
         {
-            ProcessingContext context = null;
-            long socketID = 0;
+            SocketAsyncEventArgs args = this.CreateAsyncArgs();
+            if (!m_listenerSocket.AcceptAsync(args))
+            {
+                //
+                // Call completed synchronously. Force async 
+                //
+                this.ForceAsyncAccept(args);
+                                
+                m_acceptThrottle.Completed();
+            }
+        }
 
+        void AcceptConnection(object sender, SocketAsyncEventArgs args)
+        {
+            Socket socket = args.AcceptSocket;
+            SocketError socketError = args.SocketError;
+            
+            this.ReleaseAsyncArgs(args);
+            
+            if (sender != null)
+            {
+                //
+                // sender != null if call completed asynchronously. 
+                // Release the accept throttle so the listener thread can resume accepting connections
+                //
+                m_acceptThrottle.Completed();
+            }
+            //
+            // If there was an error...
+            //
+            if (socket == null || socketError != SocketError.Success)
+            {
+                this.ReleaseConnectionThrottle();
+                return;
+            }
+    
+            this.AcceptConnection(socket);
+        }
+
+        void AcceptConnection(Socket socket)
+        {
             try
             {
-                context = m_application.CreateContext();                
-                
-                socketID = m_activeSockets.Add(socket);                
-                context.Init(this, socket, socketID);   
-                
-                ThreadPool.QueueUserWorkItem(m_handlerCallback, context);
-                context = null;
+                //
+                // Fire the connection accepted event
+                //
+                this.ConnectionAccepted.SafeInvoke(socket);
+                //
+                // Configure the socket for timeouts before dispatch
+                // 
+                m_settings.ConfigureSocket(socket); 
+                //
+                // Ok, we can do some work now
+                //
+                this.Dispatch(socket);
+
+                socket = null;
             }
             finally
             {
-                if (context != null)
+                if (socket != null)  // This is non-null if there was an exception and we could not dispatch the socket cleanly
                 {
-                    this.ReleaseContext(context);
+                    socket.SafeClose();
+                    this.ConnectionClosed.SafeInvoke(socket);
                 }
             }
         }
-        
-        /// <summary>
-        /// Async socket processing
-        /// </summary>
-        void InvokeProcessConnection(object state)
+
+        void ForceAsyncAccept(SocketAsyncEventArgs args)
         {
-            ProcessingContext context = null;
             try
             {
-                context = (ProcessingContext) state;
-                m_application.Process(context);
+                ThreadPool.QueueUserWorkItem(m_forcedAsyncCallback, args);
             }
             catch(Exception ex)
             {
                 this.NotifyError(ex);
+                this.ReleaseAsyncArgs(args);  
+                this.ReleaseConnectionThrottle(); 
+            }
+        }
+                        
+        void ForcedAsyncComplete(object state)
+        {
+            this.AcceptConnection(null, (SocketAsyncEventArgs) state);
+        }
+                        
+        /// <summary>
+        /// Dispatch the new socket for synchronous request handling
+        /// </summary>
+        /// <param name="socket"></param>
+        void Dispatch(Socket socket)
+        {
+            TContext context = null;
+            long socketID = 0;
+
+            socketID = m_activeSockets.Add(socket);                
+            try
+            {
+                context = this.CreateContext(socket, socketID);                    
+                socketID = 0;                
+                
+                bool completed = m_application.Process(context);
+                if (!completed)
+                {  
+                    // Processing will be completed asynchronously. Application will call ProcessingComplete
+                    context = null;
+                }
             }
             finally
             {
+                //
+                // The socket table is safe - it will not throw if we try to shut down an already shutdown socket. 
+                // In the very very rare case if that happens
+                //
                 if (context != null)
                 {
-                    this.ReleaseContext(context);
+                    this.ProcessingComplete(context);
                 }
-            }            
+                if (socketID > 0)
+                {
+                    m_activeSockets.Shutdown(socketID);
+                }
+            }
         }
-
-        void ReleaseContext(ProcessingContext context)
+        
+        public void ProcessingComplete(TContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            this.ReleaseContext(context);
+        }
+                
+        TContext CreateContext(Socket socket, long socketID)
+        {
+            TContext context = m_contextPool.Get();
+            context.Init(socket, socketID);            
+            return context;
+        }
+        
+        void ReleaseContext(TContext context)
+        {            
             try
             {
                 if (context.HasValidSocket)
                 {
                     m_activeSockets.Shutdown(context.SocketID, m_settings.SocketCloseTimeout);
-                    this.NotifyClosed(context.Socket);
+                    this.ConnectionClosed.SafeInvoke(context.Socket);
                 }
-                
                 context.Clear();
-                m_application.ReleaseContext(context);
+                m_contextPool.Put(context);
             }
             catch (Exception ex)
             {
@@ -231,32 +337,54 @@ namespace DnsResponder
             }
             finally
             {
+                this.ReleaseConnectionThrottle();
+            }
+        }
+        
+        void ReleaseConnectionThrottle()
+        {
+            try
+            {
                 m_connectionThrottle.Completed();
             }
-        }
-        
-        void NotifyAccepted(Socket socket)
-        {
-            if (this.ConnectionAccepted != null)
+            catch(Exception ex)
             {
-                this.ConnectionAccepted.SafeInvoke(this, socket);
+                this.NotifyError(ex);
             }
         }
-                
-        void NotifyClosed(Socket socket)
+                        
+        SocketAsyncEventArgs CreateAsyncArgs()
         {
-            if (this.ConnectionClosed != null)
+            SocketAsyncEventArgs args = m_asyncArgsPool.Get();
+            if (args == null)
             {
-                this.ConnectionClosed.SafeInvoke(this, socket);
+                args = new SocketAsyncEventArgs();
+                args.Completed += this.AcceptConnection;        
             }
+            else
+            {
+                args.AcceptSocket = null;
+            }
+            
+            return args;
         }
         
+        void ReleaseAsyncArgs(SocketAsyncEventArgs args)
+        {
+            try
+            {
+                args.AcceptSocket = null;
+                m_asyncArgsPool.Put(args);
+            }
+            catch(Exception ex)
+            {
+                this.NotifyError(ex);
+            }
+        }
+                                
         void NotifyError(Exception ex)
         {
-            if (this.Error != null)
-            {
-                this.Error.SafeInvoke(this, ex);
-            }
+            this.Error.SafeInvoke(ex);
         }
     }
 }

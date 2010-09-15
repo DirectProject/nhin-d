@@ -30,8 +30,6 @@ namespace DnsResponder
         WorkThrottle m_activeRequestThrottle;
         IDnsStore m_store;
         
-        TcpServer m_tcpServer;
-        
         DnsResponderTCP m_tcpResponder;
         DnsResponderUDP m_udpResponder;
         
@@ -43,13 +41,11 @@ namespace DnsResponder
             }
 
             m_settings = settings;
-            m_activeRequestThrottle = new WorkThrottle(m_settings.ServerSettings.MaxActiveRequests);
+            m_activeRequestThrottle = new WorkThrottle(m_settings.TcpServerSettings.MaxActiveRequests);
             m_store = store;
 
             m_tcpResponder = new DnsResponderTCP(this);
             m_udpResponder = new DnsResponderUDP(this);
-
-            m_tcpServer = new TcpServer(m_settings.Endpoint, m_settings.ServerSettings, m_tcpResponder);            
         }
                 
         public DnsServerSettings Settings
@@ -59,15 +55,7 @@ namespace DnsResponder
                 return m_settings;
             }
         }
-        
-        public TcpServer TCPServer
-        {
-            get
-            {
-                return m_tcpServer;
-            }
-        }
-        
+                
         public IDnsStore Store
         {
             get
@@ -94,12 +82,14 @@ namespace DnsResponder
         
         public void Start()
         {
-            m_tcpServer.Start();
+            m_udpResponder.Start();
+            m_tcpResponder.Start();
         }
         
         public void Stop()
         {
-            m_tcpServer.Stop();
+            m_udpResponder.Stop();
+            m_tcpResponder.Stop();
         }
     }
 }
