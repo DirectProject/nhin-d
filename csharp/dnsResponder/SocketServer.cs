@@ -8,19 +8,30 @@ using System.Net.Sockets;
 
 namespace DnsResponder
 {
+    public interface IHandler<TContext>
+    {
+        /// <summary>
+        /// Return true if synchronously processed and completed. 
+        /// If so, resources such as any allocated sockets will be shutdown
+        /// To process asynchronously, return false and then call SocketServer.ProcessingComplete(context)
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        bool Process(TContext context);
+    }
+    
     /// <summary>
     /// This - and all its accompanying generic socket code - should get yanked into a separate Dll
     /// </summary>
-    public abstract class SocketServer<T>
-        where T : ServerProcessingContext, new()
+    public abstract class SocketServer
     {
         IPEndPoint m_endpoint;
         Socket m_socket;
         SocketServerSettings m_settings;
         SynchronizedObjectPool<SocketAsyncEventArgs> m_asyncArgsPool;
-        SynchronizedObjectPool<T> m_contextPool;
         IWorkLoadThrottle m_workThrottle;
         IWorkLoadThrottle m_outstandingAcceptThrottle;
+        WaitCallback m_forcedAsyncCallback;
         
         Thread m_listenerThread;
         bool m_running = false;
@@ -45,16 +56,20 @@ namespace DnsResponder
             m_workThrottle = workThrottle ?? settings.CreateRequestThrottle();
             m_outstandingAcceptThrottle = settings.CreateAcceptThrottle();
             m_asyncArgsPool = new SynchronizedObjectPool<SocketAsyncEventArgs>(m_settings.MaxOutstandingAccepts);
-            m_contextPool = new SynchronizedObjectPool<T>(m_settings.MaxActiveRequests); 
-            
+            m_forcedAsyncCallback = new WaitCallback(this.ForcedAsyncComplete);
+                
             m_listenerThread = new Thread(this.Run);
         }
         
+        /// <summary>
+        /// Service status events
+        /// </summary>
         public event Action Starting;
         public event Action Started;
         public event Action Stopping;
         public event Action Stopped;
-        
+        public event Action<Exception> Error;
+
         public IPEndPoint Endpoint
         {
             get
@@ -62,7 +77,7 @@ namespace DnsResponder
                 return m_endpoint;
             }
         }
-
+        
         public SocketServerSettings Settings
         {
             get
@@ -78,18 +93,25 @@ namespace DnsResponder
                 return m_socket;
             }
         }
-                
-        public event Action<Exception> Error;
         
+        public SynchronizedObjectPool<SocketAsyncEventArgs> AsyncArgsPool
+        {
+            get
+            {
+                return m_asyncArgsPool;
+            }
+        }
+                        
         public void Start()
         {
             this.Starting.SafeInvoke();
+
+            m_socket.Bind(m_endpoint);
             
             this.OnStart();
             
             m_running = true;
             m_listenerThread.Start();
-            m_socket.Bind(m_endpoint);
                         
             this.Started.SafeInvoke();
         }
@@ -105,7 +127,7 @@ namespace DnsResponder
             
             m_running = false;
             
-            m_socket.Close();
+            this.Socket.SafeClose();
             this.OnStop();
 
             if (m_listenerThread.Join(timeout))
@@ -129,7 +151,7 @@ namespace DnsResponder
                         m_outstandingAcceptThrottle.Wait();
                         if (m_running)
                         {
-                            this.StartAccept(this.CreateAsyncArgs());
+                            this.Accept();
                         }
                     }
                 }
@@ -148,6 +170,45 @@ namespace DnsResponder
             }
         }
         
+        void Accept()
+        {
+            try
+            {
+                this.StartAccept();
+            }
+            catch (Exception ex)
+            {
+                this.NotifyError(ex);
+                this.AcceptCompleted();
+            }
+        }
+        
+        public void ProcessingComplete()
+        {
+            this.WorkCompleted();
+        }
+
+        protected bool ForceAsyncAccept(SocketAsyncEventArgs args)
+        {
+            try
+            {
+                ThreadPool.QueueUserWorkItem(m_forcedAsyncCallback, args);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                this.NotifyError(ex);
+                this.ReleaseAsyncArgs(args);
+                this.ProcessingComplete();
+            }
+            
+            return false;
+        }
+        
+        protected virtual void ForcedAsyncComplete(object state)
+        {
+        }
+        
         void WaitForCapacity()
         {
             m_workThrottle.Wait();
@@ -157,58 +218,17 @@ namespace DnsResponder
             m_workThrottle.Completed();
         }
         
-        protected T CreateContext()
-        {
-            T context = m_contextPool.Get();
-            if (context == null)
-            {
-                context = new T();
-                context.Init();
-            }
-            
-            return context;
-        }
         /// <summary>
-        /// Call this if you process buffers asynchronously
+        /// Checks the async args pool first, else calls the allocator
         /// </summary>
-        /// <param name="buffer"></param>
-        public void ProcessingComplete(T context)
-        {
-            if (context == null)
-            {
-                throw new ArgumentNullException();
-            }
-            
-            try
-            {
-                context.Clear();
-                m_contextPool.Put(context);
-            }
-            catch (Exception ex)
-            {
-                this.NotifyError(ex);
-            }
-            this.WorkCompleted();
-        }
-        
-        /// <summary>
-        /// Some socket operations will complete synchrnously. To keep the model consistent, we may want to force these sync
-        /// operations to be handled asynchronously.
-        /// </summary>
-        /// <param name="args"></param>
-        /// <param name="asyncCallback"></param>
-        protected void ForceAsyncComplete(SocketAsyncEventArgs args, WaitCallback asyncCallback)
-        {
-            ThreadPool.QueueUserWorkItem(asyncCallback, args);
-        }
-
-        protected SocketAsyncEventArgs CreateAsyncArgs()
+        /// <param name="allocator"></param>
+        /// <returns></returns>
+        public SocketAsyncEventArgs CreateAsyncArgs(Func<SocketAsyncEventArgs> allocator)
         {
             SocketAsyncEventArgs args = m_asyncArgsPool.Get();
             if (args == null)
             {
-                args = new SocketAsyncEventArgs();
-                this.InitAcceptArgs(args);
+                args = allocator();
             }
             else
             {
@@ -217,14 +237,29 @@ namespace DnsResponder
 
             return args;
         }
-        protected abstract void InitAcceptArgs(SocketAsyncEventArgs args);
+        
+        public void AcceptCompleted()
+        {
+            this.AcceptCompleted(null);
+        }        
+        
         protected void AcceptCompleted(SocketAsyncEventArgs args)
         {
-            args.AcceptSocket = null;
-            m_asyncArgsPool.Put(args);
+            if (args != null)
+            {
+                this.ReleaseAsyncArgs(args);
+            }
             m_outstandingAcceptThrottle.Completed();
         }
-                
+        
+        protected void ReleaseAsyncArgs(SocketAsyncEventArgs args)
+        {
+            args.AcceptSocket = null;
+            args.ClearBuffer();
+            args.RemoteEndPoint = null;
+            m_asyncArgsPool.Put(args);
+        }
+            
         protected void NotifyError(Exception ex)
         {
             if (this.Error != null)
@@ -235,6 +270,6 @@ namespace DnsResponder
         
         protected abstract void OnStart();
         protected abstract void OnStop();        
-        protected abstract void StartAccept(SocketAsyncEventArgs args);
+        protected abstract void StartAccept();
     }
 }

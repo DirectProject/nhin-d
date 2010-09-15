@@ -23,54 +23,67 @@ using System.Net.Sockets;
 
 namespace DnsResponder
 {
-    public class UdpServer<TContext> : SocketServer<TContext>
-        where TContext : UdpContext, new()
+    public class DnsUdpServer : SocketServer
     {
+        IHandler<DnsUdpContext> m_requestHandler;
         EventHandler<SocketAsyncEventArgs> m_receiveCompleteHandler;
-        IServerApplication<TContext> m_application;
         IPEndPoint m_fromAny;
+        SynchronizedObjectPool<DnsUdpContext> m_contextPool;
         
-        public UdpServer(IPEndPoint endpoint, SocketServerSettings settings, IServerApplication<TContext> application)
-            : this(endpoint, settings, application, null)
+        public DnsUdpServer(IPEndPoint endpoint, SocketServerSettings settings, IHandler<DnsUdpContext> requestHandler)
+            : this(endpoint, settings, requestHandler, null)
         {
         }
 
-        public UdpServer(IPEndPoint endpoint, SocketServerSettings settings, IServerApplication<TContext> application, IWorkLoadThrottle workThrottle)
+        public DnsUdpServer(IPEndPoint endpoint, SocketServerSettings settings, IHandler<DnsUdpContext> requestHandler, IWorkLoadThrottle workThrottle)
             : base(endpoint, new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp), settings, workThrottle)
         {
-            if (application == null)
+            if (requestHandler == null)
             {
                 throw new ArgumentNullException();
             }
             
-            m_application = application;
+            m_requestHandler = requestHandler;
             m_receiveCompleteHandler = new EventHandler<SocketAsyncEventArgs>(this.ReceiveCompleted);
             m_fromAny = new IPEndPoint(IPAddress.Any, 0);
+            m_contextPool = new SynchronizedObjectPool<DnsUdpContext>(this.Settings.MaxActiveRequests);
         }
 
-        protected override void StartAccept(SocketAsyncEventArgs args)
+        public SynchronizedObjectPool<DnsUdpContext> ContextPool
         {
-            TContext context = this.CreateContext();
-            context.Socket = this.Socket;
-            context.Init();
-                  
-            ArraySegment<byte> buffer = context.ReceiveBuffer;
-            args.SetBuffer(buffer.Array, 0, buffer.Count);
-            args.UserToken = context;
-
-            if (!this.Socket.ReceiveFromAsync(args))
+            get
             {
-                //
-                // Call completed synchronously. 
-                //
-                this.ReceiveCompleted(null, args);
-            }            
+                return m_contextPool;
+            }
         }
 
-        protected override void InitAcceptArgs(SocketAsyncEventArgs args)
+        protected override void StartAccept()
         {
+            SocketAsyncEventArgs args = base.CreateAsyncArgs(this.AllocNewAsyncArgs);
             args.RemoteEndPoint = m_fromAny;
+            
+            DnsUdpContext context = this.CreateContext();
+            context.Socket = this.Socket;
+                  
+            args.SetBuffer(context.Buffer.Buffer, 0, context.Buffer.Capacity);
+            args.UserToken = context;
+            
+            if (!this.Socket.ReceiveFromAsync(args))
+            {   
+                //
+                // Call completed synchronously. Force async 
+                //
+                base.ForceAsyncAccept(args);
+                base.AcceptCompleted();
+            }
+        }
+
+        SocketAsyncEventArgs AllocNewAsyncArgs()
+        {
+            SocketAsyncEventArgs args = new SocketAsyncEventArgs();
             args.Completed += m_receiveCompleteHandler;
+            
+            return args;
         }                
         
         void ReceiveCompleted(object sender, SocketAsyncEventArgs args)
@@ -78,25 +91,26 @@ namespace DnsResponder
             int countRead = args.BytesTransferred;
             SocketError socketError = args.SocketError;
             IPEndPoint remoteEndpoint = (IPEndPoint) args.RemoteEndPoint;
-            TContext context = (TContext)args.UserToken;
+            DnsUdpContext context = (DnsUdpContext)args.UserToken;
             //
             // Release the accept throttle so the listener thread can resume accepting connections
             //
-            base.AcceptCompleted(args);
-
-            if (socketError != SocketError.Success)
+            if (sender != null)
             {
-                this.ProcessingComplete(context);
-                return;
+                base.AcceptCompleted(args); //async completion. Free the args..
+            }            
+            else
+            {
+                this.ReleaseAsyncArgs(args);
             }
             
             try
             {
-                if (countRead > 0)
+                if (socketError == SocketError.Success && countRead > 0)
                 {
                     context.BytesTransfered = countRead;
                     context.RemoteEndPoint = remoteEndpoint;
-                    if (!m_application.Process(context))
+                    if (!m_requestHandler.Process(context))
                     {
                         context = null; // Completion will be asynchronous
                     }
@@ -108,11 +122,46 @@ namespace DnsResponder
             }
             finally
             {
-                if (context != null)
-                {
-                    this.ProcessingComplete(context);
-                }
+                this.ProcessingComplete(context);
             }
+        }
+
+        protected override void ForcedAsyncComplete(object state)
+        {
+            this.ReceiveCompleted(null, (SocketAsyncEventArgs) state);
+        }
+
+        protected DnsUdpContext CreateContext()
+        {
+            DnsUdpContext context = m_contextPool.Get();
+            if (context == null)
+            {
+                context = new DnsUdpContext();
+            }
+            
+            return context;
+        }
+        
+        public void ProcessingComplete(DnsUdpContext context)
+        {
+            try
+            {
+                this.ReleaseContext(context);
+            }
+            catch(Exception ex)
+            {
+                this.NotifyError(ex);
+            }
+            finally
+            {
+                base.ProcessingComplete();
+            }
+        }
+        
+        void ReleaseContext(DnsUdpContext context)
+        {
+            context.Reset();
+            m_contextPool.Put(context);
         }
         
         protected override void  OnStart()

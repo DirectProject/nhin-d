@@ -17,42 +17,79 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Net;
 using DnsResolver;
 
 namespace DnsResponder
 {
     /// <summary>
-    /// TEST CODE!! Remove
+    /// A trivial Memory Dns Store.
     /// </summary>
-    public class RelayStore : IDnsStore
+    public class MemoryStore : IDnsStore
     {
-        IPAddress m_serverIP;
+        DnsRecordTable m_records;
         
-        public RelayStore(string serverIP)
+        public MemoryStore()
+            : this(0)
         {
-            m_serverIP = IPAddress.Parse(serverIP);
+        }
+        
+        public MemoryStore(int capacity)
+        {
+            m_records = new DnsRecordTable(capacity);
+        }
+        
+        public DnsRecordTable Records
+        {
+            get
+            {
+                return m_records;
+            }
         }
         
         public DnsResponse Get(DnsRequest request)
         {
-            ushort requestID = request.RequestID;
-            DnsResponse response = null;
-            try
+            if (request == null)
             {
-                using (DnsClient client = new DnsClient(m_serverIP))
+                throw new ArgumentNullException();
+            }
+            
+            DnsQuestion question = request.Question;
+            if (question == null || question.Class != DnsStandard.Class.IN)
+            {
+                return null;
+            }
+            
+            IEnumerable<DnsResourceRecord> matches = m_records[request.Question.Domain];
+            if (matches == null)
+            {
+                return null;
+            }
+            
+            return this.CreateResponse(request, matches);
+        }
+        
+        DnsResponse CreateResponse(DnsRequest request, IEnumerable<DnsResourceRecord> matches)
+        {
+            DnsStandard.RecordType questionType = request.Question.Type;
+            DnsResponse response = new DnsResponse(request);
+            foreach (DnsResourceRecord record in matches)
+            {
+                if (record.Type == questionType)
                 {
-                    response = client.Resolve(request);
+                    switch (record.Type)
+                    {
+                        default:
+                            response.AnswerRecords.Add(record);
+                            break;
+
+                        case DnsStandard.RecordType.NS:
+                        case DnsStandard.RecordType.SOA:
+                            response.AnswerRecords.Add(record);
+                            break;
+                    }
                 }
             }
-            finally
-            {
-                if (response != null)
-                {
-                    response.RequestID = requestID;
-                }            
-                request.RequestID = requestID;
-            }
+            
             return response;
         }
     }

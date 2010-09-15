@@ -26,6 +26,7 @@ namespace DnsResponder
     public abstract class DnsResponder
     {
         DnsServer m_server;
+        DnsServerSettings m_settings;
         
         public DnsResponder(DnsServer server)
         {
@@ -35,21 +36,14 @@ namespace DnsResponder
             }
             
             m_server = server;
+            m_settings = server.Settings;
         }
-        
-        public DnsServer Server
-        {
-            get
-            {
-                return m_server;
-            }
-        }
-        
+                
         public DnsServerSettings Settings
         {
             get
             {
-                return m_server.Settings;
+                return m_settings;
             }
         }
 
@@ -58,15 +52,6 @@ namespace DnsResponder
         
         public abstract void Start();
         public abstract void Stop();
-        
-        public DnsResponse ProcessRequest(Buffer buffer)
-        {
-            if (buffer == null)
-            {
-                throw new ArgumentNullException();
-            }
-            return this.ProcessRequest(this.DeserializeRequest(buffer.Bytes, buffer.Count));
-        }
         
         public DnsResponse ProcessRequest(DnsBuffer buffer)
         {

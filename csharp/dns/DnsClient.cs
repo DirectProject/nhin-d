@@ -105,7 +105,10 @@ namespace DnsResolver
 	/// </example>
     public class DnsClient : IDisposable
     {
-		private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(2);
+        /// <summary>
+        /// Default Receive Timeout
+        /// </summary>
+		public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(2);
         
         IPEndPoint m_dnsServer;
         Socket m_udpSocket;
@@ -113,6 +116,7 @@ namespace DnsResolver
         DnsBuffer m_responseBuffer;
         DnsBuffer m_lengthBuffer;
         TimeSpan m_timeout;
+        TimeSpan? m_postFailurePause;
         int m_maxRetries = 3;
         Random m_requestIDGenerator;
         
@@ -223,7 +227,7 @@ namespace DnsResolver
                 m_dnsServer = value;
             }            
         }
-        
+                        
 		/// <summary>
 		/// Timeout interval for DNS requests. 
 		/// </summary>
@@ -244,7 +248,22 @@ namespace DnsResolver
                 m_timeout = value;
             }
         }
-
+        
+        /// <summary>
+        /// Pause for this long in between UDP retries
+        /// </summary>
+        public TimeSpan? RetryPause
+        {
+            get
+            {
+                return m_postFailurePause;
+            }
+            set
+            {
+                m_postFailurePause = value;
+            }
+        }
+        
 		private int TimeoutInMilliseconds
 		{
 			get { return (int)Timeout.TotalMilliseconds; }
@@ -293,6 +312,8 @@ namespace DnsResolver
                 throw new ArgumentNullException("request");
             }
             
+            request.Validate();
+               
             request.RequestID = this.NextID();
             this.SerializeRequest(request);
 
@@ -308,6 +329,8 @@ namespace DnsResolver
                 attempt++;
                 try
                 {
+                    this.EnsureUdpSocket();
+
                     if (useUDPFirst)
                     {
                         this.ExecuteUDP();
@@ -318,6 +341,8 @@ namespace DnsResolver
                     }
                     
                     DnsResponse response = this.DeserializeResponse();
+                    response.Validate();
+
                     if (request.RequestID != response.RequestID || !response.Question.Equals(request.Question))
                     {
                         // Hmm. Not a response to any query we'd sent. 
@@ -360,6 +385,13 @@ namespace DnsResolver
                     }
                     
                     this.NotifyError(error);
+                }
+                
+                this.CloseUdpSocket();
+                
+                if (m_postFailurePause != null)
+                {
+                    System.Threading.Thread.Sleep(m_postFailurePause.Value);
                 }            
             }
             
@@ -738,13 +770,18 @@ namespace DnsResolver
 		/// </summary>
         public void Close()
         {
+            this.CloseUdpSocket();
+        }
+        
+        void CloseUdpSocket()
+        {
             if (m_udpSocket != null)
             {
                 m_udpSocket.Close();
                 m_udpSocket = null;
             }
         }
-
+        
         void SerializeRequest(DnsRequest request)
         {
             m_requestBuffer.Clear();
@@ -763,17 +800,26 @@ namespace DnsResolver
         //--------------------------------------------
         void ExecuteUDP()
         {
-            if (m_udpSocket == null)
-            {
-                m_udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                m_udpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, TimeoutInMilliseconds);
-            }
-
-            m_udpSocket.SendTo(m_requestBuffer.Buffer, m_requestBuffer.Count, SocketFlags.None, m_dnsServer);
-
+            this.CloseUdpSocket();
+            this.EnsureUdpSocket();
+            
+            m_udpSocket.Send(m_requestBuffer.Buffer, m_requestBuffer.Count, SocketFlags.None);            
             m_responseBuffer.Count = m_udpSocket.Receive(m_responseBuffer.Buffer);
         }
-
+        
+        void EnsureUdpSocket()
+        {
+            if (m_udpSocket != null)
+            {
+                return;
+            }
+            
+            m_udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            m_udpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, this.TimeoutInMilliseconds);
+            
+            m_udpSocket.Connect(m_dnsServer);
+        }
+        
 		//--------------------------------------------
         //
         // TCP Transport
@@ -783,8 +829,7 @@ namespace DnsResolver
         {
             using(Socket tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
-                tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, TimeoutInMilliseconds);
-                
+                tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, this.TimeoutInMilliseconds);
                 tcpSocket.Connect(m_dnsServer);
                 
                 m_lengthBuffer.Clear();

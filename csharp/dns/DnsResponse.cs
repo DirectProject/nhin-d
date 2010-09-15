@@ -286,7 +286,7 @@ namespace DnsResolver
         public override void Validate()
         {
             base.Validate();            
-            if (!this.Header.IsRequest)              
+            if (this.Header.IsRequest)              
             {
                 throw new DnsProtocolException(DnsProtocolError.InvalidResponse);
             }
