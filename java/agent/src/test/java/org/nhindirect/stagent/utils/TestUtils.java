@@ -131,7 +131,9 @@ public class TestUtils
 		anchors.add(msCACert);
 		anchors.add(cernerDemos);	
 		
-		AgentTestModule mod = new AgentTestModule(domains, anchors, internalKeystoreFile, internalStorePassword, pkPassword);
+		String certificateRevocationListFile = "a";
+		
+		AgentTestModule mod = new AgentTestModule(domains, anchors, internalKeystoreFile, internalStorePassword, pkPassword, certificateRevocationListFile);
 		
 		Injector inj = Guice.createInjector(mod);
 		return inj.getInstance(DefaultNHINDAgent.class);

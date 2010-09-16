@@ -40,6 +40,7 @@ import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.CertificateStore;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFile;
+import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFileCrl;
 import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFilePassword;
 import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFilePrivKeyPassword;
 
@@ -63,6 +64,7 @@ public class KeyStoreCertificateStore extends CertificateStore
 	private File keyStoreFile;
 	private String keyStorePassword;
 	private String privateKeyPassword;
+	private String certificateRevocationListFile;
 	private KeyStore ks;
 	
 	/**
@@ -96,20 +98,42 @@ public class KeyStoreCertificateStore extends CertificateStore
 	 * @param keyStoreFile The file name that contains the keystore.
 	 * @param keyStorePassword The password that protects the keystores contents.
 	 * @param privateKeyPassword The password used to retrive privates keys within the keystore.
+	 * @param certificateRevocationListFile The CRL URI for certificates within the keystore.
 	 */		
 	@Inject
 	public KeyStoreCertificateStore(@CertStoreKeyFile String keyStoreFileName, 
-			@Nullable @CertStoreKeyFilePassword String keyStorePassword, @Nullable @CertStoreKeyFilePrivKeyPassword String privateKeyPassword)
+			@Nullable @CertStoreKeyFilePassword String keyStorePassword, @Nullable @CertStoreKeyFilePrivKeyPassword String privateKeyPassword,
+			@Nullable @CertStoreKeyFileCrl String certificateRevocationListFile)
 	{
 		this.keyStoreFile = new File(keyStoreFileName);
 		this.keyStorePassword = keyStorePassword;
 		this.privateKeyPassword = privateKeyPassword;
+		this.certificateRevocationListFile = certificateRevocationListFile;
 		
 		if (keyStoreFile == null)
     		throw new IllegalArgumentException();
 
 		bootstrapFromFile();
 	}	
+	
+	   /**
+     * Constructs a keystore using the provided file name, file password, and private key password.
+     * @param keyStoreFile The file name that contains the keystore.
+     * @param keyStorePassword The password that protects the keystores contents.
+     * @param privateKeyPassword The password used to retrive privates keys within the keystore.
+     */     
+    public KeyStoreCertificateStore(String keyStoreFileName, 
+            String keyStorePassword, String privateKeyPassword)
+    {
+        this.keyStoreFile = new File(keyStoreFileName);
+        this.keyStorePassword = keyStorePassword;
+        this.privateKeyPassword = privateKeyPassword;
+        
+        if (keyStoreFile == null)
+            throw new IllegalArgumentException();
+
+        bootstrapFromFile();
+    }   
 	
 	/**
 	 * Constructs a keystore using the provided file, file password, and private key password.
@@ -379,4 +403,14 @@ public class KeyStoreCertificateStore extends CertificateStore
     	
     	return retVal;
     }  
+    
+    /**
+     * Return a value for the default CRL URI.
+     * 
+     * @return a value for the default CRL URI.
+     */
+    @Override
+    public String getDefaultCrlUri() {
+        return certificateRevocationListFile;
+    }
 }

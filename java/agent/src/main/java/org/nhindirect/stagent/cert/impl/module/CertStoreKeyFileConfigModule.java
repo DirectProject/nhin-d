@@ -23,6 +23,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.stagent.cert.impl.module;
 
 import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFile;
+import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFileCrl;
 import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFilePassword;
 import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFilePrivKeyPassword;
 
@@ -33,23 +34,26 @@ public class CertStoreKeyFileConfigModule extends AbstractModule
 	private final String keyFile;
 	private final String filePassword;
 	private final String privKeyPassword;
+	private final String certificateRevocationListFile;
 	
-	public static CertStoreKeyFileConfigModule create(String keyFile, String filePassword, String privKeyPassword)
+	public static CertStoreKeyFileConfigModule create(String keyFile, String filePassword, String privKeyPassword, String certificateRevocationListFile)
 	{
-		return new CertStoreKeyFileConfigModule(keyFile, filePassword, filePassword);
+		return new CertStoreKeyFileConfigModule(keyFile, filePassword, filePassword, certificateRevocationListFile);
 	}
 	
-	private CertStoreKeyFileConfigModule(String keyFile, String filePassword, String privKeyPassword)
+	private CertStoreKeyFileConfigModule(String keyFile, String filePassword, String privKeyPassword, String certificateRevocationListFile)
 	{
 		this.keyFile = keyFile;
 		this.filePassword = filePassword;
 		this.privKeyPassword = privKeyPassword;
+		this.certificateRevocationListFile = certificateRevocationListFile;
 	}
 	
 	protected void configure()
 	{		
 		bindConstant().annotatedWith(CertStoreKeyFile.class).to(keyFile);
 		bindConstant().annotatedWith(CertStoreKeyFilePassword.class).to(filePassword);
-		bindConstant().annotatedWith(CertStoreKeyFilePrivKeyPassword.class).to(privKeyPassword);		
+		bindConstant().annotatedWith(CertStoreKeyFilePrivKeyPassword.class).to(privKeyPassword);	
+		bindConstant().annotatedWith(CertStoreKeyFileCrl.class).to(certificateRevocationListFile);
 	}	
 }
