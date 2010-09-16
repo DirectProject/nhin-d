@@ -30,6 +30,8 @@ import java.util.Locale;
 
 import javax.mail.internet.InternetAddress;
 
+import org.nhindirect.stagent.cert.impl.CRLManager;
+
 /**
  * Abstract base class for a certificate store implementation.  It does not implement any specific certificate storage functions
  * against a certificate repository implementation.  Storage specific implementation should over ride this class to communicate
@@ -209,14 +211,31 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         {
         	try
         	{
-        		// flow control based on exception handling is generally bad practice, but this is how the X509Certificate
-        		// checks validity based on date (instead of returning a boolean)
+                /*
+                 * flow control based on exception handling is generally bad
+                 * practice, but this is how the X509Certificate checks validity
+                 * based on date (instead of returning a boolean)
+                 */
         		cert.checkValidity(new GregorianCalendar().getTime());
-        		filteredCerts.add(cert);      		
-        	}
+        		
+        		// Search CRLs to determine if this certificate has been revoked
+        		CRLManager crlManager = new CRLManager(getDefaultCrlUri());
+                if (!crlManager.isRevoked(cert))
+                    filteredCerts.add(cert);
+        	} 
             catch (Exception e) {/* no op.... the cert is not valid for the given time */}
         }
         
         return filteredCerts.size() == 0 ? null : filteredCerts;
+    }
+    
+    /**
+     * Return a value for the default CRL URI. Subclasses may override this
+     * method.
+     * 
+     * @return a value for the default CRL URI.
+     */
+    public String getDefaultCrlUri() {
+        return null;
     }
 }
