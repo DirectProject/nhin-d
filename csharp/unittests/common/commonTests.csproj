@@ -55,7 +55,9 @@
   <ItemGroup>
     <Compile Include="Caching\DnsClientWithCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseCacheFacts.cs" />
-    <Compile Include="Caching\DnsResponseToBinExample.cs" />
+    <Compile Include="Caching\DnsResponseToBinExample.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Mail\RoundTripFacts.cs" />
     <Compile Include="Mail\TestMDN.cs" />
     <Compile Include="Mime\BodyFacts.cs" />
