@@ -155,7 +155,12 @@
 			<artifactId>apacheds-server-unit</artifactId>
 			<version>1.0.2</version>
 			<scope>test</scope>
-		</dependency>																																																																																			
+		</dependency>
+        <dependency>
+            <groupId>com.atlassian.maven.plugins</groupId>
+	   	    <artifactId>maven-clover2-plugin</artifactId>
+		<version>3.0.2</version>
+	</dependency>																																																																																
   </dependencies>      
   <build>
   	<extensions>

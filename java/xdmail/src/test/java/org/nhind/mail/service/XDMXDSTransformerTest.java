@@ -253,6 +253,7 @@ public class XDMXDSTransformerTest extends TestCase {
             output = transformer.getXDMRequest(input);
             assertTrue("Output is null", output != null);
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Exception thrown");
         }
     }
@@ -268,6 +269,7 @@ public class XDMXDSTransformerTest extends TestCase {
             output = transformer.getXDMRequest(input);
             assertTrue("Output is null", output != null);
         } catch (Exception e) {
+            e.printStackTrace();
             fail("Exception thrown");
         }
     }
