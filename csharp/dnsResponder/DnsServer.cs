@@ -72,7 +72,7 @@ namespace DnsResponder
             }
         }
         
-        public DnsResponderUDP UDPResponsder
+        public DnsResponderUDP UDPResponder
         {
             get
             {

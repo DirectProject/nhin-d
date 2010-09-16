@@ -85,7 +85,7 @@ namespace DnsResolver
         {
             if (address.AddressFamily != AddressFamily.InterNetwork)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("Not IP4 address");
             }
             
             //return (uint) address.Address; // This property is obsolete!

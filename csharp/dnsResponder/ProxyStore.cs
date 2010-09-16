@@ -17,19 +17,61 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
+using System.Net;
+using DnsResolver;
 
 namespace DnsResponder
 {
-    public interface IServerApplication<TContext>
+    /// <summary>
+    /// Trivial dns store - relays all calls to another Dns server
+    /// Used for Testing
+    /// </summary>
+    public class ProxyStore : IDnsStore
     {
-        /// <summary>
-        /// Return true if synchronously processed and completed. 
-        /// If so, resources such as any allocated sockets will be shutdown
-        /// To process asynchronously, return false and then call SocketServer.ProcessingComplete(context)
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        bool Process(TContext context);
-    }    
+        IPAddress m_serverIP;
+        TimeSpan? m_timeout;
+        
+        public ProxyStore(string serverIP)
+        {
+            m_serverIP = IPAddress.Parse(serverIP);
+        }
+        
+        public TimeSpan Timeout
+        {
+            get
+            {
+                return (m_timeout != null) ? m_timeout.Value : DnsClient.DefaultTimeout;
+            }
+            set
+            {
+                m_timeout = value;
+            }
+        }
+        
+        public DnsResponse Get(DnsRequest request)
+        {
+            ushort requestID = request.RequestID;
+            DnsResponse response = null;
+            try
+            {
+                using (DnsClient client = new DnsClient(m_serverIP))
+                {
+                    if (m_timeout != null)
+                    {
+                        client.Timeout = m_timeout.Value;
+                    }
+                    response = client.Resolve(request);
+                }
+            }
+            finally
+            {
+                if (response != null)
+                {
+                    response.RequestID = requestID;
+                }            
+                request.RequestID = requestID;
+            }
+            return response;
+        }
+    }
 }

@@ -63,29 +63,4 @@ namespace DnsResponder
             }
         }
     }
-    
-    public class ObjectAllocator<T> : SynchronizedObjectPool<T>
-        where T : new()
-    {
-        public ObjectAllocator()
-            : base()
-        {
-        }
-
-        public ObjectAllocator(int maxSize)
-            : base(maxSize)
-        {
-        }
-
-        public override T Get()
-        {
-            T item = base.Get();
-            if (item == null)
-            {
-                item = new T();
-            }
-            
-            return item;
-        }    
-    }
 }

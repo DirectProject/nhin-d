@@ -41,6 +41,7 @@ namespace DnsResponder
     public class WorkThrottle : IWorkLoadThrottle
     {
         Semaphore m_semaphore;
+        //int m_waitCalls;
         
         public WorkThrottle(int maxParallel)
         {
@@ -48,15 +49,26 @@ namespace DnsResponder
         }        
         
         public event Action<WorkThrottle, Exception> Error;
-        
+        /*        
+        public int WaitCalls
+        {
+            get
+            {
+                return m_waitCalls;
+            }
+        }
+        */
+                
         public void Wait()
         {
             m_semaphore.WaitOne();
+            //Interlocked.Increment(ref m_waitCalls);
         }
         
         public void Wait(int timeout)
         {
             m_semaphore.WaitOne(timeout);
+            //Interlocked.Increment(ref m_waitCalls);
         }
 
         public void Completed()
@@ -64,6 +76,7 @@ namespace DnsResponder
             try
             {
                 m_semaphore.Release();
+                //Interlocked.Decrement(ref m_waitCalls);
             }
             catch (Exception ex)
             {

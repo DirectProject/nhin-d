@@ -21,17 +21,17 @@ using DnsResolver;
 
 namespace DnsResponder
 {
-    public class DnsResponderUDP : DnsResponder, IServerApplication<DnsUdpContext>
+    public class DnsResponderUDP : DnsResponder, IHandler<DnsUdpContext>
     {
-        UdpServer<DnsUdpContext> m_server; 
+        DnsUdpServer m_server; 
               
         public DnsResponderUDP(DnsServer server)
             : base(server)
         {
-            m_server = new UdpServer<DnsUdpContext>(server.Settings.Endpoint, server.Settings.UdpServerSettings, this);
+            m_server = new DnsUdpServer(server.Settings.Endpoint, server.Settings.UdpServerSettings, this);
         }
-        
-        public UdpServer<DnsUdpContext> Server
+
+        public DnsUdpServer Server
         {
             get
             {
@@ -59,8 +59,9 @@ namespace DnsResponder
             DnsResponse response = base.ProcessRequest(context.Buffer);            
             if (response != null)
             {
-                context.Init();                
+                context.Clear();
                 base.Serialize(response, context.Buffer, DnsStandard.MaxUdpMessageLength);
+
                 context.SendResponse();
             }
             

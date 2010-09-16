@@ -27,7 +27,7 @@ namespace DnsResponder
     /// <summary>
     /// Simple DNS TCP Responder
     /// </summary>
-    public class DnsResponderTCP : DnsResponder, IServerApplication<DnsTcpContext>
+    public class DnsResponderTCP : DnsResponder, IHandler<DnsTcpContext>
     {
         TcpServer<DnsTcpContext> m_tcpServer;
         
@@ -37,7 +37,7 @@ namespace DnsResponder
             m_tcpServer = new TcpServer<DnsTcpContext>(this.Settings.Endpoint, this.Settings.TcpServerSettings, this);
         }
 
-        public TcpServer<DnsTcpContext> TcpServer
+        public TcpServer<DnsTcpContext> Server
         {
             get
             {
