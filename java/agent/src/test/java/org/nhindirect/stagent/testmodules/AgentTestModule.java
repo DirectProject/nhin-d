@@ -15,10 +15,10 @@ public class AgentTestModule extends AbstractModule
 	private final TrustAnchorResolverTestModule trustAnchorModule;
 	
 	public AgentTestModule(Collection<String> domains, Collection<X509Certificate> anchors, 
-			String keyStoreFileName, String keyStorePassword, String  keyStorePrivPassword)
+			String keyStoreFileName, String keyStorePassword, String  keyStorePrivPassword, String certificateRevocationListFile)
 	{
 		this.domains = domains;
-		this.certModule = new CertResolverTestModule(keyStoreFileName, keyStorePassword, keyStorePrivPassword);
+		this.certModule = new CertResolverTestModule(keyStoreFileName, keyStorePassword, keyStorePrivPassword, certificateRevocationListFile);
 		this.trustAnchorModule = new TrustAnchorResolverTestModule(anchors);				
 	}
 	
