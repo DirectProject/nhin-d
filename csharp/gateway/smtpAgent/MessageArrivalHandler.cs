@@ -100,7 +100,7 @@ namespace NHINDirect.SmtpAgent
                 {
                     try
                     {
-                        agent = this.CreateAgent(configFilePath);
+                        agent = SmtpAgentFactory.Create(configFilePath);
                         s_agents[configFilePath] = agent;
                     }
                     catch (Exception ex)
@@ -139,11 +139,5 @@ namespace NHINDirect.SmtpAgent
                 throw;
             }
         }
-        
-        SmtpAgent CreateAgent(string configFilePath)
-        {
-            SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configFilePath);
-            return new SmtpAgent(settings);
-        }
-    }    
+    }
 }
