@@ -22,30 +22,29 @@ using NHINDirect.Diagnostics;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
-using NLog.Targets.Compound;
 using NLog.Win32.Targets;
 
-namespace Health.Net.Diagnostics.NLog
+namespace Health.Net.Direct.Diagnostics.NLog
 {
-	public class NLogFactory : ILogFactory
-	{
-		// TODO: not sure if this is the way we want to configure the logger, however, this
-		// honors the principle of being a code based configuration vs XML/file based.
-		public NLogFactory(LogFileSettings settings)
-		{
-			Target target
-				= new FileTarget
-				  	{
-				  		Layout = "${longdate} [${threadid}] ${level} ${logger} - ${message}",
-				  		FileName = CreatePathFromSettings(settings, ""),
-				  		ArchiveFileName = CreatePathFromSettings(settings, ".{###}"),
+    public class NLogFactory : ILogFactory
+    {
+        // TODO: not sure if this is the way we want to configure the logger, however, this
+        // honors the principle of being a code based configuration vs XML/file based.
+        public NLogFactory(LogFileSettings settings)
+        {
+            Target target
+                = new FileTarget
+                      {
+                          Layout = "${longdate} [${threadid}] ${level} ${logger} - ${message}",
+                          FileName = CreatePathFromSettings(settings, ""),
+                          ArchiveFileName = CreatePathFromSettings(settings, ".{###}"),
 
-						// TODO: expose this up to the LogFileSettings
-						ArchiveEvery = settings.FileChangeFrequency < 24
-				  		               	? FileTarget.ArchiveEveryMode.Hour
-				  		               	: FileTarget.ArchiveEveryMode.Day,
-				  		ArchiveNumbering = FileTarget.ArchiveNumberingMode.Rolling
-				  	};
+                          // TODO: expose this up to the LogFileSettings
+                          ArchiveEvery = settings.FileChangeFrequency < 24
+                                             ? FileTarget.ArchiveEveryMode.Hour
+                                             : FileTarget.ArchiveEveryMode.Day,
+                          ArchiveNumbering = FileTarget.ArchiveNumberingMode.Rolling
+                      };
 
             LoggingConfiguration config = new LoggingConfiguration();
 
@@ -68,30 +67,30 @@ namespace Health.Net.Diagnostics.NLog
                 config.LoggingRules.Add(new LoggingRule("*", eventLogLevel, eventLogTarget));
             }
 
-		    LogManager.Configuration = config;
-		}
+            LogManager.Configuration = config;
+        }
 
-	    public ILogger GetLogger(string name)
-		{
-			return new NLogLogger(LogManager.GetLogger(name));
-		}
+        public ILogger GetLogger(string name)
+        {
+            return new NLogLogger(LogManager.GetLogger(name));
+        }
 
-		public ILogger GetLogger(Type loggerType)
-		{
-			return GetLogger(loggerType.FullName);
-		}
+        public ILogger GetLogger(Type loggerType)
+        {
+            return GetLogger(loggerType.FullName);
+        }
 
-		private static string CreatePathFromSettings(LogFileSettings settings, string suffix)
-		{
-			return Path.ChangeExtension(
-				Path.Combine(settings.DirectoryPath, settings.NamePrefix + suffix),
-				NormalizeExtension(settings));
-		}
+        private static string CreatePathFromSettings(LogFileSettings settings, string suffix)
+        {
+            return Path.ChangeExtension(
+                Path.Combine(settings.DirectoryPath, settings.NamePrefix + suffix),
+                NormalizeExtension(settings));
+        }
 
-		private static string NormalizeExtension(LogFileSettings settings)
-		{
-			return "." + settings.Ext.TrimStart('.');
-		}
+        private static string NormalizeExtension(LogFileSettings settings)
+        {
+            return "." + settings.Ext.TrimStart('.');
+        }
 
         private static LogLevel ConvertLogLevel(LoggingLevel level)
         {
