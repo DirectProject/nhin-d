@@ -37,7 +37,7 @@ namespace SmtpAgentTests
         
         public TestNotifications()
         {
-            m_agent = new SmtpAgent(SmtpAgentSettings.LoadSettings(MakeFilePath("SmtpAgentTestFiles\\TestSmtpAgentConfig.xml")));
+            m_agent = SmtpAgentFactory.Create(MakeFilePath("SmtpAgentTestFiles\\TestSmtpAgentConfig.xml"));
             m_producer = new NotificationProducer(m_agent.Settings.Notifications);
         }
         
