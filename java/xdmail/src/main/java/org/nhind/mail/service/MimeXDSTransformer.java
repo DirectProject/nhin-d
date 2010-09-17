@@ -178,7 +178,7 @@ public class MimeXDSTransformer {
      * @throws MessagingException
      * @throws IOException
      */
-    public static List<ProvideAndRegisterDocumentSetRequestType> createRequests(MimeMessage mimeMessage)
+    public List<ProvideAndRegisterDocumentSetRequestType> createRequests(MimeMessage mimeMessage)
             throws MessagingException, IOException {
         List<ProvideAndRegisterDocumentSetRequestType> requests = new ArrayList<ProvideAndRegisterDocumentSetRequestType>();
 
