@@ -17,11 +17,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-using Health.Net.Diagnostics.NLog;
-
 using NHINDirect.Agent;
 using NHINDirect.Certificates;
-using NHINDirect.Container;
 using NHINDirect.Diagnostics;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client.DomainManager;
@@ -39,7 +36,7 @@ namespace NHINDirect.SmtpAgent
         ConfigService m_configService;
         NotificationProducer m_notifications;
                 
-        public SmtpAgent(SmtpAgentSettings settings)
+        internal SmtpAgent(SmtpAgentSettings settings)
         {
             if (settings == null)
             {
@@ -107,11 +104,6 @@ namespace NHINDirect.SmtpAgent
         {
             m_settings = settings;
             m_settings.Validate();
-
-            // move this to some package initializer...
-        	IoC.Initialize(new SimpleDependencyResolver())
-                .Register<ILogFactory>(new NLogFactory(m_settings.LogSettings))
-                ;
 
         	m_logger = Log.For(this);
 

@@ -22,7 +22,7 @@ namespace NHINDirect.Config.Service
 {
     public class ServiceSettings
     {
-        public const string ConfigConnectStringKey = "configStoreConnectString";
+        public const string ConfigConnectStringKey = "configStore";
         public const string QueryTimeoutKey = "queryTimeout";
         
         string m_connectString;
@@ -80,7 +80,7 @@ namespace NHINDirect.Config.Service
         
         void Load()
         {
-            m_connectString = this.GetSetting(ServiceSettings.ConfigConnectStringKey);
+            m_connectString = ConfigurationManager.ConnectionStrings[ConfigConnectStringKey].ConnectionString;
 
         	TimeSpan timeout;
         	if (!TimeSpan.TryParse(GetSetting(QueryTimeoutKey), out timeout))
