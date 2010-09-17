@@ -40,9 +40,9 @@ namespace SmtpAgentTests
         
         public TestSmtpAgent()
         {
-            //m_agent = new SmtpAgent(base.LoadTestSettings("TestSmtpAgentConfigService.xml"));
-            //m_agent = new SmtpAgent(base.LoadTestSettings("TestSmtpAgentConfigServiceProd.xml"));
-            m_agent = new SmtpAgent(base.LoadTestSettings("TestSmtpAgentConfig.xml"));
+            //m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfigService.xml"));
+            //m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfigServiceProd.xml"));
+            m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfig.xml"));
         }
         
         [Fact]

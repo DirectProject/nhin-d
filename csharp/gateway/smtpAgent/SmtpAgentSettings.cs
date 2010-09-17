@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.IO;
+using System.Text;
 using System.Xml.Serialization;
 
 using NHINDirect.Agent.Config;
@@ -336,6 +337,14 @@ namespace NHINDirect.SmtpAgent
             {
                 return serializer.Deserialize<SmtpAgentSettings>(stream);
             }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder(GetType().Name).Append("(");
+            builder.Append("Incoming=").Append(Incoming).Append(", ");
+            builder.Append("Outgoing=").Append(Outgoing);
+            return builder.Append(")").ToString();
         }
     }
 }
