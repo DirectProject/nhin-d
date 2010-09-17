@@ -82,7 +82,7 @@ public class NHINDMailet extends GenericMailet {
             boolean forwardToXdr = true; // should be based on some routing
             
             if (forwardToXdr) {
-                List<ProvideAndRegisterDocumentSetRequestType> requests = MimeXDSTransformer.createRequests(mail
+                List<ProvideAndRegisterDocumentSetRequestType> requests = getMimeXDSTransformer().createRequests(mail
                         .getMessage());
 
                 for (ProvideAndRegisterDocumentSetRequestType request : requests) {
@@ -100,8 +100,7 @@ public class NHINDMailet extends GenericMailet {
 
             mail.setState(Mail.GHOST);
         } catch (Throwable e) {
-            e.printStackTrace();
-            LOGGER.error("NHINDMailet delivery failure" + e.getMessage(), e);
+            LOGGER.error("NHINDMailet delivery failure", e);
             throw new RuntimeException(e);
         }
     }
@@ -132,6 +131,16 @@ public class NHINDMailet extends GenericMailet {
      */
     protected String getEndpointUrl() {
         return this.endpointUrl;
+    }
+    
+    /**
+     * Set the value of endpointUrl.
+     * 
+     * @param endpointUrl
+     *            The value of endpointUrl.
+     */
+    protected void setEndpointUrl(String endpointUrl) {
+        this.endpointUrl = endpointUrl;
     }
     
     /**
