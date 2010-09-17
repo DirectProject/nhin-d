@@ -44,9 +44,9 @@ Source: "..\external\microsoft\vcredist\*"; DestDir: "{app}\Libraries"; Flags: i
 Name: "{group}\{cm:UninstallProgram,NHIN .NET Gateway}"; Filename: "{uninstallexe}"
 
 [Run]
-Filename: "{app}\Libraries\install_redist.bat"; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked
-Filename: "{app}\install.bat"; Parameters: "nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall shellexec;
+Filename: "{app}\Libraries\install_redist.bat"; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: runhidden postinstall runascurrentuser unchecked
+Filename: "{app}\install.bat"; Parameters: "nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall runascurrentuser;
 
 [UninstallRun]
-Filename: "{app}\unregisterGateway.bat"; Flags: shellexec;
+Filename: "{app}\unregisterGateway.bat"; Flags: shellexec runascurrentuser;
 
