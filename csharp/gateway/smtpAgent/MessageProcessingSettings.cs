@@ -70,6 +70,11 @@ namespace NHINDirect.SmtpAgent
                 Directory.CreateDirectory(this.CopyFolder);
             }
         }
+
+        public override string ToString()
+        {
+            return "CopyFolder=" + CopyFolder;
+        }
     }
 
     [XmlType("RawMessage")]
@@ -107,6 +112,11 @@ namespace NHINDirect.SmtpAgent
                 m_enableRelay = value;
             }
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " EnableRelay=" + EnableRelay;
+        }
     }
 
     [XmlType("ProcessOutgoing")]
@@ -135,6 +145,11 @@ namespace NHINDirect.SmtpAgent
                 m_enableRelay = value;
             }
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " EnableRelay=" + EnableRelay;
+        }
     }
 
     [XmlType("ProcessBadMessage")]
@@ -144,5 +159,5 @@ namespace NHINDirect.SmtpAgent
             : base()
         {
         }
-    }    
+    }  
 }
