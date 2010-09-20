@@ -153,8 +153,8 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
         	
         	// replace all instances of the hard coded local LDAP server to the port of the actual server
         	String xmlConfig = IOUtils.toString(str);
-        	String newLDAPLoc = "ldap://localhost:" + configuration.getLdapPort() + "/";
-        	xmlConfig.replaceAll("ldap://localhost:1024/", newLDAPLoc);
+        	String replacePort = "localhost:" + configuration.getLdapPort();
+        	xmlConfig = xmlConfig.replaceAll("localhost:1024", replacePort);
         	
         	// write the configuration to a new file
         	File newConfigFile = new File("./tmp/" + getConfigFileName());
