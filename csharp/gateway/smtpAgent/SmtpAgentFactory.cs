@@ -42,11 +42,4 @@ namespace NHINDirect.SmtpAgent
             }
         }
     }
-
-    public class NullAuditor : IAuditor
-    {
-        public void Log(string category, string message)
-        {
-        }
-    }
 }

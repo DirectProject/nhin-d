@@ -62,6 +62,11 @@ namespace NHINDirect.Diagnostics
             m_logger.Trace(m_methodName + MethodBeginSuffix);
         }
 
+        /// <summary>
+        /// If <see cref="ILogger.IsTraceEnabled"/> is <c>true</c> and the <see cref="m_methodName"/>
+        /// is not null or empty then it will log the <see cref="m_methodName"/> + the <see cref="MethodEndSuffix"/>
+        /// to <see cref="ILogger.Trace(string)"/>.
+        /// </summary>
         public void Dispose()
         {
             if (m_logger.IsTraceEnabled && !string.IsNullOrEmpty(m_methodName))

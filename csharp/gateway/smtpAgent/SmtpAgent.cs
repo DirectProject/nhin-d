@@ -650,15 +650,4 @@ namespace NHINDirect.SmtpAgent
             }
         }
     }
-
-    public class AuditNames
-    {
-        public class Message
-        {
-            public const string IncomingAccepted = "Incoming Message Accepted";
-            public const string IncomingRejected = "Incoming Message Rejected";
-
-            public const string OutgoingSent = "Outgoing Message Sent";
-        }
-    }
 }
