@@ -19,6 +19,7 @@ using System.IO;
 
 using NHINDirect.Agent;
 using NHINDirect.Certificates;
+using NHINDirect.Container;
 using NHINDirect.Diagnostics;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client.DomainManager;
@@ -27,7 +28,9 @@ namespace NHINDirect.SmtpAgent
 {    
     public class SmtpAgent
     {
+        IAuditor m_auditor;
     	ILogger m_logger;
+
         SmtpAgentSettings m_settings;
         NHINDAgent m_agent;
         DomainPostmasters m_postmasters;
@@ -54,13 +57,21 @@ namespace NHINDirect.SmtpAgent
             }
         }
 
-        internal ILogger Logger
+        private ILogger Logger
 		{
 			get
 			{
 				return m_logger;
 			}
 		}
+
+        private IAuditor Auditor
+        {
+            get
+            {
+                return m_auditor;
+            }
+        }
                 
         public NHINDAgent SecurityAgent
         {
@@ -105,47 +116,47 @@ namespace NHINDirect.SmtpAgent
             m_settings = settings;
             m_settings.Validate();
 
+            m_auditor = IoC.Resolve<IAuditor>();
         	m_logger = Log.For(this);
 
             m_diagnostics = new AgentDiagnostics();
             m_configService = new ConfigService(m_settings);
 
-            Logger.Trace("Init_Begin");
-            try
-            {   
-                //
-                // First, setup defaults using Xml Config
-                //
-                this.InitDomains();
-                this.InitFolders();
-                this.InitRoutes();       
-                this.InitNotifications();         
-                //
-                // Call config service, if any was configured
-                //
-                this.InitDomainsFromConfigService();
-                //
-                // Finally, we can agent...
-                //
-                this.InitAgent();
-                this.SubscribeToAgentEvents();
-
-                Logger.Trace("Init_End");
-            }
-            catch (Exception error)
+            using (new MethodTracer(Logger))
             {
-				Logger.Error("Init_Failed", error);
-                throw;
+                try
+                {
+                    //
+                    // First, setup defaults using Xml Config
+                    //
+                    this.InitDomains();
+                    this.InitFolders();
+                    this.InitRoutes();
+                    this.InitNotifications();
+                    //
+                    // Call config service, if any was configured
+                    //
+                    this.InitDomainsFromConfigService();
+                    //
+                    // Finally, we can agent...
+                    //
+                    this.InitAgent();
+                    this.SubscribeToAgentEvents();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("While initializing", ex);
+                    throw;
+                }
             }
         }
         
         void InitAgent()
         {
-            Logger.Trace("CreateAgent_Begin");
-
-            m_agent = m_settings.CreateAgent();
-
-            Logger.Trace("CreateAgent_End");
+            using (new MethodTracer(Logger))
+            {
+                m_agent = m_settings.CreateAgent();
+            }
         }
         
         void InitDomainsFromConfigService()
@@ -156,26 +167,24 @@ namespace NHINDirect.SmtpAgent
                 return;
             }
 
-            Logger.Trace("InitDomainFromConfigService_Begin");
-
-            Domain[] configuredDomains = m_configService.GetDomains(m_settings.Domains);
-            if (configuredDomains.IsNullOrEmpty() || configuredDomains.Length != m_settings.Domains.Length)
+            using (new MethodTracer(Logger))
             {
-                throw new SmtpAgentException(SmtpAgentError.ConfiguredDomainsMismatch);
-            }
-            
-            this.InitPostmastersFromConfigService(configuredDomains);
+                Domain[] configuredDomains = m_configService.GetDomains(m_settings.Domains);
+                if (configuredDomains.IsNullOrEmpty() || configuredDomains.Length != m_settings.Domains.Length)
+                {
+                    throw new SmtpAgentException(SmtpAgentError.ConfiguredDomainsMismatch);
+                }
 
-            Logger.Trace("InitDomainFromConfigService_End");
+                this.InitPostmastersFromConfigService(configuredDomains);
+            }
         }
         
         void InitDomains()
         {
-            Logger.Trace("InitDomains_Begin");
-
-            this.InitPostmasters();
-
-            Logger.Trace("InitDomains_End");
+            using (new MethodTracer(Logger))
+            {
+                InitPostmasters();
+            }
         }
         
         void InitPostmasters()
@@ -194,31 +203,26 @@ namespace NHINDirect.SmtpAgent
         
             Debug.Assert(m_postmasters != null);
 
-            Logger.Trace("InitPostmastersFromConfig_Begin");
-
-            AddressManagerClient client = m_settings.AddressManager.CreateAddressManagerClient();
-            foreach(Domain domain in domains)
+            using (new MethodTracer(Logger))
             {
-                Address address;
-                if (domain.PostmasterID != null && (address = client.GetAddress(domain.PostmasterID.Value)) != null)
+                AddressManagerClient client = m_settings.AddressManager.CreateAddressManagerClient();
+                foreach (Domain domain in domains)
                 {
-                    m_postmasters[domain.Name] = address.ToMailAddress();
+                    Address address;
+                    if (domain.PostmasterID != null && (address = client.GetAddress(domain.PostmasterID.Value)) != null)
+                    {
+                        m_postmasters[domain.Name] = address.ToMailAddress();
+                    }
                 }
             }
-
-            Logger.Trace("InitPostmastersFromConfig_End");
         }
         
         void InitFolders()
         {
-            Logger.Trace("InitFolder_Begin");
-
-            m_settings.RawMessage.EnsureFolders();
-            m_settings.Incoming.EnsureFolders();
-            m_settings.Outgoing.EnsureFolders();
-            m_settings.BadMessage.EnsureFolders();
-
-            Logger.Trace("InitFolder_End");
+            using (new MethodTracer(Logger))
+            {
+                m_settings.EnsureFolders();
+            }
         }
         
         void InitRoutes()
@@ -229,41 +233,35 @@ namespace NHINDirect.SmtpAgent
                 return;
             }
 
-            Logger.Trace("InitRoutes_Begin");
-
-            m_router.SetRoutes(m_settings.IncomingRoutes);
-
-            Logger.Trace("InitRoutes_End");
+            using (new MethodTracer(Logger))
+            {
+                m_router.SetRoutes(m_settings.IncomingRoutes);
+            }
         }
         
         void InitNotifications()
         {
-            Logger.Trace("InitNotifications_Begin");
-
-            m_notifications = new NotificationProducer(m_settings.Notifications);
-
-            Logger.Trace("InitNotifications_End");
+            using (new MethodTracer(Logger))
+            {
+                m_notifications = new NotificationProducer(m_settings.Notifications);
+            }
         }
         
         void SubscribeToAgentEvents()
         {
-            Logger.Trace("SubscribingToEvents_Begin");
-
-            m_agent.PreProcessOutgoing += this.OnPreProcessOutgoing;
-            m_agent.PreProcessIncoming += this.OnPreProcessIncoming;
-            m_agent.ErrorIncoming += m_diagnostics.OnIncomingError;
-            m_agent.ErrorOutgoing += m_diagnostics.OnOutgoingError;
-            
-            DnsCertResolver dnsResolver = m_agent.PublicCertResolver as DnsCertResolver;
-            if (dnsResolver != null)
+            using (new MethodTracer(Logger))
             {
-				// make sure to clear this out so we're not multi-subscribed
-            	dnsResolver.Error -= m_diagnostics.OnDnsError;
+                m_agent.PreProcessOutgoing += this.OnPreProcessOutgoing;
+                m_agent.PreProcessIncoming += this.OnPreProcessIncoming;
+                m_agent.ErrorIncoming += m_diagnostics.OnIncomingError;
+                m_agent.ErrorOutgoing += m_diagnostics.OnOutgoingError;
 
-                dnsResolver.Error += m_diagnostics.OnDnsError;
+                DnsCertResolver dnsResolver = m_agent.PublicCertResolver as DnsCertResolver;
+                if (dnsResolver != null)
+                {
+                    dnsResolver.Error += m_diagnostics.OnDnsError;
+                }
             }
-
-            Logger.Trace("SubscribingToEvents_End");
         }
         
         //---------------------------------------------------
@@ -612,6 +610,7 @@ namespace NHINDirect.SmtpAgent
                                         
         protected virtual void AcceptMessage(ISmtpMessage message)
         {
+            m_auditor.Log(AuditNames.Message.IncomingAccepted, message.GetMailFrom());
             message.Accept();
         }
         
@@ -619,7 +618,9 @@ namespace NHINDirect.SmtpAgent
         {
             try
             {
+                m_auditor.Log(AuditNames.Message.IncomingRejected, message.GetMailFrom());
                 message.Reject();
+
                 Logger.Debug("Rejected Message");
                 this.CopyMessage(message, m_settings.BadMessage);
             }
@@ -647,6 +648,17 @@ namespace NHINDirect.SmtpAgent
             {
                 Logger.Error("While copying message", ex);
             }
+        }
+    }
+
+    public class AuditNames
+    {
+        public class Message
+        {
+            public const string IncomingAccepted = "Incoming Message Accepted";
+            public const string IncomingRejected = "Incoming Message Rejected";
+
+            public const string OutgoingSent = "Outgoing Message Sent";
         }
     }
 }
