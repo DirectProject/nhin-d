@@ -326,7 +326,15 @@ namespace NHINDirect.SmtpAgent
                 Array.ForEach<MessageRoute>(m_incomingRoutes, x => x.Validate());
             }
         }
-        
+
+        public void EnsureFolders()
+        {
+            this.RawMessage.EnsureFolders();
+            this.Incoming.EnsureFolders();
+            this.Outgoing.EnsureFolders();
+            this.BadMessage.EnsureFolders();
+        }
+
         public static SmtpAgentSettings LoadSettings(string configFilePath)
         {
             ExtensibleXmlSerializer serializer = new ExtensibleXmlSerializer();
