@@ -20,6 +20,7 @@ namespace NHINDirect.SmtpAgent
 
                 IoC.Initialize(new SimpleDependencyResolver())
                     .Register<ILogFactory>(new NLogFactory(settings.LogSettings))
+                    .Register<IAuditor>(new NullAuditor())
                     ;
 
                 Log.For<MessageArrivalEventHandler>().Debug(settings);
@@ -39,6 +40,13 @@ namespace NHINDirect.SmtpAgent
 
                 throw;
             }
+        }
+    }
+
+    public class NullAuditor : IAuditor
+    {
+        public void Log(string category, string message)
+        {
         }
     }
 }
