@@ -72,6 +72,7 @@
     <Compile Include="Cryptography\SignedEntity.cs" />
     <Compile Include="Cryptography\SMIMECryptographer.cs" />
     <Compile Include="Cryptography\SMIMEStandard.cs" />
+    <Compile Include="Diagnostics\AuditNames.cs" />
     <Compile Include="Diagnostics\IAuditor.cs" />
     <Compile Include="Diagnostics\ILogFactory.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
@@ -81,6 +82,7 @@
     </Compile>
     <Compile Include="Diagnostics\LoggingLevel.cs" />
     <Compile Include="Diagnostics\MethodTracer.cs" />
+    <Compile Include="Diagnostics\NullAuditor.cs" />
     <Compile Include="Dns\DnsClientWithCache.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Container\IDependencyResolver.cs" />
