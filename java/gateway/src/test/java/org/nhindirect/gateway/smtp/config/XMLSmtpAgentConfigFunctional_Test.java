@@ -19,6 +19,8 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
 import org.apache.directory.server.core.schema.bootstrap.AbstractBootstrapSchema;
 import org.apache.directory.server.unit.AbstractServerTest;
@@ -46,7 +48,7 @@ import com.google.inject.Injector;
  */
 
 public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
-{
+{	
 	/**
      * Initialize the server.
      */
@@ -142,8 +144,27 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
             assertAnchors(trustAnchorResolver.getIncomingAnchors());                
         }
         
-        protected SmtpAgentConfig createSmtpAgentConfig() {
-            SmtpAgentConfig config = new XMLSmtpAgentConfig(TestUtils.getTestConfigFile(getConfigFileName()), null);
+        protected SmtpAgentConfig createSmtpAgentConfig() throws Exception
+        {
+        	// get the configuration XML file as a resource
+        	InputStream str = this.getClass().getClassLoader().getResourceAsStream("configFiles/" + getConfigFileName());
+        	if (str == null)
+        		throw new IOException("Config file configFiles/" + getConfigFileName() + " could not be loaded.");
+        	
+        	// replace all instances of the hard coded local LDAP server to the port of the actual server
+        	String xmlConfig = IOUtils.toString(str);
+        	String newLDAPLoc = "ldap://localhost:" + configuration.getLdapPort() + "/";
+        	xmlConfig.replaceAll("ldap://localhost:1024/", newLDAPLoc);
+        	
+        	// write the configuration to a new file
+        	File newConfigFile = new File("./tmp/" + getConfigFileName());
+        	FileUtils.forceDeleteOnExit(newConfigFile);
+        	FileUtils.writeStringToFile(newConfigFile, xmlConfig);
+        	
+        	// load the new file into the SmtpAgentConfig
+        	String configFile = newConfigFile.getAbsolutePath();
+        	
+        	SmtpAgentConfig config = new XMLSmtpAgentConfig(configFile, null);
             return config;
         }
         
