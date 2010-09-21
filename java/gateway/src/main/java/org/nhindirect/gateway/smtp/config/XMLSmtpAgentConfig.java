@@ -446,8 +446,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			if (storeType.equalsIgnoreCase("keystore"))
 			{
 				resolverProvider = new KeyStoreCertificateStoreProvider(certNode.getAttribute("file"), 
-						certNode.getAttribute("filePass"), certNode.getAttribute("privKeyPass"),
-						certNode.getAttribute("crlUri"));
+						certNode.getAttribute("filePass"), certNode.getAttribute("privKeyPass"));
 			}
 			/*
 			 * DNS resolver
@@ -489,7 +488,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			if (storeType.equalsIgnoreCase("keystore"))
 			{
 				resolverProvider = new KeyStoreCertificateStoreProvider(certNode.getAttribute("file"), 
-						certNode.getAttribute("filePass"), certNode.getAttribute("privKeyPass"), null);
+						certNode.getAttribute("filePass"), certNode.getAttribute("privKeyPass"));
 			}
 			else if(storeType.equalsIgnoreCase("ldap"))
 			{
