@@ -8,8 +8,11 @@ import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -35,13 +38,17 @@ public class CRLManager {
 
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultNHINDAgent.class);
     
-    private String defaultCrlUri;
     private Set<CRL> crlCollection;
     
     private static CertificateFactory certificateFactory;
     
+    // TODO: convert to JCS cache
+    private static Map<String, X509CRLImpl> cache;
+    
     static 
     {
+        cache = new HashMap<String, X509CRLImpl>();
+        
         try 
         {
             certificateFactory = CertificateFactory.getInstance("X.509");
@@ -56,15 +63,6 @@ public class CRLManager {
      */
     public CRLManager() 
     { 
-        this(null);
-    }
-
-    /**
-     * Construct a CRLManager using a default CRL.
-     */
-    public CRLManager(String defaultCrlUri) 
-    { 
-        this.defaultCrlUri = defaultCrlUri;
         this.crlCollection = new HashSet<CRL>();
     }
     
@@ -92,20 +90,7 @@ public class CRLManager {
     {
         if (certificate == null)
             return;
-        
-        try 
-        {
-            // Add default CRL
-            X509CRLImpl defaultCrl = getCrlFromUri(defaultCrlUri);
-            if (defaultCrl != null)
-                crlCollection.add(defaultCrl);
-        }
-        catch (Exception e)
-        {
-            if (LOGGER.isWarnEnabled())
-                LOGGER.warn("Unable to handle default CRL: " + e.getMessage());
-        }
-        
+              
         try {
             // Add CRL distribution point(s)
             X509CertImpl certificateImpl = new X509CertImpl(certificate.getEncoded());
@@ -121,7 +106,7 @@ public class CRLManager {
 
                         if (generalNameString.startsWith("URIName: ")) 
                         {
-                            String crlURLString = generalNameString.substring(9);
+                            String crlURLString = getNameString(generalNameString);
                          
                             X509CRLImpl crlImpl = getCrlFromUri(crlURLString);
                             if (crlImpl != null)
@@ -171,30 +156,65 @@ public class CRLManager {
     {
         if (crlUrlString == null || crlUrlString.trim().length() == 0)
             return null;
-        
-        X509CRLImpl crlImpl = null;
-        
-        try {
-            URLConnection urlConnection = new URL(crlUrlString).openConnection();
-            urlConnection.setConnectTimeout(3000);
             
-            InputStream crlInputStream = urlConnection.getInputStream();
+        synchronized(cache) 
+        { 
+            X509CRLImpl crlImpl = getCache().get(crlUrlString);
             
-            try 
+            if (crlImpl != null && crlImpl.getNextUpdate().before(new Date())) 
             {
-                crlImpl = (X509CRLImpl) certificateFactory.generateCRL(crlInputStream);
-            } 
-            finally 
-            {
-                crlInputStream.close();
+                getCache().remove(crlUrlString);
+                crlImpl = null;
             }
+            
+            if (crlImpl == null)
+            {
+                try 
+                {
+                    URLConnection urlConnection = new URL(crlUrlString).openConnection();
+                    urlConnection.setConnectTimeout(3000);
+                    
+                    InputStream crlInputStream = urlConnection.getInputStream();
+                    
+                    try 
+                    {
+                        crlImpl = (X509CRLImpl) certificateFactory.generateCRL(crlInputStream);
+                    } 
+                    finally 
+                    {
+                        crlInputStream.close();
+                    }
+                    
+                    getCache().put(crlUrlString, crlImpl);
+                }
+                catch (Exception e)
+                {
+                    if (LOGGER.isWarnEnabled())
+                        LOGGER.warn("Unable to retrieve or parse CRL " + crlUrlString);
+                }
+            }
+            
+            return crlImpl;
         }
-        catch (Exception e)
-        {
-            if (LOGGER.isWarnEnabled())
-                LOGGER.warn("Unable to retrieve or parse CRL " + crlUrlString);
-        }
-        
-        return crlImpl;
+    }
+    
+    /**
+     * Get the cache object.
+     * 
+     * @return the cache object.
+     */
+    private static Map<String, X509CRLImpl> getCache() {
+        return cache;
+    }
+    
+    /**
+     * Get the URI from the standardized generalNameString.
+     * 
+     * @param generalNameString
+     *            the general name string.
+     * @return a URI.
+     */
+    public String getNameString(String generalNameString) {
+        return generalNameString.substring(9);
     }
 }
