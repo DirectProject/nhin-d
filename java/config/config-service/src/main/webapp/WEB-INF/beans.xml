@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+    http://www.springframework.org/schema/tx       http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://cxf.apache.org/jaxws                    http://cxf.apache.org/schemas/jaxws.xsd"	
+	default-autowire="byName">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+	<context:annotation-config />
+	<context:component-scan base-package="org.nhindirect.config" />
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<jaxws:endpoint id="domainService"
+		implementorClass="org.nhindirect.config.service.ws.DomainServiceWS"
+		address="/DomainService">
+		<jaxws:implementor>
+			<bean id="domainServiceImpl" 
+			      class="org.nhindirect.config.service.ws.DomainServiceWS"
+				  init-method="init">
+				<property name="dao" ref="domainDao" />
+			</bean>
+		</jaxws:implementor>
+	</jaxws:endpoint>
+	
+	<!-- <jaxws:endpoint id="addressService" implementor="org.nhindirect.config.service.ws.AddressServiceWS" 
+		address="/AddressService" /> -->
+
+	<bean id="domainDao" class="org.nhindirect.config.store.dao.impl.DomainDaoImpl" />
+
+	<!-- Exception translation bean post processor -->
+	<bean
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="true" />
+				<property name="generateDdl" value="true" />
+				<property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" />
+			</bean>
+		</property>
+		<property name="persistenceUnitName" value="config-store" />
+	</bean>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="jdbc:postgresql:nhindconfig" />
+		<property name="username" value="nhind" />
+		<property name="password" value="nhind" />
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />
+
+</beans>
