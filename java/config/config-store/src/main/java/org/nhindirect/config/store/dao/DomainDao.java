@@ -38,6 +38,8 @@ public interface DomainDao {
 	
 	public Domain getDomainByName(String domain);
 	
+	public List<Domain> searchDomain(String name, EntityStatus status);
+	
 	public List<Domain> getDomains(List<String> name, EntityStatus status);
 	
 	public List<Domain> listDomains(String name, int count);
