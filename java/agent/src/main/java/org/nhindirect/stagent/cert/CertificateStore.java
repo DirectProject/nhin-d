@@ -219,7 +219,7 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         		cert.checkValidity(new GregorianCalendar().getTime());
         		
         		// Search CRLs to determine if this certificate has been revoked
-        		CRLManager crlManager = new CRLManager(getDefaultCrlUri());
+        		CRLManager crlManager = new CRLManager();
                 if (!crlManager.isRevoked(cert))
                     filteredCerts.add(cert);
         	} 
@@ -229,13 +229,4 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         return filteredCerts.size() == 0 ? null : filteredCerts;
     }
     
-    /**
-     * Return a value for the default CRL URI. Subclasses may override this
-     * method.
-     * 
-     * @return a value for the default CRL URI.
-     */
-    public String getDefaultCrlUri() {
-        return null;
-    }
 }
