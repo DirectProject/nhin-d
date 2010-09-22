@@ -14,21 +14,28 @@ All custom modules are deployed in jar files and placed in the James lib directo
 
 _%jamesInstallRoot%/apps/james/SAR-INF/lib_
 
-All jars and transient dependencies should be placed in this directory.
+All jars and transient dependencies must be placed in this directory.
 
-The following is a list of minimum dependencies to run the security and trust agent within James using keystore based certificate store..
+The following is a list of minimum dependencies to run the security and trust agent within James using keystore based certificate store.
 
-* activation-1.1.jar          
-* aopalliance-1.0.jar         
-* apache-mailet-2.4.jar       
-* apache-mailet-base-1.1.jar  
-* bcmail-jdk15-140.jar        
-* bcprov-jdk15-140.jar        
-* commons-codec-1.4.jar
-* commons-io-1.4.jar
-* commons-logging-1.1.1.jar
-* guice-2.0.jar
-* mail-1.4.1.jar
+All of these will be in your Maven cache from building source (~/.m2 or equivalent on Windows).
+
+Writing an Ant script to pull these into the appropriate configuration would be highly appreciated.
+
+* activation-1.1.jar [http://java.sun.com/products/archive/javabeans/jaf11.html]
+* aopalliance-1.0.jar [http://sourceforge.net/projects/aopalliance/files/]
+* apache-mailet-2.4.jar [http://james.apache.org/download.cgi] 
+* apache-mailet-base-1.1.jar [http://james.apache.org/download.cgi]
+* bcmail-jdk15-140.jar [http://www.bouncycastle.org/latest_releases.html]      
+* bcprov-jdk15-140.jar [http://www.bouncycastle.org/latest_releases.html]    
+* commons-codec-1.4.jar [http://commons.apache.org/codec/download_codec.cgi]
+* commons-io-1.4.jar [http://commons.apache.org/io/download_io.cgi]
+* commons-logging-1.1.1.jar [http://commons.apache.org/logging/download_logging.cgi]
+* guice-2.0.jar [http://code.google.com/p/google-guice/]
+* mail-1.4.1.jar [http://www.oracle.com/technetwork/java/javamail-1-4-1-141959.html]
+
+In addition, the following files that were created during the Direct build process must be placed in the same directory
+
 * nhinAgent-1.0-SNAPSHOT.jar
 * nhin-d-gateways-1.0-SNAPSHOT.jar
 
@@ -67,6 +74,7 @@ Example:
    </mailet>
 {code}
 
+TODO: we need to supply a sample config that works.
 
 *Mailet*
 
@@ -104,6 +112,26 @@ When James reaches this mailet, the matcher determines if the message is incomin
 h2. Deployment Configuration Scenarios
 
 The following scenarios are not at all an exhaustive list of deployment configurations, but some identified use cases and suggested best practice deployments.
+
+*Development Testing Configuration*
+
+This use case describes a scenario where the HISP is only used for development testing.
+
+Mailet configuration in this use case is....
+
+James needs to be configured with users. To do so, you must telnet into the James port and configure users. For example:
+
+{code}
+> telnet localhost 4555
+Login id:
+> root
+Password
+> root
+> adduser nhin-d nhind
+> quit
+{code}
+
+Note that we are assuming use of the default installation password for a development instance. This is absolutely not recommended for any other configuration.
 
 *Single Domain Standalone*
 
