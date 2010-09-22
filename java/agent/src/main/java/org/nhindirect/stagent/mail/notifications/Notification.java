@@ -80,7 +80,7 @@ public class Notification
     	}
     	catch (MessagingException e) { /* no-op */}
     	
-	    this.disposition = disposition;
+	    this.setDisposition(disposition, true);
 	}	
 
     /**
@@ -224,11 +224,12 @@ public class Notification
 		return disposition;
 	}
 
-	/**
-	 * Sets the {@link Disposition} for this instance.
-	 * @param disposition The {@link Disposition} for this instance
+	/*
+	 * set the disposition but optionally suppress generating the multipart... this
+	 * is mainly used because of the constructor not setting all attributes before
+	 * generating the mutlipart
 	 */
-	public void setDisposition(Disposition disposition) 
+	private void setDisposition(Disposition disposition, boolean supressMMGen)
 	{
         if (disposition == null)
         {
@@ -238,11 +239,21 @@ public class Notification
 		try
 		{
 			notification.setHeader(MDNStandard.Headers.Disposition, disposition.toString());
-			genMMRep();
+			if (!supressMMGen)
+				genMMRep();
 		}
 		catch (MessagingException e) {/* no-op */}
 		
 		this.disposition = disposition;
+	}
+	
+	/**
+	 * Sets the {@link Disposition} for this instance.
+	 * @param disposition The {@link Disposition} for this instance
+	 */
+	public void setDisposition(Disposition disposition) 
+	{
+		setDisposition(disposition, false);
 	}
 
 	/**

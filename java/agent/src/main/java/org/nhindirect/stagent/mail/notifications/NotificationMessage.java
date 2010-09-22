@@ -77,7 +77,8 @@ public class NotificationMessage extends Message
     	ContentType type = new ContentType(notification.getAsMultipart().getContentType());
     	String boundary = type.getParameter("boundary");	
     	
-    	headers.addHeader(MailStandard.Headers.ContentType, MDNStandard.MediaType.DispositionReport + "; " + boundary);    	
+    	headers.addHeader(MailStandard.Headers.ContentType, MDNStandard.MediaType.DispositionReport + 
+    			"; boundary=" + boundary);    	
     	
     	return headers;
 
