@@ -40,4 +40,7 @@
    <OutgoingMessagesSettings saveFolder="OutgoingMsgFolder"/>
    <IncomingMessagesSettings saveFolder="IncomingMsgFolder"/>
    <BadMessagesSettings saveFolder="BadMsgFolder"/>  
+   <MDNSettings autoResponse="true" productName="NHIN Direct Agent">
+       <Text><![CDATA[This is a CDATA subject]]></Text>
+   </MDNSettings>
 </SmtpAgentConfig>

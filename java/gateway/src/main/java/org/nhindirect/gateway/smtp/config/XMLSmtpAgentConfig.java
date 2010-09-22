@@ -38,6 +38,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.nhindirect.gateway.smtp.DomainPostmaster;
+import org.nhindirect.gateway.smtp.NotificationProducer;
 import org.nhindirect.gateway.smtp.ProcessBadMessageSettings;
 import org.nhindirect.gateway.smtp.ProcessIncomingSettings;
 import org.nhindirect.gateway.smtp.ProcessOutgoingSettings;
@@ -102,6 +103,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	private ProcessIncomingSettings incomingSettings;
 	private ProcessOutgoingSettings outgoingSettings;
 	private ProcessBadMessageSettings badSettings;
+	private NotificationProducer notificationProducer;
 	
 	/**
 	 * Construct and configuration component with the location of the configuration file and an optional provider for creating
@@ -204,7 +206,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			throw new SmtpAgentException(SmtpAgentError.MissingDomains);
 		
 		SmtpAgentSettings settings = new SmtpAgentSettings(domainPostmasters, rawSettings, outgoingSettings,
-				incomingSettings, badSettings);
+				incomingSettings, badSettings, notificationProducer);
 		
 		if (smtpAgentProvider == null)
 			smtpAgentProvider = new DefaultSmtpAgentProvider(settings);

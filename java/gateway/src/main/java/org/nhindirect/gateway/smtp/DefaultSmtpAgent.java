@@ -24,6 +24,7 @@ package org.nhindirect.gateway.smtp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.UUID;
 
 import javax.mail.internet.MimeMessage;
@@ -31,9 +32,8 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.stagent.AgentError;
-import org.nhindirect.stagent.AgentException;
 import org.nhindirect.stagent.DefaultMessageEnvelope;
+import org.nhindirect.stagent.IncomingMessage;
 import org.nhindirect.stagent.NHINDAgent;
 import org.nhindirect.stagent.MessageEnvelope;
 import org.nhindirect.stagent.NHINDAddress;
@@ -41,6 +41,7 @@ import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.OutgoingMessage;
 import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.Message;
+import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
 import com.google.inject.Inject;
@@ -116,10 +117,11 @@ public class DefaultSmtpAgent implements SmtpAgent
 			envelopeToProcess.setAgent(agent);
 			
 			// should always result in either a non null object or an exception
-			retVal = processEnvelope(envelopeToProcess);
+			MessageEnvelope processEvn = processEnvelope(envelopeToProcess);
+			retVal = new MessageProcessResult(processEvn, null);
 			
 			if (retVal.getProcessedMessage() != null)
-				postProcessMessage(retVal.getProcessedMessage());						
+				postProcessMessage(retVal);						
 		}
 		catch (SmtpAgentException e)
 		{
@@ -176,52 +178,68 @@ public class DefaultSmtpAgent implements SmtpAgent
 	/*
 	 * Processes a message using the securty and trust agent.
 	 */
-    protected MessageProcessResult processEnvelope(MessageEnvelope envelope)
+    protected MessageEnvelope processEnvelope(MessageEnvelope envelope)
     {
-    	MessageProcessResult retVal = null;
+    	
     	MessageEnvelope processedMessage = null;
-    	MessageEnvelope ackMessage = null;
+    	Collection<NotificationMessage> notificationMessages = null;
     	boolean isOutgoing = isOutgoing(envelope);
     	
-    	try
-    	{    		
-    		if (LOGGER.isDebugEnabled())
-    		{
-    			if (isOutgoing)
-    				LOGGER.debug("Sending outgoing message from " + envelope.getSender().toString() + " to STAgent");
-    			else
-    				LOGGER.debug("Sending incoming message from " + envelope.getSender().toString() + " to STAgent");
-    			
-    		}
-    		
-    		processedMessage = (isOutgoing) ? agent.processOutgoing(envelope) : agent.processIncoming(envelope);
-    		if  (processedMessage == null)
-    			throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
-    		
-    	
-    		retVal = new MessageProcessResult(processedMessage, ackMessage);
-    	}
-    	catch (AgentException e)
-    	{
-    		if (e.getError() != AgentError.NoTrustedRecipients)
-    			throw e;
-    		
-    		retVal = new MessageProcessResult(null, ackMessage);    		    		    				
-    	}
-    	
-    	return retVal;
+	
+		if (LOGGER.isDebugEnabled())
+		{
+			if (isOutgoing)
+				LOGGER.debug("Sending outgoing message from " + envelope.getSender().toString() + " to STAgent");
+			else
+				LOGGER.debug("Sending incoming message from " + envelope.getSender().toString() + " to STAgent");
+			
+		}
+		
+		processedMessage = (isOutgoing) ? agent.processOutgoing(envelope) : agent.processIncoming(envelope);
+		if  (processedMessage == null)
+			throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
+		
+		return processedMessage;		
     }
 	
 
     
     
-    private void postProcessMessage(MessageEnvelope envelope)
+    private void postProcessMessage(MessageProcessResult result)
     {    	
-        boolean isOutgoing = (envelope instanceof OutgoingMessage);
+        boolean isOutgoing = (result.getProcessedMessage() instanceof OutgoingMessage);
 
-        this.copyMessage(envelope.getMessage(), 
-            		(isOutgoing) ? settings.getOutgoingMessageSettings() : settings.getIncomingMessageSettings());
+        if (isOutgoing)
+        	postProcessOutgoingMessage(result);
+        else
+        	postProcessIncomingMessage(result);
     }    
+    
+    private void postProcessOutgoingMessage(MessageProcessResult result)
+    {
+    	if (result.getProcessedMessage().hasRecipients())
+    		copyMessage(result.getProcessedMessage().getMessage(), settings.getOutgoingMessageSettings());
+    }
+    
+    private void postProcessIncomingMessage(MessageProcessResult result)
+    {
+        this.copyMessage(result.getProcessedMessage().getMessage(), settings.getIncomingMessageSettings());
+        
+        // check if we need to create notification messages
+        try
+        {
+        	if (settings.getNotificationProducer() != null)
+        	{
+        		result.setNotificationMessages(settings.getNotificationProducer().
+        				produce((IncomingMessage)result.getProcessedMessage()));
+        	}
+        }
+        catch (Exception e)
+        {
+        	// don't bail on the whole process if we can't create notifications messages
+        	LOGGER.error("Failed to create notification messages.", e);
+        }
+    }
     
     /*
      * Copy the content of message into a configured folder.
