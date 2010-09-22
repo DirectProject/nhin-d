@@ -17,7 +17,6 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.directory.server.core.configuration.MutableAuthenticatorConfiguration;
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
 import org.apache.directory.server.core.schema.bootstrap.AbstractBootstrapSchema;
 import org.apache.directory.server.unit.AbstractServerTest;
@@ -26,8 +25,6 @@ import org.nhindirect.ldap.LDAPResearchTest;
 import org.nhindirect.ldap.PrivkeySchema;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
-
-import sun.security.krb5.internal.Authenticator;
 
 /**
  * Testcase using an embedded Apache Directory Server.

@@ -4,7 +4,6 @@ import javax.mail.internet.MimeMessage;
 
 import junit.framework.TestCase;
 import org.nhindirect.stagent.DefaultNHINDAgent;
-import org.nhindirect.stagent.DefaultNHINDAgent_ProcessIncoming_AsMessageEnvelope_Test.TestPlan;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.trust.DefaultTrustAnchorResolver;
