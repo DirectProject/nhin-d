@@ -117,6 +117,10 @@ The following scenarios are not at all an exhaustive list of deployment configur
 
 This use case describes a scenario where the HISP is only used for development testing.
 
+TODO: this configuration allows for the following scenario:
+# User 1 (nhin-d@demo.com) for whom the gateway and the agent are operating in pure HISP mode, managing security and trust, encrypting and signing messages.
+# User 2 (nhin-d@????) from whom the gateway and the agent expect to send and receive encrypted and signed messages, where security and trust are managed locally.
+
 Mailet configuration in this use case is....
 
 James needs to be configured with users. To do so, you must telnet into the James port and configure users. For example:
