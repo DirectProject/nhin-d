@@ -1,3 +1,25 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Umesh Madan     umeshma@microsoft.com
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.stagent.cert.impl;
 
 import java.io.InputStream;
@@ -18,6 +40,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.stagent.DefaultNHINDAgent;
+import org.nhindirect.stagent.cert.RevocationManager;
 
 import sun.security.x509.CRLDistributionPointsExtension;
 import sun.security.x509.DistributionPoint;
@@ -34,7 +57,7 @@ import sun.security.x509.X509CertImpl;
  * 
  * @author beau
  */
-public class CRLManager {
+public class CRLRevocationManager implements RevocationManager {
 
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultNHINDAgent.class);
     
@@ -61,7 +84,7 @@ public class CRLManager {
     /**
      * Default constructor.
      */
-    public CRLManager() 
+    public CRLRevocationManager() 
     { 
         this.crlCollection = new HashSet<CRL>();
     }
@@ -123,14 +146,12 @@ public class CRLManager {
         }
     }
 
-    /**
-     * Determine whether or not a certificate has been revoked.
+    /*
+     * (non-Javadoc)
      * 
-     * @param certificate
-     *            The certificate to inspect.
-     * @return true if the certificate has been revoked, false otherwise.
-     * @throws CRLException
+     * @see org.nhindirect.stagent.cert.RevocationManager#isRevoked(java.security.cert.X509Certificate)
      */
+    @Override
     public boolean isRevoked(X509Certificate certificate)
     {
         loadCRLs(certificate);
@@ -203,7 +224,8 @@ public class CRLManager {
      * 
      * @return the cache object.
      */
-    private static Map<String, X509CRLImpl> getCache() {
+    private static Map<String, X509CRLImpl> getCache() 
+    {
         return cache;
     }
     
@@ -214,7 +236,8 @@ public class CRLManager {
      *            the general name string.
      * @return a URI.
      */
-    public String getNameString(String generalNameString) {
+    protected String getNameString(String generalNameString) 
+    {
         return generalNameString.substring(9);
     }
 }

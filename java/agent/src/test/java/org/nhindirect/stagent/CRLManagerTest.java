@@ -1,10 +1,9 @@
 package org.nhindirect.stagent;
 
-import java.security.cert.X509Certificate;
-
 import junit.framework.TestCase;
 
-import org.nhindirect.stagent.cert.impl.CRLManager;
+import org.nhindirect.stagent.cert.RevocationManager;
+import org.nhindirect.stagent.cert.impl.CRLRevocationManager;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 
 /**
@@ -31,10 +30,10 @@ public class CRLManagerTest extends TestCase
         String internalKeystoreFile = workingDir + "keystore";
         KeyStoreCertificateStore service = new KeyStoreCertificateStore(internalKeystoreFile, KEY_STORE_PASSWORD, PRIVATE_KEY_PASSWORD);
 
-        CRLManager crlManager = new CRLManager() 
+        RevocationManager crlManager = new CRLRevocationManager() 
         {
             @Override
-            public String getNameString(String generalNameString) 
+            protected String getNameString(String generalNameString) 
             {
                 String s = generalNameString.substring(9);
                 return s.replace("http://JUNIT", "file://" + workingDir);
