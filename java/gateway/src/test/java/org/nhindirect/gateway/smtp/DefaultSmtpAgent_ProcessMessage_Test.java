@@ -6,14 +6,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import javax.mail.Message.RecipientType;
+
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.gateway.smtp.module.SmtpAgentConfigModule;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
+import org.nhindirect.stagent.mail.Message;
+import org.nhindirect.stagent.mail.notifications.NotificationHelper;
+import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 import org.nhindirect.stagent.provider.MockNHINDAgentProvider;
 import org.nhindirect.stagent.utils.InjectionUtils;
-import org.nhindirect.stagent.AgentError;
-import org.nhindirect.stagent.AgentException;
 import org.nhindirect.stagent.DefaultMessageEnvelope;
 import org.nhindirect.stagent.NHINDAgent;
 
@@ -101,6 +104,83 @@ public class DefaultSmtpAgent_ProcessMessage_Test extends TestCase
 		}.perform();
 	}
 	
+	public void testProcessValidIncomingMessageWithMDNRequest_AssertSuccessfulResultWithNoBounces() throws Exception 
+	{
+		new TestPlan() 
+		{			
+			protected String getMessageToProcess() throws Exception
+			{
+				return TestUtils.readMessageResource("PlainIncomingMessage.txt");
+			}	
+			
+			@Override
+			protected void performInner() throws Exception 
+			{
+				DefaultMessageEnvelope env = new DefaultMessageEnvelope(getMessageToProcess());
+				
+				// add the notification request
+				NotificationHelper.requestNotification(env.getMessage());
+				
+				MessageProcessResult result = agent.processMessage(env.getMessage(), env.getRecipients(), env.getSender());			
+				doAssertions(result);
+			}
+			
+			@Override
+			protected void doAssertions(MessageProcessResult result) throws Exception
+			{
+				assertNotNull(result);
+				assertNotNull(result.getProcessedMessage());
+				assertNotNull(result.getProcessedMessage().getMessage());
+				assertNotNull(result.getNotificationMessages());
+				assertTrue(result.getNotificationMessages().size() > 0);
+				
+				// get the first message
+				NotificationMessage notiMsg = result.getNotificationMessages().iterator().next();
+				
+				assertEquals(1, notiMsg.getRecipients(RecipientType.TO).length);
+				
+				Message processedMessage = result.getProcessedMessage().getMessage();
+				String processedSender = processedMessage.getFrom()[0].toString();
+				String notiRecip = notiMsg.getRecipients(RecipientType.TO)[0].toString();
+				// make sure the to and from are the same
+				assertEquals(processedSender, notiRecip);
+				
+			}
+			
+		}.perform();
+	}
+	
+	public void testProcessValidOutgoingMessageWithMDNRequest_AssertSuccessfulResult() throws Exception 
+	{
+		new TestPlan() 
+		{			
+			protected String getMessageToProcess() throws Exception
+			{
+				return TestUtils.readMessageResource("PlainOutgoingMessage.txt");
+			}	
+			
+			@Override
+			protected void performInner() throws Exception 
+			{
+				DefaultMessageEnvelope env = new DefaultMessageEnvelope(getMessageToProcess());
+				
+				// add the notification request
+				NotificationHelper.requestNotification(env.getMessage());
+				
+				MessageProcessResult result = agent.processMessage(env.getMessage(), env.getRecipients(), env.getSender());			
+				doAssertions(result);
+			}			
+			
+			@Override
+			protected void doAssertions(MessageProcessResult result) throws Exception
+			{
+				assertNotNull(result);
+				assertNotNull(result.getProcessedMessage());
+			}
+			
+		}.perform();
+	}	
+
 	public void testProcessValidOutgoingMessage_AssertSuccessfulResultWithNoBounces() throws Exception 
 	{
 		new TestPlan() 

@@ -24,7 +24,6 @@ package org.nhindirect.gateway.smtp;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.UUID;
 
 import javax.mail.internet.MimeMessage;
@@ -41,7 +40,6 @@ import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.OutgoingMessage;
 import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.Message;
-import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
 import com.google.inject.Inject;
@@ -182,7 +180,6 @@ public class DefaultSmtpAgent implements SmtpAgent
     {
     	
     	MessageEnvelope processedMessage = null;
-    	Collection<NotificationMessage> notificationMessages = null;
     	boolean isOutgoing = isOutgoing(envelope);
     	
 	

@@ -208,6 +208,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 				}
 				catch (Throwable t)
 				{
+					// don't kill the process if this fails
 					LOGGER.error("Error sending MDN message.", t);
 				}
 			}

@@ -39,6 +39,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.nhindirect.gateway.smtp.DomainPostmaster;
 import org.nhindirect.gateway.smtp.NotificationProducer;
+import org.nhindirect.gateway.smtp.NotificationSettings;
 import org.nhindirect.gateway.smtp.ProcessBadMessageSettings;
 import org.nhindirect.gateway.smtp.ProcessIncomingSettings;
 import org.nhindirect.gateway.smtp.ProcessOutgoingSettings;
@@ -197,7 +198,13 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			{
 				buildBadMessageSettings(docNode);
 			}	
-			
+			/*
+			 * MDN settings
+			 */
+			else if (docNode.getNodeName().equalsIgnoreCase("mdnsettings"))
+			{
+				buildMDNSettings(docNode);
+			}
 			
 			docNode = docNode.getNextSibling();
 		} while (docNode != null);
@@ -218,6 +225,35 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			agentModule = AgentModule.create(agentProvider);
 			
 		return Guice.createInjector(agentModule, SmtpAgentModule.create(smtpAgentProvider));
+	}
+	
+	/*
+	 * Builds the MDN settings
+	 */
+	private void buildMDNSettings(Node MDNNode)
+	{
+		if (MDNNode.getNodeType() == Node.ELEMENT_NODE)
+		{
+			Element settingsNode = (Element)MDNNode;
+			boolean autoResponse = Boolean.parseBoolean(settingsNode.getAttribute("autoResponse"));
+			String prodName = settingsNode.getAttribute("productName");
+			
+			String text = null;
+			Node childNode = MDNNode.getFirstChild();
+			do
+			{
+				if (childNode.getNodeType() == Node.ELEMENT_NODE)
+				{
+					if (childNode.getNodeName().equalsIgnoreCase("text"))
+						text = childNode.getFirstChild().getNodeValue();	
+				}
+				childNode = childNode.getNextSibling();
+			} while (childNode != null);
+			
+			
+			
+			notificationProducer = new NotificationProducer(new NotificationSettings(autoResponse, prodName, text));
+		}
 	}
 	
 	/*

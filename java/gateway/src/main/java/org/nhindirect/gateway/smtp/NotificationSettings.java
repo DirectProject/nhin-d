@@ -22,6 +22,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp;
 
+/**
+ * Notification settings for SmtpAgent.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public class NotificationSettings 
 {
 	private static final String DEFAULT_TEXT = "Security Agent";

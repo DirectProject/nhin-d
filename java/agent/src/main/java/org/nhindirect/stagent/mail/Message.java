@@ -36,6 +36,7 @@ import javax.mail.internet.MimeMessage;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
 /**
+ * Extension to Java MimeMessage with utility methods. 
  * @author Greg Meyer
  * @author Umesh Madan
  *
