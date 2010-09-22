@@ -1,8 +1,6 @@
 package org.nhindirect.ldap;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,13 +27,8 @@ import org.apache.directory.server.core.configuration.MutablePartitionConfigurat
 import org.apache.directory.server.core.schema.bootstrap.AbstractBootstrapSchema;
 import org.apache.directory.server.unit.AbstractServerTest;
 import org.apache.directory.shared.ldap.ldif.Entry;
-import org.apache.directory.shared.ldap.message.LockableAttributesImpl;
-import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.X509CertificateEx;
-import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
-import org.nhindirect.stagent.cert.impl.LdapCertUtilImpl;
-import org.nhindirect.stagent.cert.impl.LdapEnvironment;
 import org.nhindirect.stagent.cert.impl.LdapStoreConfiguration;
 import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
 

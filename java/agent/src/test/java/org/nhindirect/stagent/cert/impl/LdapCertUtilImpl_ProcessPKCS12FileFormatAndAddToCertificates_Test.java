@@ -1,6 +1,5 @@
 package org.nhindirect.stagent.cert.impl;
 
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -8,13 +7,11 @@ import java.io.FileInputStream;
 import java.lang.String;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import junit.framework.TestCase;
 
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cert.impl.LdapCertUtilImpl;
-import org.nhindirect.stagent.cert.impl.LdapCertUtilImpl_LdapSearch_Test.TestPlan;
 import org.nhindirect.stagent.utils.BaseTestPlan;
 
 /**

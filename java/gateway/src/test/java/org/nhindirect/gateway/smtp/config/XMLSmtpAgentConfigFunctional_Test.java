@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -33,10 +32,6 @@ import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.ldap.PrivkeySchema;
 import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.cert.CertificateResolver;
-import org.nhindirect.stagent.cert.X509CertificateEx;
-import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
-import org.nhindirect.stagent.cert.impl.LdapStoreConfiguration;
-import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
 
 import com.google.inject.Injector;
