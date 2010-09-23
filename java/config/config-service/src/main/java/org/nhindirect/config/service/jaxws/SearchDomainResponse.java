@@ -9,10 +9,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.nhindirect.config.store.Domain;
 
-@XmlRootElement(name = "listDomainsResponse", namespace = "http://nhind.org/config")
+@XmlRootElement(name = "searchDomainResponse", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "listDomainsResponse", namespace = "http://nhind.org/config")
-public class ListDomainsResponse {
+@XmlType(name = "searchDomainResponse", namespace = "http://nhind.org/config")
+public class SearchDomainResponse {
 
     @XmlElement(name = "return", namespace = "")
     private Collection<Domain> _return;

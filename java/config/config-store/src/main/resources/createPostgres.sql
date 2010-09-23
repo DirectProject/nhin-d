@@ -39,8 +39,8 @@ CREATE TABLE anchor (
 CREATE UNIQUE INDEX anchor_owner_tprint_idx ON anchor (owner, thumbprint);   
 
 CREATE TABLE address (
-	eMailAddress varchar(400) PRIMARY KEY,
-	id          bigserial,
+    id          bigserial PRIMARY KEY,
+	eMailAddress varchar(400) NOT NULL,
 	domainId    bigint NOT NULL references domain(id),
 	displayName varchar(100) NOT NULL,
 	createTime  timestamp with time zone DEFAULT now() NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE address (
 	type        varchar(64) NULL,
 	status      smallint DEFAULT 0 NOT NULL
 	);
-CREATE UNIQUE INDEX address_id_idx ON address (id);   	
+CREATE UNIQUE INDEX address_email_idx ON address (eMailAddress);   	
 
 
 	

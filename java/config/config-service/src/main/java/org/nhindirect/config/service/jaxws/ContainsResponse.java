@@ -1,28 +1,26 @@
 
 package org.nhindirect.config.service.jaxws;
 
-import java.util.Collection;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.nhindirect.config.store.Domain;
 
-@XmlRootElement(name = "listDomainsResponse", namespace = "http://nhind.org/config")
+@XmlRootElement(name = "containsResponse", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "listDomainsResponse", namespace = "http://nhind.org/config")
-public class ListDomainsResponse {
+@XmlType(name = "containsResponse", namespace = "http://nhind.org/config")
+public class ContainsResponse {
 
     @XmlElement(name = "return", namespace = "")
-    private Collection<Domain> _return;
+    private boolean _return;
 
     /**
      * 
      * @return
-     *     returns Collection<Domain>
+     *     returns boolean
      */
-    public Collection<Domain> getReturn() {
+    public boolean isReturn() {
         return this._return;
     }
 
@@ -31,7 +29,7 @@ public class ListDomainsResponse {
      * @param _return
      *     the value for the _return property
      */
-    public void setReturn(Collection<Domain> _return) {
+    public void setReturn(boolean _return) {
         this._return = _return;
     }
 

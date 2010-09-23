@@ -1,4 +1,4 @@
-package org.nhindirect.config.service.ws;
+package org.nhindirect.config.service.impl;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -20,31 +20,31 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import java.security.cert.X509Certificate;
-import java.util.List;
+import java.util.Collection;
 
-import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.xml.ws.FaultAction;
-
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.service.CertificateService;
 import org.nhindirect.config.service.ConfigurationServiceException;
-import org.nhindirect.config.store.dao.AddressDao;
+import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.EntityStatus;
+import org.nhindirect.config.store.dao.CertificateDao;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @WebService(endpointInterface = "org.nhindirect.config.service.CertificateService")
-public class CertificateServiceWS implements CertificateService {
+public class CertificateServiceImpl implements CertificateService {
 	
-	//TODO Should X509Certificate be replaced with X509CertificateEx?
+	//TODO Should Certificate be replaced with X509CertificateEx?
 	
-	private static final Log log = LogFactory.getLog(CertificateServiceWS.class);
+	private static final Log log = LogFactory.getLog(CertificateServiceImpl.class);
 	
-	private AddressDao dao;
+	private CertificateDao dao;
 	
-	public void setDao(AddressDao aDao) {
+	@Autowired
+	public void setDao(CertificateDao aDao) {
 		dao = aDao;
 	}
 	
@@ -52,62 +52,58 @@ public class CertificateServiceWS implements CertificateService {
 		log.info("CertificateService initialized");
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
-	public void addCertificates(List<X509Certificate> certs) throws ConfigurationServiceException {
+	public void addCertificates(Collection<Certificate> certs) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
-	public X509Certificate getCertificate(String owner, String thumbprint,
+	public Certificate getCertificate(String owner, String thumbprint,
 			CertificateGetOptions options) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
-	public List<X509Certificate> getCertificates(List<Long> certIds, CertificateGetOptions options) throws ConfigurationServiceException {
+	public Collection<Certificate> getCertificates(Collection<Long> certIds, CertificateGetOptions options) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
-	public List<X509Certificate> getCertificatesForOwner(String owner,
+	public Collection<Certificate> getCertificatesForOwner(String owner,
 			CertificateGetOptions options) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
-	public void setCertificateStatus(List<Long> certificateIDs,
+	public void setCertificateStatus(Collection<Long> certificateIDs,
 			EntityStatus status) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
 	public void setCertificateStatusForOwner(String owner, EntityStatus status)  throws ConfigurationServiceException{
 		// TODO Auto-generated method stub
 
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
-	public void removeCertificates(List<Long> certificateIds) throws ConfigurationServiceException {
+	public void removeCertificates(Collection<Long> certificateIds) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
 	public void removeCertificatesForOwner(String owner) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
-	public List<X509Certificate> ListCertificates(long lastCertificateID,
+	public Collection<Certificate> listCertificates(long lastCertificateID,
 			int maxResults, CertificateGetOptions options) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public boolean contains(Certificate cert) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

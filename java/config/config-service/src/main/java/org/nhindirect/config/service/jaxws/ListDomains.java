@@ -7,18 +7,18 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement(name = "ListDomains", namespace = "http://nhind.org/config")
+@XmlRootElement(name = "listDomains", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ListDomains", namespace = "http://nhind.org/config", propOrder = {
+@XmlType(name = "listDomains", namespace = "http://nhind.org/config", propOrder = {
     "names",
-    "maxCount"
+    "maxResults"
 })
 public class ListDomains {
 
     @XmlElement(name = "names", namespace = "")
     private String names;
-    @XmlElement(name = "maxCount", namespace = "")
-    private int maxCount;
+    @XmlElement(name = "maxResults", namespace = "")
+    private int maxResults;
 
     /**
      * 
@@ -43,17 +43,17 @@ public class ListDomains {
      * @return
      *     returns int
      */
-    public int getMaxCount() {
-        return this.maxCount;
+    public int getMaxResults() {
+        return this.maxResults;
     }
 
     /**
      * 
-     * @param maxCount
-     *     the value for the maxCount property
+     * @param maxResults
+     *     the value for the maxResults property
      */
-    public void setMaxCount(int maxCount) {
-        this.maxCount = maxCount;
+    public void setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
     }
 
 }

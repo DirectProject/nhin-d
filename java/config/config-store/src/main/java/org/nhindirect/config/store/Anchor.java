@@ -158,6 +158,12 @@ public class Anchor {
 		this.outgoing = outgoing;
 	}
 	
+	public long getCertificateId() {
+		return certificateId;
+	}
+	public void setCertificateId(long certificateId) {
+		this.certificateId = certificateId;
+	}
 	private void loadCertFromData() throws CertificateException {
 		X509Certificate cert = null;
 		try {

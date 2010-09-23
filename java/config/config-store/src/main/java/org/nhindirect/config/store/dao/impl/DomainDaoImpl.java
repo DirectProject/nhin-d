@@ -22,6 +22,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -31,10 +33,13 @@ import javax.persistence.Query;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
+import org.nhindirect.config.store.dao.AddressDao;
 import org.nhindirect.config.store.dao.DomainDao;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +52,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class DomainDaoImpl implements DomainDao {
 	
     @PersistenceContext
+    @Autowired
     private EntityManager entityManager;
+    
+    @Autowired
+    private AddressDao addressDao;
 
     private static final Log log = LogFactory.getLog(DomainDaoImpl.class);
        
@@ -55,7 +64,7 @@ public class DomainDaoImpl implements DomainDao {
 	/* (non-Javadoc)
 	 * @see org.nhindirect.config.store.dao.DomainDao#count()
 	 */
-    // @Transactional(readOnly = true)
+    @Transactional(readOnly = true)
 	public int count() {
 		if (log.isDebugEnabled()) log.debug("Enter");
 		Long result = (Long) entityManager.createQuery("select count(d) from Domain d").getSingleResult();
@@ -70,18 +79,47 @@ public class DomainDaoImpl implements DomainDao {
 	public void add(Domain item) {
     	if (log.isDebugEnabled()) log.debug("Enter");
 	    
+    	// Save and clear Address information until the Domain is saved.
+    	// This is really something that JPA should be doing, but doesn't seem
+    	// to work.
     	if (item != null) {
-    		item.setCreateTime(Calendar.getInstance());
-    		item.setUpdateTime(item.getCreateTime());
-    		
+	    	String pm = item.getPostMasterEmail();
+	    	Long   pmId = item.getPostmasterAddressId();
+	    	Collection<Address> addresses = item.getAddresses();
+	    	if ((pmId != null) && 
+	    		(pmId.longValue() == 0)) {
+	    		item.setPostmasterAddressId((Long)null);
+	    	}
+	    	item.setAddresses(null);	
 
-    		// Avoid a Constraint Violation if we have 0L as an id
-    		if (((item.getPostmasterEmailAddressId()) != null) &&
-    			(item.getPostmasterEmailAddressId().longValue() == 0)) {
-    			item.setPostmasterEmailAddressId((Long)null);
-    		}	 
+	    	item.setCreateTime(Calendar.getInstance());
+    		item.setUpdateTime(item.getCreateTime());		
     		
-	    	entityManager.persist(item);
+    		if (log.isDebugEnabled()) log.debug("Calling JPA to persist the Domain");
+	    	
+    		entityManager.persist(item);
+	    	entityManager.flush();
+	    	
+	    	if (log.isDebugEnabled()) log.debug("Persisted the bare Domain");
+	    	
+	    	boolean needUpdate = false;
+	    	if ((addresses != null) &&
+		    		(addresses.size() > 0)) {
+		    		item.setAddresses(addresses);
+		    		needUpdate = true;
+		    }
+	    	if ((pm != null) && 
+	    		(pm.length() > 0)) {
+	    		item.setPostMasterEmail(pm);
+	    		needUpdate = true;
+	    	}
+
+	    	if (needUpdate) {
+	    		if (log.isDebugEnabled()) log.debug("Updating the domain with Address info");
+	    		update(item);
+	    	}
+	    	
+	    	if (log.isDebugEnabled()) log.debug("Returned from JPA: Domain ID=" + item.getId());
 	    }
 		
     	if (log.isDebugEnabled()) log.debug("Exit");
@@ -95,14 +133,50 @@ public class DomainDaoImpl implements DomainDao {
     	if (log.isDebugEnabled()) log.debug("Enter");
 	    
     	if (item != null) {
-    		Domain inDb = entityManager.find(Domain.class, item.getId());
-    		inDb.setDomainName(item.getDomainName());
-    		inDb.setPostmasterEmailAddressId(item.getPostmasterEmailAddressId());
-    		inDb.setStatus(item.getStatus());
-    		inDb.setUpdateTime(Calendar.getInstance());
-    		entityManager.merge(inDb);
+    		item.setUpdateTime(Calendar.getInstance());
+    		
+    		if ((item.getPostMasterEmail() != null) &&
+    			(item.getPostMasterEmail().length() > 0)) {
+    			
+    			boolean found = false;
+    			Iterator<Address> addrs = item.getAddresses().iterator();
+    			while (addrs.hasNext()) {
+    				if (addrs.next().getEmailAddress().equals(item.getPostMasterEmail())) {
+    					found = true;
+    					break;
+    				}
+    			}
+    			if (!found) {
+    				if (log.isDebugEnabled()) log.debug("Adding new postmaster email address: " + item.getPostMasterEmail());
+    				item.getAddresses().add(new Address(item, item.getPostMasterEmail(), "Postmaster"));
+    			}
+    		}
+    		
+    		for (Address address : item.getAddresses()) {
+    			if ((address.getId() == null) || 
+    			    (address.getId().longValue() == 0)) {
+    				if (log.isDebugEnabled()) log.debug("Adding " + address.toString() + " to database");
+    				addressDao.add(address);
+    			}
+    		}
+    		
+    		// Set the correct ID in the Domain.postmasterAddressId field, if necessary.
+    		if ((item.getPostmasterAddressId() == null) ||
+    			(item.getPostmasterAddressId().longValue() == 0L)) {
+	    		Iterator<Address> addrs = item.getAddresses().iterator();
+				while (addrs.hasNext()) {
+					Address address = addrs.next();
+					if (address.getDisplayName().equals("Postmaster")) {
+						if (log.isDebugEnabled()) log.debug("Linking domain's postmaster email address to " + address.toString());
+						item.setPostmasterAddressId(address.getId());
+						break;
+					}
+				}
+    		}
+    		if (log.isDebugEnabled()) log.debug("Calling JPA to perform update...");
+    		entityManager.merge(item);
     	}
-    	
+
 	    if (log.isDebugEnabled()) log.debug("Exit");
 	}
 
@@ -247,6 +321,70 @@ public class DomainDaoImpl implements DomainDao {
 
 	public void setEntityManager(EntityManager entityManager) {
 		this.entityManager = entityManager;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Domain> searchDomain(String name, EntityStatus status) {
+    	if (log.isDebugEnabled()) log.debug("Enter");
+    	
+    	List<Domain> result = null;
+    	StringBuffer query = new StringBuffer("");
+    	Query select = null;
+    	if (name != null) {
+    		String search = name.replace('*', '%');
+        	search.replace('?', '_');
+        	query.append("SELECT d from Domain d WHERE d.domainName LIKE ?1 ");
+        	if (status != null) {
+        		query.append("AND d.status = ?2");
+        		select = entityManager.createQuery(query.toString());
+        		select.setParameter(1, search);
+        		select.setParameter(2, status);
+        	}
+        	else {
+        		select = entityManager.createQuery(query.toString());
+        		select.setParameter(1, search);
+        	}
+    	}
+    	else {
+        	if (status != null) {
+        		query.append("SELECT d from Domain d WHERE d.status LIKE ?1");
+        		select = entityManager.createQuery(query.toString());
+        		select.setParameter(1, status);
+        	}
+        	else {
+        		select = entityManager.createQuery("SELECT d from Domain d");       		
+        	}
+        		
+    	}
+    	
+		result = (List<Domain>) select.getResultList();
+		if (result == null) {
+			result = new ArrayList<Domain>();
+		}
+    	
+	    if (log.isDebugEnabled()) log.debug("Exit");
+	    return result;
+	}
+	
+	public Domain getDomain(Long id) {
+		if (log.isDebugEnabled()) log.debug("Enter");
+		
+		Domain result = null;
+		if ((id != null) &&
+			(id.longValue() > 0)) {
+			result = entityManager.find(Domain.class, id);
+		}
+		
+		if (log.isDebugEnabled()) log.debug("Exit");
+		return result;
+	}
+	
+	public void setAddressDao(AddressDao aDao) {
+		addressDao = aDao;
+	}
+	
+	private AddressDao getAddressDao() {
+		return addressDao;
 	}
 
 }

@@ -1,7 +1,7 @@
 
 package org.nhindirect.config.service.jaxws;
 
-import java.util.List;
+import java.util.Collection;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -14,25 +14,25 @@ import org.nhindirect.config.store.Address;
 @XmlType(name = "addAddress", namespace = "http://nhind.org/config")
 public class AddAddress {
 
-    @XmlElement(name = "arg0", namespace = "")
-    private List<Address> arg0;
+    @XmlElement(name = "address", namespace = "")
+    private Collection<Address> address;
 
     /**
      * 
      * @return
-     *     returns List<Address>
+     *     returns Collection<Address>
      */
-    public List<Address> getArg0() {
-        return this.arg0;
+    public Collection<Address> getAddress() {
+        return this.address;
     }
 
     /**
      * 
-     * @param arg0
-     *     the value for the arg0 property
+     * @param address
+     *     the value for the address property
      */
-    public void setArg0(List<Address> arg0) {
-        this.arg0 = arg0;
+    public void setAddress(Collection<Address> address) {
+        this.address = address;
     }
 
 }

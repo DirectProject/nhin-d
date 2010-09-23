@@ -1,88 +1,89 @@
-package org.nhindirect.config.service.ws;
+package org.nhindirect.config.service.impl;
 
-import java.util.List;
+import java.util.Collection;
 
-import javax.jws.WebMethod;
-import javax.jws.WebService;
-import javax.xml.ws.FaultAction;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.service.AnchorService;
 import org.nhindirect.config.service.ConfigurationServiceException;
 import org.nhindirect.config.store.Anchor;
 import org.nhindirect.config.store.EntityStatus;
+import org.nhindirect.config.store.dao.AnchorDao;
+import org.springframework.beans.factory.annotation.Autowired;
 
+public class AnchorServiceImpl implements AnchorService {
 
-@WebService(endpointInterface = "org.nhindirect.config.service.AnchorService")
-public class AnchorServiceWS implements AnchorService {
-
-	@FaultAction(className=ConfigurationServiceException.class)
-	public void addAnchors(List<Anchor> anchors)
+	private static final Log log = LogFactory.getLog(AnchorServiceImpl.class);
+	
+	private AnchorDao dao;
+	
+	public void addAnchors(Collection<Anchor> anchors)
 			throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
 	public Anchor getAnchor(String owner, String thumbprint,
 			CertificateGetOptions options) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
-	public List<Anchor> getAnchors(List<Long> anchorIds,
+	public Collection<Anchor> getAnchors(Collection<Long> anchorIds,
 			CertificateGetOptions options) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
-	public List<Anchor> getAnchorsForOwner(String owner,
+	public Collection<Anchor> getAnchorsForOwner(String owner,
 			CertificateGetOptions options) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
-	public List<Anchor> getIncomingAnchors(String owner,
+	public Collection<Anchor> getIncomingAnchors(String owner,
 			CertificateGetOptions options) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
-	public List<Anchor> getOutgoingAnchors(String owner,
+	public Collection<Anchor> getOutgoingAnchors(String owner,
 			CertificateGetOptions options) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
 	public void setAnchorStatusForOwner(String owner, EntityStatus status)
 			throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 
 	}
 	
-	@FaultAction(className=ConfigurationServiceException.class)
-	public List<Anchor> ListAnchors(Long lastAnchorID, int maxResults,
+	public Collection<Anchor> listAnchors(Long lastAnchorID, int maxResults,
 			CertificateGetOptions options) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
-	public void removeAnchors(List<Long> anchorIds)
+	public void removeAnchors(Collection<Long> anchorIds)
 			throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 
 	}
 
-	@FaultAction(className=ConfigurationServiceException.class)
 	public void removeAnchorsForOwner(String owner)
 			throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Autowired
+	public void setDao(AnchorDao dao) {
+		this.dao = dao;
+	}
+
+	public AnchorDao getDao() {
+		return dao;
 	}
 
 }

@@ -6,40 +6,40 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.nhindirect.config.service.ws.CertificateGetOptions;
+import org.nhindirect.config.service.impl.CertificateGetOptions;
 
-@XmlRootElement(name = "ListCertificates", namespace = "http://nhind.org/config")
+@XmlRootElement(name = "listCertificates", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ListCertificates", namespace = "http://nhind.org/config", propOrder = {
-    "arg0",
-    "arg1",
-    "arg2"
+@XmlType(name = "listCertificates", namespace = "http://nhind.org/config", propOrder = {
+    "lastCertificateId",
+    "maxResutls",
+    "options"
 })
 public class ListCertificates {
 
-    @XmlElement(name = "arg0", namespace = "")
-    private long arg0;
-    @XmlElement(name = "arg1", namespace = "")
-    private int arg1;
-    @XmlElement(name = "arg2", namespace = "")
-    private CertificateGetOptions arg2;
+    @XmlElement(name = "lastCertificateId", namespace = "")
+    private long lastCertificateId;
+    @XmlElement(name = "maxResutls", namespace = "")
+    private int maxResutls;
+    @XmlElement(name = "options", namespace = "")
+    private CertificateGetOptions options;
 
     /**
      * 
      * @return
      *     returns long
      */
-    public long getArg0() {
-        return this.arg0;
+    public long getLastCertificateId() {
+        return this.lastCertificateId;
     }
 
     /**
      * 
-     * @param arg0
-     *     the value for the arg0 property
+     * @param lastCertificateId
+     *     the value for the lastCertificateId property
      */
-    public void setArg0(long arg0) {
-        this.arg0 = arg0;
+    public void setLastCertificateId(long lastCertificateId) {
+        this.lastCertificateId = lastCertificateId;
     }
 
     /**
@@ -47,17 +47,17 @@ public class ListCertificates {
      * @return
      *     returns int
      */
-    public int getArg1() {
-        return this.arg1;
+    public int getMaxResutls() {
+        return this.maxResutls;
     }
 
     /**
      * 
-     * @param arg1
-     *     the value for the arg1 property
+     * @param maxResutls
+     *     the value for the maxResutls property
      */
-    public void setArg1(int arg1) {
-        this.arg1 = arg1;
+    public void setMaxResutls(int maxResutls) {
+        this.maxResutls = maxResutls;
     }
 
     /**
@@ -65,17 +65,17 @@ public class ListCertificates {
      * @return
      *     returns CertificateGetOptions
      */
-    public CertificateGetOptions getArg2() {
-        return this.arg2;
+    public CertificateGetOptions getOptions() {
+        return this.options;
     }
 
     /**
      * 
-     * @param arg2
-     *     the value for the arg2 property
+     * @param options
+     *     the value for the options property
      */
-    public void setArg2(CertificateGetOptions arg2) {
-        this.arg2 = arg2;
+    public void setOptions(CertificateGetOptions options) {
+        this.options = options;
     }
 
 }

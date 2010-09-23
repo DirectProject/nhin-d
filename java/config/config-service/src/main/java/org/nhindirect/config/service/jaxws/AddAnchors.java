@@ -1,7 +1,7 @@
 
 package org.nhindirect.config.service.jaxws;
 
-import java.util.List;
+import java.util.Collection;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -14,25 +14,25 @@ import org.nhindirect.config.store.Anchor;
 @XmlType(name = "addAnchor", namespace = "http://nhind.org/config")
 public class AddAnchors {
 
-    @XmlElement(name = "arg0", namespace = "")
-    private List<Anchor> arg0;
+    @XmlElement(name = "anchor", namespace = "")
+    private Collection<Anchor> anchor;
 
     /**
      * 
      * @return
-     *     returns List<Anchor>
+     *     returns Collection<Anchor>
      */
-    public List<Anchor> getArg0() {
-        return this.arg0;
+    public Collection<Anchor> getAnchor() {
+        return this.anchor;
     }
 
     /**
      * 
-     * @param arg0
-     *     the value for the arg0 property
+     * @param anchor
+     *     the value for the anchor property
      */
-    public void setArg0(List<Anchor> arg0) {
-        this.arg0 = arg0;
+    public void setAnchor(Collection<Anchor> anchor) {
+        this.anchor = anchor;
     }
 
 }

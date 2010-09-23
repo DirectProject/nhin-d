@@ -7,35 +7,35 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement(name = "ListAddresss", namespace = "http://nhind.org/config")
+@XmlRootElement(name = "listAddresss", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ListAddresss", namespace = "http://nhind.org/config", propOrder = {
-    "arg0",
-    "arg1"
+@XmlType(name = "listAddresss", namespace = "http://nhind.org/config", propOrder = {
+    "lastEmailAddress",
+    "maxResults"
 })
 public class ListAddresss {
 
-    @XmlElement(name = "arg0", namespace = "")
-    private String arg0;
-    @XmlElement(name = "arg1", namespace = "")
-    private int arg1;
+    @XmlElement(name = "lastEmailAddress", namespace = "")
+    private String lastEmailAddress;
+    @XmlElement(name = "maxResults", namespace = "")
+    private int maxResults;
 
     /**
      * 
      * @return
      *     returns String
      */
-    public String getArg0() {
-        return this.arg0;
+    public String getLastEmailAddress() {
+        return this.lastEmailAddress;
     }
 
     /**
      * 
-     * @param arg0
-     *     the value for the arg0 property
+     * @param lastEmailAddress
+     *     the value for the lastEmailAddress property
      */
-    public void setArg0(String arg0) {
-        this.arg0 = arg0;
+    public void setLastEmailAddress(String lastEmailAddress) {
+        this.lastEmailAddress = lastEmailAddress;
     }
 
     /**
@@ -43,17 +43,17 @@ public class ListAddresss {
      * @return
      *     returns int
      */
-    public int getArg1() {
-        return this.arg1;
+    public int getMaxResults() {
+        return this.maxResults;
     }
 
     /**
      * 
-     * @param arg1
-     *     the value for the arg1 property
+     * @param maxResults
+     *     the value for the maxResults property
      */
-    public void setArg1(int arg1) {
-        this.arg1 = arg1;
+    public void setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
     }
 
 }
