@@ -8,16 +8,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.nhindirect.config.store.EntityStatus;
 
-@XmlRootElement(name = "setCertificateStatusForOwner", namespace = "http://nhind.org/config")
+@XmlRootElement(name = "searchDomain", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "setCertificateStatusForOwner", namespace = "http://nhind.org/config", propOrder = {
-    "owner",
+@XmlType(name = "searchDomain", namespace = "http://nhind.org/config", propOrder = {
+    "name",
     "status"
 })
-public class SetCertificateStatusForOwner {
+public class SearchDomain {
 
-    @XmlElement(name = "owner", namespace = "")
-    private String owner;
+    @XmlElement(name = "name", namespace = "")
+    private String name;
     @XmlElement(name = "status", namespace = "")
     private EntityStatus status;
 
@@ -26,17 +26,17 @@ public class SetCertificateStatusForOwner {
      * @return
      *     returns String
      */
-    public String getOwner() {
-        return this.owner;
+    public String getName() {
+        return this.name;
     }
 
     /**
      * 
-     * @param owner
-     *     the value for the owner property
+     * @param name
+     *     the value for the name property
      */
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**

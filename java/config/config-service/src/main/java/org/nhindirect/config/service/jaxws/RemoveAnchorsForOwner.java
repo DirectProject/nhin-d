@@ -12,25 +12,25 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "removeAnchorsForOwner", namespace = "http://nhind.org/config")
 public class RemoveAnchorsForOwner {
 
-    @XmlElement(name = "arg0", namespace = "")
-    private String arg0;
+    @XmlElement(name = "owner", namespace = "")
+    private String owner;
 
     /**
      * 
      * @return
      *     returns String
      */
-    public String getArg0() {
-        return this.arg0;
+    public String getOwner() {
+        return this.owner;
     }
 
     /**
      * 
-     * @param arg0
-     *     the value for the arg0 property
+     * @param owner
+     *     the value for the owner property
      */
-    public void setArg0(String arg0) {
-        this.arg0 = arg0;
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
 }

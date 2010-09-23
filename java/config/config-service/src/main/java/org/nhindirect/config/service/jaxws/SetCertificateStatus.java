@@ -1,7 +1,7 @@
 
 package org.nhindirect.config.service.jaxws;
 
-import java.util.List;
+import java.util.Collection;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -12,32 +12,32 @@ import org.nhindirect.config.store.EntityStatus;
 @XmlRootElement(name = "setCertificateStatus", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "setCertificateStatus", namespace = "http://nhind.org/config", propOrder = {
-    "arg0",
-    "arg1"
+    "certificateIds",
+    "status"
 })
 public class SetCertificateStatus {
 
-    @XmlElement(name = "arg0", namespace = "")
-    private List<Long> arg0;
-    @XmlElement(name = "arg1", namespace = "")
-    private EntityStatus arg1;
+    @XmlElement(name = "certificateIds", namespace = "")
+    private Collection<Long> certificateIds;
+    @XmlElement(name = "status", namespace = "")
+    private EntityStatus status;
 
     /**
      * 
      * @return
-     *     returns List<Long>
+     *     returns Collection<Long>
      */
-    public List<Long> getArg0() {
-        return this.arg0;
+    public Collection<Long> getCertificateIds() {
+        return this.certificateIds;
     }
 
     /**
      * 
-     * @param arg0
-     *     the value for the arg0 property
+     * @param certificateIds
+     *     the value for the certificateIds property
      */
-    public void setArg0(List<Long> arg0) {
-        this.arg0 = arg0;
+    public void setCertificateIds(Collection<Long> certificateIds) {
+        this.certificateIds = certificateIds;
     }
 
     /**
@@ -45,17 +45,17 @@ public class SetCertificateStatus {
      * @return
      *     returns EntityStatus
      */
-    public EntityStatus getArg1() {
-        return this.arg1;
+    public EntityStatus getStatus() {
+        return this.status;
     }
 
     /**
      * 
-     * @param arg1
-     *     the value for the arg1 property
+     * @param status
+     *     the value for the status property
      */
-    public void setArg1(EntityStatus arg1) {
-        this.arg1 = arg1;
+    public void setStatus(EntityStatus status) {
+        this.status = status;
     }
 
 }
