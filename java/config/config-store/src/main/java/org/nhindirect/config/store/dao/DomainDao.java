@@ -19,6 +19,7 @@ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWE
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
 */
+import java.util.Collection;
 import java.util.List;
 
 import org.nhindirect.config.store.Domain;
@@ -37,6 +38,8 @@ public interface DomainDao {
 	public void delete(String name);
 	
 	public Domain getDomainByName(String domain);
+	
+	public Domain getDomain(Long id);
 	
 	public List<Domain> searchDomain(String name, EntityStatus status);
 	
