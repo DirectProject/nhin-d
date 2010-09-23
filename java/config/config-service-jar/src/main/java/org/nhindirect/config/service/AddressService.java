@@ -19,33 +19,36 @@ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWE
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
 */
+import java.util.Collection;
 import java.util.List;
 
 import javax.jws.WebMethod;
+import javax.jws.WebParam;
 import javax.jws.WebService;
 
 import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.EntityStatus;
 
-@WebService(name = "AddressService",targetNamespace = "http://nhind.org/config")
 public interface AddressService {
 
     @WebMethod(operationName = "addAddress", action = "urn:AddAddress")
-	void addAddress(List<Address> Address) throws ConfigurationServiceException;
+	void addAddress(@WebParam(name = "address") Collection<Address> address) throws ConfigurationServiceException;
     
     @WebMethod(operationName = "updateAddress", action = "urn:UpdateAddress")
-	void updateAddress(Address Address) throws ConfigurationServiceException;;
+	void updateAddress(@WebParam(name = "address") Address address) throws ConfigurationServiceException;;
     
     @WebMethod(operationName = "getAddressCount", action = "urn:GetAddressCount")
 	int  getAddressCount() throws ConfigurationServiceException;;
     
     @WebMethod(operationName = "getAddresss", action = "urn:GetAddresss")
-	List<Address> getAddress(List<String> AddressNames, EntityStatus status) throws ConfigurationServiceException;;
+	Collection<Address> getAddress(@WebParam(name = "emailAddress") Collection<String> addressNames, 
+			                       @WebParam(name = "status") EntityStatus status) throws ConfigurationServiceException;;
     
     @WebMethod(operationName = "removeAddress", action = "urn:RemoveAddress")
-	void removeAddress(String AddressName) throws ConfigurationServiceException;;
+	void removeAddress(@WebParam(name = "emailAddress") String addressName) throws ConfigurationServiceException;;
     
-    @WebMethod(operationName = "ListAddresss", action = "urn:ListAddresss")
-	List<Address> ListAddresss(String lastAddressName, int maxResults) throws ConfigurationServiceException;;
+    @WebMethod(operationName = "listAddresss", action = "urn:ListAddresss")
+	Collection<Address> listAddresss(@WebParam(name = "lastEmailAddress") String lastAddressName, 
+			                         @WebParam(name = "maxResults") int maxResults) throws ConfigurationServiceException;;
 }
 

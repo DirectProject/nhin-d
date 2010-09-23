@@ -20,11 +20,10 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import java.sql.Timestamp;
-
 import java.util.Calendar;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -36,6 +35,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlTransient;
 
 
 @Entity
@@ -47,7 +51,7 @@ public class Address {
 	
 	private String emailAddress;
 	
-	private long id;
+	private Long id;
 	
 	private Domain domain;
 	
@@ -59,7 +63,6 @@ public class Address {
 
 	private EntityStatus status;
 	
-	@Column(name="type",length=64)
 	private String type;
 	
     public Address()
@@ -112,16 +115,21 @@ public class Address {
 	@Column(name="id",nullable=false)
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE)
-	public long getId() {
+	@XmlAttribute
+	public Long getId() {
+		if (id == null) {
+			setId(new Long(0L));
+		}
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	@ManyToOne(optional=false,fetch=FetchType.EAGER)
+	@ManyToOne(optional=false, fetch=FetchType.EAGER)
 	@JoinColumn(name="domainId")
+	@XmlTransient
 	public Domain getDomain() {
 		return domain;
 	}
@@ -176,6 +184,18 @@ public class Address {
 
 	public void setType(String aType) {
 		type = aType;
+	}
+	
+	@Override
+	public String toString() {
+		return "[ID: " + getId() +
+			   " | Address: " + getEmailAddress() +
+		       " | For: "    + getDisplayName() +
+		       " | Domain: " + getDomain().getDomainName() + "]";
+	}
+	
+	public void afterUnmarshal(Unmarshaller u, Object parent) {
+	    setDomain((Domain) parent);
 	}
 
 }

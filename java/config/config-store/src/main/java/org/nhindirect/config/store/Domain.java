@@ -21,12 +21,15 @@ THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -39,6 +42,10 @@ import javax.persistence.Temporal;
 import javax.persistence.CascadeType;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
 
 
 @Entity
@@ -46,17 +53,22 @@ import javax.persistence.Transient;
 /**
  * The JPA Domain class
  */
+@XmlRootElement
 public class Domain {
 	
-	private String domainName;
+	private String   domainName;
 	
 	private Calendar createTime;
 
 	private Calendar updateTime;
 
-	private Long     postmasterAddressId;
+	private Long  postmasterAddressId;
 	
-	private long id;	
+	private String postmasterAddress;
+	
+	private Collection<Address> addresses;
+	
+	private Long id;	
 	
 	private EntityStatus status = EntityStatus.NEW;
 	
@@ -75,11 +87,15 @@ public class Domain {
 	@Column(name="id",nullable=false)
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE)
-	public long getId() {
+	@XmlAttribute
+	public Long getId() {
+		if (id == null) {
+			setId(new Long(0L));
+		}
 		return id;
 	}
 	
-	public void setId(long anId) {
+	public void setId(Long anId) {
 		id = anId;
 	}
 
@@ -92,7 +108,15 @@ public class Domain {
 	public Calendar getCreateTime() {
 		return createTime;
 	}
-
+	
+	@Column(name="postmasterAddressId")
+	public Long getPostmasterAddressId() {
+		return postmasterAddressId;
+	}
+	
+	public void setPostmasterAddressId(Long anId) {
+		postmasterAddressId = anId;
+	}
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	public Calendar getUpdateTime() {
@@ -101,15 +125,11 @@ public class Domain {
 
 	@Column(name="status")
 	@Enumerated
+	@XmlAttribute
 	public EntityStatus getStatus() {
 		return status;
 	}
 	
-	@Column(name="postmasterAddressId")
-	public Long getPostmasterEmailAddressId()
-	{
-		return postmasterAddressId;
-	}
 
 	
 	public void setDomainName(String aName) {
@@ -130,25 +150,58 @@ public class Domain {
 	public void setStatus(EntityStatus aStatus) {
 		status = aStatus;
 	}
+	
+	/**
+	 * If we have an email address id, then search through the collection of addresses to
+	 * find an id match and return it.
+	 * @return
+	 */
+	@Transient
+	public String getPostMasterEmail() {
+		return postmasterAddress;
+	}
+	
+	/**
+	 * Add the address unless it already exists, in which case, just set the postmasterEmailAddressId 
+	 * appropriately
+	 * @param email
+	 */
+	public void setPostMasterEmail(String email) {
+		if (email != null) {
+			boolean matched = false;
+			
+			// Check to see if we've already got the address
+			for (Address address : getAddresses()) {
+				if (address.getEmailAddress().equals(email)) {
+					setPostmasterAddressId(address.getId());
+					matched = true;
+					break;
+				}
+			}
+			// It's a new address so add it
+			if (!matched) {
+				Address postmaster = new Address(this, email);
+				postmaster.setDisplayName("Postmaster");
+				postmaster.setStatus(EntityStatus.NEW);
+				getAddresses().add(postmaster);
+				setPostmasterAddressId(postmaster.getId());
+			}
+		}
+		return;
+	}
+	
+	
+	@OneToMany(orphanRemoval=true, fetch=FetchType.EAGER, mappedBy="domain")
+	@XmlElement(name="address")
+	public Collection<Address> getAddresses() {
+		if (addresses == null) addresses = new ArrayList<Address>() ;
+		return addresses;
+	}
 
-	public void setPostmasterEmailAddressId(Address aPostmaster)
-	{
-		if (aPostmaster instanceof Address)
-		{
-			postmasterAddressId = aPostmaster.getId();
-		}
-		else
-		{
-			postmasterAddressId = null;
-		}
+	public void setAddresses(Collection<Address> addresses) {
+		this.addresses = addresses;
 	}
-	
-	public void setPostmasterEmailAddressId(Long anId)
-	{
-		postmasterAddressId = anId;
-	}
-	
-	
+
 	@Transient
 	public boolean isValid() {
 		boolean result = false;
@@ -163,6 +216,15 @@ public class Domain {
 		
 		return result;
 	}
+	
+	@Override
+	public String toString() {
+		return "[ID: " + getId() +
+			   " | Domain: " + getDomainName() +
+			   " | Status: " + getStatus().toString() + 
+			   " | Addresses: " + getAddresses().size() + "]";
+	}
+	
 	
 
 }

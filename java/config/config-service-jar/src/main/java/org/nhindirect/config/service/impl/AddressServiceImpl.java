@@ -1,4 +1,4 @@
-package org.nhindirect.config.service.ws;
+package org.nhindirect.config.service.impl;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -19,6 +19,7 @@ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWE
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
 */
+import java.util.Collection;
 import java.util.List;
 
 import javax.jws.WebMethod;
@@ -36,10 +37,9 @@ import org.nhindirect.config.store.dao.AddressDao;
 import org.nhindirect.config.store.dao.DomainDao;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@WebService(endpointInterface = "org.nhindirect.config.service.AddressService")
-public class AddressServiceWS implements AddressService {
+public class AddressServiceImpl implements AddressService {
 
-	private static final Log log = LogFactory.getLog(AddressServiceWS.class);
+	private static final Log log = LogFactory.getLog(AddressServiceImpl.class);
 	
 	private AddressDao dao;
 	
@@ -47,39 +47,34 @@ public class AddressServiceWS implements AddressService {
 		log.info("AddressService initialized");
 	}
 	
-	@FaultAction(className=ConfigurationFault.class)
-	public void addAddress(List<Address> Address) throws ConfigurationServiceException {
+	
+	public void addAddress(Collection<Address> address) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 
 	}
 
-	@FaultAction(className=ConfigurationFault.class)
-	public void updateAddress(Address Address) throws ConfigurationServiceException {
+	public void updateAddress(Address address) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 
 	}
 
-	@FaultAction(className=ConfigurationFault.class)
 	public int getAddressCount() throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	@FaultAction(className=ConfigurationFault.class)
-	public List<Address> getAddress(List<String> AddressNames,
+	public Collection<Address> getAddress(Collection<String> addressNames,
 			EntityStatus status) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@FaultAction(className=ConfigurationFault.class)
-	public void removeAddress(String AddressName) throws ConfigurationServiceException {
+	public void removeAddress(String addressName) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 
 	}
 
-	@FaultAction(className=ConfigurationFault.class)
-	public List<Address> ListAddresss(String lastAddressName, int maxResults) throws ConfigurationServiceException {
+	public Collection<Address> listAddresss(String lastAddressName, int maxResults) throws ConfigurationServiceException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -18,23 +18,43 @@
 	<context:component-scan base-package="org.nhindirect.config" />
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
-	<jaxws:endpoint id="domainService"
-		implementorClass="org.nhindirect.config.service.ws.DomainServiceWS"
-		address="/DomainService">
+	<jaxws:endpoint id="configurationService"
+	             address="/ConfigurationService" >
 		<jaxws:implementor>
-			<bean id="domainServiceImpl" 
-			      class="org.nhindirect.config.service.ws.DomainServiceWS"
-				  init-method="init">
-				<property name="dao" ref="domainDao" />
+			<bean id="configurationServiceImpl" 
+			      class="org.nhindirect.config.service.impl.ConfigurationServiceImpl">
+				  <property name="domainSvc" ref="domainSvc"/>
+				  <property name="addressSvc" ref="addressSvc"/>
+				  <property name="anchorSvc" ref="anchorSvc"/>
+				  <property name="certSvc" ref="certSvc"></property>
 			</bean>
+			
 		</jaxws:implementor>
 	</jaxws:endpoint>
 	
 	<!-- <jaxws:endpoint id="addressService" implementor="org.nhindirect.config.service.ws.AddressServiceWS" 
 		address="/AddressService" /> -->
+	 
+	<!--  Service Implementations -->
+	<bean id="domainSvc" class="org.nhindirect.config.service.impl.DomainServiceImpl">
+	   <property name="dao" ref="domainDao"/>
+	</bean>
+	<bean id="addressSvc" class="org.nhindirect.config.service.impl.AddressServiceImpl">
+	   <property name="dao" ref="addressDao"/>
+    </bean>
+	<bean id="anchorSvc" class="org.nhindirect.config.service.impl.AnchorServiceImpl">
+	   <property name="dao" ref="anchorDao"/>
+    </bean>
+	<bean id="certSvc" class="org.nhindirect.config.service.impl.CertificateServiceImpl">
+	   <property name="dao" ref="certificateDao"/>
+    </bean>
 
-	<bean id="domainDao" class="org.nhindirect.config.store.dao.impl.DomainDaoImpl" />
-
+    <!--  DAO's -->
+    <bean id="domainDao" class="org.nhindirect.config.store.dao.impl.DomainDaoImpl"/>
+    <bean id="addressDao" class="org.nhindirect.config.store.dao.impl.AddressDaoImpl"/>
+    <bean id="anchorDao" class="org.nhindirect.config.store.dao.impl.AnchorDaoImpl" />
+    <bean id="certificateDao" class="org.nhindirect.config.store.dao.impl.CertificateDaoImpl"/>
+    
 	<!-- Exception translation bean post processor -->
 	<bean
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />

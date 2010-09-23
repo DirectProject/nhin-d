@@ -13,25 +13,25 @@ import org.nhindirect.config.store.Address;
 @XmlType(name = "updateAddress", namespace = "http://nhind.org/config")
 public class UpdateAddress {
 
-    @XmlElement(name = "arg0", namespace = "")
-    private Address arg0;
+    @XmlElement(name = "address", namespace = "")
+    private Address address;
 
     /**
      * 
      * @return
      *     returns Address
      */
-    public Address getArg0() {
-        return this.arg0;
+    public Address getAddress() {
+        return this.address;
     }
 
     /**
      * 
-     * @param arg0
-     *     the value for the arg0 property
+     * @param address
+     *     the value for the address property
      */
-    public void setArg0(Address arg0) {
-        this.arg0 = arg0;
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
 }

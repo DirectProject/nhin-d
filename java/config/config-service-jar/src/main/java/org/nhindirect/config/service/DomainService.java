@@ -19,6 +19,7 @@ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWE
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
 */
+import java.util.Collection;
 import java.util.List;
 
 import javax.jws.WebMethod;
@@ -28,27 +29,33 @@ import javax.jws.WebService;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 
-@WebService(name = "DomainService", targetNamespace = "http://nhind.org/config")
 public interface DomainService {
 	
     @WebMethod(operationName = "addDomain", action = "urn:AddDomain")
 	void addDomain(@WebParam(name = "domain") Domain domain) throws ConfigurationServiceException;
     
     @WebMethod(operationName = "updateDomain", action = "urn:UpdateDomain")
-	void updateDomain(@WebParam(name = "domain")Domain domain) throws ConfigurationServiceException;
+	void updateDomain(@WebParam(name = "domain") Domain domain) throws ConfigurationServiceException;
     
     @WebMethod(operationName = "getDomainCount", action = "urn:GetDomainCount")
 	int  getDomainCount() throws ConfigurationServiceException;
     
     @WebMethod(operationName = "getDomains", action = "urn:GetDomains")
-	List<Domain> getDomains(@WebParam(name = "names")List<String> domainNames, 
-			                @WebParam(name = "status")EntityStatus status) throws ConfigurationServiceException;
+	Collection<Domain> getDomains(@WebParam(name = "names")Collection<String> domainNames, 
+			                @WebParam(name = "status")     EntityStatus status) throws ConfigurationServiceException;
     
     @WebMethod(operationName = "removeDomain", action = "urn:RemoveDomain")
-	void removeDomain(@WebParam(name = "name")String domainName) throws ConfigurationServiceException;
+	void removeDomain(@WebParam(name = "name") String domainName) throws ConfigurationServiceException;
     
-    @WebMethod(operationName = "ListDomains", action = "urn:ListDomains")
-	List<Domain> listDomains(@WebParam(name = "names")String lastDomainName, 
-			                 @WebParam(name = "maxCount")int maxResults) throws ConfigurationServiceException;
+    @WebMethod(operationName = "listDomains", action = "urn:listDomains")
+	Collection<Domain> listDomains(@WebParam(name = "names")    String lastDomainName, 
+			                       @WebParam(name = "maxResults") int maxResults) throws ConfigurationServiceException;
+
+	@WebMethod(operationName = "searchDomain", action = "urn:SearchDomain")
+	Collection<Domain> searchDomain(@WebParam(name = "name")  String domain, 
+			                        @WebParam(name = "status")EntityStatus status);
+	
+	@WebMethod(operationName = "getDomain", action = "urn:GetDomain")
+	Domain getDomain(@WebParam(name = "id") Long id);
 }
 
