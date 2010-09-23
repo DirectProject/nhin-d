@@ -87,6 +87,7 @@ namespace DnsResolverTests
         [InlineData("www.gmail.com")]
         [InlineData("www.relayhealth.com")]
         [InlineData("www.aol.com")]
+        [InlineData("www.google.com")]
         public void TestMX(string domain)
         {
             Resolve(DnsRequest.CreateMX(domain));
