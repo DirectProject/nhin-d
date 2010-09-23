@@ -6,37 +6,37 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.nhindirect.config.service.ws.CertificateGetOptions;
+import org.nhindirect.config.service.impl.CertificateGetOptions;
 
 @XmlRootElement(name = "getOutgoingAnchors", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "getOutgoingAnchors", namespace = "http://nhind.org/config", propOrder = {
-    "arg0",
-    "arg1"
+    "owner",
+    "options"
 })
 public class GetOutgoingAnchors {
 
-    @XmlElement(name = "arg0", namespace = "")
-    private String arg0;
-    @XmlElement(name = "arg1", namespace = "")
-    private CertificateGetOptions arg1;
+    @XmlElement(name = "owner", namespace = "")
+    private String owner;
+    @XmlElement(name = "options", namespace = "")
+    private CertificateGetOptions options;
 
     /**
      * 
      * @return
      *     returns String
      */
-    public String getArg0() {
-        return this.arg0;
+    public String getOwner() {
+        return this.owner;
     }
 
     /**
      * 
-     * @param arg0
-     *     the value for the arg0 property
+     * @param owner
+     *     the value for the owner property
      */
-    public void setArg0(String arg0) {
-        this.arg0 = arg0;
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     /**
@@ -44,17 +44,17 @@ public class GetOutgoingAnchors {
      * @return
      *     returns CertificateGetOptions
      */
-    public CertificateGetOptions getArg1() {
-        return this.arg1;
+    public CertificateGetOptions getOptions() {
+        return this.options;
     }
 
     /**
      * 
-     * @param arg1
-     *     the value for the arg1 property
+     * @param options
+     *     the value for the options property
      */
-    public void setArg1(CertificateGetOptions arg1) {
-        this.arg1 = arg1;
+    public void setOptions(CertificateGetOptions options) {
+        this.options = options;
     }
 
 }

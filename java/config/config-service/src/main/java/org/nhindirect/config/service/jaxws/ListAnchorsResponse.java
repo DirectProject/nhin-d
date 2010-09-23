@@ -1,7 +1,7 @@
 
 package org.nhindirect.config.service.jaxws;
 
-import java.util.List;
+import java.util.Collection;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -9,20 +9,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.nhindirect.config.store.Anchor;
 
-@XmlRootElement(name = "ListAnchorsResponse", namespace = "http://nhind.org/config")
+@XmlRootElement(name = "listAnchorsResponse", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ListAnchorsResponse", namespace = "http://nhind.org/config")
+@XmlType(name = "listAnchorsResponse", namespace = "http://nhind.org/config")
 public class ListAnchorsResponse {
 
     @XmlElement(name = "return", namespace = "")
-    private List<Anchor> _return;
+    private Collection<Anchor> _return;
 
     /**
      * 
      * @return
-     *     returns List<Anchor>
+     *     returns Collection<Anchor>
      */
-    public List<Anchor> getReturn() {
+    public Collection<Anchor> getReturn() {
         return this._return;
     }
 
@@ -31,7 +31,7 @@ public class ListAnchorsResponse {
      * @param _return
      *     the value for the _return property
      */
-    public void setReturn(List<Anchor> _return) {
+    public void setReturn(Collection<Anchor> _return) {
         this._return = _return;
     }
 

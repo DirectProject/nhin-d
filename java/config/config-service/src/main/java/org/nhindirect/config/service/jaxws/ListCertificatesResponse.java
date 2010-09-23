@@ -1,28 +1,28 @@
 
 package org.nhindirect.config.service.jaxws;
 
-import java.security.cert.X509Certificate;
-import java.util.List;
+import java.util.Collection;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import org.nhindirect.config.store.Certificate;
 
-@XmlRootElement(name = "ListCertificatesResponse", namespace = "http://nhind.org/config")
+@XmlRootElement(name = "listCertificatesResponse", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ListCertificatesResponse", namespace = "http://nhind.org/config")
+@XmlType(name = "listCertificatesResponse", namespace = "http://nhind.org/config")
 public class ListCertificatesResponse {
 
     @XmlElement(name = "return", namespace = "")
-    private List<X509Certificate> _return;
+    private Collection<Certificate> _return;
 
     /**
      * 
      * @return
-     *     returns List<X509Certificate>
+     *     returns Collection<Certificate>
      */
-    public List<X509Certificate> getReturn() {
+    public Collection<Certificate> getReturn() {
         return this._return;
     }
 
@@ -31,7 +31,7 @@ public class ListCertificatesResponse {
      * @param _return
      *     the value for the _return property
      */
-    public void setReturn(List<X509Certificate> _return) {
+    public void setReturn(Collection<Certificate> _return) {
         this._return = _return;
     }
 

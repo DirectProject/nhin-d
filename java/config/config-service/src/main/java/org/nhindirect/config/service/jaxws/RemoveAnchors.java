@@ -1,7 +1,7 @@
 
 package org.nhindirect.config.service.jaxws;
 
-import java.util.List;
+import java.util.Collection;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -13,25 +13,25 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "removeAnchors", namespace = "http://nhind.org/config")
 public class RemoveAnchors {
 
-    @XmlElement(name = "arg0", namespace = "")
-    private List<Long> arg0;
+    @XmlElement(name = "anchorId", namespace = "")
+    private Collection<Long> anchorId;
 
     /**
      * 
      * @return
-     *     returns List<Long>
+     *     returns Collection<Long>
      */
-    public List<Long> getArg0() {
-        return this.arg0;
+    public Collection<Long> getAnchorId() {
+        return this.anchorId;
     }
 
     /**
      * 
-     * @param arg0
-     *     the value for the arg0 property
+     * @param anchorId
+     *     the value for the anchorId property
      */
-    public void setArg0(List<Long> arg0) {
-        this.arg0 = arg0;
+    public void setAnchorId(Collection<Long> anchorId) {
+        this.anchorId = anchorId;
     }
 
 }

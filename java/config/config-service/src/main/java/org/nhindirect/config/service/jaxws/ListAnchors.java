@@ -6,40 +6,40 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.nhindirect.config.service.ws.CertificateGetOptions;
+import org.nhindirect.config.service.impl.CertificateGetOptions;
 
-@XmlRootElement(name = "ListAnchors", namespace = "http://nhind.org/config")
+@XmlRootElement(name = "listAnchors", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ListAnchors", namespace = "http://nhind.org/config", propOrder = {
-    "arg0",
-    "arg1",
-    "arg2"
+@XmlType(name = "listAnchors", namespace = "http://nhind.org/config", propOrder = {
+    "lastAnchorId",
+    "maxResults",
+    "options"
 })
 public class ListAnchors {
 
-    @XmlElement(name = "arg0", namespace = "")
-    private Long arg0;
-    @XmlElement(name = "arg1", namespace = "")
-    private int arg1;
-    @XmlElement(name = "arg2", namespace = "")
-    private CertificateGetOptions arg2;
+    @XmlElement(name = "lastAnchorId", namespace = "")
+    private Long lastAnchorId;
+    @XmlElement(name = "maxResults", namespace = "")
+    private int maxResults;
+    @XmlElement(name = "options", namespace = "")
+    private CertificateGetOptions options;
 
     /**
      * 
      * @return
      *     returns Long
      */
-    public Long getArg0() {
-        return this.arg0;
+    public Long getLastAnchorId() {
+        return this.lastAnchorId;
     }
 
     /**
      * 
-     * @param arg0
-     *     the value for the arg0 property
+     * @param lastAnchorId
+     *     the value for the lastAnchorId property
      */
-    public void setArg0(Long arg0) {
-        this.arg0 = arg0;
+    public void setLastAnchorId(Long lastAnchorId) {
+        this.lastAnchorId = lastAnchorId;
     }
 
     /**
@@ -47,17 +47,17 @@ public class ListAnchors {
      * @return
      *     returns int
      */
-    public int getArg1() {
-        return this.arg1;
+    public int getMaxResults() {
+        return this.maxResults;
     }
 
     /**
      * 
-     * @param arg1
-     *     the value for the arg1 property
+     * @param maxResults
+     *     the value for the maxResults property
      */
-    public void setArg1(int arg1) {
-        this.arg1 = arg1;
+    public void setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
     }
 
     /**
@@ -65,17 +65,17 @@ public class ListAnchors {
      * @return
      *     returns CertificateGetOptions
      */
-    public CertificateGetOptions getArg2() {
-        return this.arg2;
+    public CertificateGetOptions getOptions() {
+        return this.options;
     }
 
     /**
      * 
-     * @param arg2
-     *     the value for the arg2 property
+     * @param options
+     *     the value for the options property
      */
-    public void setArg2(CertificateGetOptions arg2) {
-        this.arg2 = arg2;
+    public void setOptions(CertificateGetOptions options) {
+        this.options = options;
     }
 
 }

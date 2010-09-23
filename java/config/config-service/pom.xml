@@ -81,7 +81,6 @@
 			<artifactId>postgresql</artifactId>
 			<version>8.4-701.jdbc4</version>
 			<type>jar</type>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -111,6 +110,12 @@
 			<version>1.0-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>cglib</artifactId>
+					<groupId>cglib</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.nhind</groupId>
@@ -133,6 +138,13 @@
             <type>jar</type>
             <scope>test</scope>
         </dependency>
+		<dependency>
+			<groupId>apache-log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 	<url>http://www.nhindirect.org</url>
 	<build>
@@ -169,12 +181,7 @@
 					</execution>
 				</executions>
 				<configuration>
-
-					<sei>org.nhindirect.config.service.ws.DomainServiceWS</sei>
-					<!-- <sei>org.nhindirect.config.service.ws.AddressServiceWS</sei> 
-					     <sei>org.nhindirect.config.service.ws.CertificateServiceWS</sei> 
-						 <sei>org.nhindirect.config.service.ws.AnchorServiceWS</sei> 
-						 <sei>org.nhindirect.config.service.ws.KeyStoreServiceWS</sei> -->
+					<sei>org.nhindirect.config.service.impl.ConfigurationServiceImpl</sei>
 					<verbose>true</verbose>
 					<destDir>src/main/java</destDir>
 					<resourceDestDir>src/main/resources/wsdl</resourceDestDir>

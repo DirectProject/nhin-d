@@ -1,7 +1,7 @@
 
 package org.nhindirect.config.service.jaxws;
 
-import java.util.List;
+import java.util.Collection;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -18,16 +18,16 @@ import org.nhindirect.config.store.EntityStatus;
 public class GetDomains {
 
     @XmlElement(name = "names", namespace = "")
-    private List<String> names;
+    private Collection<String> names;
     @XmlElement(name = "status", namespace = "")
     private EntityStatus status;
 
     /**
      * 
      * @return
-     *     returns List<String>
+     *     returns Collection<String>
      */
-    public List<String> getNames() {
+    public Collection<String> getNames() {
         return this.names;
     }
 
@@ -36,7 +36,7 @@ public class GetDomains {
      * @param names
      *     the value for the names property
      */
-    public void setNames(List<String> names) {
+    public void setNames(Collection<String> names) {
         this.names = names;
     }
 
