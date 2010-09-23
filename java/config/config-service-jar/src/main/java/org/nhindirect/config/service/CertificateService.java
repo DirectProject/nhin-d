@@ -21,46 +21,61 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import java.security.cert.X509Certificate;
-import java.util.List;
+import java.util.Collection;
 
 import javax.jws.WebMethod;
-import javax.jws.WebService;
+import javax.jws.WebParam;
 
-
-import org.nhindirect.config.service.ws.CertificateGetOptions;
+import org.nhindirect.config.service.impl.CertificateGetOptions;
 import org.nhindirect.config.store.EntityStatus;
+import org.nhindirect.config.store.Certificate;
 
-@WebService(name = "CertificateService", targetNamespace = "http://nhind.org/config")
 public interface CertificateService {
 	
 	//TODO Should X509Certificate actually be X509CertificateEx? 
 	
 	@WebMethod(operationName = "addCertificates", action = "urn:AddCertificates")
-	void addCertificates(List<X509Certificate> certs) throws ConfigurationServiceException;
+	void addCertificates(@WebParam(name = "certs") Collection<Certificate> certs) throws ConfigurationServiceException;
 	
 	@WebMethod(operationName = "getCertificate", action = "urn:GetCertificate")
-	X509Certificate getCertificate(String owner, String thumbprint, CertificateGetOptions options) throws ConfigurationServiceException;
+	Certificate getCertificate(@WebParam(name = "owner") String owner, 
+			                       @WebParam(name = "thumbprint") String thumbprint, 
+			                       @WebParam(name = "options") CertificateGetOptions options) throws ConfigurationServiceException;
 	
 	@WebMethod(operationName = "getCertificates", action = "urn:GetCertificates")
-	List<X509Certificate> getCertificates(List<Long> certificateIds, CertificateGetOptions options) throws ConfigurationServiceException;
+	Collection<Certificate> getCertificates(@WebParam(name = "certificateIds") Collection<Long> certificateIds, 
+			                                    @WebParam(name = "options") CertificateGetOptions options) throws ConfigurationServiceException;
 	
 	@WebMethod(operationName = "getCertificatesForOwner", action = "urn:GetCertificatesForOwner")
-	List<X509Certificate> getCertificatesForOwner(String owner, CertificateGetOptions options) throws ConfigurationServiceException;
+	Collection<Certificate> getCertificatesForOwner(@WebParam(name = "owner") String owner, 
+			                                            @WebParam(name = "options") CertificateGetOptions options) throws ConfigurationServiceException;
 	
 	@WebMethod(operationName = "setCertificateStatus", action = "urn:SetCertificateStatus")
-	void setCertificateStatus(List<Long> certificateIds, EntityStatus status) throws ConfigurationServiceException;
+	void setCertificateStatus(@WebParam(name = "certificateIds") Collection<Long> certificateIds, 
+			                  @WebParam(name = "status") EntityStatus status) throws ConfigurationServiceException;
 	
 	@WebMethod(operationName = "setCertificateStatusForOwner", action = "urn:SetCertificateStatusForOwner")
-	void setCertificateStatusForOwner(String owner, EntityStatus status) throws ConfigurationServiceException;
+	void setCertificateStatusForOwner(@WebParam(name = "owner") String owner, 
+			                          @WebParam(name = "status") EntityStatus status) throws ConfigurationServiceException;
 	
 	@WebMethod(operationName = "removeCertificates", action = "urn:RemoveCertificates")
-	void removeCertificates(List<Long> certificateIds) throws ConfigurationServiceException;
+	void removeCertificates(@WebParam(name = "certificateIds") Collection<Long> certificateIds) throws ConfigurationServiceException;
 	
 	@WebMethod(operationName = "removeCertificatesForOwner", action = "urn:RemoveCertificatesForOwner")
-	void removeCertificatesForOwner(String owner) throws ConfigurationServiceException;
+	void removeCertificatesForOwner(@WebParam(name = "owner") String owner) throws ConfigurationServiceException;
 	
-	@WebMethod(operationName = "ListCertificates", action = "urn:ListCertificates")
-	List<X509Certificate> ListCertificates(long lastCertificateId, int maxResults, CertificateGetOptions options) throws ConfigurationServiceException;
-
+	@WebMethod(operationName = "listCertificates", action = "urn:ListCertificates")
+	Collection<Certificate> listCertificates(@WebParam(name = "lastCertificateId") long lastCertificateId, 
+			                                     @WebParam(name = "maxResutls") int maxResults, 
+			                                     @WebParam(name = "options") CertificateGetOptions options) throws ConfigurationServiceException;
+    
+    /**
+     * Determines if a certificate exists in the certificate store.  Although not specific in the interface
+     * definition, certificate thumbprinting is recommended for certificate searching.
+     * @param cert The certificate to search for.
+     * @return True if the certificate exist in the store.  False otherwise.
+     */
+    @WebMethod(operationName = "contains", action = "urn:Contains")
+	public boolean contains(@WebParam(name = "cert") Certificate cert);        
+        
 }

@@ -1,4 +1,4 @@
-package org.nhindirect.config.service.ws;
+package org.nhindirect.config.service.impl;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -19,9 +19,6 @@ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWE
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
 */
-import java.security.cert.X509Certificate;
-import org.nhindirect.config.store.Certificate;
-
 import org.nhindirect.config.store.EntityStatus;
 
 public class CertificateGetOptions {
@@ -36,5 +33,30 @@ public class CertificateGetOptions {
 	
 	CertificateGetOptions() {	
 	}
+
+	public boolean isIncludeData() {
+		return includeData;
+	}
+
+	public void setIncludeData(boolean includeData) {
+		this.includeData = includeData;
+	}
+
+	public boolean isIncludePrivateKey() {
+		return includePrivateKey;
+	}
+
+	public void setIncludePrivateKey(boolean includePrivateKey) {
+		this.includePrivateKey = includePrivateKey;
+	}
+
+	public EntityStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(EntityStatus status) {
+		this.status = status;
+	}
+	
 	
 }
