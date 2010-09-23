@@ -42,6 +42,10 @@ import javax.persistence.Temporal;
 import javax.persistence.CascadeType;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
 
 
 @Entity
@@ -49,6 +53,7 @@ import javax.persistence.Transient;
 /**
  * The JPA Domain class
  */
+@XmlRootElement
 public class Domain {
 	
 	private String   domainName;
@@ -63,7 +68,7 @@ public class Domain {
 	
 	private Collection<Address> addresses;
 	
-	private long id;	
+	private Long id;	
 	
 	private EntityStatus status = EntityStatus.NEW;
 	
@@ -82,11 +87,15 @@ public class Domain {
 	@Column(name="id",nullable=false)
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE)
-	public long getId() {
+	@XmlAttribute
+	public Long getId() {
+		if (id == null) {
+			setId(new Long(0L));
+		}
 		return id;
 	}
 	
-	public void setId(long anId) {
+	public void setId(Long anId) {
 		id = anId;
 	}
 
@@ -116,6 +125,7 @@ public class Domain {
 
 	@Column(name="status")
 	@Enumerated
+	@XmlAttribute
 	public EntityStatus getStatus() {
 		return status;
 	}
@@ -171,7 +181,7 @@ public class Domain {
 			// It's a new address so add it
 			if (!matched) {
 				Address postmaster = new Address(this, email);
-				postmaster.setDisplayName("Post Master");
+				postmaster.setDisplayName("Postmaster");
 				postmaster.setStatus(EntityStatus.NEW);
 				getAddresses().add(postmaster);
 				setPostmasterAddressId(postmaster.getId());
@@ -182,6 +192,7 @@ public class Domain {
 	
 	
 	@OneToMany(orphanRemoval=true, fetch=FetchType.EAGER, mappedBy="domain")
+	@XmlElement(name="address")
 	public Collection<Address> getAddresses() {
 		if (addresses == null) addresses = new ArrayList<Address>() ;
 		return addresses;
@@ -210,7 +221,8 @@ public class Domain {
 	public String toString() {
 		return "[ID: " + getId() +
 			   " | Domain: " + getDomainName() +
-			   " | Status: " + getStatus().toString() + "]";
+			   " | Status: " + getStatus().toString() + 
+			   " | Addresses: " + getAddresses().size() + "]";
 	}
 	
 	
