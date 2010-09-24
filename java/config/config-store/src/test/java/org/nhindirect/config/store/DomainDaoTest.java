@@ -170,7 +170,7 @@ public class DomainDaoTest  {
 		domainDao.add(domain);
 		
 		Domain test = domainDao.getDomainByName("health.newdomain.com");
-		// assertEquals("postmaster@health.newdomain.com", test.getPostMasterEmail());
+		assertEquals("postmaster@health.newdomain.com", test.getPostMasterEmail());
 		assertEquals(3, test.getAddresses().size());
 		
 		log.info(domain.toString());
