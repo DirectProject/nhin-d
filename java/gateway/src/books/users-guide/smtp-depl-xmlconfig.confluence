@@ -31,6 +31,9 @@ XML configuration for the SMTP protocol consists of an XML file that sets parame
    <OutgoingMessagesSettings saveFolder="OutgoingMsgFolder"/>
    <IncomingMessagesSettings saveFolder="IncomingMsgFolder"/>
    <BadMessagesSettings saveFolder="BadMsgFolder"/>
+   <MDNSettings autoResponse="true" productName="NHIN Direct Security Agent">
+       <Text><![CDATA[Your message was processed successfully.]]></Text>
+   </MDNSettings>   
 </SmtpAgentConfig>
 {code}
 
@@ -130,3 +133,17 @@ Attributes:
 
 ||Attribute||Description||
 |saveFolder|The folder where the messages will be stored.  If the folder does not exist, the system will automatically created it as long as the agent's process has permission to do so.|
+
+h2. MDN Settings
+
+The agent can automatically produce MDN message in response to MDN requests with a disposition of _Processed_.  MDN is described in [RFC3798|http://tools.ietf.org/html/rfc3798] and is intended (for the SMTP Agent purposes) to indicate the successful reception and processing of message by the security and trust agent. 
+
+Attributes:
+
+||Attribute||Description||
+|autoResponse|Indicates if the SMTP agent should produce MDN messages for MDN requests.  The default setting is false if this attribute is not present.| 
+|productName|The product name used in the user agent header of the MDN message.  Defaults to _Security Agent_ if this attribute is not present.|
+
+Elements:
+||Element||Type||Description||
+|Text|String or CDATA|Human readable response text sent back to the sender indicating a successful reception of the senders message.  The text may either be a simple string or may be contained in a CDATA section for more sophisticated encoding and formatting.|

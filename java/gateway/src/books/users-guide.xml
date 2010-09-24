@@ -27,7 +27,13 @@
         </section>         
         <section>
           <id>dev-write</id>     
-        </section>     
+        </section>
+        <section>
+          <id>dev-write</id>     
+        </section>
+        <section>
+          <id>dev-setup</id>     
+        </section>                         
       </sections>
     </chapter>
     <chapter>
