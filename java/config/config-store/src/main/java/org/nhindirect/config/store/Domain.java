@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -63,8 +64,6 @@ public class Domain {
 	private Calendar updateTime;
 
 	private Long  postmasterAddressId;
-	
-	private String postmasterAddress;
 	
 	private Collection<Address> addresses;
 	
@@ -153,39 +152,64 @@ public class Domain {
 	
 	/**
 	 * If we have an email address id, then search through the collection of addresses to
-	 * find an id match and return it.
+	 * find an id match and return it.  
 	 * @return
 	 */
 	@Transient
 	public String getPostMasterEmail() {
-		return postmasterAddress;
+		String result = null;
+		// return the address that matched the ID
+		if ((getAddresses().size() > 0) && 
+			(getPostmasterAddressId() != null) &&
+			(getPostmasterAddressId() > 0)) {
+			for (Address address : getAddresses()) {
+				if (address.getId().equals(getPostmasterAddressId())) {
+					result = address.getEmailAddress();
+					break;
+				}
+			}
+		}
+		return result;
 	}
 	
 	/**
-	 * Add the address unless it already exists, in which case, just set the postmasterEmailAddressId 
-	 * appropriately
+	 * Process according to the following table: <p>
+	 *    		 id       name      action<br>
+	 *           0/Null   0/Null    None<br>
+	 *           Not Null 0/Null    Set Id to null.  Don't remove the Address<br>
+	 *           0/Null   Not Null  Add to Address if not there, set Id<br>
+	 *           Not Null Not Null  if id.address = address then None, otherwise update id </p>
 	 * @param email
 	 */
 	public void setPostMasterEmail(String email) {
-		if (email != null) {
+		
+		Long oldId = getPostmasterAddressId();
+		if (email == null) {
+			if (getPostmasterAddressId() != null) {	
+				setPostmasterAddressId(null);
+			}
+		}
+		else {
+			Long addressId  = null;
 			boolean matched = false;
-			
 			// Check to see if we've already got the address
 			for (Address address : getAddresses()) {
 				if (address.getEmailAddress().equals(email)) {
-					setPostmasterAddressId(address.getId());
+					addressId = address.getId();
 					matched = true;
 					break;
 				}
 			}
-			// It's a new address so add it
-			if (!matched) {
+			
+			if (!matched) {       // It's a new address so add it
 				Address postmaster = new Address(this, email);
 				postmaster.setDisplayName("Postmaster");
 				postmaster.setStatus(EntityStatus.NEW);
 				getAddresses().add(postmaster);
-				setPostmasterAddressId(postmaster.getId());
+				addressId = postmaster.getId();
 			}
+			
+			setPostmasterAddressId(addressId);			
 		}
 		return;
 	}
@@ -194,7 +218,9 @@ public class Domain {
 	@OneToMany(orphanRemoval=true, fetch=FetchType.EAGER, mappedBy="domain")
 	@XmlElement(name="address")
 	public Collection<Address> getAddresses() {
-		if (addresses == null) addresses = new ArrayList<Address>() ;
+		if (addresses == null) {
+			addresses = new ArrayList<Address>() ;
+		}
 		return addresses;
 	}
 
