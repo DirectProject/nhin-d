@@ -1,4 +1,3 @@
-package org.nhindirect.config.service.impl;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -18,70 +17,108 @@ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUEN
 GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
-*/
-import java.util.Collection;
-import java.util.List;
+ */
 
-import javax.jws.WebMethod;
-import javax.jws.WebService;
-import javax.xml.ws.FaultAction;
+package org.nhindirect.config.service.impl;
+
+import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.service.AddressService;
-import org.nhindirect.config.service.ConfigurationFault;
 import org.nhindirect.config.service.ConfigurationServiceException;
 import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.store.dao.AddressDao;
-import org.nhindirect.config.store.dao.DomainDao;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Service class for methods related to an Address object.
+ */
 public class AddressServiceImpl implements AddressService {
 
-	private static final Log log = LogFactory.getLog(AddressServiceImpl.class);
-	
-	private AddressDao dao;
-	
-	public void init() {
-		log.info("AddressService initialized");
-	}
-	
-	
-	public void addAddress(Collection<Address> address) throws ConfigurationServiceException {
-		// TODO Auto-generated method stub
+    private static final Log log = LogFactory.getLog(AddressServiceImpl.class);
 
-	}
+    private AddressDao dao;
 
-	public void updateAddress(Address address) throws ConfigurationServiceException {
-		// TODO Auto-generated method stub
+    /**
+	 * Initialization method.
+	 */
+    public void init() {
+        log.info("AddressService initialized");
+    }
 
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.config.service.AddressService#addAddress(java.util.Collection)
+     */
+    public void addAddress(Collection<Address> address) throws ConfigurationServiceException {
+        // TODO Auto-generated method stub
 
-	public int getAddressCount() throws ConfigurationServiceException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    }
 
-	public Collection<Address> getAddress(Collection<String> addressNames,
-			EntityStatus status) throws ConfigurationServiceException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.config.service.AddressService#updateAddress(org.nhindirect.config.store.Address)
+     */
+    public void updateAddress(Address address) throws ConfigurationServiceException {
+        // TODO Auto-generated method stub
 
-	public void removeAddress(String addressName) throws ConfigurationServiceException {
-		// TODO Auto-generated method stub
+    }
 
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.config.service.AddressService#getAddressCount()
+     */
+    public int getAddressCount() throws ConfigurationServiceException {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	public Collection<Address> listAddresss(String lastAddressName, int maxResults) throws ConfigurationServiceException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.config.service.AddressService#getAddress(java.util.Collection, org.nhindirect.config.store.EntityStatus)
+     */
+    public Collection<Address> getAddress(Collection<String> addressNames, EntityStatus status)
+            throws ConfigurationServiceException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Autowired
-	public void setDao(AddressDao dao) {
-		this.dao = dao;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.config.service.AddressService#removeAddress(java.lang.String)
+     */
+    public void removeAddress(String addressName) throws ConfigurationServiceException {
+        // TODO Auto-generated method stub
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.config.service.AddressService#listAddresss(java.lang.String, int)
+     */
+    public Collection<Address> listAddresss(String lastAddressName, int maxResults)
+            throws ConfigurationServiceException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * Set the value of the AddressDao object.
+     * 
+     * @param dao
+     *            The value of the AddressDao object.
+     */
+    @Autowired
+    public void setDao(AddressDao dao) {
+        this.dao = dao;
+    }
 
 }
