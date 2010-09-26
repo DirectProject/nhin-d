@@ -1,4 +1,3 @@
-package org.nhindirect.config.store.dao;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -18,33 +17,108 @@ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUEN
 GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
-*/
-import java.util.Collection;
+ */
+
+package org.nhindirect.config.store.dao;
+
 import java.util.List;
 
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 
+/**
+ * Domain data access methods.
+ */
 public interface DomainDao {
-	
-	public int count();
-	
-	public void add(Domain item);
-	
-	public void update(Domain item);
-	
-	public void save(Domain item);
-	
-	public void delete(String name);
-	
-	public Domain getDomainByName(String domain);
-	
-	public Domain getDomain(Long id);
-	
-	public List<Domain> searchDomain(String name, EntityStatus status);
-	
-	public List<Domain> getDomains(List<String> name, EntityStatus status);
-	
-	public List<Domain> listDomains(String name, int count);
+
+    /**
+     * Get a count of Domains.
+     * 
+     * @return a count of Domains.
+     */
+    public int count();
+
+    /**
+     * Add a Domain.
+     * 
+     * @param item
+     *            The Domain.
+     */
+    public void add(Domain item);
+
+    /**
+     * Update a Domain.
+     * 
+     * @param item
+     *            The Domain.
+     */
+    public void update(Domain item);
+
+    /**
+     * Save a Domain.
+     * 
+     * @param item
+     *            The Domain.
+     */
+    public void save(Domain item);
+
+    /**
+     * Delete a Domain.
+     * 
+     * @param name
+     *            The Domain name.
+     */
+    public void delete(String name);
+
+    /**
+     * Get a Domain.
+     * 
+     * @param domain
+     *            The Domain name.
+     * @return a Domain.
+     */
+    public Domain getDomainByName(String domain);
+
+    /**
+     * Get a Domain.
+     * 
+     * @param id
+     *            The Domain id.
+     * @return a Domain.
+     */
+    public Domain getDomain(Long id);
+
+    /**
+     * Get a collection of Domains.
+     * 
+     * @param name
+     *            The Domain name.
+     * @param status
+     *            The Domain status.
+     * @return a collection of Domains.
+     */
+    public List<Domain> searchDomain(String name, EntityStatus status);
+
+    /**
+     * Get a collection of Domains.
+     * 
+     * @param name
+     *            The collection of Domain names.
+     * @param status
+     *            The Domain status.
+     * @return a collection of Domains.
+     */
+    public List<Domain> getDomains(List<String> name, EntityStatus status);
+
+    /**
+     * Get a collection of Domains.
+     * 
+     * @param name
+     *            The Domain name.
+     * @param count
+     *            The count of Domains.
+     * @return a collection of Domains.
+     */
+    public List<Domain> listDomains(String name, int count);
 
 }
