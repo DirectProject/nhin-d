@@ -1,4 +1,3 @@
-package org.nhindirect.config.service;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -18,44 +17,110 @@ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUEN
 GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
+
+package org.nhindirect.config.service;
+
 import java.util.Collection;
-import java.util.List;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
-import javax.jws.WebService;
 
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 
+/**
+ * Service class for methods related to a Domain object.
+ */
 public interface DomainService {
-	
+
+    /**
+     * Add a new Domain.
+     * 
+     * @param domain
+     *            The Domain to add.
+     * @throws ConfigurationServiceException
+     */
     @WebMethod(operationName = "addDomain", action = "urn:AddDomain")
-	void addDomain(@WebParam(name = "domain") Domain domain) throws ConfigurationServiceException;
-    
+    void addDomain(@WebParam(name = "domain") Domain domain) throws ConfigurationServiceException;
+
+    /**
+     * Update a Domain.
+     * 
+     * @param domain
+     *            The Domain to update.
+     * @throws ConfigurationServiceException
+     */
     @WebMethod(operationName = "updateDomain", action = "urn:UpdateDomain")
-	void updateDomain(@WebParam(name = "domain") Domain domain) throws ConfigurationServiceException;
-    
+    void updateDomain(@WebParam(name = "domain") Domain domain) throws ConfigurationServiceException;
+
+    /**
+     * Get a count of Domains.
+     * 
+     * @return a count of Domains.
+     * @throws ConfigurationServiceException
+     */
     @WebMethod(operationName = "getDomainCount", action = "urn:GetDomainCount")
-	int  getDomainCount() throws ConfigurationServiceException;
-    
+    int getDomainCount() throws ConfigurationServiceException;
+
+    /**
+     * Get a collection of all Domains matching the parameters.
+     * 
+     * @param domainNames
+     *            A collection of domain names.
+     * @param status
+     *            An EntityStatus object.
+     * @return a collection of all Domains matching the parameters.
+     * @throws ConfigurationServiceException
+     */
     @WebMethod(operationName = "getDomains", action = "urn:GetDomains")
-	Collection<Domain> getDomains(@WebParam(name = "names")Collection<String> domainNames, 
-			                @WebParam(name = "status")     EntityStatus status) throws ConfigurationServiceException;
-    
+    Collection<Domain> getDomains(@WebParam(name = "names") Collection<String> domainNames,
+            @WebParam(name = "status") EntityStatus status) throws ConfigurationServiceException;
+
+    /**
+     * Remove a Domain.
+     * 
+     * @param domainName
+     *            The name of the Domain to remove.
+     * @throws ConfigurationServiceException
+     */
     @WebMethod(operationName = "removeDomain", action = "urn:RemoveDomain")
-	void removeDomain(@WebParam(name = "name") String domainName) throws ConfigurationServiceException;
-    
+    void removeDomain(@WebParam(name = "name") String domainName) throws ConfigurationServiceException;
+
+    /**
+     * Return a list of Domains matching the parameters.
+     * 
+     * @param lastDomainName
+     *            The last domain name.
+     * @param maxResults
+     *            The maximum number of results.
+     * @return a List of Domains matching the parameters.
+     * @throws ConfigurationServiceException
+     */
     @WebMethod(operationName = "listDomains", action = "urn:listDomains")
-	Collection<Domain> listDomains(@WebParam(name = "names")    String lastDomainName, 
-			                       @WebParam(name = "maxResults") int maxResults) throws ConfigurationServiceException;
+    Collection<Domain> listDomains(@WebParam(name = "names") String lastDomainName,
+            @WebParam(name = "maxResults") int maxResults) throws ConfigurationServiceException;
 
-	@WebMethod(operationName = "searchDomain", action = "urn:SearchDomain")
-	Collection<Domain> searchDomain(@WebParam(name = "name")  String domain, 
-			                        @WebParam(name = "status")EntityStatus status);
-	
-	@WebMethod(operationName = "getDomain", action = "urn:GetDomain")
-	Domain getDomain(@WebParam(name = "id") Long id);
+    /**
+     * Return a collection of Domains matching the parameters.
+     * 
+     * @param domain
+     *            The Domain name.
+     * @param status
+     *            The Domain EntityStatus.
+     * @return a collection of Domains matching the parameters.
+     */
+    @WebMethod(operationName = "searchDomain", action = "urn:SearchDomain")
+    Collection<Domain> searchDomain(@WebParam(name = "name") String domain,
+            @WebParam(name = "status") EntityStatus status);
+
+    /**
+     * Return a Domain matching the given ID.
+     * 
+     * @param id
+     *            The ID of the Domain.
+     * @return a Domain matching the given ID.
+     */
+    @WebMethod(operationName = "getDomain", action = "urn:GetDomain")
+    Domain getDomain(@WebParam(name = "id") Long id);
 }
-

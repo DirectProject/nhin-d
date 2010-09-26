@@ -1,4 +1,3 @@
-package org.nhindirect.config.service;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -20,6 +19,11 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+package org.nhindirect.config.service;
+
+/**
+ * Enumeration of possible errors.
+ */
 public enum ConfigurationError {
     None,
     Unknown,

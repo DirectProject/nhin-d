@@ -1,6 +1,3 @@
-package org.nhindirect.config.service;
-
-import javax.xml.ws.WebFault;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -20,47 +17,101 @@ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUEN
 GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 
+package org.nhindirect.config.service;
+
+import javax.xml.ws.WebFault;
+
+/**
+ * Configuration fault class.
+ */
 @WebFault()
 public class ConfigurationFault {
-	
-	private String message = "";
-	
-	private ConfigurationError error = ConfigurationError.Unknown;
-	
-	public ConfigurationFault() {
-	}
-	
-	public ConfigurationFault(ConfigurationError anError) {
-		setError(anError);
-	}
-	
-	public ConfigurationFault(String aMsg, ConfigurationError anError) {
-		setMessage(aMsg);
-		setError(anError);
-	}
-	
-	public String getMessage() {
-		return message;
-	}
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    private String message = "";
 
-	public ConfigurationError getError() {
-		return error;
-	}
+    private ConfigurationError error = ConfigurationError.Unknown;
 
-	public void setError(ConfigurationError error) {
-		this.error = error;
-	}
-	
-	//TODO Map exceptions to fault errors
-	public static ConfigurationFault errorToFault(Exception e) {
-		ConfigurationFault result = new ConfigurationFault(e.getMessage(), ConfigurationError.Unknown);
-		
-		return result;
-	}
+    /**
+     * Default constructor.
+     */
+    public ConfigurationFault() {
+    }
+
+    /**
+     * Construct a new ConfigurationFault with a specific ConfigurationError.
+     * 
+     * @param anError
+     *            A ConfigurationError.
+     */
+    public ConfigurationFault(ConfigurationError anError) {
+        setError(anError);
+    }
+
+    /**
+     * Construct a new ConfigurationFault with a specific message and
+     * ConfigurationError.
+     * 
+     * @param aMsg
+     *            A message.
+     * @param anError
+     *            A ConfigurationError.
+     */
+    public ConfigurationFault(String aMsg, ConfigurationError anError) {
+        setMessage(aMsg);
+        setError(anError);
+    }
+
+    /**
+     * Return the value of message.
+     * 
+     * @return the value of message.
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * Set the message.
+     * 
+     * @param message
+     *            The value of message.
+     */
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    /**
+     * Get the value of error.
+     * 
+     * @return the value of error.
+     */
+    public ConfigurationError getError() {
+        return error;
+    }
+
+    /**
+     * Set the value of error.
+     * 
+     * @param error
+     *            The value of error.
+     */
+    public void setError(ConfigurationError error) {
+        this.error = error;
+    }
+
+    /**
+     * Convert an Exception to a ConfigurationFault.
+     * 
+     * TODO Map exceptions to fault errors
+     * 
+     * @param e The Exception.
+     * @return
+     */
+    public static ConfigurationFault errorToFault(Exception e) {
+        ConfigurationFault result = new ConfigurationFault(e.getMessage(), ConfigurationError.Unknown);
+
+        return result;
+    }
 }

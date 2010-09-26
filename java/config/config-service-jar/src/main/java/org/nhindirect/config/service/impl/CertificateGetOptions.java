@@ -1,4 +1,3 @@
-package org.nhindirect.config.service.impl;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -18,45 +17,88 @@ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUEN
 GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
+
+package org.nhindirect.config.service.impl;
+
 import org.nhindirect.config.store.EntityStatus;
 
+/**
+ * A set of options relating to a Certificate.
+ */
 public class CertificateGetOptions {
-	
-	private boolean includeData       = false;
-	private boolean includePrivateKey = false;
-	
-	private EntityStatus status;
 
-	
-	public static final CertificateGetOptions DEFAULT = new CertificateGetOptions();
-	
-	CertificateGetOptions() {	
-	}
+    private boolean includeData = false;
+    private boolean includePrivateKey = false;
 
-	public boolean isIncludeData() {
-		return includeData;
-	}
+    private EntityStatus status;
 
-	public void setIncludeData(boolean includeData) {
-		this.includeData = includeData;
-	}
+    /**
+     * A CertificateGetOptions instance.
+     */
+    public static final CertificateGetOptions DEFAULT = new CertificateGetOptions();
 
-	public boolean isIncludePrivateKey() {
-		return includePrivateKey;
-	}
+    /**
+     * Default constructor.
+     */
+    CertificateGetOptions() {
+    }
 
-	public void setIncludePrivateKey(boolean includePrivateKey) {
-		this.includePrivateKey = includePrivateKey;
-	}
+    /**
+     * Return the value of includeData.
+     * 
+     * @return the value of includeData.
+     */
+    public boolean isIncludeData() {
+        return includeData;
+    }
 
-	public EntityStatus getStatus() {
-		return status;
-	}
+    /**
+     * Set the value of includeData.
+     * 
+     * @param includeData
+     *            The value of includeData.
+     */
+    public void setIncludeData(boolean includeData) {
+        this.includeData = includeData;
+    }
 
-	public void setStatus(EntityStatus status) {
-		this.status = status;
-	}
-	
-	
+    /**
+     * Get the value of includePrvateKey.
+     * 
+     * @return the value of includePrivateKey.
+     */
+    public boolean isIncludePrivateKey() {
+        return includePrivateKey;
+    }
+
+    /**
+     * Set the value of includePrivateKey.
+     * 
+     * @param includePrivateKey
+     *            The value of includePrivateKey.
+     */
+    public void setIncludePrivateKey(boolean includePrivateKey) {
+        this.includePrivateKey = includePrivateKey;
+    }
+
+    /**
+     * Get the value of status.
+     * 
+     * @return the value of status.
+     */
+    public EntityStatus getStatus() {
+        return status;
+    }
+
+    /**
+     * Set the value of status.
+     * 
+     * @param status
+     *            The value of status.
+     */
+    public void setStatus(EntityStatus status) {
+        this.status = status;
+    }
+
 }
