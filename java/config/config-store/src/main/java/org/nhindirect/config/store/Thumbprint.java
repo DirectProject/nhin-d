@@ -1,4 +1,3 @@
-package org.nhindirect.config.store;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -21,6 +20,8 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+package org.nhindirect.config.store;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
@@ -28,10 +29,12 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
 /**
- * NOTE:  This is a copy of the original Thumbprint class from the agent code base.  Copied to this package as a quick
- * fix to a visibility issue.
+ * NOTE: This is a copy of the original Thumbprint class from the agent code
+ * base. Copied to this package as a quick fix to a visibility issue.
  * 
- * An X509Certificate thumb print.  Thumb print is essentially a SHA-1 digest of the certificates der encoding.
+ * An X509Certificate thumb print. Thumb print is essentially a SHA-1 digest of
+ * the certificates der encoding.
+ * 
  * @author Greg Meyer
  */
 public class Thumbprint 
@@ -39,12 +42,14 @@ public class Thumbprint
 	private final byte[] digest;
 	private final String digestString;
 	
-	/**
-	 * Creates a thumbprint of an X509Certificate.
-	 * @param cert The certificate to convert.
-	 * @return A thumbprint of the certificate.
-	 * @throws CertificateException 
-	 */
+    /**
+     * Creates a thumbprint of an X509Certificate.
+     * 
+     * @param cert
+     *            The certificate to convert.
+     * @return A thumbprint of the certificate.
+     * @throws CertificateException
+     */
 	public static Thumbprint toThumbprint(X509Certificate cert) throws CertificateException
 	{
 		Thumbprint retVal = null;
@@ -75,10 +80,11 @@ public class Thumbprint
         digestString = createStringRep();
 	}
 	
-	/**
-	 * Gets the raw byte digest of the certificate's der encoding. 
-	 * @return The certificates digest.
-	 */
+    /**
+     * Gets the raw byte digest of the certificate's der encoding.
+     * 
+     * @return The certificates digest.
+     */
 	public byte[] getDigest()
 	{
 		return digest.clone();
@@ -101,18 +107,18 @@ public class Thumbprint
 	}
 	
 	@Override
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
 	public String toString()
 	{
 		return digestString;
 	}
 	
 	@Override
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
 	public boolean equals(Object obj)
 	{
 		if (!(obj instanceof Thumbprint))

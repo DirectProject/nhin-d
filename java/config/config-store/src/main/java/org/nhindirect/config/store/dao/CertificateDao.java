@@ -1,4 +1,3 @@
-package org.nhindirect.config.store.dao;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -18,30 +17,99 @@ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUEN
 GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
+
+package org.nhindirect.config.store.dao;
 
 import java.util.List;
 
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.EntityStatus;
 
+/**
+ * Certificate data access methods.
+ */
 public interface CertificateDao {
-	public Certificate load(String owner, String thumbprint);
-	
-	public List<Certificate> list(List<Long> idList);
-	
-	public List<Certificate> list(String owner);
-	
-	public void save(Certificate cert);
-	
-	public void save(List<Certificate> certList);
-	
-	public void setStatus(List<Long> certificateIDs, EntityStatus status);
-	
-	public void setStatus(String owner, EntityStatus status);
-	
-	public void delete(List<Long> idList);
-	
-	public void delete(String owner);
+
+    /**
+     * Load a Certificate.
+     * 
+     * @param owner
+     *            The Certificate owner.
+     * @param thumbprint
+     *            The Certificate thumbprint.
+     * @return a Certificate.
+     */
+    public Certificate load(String owner, String thumbprint);
+
+    /**
+     * Get a collection of Certificates.
+     * 
+     * @param idList
+     *            The collection of Certificate IDs.
+     * @return a collection of Certificates.
+     */
+    public List<Certificate> list(List<Long> idList);
+
+    /**
+     * Get a collection of Certificates.
+     * 
+     * @param owner
+     *            The Certificate owner.
+     * @return a collection of Certificates.
+     */
+    public List<Certificate> list(String owner);
+
+    /**
+     * Save a Certificate.
+     * 
+     * @param cert
+     *            The Certificate.
+     */
+    public void save(Certificate cert);
+
+    /**
+     * Save a collection of Certificates.
+     * 
+     * @param certList
+     *            The Collection of Certificates.
+     */
+    public void save(List<Certificate> certList);
+
+    /**
+     * Set the status of a collection of Certificates.
+     * 
+     * @param certificateIDs
+     *            The collection of Certificate IDs.
+     * @param status
+     *            The Certificate status.
+     */
+    public void setStatus(List<Long> certificateIDs, EntityStatus status);
+
+    /**
+     * Set the status of a collection of Certificates.
+     * 
+     * @param owner
+     *            The Certificate owner.
+     * @param status
+     *            The Certificate status.
+     */
+    public void setStatus(String owner, EntityStatus status);
+
+    /**
+     * Delete a collection of Certificates.
+     * 
+     * @param idList
+     *            The collection of Certificate IDs.
+     */
+    public void delete(List<Long> idList);
+
+    /**
+     * Delete a collection of Certificates.
+     * 
+     * @param owner
+     *            The Certificate owner.
+     */
+    public void delete(String owner);
 
 }

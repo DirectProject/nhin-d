@@ -1,4 +1,3 @@
-package org.nhindirect.config.store;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -18,12 +17,13 @@ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUEN
 GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
+
+package org.nhindirect.config.store;
 
 import java.util.Calendar;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -37,50 +37,65 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
 
-
 @Entity
-@Table(name="address")
+@Table(name = "address")
 /**
  * The JPA Address class
  */
 public class Address {
-	
-	private String emailAddress;
-	
-	private Long id;
-	
-	private Domain domain;
-	
-	private String displayName;
-	
-	private Calendar createTime;
 
-	private Calendar updateTime;
+    private String emailAddress;
 
-	private EntityStatus status;
-	
-	private String type;
-	
-    public Address()
-    {
+    private Long id;
+
+    private Domain domain;
+
+    private String displayName;
+
+    private Calendar createTime;
+
+    private Calendar updateTime;
+
+    private EntityStatus status;
+
+    private String type;
+
+    /**
+     * Construct an Address.
+     */
+    public Address() {
     }
-     
-    public Address(Domain aDomain, String anAddress)
-    {
-    	 setDomain(aDomain);
-         setEmailAddress(anAddress);
-         setDisplayName("");
-         setCreateTime(Calendar.getInstance());
-         setUpdateTime(Calendar.getInstance());
-         setStatus(EntityStatus.NEW);
+
+    /**
+     * Construct an Address.
+     * 
+     * @param aDomain
+     *            The Domain.
+     * @param anAddress
+     *            The address.
+     */
+    public Address(Domain aDomain, String anAddress) {
+        setDomain(aDomain);
+        setEmailAddress(anAddress);
+        setDisplayName("");
+        setCreateTime(Calendar.getInstance());
+        setUpdateTime(Calendar.getInstance());
+        setStatus(EntityStatus.NEW);
     }
-    
-    public Address(Domain aDomain, String anAddress, String aName)
-    {
+
+    /**
+     * Construct an Address.
+     * 
+     * @param aDomain
+     *            The Domain.
+     * @param anAddress
+     *            The address.
+     * @param aName
+     *            The display name.
+     */
+    public Address(Domain aDomain, String anAddress, String aName) {
         setDomain(aDomain);
         setEmailAddress(anAddress);
         setDisplayName(aName);
@@ -88,114 +103,216 @@ public class Address {
         setUpdateTime(Calendar.getInstance());
         setStatus(EntityStatus.NEW);
     }
-    
-    public Address(Address anAddress)
-    {
-    	if (anAddress != null)
-    	{
-	    	setDomain(anAddress.getDomain());
-	    	setEmailAddress(anAddress.getEmailAddress());
-	    	setDisplayName(anAddress.getDisplayName());
-	    	setCreateTime(anAddress.getCreateTime());
-	    	setUpdateTime(anAddress.getUpdateTime());
-	    	setStatus(anAddress.getStatus());
-	    	setType(anAddress.getType());
-    	}
+
+    /**
+     * Construct an Address.
+     * 
+     * @param anAddress
+     *            The address.
+     */
+    public Address(Address anAddress) {
+        if (anAddress != null) {
+            setDomain(anAddress.getDomain());
+            setEmailAddress(anAddress.getEmailAddress());
+            setDisplayName(anAddress.getDisplayName());
+            setCreateTime(anAddress.getCreateTime());
+            setUpdateTime(anAddress.getUpdateTime());
+            setStatus(anAddress.getStatus());
+            setType(anAddress.getType());
+        }
     }
-    
-    @Column(name="emailaddress",length=400)
-	public String getEmailAddress() {
-		return emailAddress; 
-	}
 
-	public void setEmailAddress(String anEmail) {
-		emailAddress = anEmail;
-	}
+    /**
+     * Get the value of emailAddress.
+     * 
+     * @return the value of emailAddress.
+     */
+    @Column(name = "emailaddress", length = 400)
+    public String getEmailAddress() {
+        return emailAddress;
+    }
 
-	@Column(name="id",nullable=false)
-	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE)
-	@XmlAttribute
-	public Long getId() {
-		if (id == null) {
-			setId(new Long(0L));
-		}
-		return id;
-	}
+    /**
+     * Set the value of emailAddress.
+     * 
+     * @param anEmail
+     *            The value of emailAddress.
+     */
+    public void setEmailAddress(String anEmail) {
+        emailAddress = anEmail;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /**
+     * Get the value of id.
+     * 
+     * @return the value of id.
+     */
+    @Column(name = "id", nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @XmlAttribute
+    public Long getId() {
+        if (id == null) {
+            setId(new Long(0L));
+        }
+        return id;
+    }
 
-	@ManyToOne(optional=false, fetch=FetchType.EAGER)
-	@JoinColumn(name="domainId")
-	@XmlTransient
-	public Domain getDomain() {
-		return domain;
-	}
+    /**
+     * Set the value of id.
+     * 
+     * @param id
+     *            The value of id.
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setDomain(Domain anId) {
-		domain = anId;
-		
-	}
+    /**
+     * Get the value of domain.
+     * 
+     * @return the value of domain.
+     */
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "domainId")
+    @XmlTransient
+    public Domain getDomain() {
+        return domain;
+    }
 
-	@Column(name="displayname",length=100)
-	public String getDisplayName() {
-		return displayName;
-	}
+    /**
+     * Set the value of domain.
+     * 
+     * @param anId
+     *            The value of domain.
+     */
+    public void setDomain(Domain anId) {
+        domain = anId;
 
-	public void setDisplayName(String aName) {
-		displayName = aName;	
-	}
+    }
 
-	@Temporal(TemporalType.TIMESTAMP)
-	public Calendar getCreateTime() {
-		return createTime;
-	}
+    /**
+     * Get the value of displayName.
+     * 
+     * @return the value of displayName.
+     */
+    @Column(name = "displayname", length = 100)
+    public String getDisplayName() {
+        return displayName;
+    }
 
-	public void setCreateTime(Calendar timestamp) {
-		createTime = timestamp;
-	}
+    /**
+     * Set the value of displayName.
+     * 
+     * @param aName
+     *            The value of displayName.
+     */
+    public void setDisplayName(String aName) {
+        displayName = aName;
+    }
 
-	@Temporal(TemporalType.TIMESTAMP)
-	public Calendar getUpdateTime() {
-		return updateTime;
-	}
+    /**
+     * Get the value of createTime.
+     * 
+     * @return the value of createTime.
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    public Calendar getCreateTime() {
+        return createTime;
+    }
 
-	public void setUpdateTime(Calendar timestamp) {
-		updateTime = timestamp;
-	}
+    /**
+     * Set the value of createTime.
+     * 
+     * @param timestamp
+     *            The value of createTime.
+     */
+    public void setCreateTime(Calendar timestamp) {
+        createTime = timestamp;
+    }
 
-	@Column(name="status")
-	@Enumerated
-	public EntityStatus getStatus() {
-		return status;
-	}
+    /**
+     * Get the value of updateTime.
+     * 
+     * @return the value of updateTime.
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    public Calendar getUpdateTime() {
+        return updateTime;
+    }
 
+    /**
+     * Set the value of updateTime.
+     * 
+     * @param timestamp
+     *            The value of updateTime.
+     */
+    public void setUpdateTime(Calendar timestamp) {
+        updateTime = timestamp;
+    }
 
-	public void setStatus(EntityStatus aStatus) {
-		status = aStatus;
-	}
+    /**
+     * Get the value of status.
+     * 
+     * @return the value of status.
+     */
+    @Column(name = "status")
+    @Enumerated
+    public EntityStatus getStatus() {
+        return status;
+    }
 
-	@Column(name="type",length=64)
-	public String getType() {
-		return type;
-	}
+    /**
+     * Set the value of status.
+     * 
+     * @param aStatus
+     *            The value of status.
+     */
+    public void setStatus(EntityStatus aStatus) {
+        status = aStatus;
+    }
 
-	public void setType(String aType) {
-		type = aType;
-	}
-	
-	@Override
-	public String toString() {
-		return "[ID: " + getId() +
-			   " | Address: " + getEmailAddress() +
-		       " | For: "    + getDisplayName() +
-		       " | Domain: " + getDomain().getDomainName() + "]";
-	}
-	
-	public void afterUnmarshal(Unmarshaller u, Object parent) {
-	    setDomain((Domain) parent);
-	}
+    /**
+     * Get the value of type.
+     * 
+     * @return the value of type.
+     */
+    @Column(name = "type", length = 64)
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Set the value of type.
+     * 
+     * @param aType
+     *            The value of type.
+     */
+    public void setType(String aType) {
+        type = aType;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "[ID: " + getId() + " | Address: " + getEmailAddress() + " | For: " + getDisplayName() + " | Domain: "
+                + getDomain().getDomainName() + "]";
+    }
+
+    /**
+     * Actions to run after an unmarshal.
+     * 
+     * @param u
+     *            The Unmarshaller.
+     * @param parent
+     *            The paret.
+     */
+    public void afterUnmarshal(Unmarshaller u, Object parent) {
+        setDomain((Domain) parent);
+    }
 
 }
