@@ -92,6 +92,60 @@ namespace NHINDirect.XDS
 
         }
 
+        public XmlDocument CreateRepositorySlotElement(XmlDocument xmlDocRequest, string slotName, string slotValue, string documentEntryUUID)
+        {
+            try
+            {
+                XmlElement eltRoot = null;
+                XmlNode nodeExtrinsicObject = null;
+                XmlNode nodeExtrinsicObjectSlotValue = null;
+                string xpathExtrinsicObject = @".//*[local-name()='ExtrinsicObject'][@id='$id$']";
+                string xpathExtrinsicObjectSlotValue = @".//*[local-name()='ExtrinsicObject'][@id='$id$']/*[local-name()='Slot'][@name='$name$']/*[local-name()='ValueList']/*[local-name()='Value']";
+
+                //Root Element
+                eltRoot = xmlDocRequest.DocumentElement;
+
+                //ExtrinsicObject element of particular id/entryUUID
+                xpathExtrinsicObject = xpathExtrinsicObject.Replace("$id$", documentEntryUUID);
+                nodeExtrinsicObject = eltRoot.SelectSingleNode(xpathExtrinsicObject);
+
+                //ExtrinsicObject->Slot->ValueList->Value
+                xpathExtrinsicObjectSlotValue = xpathExtrinsicObjectSlotValue.Replace("$id$", documentEntryUUID);
+                xpathExtrinsicObjectSlotValue = xpathExtrinsicObjectSlotValue.Replace("$name$", slotName);
+                nodeExtrinsicObjectSlotValue = eltRoot.SelectSingleNode(xpathExtrinsicObjectSlotValue);
+
+                if (nodeExtrinsicObject == null)
+                    return xmlDocRequest;
+
+                if (nodeExtrinsicObjectSlotValue != null)
+                {
+                    nodeExtrinsicObjectSlotValue.InnerText = slotValue;
+                }
+                else
+                {
+                    XmlElement eltSlot = xmlDocRequest.CreateElement("Slot", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0");
+                    XmlAttribute attribName = xmlDocRequest.CreateAttribute("name");
+                    attribName.Value = slotName;
+                    eltSlot.Attributes.Append(attribName);
+
+                    XmlElement eltValueList = xmlDocRequest.CreateElement("ValueList", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0");
+                    eltSlot.AppendChild(eltValueList);
+
+                    XmlElement eltValue = xmlDocRequest.CreateElement("Value", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0");
+                    eltValue.InnerText = slotValue;
+                    eltValueList.AppendChild(eltValue);
+
+                    nodeExtrinsicObject.InsertAfter(eltSlot, null);
+                }
+
+                return xmlDocRequest;
+            }
+            catch (Exception ex)
+            {
+                m_logger.Error("Unexpected error", ex);
+                throw;
+            }
+        }
         public Stream GetDocumentContentStream(XmlDocument xmlDocRequest, string documentUniqueId)
         {
             Stream documentContentStream = null;
