@@ -13,6 +13,16 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>NHIN-Direct Configuration Service</name>
+
+	<repositories>
+		<repository>
+			<id>jboss-repository</id>
+			<name>JBoss Repository</name>
+			<url>http://repository.jboss.org/maven2</url>
+		</repository>
+	</repositories>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>cglib</groupId>
