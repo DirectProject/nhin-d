@@ -21,7 +21,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\bin\Debug"
+			OutputDirectory="..\..\bin\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfATL="2"
@@ -56,7 +56,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(OutDir)"
+				AdditionalIncludeDirectories="$(OutDir);$(OutDir)\.."
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -114,7 +114,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="..\..\bin\Debug"
+			OutputDirectory="..\..\bin\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfATL="2"
@@ -148,7 +148,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(OutDir)"
+				AdditionalIncludeDirectories="$(OutDir);$(OutDir)\.."
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -206,7 +206,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\bin\Release"
+			OutputDirectory="..\..\bin\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfATL="2"
@@ -297,7 +297,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="..\..\bin\Release"
+			OutputDirectory="..\..\bin\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfATL="2"
