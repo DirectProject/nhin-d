@@ -63,7 +63,7 @@ Name: "{group}\{cm:UninstallProgram,NHIN .NET Gateway}"; Filename: "{uninstallex
 
 [Run]
 Filename: "{app}\Libraries\install_redist.bat"; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: runhidden postinstall runascurrentuser unchecked;
-Filename: "{app}\install.bat"; Parameters: """{app}\DevAgentConfig.xml"" nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall runascurrentuser unchecked;
+Filename: "{app}\install.bat"; Parameters: "nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall runascurrentuser unchecked;
 ; Commented out until we determine why there is an issue with certificates
 ;Filename: "{app}\SQL\createdatabase.bat"; Parameters: ".\sqlexpress NHINDConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: postinstall runascurrentuser unchecked;
 ;Filename: "{app}\createconfigsvc.bat"; Parameters: """{app}\ConfigService"""; Description: Create Config Service; Flags: postinstall runascurrentuser unchecked;
