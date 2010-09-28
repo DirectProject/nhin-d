@@ -9,11 +9,23 @@ namespace NHINDirect.Diagnostics
     ///</summary>
     public static class Log
     {
-        private static readonly ILogFactory s_logFactory;
+        private static ILogFactory s_logFactory;
+        private static readonly object s_factorySync = new object();
 
-        static Log()
+        private static ILogFactory LogFactory
         {
-            s_logFactory = IoC.Resolve<ILogFactory>();
+            get
+            {
+                lock (s_factorySync)
+                {
+                    if (s_logFactory == null)
+                    {
+                        s_logFactory = IoC.Resolve<ILogFactory>();
+                    }
+
+                    return s_logFactory;
+                }
+            }
         }
 
         ///<summary>
@@ -48,7 +60,7 @@ namespace NHINDirect.Diagnostics
         ///<returns>The logger for the type <paramref name="type"/></returns>
         public static ILogger For(Type type)
         {
-            return s_logFactory.GetLogger(type);
+            return LogFactory.GetLogger(type);
         }
     }
 }
