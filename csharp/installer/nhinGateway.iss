@@ -24,29 +24,68 @@ SolidCompression=yes
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
+;[Components]
+;Name: core; Description: "Core Components";
+;Name: configservice; Description: "Configuration Service";
+
 [Files]
-Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Excludes: "xunit*.dll,*tests.dll"; Flags: ignoreversion
-Source: "..\bin\debug\*.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\*.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\debug\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs
-Source: "..\bin\debug\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Excludes: "xunit*.dll,*tests.dll"; Flags: ignoreversion;
+Source: "..\bin\debug\Win32\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX86;
+Source: "..\bin\debug\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64;
+Source: "..\bin\debug\*.config"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "..\bin\debug\*.exe"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "..\bin\debug\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs;
+Source: "..\bin\debug\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: ignoreversion;
 
-Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion;
+Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion;
+Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: ignoreversion;
+Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags: ignoreversion recursesubdirs;
 
-Source: "..\gateway\devInstall\install*.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\gateway\devInstall\*.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\gateway\devInstall\simple.eml"; DestDir: "{app}\Samples"; Flags: ignoreversion
+Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion;
 
-Source: "..\external\microsoft\vcredist\*"; DestDir: "{app}\Libraries"; Flags: ignoreversion recursesubdirs
+Source: "..\gateway\devInstall\install*.bat"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "..\gateway\devInstall\*.xml"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "..\gateway\devInstall\setupdomains.txt"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "..\gateway\devInstall\simple.eml"; DestDir: "{app}\Samples"; Flags: ignoreversion;
+
+Source: "..\external\microsoft\vcredist\*"; DestDir: "{app}\Libraries"; Flags: ignoreversion recursesubdirs;
+
+Source: "createdatabase.bat"; DestDir: "{app}\SQL"; Flags: ignoreversion;
+Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion;
+Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion;
+
+Source: "createconfigsvc.bat"; DestDir: "{app}"; Flags: ignoreversion;
 
 [Icons]
-Name: "{group}\{cm:UninstallProgram,NHIN .NET Gateway}"; Filename: "{uninstallexe}"
+Name: "{group}\{cm:UninstallProgram,NHIN .NET Gateway}"; Filename: "{uninstallexe}";
 
 [Run]
-Filename: "{app}\Libraries\install_redist.bat"; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: runhidden postinstall runascurrentuser unchecked
-Filename: "{app}\install.bat"; Parameters: "nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall runascurrentuser;
+Filename: "{app}\Libraries\install_redist.bat"; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: runhidden postinstall runascurrentuser unchecked;
+Filename: "{app}\install.bat"; Parameters: """{app}\DevAgentConfig.xml"" nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall runascurrentuser unchecked;
+; Commented out until we determine why there is an issue with certificates
+;Filename: "{app}\SQL\createdatabase.bat"; Parameters: ".\sqlexpress NHINDConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: postinstall runascurrentuser unchecked;
+;Filename: "{app}\createconfigsvc.bat"; Parameters: """{app}\ConfigService"""; Description: Create Config Service; Flags: postinstall runascurrentuser unchecked;
+;Filename: "{app}\install.bat"; Parameters: """{app}\DevAgentWithServiceConfig.xml"" nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall runascurrentuser unchecked;
+;Filename: "{app}\nhinConfigConsole.exe"; Parameters: "batch setupdomains.txt"; Description: "Install Certs in Configuration Service"; Flags: postinstall runascurrentuser unchecked;
 
 [UninstallRun]
 Filename: "{app}\unregisterGateway.bat"; Flags: shellexec runascurrentuser;
+
+[Code]
+function IsX64: Boolean;
+begin
+  Result := Is64BitInstallMode and (ProcessorArchitecture = paX64);
+end;
+
+function IsIA64: Boolean;
+begin
+  Result := Is64BitInstallMode and (ProcessorArchitecture = paIA64);
+end;
+
+function IsX86: Boolean;
+begin
+  Result := (ProcessorArchitecture = paX86);
+end;
 
