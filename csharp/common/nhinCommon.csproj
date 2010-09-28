@@ -73,6 +73,7 @@
     <Compile Include="Cryptography\SMIMECryptographer.cs" />
     <Compile Include="Cryptography\SMIMEStandard.cs" />
     <Compile Include="Diagnostics\AuditNames.cs" />
+    <Compile Include="Diagnostics\EventLogAuditor.cs" />
     <Compile Include="Diagnostics\IAuditor.cs" />
     <Compile Include="Diagnostics\ILogFactory.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
