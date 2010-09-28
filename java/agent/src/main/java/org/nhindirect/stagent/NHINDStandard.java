@@ -36,13 +36,13 @@ public class NHINDStandard
     public final static String[] MailHeadersUsed = new String[]
     {
     	MimeStandard.VersionHeader,
-    	MailStandard.FromHeader,
-    	MailStandard.ToHeader,
-    	MailStandard.CCHeader,
-    	MailStandard.BCCHeader,
-    	MailStandard.OrigDateHeader,
-    	MailStandard.MessageIDHeader,
-    	MailStandard.InReplyToHeader,
-        MailStandard.ReferencesHeader
+    	MailStandard.Headers.From,
+    	MailStandard.Headers.To,
+    	MailStandard.Headers.CC,
+    	MailStandard.Headers.BCC,
+    	MailStandard.Headers.OrigDate,
+    	MailStandard.Headers.MessageID,
+    	MailStandard.Headers.InReplyTo,
+        MailStandard.Headers.References
     };
 }

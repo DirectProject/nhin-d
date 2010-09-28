@@ -299,7 +299,7 @@ public class NHINDAgentTest extends TestCase
 		
 		assertNotNull(wrappedMessage);
 		assertTrue(wrappedMessage.toString().length() > 0);
-		assertEquals(MailStandard.MediaType_WrappedMessage, wrappedMessage.getContentType());
+		assertEquals(MailStandard.MediaType.WrappedMessage, wrappedMessage.getContentType());
 		List<String> headers = new ArrayList<String>();
 		Enumeration<Header> allHeaders = wrappedMessage.getAllHeaders();
 		while(allHeaders.hasMoreElements()) {

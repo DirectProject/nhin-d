@@ -38,6 +38,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.nhindirect.gateway.smtp.DomainPostmaster;
+import org.nhindirect.gateway.smtp.NotificationProducer;
+import org.nhindirect.gateway.smtp.NotificationSettings;
 import org.nhindirect.gateway.smtp.ProcessBadMessageSettings;
 import org.nhindirect.gateway.smtp.ProcessIncomingSettings;
 import org.nhindirect.gateway.smtp.ProcessOutgoingSettings;
@@ -102,6 +104,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	private ProcessIncomingSettings incomingSettings;
 	private ProcessOutgoingSettings outgoingSettings;
 	private ProcessBadMessageSettings badSettings;
+	private NotificationProducer notificationProducer;
 	
 	/**
 	 * Construct and configuration component with the location of the configuration file and an optional provider for creating
@@ -195,7 +198,13 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			{
 				buildBadMessageSettings(docNode);
 			}	
-			
+			/*
+			 * MDN settings
+			 */
+			else if (docNode.getNodeName().equalsIgnoreCase("mdnsettings"))
+			{
+				buildMDNSettings(docNode);
+			}
 			
 			docNode = docNode.getNextSibling();
 		} while (docNode != null);
@@ -204,7 +213,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			throw new SmtpAgentException(SmtpAgentError.MissingDomains);
 		
 		SmtpAgentSettings settings = new SmtpAgentSettings(domainPostmasters, rawSettings, outgoingSettings,
-				incomingSettings, badSettings);
+				incomingSettings, badSettings, notificationProducer);
 		
 		if (smtpAgentProvider == null)
 			smtpAgentProvider = new DefaultSmtpAgentProvider(settings);
@@ -216,6 +225,35 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			agentModule = AgentModule.create(agentProvider);
 			
 		return Guice.createInjector(agentModule, SmtpAgentModule.create(smtpAgentProvider));
+	}
+	
+	/*
+	 * Builds the MDN settings
+	 */
+	private void buildMDNSettings(Node MDNNode)
+	{
+		if (MDNNode.getNodeType() == Node.ELEMENT_NODE)
+		{
+			Element settingsNode = (Element)MDNNode;
+			boolean autoResponse = Boolean.parseBoolean(settingsNode.getAttribute("autoResponse"));
+			String prodName = settingsNode.getAttribute("productName");
+			
+			String text = null;
+			Node childNode = MDNNode.getFirstChild();
+			do
+			{
+				if (childNode.getNodeType() == Node.ELEMENT_NODE)
+				{
+					if (childNode.getNodeName().equalsIgnoreCase("text"))
+						text = childNode.getFirstChild().getNodeValue();	
+				}
+				childNode = childNode.getNextSibling();
+			} while (childNode != null);
+			
+			
+			
+			notificationProducer = new NotificationProducer(new NotificationSettings(autoResponse, prodName, text));
+		}
 	}
 	
 	/*
@@ -446,8 +484,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			if (storeType.equalsIgnoreCase("keystore"))
 			{
 				resolverProvider = new KeyStoreCertificateStoreProvider(certNode.getAttribute("file"), 
-						certNode.getAttribute("filePass"), certNode.getAttribute("privKeyPass"),
-						certNode.getAttribute("crlUri"));
+						certNode.getAttribute("filePass"), certNode.getAttribute("privKeyPass"));
 			}
 			/*
 			 * DNS resolver
@@ -489,7 +526,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			if (storeType.equalsIgnoreCase("keystore"))
 			{
 				resolverProvider = new KeyStoreCertificateStoreProvider(certNode.getAttribute("file"), 
-						certNode.getAttribute("filePass"), certNode.getAttribute("privKeyPass"), null);
+						certNode.getAttribute("filePass"), certNode.getAttribute("privKeyPass"));
 			}
 			else if(storeType.equalsIgnoreCase("ldap"))
 			{

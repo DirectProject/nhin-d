@@ -1,4 +1,3 @@
-package org.nhindirect.config.store.dao;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -18,7 +17,9 @@ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUEN
 GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
+
+package org.nhindirect.config.store.dao;
 
 import java.util.List;
 
@@ -26,23 +27,90 @@ import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 
+/**
+ * Address data access methods.
+ */
 public interface AddressDao {
-	public int count();
-	
-	public void add(Address item);
-	
-	public void update(Address item);
-	
-	public void save(Address item);
-	
-	public void delete(String name);
-	
-	public Address get(String name);
-	
-	public List<Address> listAddresses(List<String> names, EntityStatus status);
-	
-	public List<Address> getByDomain(Domain domain, EntityStatus status);
-	
-	public List<Address> listAddresses(String name, int count);
+
+    /**
+     * Get a count of Addresses.
+     * 
+     * @return a count of Addresses.
+     */
+    public int count();
+
+    /**
+     * Add an Address.
+     * 
+     * @param item
+     *            The Address.
+     */
+    public void add(Address item);
+
+    /**
+     * Update an Address.
+     * 
+     * @param item
+     *            The Address.
+     */
+    public void update(Address item);
+
+    /**
+     * Save an Address.
+     * 
+     * @param item
+     *            The Address.
+     */
+    public void save(Address item);
+
+    /**
+     * Delete an Address.
+     * 
+     * @param name
+     *            The Address.
+     */
+    public void delete(String name);
+
+    /**
+     * Get an Address.
+     * 
+     * @param name
+     *            The Address name.
+     * @return an Address.
+     */
+    public Address get(String name);
+
+    /**
+     * Get a collection of Addresses.
+     * 
+     * @param names
+     *            The Address names.
+     * @param status
+     *            The Address status.
+     * @return a collection of Addresses.
+     */
+    public List<Address> listAddresses(List<String> names, EntityStatus status);
+
+    /**
+     * Get a collection of Addresses.
+     * 
+     * @param domain
+     *            The Domain name.
+     * @param status
+     *            The Address status.
+     * @return a collection of Addresses.
+     */
+    public List<Address> getByDomain(Domain domain, EntityStatus status);
+
+    /**
+     * Get a collection of Addresses.
+     * 
+     * @param name
+     *            The address name.
+     * @param count
+     *            The count.
+     * @return a collection of Addresses.
+     */
+    public List<Address> listAddresses(String name, int count);
 
 }

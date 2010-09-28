@@ -1,12 +1,9 @@
 package org.nhindirect.stagent;
 
-
 import junit.framework.TestCase;
 import org.nhindirect.stagent.DefaultNHINDAgent;
-import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.trust.DefaultTrustAnchorResolver;
-import org.nhindirect.stagent.trust.TrustAnchorResolver;
 import org.nhindirect.stagent.utils.BaseTestPlan;
 
 /**

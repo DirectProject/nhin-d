@@ -20,7 +20,12 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */package org.nhindirect.gateway.smtp;
 
+import java.util.Collection;
+
 import org.nhindirect.stagent.MessageEnvelope;
+import org.nhindirect.stagent.mail.notifications.NotificationMessage;
+
+import java.util.Collections;
 
 /**
  * Result structure for messages processed by the SmtpAgent.  Contains the result of processing the message and 
@@ -31,17 +36,17 @@ public class MessageProcessResult
 {
 	private final MessageEnvelope processedMessage;
 	
-	private final MessageEnvelope ackMessage;
+	private Collection<NotificationMessage> notificationMessages;
 	
 	/**
 	 * Construct a result.
 	 * @param processedMessage The resulting message of processing a message through the SmtpAgent.
 	 * @param ackMessage An acknowledgment message that should be sent to the sender.
 	 */
-	public MessageProcessResult(MessageEnvelope processedMessage, MessageEnvelope ackMessage)
+	public MessageProcessResult(MessageEnvelope processedMessage, Collection<NotificationMessage> notificationMessages)
 	{
 		this.processedMessage = processedMessage;
-		this.ackMessage = ackMessage;
+		this.notificationMessages = notificationMessages;
 	}
 
 	/**
@@ -55,12 +60,20 @@ public class MessageProcessResult
 	}
 
 	/**
-	 * Get the ack message that should be sent back to the sender according the security and trust policy.
-	 * @return The ack message that should be sent back to the sender
+	 * Get the notification messages that should be sent back to the sender according the security and trust policy.
+	 * @return The notification messages that should be sent back to the sender.
 	 */
-	public MessageEnvelope getAckMessage() 
+	public Collection<NotificationMessage> getNotificationMessages() 
 	{
-		return ackMessage;
+		if (notificationMessages != null)
+			return Collections.unmodifiableCollection(notificationMessages);
+		else
+			return Collections.emptyList();
 	}
 
+	public void setNotificationMessages(Collection<NotificationMessage> notificationMessages)
+	{
+		this.notificationMessages = notificationMessages;
+	}
+	
 }

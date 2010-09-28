@@ -12,7 +12,10 @@ import org.nhindirect.gateway.smtp.james.mailet.NHINDSecurityAndTrustMailet;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.cryptography.SMIMEStandard;
+import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.mail.Message;
+import org.nhindirect.stagent.mail.notifications.MDNStandard;
+import org.nhindirect.stagent.mail.notifications.NotificationHelper;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
 import junit.framework.TestCase;
@@ -68,6 +71,9 @@ public class NHINDSecurityAndTrustMailet_functionalTest extends TestCase
 				
 				MimeMessage msg = EntitySerializer.Default.deserialize(originalMessage);
 				
+				// add an MDN request
+				msg.setHeader(MDNStandard.Headers.DispositionNotificationTo, msg.getHeader(MailStandard.Headers.From, ","));
+				
 				MockMail theMessage = new MockMail(msg);
 				
 				Mailet theMailet = getMailet("ValidConfig.xml");
@@ -100,6 +106,9 @@ public class NHINDSecurityAndTrustMailet_functionalTest extends TestCase
 				assertEquals(theMessage.getState(), Mail.TRANSPORT);
 
 				Message compareMessage = new Message(theMessage.getMessage());
+				
+				// remove the MDN before comparison
+				compareMessage.removeHeader(MDNStandard.Headers.DispositionNotificationTo);
 				
 				assertEquals(originalMessage, compareMessage.toString());
 				

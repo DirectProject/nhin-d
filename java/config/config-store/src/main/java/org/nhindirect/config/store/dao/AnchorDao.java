@@ -1,4 +1,3 @@
-package org.nhindirect.config.store.dao;
 /* 
 Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
@@ -18,31 +17,95 @@ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUEN
 GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
+
+package org.nhindirect.config.store.dao;
 
 import java.util.List;
 
 import org.nhindirect.config.store.Anchor;
 import org.nhindirect.config.store.EntityStatus;
 
+/**
+ * Anchor data access methods.
+ */
 public interface AnchorDao {
-	public Anchor load(String owner);
-	
-	public List<Anchor> listAll();
-	
-	public List<Anchor> list(List<String> owners);
-	
-	public void save(Anchor anchor);
-	
-	public void save(List<Anchor> anchorList);
-	
-	public void setStatus(List<Long> anchorIDs, EntityStatus status);
-	
-	public void setStatus(String owner, EntityStatus status);
-	
-	public void delete(List<Long> idList);
-	
-	public void delete(String owner);
 
+    /**
+     * Load an Anchor.
+     * 
+     * @param owner
+     *            The Anchor owner.
+     * @return an Anchor.
+     */
+    public Anchor load(String owner);
+
+    /**
+     * Get a collection of all Anchors.
+     * 
+     * @return a collection of all Anchors.
+     */
+    public List<Anchor> listAll();
+
+    /**
+     * Get a collection of Anchors.
+     * 
+     * @param owners
+     *            A collection of owners.
+     * @return a collection of Anchors.
+     */
+    public List<Anchor> list(List<String> owners);
+
+    /**
+     * Save an Anchor.
+     * 
+     * @param anchor
+     *            The Anchor.
+     */
+    public void save(Anchor anchor);
+
+    /**
+     * Save a collection of Anchors.
+     * 
+     * @param anchorList
+     *            The collection of Anchors.
+     */
+    public void save(List<Anchor> anchorList);
+
+    /**
+     * Set the status for a collection of Anchors.
+     * 
+     * @param anchorIDs
+     *            The Anchor IDs.
+     * @param status
+     *            The Anchor status.
+     */
+    public void setStatus(List<Long> anchorIDs, EntityStatus status);
+
+    /**
+     * Set the status of an Anchor.
+     * 
+     * @param owner
+     *            The Anchor owner.
+     * @param status
+     *            The Anchor status.
+     */
+    public void setStatus(String owner, EntityStatus status);
+
+    /**
+     * Delete a collection of Anchors.
+     * 
+     * @param idList
+     *            The collection of Anchor IDs.
+     */
+    public void delete(List<Long> idList);
+
+    /**
+     * Delete a collection of Anchors.
+     * 
+     * @param owner
+     *            The Anchor owner.
+     */
+    public void delete(String owner);
 
 }

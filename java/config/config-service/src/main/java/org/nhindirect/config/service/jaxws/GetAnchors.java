@@ -1,43 +1,43 @@
 
 package org.nhindirect.config.service.jaxws;
 
-import java.util.List;
+import java.util.Collection;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.nhindirect.config.service.ws.CertificateGetOptions;
+import org.nhindirect.config.service.impl.CertificateGetOptions;
 
 @XmlRootElement(name = "getAnchors", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "getAnchors", namespace = "http://nhind.org/config", propOrder = {
-    "arg0",
-    "arg1"
+    "anchorId",
+    "options"
 })
 public class GetAnchors {
 
-    @XmlElement(name = "arg0", namespace = "")
-    private List<Long> arg0;
-    @XmlElement(name = "arg1", namespace = "")
-    private CertificateGetOptions arg1;
+    @XmlElement(name = "anchorId", namespace = "")
+    private Collection<Long> anchorId;
+    @XmlElement(name = "options", namespace = "")
+    private CertificateGetOptions options;
 
     /**
      * 
      * @return
-     *     returns List<Long>
+     *     returns Collection<Long>
      */
-    public List<Long> getArg0() {
-        return this.arg0;
+    public Collection<Long> getAnchorId() {
+        return this.anchorId;
     }
 
     /**
      * 
-     * @param arg0
-     *     the value for the arg0 property
+     * @param anchorId
+     *     the value for the anchorId property
      */
-    public void setArg0(List<Long> arg0) {
-        this.arg0 = arg0;
+    public void setAnchorId(Collection<Long> anchorId) {
+        this.anchorId = anchorId;
     }
 
     /**
@@ -45,17 +45,17 @@ public class GetAnchors {
      * @return
      *     returns CertificateGetOptions
      */
-    public CertificateGetOptions getArg1() {
-        return this.arg1;
+    public CertificateGetOptions getOptions() {
+        return this.options;
     }
 
     /**
      * 
-     * @param arg1
-     *     the value for the arg1 property
+     * @param options
+     *     the value for the options property
      */
-    public void setArg1(CertificateGetOptions arg1) {
-        this.arg1 = arg1;
+    public void setOptions(CertificateGetOptions options) {
+        this.options = options;
     }
 
 }

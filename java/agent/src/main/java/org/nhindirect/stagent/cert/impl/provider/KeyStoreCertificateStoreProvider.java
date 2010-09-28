@@ -32,18 +32,16 @@ public class KeyStoreCertificateStoreProvider implements Provider<CertificateRes
 	private final String fileName;
 	private final String filePassword;
 	private final String privKeyPassword;
-	private final String certificateRevocationListFile;
 	
-	public KeyStoreCertificateStoreProvider(String fileName, String filePassword, String privKeyPassword, String certificateRevocationListFile)
+	public KeyStoreCertificateStoreProvider(String fileName, String filePassword, String privKeyPassword)
 	{
 		this.fileName = fileName;
 		this.filePassword = filePassword;
 		this.privKeyPassword = privKeyPassword;
-		this.certificateRevocationListFile = certificateRevocationListFile;
 	}
 	
 	public CertificateResolver get()
 	{
-		return new KeyStoreCertificateStore(fileName, filePassword, privKeyPassword, certificateRevocationListFile);
+		return new KeyStoreCertificateStore(fileName, filePassword, privKeyPassword);
 	}
 }

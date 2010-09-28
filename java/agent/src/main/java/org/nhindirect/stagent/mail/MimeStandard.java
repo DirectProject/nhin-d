@@ -59,10 +59,13 @@ public class MimeStandard
     //
     // Content-Type
     //
-    public static final String MediaType_TextPlain = "text/plain";
-    public static final String MediaType_Default = MediaType_TextPlain;
-    public static final String MediaType_Multipart = "multipart";
-    public static final String MediaType_MultipartMixed = "multipart/mixed;";
+    public static class MediaType
+    {
+    	public static final String TextPlain = "text/plain";
+    	public static final String Default = TextPlain;
+    	public static final String Multipart = "multipart";
+    	public static final String MultipartMixed = "multipart/mixed;";
+    }
     
     //
     // MAIL

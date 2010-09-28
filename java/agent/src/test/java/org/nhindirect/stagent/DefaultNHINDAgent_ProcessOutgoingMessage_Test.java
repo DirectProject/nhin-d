@@ -151,7 +151,7 @@ public class DefaultNHINDAgent_ProcessOutgoingMessage_Test extends TestCase {
 
 					@Override
 					public String getContentType() throws MessagingException {
-						return MailStandard.MediaType_WrappedMessage;
+						return MailStandard.MediaType.WrappedMessage;
 					}
 					
 				};

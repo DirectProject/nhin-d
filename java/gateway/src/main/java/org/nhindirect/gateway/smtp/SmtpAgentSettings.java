@@ -37,6 +37,7 @@ public class SmtpAgentSettings
 	private final ProcessOutgoingSettings outgoingSettings;
 	private final ProcessIncomingSettings incomingSettings;
 	private final ProcessBadMessageSettings badMessageSettings;
+	private final NotificationProducer notificationProducer;
 	
 	/**
 	 * Constructs the settings objects.
@@ -47,15 +48,21 @@ public class SmtpAgentSettings
 	 * @param badMessageSettings Settings for processing bad messages.
 	 */
 	public SmtpAgentSettings(Map<String, DomainPostmaster>  domains, RawMessageSettings rawMessageSettings, ProcessOutgoingSettings outgoingSettings,
-			ProcessIncomingSettings incomingSettings, ProcessBadMessageSettings badMessageSettings)
+			ProcessIncomingSettings incomingSettings, ProcessBadMessageSettings badMessageSettings, NotificationProducer notificationProducer)
 	{
 		this.domains = domains;
 		this.rawMessageSettings = rawMessageSettings;
 		this.outgoingSettings = outgoingSettings;
 		this.incomingSettings = incomingSettings;
 		this.badMessageSettings = badMessageSettings;
+		this.notificationProducer = notificationProducer;
 	}
 	
+	public NotificationProducer getNotificationProducer() 
+	{
+		return notificationProducer;
+	}
+
 	/**
 	 * Gets the domains managed by the SmtpAgent and postmaster email addresses for each domain.
 	 * @return The domains managed by the SmtpAgent

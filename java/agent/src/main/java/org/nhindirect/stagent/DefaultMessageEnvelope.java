@@ -418,10 +418,10 @@ public class DefaultMessageEnvelope implements MessageEnvelope
 	        {
 	        	this.getTo().removeAll(rejectedRecipients);
 	        	if(this.getTo().isEmpty()) {
-	        		this.getMessage().removeHeader(MailStandard.ToHeader);
+	        		this.getMessage().removeHeader(MailStandard.Headers.To);
 	        	}
 	        	else {
-	        		this.getMessage().setHeader(MailStandard.ToHeader, this.getTo().toString());
+	        		this.getMessage().setHeader(MailStandard.Headers.To, this.getTo().toString());
 	        	}
 	        }
 
@@ -429,10 +429,10 @@ public class DefaultMessageEnvelope implements MessageEnvelope
 	        {
 	        	this.getCC().removeAll(rejectedRecipients);
 	        	if(this.getCC().isEmpty()) {
-	        		this.getMessage().removeHeader(MailStandard.CCHeader);
+	        		this.getMessage().removeHeader(MailStandard.Headers.CC);
 	        	}
 	        	else {
-	        		this.getMessage().setHeader(MailStandard.CCHeader, this.getCC().toString());
+	        		this.getMessage().setHeader(MailStandard.Headers.CC, this.getCC().toString());
 	        	}
 	        }
 
@@ -440,10 +440,10 @@ public class DefaultMessageEnvelope implements MessageEnvelope
 	        {
 	        	this.getBCC().removeAll(rejectedRecipients);
 	        	if(this.getBCC().isEmpty()) {
-	        		this.getMessage().removeHeader(MailStandard.BCCHeader);
+	        		this.getMessage().removeHeader(MailStandard.Headers.BCC);
 	        	}
 	        	else {
-	        		this.getMessage().setHeader(MailStandard.BCCHeader, this.getBCC().toString());
+	        		this.getMessage().setHeader(MailStandard.Headers.BCC, this.getBCC().toString());
 	        	}
 	        }
 

@@ -42,6 +42,7 @@ import org.nhindirect.gateway.smtp.SmtpAgentFactory;
 import org.nhindirect.stagent.AddressSource;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
+import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 
 /**
  * Apache James mailet for the enforcing the NHINDirect security and trust specification.  The mailed sits between
@@ -192,9 +193,26 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		}
 		
 		
-		/**
-		 * TODO: Handle the MDN specification for ack message
+		/*
+		 * Handle sending MDN messages
 		 */
+		Collection<NotificationMessage> notifications = result.getNotificationMessages();
+		if (notifications != null && notifications.size() > 0)
+		{
+			// create a message for each notification and put it on James "stack"
+			for (NotificationMessage message : notifications)
+			{
+				try
+				{
+					this.getMailetContext().sendMail(message);
+				}
+				catch (Throwable t)
+				{
+					// don't kill the process if this fails
+					LOGGER.error("Error sending MDN message.", t);
+				}
+			}
+		}
 		
 		
 		LOGGER.trace("Exiting service(Mail mail)");

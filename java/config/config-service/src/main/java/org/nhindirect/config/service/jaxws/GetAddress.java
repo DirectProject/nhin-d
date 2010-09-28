@@ -1,7 +1,7 @@
 
 package org.nhindirect.config.service.jaxws;
 
-import java.util.List;
+import java.util.Collection;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -12,32 +12,32 @@ import org.nhindirect.config.store.EntityStatus;
 @XmlRootElement(name = "getAddresss", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "getAddresss", namespace = "http://nhind.org/config", propOrder = {
-    "arg0",
-    "arg1"
+    "emailAddress",
+    "status"
 })
 public class GetAddress {
 
-    @XmlElement(name = "arg0", namespace = "")
-    private List<String> arg0;
-    @XmlElement(name = "arg1", namespace = "")
-    private EntityStatus arg1;
+    @XmlElement(name = "emailAddress", namespace = "")
+    private Collection<String> emailAddress;
+    @XmlElement(name = "status", namespace = "")
+    private EntityStatus status;
 
     /**
      * 
      * @return
-     *     returns List<String>
+     *     returns Collection<String>
      */
-    public List<String> getArg0() {
-        return this.arg0;
+    public Collection<String> getEmailAddress() {
+        return this.emailAddress;
     }
 
     /**
      * 
-     * @param arg0
-     *     the value for the arg0 property
+     * @param emailAddress
+     *     the value for the emailAddress property
      */
-    public void setArg0(List<String> arg0) {
-        this.arg0 = arg0;
+    public void setEmailAddress(Collection<String> emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
     /**
@@ -45,17 +45,17 @@ public class GetAddress {
      * @return
      *     returns EntityStatus
      */
-    public EntityStatus getArg1() {
-        return this.arg1;
+    public EntityStatus getStatus() {
+        return this.status;
     }
 
     /**
      * 
-     * @param arg1
-     *     the value for the arg1 property
+     * @param status
+     *     the value for the status property
      */
-    public void setArg1(EntityStatus arg1) {
-        this.arg1 = arg1;
+    public void setStatus(EntityStatus status) {
+        this.status = status;
     }
 
 }
