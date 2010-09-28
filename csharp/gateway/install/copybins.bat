@@ -17,6 +17,9 @@ if "%dest%"=="" goto :Usage
 if "%bin%"=="" goto :Usage
 if "%backup%"=="" goto :Usage
 
+set platform_dir=Win32
+if "%PROCESSOR_ARCHITECTURE%" == "AMD64" set platform_dir=x64
+
 call :Restart
 if %ERRORLEVEL% NEQ 0 goto :Error
 
@@ -69,15 +72,12 @@ goto :EOF
 :EnsureDirs
 echo Ensuring Directories
 if not exist %dest% md %dest%
-pushd %dest%
-del /s /q *
-popd
 goto :EOF
 
 @rem -------------------------------
 :CopyBins
 call :PrintHeading Copying BINS to "%dest%"
-call :CopyFiles dnsResolver.dll nhinCommon.dll nhinAgent.dll nhinSmtpAgent.dll Interop.ADODB.dll Interop.CDO.dll smtpEventHandler.dll nhinConfigClient.dll nhinConfigStore.dll nhinToolLib.dll nhinConfigConsole.exe ConfigConsoleSettings.xml
+call :CopyFiles dnsResolver.dll nhinCommon.dll nhinAgent.dll nhinSmtpAgent.dll Interop.ADODB.dll Interop.CDO.dll %platform_dir%\smtpEventHandler.dll
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------
