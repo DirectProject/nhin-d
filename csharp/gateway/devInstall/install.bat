@@ -2,13 +2,17 @@
 @echo off
 setlocal
 
-if "%1%" == "nocopy" (
+@rem these are the defaults, exceptions below...
 set srcbin=
 set destbin=%~dp0
-) else (
+
+@rem nocopy can occur in the first or second param
+if "%1%" NEQ "nocopy" (
+set configFile=%~f1
+if "%2" NEQ "nocopy" (
 set srcbin=..\..\bin\debug
 set destbin=C:\inetpub\nhinGateway\
-set configFile=%~f1
+)
 )
 
 if NOT "%srcbin%" == "" call copybins.bat %destbin%
@@ -43,10 +47,13 @@ goto :EOF
 
 @rem -------------------------------
 echo install [nocopy]
+echo install configpath [nocopy]
 echo     nocopy: do not copy bits. Just install from local directory
+echo     configpath: path to the xml configuration file
 goto :EOF
 
 :Done
 endlocal
 popd
+pause
 exit /b %ERRORLEVEL%
