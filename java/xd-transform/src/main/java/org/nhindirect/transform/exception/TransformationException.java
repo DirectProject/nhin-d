@@ -26,25 +26,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform;
-
-import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
-import java.io.File;
-
-import org.nhindirect.transform.exception.TransformationException;
+package org.nhindirect.transform.exception;
 
 /**
- * This interface handles the transformation of XDM to XDS.
+ * Generic exception to be thrown from transformation classes.
  * 
  * @author beau
  */
-public interface XdmXdsTransformer
+public class TransformationException extends java.lang.Exception
 {
+    private static final long serialVersionUID = -6617978036111712964L;
+
     /**
-     * @param file
-     * @return
-     * @throws TransformationException 
+     * Construct an exception.
+     * 
+     * @param message
+     *            The exception message.
+     * @param throwable
+     *            The throwable causing the exception.
      */
-    public ProvideAndRegisterDocumentSetRequestType transform(File file) throws TransformationException;
+    public TransformationException(String message, Throwable throwable)
+    {
+        super(message, throwable);
+    }
 }
