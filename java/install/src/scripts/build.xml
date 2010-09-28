@@ -1,0 +1,189 @@
+<project name="install" default="assemble" basedir=".">
+	<description>
+	    Install the apache-james mail server for use with NHIN Direct
+	</description>
+	
+	<!-- set global properties for this build -->
+	<property environment="env" />
+	<property name="install.root.dir" value="../.." />
+	<property name="src" value="${install.root.dir}/src"/>
+	<property name="build.dir" value="${install.root.dir}/build"/>
+	<property name="build.download.dir" value="${build.dir}/download" />
+	<property name="apache.james.binary.url" value="http://www.devlib.org/apache//james/server/apache-james-2.3.2.zip" />
+	<property name="metro.download.url" value="https://metro.dev.java.net/2.0.1/metro-2_0_1.zip" />
+	<property name="wget.command.path" value="/usr/bin/wget" />
+	<property name="apache.james.binary.zip" value="${build.download.dir}/apache-james-2.3.2.zip" />
+	<property name="metro.download.zip" value="${build.download.dir}/metro-2_0_1.zip" />
+	<property name="metro.stage.dir" value="${build.dir}/metro" />
+	<property name="james.stage.dir" value="${env.DIRECT_INSTALL_DIR}/james-2.3.2" />
+	<property name="jce.stage.dir" value="${build.dir}/jce" />
+	<property name="james.stage.apps.dir" value="${james.stage.dir}/apps/james" />
+	<property name="james.stage.config" value="${james.stage.apps.dir}/SAR-INF/config.xml" />
+	<property name="james.stage.config.save" value="${james.stage.apps.dir}/SAR-INF/config.xml.save" />
+	<property name="james.stage.config.new" value="${james.stage.apps.dir}/SAR-INF/config-new.xml" />
+	<property name="james.stage.apps.SAR-INF.lib.dir" value="${james.stage.apps.dir}/SAR-INF/lib" />
+	<property name="james.stage.apps.james.sar.path" value="${james.stage.dir}/apps/james.sar" />
+	<property name="maven.repo" value="${env.HOME}/.m2/repository" />
+	<property name="james.stage.stconfig.src" value="${install.root.dir}/src/main/resources/STConfig.xml" />
+	<property name="james.stage.stconfig.dst" value="${james.stage.apps.dir}/SAR-INF/STConfig.xml" />
+	<property name="james.stage.stconfig.save" value="${james.stage.apps.dir}/SAR-INF/STConfig.xml.save" />
+	<property name="james.stage.stconfig.new" value="${james.stage.apps.dir}/SAR-INF/STConfig-new.xml" />
+	<property name="james.stage.keystore.src" value="${install.root.dir}/src/main/resources/keystore.jks" />
+	<property name="james.stage.keystore.dst" value="${james.stage.apps.dir}/SAR-INF/keystore.jks" />
+	<property name="jce.policy.zip" value="${install.root.dir}/src/main/resources/jce_policy-1_4_2.zip" />
+	
+	<!-- Support libraries -->
+	<property name="lib.activation" value="${maven.repo}/javax/activation/activation/1.1/activation-1.1.jar" />
+	<property name="lib.aopalliance" value="${maven.repo}/aopalliance/aopalliance/1.0/aopalliance-1.0.jar" />
+	<property name="lib.apache-mailet" value="${maven.repo}/org/apache/james/apache-mailet/2.4/apache-mailet-2.4.jar" />
+	<property name="lib.apache-mailet-base" value="${maven.repo}/org/apache/james/apache-mailet-base/1.1/apache-mailet-base-1.1.jar" />
+	<property name="lib.bcmail-jdk15" value="${maven.repo}/bouncycastle/bcmail-jdk15/140/bcmail-jdk15-140.jar" />
+	<property name="lib.bcprov-jdk15" value="${maven.repo}/bouncycastle/bcprov-jdk15/140/bcprov-jdk15-140.jar" />
+	<property name="lib.commons-codec" value="${maven.repo}/commons-codec/commons-codec/1.4/commons-codec-1.4.jar" />
+	<property name="lib.commons-io" value="${maven.repo}/commons-io/commons-io/1.4/commons-io-1.4.jar" />
+	<property name="lib.commons-logging" value="${maven.repo}/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar" />
+	<property name="lib.commons-lang" value="${maven.repo}/commons-lang/commons-lang/2.5/commons-lang-2.5.jar" />
+	<property name="lib.mail" value="${maven.repo}/javax/mail/mail/1.4.1/mail-1.4.1.jar" />
+	<property name="lib.guice" value="${maven.repo}/com/google/inject/guice/2.0/guice-2.0.jar" />
+	<property name="lib.metro.src" value="${install.root.dir}/build/metro/lib//webservices-rt.jar" />
+	<property name="lib.metro.dst" value="${james.stage.apps.SAR-INF.lib.dir}/webservices-rt-2.0.1.jar" />
+
+	<!-- Package libraries -->
+	<property name="agent.dir" value="${install.root.dir}/../agent" />
+	<property name="gateway.dir" value="${install.root.dir}/../gateway" />
+	<property name="xdmail.dir" value="${install.root.dir}/../xdmail" />
+	<property name="lib.agent" value="${agent.dir}/target/nhinAgent-1.0-SNAPSHOT.jar" />
+	<property name="lib.gateway" value="${gateway.dir}/target/nhin-d-gateways-1.0-SNAPSHOT.jar" />
+	<property name="lib.xdmail" value="${xdmail.dir}/target/xdmail-1.0-SNAPSHOT.jar" />
+	
+	<!-- Stylesheet to edit the config file -->
+	<property name="edit.config.stylesheet" value="${src}/scripts/edit-config.xsl" />
+	<property name="edit.STConfig.stylesheet" value="${src}/scripts/edit-STConfig.xsl" />
+
+	<target name="init">
+	
+		<!-- Create the time stamp -->
+	    <tstamp/>
+ 	</target>
+
+	<target name="assemble" depends="init" description="assemble the apache james mail server">
+	    
+		<!-- Create the build directory structure -->
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.download.dir}" />
+		<fail unless="env.DIRECT_INSTALL_DIR" message="Environment variable DIRECT_INSTALL_DIR is not set" />
+
+		<!-- get the apache james binary install package -->
+		<available file="${apache.james.binary.zip}"  property="apache.james.download.exists" />
+		<antcall target="get-james" />
+		
+		<!-- get metro -->
+		<available file="${metro.download.zip}" property="metro.download.exists" />
+		<antcall target="get-metro" />
+		
+		<!-- unpack -->
+		<delete dir="${james.stage.dir}" />
+		<delete dir="${metro.stage.dir}" />
+		<delete dir="${jce.stage.dir}" />
+		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${apache.james.binary.zip}" />
+		<unzip dest="${build.dir}" src="${metro.download.zip}" />
+		<unzip dest="${build.dir}" src="${jce.policy.zip}" />
+		
+		<!-- configure james -->
+		<antcall target="configure" />
+	</target>
+
+	<target name="get-james" unless="apache.james.download.exists">
+		<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true">
+	  		<arg line="-q ${apache.james.binary.url}" />
+	  	</exec>
+	</target>
+
+	<target name="get-metro" unless="metro.download.exists">
+	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true">
+	  		<arg line="-q ${metro.download.url}" />
+	  	</exec>
+	</target>
+
+	<target name="configure">
+		<!-- expand the sar file in apps -->
+		<unzip dest="${james.stage.apps.dir}" src="${james.stage.apps.james.sar.path}" />
+		
+		<!-- trim the expanded sar -->
+		<delete dir="${james.stage.apps.dir}/META-INF" />
+		<delete dir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<mkdir dir="${james.stage.apps.SAR-INF.lib.dir}" />
+
+		<!-- populate new libraries -->
+		<copy file="${lib.activation}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.aopalliance}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.apache-mailet}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.apache-mailet-base}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.bcmail-jdk15}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.bcprov-jdk15}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.commons-codec}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.commons-io}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.commons-lang}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.commons-logging}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.guice}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.mail}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.metro.src}" tofile="${lib.metro.dst}" />
+		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
+		
+		<!-- get the expanded path for the STConfig.xml -->
+		<exec executable="sh" outputproperty="stconfig.expanded.path">
+			<arg line="-c 'cd ${james.stage.apps.dir}/SAR-INF; pwd'"/>
+		</exec>
+		<property name="james.stage.stconfig.url" value="file://${stconfig.expanded.path}/STConfig.xml" />
+		
+		<!-- get the expanded path for the keystore.jks -->
+		<exec executable="sh" outputproperty="keystore.expanded.path">
+			<arg line="-c 'cd ${james.stage.apps.dir}/SAR-INF; pwd'"/>
+		</exec>
+		<property name="james.stage.keystore.path" value="${keystore.expanded.path}/keystore.jks" />
+		
+		<!-- edit the config.xml file -->
+		<xslt style="${edit.config.stylesheet}" in="${james.stage.config}" out="${james.stage.config.new}">
+		    <param name="postmaster" expression="nhin-d+postmaster@nologs.org"/>
+		    <param name="servername" expression="james.nologs.org"/>
+		    <param name="mailetpackage" expression="org.nhindirect.gateway.smtp.james.mailet"/>
+		    <param name="matcherpackage" expression="org.nhindirect.gateway.smtp.james.matcher"/>
+		    <param name="mailet-config-scope" expression="All"/>
+		    <param name="mailet-config-url" expression="${james.stage.stconfig.url}" />
+		    <param name="mailet-config-class" expression="NHINDSecurityAndTrustMailet"/>
+		    <param name="mailet-match-remove" expression="RemoteAddrNotInNetwork=127.0.0.1"/>
+		</xslt>
+		<copy file="${james.stage.config}" tofile="${james.stage.config.save}" overwrite="true" />
+		<copy file="${james.stage.config.new}" tofile="${james.stage.config}" overwrite="true" />
+
+		<!-- copy resources -->
+		<copy file="${james.stage.stconfig.src}" tofile="${james.stage.stconfig.dst}" overwrite="true" />
+		<copy file="${james.stage.keystore.src}" tofile="${james.stage.keystore.dst}" overwrite="true" />
+		
+		<!-- edit the STConfig.xml file -->
+		<xslt style="${edit.STConfig.stylesheet}" in="${james.stage.stconfig.dst}" out="${james.stage.stconfig.new}">
+		    <param name="keystorepath" expression="${james.stage.keystore.path}"/>
+		</xslt>
+		<copy file="${james.stage.stconfig.dst}" tofile="${james.stage.stconfig.save}" overwrite="true" />
+		<copy file="${james.stage.stconfig.new}" tofile="${james.stage.stconfig.dst}" overwrite="true" />
+		
+		<!-- make shell files executable -->
+		<exec executable="sh">
+			<arg line="-c 'cd ${james.stage.dir}/bin; chmod a+x *.sh'"/>
+		</exec>
+		
+		<!-- clean up work files -->
+		<delete file="${james.stage.stconfig.new}" failonerror="false" />
+		<delete file="${james.stage.stconfig.save}" failonerror="false" />
+		<delete file="${james.stage.config.new}" failonerror="false" />
+		
+	</target>
+		
+	<target name="clean" depends="init" description="clean up" >
+	    <!-- Delete the ${build} directory tree -->
+	    <delete dir="${build.dir}"/>
+	</target>
+	
+</project>
