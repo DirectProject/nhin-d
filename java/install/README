@@ -1,0 +1,69 @@
+Linux/Unix
+================================================================================
+To install Direct, change directories to the install area:
+
+  cd ~/nhin-d/java/install
+
+Make sure to run mvn:
+
+  mvn clean install
+
+Choose a directory under which to install.  The directory must exists.  The package will be installed in the james-2.3.2 directory beneath the directory under which you install.  If this directory, james-2.3.2, already exists, the installation will not run. If the optional installation directory is not supplied, the install will be performed under build.  
+
+To install:
+
+  sh ./install.sh [<installation-directory>]
+
+To run:
+
+  cd <installation-directory>/james-2.3.2/bin
+  sudo -E ./run.sh
+
+Windows
+================================================================================
+To install Direct, change directories to the install area:
+
+  PUSHD C:\nhin-d\java\install
+
+Make sure to run mvn:
+
+  mvn clean install
+
+Choose a directory under which to install.  The directory must exists.  The package will be installed in the james-2.3.2 directory beneath the directory under which you install.  If this directory, james-2.3.2, already exists, the installation will not run. If the optional installation directory is not supplied, the install will be performed under build.  
+
+To install:
+
+  INSTALL.BAT [<installation-directory>]
+
+To run:
+
+  PUSHD <installation-directory>\james-2.3.2\bin
+  run.bat
+
+Mac OS X
+================================================================================
+This install process requires the wget command to by in the path.  This is not available by default.  Instructions for installing a compatable version of wget can be found at
+
+  http://wget.darwinports.com/
+
+To install Direct, change directories to the install area:
+
+  cd ~/nhin-d/java/install
+
+Make sure to run mvn:
+
+  mvn clean install
+
+Choose a directory under which to install.  The directory must exists.  The package will be installed in the james-2.3.2 directory beneath the directory under which you install.  If this directory, james-2.3.2, already exists, the installation will not run. If the optional installation directory is not supplied, the install will be performed under build.  
+
+To install:
+
+  sh ./install.sh [<installation-directory>]
+
+To run:
+
+  export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home
+  cd <installation-directory>/james-2.3.2/bin
+  sudo -E ./run.sh
+
+
