@@ -27,8 +27,8 @@ namespace NHINDirect.Diagnostics
         {
             try
             {
-                string msg = string.Format("{0} - {1}", category, message);
-                EventLog.WriteEntry("nhin", msg, EventLogEntryType.Information);
+                string msg = string.Format("AUDIT: {0} - {1}", category, message);
+                EventLog.WriteEntry("nhinAudit", msg, EventLogEntryType.Information);
             }
             catch (Exception ex)
             {
