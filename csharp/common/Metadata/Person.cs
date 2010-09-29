@@ -172,7 +172,7 @@ namespace NHINDirect.Metadata
             yield return "PID-5|" + nameValue;
             yield return "PID-7|" + dateValue;
             yield return "PID-8|" + sexValue;
-            yield return "PID-11" + addressValue;
+            yield return "PID-11|" + addressValue;
         }
 
 

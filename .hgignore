@@ -20,6 +20,9 @@ tmp/
 target/
 NHINKeyStore
 *xdm.zip
+java/gateway/IncomingMsgFolder/
+java/gateway/OutgoingMsgFolder/
+java/gateway/RawMsgFolder/
 
 # Ignore Eclipse files
 .classpath

@@ -32,15 +32,22 @@ import java.io.File;
 
 import javax.mail.internet.MimeMessage;
 
+import org.nhindirect.transform.exception.TransformationException;
+
 /**
+ * Interface for handling the transformation of a MimeMessage to an XDM File.
+ * 
  * @author beau
- *
  */
 public interface MimeXdmTransformer
 {
     /**
+     * Transmorm a MimeMessage to a File representing an XDM package.
+     * 
      * @param mimeMessage
-     * @return
+     *            The MimeMessage object to transform.
+     * @return a File representing an XDM package.
+     * @throws TransformationException
      */
-    public File transform(MimeMessage mimeMessage);
+    public File transform(MimeMessage mimeMessage) throws TransformationException;
 }
