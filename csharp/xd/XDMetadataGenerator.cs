@@ -204,7 +204,7 @@ namespace NHINDirect.Xd
                 Map(docMetadata.UniqueId,
                     () => new ExternalIdentifier(XDMetadataStandard.DocumentUniqueIdIdentitySchemeUUID, docMetadata.UniqueId,"XDSDocumentEntry.uniqueId")),
                 Map(docMetadata.Uri,
-                    () => new Slot(XDMetadataStandard.UriSlot, docMetadata.Uri.Break(128)))
+                    () => new Slot(XDMetadataStandard.UriSlot, UriValues(docMetadata.Uri))),
             };
 
             foreach (Pair<Object, Func<XObject>> p in specs)
@@ -252,6 +252,13 @@ namespace NHINDirect.Xd
                 yield return new Slot("authorPerson", a.Person.ToXCN());
         }
 
-
+        /// <summary>
+        /// Implements the URI break algorithm for the IHE XD* URI document attribute
+        /// </summary>
+        public static IEnumerable<string> UriValues(string Uri)
+        {
+            IEnumerable<string> strings = Uri.Break(128);
+            return strings.Select((string s, int i) => String.Format("{0}|{1}", i + 1, s));
+        }
     }
 }

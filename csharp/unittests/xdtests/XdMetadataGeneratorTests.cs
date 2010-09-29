@@ -469,5 +469,13 @@ namespace NHINDirect.Tests.xdTests
             Assert.NotEmpty(docXElements);
         }
 
+        [Fact]
+        public void UriValuesBreaksCorrectly()
+        {
+            string FakeUri = Enumerable.Repeat("0123456789", 13).Aggregate("", (string a, string s) => a + s);
+            IEnumerable<string> strings = XDMetadataGenerator.UriValues(FakeUri);
+            Assert.Equal("2|89", strings.Last());
+        }
+
     }
 }
