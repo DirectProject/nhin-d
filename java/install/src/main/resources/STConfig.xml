@@ -1,0 +1,27 @@
+<SmtpAgentConfig>
+   <Domains>
+      <AnchorStore type="Uniform" storeType="KeyStore" file="keystore-path" filePass="h3||0 wor|d" privKeyPass="pKpa$$wd" />    
+      <Domain name="demo.com" postmaster="postmaster@demo.com">
+         <IncomingTrustAnchors> 
+            <Anchor name="cacert"/>
+         </IncomingTrustAnchors>  
+         <OutgoingTrustAnchors> 
+            <Anchor name="cacert"/>
+         </OutgoingTrustAnchors>           
+      </Domain> 
+      <Domain name="mailcatch.com" postmaster="postmaster@mailcatch.com">    
+         <IncomingTrustAnchors> 
+            <Anchor name="cacert"/>
+         </IncomingTrustAnchors>  
+         <OutgoingTrustAnchors> 
+            <Anchor name="cacert"/>
+         </OutgoingTrustAnchors>         
+      </Domain> 
+   </Domains>
+   <PublicCertStore type="Keystore" file="keystore-path" filePass="h3||0 wor|d" privKeyPass="pKpa$$wd" />
+   <PrivateCertStore type="Keystore" file="keystore-path" filePass="h3||0 wor|d" privKeyPass="pKpa$$wd" />
+   <RawMessageSettings saveFolder="RawMsgFolder"/>
+   <OutgoingMessagesSettings saveFolder="OutgoingMsgFolder"/>
+   <IncomingMessagesSettings saveFolder="IncomingMsgFolder"/>
+   <BadMessagesSettings saveFolder="BadMsgFolder"/>  
+</SmtpAgentConfig>

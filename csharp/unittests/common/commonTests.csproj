@@ -58,6 +58,9 @@
     <Compile Include="Caching\DnsResponseToBinExample.cs" />
     <Compile Include="Mail\RoundTripFacts.cs" />
     <Compile Include="Mail\TestMDN.cs" />
+    <Compile Include="metadata\AuthorFacts.cs" />
+    <Compile Include="metadata\PatientIDFacts.cs" />
+    <Compile Include="metadata\PersonFacts.cs" />
     <Compile Include="Mime\BodyFacts.cs" />
     <Compile Include="Mime\CharReaderFacts.cs" />
     <Compile Include="Mime\MimeEntityCollectionFacts.cs" />
