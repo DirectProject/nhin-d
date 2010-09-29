@@ -3,15 +3,23 @@
 	    Install the apache-james mail server for use with NHIN Direct
 	</description>
 	
+	<!-- check the os -->
+	<condition property="is.windows">
+		<os family="windows"/>
+	</condition>
+	<condition property="is.unix">
+		<os family="unix"/>
+	</condition>
+	
 	<!-- set global properties for this build -->
 	<property environment="env" />
-	<property name="install.root.dir" value="../.." />
+	<property name="install.root.dir" value="${env.DIRECT_INSTALL_CD}" />
 	<property name="src" value="${install.root.dir}/src"/>
+	<property name="resources.dir" value="${src}/main/resources" />
 	<property name="build.dir" value="${install.root.dir}/build"/>
 	<property name="build.download.dir" value="${build.dir}/download" />
 	<property name="apache.james.binary.url" value="http://www.devlib.org/apache//james/server/apache-james-2.3.2.zip" />
 	<property name="metro.download.url" value="https://metro.dev.java.net/2.0.1/metro-2_0_1.zip" />
-	<property name="wget.command.path" value="/usr/bin/wget" />
 	<property name="apache.james.binary.zip" value="${build.download.dir}/apache-james-2.3.2.zip" />
 	<property name="metro.download.zip" value="${build.download.dir}/metro-2_0_1.zip" />
 	<property name="metro.stage.dir" value="${build.dir}/metro" />
@@ -60,7 +68,16 @@
 	<property name="edit.config.stylesheet" value="${src}/scripts/edit-config.xsl" />
 	<property name="edit.STConfig.stylesheet" value="${src}/scripts/edit-STConfig.xsl" />
 
-	<target name="init">
+	<target name="windows-specific" if="is.windows">
+		<echo message="src is ${src}" />
+		<property name="wget.command.path" value="${resources.dir}/wget.exe" />
+	</target>
+	
+	<target name="unix-specific" if="is.unix">
+		<property name="wget.command.path" value="/usr/bin/wget" />
+	</target>
+	
+	<target name="init" depends="windows-specific,unix-specific">
 	
 		<!-- Create the time stamp -->
 	    <tstamp/>
@@ -91,21 +108,24 @@
 		
 		<!-- configure james -->
 		<antcall target="configure" />
+		<antcall target="make-shell-files-executable" />
 	</target>
 
+	<!-- get apache-james -->
 	<target name="get-james" unless="apache.james.download.exists">
 		<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true">
 	  		<arg line="-q ${apache.james.binary.url}" />
 	  	</exec>
 	</target>
 
+	<!-- get metro -->
 	<target name="get-metro" unless="metro.download.exists">
 	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true">
 	  		<arg line="-q ${metro.download.url}" />
 	  	</exec>
 	</target>
 
-	<target name="configure">
+	<target name="configure" depends="set-stconfig-expanded-path,set-keystore-path">
 		<!-- expand the sar file in apps -->
 		<unzip dest="${james.stage.apps.dir}" src="${james.stage.apps.james.sar.path}" />
 		
@@ -132,17 +152,7 @@
 		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
 		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}" />
 		
-		<!-- get the expanded path for the STConfig.xml -->
-		<exec executable="sh" outputproperty="stconfig.expanded.path">
-			<arg line="-c 'cd ${james.stage.apps.dir}/SAR-INF; pwd'"/>
-		</exec>
 		<property name="james.stage.stconfig.url" value="file://${stconfig.expanded.path}/STConfig.xml" />
-		
-		<!-- get the expanded path for the keystore.jks -->
-		<exec executable="sh" outputproperty="keystore.expanded.path">
-			<arg line="-c 'cd ${james.stage.apps.dir}/SAR-INF; pwd'"/>
-		</exec>
-		<property name="james.stage.keystore.path" value="${keystore.expanded.path}/keystore.jks" />
 		
 		<!-- edit the config.xml file -->
 		<xslt style="${edit.config.stylesheet}" in="${james.stage.config}" out="${james.stage.config.new}">
@@ -169,18 +179,59 @@
 		<copy file="${james.stage.stconfig.dst}" tofile="${james.stage.stconfig.save}" overwrite="true" />
 		<copy file="${james.stage.stconfig.new}" tofile="${james.stage.stconfig.dst}" overwrite="true" />
 		
-		<!-- make shell files executable -->
-		<exec executable="sh">
-			<arg line="-c 'cd ${james.stage.dir}/bin; chmod a+x *.sh'"/>
-		</exec>
-		
 		<!-- clean up work files -->
 		<delete file="${james.stage.stconfig.new}" failonerror="false" />
 		<delete file="${james.stage.stconfig.save}" failonerror="false" />
 		<delete file="${james.stage.config.new}" failonerror="false" />
 		
 	</target>
-		
+
+	<!-- make shell files executable -->
+	<target name="make-shell-files-executable" if="is.unix">
+		<exec executable="sh">
+			<arg line="-c 'cd ${james.stage.dir}/bin; chmod a+x *.sh'"/>
+		</exec>
+	</target>
+
+	<!-- set the expanded path for STConfig -->
+	<target name="set-stconfig-expanded-path" depends="set-stconfig-expanded-path-unix,set-stconfig-expanded-path-windows" />
+
+	<target name="set-stconfig-expanded-path-unix" if="is.unix">
+		<path id="stconfig.path">
+			<pathelement path="${james.stage.apps.dir}/SAR-INF" />
+		</path>
+		<pathconvert targetos="unix" property="stconfig.expanded.path" refid="stconfig.path" />
+	</target>
+
+	<target name="set-stconfig-expanded-path-windows" if="is.windows">
+		<path id="stconfig.path">
+			<pathelement path="${james.stage.apps.dir}/SAR-INF" />
+		</path>
+		<pathconvert targetos="windows" dirsep="/" property="stconfig.expanded.path" refid="stconfig.path">
+			<map from=":" to="" />
+		</pathconvert>
+	</target>
+
+	<!-- set the keystore path -->
+	<target name="set-keystore-path" depends="set-keystore-path-unix,set-keystore-path-windows" />
+
+	<target name="set-keystore-path-unix" if="is.unix">
+		<path id="keystore.path">
+			<pathelement path="${james.stage.apps.dir}/SAR-INF/keystore.jks" />
+		</path>
+		<pathconvert targetos="unix" property="james.stage.keystore.path" refid="keystore.path" />
+	</target>
+
+	<target name="set-keystore-path-windows" if="is.windows">
+		<path id="keystore.path">
+			<pathelement path="${james.stage.apps.dir}/SAR-INF/keystore.jks" />
+		</path>
+		<pathconvert targetos="windows" dirsep="/" property="james.stage.keystore.path" refid="keystore.path">
+			<map from=":" to="" />
+		</pathconvert>
+	</target>
+
+	<!-- clean up -->
 	<target name="clean" depends="init" description="clean up" >
 	    <!-- Delete the ${build} directory tree -->
 	    <delete dir="${build.dir}"/>
