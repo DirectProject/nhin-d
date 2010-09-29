@@ -77,7 +77,8 @@ namespace NHINDirect.Xd
         {
             InitializeContentBase(classifiedObject);
             this.Add(new XAttribute("classificationScheme", scheme),
-                   new XAttribute("nodeRepresentation", nodeRepresentation));
+                   new XAttribute("nodeRepresentation", nodeRepresentation),
+                   content);
         }
 
         private void InitializeContentBase(string classifiedObject)
