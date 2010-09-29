@@ -31,24 +31,29 @@ package org.nhindirect.transform.impl;
 import java.io.File;
 
 import javax.mail.internet.MimeMessage;
+import javax.naming.OperationNotSupportedException;
 
 import org.nhindirect.transform.MimeXdmTransformer;
+import org.nhindirect.transform.exception.TransformationException;
 
 /**
+ * Class for handling the transformation of a MimeMessage to an XDM File.
+ * 
  * @author beau
- *
  */
 public class DefaultMimeXdmTransformer implements MimeXdmTransformer
 {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.nhindirect.transform.MimeXdmTransformer#transform(javax.mail.internet.MimeMessage)
      */
     @Override
-    public File transform(MimeMessage mimeMessage)
+    public File transform(MimeMessage mimeMessage) throws TransformationException
     {
-        // TODO Auto-generated method stub
-        return null;
+        OperationNotSupportedException e = new OperationNotSupportedException("This method has not been implemented");
+        throw new TransformationException("Unable to complete transformation.", e);
     }
 
 }

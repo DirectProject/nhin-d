@@ -34,15 +34,25 @@ import java.util.List;
 
 import javax.mail.internet.MimeMessage;
 
+import org.nhindirect.transform.exception.TransformationException;
+
 /**
+ * Interface for handling the transformation of a MimeMessage to a List of
+ * ProvideAndRegisterDocumentSetRequestType objects.
+ * 
  * @author beau
- *
  */
 public interface MimeXdsTransformer
 {
     /**
+     * Transform a MimeMessage object to a List of
+     * ProvideAndRegisterDocumentSetRequestType objects.
+     * 
      * @param mimeMessage
-     * @return
+     *            The MimeMessage object to trasform.
+     * @return a List of ProvideAndRegisterDocumentSetRequestType objects.
+     * @throws TransformationException
      */
-    public List<ProvideAndRegisterDocumentSetRequestType> transform(MimeMessage mimeMessage);
+    public List<ProvideAndRegisterDocumentSetRequestType> transform(MimeMessage mimeMessage)
+            throws TransformationException;
 }
