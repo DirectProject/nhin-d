@@ -24,5 +24,5 @@ if [ -d $DIRECT_INSTALL_PACKAGE_DIR -o -e $DIRECT_INSTALL_PACKAGE_DIR ]; then
 else
 	echo "Installing Direct in $DIRECT_INSTALL_PACKAGE_DIR"
 	export DIRECT_INSTALL_CD=`pwd`
-	ant -v -f src/scripts/build.xml
+	ant -f src/scripts/build.xml
 fi
