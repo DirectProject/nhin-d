@@ -6,6 +6,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 
+import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
@@ -22,8 +23,8 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Test methods in the DefaultXdmXdsTransformer class.
+ * 
  * @author beau
- *
  */
 public class DefaultXdmXdsTransformerTest extends TestCase
 {
@@ -227,17 +228,38 @@ public class DefaultXdmXdsTransformerTest extends TestCase
 
     /**
      * Test the getXDMRequest method.
-     * 
-     * TODO: Address this failing test.
      */
-    @SuppressWarnings("unused")
-    private void getXDMRequest_File()
+    public void testGetXDMRequest_File()
     {
         LOGGER.info("Begin testGetXDMRequest_File");
 
         DefaultXdmXdsTransformer transformer = new DefaultXdmXdsTransformer();
 
         File input = getSampleXdmAsFile();
+        ProvideAndRegisterDocumentSetRequestType output = null;
+
+        try
+        {
+            output = transformer.transform(input);
+            assertTrue("Output is null", output != null);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            fail("Exception thrown");
+        }
+    }
+
+    /**
+     * Test the getXDMRequest method.
+     */
+    public void testGetXDMRequest_DataHandler()
+    {
+        LOGGER.info("Begin testGetXDMRequest_DataHandler");
+
+        DefaultXdmXdsTransformer transformer = new DefaultXdmXdsTransformer();
+
+        DataHandler input = getSampleXdmAsDataHandler();
         ProvideAndRegisterDocumentSetRequestType output = null;
 
         try
@@ -263,6 +285,19 @@ public class DefaultXdmXdsTransformerTest extends TestCase
         File file = new File(url.getPath());
 
         return file;
+    }
+
+    /**
+     * Return a sample XDM file as a DataHandler.
+     * 
+     * @return a sample XDM file.
+     */
+    private static DataHandler getSampleXdmAsDataHandler()
+    {
+        URL url = DefaultXdmXdsTransformerTest.class.getClassLoader().getResource("samplexdm.zip");
+        DataHandler dh = new DataHandler(url);
+
+        return dh;
     }
 
 }

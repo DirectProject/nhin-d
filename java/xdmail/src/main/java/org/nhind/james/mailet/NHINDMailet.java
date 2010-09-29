@@ -39,7 +39,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.base.GenericMailet;
-import org.nhind.mail.service.MimeXDSTransformer;
+import org.nhind.mail.service.DocumentRepository;
+import org.nhindirect.transform.MimeXdsTransformer;
+import org.nhindirect.transform.impl.DefaultMimeXdsTransformer;
 
 /**
  * An Apache James Mailet that converts clinical messages into IHE
@@ -49,15 +51,10 @@ import org.nhind.mail.service.MimeXDSTransformer;
  */
 public class NHINDMailet extends GenericMailet {
     
-    /**
-     * Local XDR endpoint.
-     */
     private String endpointUrl;
     
-    /**
-     * MimeXDSTransformer object.
-     */
-    private MimeXDSTransformer mimeXDSTransformer;
+    private MimeXdsTransformer mimeXDSTransformer;
+    private DocumentRepository documentRepository;
     
     /**
      * Class logger.
@@ -82,12 +79,12 @@ public class NHINDMailet extends GenericMailet {
             boolean forwardToXdr = true; // should be based on some routing
             
             if (forwardToXdr) {
-                List<ProvideAndRegisterDocumentSetRequestType> requests = getMimeXDSTransformer().createRequests(mail
+                List<ProvideAndRegisterDocumentSetRequestType> requests = getMimeXDSTransformer().transform(mail
                         .getMessage());
 
                 for (ProvideAndRegisterDocumentSetRequestType request : requests) {
                     @SuppressWarnings("unused")
-                    String response = getMimeXDSTransformer().forwardRequest(endpointUrl, request);
+                    String response = getDocumentRepository().forwardRequest(endpointUrl, request);
 
                     // if (!isSuccessful(response))
                     // ??
@@ -149,7 +146,7 @@ public class NHINDMailet extends GenericMailet {
      * @param mimeXDSTransformer
      *            The value of mimeXDSTransformer.
      */
-    protected void setMimeXDSTransformer(MimeXDSTransformer mimeXDSTransformer) {
+    protected void setMimeXDSTransformer(MimeXdsTransformer mimeXDSTransformer) {
         this.mimeXDSTransformer = mimeXDSTransformer;
     }
 
@@ -158,11 +155,34 @@ public class NHINDMailet extends GenericMailet {
      * 
      * @return the value of mimeXDSTransformer, or a new object if null.
      */
-    protected MimeXDSTransformer getMimeXDSTransformer() {
+    protected MimeXdsTransformer getMimeXDSTransformer() {
         if (this.mimeXDSTransformer == null) {
-            this.mimeXDSTransformer = new MimeXDSTransformer();
+            this.mimeXDSTransformer = new DefaultMimeXdsTransformer();
         }
         
         return this.mimeXDSTransformer;
+    }
+
+    /**
+     * Set the value of documentRepository.
+     * 
+     * @param documentRepository
+     *            The value of documentRepository.
+     */
+    public void setDocumentRepository(DocumentRepository documentRepository) {
+        this.documentRepository = documentRepository;
+    }
+
+    /**
+     * Get the value of documentRepository.
+     * 
+     * @return the value of documentRepository, or a new object if null.
+     */
+    public DocumentRepository getDocumentRepository() {
+        if (this.documentRepository == null) {
+            this.documentRepository = new DocumentRepository();
+        }
+        
+        return documentRepository;
     }
 }

@@ -32,26 +32,31 @@ import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
 import java.io.File;
 
+import javax.naming.OperationNotSupportedException;
+
 import org.nhindirect.transform.XdsXdmTransformer;
+import org.nhindirect.transform.exception.TransformationException;
 
 /**
+ * Interface for handling the transformation of a
+ * ProvideAndRegisterDocumentSetRequestType object to an XDM File.
+ * 
  * @author beau
- *
  */
 public class DefaultXdsXdmTransformer implements XdsXdmTransformer
 {
 
-    /* (non-Javadoc)
-     * @see org.nhindirect.transform.XdsXdmTransformer#transform(ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType)
-     */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.nhindirect.transform.XdsXdmTransformer#transform(ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType)
      */
     @Override
     public File transform(ProvideAndRegisterDocumentSetRequestType provideAndRegisterDocumentSetRequestType)
+            throws TransformationException
     {
-        // TODO Auto-generated method stub
-        return null;
+        OperationNotSupportedException e = new OperationNotSupportedException("This method has not been implemented");
+        throw new TransformationException("Unable to complete transformation.", e);
     }
 
 }

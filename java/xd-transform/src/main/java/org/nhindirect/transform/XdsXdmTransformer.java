@@ -32,15 +32,26 @@ import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
 import java.io.File;
 
+import org.nhindirect.transform.exception.TransformationException;
+
 /**
- * @author beau
+ * Interface for handling the transformation of a
+ * ProvideAndRegisterDocumentSetRequestType object to an XDM File.
  * 
+ * @author beau
  */
 public interface XdsXdmTransformer
 {
     /**
+     * Transform a ProvideAndRegisterDocumentSetRequestType object to an XDM
+     * File.
+     * 
      * @param provideAndRegisterDocumentSetRequestType
-     * @return
+     *            The ProvideAndRegisterDocumentSetRequestType object to
+     *            transform.
+     * @return an XDM File.
+     * @throws TransformationException
      */
-    public File transform(ProvideAndRegisterDocumentSetRequestType provideAndRegisterDocumentSetRequestType);
+    public File transform(ProvideAndRegisterDocumentSetRequestType provideAndRegisterDocumentSetRequestType)
+            throws TransformationException;
 }
