@@ -28,6 +28,7 @@
 
 package org.nhindirect.transform.impl;
 
+import static org.nhindirect.transform.util.XdConstants.*;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
 
@@ -74,6 +75,9 @@ import org.nhindirect.transform.XdmXdsTransformer;
 import org.nhindirect.transform.exception.TransformationException;
 import org.nhindirect.transform.parse.ccd.CcdParser;
 import org.nhindirect.transform.pojo.SimplePerson;
+import org.nhindirect.transform.util.ClassificationNode;
+import org.nhindirect.transform.util.ExternalClassificationScheme;
+import org.nhindirect.transform.util.ExternalIdentifier;
 import org.nhindirect.transform.util.MimeType;
 
 /*
@@ -221,8 +225,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                     {
                         LOGGER.info("Matched type TEXT_XML");
 
-                        if (StringUtils.contains(contentString, "urn:hl7-org:v3")
-                                && StringUtils.contains(contentString, "POCD_HD000040"))
+                        if (StringUtils.contains(contentString, CCD_XMLNS)
+                                && StringUtils.contains(contentString, CCD_EXTENSION))
                         {
                             LOGGER.info("Matched format CODE_FORMAT_CDAR2");
 
@@ -443,25 +447,25 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         LOGGER.info("Creating ExtrinsicObjectType object inside getSubmitObjectsRequest");
         ExtrinsicObjectType eot = getExtrinsicObject(patientId, orgId, person, sentDate, docId, formatCode, mimeType,
                 auth);
-        QName qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "ExtrinsicObject");
+        QName qname = new QName(IDENTIFIABLE_TYPE_NS, EXTRINSIC_OBJECT_TYPE);
         JAXBElement<ExtrinsicObjectType> eotj = new JAXBElement<ExtrinsicObjectType>(qname, ExtrinsicObjectType.class,
                 eot);
 
         LOGGER.info("Creating RegistryPackageType object inside getSubmitObjectsRequest");
         RegistryPackageType rpt = getSubmissionSet(patientId, orgId, subject, sentDate, subId, auth, recip);
-        qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "RegistryPackage");
+        qname = new QName(IDENTIFIABLE_TYPE_NS, REGISTRY_PACKAGE_TYPE);
         JAXBElement<RegistryPackageType> rptj = new JAXBElement<RegistryPackageType>(qname, RegistryPackageType.class,
                 rpt);
 
         LOGGER.info("Creating ClassificationType object inside getSubmitObjectsRequest");
         ClassificationType clas = getClassification(rpt.getId());
-        qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "Classification");
+        qname = new QName(IDENTIFIABLE_TYPE_NS, CLASSIFICATION_TYPE);
         JAXBElement<ClassificationType> clasj = new JAXBElement<ClassificationType>(qname, ClassificationType.class,
                 clas);
 
         LOGGER.info("Creating AssociationType1 object inside getSubmitObjectsRequest");
         AssociationType1 ass = getAssociation(rpt.getId(), eot.getId());
-        qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "Association");
+        qname = new QName(IDENTIFIABLE_TYPE_NS, ASSOCIATION_TYPE_1);
         JAXBElement<AssociationType1> assj = new JAXBElement<AssociationType1>(qname, AssociationType1.class, ass);
 
         LOGGER.info("Building JAXBElements list");
@@ -510,24 +514,22 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
 
         ExtrinsicObjectType document = null;
 
-        final String obType = "urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1";
-
         document = new ExtrinsicObjectType();
         document.setId(docId);
-        document.setObjectType(obType);
+        document.setObjectType(ClassificationNode.DOCUMENT_ENTRY.getScheme());
         document.setMimeType(mimeType);
 
         slots = document.getSlot();
         extIds = document.getExternalIdentifier();
         classifs = document.getClassification();
 
-        slots.add(makeSlot("creationTime", sentDate));
+        slots.add(makeSlot(CREATION_TIME, sentDate));
 
-        slots.add(makeSlot("sourcePatientId", patientId + "^^^&" + orgId));
+        slots.add(makeSlot(SOURCE_PATIENT_ID, patientId + "^^^&" + orgId));
 
         if (person != null)
         {
-            slots.add(makePatientSlot("sourcePatientInfo", person, patientId, orgId));
+            slots.add(makePatientSlot(SOURCE_PATIENT_INFO, person, patientId, orgId));
         }
 
         snames = new ArrayList<String>();
@@ -537,58 +539,42 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         if (auth != null)
         {
             snames.add(null);
-            slotNames.add("authorPerson");
+            slotNames.add(AUTHOR_PERSON);
             slotValues.add(auth);
         }
 
         snames.add(null);
-        slotNames.add("authorInstitution");
+        slotNames.add(AUTHOR_INSTITUTION);
         slotValues.add(orgId);
 
         snames.add(null);
-        slotNames.add("authorRole");
+        slotNames.add(AUTHOR_ROLE);
         if (auth != null)
             slotValues.add(auth + "'s Role");// see if we need this
         else
             slotValues.add("System");
 
-        addClassifications(classifs, docId, "c101", "urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d", null, slotNames,
+        addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_AUTHOR, null, slotNames,
                 slotValues, snames);
 
-        snames = Arrays.asList("History and Physical");
-        slotNames = Arrays.asList("codingScheme");
-        slotValues = Arrays.asList("Connect-a-thon classCodes");
-        addClassifications(classifs, docId, "c102", "uuid:41a5887f-8865-4c09-adf7-e362475b143a",
-                "History and Physical", slotNames, slotValues, snames);
+        addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_CLASS_CODE,
+                "History and Physical", CODING_SCHEME, "Connect-a-thon classCodes", "History and Physical");
 
-        snames = Arrays.asList(formatCode);
-        slotNames = Arrays.asList("codingScheme");
-        slotValues = Arrays.asList("Connect-a-thon formatCodes");
-        addClassifications(classifs, docId, "c104", "urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d", formatCode,
-                slotNames, slotValues, snames);
+        addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_FORMAT_CODE, formatCode,
+                CODING_SCHEME, "Connect-a-thon formatCodes", formatCode);
 
-        snames = Arrays.asList("OF");
-        slotNames = Arrays.asList("codingScheme");
-        slotValues = Arrays.asList("Connect-a-thon healthcareFacilityTypeCodes");
-        addClassifications(classifs, docId, "c105", "urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1", "OF", slotNames,
-                slotValues, snames);
+        addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_FACILITY_CODE, "OF",
+                CODING_SCHEME, "Connect-a-thon healthcareFacilityTypeCodes", "OF");
 
-        snames = Arrays.asList("Multidisciplinary");
-        slotNames = Arrays.asList("codingScheme");
-        slotValues = Arrays.asList("Connect-a-thon practiceSettingCodes");
-        addClassifications(classifs, docId, "c106", "urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead",
-                "Multidisciplinary", slotNames, slotValues, snames);
+        addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_PRACTICE_SETTING_CODE,
+                "Multidisciplinary", CODING_SCHEME, "Connect-a-thon practiceSettingCodes", "Multidisciplinary");
 
-        snames = Arrays.asList("34133-9");
-        slotNames = Arrays.asList("codingScheme");
-        slotValues = Arrays.asList("LOINC");
-        addClassifications(classifs, docId, "c107", "urn:uuid:f0306f51-975f-434e-a61c-c59651d33983", "34133-9",
-                slotNames, slotValues, snames);
+        addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_TYPE_CODE, DEFAULT_LOINC_CODE,
+                CODING_SCHEME, LOINC, DEFAULT_LOINC_CODE);
 
-        addExternalIds(extIds, docId, "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427", "ei01",
-                "XDSDocumentEntry.patientId", patientId + "^^^&" + orgId);
-        addExternalIds(extIds, docId, "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab", "ei02",
-                "XDSDocumentEntry.uniqueId", docId);
+        addExternalIds(extIds, docId, ExternalIdentifier.DOCUMENT_ENTRY_PATIENT_ID, "XDSDocumentEntry.patientId",
+                patientId + "^^^&" + orgId);
+        addExternalIds(extIds, docId, ExternalIdentifier.DOCUMENT_ENTRY_UNIQUE_ID, "XDSDocumentEntry.uniqueId", docId);
 
         return document;
     }
@@ -625,10 +611,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
 
         RegistryPackageType subset = new RegistryPackageType();
 
-        final String obType = "urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1";
-
         subset.setId(subId);
-        subset.setObjectType(obType);
+        subset.setObjectType(ClassificationNode.DOCUMENT_ENTRY.getScheme());
 
         slots = subset.getSlot();
         extIds = subset.getExternalIdentifier();
@@ -660,22 +644,16 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         else
             slotValues.add("System");
 
-        addClassifications(classifs, subId, "c101", "urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d", null, slotNames,
+        addClassifications(classifs, subId, ExternalClassificationScheme.SUBMISSION_SET_AUTHOR, null, slotNames,
                 slotValues, snames);
 
-        snames = Arrays.asList(subject);
-        slotNames = Arrays.asList("codingScheme");
-        slotValues = Arrays.asList("Connect-a-thon contentTypeCodes");
+        addClassifications(classifs, subId, ExternalClassificationScheme.SUBMISSION_SET_CONTENT_TYPE_CODE, subject,
+                CODING_SCHEME, "Connect-a-thon contentTypeCodes", subject);
 
-        addClassifications(classifs, subId, "c102", "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500", subject,
-                slotNames, slotValues, snames);
-
-        addExternalIds(extIds, subId, "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8", "ei01",
-                "XDSSubmissionSet.uniqueId", subId);
-        addExternalIds(extIds, subId, "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832", "ei02",
-                "XDSSubmissionSet.sourceId", orgId);
-        addExternalIds(extIds, subId, "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446", "ei03",
-                "XDSSubmissionSet.patientId", patientId + "^^^&" + orgId);
+        addExternalIds(extIds, subId, ExternalIdentifier.SUBMISSION_SET_UNIQUE_ID, "XDSSubmissionSet.uniqueId", subId);
+        addExternalIds(extIds, subId, ExternalIdentifier.SUBMISSION_SET_SOURCE_ID, "XDSSubmissionSet.sourceId", orgId);
+        addExternalIds(extIds, subId, ExternalIdentifier.SUBMISSION_SET_PATIENT_ID, "XDSSubmissionSet.patientId",
+                patientId + "^^^&" + orgId);
 
         return subset;
     }
@@ -690,7 +668,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
     protected ClassificationType getClassification(String setId)
     {
         ClassificationType ct = new ClassificationType();
-        ct.setClassificationNode("urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd");
+        ct.setClassificationNode(ClassificationNode.SUBMISSION_SET.getScheme());
         ct.setClassifiedObject(setId);
 
         return ct;
@@ -803,10 +781,41 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      *            The list of ClassificationType objects to append to.
      * @param docId
      *            The document ID.
-     * @param id
-     *            The classification ID.
-     * @param scheme
-     *            The classification scheme.
+     * @param externalClassificationScheme
+     *            The external classification scheme object to use for this
+     *            ClassificationType.
+     * @param rep
+     *            The node representation.
+     * @param slotName
+     *            The slot name.
+     * @param slotValue
+     *            The slot value.
+     * @param sname
+     *            The localized string.
+     */
+    protected void addClassifications(List<ClassificationType> classifs, String docId,
+            ExternalClassificationScheme externalClassificationScheme, String rep, String slotName, String slotValue,
+            String sname)
+    {
+
+        List<String> slotNames = Arrays.asList(slotName);
+        List<String> slotValues = Arrays.asList(slotValue);
+        List<String> snames = Arrays.asList(sname);
+        addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_CLASS_CODE, rep, slotNames,
+                slotValues, snames);
+    }
+
+    /**
+     * Add a ClassificationType object to the provided list of
+     * ClassificationType objects, created from the provided data.
+     * 
+     * @param classifs
+     *            The list of ClassificationType objects to append to.
+     * @param docId
+     *            The document ID.
+     * @param externalClassificationScheme
+     *            The external classification scheme object to use for this
+     *            ClassificationType.
      * @param rep
      *            The node representation.
      * @param slotNames
@@ -816,8 +825,9 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      * @param snames
      *            The localized strings.
      */
-    protected void addClassifications(List<ClassificationType> classifs, String docId, String id, String scheme,
-            String rep, List<String> slotNames, List<String> slotValues, List<String> snames)
+    protected void addClassifications(List<ClassificationType> classifs, String docId,
+            ExternalClassificationScheme externalClassificationScheme, String rep, List<String> slotNames,
+            List<String> slotValues, List<String> snames)
     {
         if (classifs == null)
         {
@@ -828,8 +838,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
 
         classifs.add(ct);
         ct.setClassifiedObject(docId);
-        ct.setClassificationScheme(scheme);
-        ct.setId(id);
+        ct.setClassificationScheme(externalClassificationScheme.getClassificationScheme());
+        ct.setId(externalClassificationScheme.getClassificationId());
         ct.setNodeRepresentation(rep);
 
         List<SlotType1> slots = ct.getSlot();
@@ -875,8 +885,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      * @param value
      *            The external identifier value.
      */
-    protected void addExternalIds(List<ExternalIdentifierType> extIds, String docId, String scheme, String id,
-            String sname, String value)
+    protected void addExternalIds(List<ExternalIdentifierType> extIds, String docId,
+            ExternalIdentifier externalIdentifier, String sname, String value)
     {
         if (extIds == null)
             throw new IllegalArgumentException("Must include a live reference to an ExternalIdentifierType list");
@@ -885,8 +895,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
 
         extIds.add(ei);
         ei.setRegistryObject(docId);
-        ei.setIdentificationScheme(scheme);
-        ei.setId(id);
+        ei.setIdentificationScheme(externalIdentifier.getIdentificationScheme());
+        ei.setId(externalIdentifier.getIdentificationId());
 
         if (StringUtils.isNotBlank(sname))
         {
