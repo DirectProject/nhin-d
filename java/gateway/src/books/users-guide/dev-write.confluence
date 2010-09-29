@@ -85,6 +85,52 @@ Pseudo Example:
 {code}
 
 
+h4. MDN Messages
+
+If an incoming message contains an MDN request header, the SMTP agent may automatically produce a collection of MDN messages with a _Disposition_ of _Processed_.  The purpose is to indicate to the sender that the security and trust sub system of the NHIN Direct network received and successfully processed the sender's message.  MDN is described in [RFC3798|http://tools.ietf.org/html/rfc3798].
+
+The SMTP agent returns generate MDN messages in the MessageProcessResult object's notificationMessages attribute.  Because the SMTP agent is ignorant of the SMTP protocol implementation, the protocol bridge is responsible for sending the messages using the appropriate process as specified by the protocol implementation.  MDN messages produced by the SMTP bridge are not encrypted and signed per the security and trust agent specification and should placed on the protocol implementation's outgoing queue or whatever process will result in the MDN messages being encrypted and signed before being sent.
+
+Pseduo James Example:
+
+{code}
+    public void service(Mail mail) throws MessagingException 
+    { 
+       MimeMessage msg = mail.getMessage();
+       // get recipients and sender
+       .
+       .
+       .
+       .
+       MessageProcessResult result = agent.processMessage(msg, recipients, sender);
+       //  check result and processed message for errors and move the processed message
+       //  through the James stack
+       .
+       .
+       .
+       .       
+
+       // send the MDN messages
+       Collection<NotificationMessage> notifications = result.getNotificationMessages();
+       if (notifications != null && notifications.size() > 0)
+       {
+           // create a message for each notification and put it on James "stack"
+           for (NotificationMessage message : notifications)
+           {
+              try
+              {
+                  this.getMailetContext().sendMail(message);
+              }
+              catch (Throwable t)
+              {
+                  // don't kill the process if this fails
+                  // but handle the exception
+              }
+           }
+        }
+    }  
+{code}
+
 h3. Dependencies
 
 The following jars are direct dependencies for writing protocol bridges.

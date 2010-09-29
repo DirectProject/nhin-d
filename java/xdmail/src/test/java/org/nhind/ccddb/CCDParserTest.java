@@ -30,11 +30,19 @@ package org.nhind.ccddb;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * 
  * @author vlewis
  */
 public class CCDParserTest extends TestCase {
+    
+    /**
+     * Class logger.
+     */
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(CCDParserTest.class);
 
     public CCDParserTest(String testName) {
         super(testName);
@@ -54,7 +62,7 @@ public class CCDParserTest extends TestCase {
      * Test of parseCCD method, of class CCDParser.
      */
     public void testParseCCD() throws Exception {
-        System.out.println("parseCCD");
+        LOGGER.info("parseCCD");
         String ccdXml = "<ClinicalDocument>Test</ClinicalDocument>";
         CCDParser instance = new CCDParser();
         // instance.parseCCD(ccdXml);
@@ -65,7 +73,7 @@ public class CCDParserTest extends TestCase {
      * Test of getPatientId method, of class CCDParser.
      */
     public void testGetPatientId() {
-        System.out.println("getPatientId");
+        LOGGER.info("getPatientId");
         CCDParser instance = new CCDParser();
         String expResult = "";
         String result = instance.getPatientId();
@@ -78,7 +86,7 @@ public class CCDParserTest extends TestCase {
      * Test of getOrgId method, of class CCDParser.
      */
     public void testGetOrgId() {
-        System.out.println("getOrgId");
+        LOGGER.info("getOrgId");
         CCDParser instance = new CCDParser();
         String expResult = "";
         String result = instance.getOrgId();

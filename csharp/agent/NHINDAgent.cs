@@ -968,9 +968,10 @@ namespace NHINDirect.Agent
         {
             try
             {
-                if (this.ErrorIncoming != null)
+                Action<IncomingMessage, Exception> errorIncoming = ErrorIncoming;
+                if (errorIncoming != null)
                 {
-                    this.ErrorIncoming(message, ex);
+                    errorIncoming(message, ex);
                 }
             }
             catch
@@ -982,9 +983,10 @@ namespace NHINDirect.Agent
         {
             try
             {
-                if (this.ErrorOutgoing != null)
+                Action<OutgoingMessage, Exception> errorOutgoing = ErrorOutgoing;
+                if (errorOutgoing != null)
                 {
-                    this.ErrorOutgoing(message, ex);
+                    errorOutgoing(message, ex);
                 }
             }
             catch
@@ -996,9 +998,10 @@ namespace NHINDirect.Agent
         {
             try
             {
-                if (this.Error != null)
+                var error = this.Error;
+                if (error != null)
                 {
-                    this.Error(this, ex);
+                    error(this, ex);
                 }
             }
             catch

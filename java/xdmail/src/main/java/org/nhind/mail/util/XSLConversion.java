@@ -33,7 +33,6 @@ import java.io.CharArrayWriter;
 import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.Hashtable;
-import java.util.logging.Logger;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -43,18 +42,23 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
- *
+ * XSL conversion utilities.
  */
 public class XSLConversion {
 
-    static final String SERVERNAME = "XSLEngine";
+    /**
+     * Hashtable of map files to templates.
+     */
     private static Hashtable<String, Templates> conversions = new Hashtable<String, Templates>(10);
 
     /**
      * Class logger.
      */
-    private static Logger LOGGER = Logger.getLogger(XSLConversion.class.getPackage().getName());
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(XSLConversion.class);
 
     /**
      * Default constructor.
@@ -63,9 +67,13 @@ public class XSLConversion {
     }
 
     /**
+     * Perform the XSL conversion using the provided map file and message.
+     * 
      * @param mapFile
+     *            The map file.
      * @param message
-     * @return
+     *            The message.
+     * @return an XSL conversion.
      * @throws Exception
      */
     public String run(String mapFile, String message) throws Exception {
@@ -113,18 +121,19 @@ public class XSLConversion {
             transformer.transform(new StreamSource(new CharArrayReader(message.toCharArray())), new StreamResult(to));
             retXml = to.toString();
         } catch (TransformerConfigurationException e) {
-            LOGGER.severe("Exception occured during XSL conversion");
-            e.printStackTrace();
+            LOGGER.error("Exception occured during XSL conversion", e);
             throw e;
         } catch (TransformerException e) {
-            LOGGER.severe("Exception occured during XSL conversion");
-            e.printStackTrace();
+            LOGGER.error("Exception occured during XSL conversion", e);
             throw e;
         }
 
-        long elapse = System.currentTimeMillis() - start;
-        LOGGER.info("Started at " + new Timestamp(start).toString());
-        LOGGER.info("Elapsed conversion time was " + elapse + "ms");
+        if (LOGGER.isInfoEnabled()) {
+            long elapse = System.currentTimeMillis() - start;
+            
+            LOGGER.info("Started at " + new Timestamp(start).toString());
+            LOGGER.info("Elapsed conversion time was " + elapse + "ms");
+        }
 
         return retXml;
     }

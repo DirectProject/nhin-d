@@ -51,7 +51,7 @@ namespace DnsResolver
         /// <param name="name">the domain name for which this is a record</param>
         /// <param name="strings">The strings held by this TXT RR</param>
         public TextRecord(string name, IList<string> strings)
-            : base(name, Dns.RecordType.TXT)
+            : base(name, DnsStandard.RecordType.TXT)
         {
             this.Strings = strings;
         }

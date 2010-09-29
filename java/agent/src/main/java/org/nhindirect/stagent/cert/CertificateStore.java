@@ -30,6 +30,8 @@ import java.util.Locale;
 
 import javax.mail.internet.InternetAddress;
 
+import org.nhindirect.stagent.cert.impl.CRLRevocationManager;
+
 /**
  * Abstract base class for a certificate store implementation.  It does not implement any specific certificate storage functions
  * against a certificate repository implementation.  Storage specific implementation should over ride this class to communicate
@@ -209,14 +211,22 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         {
         	try
         	{
-        		// flow control based on exception handling is generally bad practice, but this is how the X509Certificate
-        		// checks validity based on date (instead of returning a boolean)
+                /*
+                 * flow control based on exception handling is generally bad
+                 * practice, but this is how the X509Certificate checks validity
+                 * based on date (instead of returning a boolean)
+                 */
         		cert.checkValidity(new GregorianCalendar().getTime());
-        		filteredCerts.add(cert);      		
-        	}
+        		
+        		// Search CRLs to determine if this certificate has been revoked
+        		RevocationManager revocationManager = new CRLRevocationManager();
+        		if (!revocationManager.isRevoked(cert))
+                    filteredCerts.add(cert);
+        	} 
             catch (Exception e) {/* no op.... the cert is not valid for the given time */}
         }
         
         return filteredCerts.size() == 0 ? null : filteredCerts;
     }
+    
 }

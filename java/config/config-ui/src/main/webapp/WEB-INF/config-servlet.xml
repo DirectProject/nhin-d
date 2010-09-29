@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+		http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+	
+	<mvc:annotation-driven/>
+	<context:annotation-config />
+	   <!-- Scans the classpath of this application for @Components to deploy as beans -->
+    <context:component-scan base-package="org.nhindirect.config.ui" />
+
+    <!-- Forwards requests to the "/" resource to the "login" view -->
+    <mvc:view-controller path="/" view-name="login"/>
+    
+	<!-- the ResourceBundleViewResolver -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	
+	</bean>
+
+	<bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping" />
+	
+	<!-- Application Message Bundle -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="/WEB-INF/messages/messages" />
+        <property name="cacheSeconds" value="0" />
+    </bean>
+
+	<bean id="configWebService"
+		class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
+		<property name="serviceInterface" value="org.nhindirect.config.service.ConfigurationService"/>
+		<property name="wsdlDocumentUrl"  value="http://localhost:8080/config-service/ConfigurationService?wsdl"/>
+		<property name="namespaceUri"     value="http://impl.service.config.nhindirect.org/"/>
+		<property name="serviceName"      value="ConfigurationServiceImplService"/>
+		<property name="portName"         value="ConfigurationServiceImplPort"/>
+	</bean>
+</beans>

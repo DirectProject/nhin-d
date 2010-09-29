@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.mail.MessagingException;
 
 import org.apache.mailet.MailetConfig;
-import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 

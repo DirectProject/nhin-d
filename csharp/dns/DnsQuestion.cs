@@ -63,8 +63,8 @@ namespace DnsResolver
         /// </summary>
         /// <param name="domain">The domain we are querying.</param>
         /// <param name="type">The record type we are querying.</param>
-        public DnsQuestion(string domain, Dns.RecordType type)
-            : this(domain, type, Dns.Class.IN)
+        public DnsQuestion(string domain, DnsStandard.RecordType type)
+            : this(domain, type, DnsStandard.Class.IN)
         {
         }
 
@@ -74,7 +74,7 @@ namespace DnsResolver
         /// <param name="domain">The domain we are querying.</param>
         /// <param name="type">The record type we are querying.</param>
         /// <param name="qClass">Use to define a non Internet DNS query</param>
-        public DnsQuestion(string domain, Dns.RecordType type, Dns.Class qClass)
+        public DnsQuestion(string domain, DnsStandard.RecordType type, DnsStandard.Class qClass)
         {
             this.Domain = domain;
             this.Type = type;
@@ -106,7 +106,7 @@ namespace DnsResolver
             }
             set
             {
-                if (value == null)
+                if (string.IsNullOrEmpty(value))
                 {
                     throw new DnsProtocolException(DnsProtocolError.InvalidQName);
                 }
@@ -119,9 +119,9 @@ namespace DnsResolver
         /// Gets and sets the QTYPE
         /// </summary>
         /// <remarks>
-        /// See <see cref="Dns.RecordType"/> for details.
+        /// See <see cref="DnsStandard.RecordType"/> for details.
         /// </remarks>
-        public Dns.RecordType Type
+        public DnsStandard.RecordType Type
         {
             get;
             set;
@@ -131,9 +131,9 @@ namespace DnsResolver
         /// Gets and sets the QClass
         /// </summary>
         /// <remarks>
-        /// See <see cref="Dns.Class"/> for details.
+        /// See <see cref="DnsStandard.Class"/> for details.
         /// </remarks>
-        public Dns.Class Class
+        public DnsStandard.Class Class
         {
             get;
             set;
@@ -152,7 +152,7 @@ namespace DnsResolver
             }
             
             return (
-                    Dns.Equals(question.Domain, this.Domain)
+                    DnsStandard.Equals(question.Domain, this.Domain)
                 &&  question.Type == this.Type
                 &&  question.Class == this.Class
             );
@@ -161,8 +161,8 @@ namespace DnsResolver
         internal void Deserialize(ref DnsBufferReader reader)
         {
             this.Domain = reader.ReadDomainName();
-            this.Type = (Dns.RecordType) reader.ReadShort();
-            this.Class = (Dns.Class) reader.ReadShort();
+            this.Type = (DnsStandard.RecordType) reader.ReadShort();
+            this.Class = (DnsStandard.Class) reader.ReadShort();
         }
 
         internal void Serialize(DnsBuffer buffer)

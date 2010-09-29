@@ -14,17 +14,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Net.Mime;
+
 using NHINDirect.Mail;
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
-using AgentTests;
+
 using Xunit;
-using Xunit.Extensions;
 
 namespace SmtpAgentTests
 {
@@ -112,14 +109,15 @@ Yo. Wassup?";
 
         internal void ProcessEndToEnd(SmtpAgent agent, Message msg, out OutgoingMessage outgoing, out IncomingMessage incoming)
         {
-            outgoing = (OutgoingMessage) agent.SecurityAgent.ProcessOutgoing(new MessageEnvelope(msg));
-            incoming = (IncomingMessage) agent.SecurityAgent.ProcessIncoming(new MessageEnvelope(outgoing.SerializeMessage()));
+            outgoing = agent.SecurityAgent.ProcessOutgoing(new MessageEnvelope(msg));
+            incoming = agent.SecurityAgent.ProcessIncoming(new MessageEnvelope(outgoing.SerializeMessage()));
         }
         
-        internal SmtpAgentSettings LoadTestSettings(string fileName)
+        protected string GetSettingsPath(string fileName)
         {
             string relativePath = Path.Combine("SmtpAgentTestFiles", fileName);
-            return SmtpAgentSettings.LoadSettings(MakeFilePath(relativePath));
+            relativePath = MakeFilePath(relativePath);
+            return relativePath;
         }
     }
     

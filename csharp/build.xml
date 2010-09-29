@@ -80,5 +80,12 @@
 		<xunitproject ProjectFile="unittests\xds.xunit" />
 		-->
 	</Target>
+
+	<Target Name="build-installer">
+		<Exec Command='"C:\Program Files (x86)\inno setup 5\iscc.exe" /Q installer\nhinGateway.iss' 
+			Condition="Exists('C:\Program Files (x86)\inno setup 5\iscc.exe')" />
+		<Exec Command='"C:\Program Files\inno setup 5\iscc.exe" /Q installer\nhinGateway.iss' 
+			Condition="Exists('C:\Program Files\inno setup 5\iscc.exe')" />
+	</Target>
 	
 </Project>

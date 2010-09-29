@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Class-Path: activation-1.1.jar antlr-2.7.6.jar aopalliance-1.0.jar asm
+ -2.2.3.jar bcmail-jdk15-140.jar bcprov-jdk15-140.jar cglib-2.2.jar co
+ mmons-codec-1.4.jar commons-collections-3.1.jar commons-dbcp-1.4.jar 
+ commons-io-1.4.jar commons-lang-2.4.jar commons-logging-1.1.1.jar com
+ mons-pool-1.5.4.jar concurrent-1.0.jar config-store-1.0-SNAPSHOT.jar 
+ cxf-api-2.2.9.jar cxf-common-schemas-2.2.9.jar cxf-common-utilities-2
+ .2.9.jar cxf-rt-bindings-soap-2.2.9.jar cxf-rt-bindings-xml-2.2.9.jar
+  cxf-rt-core-2.2.9.jar cxf-rt-databinding-jaxb-2.2.9.jar cxf-rt-front
+ end-jaxws-2.2.9.jar cxf-rt-frontend-simple-2.2.9.jar cxf-rt-transport
+ s-http-2.2.9.jar cxf-rt-ws-addr-2.2.9.jar cxf-tools-common-2.2.9.jar 
+ dnsjava-2.0.6.jar dom4j-1.6.1.jar geronimo-activation_1.1_spec-1.0.2.
+ jar geronimo-annotation_1.0_spec-1.1.1.jar geronimo-javamail_1.4_spec
+ -1.6.jar geronimo-jaxws_2.1_spec-1.0.jar geronimo-stax-api_1.0_spec-1
+ .0.1.jar geronimo-ws-metadata_2.0_spec-1.1.2.jar guice-2.0.jar hibern
+ ate-annotations-3.5.2-Final.jar hibernate-commons-annotations-3.2.0.F
+ inal.jar hibernate-core-3.5.2-Final.jar hibernate-entitymanager-3.5.2
+ -Final.jar hibernate-jpa-2.0-api-1.0.0.Final.jar javassist-3.9.0.GA.j
+ ar jaxb-api-2.1.jar jaxb-impl-2.1.13.jar jaxws-api-2.1.jar jcs-1.3.ja
+ r joda-time-1.6.1.jar jpa-api-2.0.Beta-20090815.jar jta-1.1.jar mail-
+ 1.4.1.jar neethi-2.0.4.jar nhinAgent-1.0-SNAPSHOT.jar saaj-api-1.3.ja
+ r saaj-impl-1.3.2.jar slf4j-api-1.5.8.jar spring-aop-3.0.4.RELEASE.ja
+ r spring-asm-3.0.4.RELEASE.jar spring-beans-3.0.4.RELEASE.jar spring-
+ context-3.0.4.RELEASE.jar spring-context-support-3.0.4.RELEASE.jar sp
+ ring-core-3.0.4.RELEASE.jar spring-expression-3.0.4.RELEASE.jar sprin
+ g-jdbc-3.0.4.RELEASE.jar spring-orm-3.0.4.RELEASE.jar spring-tx-3.0.4
+ .RELEASE.jar spring-web-3.0.4.RELEASE.jar spring-webmvc-3.0.4.RELEASE
+ .jar stax-api-1.0-2.jar wsdl4j-1.6.2.jar wstx-asl-3.2.9.jar xml-apis-
+ 1.0.b2.jar xml-resolver-1.2.jar XmlSchema-1.4.5.jar
+

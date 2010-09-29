@@ -14,14 +14,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
-using System.Net.Mail;
+using System.Xml.Serialization;
+
 using NHINDirect.Agent.Config;
 using NHINDirect.Diagnostics;
-using System.Xml.Serialization;
-using System.IO;
 using NHINDirect.Config.Client;
 
 namespace NHINDirect.SmtpAgent
@@ -29,7 +27,6 @@ namespace NHINDirect.SmtpAgent
     [XmlType("SmtpAgentConfig")]
     public class SmtpAgentSettings : AgentSettings
     {
-        string[] m_postmasters;
         RawMessageSettings m_rawMessageSettings;
         ProcessIncomingSettings m_incomingSettings;
         ProcessOutgoingSettings m_outgoingSettings;
@@ -37,11 +34,6 @@ namespace NHINDirect.SmtpAgent
         InternalMessageSettings m_internalMessageSettings;
         NotificationSettings m_notificationSettings;
         MessageRoute[] m_incomingRoutes;
-        bool m_logVerbose = true;
-        
-        public SmtpAgentSettings()
-        {
-        }
         
         //--------------------------------------------------------
         //
@@ -59,19 +51,13 @@ namespace NHINDirect.SmtpAgent
         }
         
         /// <summary>
-        /// OPTIONAL: If true, log verbose information & error messages
+        /// Used to fine tune the level of logging details.
+        /// NOTE: This is now DEPRECATED - use the Level attribute of <see cref="LogFileSettings.Level"/>
         /// </summary>
-        [XmlElement]      
+        [XmlIgnore]
         public bool LogVerbose
         {
-            get
-            {
-                return m_logVerbose;
-            }
-            set
-            {
-                m_logVerbose = value;
-            }
+            get; set;
         }
                 
         /// <summary>
@@ -82,14 +68,7 @@ namespace NHINDirect.SmtpAgent
         [XmlIgnore]
         public string[] Postmasters
         {
-            get
-            {
-                return m_postmasters;
-            }
-            set
-            {
-                m_postmasters = value;
-            }
+            get; set;
         }
 
         //--------------------------------------------------------
@@ -347,7 +326,15 @@ namespace NHINDirect.SmtpAgent
                 Array.ForEach<MessageRoute>(m_incomingRoutes, x => x.Validate());
             }
         }
-        
+
+        public void EnsureFolders()
+        {
+            this.RawMessage.EnsureFolders();
+            this.Incoming.EnsureFolders();
+            this.Outgoing.EnsureFolders();
+            this.BadMessage.EnsureFolders();
+        }
+
         public static SmtpAgentSettings LoadSettings(string configFilePath)
         {
             ExtensibleXmlSerializer serializer = new ExtensibleXmlSerializer();
@@ -358,6 +345,14 @@ namespace NHINDirect.SmtpAgent
             {
                 return serializer.Deserialize<SmtpAgentSettings>(stream);
             }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder(GetType().Name).Append("(");
+            builder.Append("Incoming=").Append(Incoming).Append(", ");
+            builder.Append("Outgoing=").Append(Outgoing);
+            return builder.Append(")").ToString();
         }
     }
 }

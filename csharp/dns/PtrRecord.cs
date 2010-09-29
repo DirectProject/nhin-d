@@ -55,7 +55,7 @@ namespace DnsResolver
         /// <param name="name">The domain name for which this is a record</param>
         /// <param name="domain">The domain name to which the PTR points</param>
         public PtrRecord(string name, string domain)
-            : base(name, Dns.RecordType.PTR)
+            : base(name, DnsStandard.RecordType.PTR)
         {
             this.Domain = domain;
         }
@@ -98,7 +98,7 @@ namespace DnsResolver
                 return false;
             }
             
-            return (Dns.Equals(this.m_domain, ptrRecord.m_domain));
+            return (DnsStandard.Equals(this.m_domain, ptrRecord.m_domain));
         }
 
         /// <summary>

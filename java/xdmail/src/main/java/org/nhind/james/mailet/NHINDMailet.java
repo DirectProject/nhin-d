@@ -30,11 +30,13 @@ package org.nhind.james.mailet;
 
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
-import java.util.logging.Logger;
+import java.util.List;
 
 import javax.mail.MessagingException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.base.GenericMailet;
 import org.nhind.mail.service.MimeXDSTransformer;
@@ -58,9 +60,9 @@ public class NHINDMailet extends GenericMailet {
     private MimeXDSTransformer mimeXDSTransformer;
     
     /**
-     * Class logger
+     * Class logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(NHINDMailet.class.getPackage().getName());
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(NHINDMailet.class);
     
     /*
      * (non-Javadoc)
@@ -70,39 +72,35 @@ public class NHINDMailet extends GenericMailet {
     @Override
     public void service(Mail mail) throws MessagingException {
         LOGGER.info("Servicing NHINDMailet");
-        
-        if (StringUtils.isBlank(endpointUrl))
-        {
-            LOGGER.severe("NHINDMailet endpoint URL cannot be empty or null.");
+
+        if (StringUtils.isBlank(endpointUrl)) {
+            LOGGER.error("NHINDMailet endpoint URL cannot be empty or null.");
             throw new MessagingException("NHINDMailet endpoint URL cannot be empty or null.");
-        }   
-        
-        try {            
-            boolean forwardToXdr = true; // should be based on some routing lookup
+        }
+
+        try {
+            boolean forwardToXdr = true; // should be based on some routing
+            
             if (forwardToXdr) {
-                
-                // TODO: Multiple recipient pseudocode
-                //
-                // List<ProvideAndRegisterDocumentSetRequestType> requests = 
-                //                  MimeXDSTransformer.createRequest(mail.getMessage());
-                // 
-                // for (ProvideAndRegisterDocumentSetRequestType request : requests) {
-                //     String ack = DocumentRepositoryUtils.forward(endpointUrl, request);
-                //     
-                //     if (!isSuccessful(ack))
-                //         ??
-                // }                
-                
-                getMimeXDSTransformer().forward(endpointUrl, mail.getMessage());
+                List<ProvideAndRegisterDocumentSetRequestType> requests = getMimeXDSTransformer().createRequests(mail
+                        .getMessage());
+
+                for (ProvideAndRegisterDocumentSetRequestType request : requests) {
+                    @SuppressWarnings("unused")
+                    String response = getMimeXDSTransformer().forwardRequest(endpointUrl, request);
+
+                    // if (!isSuccessful(response))
+                    // ??
+                }
+
             } else {
                 // forward it to another email server based on routing
                 // information
             }
-            
+
             mail.setState(Mail.GHOST);
         } catch (Throwable e) {
-            e.printStackTrace();
-            LOGGER.severe("NHINDMailet delivery failure" + e.getMessage());
+            LOGGER.error("NHINDMailet delivery failure", e);
             throw new RuntimeException(e);
         }
     }
@@ -121,19 +119,45 @@ public class NHINDMailet extends GenericMailet {
         
         if (StringUtils.isBlank(endpointUrl))
         {
-            LOGGER.severe("NHINDMailet endpoint URL cannot be empty or null.");
+            LOGGER.error("NHINDMailet endpoint URL cannot be empty or null.");
             throw new MessagingException("NHINDMailet endpoint URL cannot be empty or null.");
         }   
     }
     
+    /**
+     * Return the value of endpointUrl.
+     * 
+     * @return the value of endpointUrl.
+     */
     protected String getEndpointUrl() {
         return this.endpointUrl;
     }
     
+    /**
+     * Set the value of endpointUrl.
+     * 
+     * @param endpointUrl
+     *            The value of endpointUrl.
+     */
+    protected void setEndpointUrl(String endpointUrl) {
+        this.endpointUrl = endpointUrl;
+    }
+    
+    /**
+     * Set the value of mimeXDSTransformer.
+     * 
+     * @param mimeXDSTransformer
+     *            The value of mimeXDSTransformer.
+     */
     protected void setMimeXDSTransformer(MimeXDSTransformer mimeXDSTransformer) {
         this.mimeXDSTransformer = mimeXDSTransformer;
     }
-    
+
+    /**
+     * Get the value of mimeXDSTransfomer.
+     * 
+     * @return the value of mimeXDSTransformer, or a new object if null.
+     */
     protected MimeXDSTransformer getMimeXDSTransformer() {
         if (this.mimeXDSTransformer == null) {
             this.mimeXDSTransformer = new MimeXDSTransformer();

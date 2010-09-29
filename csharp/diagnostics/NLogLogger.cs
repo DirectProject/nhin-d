@@ -19,135 +19,165 @@ using NHINDirect.Diagnostics;
 
 using NLog;
 
-namespace Health.Net.Diagnostics.NLog
+namespace Health.Net.Direct.Diagnostics.NLog
 {
-	class NLogLogger : ILogger
-	{
-		private readonly Logger m_logger;
+    class NLogLogger : ILogger
+    {
+        private readonly Logger m_logger;
 
-		internal NLogLogger(Logger mLogger)
-		{
-			m_logger = mLogger;
-		}
+        internal NLogLogger(Logger mLogger)
+        {
+            m_logger = mLogger;
+        }
 
-		public bool IsDebugEnabled
-		{
-			get { return m_logger.IsDebugEnabled; }
-		}
+        public bool IsDebugEnabled
+        {
+            get { return m_logger.IsDebugEnabled; }
+        }
 
-		public void Debug(string message)
-		{
-			m_logger.Debug(message);
-		}
+        public void Debug(string message)
+        {
+            m_logger.Debug(message);
+        }
 
-		public void Debug(string message, params object[] args)
-		{
-			m_logger.Debug(message, args);
-		}
+        public void Debug(object obj)
+        {
+            m_logger.Debug(obj);
+        }
 
-		public void Debug(string message, Exception exception)
-		{
-			m_logger.DebugException(message, exception);
-		}
+        public void Debug(string message, params object[] args)
+        {
+            m_logger.Debug(message, args);
+        }
 
-		public bool IsErrorEnabled
-		{
-			get { return m_logger.IsErrorEnabled; }
-		}
+        public void Debug(string message, Exception exception)
+        {
+            m_logger.DebugException(message, exception);
+        }
 
-		public void Error(string message)
-		{
-			m_logger.Error(message);
-		}
+        public bool IsErrorEnabled
+        {
+            get { return m_logger.IsErrorEnabled; }
+        }
 
-		public void Error(string message, params object[] args)
-		{
-			m_logger.Error(message, args);
-		}
+        public void Error(string message)
+        {
+            m_logger.Error(message);
+        }
 
-		public void Error(string message, Exception exception)
-		{
-			m_logger.ErrorException(message, exception);
-		}
+        public void Error(object obj)
+        {
+            m_logger.Error(obj);
+        }
 
-		public bool IsFatalEnabled
-		{
-			get { return m_logger.IsFatalEnabled; }
-		}
+        public void Error(string message, params object[] args)
+        {
+            m_logger.Error(message, args);
+        }
 
-		public void Fatal(string message)
-		{
-			m_logger.Fatal(message);
-		}
+        public void Error(string message, Exception exception)
+        {
+            m_logger.ErrorException(message, exception);
+        }
 
-		public void Fatal(string message, params object[] args)
-		{
-			m_logger.Fatal(message, args);
-		}
+        public bool IsFatalEnabled
+        {
+            get { return m_logger.IsFatalEnabled; }
+        }
 
-		public void Fatal(string message, Exception exception)
-		{
-			m_logger.FatalException(message, exception);
-		}
+        public void Fatal(string message)
+        {
+            m_logger.Fatal(message);
+        }
 
-		public bool IsInfoEnabled
-		{
-			get { return m_logger.IsInfoEnabled; }
-		}
+        public void Fatal(object obj)
+        {
+            m_logger.Fatal(obj);
+        }
 
-		public void Info(string message)
-		{
-			m_logger.Info(message);
-		}
+        public void Fatal(string message, params object[] args)
+        {
+            m_logger.Fatal(message, args);
+        }
 
-		public void Info(string message, params object[] args)
-		{
-			m_logger.Info(message, args);
-		}
+        public void Fatal(string message, Exception exception)
+        {
+            m_logger.FatalException(message, exception);
+        }
 
-		public void Info(string message, Exception exception)
-		{
-			m_logger.InfoException(message, exception);
-		}
+        public bool IsInfoEnabled
+        {
+            get { return m_logger.IsInfoEnabled; }
+        }
 
-		public bool IsTraceEnabled
-		{
-			get { return m_logger.IsTraceEnabled; }
-		}
+        public void Info(string message)
+        {
+            m_logger.Info(message);
+        }
 
-		public void Trace(string message)
-		{
-			m_logger.Trace(message);
-		}
+        public void Info(object obj)
+        {
+            m_logger.Info(obj);
+        }
 
-		public void Trace(string message, params object[] args)
-		{
-			m_logger.Trace(message, args);
-		}
+        public void Info(string message, params object[] args)
+        {
+            m_logger.Info(message, args);
+        }
 
-		public void Trace(string message, Exception exception)
-		{
-			m_logger.TraceException(message, exception);
-		}
+        public void Info(string message, Exception exception)
+        {
+            m_logger.InfoException(message, exception);
+        }
 
-		public bool IsWarnEnabled
-		{
-			get { return m_logger.IsWarnEnabled; }
-		}
+        public bool IsTraceEnabled
+        {
+            get { return m_logger.IsTraceEnabled; }
+        }
 
-		public void Warn(string message)
-		{
-			m_logger.Warn(message);
-		}
+        public void Trace(string message)
+        {
+            m_logger.Trace(message);
+        }
 
-		public void Warn(string message, params object[] args)
-		{
-			m_logger.Warn(message, args);
-		}
+        public void Trace(object obj)
+        {
+            m_logger.Trace(obj);
+        }
 
-		public void Warn(string message, Exception exception)
-		{
-			m_logger.WarnException(message, exception);
-		}
-	}
+        public void Trace(string message, params object[] args)
+        {
+            m_logger.Trace(message, args);
+        }
+
+        public void Trace(string message, Exception exception)
+        {
+            m_logger.TraceException(message, exception);
+        }
+
+        public bool IsWarnEnabled
+        {
+            get { return m_logger.IsWarnEnabled; }
+        }
+
+        public void Warn(string message)
+        {
+            m_logger.Warn(message);
+        }
+
+        public void Warn(object obj)
+        {
+            m_logger.Warn(obj);
+        }
+
+        public void Warn(string message, params object[] args)
+        {
+            m_logger.Warn(message, args);
+        }
+
+        public void Warn(string message, Exception exception)
+        {
+            m_logger.WarnException(message, exception);
+        }
+    }
 }

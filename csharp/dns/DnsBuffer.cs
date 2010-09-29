@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net.Sockets;
 
 namespace DnsResolver
 {
@@ -28,7 +29,15 @@ namespace DnsResolver
     {
         byte[] m_buffer;
         int m_count;
-
+        
+        /// <summary>
+        /// Initializes a buffer with capacity == DnsStandard.MaxUdpMessageLength
+        /// </summary>
+        public DnsBuffer()
+            : this(DnsStandard.MaxUdpMessageLength)
+        {
+        }
+        
         /// <summary>
         /// Initializes a buffer with the requested capacity.
         /// </summary>
@@ -278,7 +287,7 @@ namespace DnsResolver
                 throw new ArgumentException("value was less than 1", "length");
             }
 
-            if (length > Dns.MAXLABELLENGTH)
+            if (length > DnsStandard.MaxLabelLength)
             {
                 throw new DnsProtocolException(DnsProtocolError.LabelTooLong);
             }
