@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7E1FA376-3372-4DF4-8AED-4DEE68A20152}</ProjectGuid>
+    <ProjectGuid>{C6AF9782-1F93-4B72-9281-754456D053A8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect.Tests</RootNamespace>
-    <AssemblyName>commonXUnitTests</AssemblyName>
+    <RootNamespace>xdTests</RootNamespace>
+    <AssemblyName>xdXunitTests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -53,62 +53,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Caching\DnsClientWithCacheFacts.cs" />
-    <Compile Include="Caching\DnsResponseCacheFacts.cs" />
-    <Compile Include="Mail\RoundTripFacts.cs" />
-    <Compile Include="Mail\TestMDN.cs" />
-    <Compile Include="metadata\AuthorFacts.cs" />
-    <Compile Include="metadata\PatientIDFacts.cs" />
-    <Compile Include="metadata\PersonFacts.cs" />
-    <Compile Include="Mime\BodyFacts.cs" />
-    <Compile Include="Mime\CharReaderFacts.cs" />
-    <Compile Include="Mime\MimeEntityCollectionFacts.cs" />
-    <Compile Include="Mime\DefaultSerializerFacts.cs" />
-    <Compile Include="Mime\EntityPartFacts.cs" />
-    <Compile Include="Mime\HeaderCollectionFacts.cs" />
-    <Compile Include="Mime\HeaderFacts.cs" />
-    <Compile Include="Mime\MimeEntityFacts.cs" />
-    <Compile Include="Mime\MimeSerializerFacts.cs" />
-    <Compile Include="Mime\MimeWriterFacts.cs" />
-    <Compile Include="Mime\StringSegmentFacts.cs" />
+    <Compile Include="ExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestingBase.cs" />
+    <Compile Include="XdMetadataGeneratorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\nhinCommon.csproj">
       <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
       <Name>nhinCommon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\dns\dnsResolver.csproj">
-      <Project>{AE250214-0E85-4C28-90C9-A006440BCE97}</Project>
-      <Name>dnsResolver</Name>
+    <ProjectReference Include="..\..\xd\xd.csproj">
+      <Project>{34C79F52-0820-4365-B7E8-9660163E7A21}</Project>
+      <Name>xd</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="metadata\dns responses\dns.hsgincubator.com.bin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="metadata\dns responses\hvnhind.hsgincubator.com.bin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="metadata\dns responses\nhind.hsgincubator.com.bin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="metadata\dns responses\www.apple.com.bin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="metadata\dns responses\www.google.com.bin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="metadata\dns responses\www.microsoft.com.bin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="metadata\dns responses\www.yahoo.com.bin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Diagnostics\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

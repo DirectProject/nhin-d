@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+# Visual C# Express 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nhinCommon", "..\common\nhinCommon.csproj", "{6A48C90B-0BD0-4F19-BBAE-B973AD504902}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nhinAgent", "..\agent\nhinAgent.csproj", "{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}"
@@ -22,6 +22,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnsResolver", "..\dns\dnsResolver.csproj", "{AE250214-0E85-4C28-90C9-A006440BCE97}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "commonTests", "..\unittests\common\commonTests.csproj", "{7E1FA376-3372-4DF4-8AED-4DEE68A20152}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xd", "..\xd\xd.csproj", "{34C79F52-0820-4365-B7E8-9660163E7A21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xdTests", "..\unittests\xdtests\xdTests.csproj", "{C6AF9782-1F93-4B72-9281-754456D053A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,6 +111,30 @@ Global
 		{7E1FA376-3372-4DF4-8AED-4DEE68A20152}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7E1FA376-3372-4DF4-8AED-4DEE68A20152}.Release|Win32.ActiveCfg = Release|Any CPU
 		{7E1FA376-3372-4DF4-8AED-4DEE68A20152}.Release|x64.ActiveCfg = Release|Any CPU
+		{34C79F52-0820-4365-B7E8-9660163E7A21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34C79F52-0820-4365-B7E8-9660163E7A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34C79F52-0820-4365-B7E8-9660163E7A21}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{34C79F52-0820-4365-B7E8-9660163E7A21}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{34C79F52-0820-4365-B7E8-9660163E7A21}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{34C79F52-0820-4365-B7E8-9660163E7A21}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{34C79F52-0820-4365-B7E8-9660163E7A21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34C79F52-0820-4365-B7E8-9660163E7A21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34C79F52-0820-4365-B7E8-9660163E7A21}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{34C79F52-0820-4365-B7E8-9660163E7A21}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{34C79F52-0820-4365-B7E8-9660163E7A21}.Release|Win32.ActiveCfg = Release|Any CPU
+		{34C79F52-0820-4365-B7E8-9660163E7A21}.Release|x64.ActiveCfg = Release|Any CPU
+		{C6AF9782-1F93-4B72-9281-754456D053A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6AF9782-1F93-4B72-9281-754456D053A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6AF9782-1F93-4B72-9281-754456D053A8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C6AF9782-1F93-4B72-9281-754456D053A8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C6AF9782-1F93-4B72-9281-754456D053A8}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{C6AF9782-1F93-4B72-9281-754456D053A8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C6AF9782-1F93-4B72-9281-754456D053A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6AF9782-1F93-4B72-9281-754456D053A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6AF9782-1F93-4B72-9281-754456D053A8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C6AF9782-1F93-4B72-9281-754456D053A8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C6AF9782-1F93-4B72-9281-754456D053A8}.Release|Win32.ActiveCfg = Release|Any CPU
+		{C6AF9782-1F93-4B72-9281-754456D053A8}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
