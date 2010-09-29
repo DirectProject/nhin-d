@@ -33,11 +33,11 @@
   <ItemGroup>
     <Reference Include="dnsResolver, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\Debug\dnsResolver.dll</HintPath>
+      <HintPath>..\bin\Debug\dnsResolver.dll</HintPath>
     </Reference>
     <Reference Include="nhinCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\Debug\nhinCommon.dll</HintPath>
+      <HintPath>..\bin\Debug\nhinCommon.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
