@@ -52,8 +52,10 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit3.JUnit3Mockery;
 import org.jmock.lib.legacy.ClassImposteriser;
-import org.nhind.mail.service.MimeXDSTransformer;
+import org.nhind.mail.service.DocumentRepository;
 import org.nhind.testutils.MockMailetConfig;
+import org.nhindirect.transform.MimeXdsTransformer;
+import org.nhindirect.transform.impl.DefaultMimeXdsTransformer;
 
 
 /**
@@ -141,14 +143,14 @@ public class NHINDMailetTest extends TestCase {
      */
     public void testGetSetMimeXDSTransformer() {
         NHINDMailet mailet = new NHINDMailet();
-        MimeXDSTransformer transformer = null;
+        MimeXdsTransformer transformer = null;
 
         transformer = mailet.getMimeXDSTransformer();
         assertTrue("MimeXDSTransformer is null", transformer != null);
 
-        transformer = new MimeXDSTransformer();
+        transformer = new DefaultMimeXdsTransformer();
         mailet.setMimeXDSTransformer(transformer);
-        MimeXDSTransformer output = mailet.getMimeXDSTransformer();
+        MimeXdsTransformer output = mailet.getMimeXDSTransformer();
         assertTrue("Output references a different object", transformer == output);
     }
     
@@ -162,7 +164,8 @@ public class NHINDMailetTest extends TestCase {
             setImposteriser(ClassImposteriser.INSTANCE);
         }};
         
-        final MimeXDSTransformer mimeXDSTransformer = context.mock(MimeXDSTransformer.class);
+        final MimeXdsTransformer mimeXDSTransformer = context.mock(MimeXdsTransformer.class);
+        final DocumentRepository forwardXds = context.mock(DocumentRepository.class);
 
         final Session session = null;
         final MimeMessage message = new MimeMessage(session);
@@ -180,16 +183,17 @@ public class NHINDMailetTest extends TestCase {
 
         NHINDMailet mailet = new NHINDMailet();
         mailet.setMimeXDSTransformer(mimeXDSTransformer);
+        mailet.setDocumentRepository(forwardXds);
         
         // expectations
         context.checking(new Expectations() {
             {
-                oneOf(mimeXDSTransformer).createRequests(message);
+                oneOf(mimeXDSTransformer).transform(message);
                 will(returnValue(prdsList));
-                oneOf(mimeXDSTransformer).forwardRequest(endpointUrl, prds);
+                oneOf(forwardXds).forwardRequest(endpointUrl, prds);
                 will(returnValue(response));
                 
-                oneOf(mimeXDSTransformer).createRequests(message);
+                oneOf(mimeXDSTransformer).transform(message);
                 will(throwException(e));                
             }
         });
