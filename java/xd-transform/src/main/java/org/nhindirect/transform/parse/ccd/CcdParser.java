@@ -26,28 +26,64 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform;
+package org.nhindirect.transform.parse.ccd;
 
-import java.io.File;
-
-import javax.mail.internet.MimeMessage;
-
-import org.nhindirect.transform.exception.TransformationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nhindirect.transform.parse.ccd.jaxb.CCDDB;
+import org.nhindirect.transform.parse.ccd.jaxb.PATIENT;
+import org.nhindirect.transform.util.XslConversion;
+import org.nhindirect.transform.util.XmlUtils;
 
 /**
- * Interface for handling the transformation of a MimeMessage to an XDM File.
+ * Utilities for parsing a CCD file.
  * 
- * @author beau
+ * @author vlewis
  */
-public interface MimeXdmTransformer
+public class CcdParser
 {
+    private String patientId;
+    private String orgId;
+
+    private static final String MAP_FILE = "ccdtoccddb.xsl";
+
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(CcdParser.class);
+
     /**
-     * Transmorm a MimeMessage to a File representing an XDM package.
+     * Parse a CCD xml string.
      * 
-     * @param mimeMessage
-     *            The MimeMessage object to transform.
-     * @return a File representing an XDM package.
-     * @throws TransformationException
+     * @param ccdXml
+     *            The String representation of a CCD request.
+     * @throws Exception
      */
-    public File transform(MimeMessage mimeMessage) throws TransformationException;
+    public void parse(String ccdXml) throws Exception
+    {
+        XslConversion xsl = new XslConversion();
+        String dbXml = xsl.run(MAP_FILE, ccdXml);
+        LOGGER.trace(dbXml);
+        CCDDB pcd = (CCDDB) XmlUtils.unmarshal(dbXml, org.nhindirect.transform.parse.ccd.jaxb.ObjectFactory.class);
+        PATIENT patient = pcd.getPATIENT();
+        patientId = patient.getPATIENTID();
+        orgId = patient.getFACILITYID();
+    }
+
+    /**
+     * Return the value of patientId.
+     * 
+     * @return the value of patientId.
+     */
+    public String getPatientId()
+    {
+        return patientId;
+    }
+
+    /**
+     * Return the value of orgId.
+     * 
+     * @return the value of orgId.
+     */
+    public String getOrgId()
+    {
+        return orgId;
+    }
 }

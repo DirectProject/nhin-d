@@ -26,28 +26,79 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform;
+package org.nhindirect.transform.util;
 
-import java.io.File;
-
-import javax.mail.internet.MimeMessage;
-
-import org.nhindirect.transform.exception.TransformationException;
+import org.apache.commons.lang.StringUtils;
 
 /**
- * Interface for handling the transformation of a MimeMessage to an XDM File.
+ * Enumeration of commonly used MIME types.
  * 
  * @author beau
  */
-public interface MimeXdmTransformer
+public enum MimeType
 {
+    TEXT_PLAIN("text/plain"), 
+    TEXT_XML("text/xml"), 
+    TEXT_CDA_XML("text/cda+xml"), 
+    APPLICATION_CCR("application/ccr"), 
+    APPLICATION_XML("application/xml"), 
+    APPLICATION_PDF("application/pdf"), 
+    MULTIPART_MIXED("multipart/mixed");
+
     /**
-     * Transmorm a MimeMessage to a File representing an XDM package.
-     * 
-     * @param mimeMessage
-     *            The MimeMessage object to transform.
-     * @return a File representing an XDM package.
-     * @throws TransformationException
+     * The MIME type.
      */
-    public File transform(MimeMessage mimeMessage) throws TransformationException;
+    private String type;
+
+    /**
+     * Enumeration constructor.
+     * 
+     * @param type
+     *            The MIME type.
+     */
+    private MimeType(String type)
+    {
+        this.type = type;
+
+    }
+
+    /**
+     * Determine if the input matches the current element by first comparing
+     * equalsIgnoreCase and then comparing startsWith.
+     * 
+     * @param type
+     *            The MIME type to compare.
+     * @return true if the string is a reasonable match, false otherwise.
+     */
+    public boolean matches(String type)
+    {
+        if (StringUtils.equalsIgnoreCase(type, this.type))
+            return true;
+        if (StringUtils.startsWith(type, this.type))
+            return true;
+
+        return false;
+    }
+
+    /**
+     * Return the type.
+     * 
+     * @return the type.
+     */
+    public String getType()
+    {
+        return type;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return type;
+    }
+
 }
