@@ -42,6 +42,10 @@ To run:
 
 Mac OS X
 ================================================================================
+This install process requires the wget command to by in the path.  This is not available by default.  Instructions for installing a compatable version of wget can be found at
+
+  http://wget.darwinports.com/
+
 To install Direct, change directories to the install area:
 
   cd ~/nhin-d/java/install
