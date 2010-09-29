@@ -8,6 +8,20 @@
 		<os family="windows"/>
 	</condition>
 	<condition property="is.unix">
+		<and>
+			<os family="unix"/>
+			<not>
+				<os family="mac" />
+			</not>
+		</and>
+	</condition>
+	<condition property="is.mac">
+		<and>
+			<os family="unix"/>
+			<os family="mac" />
+		</and>
+	</condition>
+	<condition property="is.someunix">
 		<os family="unix"/>
 	</condition>
 	
@@ -77,7 +91,13 @@
 		<property name="wget.command.path" value="/usr/bin/wget" />
 	</target>
 	
-	<target name="init" depends="windows-specific,unix-specific">
+	<target name="mac-specific" if="is.mac">
+		<exec executable="which" outputproperty="wget.command.path">
+			<arg line="wget" />
+		</exec>
+	</target>
+	
+	<target name="init" depends="windows-specific,unix-specific,mac-specific">
 	
 		<!-- Create the time stamp -->
 	    <tstamp/>
@@ -121,7 +141,7 @@
 	<!-- get metro -->
 	<target name="get-metro" unless="metro.download.exists">
 	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true">
-	  		<arg line="-q ${metro.download.url}" />
+	  		<arg line="--no-check-certificate -q ${metro.download.url}" />
 	  	</exec>
 	</target>
 
@@ -187,7 +207,7 @@
 	</target>
 
 	<!-- make shell files executable -->
-	<target name="make-shell-files-executable" if="is.unix">
+	<target name="make-shell-files-executable" if="is.someunix">
 		<exec executable="sh">
 			<arg line="-c 'cd ${james.stage.dir}/bin; chmod a+x *.sh'"/>
 		</exec>
@@ -196,7 +216,7 @@
 	<!-- set the expanded path for STConfig -->
 	<target name="set-stconfig-expanded-path" depends="set-stconfig-expanded-path-unix,set-stconfig-expanded-path-windows" />
 
-	<target name="set-stconfig-expanded-path-unix" if="is.unix">
+	<target name="set-stconfig-expanded-path-unix" if="is.someunix">
 		<path id="stconfig.path">
 			<pathelement path="${james.stage.apps.dir}/SAR-INF" />
 		</path>
@@ -215,7 +235,7 @@
 	<!-- set the keystore path -->
 	<target name="set-keystore-path" depends="set-keystore-path-unix,set-keystore-path-windows" />
 
-	<target name="set-keystore-path-unix" if="is.unix">
+	<target name="set-keystore-path-unix" if="is.someunix">
 		<path id="keystore.path">
 			<pathelement path="${james.stage.apps.dir}/SAR-INF/keystore.jks" />
 		</path>
