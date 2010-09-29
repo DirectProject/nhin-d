@@ -51,6 +51,14 @@ namespace NHINDirect.Xd
         }
 
         /// <summary>
+        /// Returns all slots that are a child of the supplied element
+        /// </summary>
+        public static IEnumerable<XElement> Slots(this XElement source)
+        {
+            return source.Elements(XDMetadataStandard.SlotElt);
+        }
+
+        /// <summary>
         /// Returns slots with the appropriate name
         /// </summary>
         public static IEnumerable<XElement> Slots(this XElement source, string slotName)
