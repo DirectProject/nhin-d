@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -19,6 +18,8 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
 import org.apache.directory.server.core.schema.bootstrap.AbstractBootstrapSchema;
 import org.apache.directory.server.unit.AbstractServerTest;
@@ -31,10 +32,6 @@ import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.ldap.PrivkeySchema;
 import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.cert.CertificateResolver;
-import org.nhindirect.stagent.cert.X509CertificateEx;
-import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
-import org.nhindirect.stagent.cert.impl.LdapStoreConfiguration;
-import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
 
 import com.google.inject.Injector;
@@ -46,7 +43,7 @@ import com.google.inject.Injector;
  */
 
 public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
-{
+{	
 	/**
      * Initialize the server.
      */
@@ -142,8 +139,27 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
             assertAnchors(trustAnchorResolver.getIncomingAnchors());                
         }
         
-        protected SmtpAgentConfig createSmtpAgentConfig() {
-            SmtpAgentConfig config = new XMLSmtpAgentConfig(TestUtils.getTestConfigFile(getConfigFileName()), null);
+        protected SmtpAgentConfig createSmtpAgentConfig() throws Exception
+        {
+        	// get the configuration XML file as a resource
+        	InputStream str = this.getClass().getClassLoader().getResourceAsStream("configFiles/" + getConfigFileName());
+        	if (str == null)
+        		throw new IOException("Config file configFiles/" + getConfigFileName() + " could not be loaded.");
+        	
+        	// replace all instances of the hard coded local LDAP server to the port of the actual server
+        	String xmlConfig = IOUtils.toString(str);
+        	String replacePort = "localhost:" + configuration.getLdapPort();
+        	xmlConfig = xmlConfig.replaceAll("localhost:1024", replacePort);
+        	
+        	// write the configuration to a new file
+        	File newConfigFile = new File("./tmp/" + getConfigFileName());
+        	FileUtils.forceDeleteOnExit(newConfigFile);
+        	FileUtils.writeStringToFile(newConfigFile, xmlConfig);
+        	
+        	// load the new file into the SmtpAgentConfig
+        	String configFile = newConfigFile.getAbsolutePath();
+        	
+        	SmtpAgentConfig config = new XMLSmtpAgentConfig(configFile, null);
             return config;
         }
         

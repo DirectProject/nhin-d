@@ -47,11 +47,31 @@ namespace DnsResolver
         /// <param name="name">the domain name for which this is a record</param>
         /// <param name="address">The address as a 32-bit integer</param>
         public AddressRecord(string name, uint address)
-            : base(name, Dns.RecordType.ANAME)
+            : base(name, DnsStandard.RecordType.ANAME)
         {
             this.Address = address;
         }
 
+        /// <summary>
+        /// Initializes a new instance with the supplied data
+        /// </summary>
+        /// <param name="name">the domain name for which this is a record</param>
+        /// <param name="address">IP4 address</param>
+        public AddressRecord(string name, IPAddress address)
+            : this(name, address.ToIPV4())
+        {
+        }
+        
+        /// <summary>
+        /// Initializes a new instance with the supplied data
+        /// </summary>
+        /// <param name="name">the domain name for which this is a record</param>
+        /// <param name="address">IP address in dot notation</param>
+        public AddressRecord(string name, string address)
+            : this(name, IPAddress.Parse(address))
+        {
+        }
+        
         /// <summary>
         /// Gets and sets the address as a 32-bit integer.
         /// </summary>

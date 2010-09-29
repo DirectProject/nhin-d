@@ -72,7 +72,7 @@ public class KeyStoreCreate
 			importCert("bob", "bob.der", null);
 			importCert("umesh", "umesh.der", "umeshKey.der");
 			importCert("dev", "dev.der", "devkey.der");
-			
+			importCert("messagingexternal", "messagingExternal.der", "messagingExternalKey.der");
 		}
 		catch (Exception e)
 		{

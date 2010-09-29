@@ -379,4 +379,5 @@ public class KeyStoreCertificateStore extends CertificateStore
     	
     	return retVal;
     }  
+    
 }

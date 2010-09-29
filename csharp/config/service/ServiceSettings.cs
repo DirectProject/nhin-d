@@ -59,10 +59,28 @@ namespace NHINDirect.Config.Service
             
             return value;
         }
+
+        public T GetSetting<T>(string name)
+        {        
+            return (T) Convert.ChangeType(this.GetSetting(name), typeof(T)); 
+        }         
+
+        public T GetSetting<T>(string name, T defaultValue)
+        {        
+            try
+            {        
+                return this.GetSetting<T>(name);        
+            }        
+            catch 
+            {        
+            }        
+            
+            return defaultValue; 
+        }         
         
         void Load()
         {
-        	m_connectString = ConfigurationManager.ConnectionStrings[ConfigConnectStringKey].ConnectionString;
+            m_connectString = ConfigurationManager.ConnectionStrings[ConfigConnectStringKey].ConnectionString;
 
         	TimeSpan timeout;
         	if (!TimeSpan.TryParse(GetSetting(QueryTimeoutKey), out timeout))

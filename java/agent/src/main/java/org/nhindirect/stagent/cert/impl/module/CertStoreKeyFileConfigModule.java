@@ -50,6 +50,6 @@ public class CertStoreKeyFileConfigModule extends AbstractModule
 	{		
 		bindConstant().annotatedWith(CertStoreKeyFile.class).to(keyFile);
 		bindConstant().annotatedWith(CertStoreKeyFilePassword.class).to(filePassword);
-		bindConstant().annotatedWith(CertStoreKeyFilePrivKeyPassword.class).to(privKeyPassword);		
+		bindConstant().annotatedWith(CertStoreKeyFilePrivKeyPassword.class).to(privKeyPassword);	
 	}	
 }

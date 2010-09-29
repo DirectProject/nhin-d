@@ -63,6 +63,10 @@ namespace DnsResolver
         /// </summary>
         InvalidPath,
         /// <summary>
+        /// A label contained in a path had an unsupported label type
+        /// </summary>
+        InvalidLabelType,
+        /// <summary>
         /// Answer count (ADCOUNT) was set to an invalid value.
         /// </summary>
         InvalidAnswerCount,
@@ -126,6 +130,22 @@ namespace DnsResolver
         /// CERT RR was invalid
         /// </summary>
         InvalidCertRecord,
+        /// <summary>
+        /// Invalid Request
+        /// </summary>
+        InvalidRequest,
+        /// <summary>
+        /// Invalid message header
+        /// </summary>
+        InvalidHeader,
+        /// <summary>
+        /// Invalid question in message
+        /// </summary>
+        InvalidQuestion,
+        /// <summary>
+        /// Invalid response message
+        /// </summary>
+        InvalidResponse
     }
 
     /// <summary>

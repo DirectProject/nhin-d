@@ -318,7 +318,12 @@ namespace DnsResolver
             // 0xC0 = 0b11000000, bitmask for pointer octet
             return ((this.Current & 0xC0) != 0);
         }
-
+               
+        bool IsPlainLabel()
+        {
+            return ((this.Current & 0xC0) == 0);
+        }
+        
         void ReadLabel()
         {
             while (true)
@@ -338,14 +343,21 @@ namespace DnsResolver
                     this.Clone(stringStartAt).ReadLabel();
                     break;
                 }
-
+                
+                if (!this.IsPlainLabel())
+                {
+                    throw new DnsProtocolException(DnsProtocolError.InvalidLabelType);
+                }
+                
                 StringBuilder sb = this.StringBuilder;
                 // found a segment
                 if (sb.Length != 0)
                 {
                     sb.Append(".");
                 }
-
+                //
+                // The current byte contains the string length
+                //
                 int maxIndex = this.ReadByte() + this.Index;
                 while (this.Index < maxIndex)
                 {

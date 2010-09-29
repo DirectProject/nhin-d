@@ -28,8 +28,8 @@ namespace SmtpAgentTests
 {
     public class TestRouter : SmtpAgentTester
     {
-        SmtpAgent m_agent;
-        Dictionary<string, int> m_routeCounts;
+        readonly SmtpAgent m_agent;
+        readonly Dictionary<string, int> m_routeCounts;
 
         static TestRouter()
         {
@@ -38,7 +38,7 @@ namespace SmtpAgentTests
         
         public TestRouter()
         {
-            m_agent = new SmtpAgent(base.LoadTestSettings("TestSmtpAgentConfig.xml"));
+            m_agent = SmtpAgentFactory.Create(GetSettingsPath("TestSmtpAgentConfig.xml"));
             m_routeCounts = new Dictionary<string,int>();
         }
         

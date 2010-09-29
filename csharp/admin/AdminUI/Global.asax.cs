@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
-using System.Data;
-using System.Linq;
 using System.Web;
-using System.Web.Security;
-using System.Web.SessionState;
-using System.Xml.Linq;
-using WebFormsMvp.Binder;
+
+using Health.Net.Diagnostics.NLog;
+
+using NHINDirect.Container;
+using NHINDirect.Diagnostics;
 
 namespace AdminUI
 {
@@ -16,7 +13,22 @@ namespace AdminUI
 
         protected void Application_Start(object sender, EventArgs e)
         {
-          
+            IoC.Initialize(new SimpleDependencyResolver())
+                .Register<ILogFactory>(
+                new NLogFactory(
+                    new LogFileSettings
+                        {
+                            DirectoryPath = HttpContext.Current.Server.MapPath(@"~\Log"),
+                            Level = LoggingLevel.Debug,
+                            EventLogLevel = LoggingLevel.Fatal,
+                            EventLogSource = "nhin AdminUI",
+                            Ext = ".log",
+                            FileChangeFrequency = 24,
+                            NamePrefix = "adminui"
+                        }
+                    )
+                )
+                ;
         }
 
         protected void Session_Start(object sender, EventArgs e)

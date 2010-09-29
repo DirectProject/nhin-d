@@ -28,16 +28,33 @@
 
 package org.nhind.james.mailet;
 
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
 
 import junit.framework.TestCase;
 
+import org.apache.mailet.Mail;
+import org.apache.mailet.MailAddress;
 import org.apache.mailet.MailetConfig;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit3.JUnit3Mockery;
+import org.jmock.lib.legacy.ClassImposteriser;
 import org.nhind.mail.service.MimeXDSTransformer;
 import org.nhind.testutils.MockMailetConfig;
+
 
 /**
  * Test class for methods in the NHINDMailet class.
@@ -133,6 +150,181 @@ public class NHINDMailetTest extends TestCase {
         mailet.setMimeXDSTransformer(transformer);
         MimeXDSTransformer output = mailet.getMimeXDSTransformer();
         assertTrue("Output references a different object", transformer == output);
+    }
+    
+    /**
+     * Tests the service method using mock objects.
+     * 
+     * @throws Exception
+     */
+    public void testService() throws Exception {
+        Mockery context = new JUnit3Mockery() {{
+            setImposteriser(ClassImposteriser.INSTANCE);
+        }};
+        
+        final MimeXDSTransformer mimeXDSTransformer = context.mock(MimeXDSTransformer.class);
+
+        final Session session = null;
+        final MimeMessage message = new MimeMessage(session);
+        final Mail mail = new MockMail(message);
+
+        final String endpointUrl = "endpointUrl";
+        final ProvideAndRegisterDocumentSetRequestType prds = new ProvideAndRegisterDocumentSetRequestType();
+        
+        final List<ProvideAndRegisterDocumentSetRequestType> prdsList = new ArrayList<ProvideAndRegisterDocumentSetRequestType>();
+        prdsList.add(prds);
+        
+        final String response = "success";
+        
+        final RuntimeException e = new RuntimeException();
+
+        NHINDMailet mailet = new NHINDMailet();
+        mailet.setMimeXDSTransformer(mimeXDSTransformer);
+        
+        // expectations
+        context.checking(new Expectations() {
+            {
+                oneOf(mimeXDSTransformer).createRequests(message);
+                will(returnValue(prdsList));
+                oneOf(mimeXDSTransformer).forwardRequest(endpointUrl, prds);
+                will(returnValue(response));
+                
+                oneOf(mimeXDSTransformer).createRequests(message);
+                will(throwException(e));                
+            }
+        });
+
+        try {
+            mailet.setEndpointUrl(null);
+            mailet.service(mail);
+            fail("Exception not thrown");
+        } catch (MessagingException ex) {
+            assertTrue(true);
+        }
+        
+        mailet.setEndpointUrl(endpointUrl);
+        mailet.service(mail);
+        
+        try {
+            mailet.service(mail);        
+            fail("Exception now thrown");
+        } catch (RuntimeException ex) {
+            assertTrue(true);
+        }
+    }
+    
+    /**
+     * Mock mail class.
+     * 
+     * @author beau
+     */
+    @SuppressWarnings("serial")
+    private class MockMail implements Mail 
+    {
+        private MimeMessage mimeMessage;
+        
+        public MockMail(MimeMessage mimeMessage) {
+            this.mimeMessage = mimeMessage;
+        }
+        
+        public Serializable getAttribute(String arg0) 
+        {
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        public Iterator getAttributeNames() {
+            return null;
+        }
+
+        public String getErrorMessage() {
+            return null;
+        }
+
+        public Date getLastUpdated() {
+            return null;
+        }
+
+        public MimeMessage getMessage() throws MessagingException 
+        {
+            return this.mimeMessage;
+        }
+
+        public long getMessageSize() throws MessagingException {
+            return 0;
+        }
+
+        public String getName() {
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        public Collection getRecipients() 
+        {
+            return null;
+        }
+
+        public String getRemoteAddr() 
+        {
+            return null;
+        }
+
+        public String getRemoteHost() {
+            return null;
+        }
+
+        public MailAddress getSender() 
+        {
+            return null;
+        }
+
+        public String getState() 
+        {
+            return null;
+        }
+
+        public boolean hasAttributes() {
+            return false;
+        }
+
+        public void removeAllAttributes() {
+        }
+
+        public Serializable removeAttribute(String arg0) {
+            return null;
+        }
+
+        public Serializable setAttribute(String arg0, Serializable arg1) {
+            return null;
+        }
+
+        public void setErrorMessage(String arg0) {
+        }
+
+        public void setLastUpdated(Date arg0) {
+        }
+
+        public void setMessage(MimeMessage msg) 
+        {
+            this.mimeMessage = msg;
+        }
+
+        public void setName(String arg0) {
+        }
+
+        @SuppressWarnings("unchecked")
+        public void setRecipients(Collection arg0) 
+        {
+        }
+
+        public void setState(String state) 
+        {
+        }
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            throw new CloneNotSupportedException();
+        }
     }
 
 }

@@ -52,7 +52,7 @@ namespace DnsResolver
     /// </remarks>
     public abstract class DnsResourceRecord
     {
-        static Func<Dns.RecordType, DnsResourceRecord> s_recordObjectFactory = DnsResourceRecord.CreateRecordObject;
+        static Func<DnsStandard.RecordType, DnsResourceRecord> s_recordObjectFactory = DnsResourceRecord.CreateRecordObject;
         DnsResourceRecordHeader m_header;        
         
         internal DnsResourceRecord()
@@ -64,11 +64,11 @@ namespace DnsResolver
         /// </summary>
         /// <param name="name">the domain name for which this is a record</param>
         /// <param name="type">the record type</param>
-        protected DnsResourceRecord(string name, Dns.RecordType type)
+        protected DnsResourceRecord(string name, DnsStandard.RecordType type)
         {
             this.Name = name;
             this.Type = type;
-            this.Class = Dns.Class.IN;
+            this.Class = DnsStandard.Class.IN;
         }
         
         //
@@ -103,8 +103,8 @@ namespace DnsResolver
         /// <summary>
         /// Gets or sets the record type
         /// </summary>
-        /// <remarks>See remarks for <see cref="Dns.RecordType"/></remarks>
-        public Dns.RecordType Type
+        /// <remarks>See remarks for <see cref="DnsStandard.RecordType"/></remarks>
+        public DnsStandard.RecordType Type
         {
             get
             {
@@ -120,7 +120,7 @@ namespace DnsResolver
         /// Gets and sets the class
         /// </summary>
         /// <remarks>See remarks for <see cref="Class"/></remarks>
-        public Dns.Class Class
+        public DnsStandard.Class Class
         {
             get
             {
@@ -201,7 +201,7 @@ namespace DnsResolver
             return (
                     this.Type == record.Type
                 &&  this.Class == record.Class
-                &&  Dns.Equals(this.Name, record.Name)
+                &&  DnsStandard.Equals(this.Name, record.Name)
             );
         }
 
@@ -265,7 +265,7 @@ namespace DnsResolver
         /// </summary>
         /// <param name="recordType"></param>
         /// <returns></returns>
-        public static DnsResourceRecord CreateRecordObject(Dns.RecordType recordType)
+        public static DnsResourceRecord CreateRecordObject(DnsStandard.RecordType recordType)
         {
             DnsResourceRecord record;
             switch (recordType)
@@ -274,35 +274,35 @@ namespace DnsResolver
                     record = new RawRecord();
                     break;
 
-                case Dns.RecordType.ANAME:
+                case DnsStandard.RecordType.ANAME:
                     record = new AddressRecord();
                     break;
 
-                case Dns.RecordType.NS:
+                case DnsStandard.RecordType.NS:
                     record = new NSRecord();
                     break;
 
-                case Dns.RecordType.CNAME:
+                case DnsStandard.RecordType.CNAME:
                     record = new CNameRecord();
                     break;
 
-                case Dns.RecordType.SOA:
+                case DnsStandard.RecordType.SOA:
                     record = new SOARecord();
                     break;
 
-                case Dns.RecordType.TXT:
+                case DnsStandard.RecordType.TXT:
                     record = new TextRecord();
                     break;
 
-                case Dns.RecordType.MX:
+                case DnsStandard.RecordType.MX:
                     record = new MXRecord();
                     break;
                 
-                case Dns.RecordType.PTR:
+                case DnsStandard.RecordType.PTR:
                     record = new PtrRecord();
                     break;
                     
-                case Dns.RecordType.CERT:
+                case DnsStandard.RecordType.CERT:
                     record = new CertRecord();
                     break;
             }
@@ -313,7 +313,7 @@ namespace DnsResolver
         /// <summary>
         /// Gets and sets the function used to map from record types to specific resource records.
         /// </summary>
-        public static Func<Dns.RecordType, DnsResourceRecord> ResourceRecordFactory
+        public static Func<DnsStandard.RecordType, DnsResourceRecord> ResourceRecordFactory
         {
             get
             {
@@ -348,7 +348,7 @@ namespace DnsResolver
                 }
             }
             
-            internal Dns.RecordType Type;
+            internal DnsStandard.RecordType Type;
             
             internal int TTL
             {
@@ -367,7 +367,7 @@ namespace DnsResolver
                 }
             }
             
-            internal Dns.Class Class;
+            internal DnsStandard.Class Class;
             
             internal short RecordDataLength
             {
@@ -398,9 +398,9 @@ namespace DnsResolver
             internal void Deserialize(ref DnsBufferReader reader)
             {
                 this.Name = reader.ReadDomainName();
-                this.Type = (Dns.RecordType) reader.ReadShort();
+                this.Type = (DnsStandard.RecordType) reader.ReadShort();
 
-                this.Class = (Dns.Class) reader.ReadShort();
+                this.Class = (DnsStandard.Class) reader.ReadShort();
                 this.TTL = reader.ReadInt();
                 this.RecordDataLength = reader.ReadShort();
             }

@@ -60,7 +60,7 @@ public class XMLUtils {
      *            The factory class.
      * @return a marshaled string from the object.
      */
-    public static String marshal(QName altName, Object jaxb, Class factory) {
+    public static String marshal(QName altName, Object jaxb, Class<?> factory) {
         String ret = null;
 
         try {
@@ -88,7 +88,7 @@ public class XMLUtils {
      *            The factory class.
      * @return an object representation of the string.
      */
-    public static Object unmarshal(String xml, Class factory) {
+    public static Object unmarshal(String xml, Class<?> factory) {
         javax.xml.bind.JAXBContext jaxbCtx = null;
 
         try {

@@ -22,7 +22,6 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp;
 
-import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.NHINDException;
 
 /**

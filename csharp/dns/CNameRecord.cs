@@ -61,7 +61,14 @@ namespace DnsResolver
                 m_name = value;
             }
         }
-
+        /// <summary>
+        /// Serialize the CName record
+        /// </summary>
+        /// <param name="buffer"></param>
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            buffer.AddDomainName(m_name);
+        }
         /// <summary>
         /// Creates an instance from the DNS message from a DNS reader.
         /// </summary>

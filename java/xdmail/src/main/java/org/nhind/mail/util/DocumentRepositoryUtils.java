@@ -33,13 +33,14 @@ import ihe.iti.xds_b._2007.DocumentRepositoryService;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhind.mail.service.RepositoryHandlerResolver;
 
 /**
@@ -53,7 +54,7 @@ public class DocumentRepositoryUtils {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(DocumentRepositoryUtils.class.getName());
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(DocumentRepositoryUtils.class);
 
     /**
      * Construct a DocumentRepositoryPortType object using the provided
@@ -71,8 +72,7 @@ public class DocumentRepositoryUtils {
             url = new URL(ihe.iti.xds_b._2007.DocumentRepositoryService.class.getResource(""),
                     "/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl");
         } catch (MalformedURLException e) {
-            LOGGER.severe("Unable to access WSDL");
-            e.printStackTrace();
+            LOGGER.error("Unable to access WSDL", e);
             throw e;
         }
 

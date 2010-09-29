@@ -9,7 +9,6 @@ import org.apache.directory.server.core.schema.bootstrap.BootstrapProducer;
 import org.apache.directory.server.core.schema.bootstrap.BootstrapRegistries;
 import org.apache.directory.server.core.schema.bootstrap.ProducerCallback;
 import org.apache.directory.server.core.schema.bootstrap.ProducerTypeEnum;
-import org.apache.directory.server.core.schema.bootstrap.AbstractBootstrapProducer.BootstrapObjectClass;
 import org.apache.directory.shared.ldap.schema.ObjectClassTypeEnum;
 
 public class PrivkeyObjectClassProducer extends AbstractBootstrapProducer

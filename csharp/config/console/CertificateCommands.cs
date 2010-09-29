@@ -330,21 +330,28 @@ namespace NHINDirect.Config.Command
         internal static MemoryX509Store LoadCerts(string filePath, string password)
         {
             MemoryX509Store certStore = new MemoryX509Store();
-            LoadCerts(certStore, filePath, password);
+            LoadCerts(certStore, filePath, password, X509KeyStorageFlags.Exportable);
             return certStore;
         }
 
-        internal static void LoadCerts(MemoryX509Store certStore, string filePath, string password)
+        internal static MemoryX509Store LoadCerts(string filePath, string password, X509KeyStorageFlags flags)
+        {
+            MemoryX509Store certStore = new MemoryX509Store();
+            LoadCerts(certStore, filePath, password, flags);
+            return certStore;
+        }
+
+        internal static void LoadCerts(MemoryX509Store certStore, string filePath, string password, X509KeyStorageFlags flags)
         {
             string ext = Path.GetExtension(filePath) ?? string.Empty;
             switch (ext.ToLower())
             {
                 default:
-                    certStore.ImportKeyFile(filePath, X509KeyStorageFlags.Exportable);
+                    certStore.ImportKeyFile(filePath, flags);
                     break;
 
                 case ".pfx":
-                    certStore.ImportKeyFile(filePath, password, X509KeyStorageFlags.Exportable);
+                    certStore.ImportKeyFile(filePath, password, flags);
                     break;
             }
         }

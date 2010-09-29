@@ -102,7 +102,7 @@ namespace DnsResolver
         /// </summary>
         /// <param name="cert">The certificate for this record.</param>
         public CertRecord(DnsX509Cert cert)
-            : base(cert.Name, Dns.RecordType.CERT)
+            : base(cert.Name, DnsStandard.RecordType.CERT)
         {
             this.Cert = cert;
             this.CertType = CertificateType.X509;
@@ -225,7 +225,7 @@ namespace DnsResolver
                     this.m_algorithm == certRecord.m_algorithm
                 &&  this.m_certType == certRecord.m_certType
                 &&  this.m_keyTag == certRecord.m_keyTag
-                &&  Dns.Equals(this.Cert.Name, certRecord.Cert.Name)
+                &&  DnsStandard.Equals(this.Cert.Name, certRecord.Cert.Name)
             );
         }
 

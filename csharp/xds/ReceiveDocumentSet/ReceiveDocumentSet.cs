@@ -20,7 +20,7 @@ namespace NHINDirect.XDS
             XDSHelper xdsHelper = null;
             StringDictionary stringDictionary = null;
 
-        	ILogger logger = LogManager.GetLogger("XDS");
+        	ILogger logger = Log.For(this);
 
             try
             {
