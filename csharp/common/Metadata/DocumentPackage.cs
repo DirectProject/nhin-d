@@ -53,12 +53,12 @@ namespace NHINDirect.Metadata
         /// </summary>
         public ClassCode ContentTypeCode { get; set; }
 
-        private List<Person> m_recipients = new List<Person>();
+        private List<Recipient> m_recipients = new List<Recipient>();
 
         /// <summary>
         /// The list of recipients to which this package is being sent.
         /// </summary>
-        public IList<Person> IntendedRecipients { get { return m_recipients; } }
+        public IList<Recipient> IntendedRecipients { get { return m_recipients; } }
 
         /// <summary>
         /// The patient ID for whom this package pertains.
