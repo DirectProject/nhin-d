@@ -30,6 +30,8 @@ package org.nhindirect.transform.util;
 
 import junit.framework.TestCase;
 
+import org.nhindirect.transform.util.type.MimeType;
+
 /**
  * Test class for the MimeType enumeration.
  * 

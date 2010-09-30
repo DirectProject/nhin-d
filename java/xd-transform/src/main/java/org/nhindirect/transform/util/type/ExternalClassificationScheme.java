@@ -26,47 +26,50 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.util;
+package org.nhindirect.transform.util.type;
 
 /**
- * Enumeration for data identifying an External Identifier element.
+ * Enumeration for data identifying an External Classification Scheme element.
  * 
  * @author beau
  */
-public enum ExternalIdentifier
+public enum ExternalClassificationScheme
 {
-    DOCUMENT_ENTRY_PATIENT_ID("ei01", "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427"), 
-    DOCUMENT_ENTRY_UNIQUE_ID("ei02", "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab"),
-    SUBMISSION_SET_UNIQUE_ID("ei01", "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8"),
-    SUBMISSION_SET_SOURCE_ID("ei02", "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832"),
-    SUBMISSION_SET_PATIENT_ID("ei03", "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446");
+    DOCUMENT_ENTRY_AUTHOR("c101", "urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d"), 
+    DOCUMENT_ENTRY_CLASS_CODE("c102", "uuid:41a5887f-8865-4c09-adf7-e362475b143a"),
+    DOCUMENT_ENTRY_FORMAT_CODE("c104", "urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d"),        
+    DOCUMENT_ENTRY_FACILITY_CODE("c105", "urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1"),         
+    DOCUMENT_ENTRY_PRACTICE_SETTING_CODE("c106", "urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead"),    
+    DOCUMENT_ENTRY_TYPE_CODE("c107", "urn:uuid:f0306f51-975f-434e-a61c-c59651d33983"),
+    SUBMISSION_SET_AUTHOR("c101", "urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d"),
+    SUBMISSION_SET_CONTENT_TYPE_CODE("c102", "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500");
 
-    private String identificationId;
-    private String identificationScheme;
+    private String classificationId;
+    private String classificationScheme;
 
-    private ExternalIdentifier(String identificationId, String identificationScheme)
+    private ExternalClassificationScheme(String classificationId, String classificationScheme)
     {
-        this.identificationId = identificationId;
-        this.identificationScheme = identificationScheme;
+        this.classificationId = classificationId;
+        this.classificationScheme = classificationScheme;
     }
 
     /**
-     * Get the value of identificationId.
+     * Get the value of classificationId.
      * 
-     * @return the value of identificationId.
+     * @return the value of classificationId.
      */
-    public String getIdentificationId()
+    public String getClassificationId()
     {
-        return this.identificationId;
+        return this.classificationId;
     }
 
     /**
-     * Get the value of identificationScheme.
+     * Get the value of classificationScheme.
      * 
-     * @return the value of identificationScheme.
+     * @return the value of classificationScheme.
      */
-    public String getIdentificationScheme()
+    public String getClassificationScheme()
     {
-        return this.identificationScheme;
+        return this.classificationScheme;
     }
 }
