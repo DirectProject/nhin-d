@@ -60,7 +60,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.transform.XdmXdsTransformer;
 import org.nhindirect.transform.exception.TransformationException;
-import org.nhindirect.transform.util.MimeType;
 import org.nhindirect.transform.util.XmlUtils;
 import org.nhindirect.transform.util.type.MimeType;
 
