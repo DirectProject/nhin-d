@@ -47,7 +47,7 @@ namespace NHINDirect.Agent
     /// { 
     ///     foreach(recipient in incoming.RejectedRecipients) 
     ///     { 
-    ///         Console.WriteLine("Rejected {0}", recipient.Address); 
+    ///         Console.WriteLine("Rejected {0}", recipient.PostalAddress); 
     ///     } 
     /// } 
     /// OutgoingMessage outgoing = agent.ProcessOutgoing(outgoingmsg); 
@@ -55,7 +55,7 @@ namespace NHINDirect.Agent
     /// { 
     ///     foreach(recipient in outgoing.RejectedRecipients) 
     ///     { 
-    ///         Console.WriteLine("Rejected {0}", recipient.Address); 
+    ///         Console.WriteLine("Rejected {0}", recipient.PostalAddress); 
     ///     } 
     /// } 
     /// </code> 

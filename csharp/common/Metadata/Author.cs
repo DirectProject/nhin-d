@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net.Mail;
 
 namespace NHINDirect.Metadata
 {
@@ -35,11 +36,11 @@ namespace NHINDirect.Metadata
         /// </summary>
         public Person Person { get; set; }
 
-        private List<string> m_inst = new List<string>();
+        private List<Institution> m_inst = new List<Institution>();
         /// <summary>
         /// Institutions author is affiliated with.
         /// </summary>
-        public List<string> Institutions { get { return m_inst; } }
+        public List<Institution> Institutions { get { return m_inst; } }
 
         private List<string> m_roles = new List<string>();
         /// <summary>
@@ -54,5 +55,9 @@ namespace NHINDirect.Metadata
         /// </summary>
         public List<string> Specialities { get { return m_spec; } }
 
+        /// <summary>
+        /// The Health Internet Address of the author
+        /// </summary>
+        public MailAddress HealthInternetAddress { get; set; }
     }
 }

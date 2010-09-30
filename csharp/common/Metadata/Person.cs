@@ -116,7 +116,7 @@ namespace NHINDirect.Metadata
         /// <summary>
         /// Home or primary address for this person.
         /// </summary>
-        public Address? Address { get; set; }
+        public PostalAddress? Address { get; set; }
 
         /// <summary>
         /// Provides a string representation of the Person
@@ -172,7 +172,7 @@ namespace NHINDirect.Metadata
             yield return "PID-5|" + nameValue;
             yield return "PID-7|" + dateValue;
             yield return "PID-8|" + sexValue;
-            yield return "PID-11" + addressValue;
+            yield return "PID-11|" + addressValue;
         }
 
 

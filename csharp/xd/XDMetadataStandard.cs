@@ -339,6 +339,11 @@ namespace NHINDirect.Xd
         /// The slot name for a submission time
         /// </summary>
         public const string SubmissionTimeSlot = "submissionTime";
+
+        /// <summary>
+        /// The slot name for intended recipient
+        /// </summary>
+        public const string IntendedRecipientSlot = "intendedRecipient";
         // Object types
 
         /// <summary>

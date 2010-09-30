@@ -112,7 +112,8 @@ namespace NHINDirect.Xd
                     () => new Description(docPackage.Comments)),
                 Map(docPackage.ContentTypeCode,
                     () => new CodedValueClassification(XDAttribute.ContentTypeCode, packageId, docPackage.ContentTypeCode)),
-                // TODO: IntendedRecipients
+                Map(docPackage.IntendedRecipients,
+                    () => new Slot(XDMetadataStandard.IntendedRecipientSlot, docPackage.IntendedRecipients.Select(r => r.ToXONXCN()))),
                 Map(docPackage.PatientId,
                     () => new ExternalIdentifier(XDMetadataStandard.SubmissionSetPatientIdUUID, docPackage.PatientId.ToEscapedCx(), "XDSSubmissionSet.patientId")),
                 Map(docPackage.SourceId,
@@ -247,7 +248,7 @@ namespace NHINDirect.Xd
             if (a.Roles != null)
                 yield return new Slot("authorRole", a.Roles);
             if (a.Institutions != null)
-                yield return new Slot("authorInstitution", a.Institutions);
+                yield return new Slot("authorInstitution", a.Institutions.Select(i => i.ToXON()));
             if (a.Person != null)
                 yield return new Slot("authorPerson", a.Person.ToXCN());
         }
