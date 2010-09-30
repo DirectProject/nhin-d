@@ -49,8 +49,10 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.transform.pojo.SimplePerson;
-import org.nhindirect.transform.util.MimeType;
 import org.nhindirect.transform.util.XmlUtils;
+import org.nhindirect.transform.util.type.ExternalClassificationScheme;
+import org.nhindirect.transform.util.type.ExternalIdentifier;
+import org.nhindirect.transform.util.type.MimeType;
 
 /**
  * Test class for methods in the MimeXDSTransformer class.
@@ -169,9 +171,9 @@ public class DefaultMimeXdsTransformerTest extends TestCase
         List<ClassificationType> classifs = null;
 
         String docId = "A";
-        String id = "B";
-        String scheme = "C";
         String rep = "D";
+
+        ExternalClassificationScheme externalClassificationScheme = ExternalClassificationScheme.DOCUMENT_ENTRY_AUTHOR;
 
         List<String> slotNames = Arrays.asList("codingScheme");
         List<String> slotValues = Arrays.asList("eventCodeList");
@@ -179,7 +181,8 @@ public class DefaultMimeXdsTransformerTest extends TestCase
 
         try
         {
-            transformer.addClassifications(classifs, docId, id, scheme, rep, slotNames, slotValues, snames);
+            transformer.addClassifications(classifs, docId, externalClassificationScheme, rep, slotNames, slotValues,
+                    snames);
             fail("Exception not thrown");
         }
         catch (IllegalArgumentException e)
@@ -188,15 +191,17 @@ public class DefaultMimeXdsTransformerTest extends TestCase
         }
 
         classifs = new ArrayList<ClassificationType>();
-        transformer.addClassifications(classifs, docId, id, scheme, rep, slotNames, slotValues, snames);
+        transformer.addClassifications(classifs, docId, externalClassificationScheme, rep, slotNames, slotValues,
+                snames);
 
         assertTrue("List is null", classifs != null);
         assertEquals("List size does not match expected", 1, classifs.size());
 
         ClassificationType ct = classifs.get(0);
         assertEquals("ClassifiedObject does not match expected", docId, ct.getClassifiedObject());
-        assertEquals("ClassificationScheme does not match expected", scheme, ct.getClassificationScheme());
-        assertEquals("Id does not match expected", id, ct.getId());
+        assertEquals("ClassificationScheme does not match expected", externalClassificationScheme
+                .getClassificationScheme(), ct.getClassificationScheme());
+        assertEquals("Id does not match expected", externalClassificationScheme.getClassificationId(), ct.getId());
         assertEquals("NodeRepresentation does not match expected", rep, ct.getNodeRepresentation());
 
         List<SlotType1> slots = ct.getSlot();
@@ -222,14 +227,13 @@ public class DefaultMimeXdsTransformerTest extends TestCase
         List<ExternalIdentifierType> extIds = null;
 
         String docId = "A";
-        String scheme = "B";
-        String id = "C";
-        String sname = "D";
         String value = "E";
+
+        ExternalIdentifier externalIdentifier = ExternalIdentifier.DOCUMENT_ENTRY_PATIENT_ID;
 
         try
         {
-            transformer.addExternalIds(extIds, docId, scheme, id, sname, value);
+            transformer.addExternalIds(extIds, docId, externalIdentifier, value);
             fail("Exception not thrown");
         }
         catch (IllegalArgumentException e)
@@ -238,7 +242,7 @@ public class DefaultMimeXdsTransformerTest extends TestCase
         }
 
         extIds = new ArrayList<ExternalIdentifierType>();
-        transformer.addExternalIds(extIds, docId, scheme, id, sname, value);
+        transformer.addExternalIds(extIds, docId, externalIdentifier, value);
 
         assertTrue("List is null", extIds != null);
         assertEquals("List size does not match expected", 1, extIds.size());
@@ -246,12 +250,14 @@ public class DefaultMimeXdsTransformerTest extends TestCase
         ExternalIdentifierType ei = extIds.get(0);
 
         assertEquals("RegistryObject does not match expected", docId, ei.getRegistryObject());
-        assertEquals("IdentificationScheme does not match expected", scheme, ei.getIdentificationScheme());
-        assertEquals("Id does not match expected", id, ei.getId());
+        assertEquals("IdentificationScheme does not match expected", externalIdentifier.getIdentificationScheme(), ei
+                .getIdentificationScheme());
+        assertEquals("Id does not match expected", externalIdentifier.getIdentificationId(), ei.getId());
         assertEquals("Value does not match expected", value, ei.getValue());
 
         InternationalStringType s = ei.getName();
-        assertEquals("Sname does not match expected", sname, s.getLocalizedString().get(0).getValue());
+        assertEquals("Sname does not match expected", externalIdentifier.getLocalizedString(), s.getLocalizedString()
+                .get(0).getValue());
     }
 
     /**
