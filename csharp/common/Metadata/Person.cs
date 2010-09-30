@@ -116,7 +116,7 @@ namespace NHINDirect.Metadata
         /// <summary>
         /// Home or primary address for this person.
         /// </summary>
-        public Address? Address { get; set; }
+        public PostalAddress? Address { get; set; }
 
         /// <summary>
         /// Provides a string representation of the Person

@@ -55,7 +55,7 @@ namespace NHINDirect.Tests.xdTests
                     m_docMeta = new DocumentMetadata();
                     m_docMeta.Author = new Author();
                     m_docMeta.Author.Person = new Person { First = "Tom", Last = "Jones", Degree = "M.D." };
-                    m_docMeta.Author.Institutions.Add("Direct U");
+                    m_docMeta.Author.Institutions.Add(new Institution("Direct U"));
                     m_docMeta.Class = new ClassCode(Metadata.C80ClassCode.TransferOfCareReferralNote);
                     m_docMeta.Comments = "This is a nice document";
                     m_docMeta.Confidentiality = new ConfidentialtyCode(Metadata.C80Confidentialty.Normal);
@@ -81,7 +81,7 @@ namespace NHINDirect.Tests.xdTests
                         Last = "Smith",
                         Sex = Sex.Male,
                         Dob = DateTime.Parse("05/05/1975"),
-                        Address = new Address { Street = "150 Main St", City = "Anywhere", State = "CA", Zip = "90000" }
+                        Address = new PostalAddress { Street = "150 Main St", City = "Anywhere", State = "CA", Zip = "90000" }
                     };
                     m_docMeta.Title = "The foo document";
                     m_docMeta.UniqueId = "abc123xyz";

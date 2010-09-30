@@ -51,7 +51,7 @@ namespace NHINDirect.Tests.metadata
         [Fact]
         public void ToSourcePatientInfoResturnsCorrectAddressValue()
         {
-            Person p = new Person { First = "John", Last = "Jacob", Address = new Address { City = "Wiesbaden", State = "Hesse", Street = "Meadow Bath Ave", Zip="00000"} };
+            Person p = new Person { First = "John", Last = "Jacob", Address = new PostalAddress { City = "Wiesbaden", State = "Hesse", Street = "Meadow Bath Ave", Zip="00000"} };
             Assert.Contains("PID-11|" + p.Address.Value.ToHL7Ad(), p.ToSourcePatientInfoValues(null));
         }
     }

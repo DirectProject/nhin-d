@@ -71,8 +71,8 @@ namespace NHINDirect.Tests.metadata
         public void Institutions()
         {
             Author a = new Author();
-            a.Institutions.Add("ONC-U");
-            Assert.Contains("ONC-U", a.Institutions);
+            a.Institutions.Add(new Institution("ONC-U"));
+            Assert.Contains("ONC-U", a.Institutions.Select( i => i.ToXON()));
         }
     }
 }

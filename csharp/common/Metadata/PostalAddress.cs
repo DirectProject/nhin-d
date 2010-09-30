@@ -23,7 +23,7 @@ namespace NHINDirect.Metadata
     /// <summary>
     /// Represents a US Postal address
     /// </summary>
-    public struct Address
+    public struct PostalAddress
     {
         private string m_Street;
         private string m_City;
@@ -31,20 +31,20 @@ namespace NHINDirect.Metadata
         private string m_Zip; // TODO: should format validate...
 
         /// <summary>
-        /// Address street name
+        /// PostalAddress street name
         /// </summary>
         public string Street { get { return m_Street; } set { m_Street = value; } }
         /// <summary>
-        /// Address city name
+        /// PostalAddress city name
         /// </summary>
         public string City { get { return m_City; } set { m_City = value; } }
         /// <summary>
-        /// Address state code
+        /// PostalAddress state code
         /// </summary>
         public string State { get { return m_State; } set { m_State = value; } }
 
         /// <summary>
-        /// Address postal (ZIP) code
+        /// PostalAddress postal (ZIP) code
         /// </summary>
         public string Zip { get { return m_Zip; } set { m_Zip = value; } }
 
