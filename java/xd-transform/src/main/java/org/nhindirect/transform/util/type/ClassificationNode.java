@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.util;
+package org.nhindirect.transform.util.type;
 
 /**
  * Enumeration for data identifying a Classification Node element.

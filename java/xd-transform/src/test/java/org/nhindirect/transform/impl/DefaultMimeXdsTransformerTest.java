@@ -49,10 +49,10 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.transform.pojo.SimplePerson;
-import org.nhindirect.transform.util.ExternalClassificationScheme;
-import org.nhindirect.transform.util.ExternalIdentifier;
-import org.nhindirect.transform.util.MimeType;
 import org.nhindirect.transform.util.XmlUtils;
+import org.nhindirect.transform.util.type.ExternalClassificationScheme;
+import org.nhindirect.transform.util.type.ExternalIdentifier;
+import org.nhindirect.transform.util.type.MimeType;
 
 /**
  * Test class for methods in the MimeXDSTransformer class.
@@ -224,14 +224,13 @@ public class DefaultMimeXdsTransformerTest extends TestCase
         List<ExternalIdentifierType> extIds = null;
 
         String docId = "A";
-        String sname = "D";
         String value = "E";
         
         ExternalIdentifier externalIdentifier = ExternalIdentifier.DOCUMENT_ENTRY_PATIENT_ID;
 
         try
         {
-            transformer.addExternalIds(extIds, docId, externalIdentifier, sname, value);
+            transformer.addExternalIds(extIds, docId, externalIdentifier, value);
             fail("Exception not thrown");
         }
         catch (IllegalArgumentException e)
@@ -240,7 +239,7 @@ public class DefaultMimeXdsTransformerTest extends TestCase
         }
 
         extIds = new ArrayList<ExternalIdentifierType>();
-        transformer.addExternalIds(extIds, docId, externalIdentifier, sname, value);
+        transformer.addExternalIds(extIds, docId, externalIdentifier, value);
 
         assertTrue("List is null", extIds != null);
         assertEquals("List size does not match expected", 1, extIds.size());
@@ -253,7 +252,7 @@ public class DefaultMimeXdsTransformerTest extends TestCase
         assertEquals("Value does not match expected", value, ei.getValue());
 
         InternationalStringType s = ei.getName();
-        assertEquals("Sname does not match expected", sname, s.getLocalizedString().get(0).getValue());
+        assertEquals("Sname does not match expected", externalIdentifier.getLocalizedString(), s.getLocalizedString().get(0).getValue());
     }
 
     /**
