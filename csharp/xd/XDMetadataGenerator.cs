@@ -112,7 +112,8 @@ namespace NHINDirect.Xd
                     () => new Description(docPackage.Comments)),
                 Map(docPackage.ContentTypeCode,
                     () => new CodedValueClassification(XDAttribute.ContentTypeCode, packageId, docPackage.ContentTypeCode)),
-                // TODO: IntendedRecipients
+                Map(docPackage.IntendedRecipients,
+                    () => new Slot(XDMetadataStandard.IntendedRecipientSlot, docPackage.IntendedRecipients.Select(r => r.ToXONXCN()))),
                 Map(docPackage.PatientId,
                     () => new ExternalIdentifier(XDMetadataStandard.SubmissionSetPatientIdUUID, docPackage.PatientId.ToEscapedCx(), "XDSSubmissionSet.patientId")),
                 Map(docPackage.SourceId,

@@ -19,11 +19,22 @@ namespace NHINDirect.Metadata
         /// <summary>
         /// The institution to which the package is intended
         /// </summary>
-        public Institution Institution { get; set; }
+        public Institution? Institution { get; set; }
 
         /// <summary>
         /// The Health Internet Address of the recipient
         /// </summary>
         public MailAddress HealthInternetAddress { get; set; }
+
+
+        /// <summary>
+        /// Formats the recipient as a combination XON/XCN data type
+        /// </summary>
+        public string ToXONXCN()
+        {
+            return String.Format("{0}|{1}",
+                Institution == null ? "" : Institution.Value.ToXON(), 
+                Person == null ? "" : Person.ToXCN());
+        }
     }
 }
