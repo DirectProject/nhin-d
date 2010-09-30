@@ -12,6 +12,7 @@
         <module>./gateway</module>
         <module>./xd-transform</module>
         <module>./xdmail</module>
+        <module>./xd</module>
   </modules>
     <developers>
         <developer>
