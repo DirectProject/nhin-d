@@ -26,41 +26,54 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.util;
+package org.nhindirect.transform.util.type;
 
 /**
- * General constants for XD* related activities.
+ * Enumeration for data identifying an External Identifier element.
  * 
  * @author beau
  */
-public class XdConstants
+public enum ExternalIdentifier
 {
-    public static final String IDENTIFIABLE_TYPE_NS = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
+    DOCUMENT_ENTRY_PATIENT_ID("ei01", "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427", "XDSDocumentEntry.patientId"), 
+    DOCUMENT_ENTRY_UNIQUE_ID("ei02", "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab", "XDSDocumentEntry.uniqueId"),
+    SUBMISSION_SET_UNIQUE_ID("ei01", "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8", "XDSSubmissionSet.uniqueId"),
+    SUBMISSION_SET_SOURCE_ID("ei02", "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832", "XDSSubmissionSet.sourceId"),
+    SUBMISSION_SET_PATIENT_ID("ei03", "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446", "XDSSubmissionSet.patientId");
 
-    /*---------------------------------------- */
+    private String identificationId;
+    private String identificationScheme;
+    private String localizedString;
 
-    public static final String EXTRINSIC_OBJECT_TYPE = "ExtrinsicObject";
-    public static final String REGISTRY_PACKAGE_TYPE = "RegistryPackage";
-    public static final String CLASSIFICATION_TYPE = "Classification";
-    public static final String ASSOCIATION_TYPE_1 = "Association";
+    private ExternalIdentifier(String identificationId, String identificationScheme, String localizedString)
+    {
+        this.identificationId = identificationId;
+        this.identificationScheme = identificationScheme;
+        this.localizedString = localizedString;
+    }
 
-    public static final String CODING_SCHEME = "codingScheme";
+    /**
+     * Get the value of identificationId.
+     * 
+     * @return the value of identificationId.
+     */
+    public String getIdentificationId()
+    {
+        return this.identificationId;
+    }
 
-    public static final String LOINC = "LOINC";
-
-    public static final String CCD_XMLNS = "urn:hl7-org:v3";
-    public static final String CCD_EXTENSION = "POCD_HD000040";
-
-    public static final String CREATION_TIME = "creationTime";
-    public static final String SOURCE_PATIENT_ID = "sourcePatientId";
-    public static final String SOURCE_PATIENT_INFO = "sourcePatientInfo";
-
-    public static final String AUTHOR_PERSON = "authorPerson";
-    public static final String AUTHOR_INSTITUTION = "authorInstitution";
-    public static final String AUTHOR_ROLE = "authorRole";
+    /**
+     * Get the value of identificationScheme.
+     * 
+     * @return the value of identificationScheme.
+     */
+    public String getIdentificationScheme()
+    {
+        return this.identificationScheme;
+    }
     
-    public static final String DEFAULT_PRACTICE_SETTING_CODE = "Multidisciplinary";
-    public static final String DEFAULT_FACILITY_CODE = "OF";
-    public static final String DEFAULT_CLASS_CODE = "History and Physical";
-    public static final String DEFAULT_LOINC_CODE = "34133-9";
+    public String getLocalizedString()
+    {
+        return this.localizedString;
+    }
 }

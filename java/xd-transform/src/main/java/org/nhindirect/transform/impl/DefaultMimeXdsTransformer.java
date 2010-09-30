@@ -28,7 +28,25 @@
 
 package org.nhindirect.transform.impl;
 
-import static org.nhindirect.transform.util.XdConstants.*;
+import static org.nhindirect.transform.util.XdConstants.ASSOCIATION_TYPE_1;
+import static org.nhindirect.transform.util.XdConstants.AUTHOR_INSTITUTION;
+import static org.nhindirect.transform.util.XdConstants.AUTHOR_PERSON;
+import static org.nhindirect.transform.util.XdConstants.AUTHOR_ROLE;
+import static org.nhindirect.transform.util.XdConstants.CCD_EXTENSION;
+import static org.nhindirect.transform.util.XdConstants.CCD_XMLNS;
+import static org.nhindirect.transform.util.XdConstants.CLASSIFICATION_TYPE;
+import static org.nhindirect.transform.util.XdConstants.CODING_SCHEME;
+import static org.nhindirect.transform.util.XdConstants.CREATION_TIME;
+import static org.nhindirect.transform.util.XdConstants.DEFAULT_CLASS_CODE;
+import static org.nhindirect.transform.util.XdConstants.DEFAULT_FACILITY_CODE;
+import static org.nhindirect.transform.util.XdConstants.DEFAULT_LOINC_CODE;
+import static org.nhindirect.transform.util.XdConstants.DEFAULT_PRACTICE_SETTING_CODE;
+import static org.nhindirect.transform.util.XdConstants.EXTRINSIC_OBJECT_TYPE;
+import static org.nhindirect.transform.util.XdConstants.IDENTIFIABLE_TYPE_NS;
+import static org.nhindirect.transform.util.XdConstants.LOINC;
+import static org.nhindirect.transform.util.XdConstants.REGISTRY_PACKAGE_TYPE;
+import static org.nhindirect.transform.util.XdConstants.SOURCE_PATIENT_ID;
+import static org.nhindirect.transform.util.XdConstants.SOURCE_PATIENT_INFO;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
 
@@ -75,10 +93,11 @@ import org.nhindirect.transform.XdmXdsTransformer;
 import org.nhindirect.transform.exception.TransformationException;
 import org.nhindirect.transform.parse.ccd.CcdParser;
 import org.nhindirect.transform.pojo.SimplePerson;
-import org.nhindirect.transform.util.ClassificationNode;
-import org.nhindirect.transform.util.ExternalClassificationScheme;
-import org.nhindirect.transform.util.ExternalIdentifier;
-import org.nhindirect.transform.util.MimeType;
+import org.nhindirect.transform.util.type.Association;
+import org.nhindirect.transform.util.type.ClassificationNode;
+import org.nhindirect.transform.util.type.ExternalClassificationScheme;
+import org.nhindirect.transform.util.type.ExternalIdentifier;
+import org.nhindirect.transform.util.type.MimeType;
 
 /*
  * FIXME
@@ -102,24 +121,34 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
     private static final String CODE_FORMAT_TEXT = "TEXT";
     private static final String CODE_FORMAT_CDAR2 = "CDAR2/IHE 1.0";
 
+    private byte[] xdsDocument = null;
+    private String xdsMimeType = null;
+    private String xdsFormatCode = null;
+
     private XdmXdsTransformer xdmXdsTransformer = new DefaultXdmXdsTransformer();
 
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultMimeXdsTransformer.class);
 
+    /**
+     * Construct a new DefaultMimeXdsTransformer object.
+     */
+    public DefaultMimeXdsTransformer()
+    {
+        super();
+    }
+
     /*
      * (non-Javadoc)
      * 
-     * @see org.nhindirect.transform.MimeXdsTransformer#transform(javax.mail.internet.MimeMessage)
+     * @see
+     * org.nhindirect.transform.MimeXdsTransformer#transform(javax.mail.internet
+     * .MimeMessage)
      */
     @Override
     public List<ProvideAndRegisterDocumentSetRequestType> transform(MimeMessage mimeMessage)
             throws TransformationException
     {
         List<ProvideAndRegisterDocumentSetRequestType> requests = new ArrayList<ProvideAndRegisterDocumentSetRequestType>();
-
-        byte[] xdsDocument = null;
-        String xdsMimeType = null;
-        String xdsFormatCode = null;
 
         try
         {
@@ -138,8 +167,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                 xdsMimeType = MimeType.TEXT_PLAIN.getType();
                 xdsDocument = ((String) mimeMessage.getContent()).getBytes();
 
-                List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, sentDate, xdsFormatCode,
-                        xdsMimeType, xdsDocument, from, recipients);
+                List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, sentDate, from, recipients);
                 requests.addAll(items);
             }
             // Multipart/mixed (attachments)
@@ -218,7 +246,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                         xdsDocument = outputStream.toByteArray();
 
                         List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, mimeMessage
-                                .getSentDate(), xdsFormatCode, xdsMimeType, xdsDocument, from, recipients);
+                                .getSentDate(), from, recipients);
                         requests.addAll(items);
                     }
                     else if (MimeType.TEXT_XML.matches(bodyPart.getContentType()))
@@ -247,7 +275,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                         // TODO: support more XML types
 
                         List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, mimeMessage
-                                .getSentDate(), xdsFormatCode, xdsMimeType, xdsDocument, from, recipients);
+                                .getSentDate(), from, recipients);
                         requests.addAll(items);
                     }
                     else
@@ -261,7 +289,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                         xdsDocument = outputStream.toByteArray();
 
                         List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, mimeMessage
-                                .getSentDate(), xdsFormatCode, xdsMimeType, xdsDocument, from, recipients);
+                                .getSentDate(), from, recipients);
                         requests.addAll(items);
                     }
                 }
@@ -317,20 +345,14 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      *            The message subject.
      * @param sentDate
      *            The message sent date.
-     * @param formatCode
-     *            The document format code.
-     * @param mimeType
-     *            The document MIME type.
-     * @param doc
-     *            The document as an array of bytes.
      * @param auth
      *            The author of the document.
      * @param recipients
      *            The list of recipients to receive the XDS request.
      * @return a list of ProvideAndRegisterDocumentSetRequestType objects.
      */
-    protected List<ProvideAndRegisterDocumentSetRequestType> getRequests(String subject, Date sentDate,
-            String formatCode, String mimeType, byte[] doc, String auth, Address[] recipients)
+    protected List<ProvideAndRegisterDocumentSetRequestType> getRequests(String subject, Date sentDate, String auth,
+            Address[] recipients)
     {
         List<ProvideAndRegisterDocumentSetRequestType> requests = new ArrayList<ProvideAndRegisterDocumentSetRequestType>();
 
@@ -340,8 +362,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
 
             try
             {
-                ProvideAndRegisterDocumentSetRequestType request = getRequest(subject, sentDate, formatCode, mimeType,
-                        doc, auth, realRecipient);
+                ProvideAndRegisterDocumentSetRequestType request = getRequest(subject, sentDate, auth, realRecipient);
                 requests.add(request);
             }
             catch (Exception e)
@@ -362,12 +383,6 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      *            The message subject.
      * @param sentDate
      *            The message sent date.
-     * @param formatCode
-     *            The document format code.
-     * @param mimeType
-     *            The document MIME type.
-     * @param doc
-     *            The document as an array of bytes.
      * @param auth
      *            The author of the document.
      * @param recip
@@ -375,12 +390,12 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      * @return a single ProvideAndRegisterDocumentSetRequestType object.
      * @throws Exception
      */
-    protected ProvideAndRegisterDocumentSetRequestType getRequest(String subject, Date sentDate, String formatCode,
-            String mimeType, byte[] doc, String auth, String recip) throws Exception
+    protected ProvideAndRegisterDocumentSetRequestType getRequest(String subject, Date sentDate, String auth,
+            String recip) throws Exception
     {
         ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
 
-        String sdoc = new String(doc);
+        String sdoc = new String(xdsDocument);
         CcdParser cp = new CcdParser();
         cp.parse(sdoc);
 
@@ -392,10 +407,10 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         SimplePerson sp = null;
 
         SubmitObjectsRequest sor = getSubmitObjectsRequest(patientId, orgId, sp, subject, date, docId, subId,
-                formatCode, mimeType, auth, recip);
+                xdsFormatCode, xdsMimeType, auth, recip);
         prsr.setSubmitObjectsRequest(sor);
 
-        DataSource source = new ByteArrayDataSource(doc, MimeType.APPLICATION_XML + "; charset=UTF-8");
+        DataSource source = new ByteArrayDataSource(xdsDocument, MimeType.APPLICATION_XML + "; charset=UTF-8");
         DataHandler dhnew = new DataHandler(source);
 
         List<Document> docs = prsr.getDocument();
@@ -458,13 +473,13 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                 rpt);
 
         LOGGER.info("Creating ClassificationType object inside getSubmitObjectsRequest");
-        ClassificationType clas = getClassification(rpt.getId());
+        ClassificationType clas = getClassification(ClassificationNode.SUBMISSION_SET, rpt.getId());
         qname = new QName(IDENTIFIABLE_TYPE_NS, CLASSIFICATION_TYPE);
         JAXBElement<ClassificationType> clasj = new JAXBElement<ClassificationType>(qname, ClassificationType.class,
                 clas);
 
         LOGGER.info("Creating AssociationType1 object inside getSubmitObjectsRequest");
-        AssociationType1 ass = getAssociation(rpt.getId(), eot.getId());
+        AssociationType1 ass = getAssociation(Association.HAS_MEMBER, rpt.getId(), eot.getId());
         qname = new QName(IDENTIFIABLE_TYPE_NS, ASSOCIATION_TYPE_1);
         JAXBElement<AssociationType1> assj = new JAXBElement<AssociationType1>(qname, AssociationType1.class, ass);
 
@@ -557,24 +572,25 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_AUTHOR, null, slotNames,
                 slotValues, snames);
 
-        addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_CLASS_CODE,
-                "History and Physical", CODING_SCHEME, "Connect-a-thon classCodes", "History and Physical");
+        addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_CLASS_CODE, DEFAULT_CLASS_CODE,
+                CODING_SCHEME, "Connect-a-thon classCodes", DEFAULT_CLASS_CODE);
 
         addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_FORMAT_CODE, formatCode,
                 CODING_SCHEME, "Connect-a-thon formatCodes", formatCode);
 
-        addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_FACILITY_CODE, "OF",
-                CODING_SCHEME, "Connect-a-thon healthcareFacilityTypeCodes", "OF");
+        addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_FACILITY_CODE,
+                DEFAULT_FACILITY_CODE, CODING_SCHEME, "Connect-a-thon healthcareFacilityTypeCodes",
+                DEFAULT_FACILITY_CODE);
 
         addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_PRACTICE_SETTING_CODE,
-                "Multidisciplinary", CODING_SCHEME, "Connect-a-thon practiceSettingCodes", "Multidisciplinary");
+                DEFAULT_PRACTICE_SETTING_CODE, CODING_SCHEME, "Connect-a-thon practiceSettingCodes",
+                DEFAULT_PRACTICE_SETTING_CODE);
 
         addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_TYPE_CODE, DEFAULT_LOINC_CODE,
                 CODING_SCHEME, LOINC, DEFAULT_LOINC_CODE);
 
-        addExternalIds(extIds, docId, ExternalIdentifier.DOCUMENT_ENTRY_PATIENT_ID, "XDSDocumentEntry.patientId",
-                patientId + "^^^&" + orgId);
-        addExternalIds(extIds, docId, ExternalIdentifier.DOCUMENT_ENTRY_UNIQUE_ID, "XDSDocumentEntry.uniqueId", docId);
+        addExternalIds(extIds, docId, ExternalIdentifier.DOCUMENT_ENTRY_PATIENT_ID, patientId + "^^^&" + orgId);
+        addExternalIds(extIds, docId, ExternalIdentifier.DOCUMENT_ENTRY_UNIQUE_ID, docId);
 
         return document;
     }
@@ -629,16 +645,16 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         if (auth != null)
         {
             snames.add(null);
-            slotNames.add("authorPerson");
+            slotNames.add(AUTHOR_PERSON);
             slotValues.add(auth);
         }
 
         snames.add(null);
-        slotNames.add("authorInstitution");
+        slotNames.add(AUTHOR_INSTITUTION);
         slotValues.add(orgId);
 
         snames.add(null);
-        slotNames.add("authorRole");
+        slotNames.add(AUTHOR_ROLE);
         if (auth != null)
             slotValues.add(auth + "'s Role");// see if we need this
         else
@@ -650,26 +666,28 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         addClassifications(classifs, subId, ExternalClassificationScheme.SUBMISSION_SET_CONTENT_TYPE_CODE, subject,
                 CODING_SCHEME, "Connect-a-thon contentTypeCodes", subject);
 
-        addExternalIds(extIds, subId, ExternalIdentifier.SUBMISSION_SET_UNIQUE_ID, "XDSSubmissionSet.uniqueId", subId);
-        addExternalIds(extIds, subId, ExternalIdentifier.SUBMISSION_SET_SOURCE_ID, "XDSSubmissionSet.sourceId", orgId);
-        addExternalIds(extIds, subId, ExternalIdentifier.SUBMISSION_SET_PATIENT_ID, "XDSSubmissionSet.patientId",
-                patientId + "^^^&" + orgId);
+        addExternalIds(extIds, subId, ExternalIdentifier.SUBMISSION_SET_UNIQUE_ID, subId);
+        addExternalIds(extIds, subId, ExternalIdentifier.SUBMISSION_SET_SOURCE_ID, orgId);
+        addExternalIds(extIds, subId, ExternalIdentifier.SUBMISSION_SET_PATIENT_ID, patientId + "^^^&" + orgId);
 
         return subset;
     }
 
     /**
-     * Create a ClassificationType object using the given ID.
+     * Create a ClassificationType object from the given classificationNode and
+     * classifiedObject values.
      * 
-     * @param setId
-     *            The ID to set within the ClassificationType object.
-     * @return a ClassificationType object with the given ID.
+     * @param classificationNode
+     *            The ClassificationNodeEnum from which to extract the scheme..
+     * @param classifiedObject
+     *            The value to set for classifiedObject.
+     * @return
      */
-    protected ClassificationType getClassification(String setId)
+    protected ClassificationType getClassification(ClassificationNode classificationNode, String classifiedObject)
     {
         ClassificationType ct = new ClassificationType();
-        ct.setClassificationNode(ClassificationNode.SUBMISSION_SET.getScheme());
-        ct.setClassifiedObject(setId);
+        ct.setClassificationNode(classificationNode.getScheme());
+        ct.setClassifiedObject(classifiedObject);
 
         return ct;
     }
@@ -685,10 +703,10 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      * @return an AssociationType1 object with the given source object ID and
      *         document ID.
      */
-    protected AssociationType1 getAssociation(String setId, String docId)
+    protected AssociationType1 getAssociation(Association association, String setId, String docId)
     {
         AssociationType1 at = new AssociationType1();
-        at.setAssociationType("HasMember");
+        at.setAssociationType(association.getAssociationType());
         at.setSourceObject(setId);
         at.setTargetObject(docId);
 
@@ -797,10 +815,10 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
             ExternalClassificationScheme externalClassificationScheme, String rep, String slotName, String slotValue,
             String sname)
     {
-
         List<String> slotNames = Arrays.asList(slotName);
         List<String> slotValues = Arrays.asList(slotValue);
         List<String> snames = Arrays.asList(sname);
+        
         addClassifications(classifs, docId, ExternalClassificationScheme.DOCUMENT_ENTRY_CLASS_CODE, rep, slotNames,
                 slotValues, snames);
     }
@@ -886,7 +904,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      *            The external identifier value.
      */
     protected void addExternalIds(List<ExternalIdentifierType> extIds, String docId,
-            ExternalIdentifier externalIdentifier, String sname, String value)
+            ExternalIdentifier externalIdentifier, String value)
     {
         if (extIds == null)
             throw new IllegalArgumentException("Must include a live reference to an ExternalIdentifierType list");
@@ -898,12 +916,12 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         ei.setIdentificationScheme(externalIdentifier.getIdentificationScheme());
         ei.setId(externalIdentifier.getIdentificationId());
 
-        if (StringUtils.isNotBlank(sname))
+        if (StringUtils.isNotBlank(externalIdentifier.getLocalizedString()))
         {
             InternationalStringType name = new InternationalStringType();
             List<LocalizedStringType> names = name.getLocalizedString();
             LocalizedStringType lname = new LocalizedStringType();
-            lname.setValue(sname);
+            lname.setValue(externalIdentifier.getLocalizedString());
             names.add(lname);
             ei.setName(name);
         }
