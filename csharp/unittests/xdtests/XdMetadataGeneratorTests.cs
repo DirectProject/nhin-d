@@ -357,6 +357,7 @@ namespace NHINDirect.Tests.xdTests
                     m_package.ContentTypeCode = new ClassCode(C80ClassCode.ConsultationNote);
                     m_package.Documents.Add(TestDocument);
                     m_package.PatientId = new PatientID("abc", "123", "xyz");
+                    m_package.IntendedRecipients.Add(new Recipient { Person = new Person { First = "Dan", Last = "Brown" }, Institution = new Institution("Louvre", "France") });
                     m_package.SourceId = "0.1.2.3.4.5.6.7.8.1000";
                     m_package.SubmissionTime = DateTime.Now;
                     m_package.Title = "Title: Awesome";
@@ -403,6 +404,18 @@ namespace NHINDirect.Tests.xdTests
         public void PackageHasId()
         {
             Assert.NotNull(TestPackageXElement.Attribute("id"));
+        }
+
+        [Fact]
+        public void PackageHasIntendedRecipient()
+        {
+            Assert.NotNull(TestPackageXElement.Slot(XDMetadataStandard.IntendedRecipientSlot));
+        }
+
+        [Fact]
+        public void IntendedRecipientIsCorrect()
+        {
+            Assert.Equal(TestPackage.IntendedRecipients.First().ToXONXCN(), TestPackageXElement.SlotValues(XDMetadataStandard.IntendedRecipientSlot).First());
         }
 
         [Fact]
