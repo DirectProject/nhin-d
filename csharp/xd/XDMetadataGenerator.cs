@@ -247,7 +247,7 @@ namespace NHINDirect.Xd
             if (a.Roles != null)
                 yield return new Slot("authorRole", a.Roles);
             if (a.Institutions != null)
-                yield return new Slot("authorInstitution", a.Institutions);
+                yield return new Slot("authorInstitution", a.Institutions.Select(i => i.ToXON()));
             if (a.Person != null)
                 yield return new Slot("authorPerson", a.Person.ToXCN());
         }

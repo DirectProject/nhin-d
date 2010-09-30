@@ -102,7 +102,7 @@ namespace NHINDirect.Mail.Notifications
         /// <summary>
         /// Creates an MDN Notification for the given message
         /// </summary>
-        /// <param name="from">Address this notification is from</param>
+        /// <param name="from">PostalAddress this notification is from</param>
         /// <param name="message">source message</param>
         /// <param name="notification"></param>
         /// <returns>Null if no notification should be issued</returns>
