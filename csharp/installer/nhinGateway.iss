@@ -50,7 +50,8 @@ Source: "..\gateway\devInstall\*.xml"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\gateway\devInstall\setupdomains.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\gateway\devInstall\simple.eml"; DestDir: "{app}\Samples"; Flags: ignoreversion;
 
-Source: "..\external\microsoft\vcredist\*"; DestDir: "{app}\Libraries"; Flags: ignoreversion recursesubdirs;
+Source: "..\external\microsoft\vcredist\vcredist_x86.exe"; DestDir: "{app}\Libraries"; DestName: "vcredist.exe"; Flags: ignoreversion recursesubdirs; Check: IsX86;
+Source: "..\external\microsoft\vcredist\vcredist_x64.exe"; DestDir: "{app}\Libraries"; DestName: "vcredist.exe"; Flags: ignoreversion recursesubdirs; Check: IsX64 or IsIA64;
 
 Source: "createdatabase.bat"; DestDir: "{app}\SQL"; Flags: ignoreversion;
 Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion;
@@ -62,7 +63,7 @@ Source: "createconfigsvc.bat"; DestDir: "{app}"; Flags: ignoreversion;
 Name: "{group}\{cm:UninstallProgram,NHIN .NET Gateway}"; Filename: "{uninstallexe}";
 
 [Run]
-Filename: "{app}\Libraries\install_redist.bat"; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: runhidden postinstall runascurrentuser unchecked;
+Filename: "{app}\Libraries\vcredist.exe"; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked;
 Filename: "{app}\install.bat"; Parameters: "nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall runascurrentuser unchecked;
 ; Commented out until we determine why there is an issue with certificates
 ;Filename: "{app}\SQL\createdatabase.bat"; Parameters: ".\sqlexpress NHINDConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: postinstall runascurrentuser unchecked;
