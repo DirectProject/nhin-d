@@ -26,50 +26,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.util;
+package org.nhindirect.transform.util.type;
 
 /**
- * Enumeration for data identifying an External Classification Scheme element.
+ * Enumeration for data identifying an Association element.
  * 
  * @author beau
  */
-public enum ExternalClassificationScheme
+public enum Association
 {
-    DOCUMENT_ENTRY_AUTHOR("c101", "urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d"), 
-    DOCUMENT_ENTRY_CLASS_CODE("c102", "uuid:41a5887f-8865-4c09-adf7-e362475b143a"),
-    DOCUMENT_ENTRY_FORMAT_CODE("c104", "urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d"),        
-    DOCUMENT_ENTRY_FACILITY_CODE("c105", "urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1"),         
-    DOCUMENT_ENTRY_PRACTICE_SETTING_CODE("c106", "urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead"),    
-    DOCUMENT_ENTRY_TYPE_CODE("c107", "urn:uuid:f0306f51-975f-434e-a61c-c59651d33983"),
-    SUBMISSION_SET_AUTHOR("c101", "urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d"),
-    SUBMISSION_SET_CONTENT_TYPE_CODE("c102", "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500");
+    HAS_MEMBER("HasMember");
 
-    private String classificationId;
-    private String classificationScheme;
+    private String associationType;
 
-    private ExternalClassificationScheme(String classificationId, String classificationScheme)
+    private Association(String associationType)
     {
-        this.classificationId = classificationId;
-        this.classificationScheme = classificationScheme;
+        this.associationType = associationType;
     }
 
     /**
-     * Get the value of classificationId.
+     * Get the value of associationType.
      * 
-     * @return the value of classificationId.
+     * @return the value of associationType.
      */
-    public String getClassificationId()
+    public String getAssociationType()
     {
-        return this.classificationId;
-    }
-
-    /**
-     * Get the value of classificationScheme.
-     * 
-     * @return the value of classificationScheme.
-     */
-    public String getClassificationScheme()
-    {
-        return this.classificationScheme;
+        return this.associationType;
     }
 }
