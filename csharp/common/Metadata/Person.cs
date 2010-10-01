@@ -119,6 +119,22 @@ namespace NHINDirect.Metadata
         public PostalAddress? Address { get; set; }
 
         /// <summary>
+        /// Tests if this instance equals another
+        /// </summary>
+        public bool Equals(Person other)
+        {
+            bool firstEquals = (First == null && other.First == null) || First == other.First;
+            bool lastEquals = (Last == null && other.Last == null) || Last == other.Last;
+            bool miEquals = (MI == null && other.MI == null) || MI == other.MI;
+            bool suffixEquals = (Suffix == null && other.Suffix == null) || Suffix == other.Suffix;
+            bool prefixEquals = (Prefix == null && other.Prefix == null) || Prefix == other.Prefix;
+            bool degreeEquals = (Degree == null && other.Degree == null) || Degree == other.Degree;
+            bool sexEquals = (Sex == null && other.Sex == null) || Sex == other.Sex;
+            bool dobEquals = (Dob == null && other.Dob == null) || Dob == other.Dob;
+            return firstEquals && lastEquals && miEquals && suffixEquals && prefixEquals && degreeEquals && sexEquals && dobEquals;
+        }
+
+        /// <summary>
         /// Provides a string representation of the Person
         /// </summary>
         /// <returns>A string representation of the person</returns>
@@ -135,6 +151,8 @@ namespace NHINDirect.Metadata
             sb.Append(Last == null ? "" : Last);
             sb.Append(Suffix == null ? "" : ", " + Suffix);
             sb.Append(Degree == null ? "" : ", " + Degree);
+            sb.Append(Sex == null ? "" : " Sex: " + Sex.AsString());
+            sb.Append(Dob == null ? "" : " Dob: " + Dob.Value.ToShortDateString());
             return sb.ToString();
         }
 
@@ -151,6 +169,37 @@ namespace NHINDirect.Metadata
                 Suffix ?? "",
                 Prefix ?? "",
                 Degree ?? "");
+        }
+
+        /// <summary>
+        /// Returns the trimmed field or null if the trimmed field is empty
+        /// </summary>
+        private static string HL7Field(string field)
+        {
+            field.Trim();
+            if (field == "") return null;
+            return field;
+        }
+
+        /// <summary>
+        /// Parses an XCN and returns a Person
+        /// </summary>
+        public static Person FromXCN(string xcn)
+        {
+            if (xcn == null) throw new ArgumentException();
+
+            Person p = new Person();
+
+            string[] fields = xcn.Split('^');
+            if (fields.Length < 2) throw new ArgumentException();
+            p.Last =                          HL7Field(fields[1]);
+            if (fields.Length >= 2) p.First = HL7Field(fields[2]);
+            if (fields.Length >= 3) p.MI =    HL7Field(fields[3]);
+            if (fields.Length >= 4) p.Suffix =HL7Field(fields[4]);
+            if (fields.Length >= 5) p.Prefix =HL7Field(fields[5]);
+            if (fields.Length >= 6) p.Degree =HL7Field(fields[6]);
+
+            return p;
         }
 
         string FormatHL7Value(string prop)
