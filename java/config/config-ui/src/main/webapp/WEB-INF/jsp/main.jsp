@@ -6,6 +6,14 @@
 <%@ include file="/WEB-INF/jsp/include.jsp"%>
 <META  http-equiv="Content-Type"  content="text/html;charset=UTF-8">
 <title><fmt:message key="welcome.title" /></title>
+
+<script>
+$(document).ready(function() 
+	    { 
+	        $("#domainTable").tablesorter(); 
+	    } 
+	); 
+</script>
 </head>
 
 <body>
@@ -40,13 +48,15 @@
 	<c:if test="${not empty searchResults}">
 	<div id="dynamic">
 	   <form:form id="removeDomainForm" action="domain/remove" cssClass="cleanform" method="POST" commandName="removeDomainForm" >
-		<table cellpadding="1px" cellspacing="0" class="display" id="domainTable">
+		<table class="tablesorter" id="domainTable">
 			<thead>
 				<tr>
-					<th width="30%">Name</th>
-					<th width="35%">Postmaster</th>
-					<th width="20%">Status</th>
-					<th width="15%">Remove</th>
+					<th>Name</th>
+					<th>Postmaster</th>
+					<th>Status</th>
+					<th>Created</th>
+					<th>Updated</th>
+					<th>Remove</th>
 				</tr>
 			</thead>
 			<tbody>				
@@ -60,19 +70,23 @@
 					<tr class="oddRow">
 					</c:otherwise>
 				</c:choose>
-				    <td width="30%"><a href='../domain?id=<c:out value="${domain.id}"/>'>'${domain.domainName}'</a></td>  
-				    <td width="35%"><c:out value="${domain.postmasterAddressId}"/></td>
-				    <td width="20%"><c:out value="${domain.status}"/></td>
-				    <td width="15%">TBD</td>
+				    <td><a href='../domain?id=${domain.id}/>'>${domain.domainName}</a></td>  
+				    <td>${domain.postMasterEmail}/></td>
+				    <td>${domain.status}/></td>
+				    <td><fmt:formatDate value="${domain.createTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
+				    <td><fmt:formatDate value="${domain.updateTime.time}" pattern="MM/dd/yyyy, hh:mm"/>/></td>
+				    <td><input type="checkbox" name="remove${domain.id}"/></td>
 				</tr>
 				</c:forEach>	
 			</tbody>
 			<tfoot>
 		        <tr>
-		            <th width="30%">Name</th>
-                    <th width="35%">Postmaster</th>
-                    <th width="20%">Status</th>
-                    <th width="15%">Remove</th>
+                    <th>Name</th>
+                    <th>Postmaster</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th>Remove</th>
 		        </tr>
 			</tfoot>
 		</table>
