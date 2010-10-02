@@ -1,8 +1,25 @@
-﻿using System;
+﻿/* 
+ Copyright (c) 2010, NHIN Direct Project
+ All rights reserved.
+
+ Authors:
+    Umesh Madan     umeshma@microsoft.com
+    John Theisen    jtheisen@kryptiq.com
+  
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Net.Mail;
 using NHINDirect.Agent;
 using NHINDirect.Certificates;
 using System.Security.Cryptography.X509Certificates;
@@ -23,9 +40,14 @@ namespace AgentTests
         
         public AgentTester(NHINDAgent agentA, NHINDAgent agentB)
         {
-            if (agentA == null || agentB == null)
+            if (agentA == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("agentA");
+            }
+
+            if (agentB == null)
+            {
+                throw new ArgumentNullException("agentB");
             }
             
             m_agentA = agentA;
@@ -39,6 +61,10 @@ namespace AgentTests
             {
                 return m_agentA;
             }
+            set
+            {
+                m_agentA = value;
+            }
         }
         
         public NHINDAgent AgentB
@@ -46,6 +72,10 @@ namespace AgentTests
             get
             {
                 return m_agentB;
+            }
+            set
+            {
+                m_agentB = value;
             }
         }
         
@@ -59,7 +89,7 @@ namespace AgentTests
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value null or empty", "value");
                 }
                 
                 if (!Directory.Exists(value))
@@ -183,7 +213,7 @@ namespace AgentTests
         {
             if (string.IsNullOrEmpty(folderPath))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "folderPath");
             }
             
             if (!Directory.Exists(folderPath))
@@ -203,11 +233,11 @@ namespace AgentTests
                 switch(ext)
                 {
                     default:
-                        certStore.ImportKeyFile(file, X509KeyStorageFlags.DefaultKeySet);
+                        certStore.ImportKeyFile(file, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
                         break;
                     
                     case ".pfx":
-                        certStore.ImportKeyFile(file, "passw0rd!", X509KeyStorageFlags.DefaultKeySet);
+                        certStore.ImportKeyFile(file, "passw0rd!", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
                         break;
                 }
             } 
@@ -259,6 +289,47 @@ namespace AgentTests
                     store.Add(cert);
                 }
             }
+        }
+    }
+    
+    /// <summary>
+    /// Introduces some simple confusion into cert resolution, to force decryption failures
+    /// </summary>
+    public class BadCertResolver : ICertificateResolver
+    {
+        ICertificateResolver m_a;
+        ICertificateResolver m_b;
+        bool m_includeGood;
+                
+        public BadCertResolver(ICertificateResolver a, ICertificateResolver b, bool includeGood)
+        {
+            m_a = a;
+            m_b = b;
+            m_includeGood = includeGood;
+        }
+        
+        public X509Certificate2Collection GetCertificates(MailAddress address)
+        {
+            X509Certificate2Collection certs;
+
+            if (address.Host.Equals("redmond.hsgincubator.com", StringComparison.OrdinalIgnoreCase))
+            {
+                certs = m_b.GetCertificates(new MailAddress(address.User + '@' + "nhind.hsgincubator.com"));
+                if (m_includeGood)
+                {
+                    certs.Add(m_a.GetCertificates(address));
+                }
+            }
+            else
+            {
+                certs = m_a.GetCertificates(new MailAddress(address.User + '@' + "redmond.hsgincubator.com"));
+                if (m_includeGood)
+                {
+                    certs.Add(m_b.GetCertificates(address));
+                }
+            }
+
+            return certs;
         }
     }
 }

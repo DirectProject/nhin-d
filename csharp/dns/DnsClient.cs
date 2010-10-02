@@ -38,22 +38,22 @@ namespace DnsResolver
 	///     const string ExampleDomain = "example.org";
 	///     var client = new DnsClient(DnsServer);
 	///
-	///     System.Console.WriteLine("Host addresses for " + ExampleDomain);
+	///     Console.WriteLine("Host addresses for " + ExampleDomain);
 	///     foreach(IPAddress addr in client.GetHostAddresses(ExampleDomain)
 	///     {
-	///         System.Console.WriteLine(addr.ToString());
+	///         Console.WriteLine(addr.ToString());
 	///     }
 	///
-	///     System.Console.WriteLine("Name Server addresses for " + ExampleDomain);
+	///     Console.WriteLine("Name Server addresses for " + ExampleDomain);
 	///     foreach(IPAddress addr in client.GetNameServers(ExampleDomain)
 	///     {
-	///         System.Console.WriteLine(addr.ToString());
+	///         Console.WriteLine(addr.ToString());
 	///     }
 	///
-	///     System.Console.WriteLine("Authority Server addresses for " + ExampleDomain);
+	///     Console.WriteLine("Authority Server addresses for " + ExampleDomain);
 	///     foreach(IPAddress addr in client.GetAuthorityServers(ExampleDomain)
 	///     {
-	///         System.Console.WriteLine(addr.ToString());
+	///         Console.WriteLine(addr.ToString());
 	///     }
 	///   </code>
 	/// </example>
@@ -64,7 +64,7 @@ namespace DnsResolver
 	///     const string LocalDnsIp = "127.0.0.1";
 	///     const string ExampleDomain = "bob.example.org"; // for bob@example.org
 	///     var client = new DnsClient(LocalDnsIp);
-	///     try { IEnumerable<CertRecord> certrecs = client.ResolveCERT(ExampleDomain); }
+	///     try { IEnumerable&lt;CertRecord&gt; certrecs = client.ResolveCERT(ExampleDomain); }
 	///     catch (DnsException error)
 	///     {
 	///         //handle error
@@ -78,7 +78,7 @@ namespace DnsResolver
 	///         }
 	///     }
 	///    </code>
-	///   </example
+	/// </example>
     /// <example>
     ///   This example uses the full power of the DnsClient library to resolve CERT records.
 	///   <code>
@@ -91,7 +91,7 @@ namespace DnsResolver
 	///     {
 	///         // handle error
 	///     }
-	///     if (resp != null && resp.HasAnswerRecords)
+	///     if (resp != null &amp;&amp; resp.HasAnswerRecords)
 	///     {
 	///         foreach (var certrec in response.AnswerRecords.CERT)
 	///         {
@@ -105,16 +105,20 @@ namespace DnsResolver
 	/// </example>
     public class DnsClient : IDisposable
     {
-        public const int DefaultTimeoutMs = 2000; // 2 seconds
-
+        /// <summary>
+        /// Default Receive Timeout
+        /// </summary>
+		public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(2);
+        
         IPEndPoint m_dnsServer;
         Socket m_udpSocket;
         DnsBuffer m_requestBuffer;
         DnsBuffer m_responseBuffer;
         DnsBuffer m_lengthBuffer;
-        int m_timeout;
+        TimeSpan m_timeout;
+        TimeSpan? m_postFailurePause;
         int m_maxRetries = 3;
-        ushort m_requestID = ushort.MinValue;
+        Random m_requestIDGenerator;
         
 		/// <summary>
 		///   Creates a DnsClient instance specifying a string representation of the IP address and using the default DNS port.
@@ -124,7 +128,7 @@ namespace DnsResolver
 		/// </param>
 		/// <example><c>var client = new DnsClient("8.8.8.8");</c></example>
         public DnsClient(string server)
-            : this(server, Dns.DNS_PORT)
+            : this(server, DnsStandard.DnsPort)
         {
         }
         
@@ -150,7 +154,7 @@ namespace DnsResolver
 		/// The IPAddress of the DNS server. A <see cref="IPAddress"/>
 		/// </param>
         public DnsClient(IPAddress server)
-            : this(new IPEndPoint(server, Dns.DNS_PORT))
+            : this(new IPEndPoint(server, DnsStandard.DnsPort))
         {
         }
         
@@ -161,7 +165,7 @@ namespace DnsResolver
 		/// A <see cref="IPEndPoint"/>
 		/// </param>
         public DnsClient(IPEndPoint server)
-            : this(server, DnsClient.DefaultTimeoutMs, 0x10000)
+            : this(server, DnsClient.DefaultTimeout, DnsStandard.MaxUdpMessageLength * 2)
         {
         }
         
@@ -172,25 +176,26 @@ namespace DnsResolver
 		/// <param name="server">
 		/// A <see cref="IPEndPoint"/>
 		/// </param>
-		/// <param name="timeoutMillis">
-		/// Timeout in milliseconds.
+		/// <param name="timeout">
+		/// Timeout value.
 		/// </param>
-		/// <param name="maxBufferSize">
-		/// Maximum buffer size.
+		/// <param name="maxUdpBufferSize">
+		/// Maximum buffer size to use for UDP communication.
 		/// </param>
-        public DnsClient(IPEndPoint server, int timeoutMillis, int maxBufferSize)
+        public DnsClient(IPEndPoint server, TimeSpan timeout, int maxUdpBufferSize)
         {         
             if (server == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("server");
             }   
             
             this.m_dnsServer = server;
             m_lengthBuffer = new DnsBuffer(2);
             m_requestBuffer = new DnsBuffer(1024);
-            m_responseBuffer = new DnsBuffer(maxBufferSize);
-            this.Timeout = timeoutMillis;
+            m_responseBuffer = new DnsBuffer(maxUdpBufferSize);
+            this.Timeout = timeout;
             this.UseUDPFirst = true;
+            m_requestIDGenerator = new Random();
         }
         
 		/// <summary>
@@ -217,17 +222,17 @@ namespace DnsResolver
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("value");
                 }
                 m_dnsServer = value;
             }            
         }
-        
+                        
 		/// <summary>
-		/// Timeout interval in milliseconds for DNS requests. 
+		/// Timeout interval for DNS requests. 
 		/// </summary>
-		/// <value>An integer representation of the number of milliseconds before timeout.</value>
-        public int Timeout
+		/// <value>A positive value indicating the span before timeout</value>
+        public TimeSpan Timeout
         {
             get
             {
@@ -235,16 +240,35 @@ namespace DnsResolver
             }
             set
             {
-                if (value <= 0)
+                if (value.Ticks < 1)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value less than 1", "value");
                 }
                 
                 m_timeout = value;
             }
         }
         
-		
+        /// <summary>
+        /// Pause for this long in between UDP retries
+        /// </summary>
+        public TimeSpan? RetryPause
+        {
+            get
+            {
+                return m_postFailurePause;
+            }
+            set
+            {
+                m_postFailurePause = value;
+            }
+        }
+        
+		private int TimeoutInMilliseconds
+		{
+			get { return (int)Timeout.TotalMilliseconds; }
+		}
+
 		/// <summary>
 		/// The number of retries to attempt.
 		/// </summary>
@@ -256,15 +280,18 @@ namespace DnsResolver
             }
             set
             {
-                if (value <= 0)
+                if (value < 1)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value was less than 1", "value");
                 }
                 
                 m_maxRetries = value;
             }
         }
-        
+
+        /// <summary>
+        /// Event to which to subscribe for notification of errors.
+        /// </summary>
         public event Action<DnsClient, Exception> Error;
         
 		
@@ -278,24 +305,32 @@ namespace DnsResolver
 		/// A DNS Response instance representing the response. See <see cref="DnsResponse"/>
 		/// </returns>
 		/// <exception cref="DnsResolver.DnsException">Thrown for network failure (e.g. max retries exceeded) or badly formed responses.</exception>
-        public DnsResponse Resolve(DnsRequest request)
+        public virtual DnsResponse Resolve(DnsRequest request)
         {
             if (request == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("request");
             }
             
+            request.Validate();
+               
             request.RequestID = this.NextID();
             this.SerializeRequest(request);
 
             bool useUDPFirst = this.UseUDPFirst;
             int attempt = 0;
             int maxAttempts = this.m_maxRetries + 1;
+            if (!useUDPFirst)
+            {
+                attempt = maxAttempts - 1;
+            }
             while (attempt < maxAttempts)
             {
                 attempt++;
                 try
                 {
+                    this.EnsureUdpSocket();
+
                     if (useUDPFirst)
                     {
                         this.ExecuteUDP();
@@ -306,6 +341,17 @@ namespace DnsResolver
                     }
                     
                     DnsResponse response = this.DeserializeResponse();
+                    response.Validate();
+
+                    if (request.RequestID != response.RequestID || !response.Question.Equals(request.Question))
+                    {
+                        // Hmm. Not a response to any query we'd sent. 
+                        // Could be a spoof, a server misbehaving, or some other socket (UDP) oddity (delayed message etc)
+                        // If this is TCP, then this should not happen and we will hit max attempts and stop
+                        // Ignore and retry
+                        continue;
+                    }
+                    
                     if (response.IsNameError)
                     {
                         return response;
@@ -339,6 +385,13 @@ namespace DnsResolver
                     }
                     
                     this.NotifyError(error);
+                }
+                
+                this.CloseUdpSocket();
+                
+                if (m_postFailurePause != null)
+                {
+                    System.Threading.Thread.Sleep(m_postFailurePause.Value);
                 }            
             }
             
@@ -405,7 +458,7 @@ namespace DnsResolver
 		/// <summary>
 		/// Convenience method resolving and returning MX RRs. 
 		/// </summary>
-		/// <param name="domain">
+		/// <param name="emailDomain">
 		/// The domain name to resolve.
 		/// </param>
 		/// <returns>
@@ -428,7 +481,7 @@ namespace DnsResolver
 		/// The domain name to resolve.
 		/// </param>
 		/// <returns>
-		/// An enumeration of TXT Records. See <see cref="TXTRecord"/>
+		/// An enumeration of TXT Records. See <see cref="TextRecord"/>
 		/// </returns>
         public IEnumerable<TextRecord> ResolveTXT(string domain)
         {
@@ -460,7 +513,17 @@ namespace DnsResolver
             return response.AnswerRecords.CERT;
         }
 
-        public IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain)
+
+        /// <summary>
+        /// Resolves CERT records for <paramref name="domain"/> from the authoritative
+        /// nameservers for the domain.
+        /// </summary>
+        /// <remarks>
+        /// This method may be used if the typical nameserver used does not handle CERT records.
+        /// </remarks>
+        /// <param name="domain">The domain for which to retrieve CERT records.</param>
+        /// <returns>An enumeration of <see cref="CertRecord"/> instances.</returns>
+        public  IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain)
         {
             IEnumerable<IPAddress> nameServers = this.GetNameServers(domain);
             if (nameServers != null)
@@ -485,11 +548,27 @@ namespace DnsResolver
             return null;
         }
 
-        public IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain, IPAddress nameserver)
+
+        /// <summary>
+        /// Resolves CERT records for <paramref name="domain"/> from the authoritative
+        /// nameservers for the domain.
+        /// </summary>
+        /// <remarks>
+        /// This method may be used if the typical nameserver used does not handle CERT records.
+        /// </remarks>
+        /// <param name="domain">The domain for which to retrieve CERT records.</param>
+        /// <param name="nameserver">The nameserver from which to retrieve authoratative nameservers
+        /// for the domain.</param>
+        /// <returns>An enumeration of <see cref="CertRecord"/> instances.</returns>
+        public virtual IEnumerable<CertRecord> ResolveCERTFromNameServer(string domain, IPAddress nameserver)
         {
-            if (string.IsNullOrEmpty(domain) || nameserver == null)
+            if (string.IsNullOrEmpty(domain))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "domain");
+            }
+            if (nameserver == null)
+            {
+                throw new ArgumentNullException("nameserver");
             }
             
             using (DnsClient client = new DnsClient(nameserver))
@@ -567,7 +646,7 @@ namespace DnsResolver
         {
             if (hostNamesOrAddresses == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("hostNamesOrAddresses");
             }
 
             foreach (string hostName in hostNamesOrAddresses)
@@ -670,11 +749,11 @@ namespace DnsResolver
                     default:
                         break;
 
-                    case Dns.RecordType.NS:
+                    case DnsStandard.RecordType.NS:
                         serverName = ((NSRecord)record).NameServer;
                         break;
 
-                    case Dns.RecordType.SOA:
+                    case DnsStandard.RecordType.SOA:
                         serverName = ((SOARecord)record).DomainName;
                         break;
                 }
@@ -691,31 +770,27 @@ namespace DnsResolver
 		/// </summary>
         public void Close()
         {
+            this.CloseUdpSocket();
+        }
+        
+        void CloseUdpSocket()
+        {
             if (m_udpSocket != null)
             {
                 m_udpSocket.Close();
                 m_udpSocket = null;
             }
         }
-
+        
         void SerializeRequest(DnsRequest request)
         {
             m_requestBuffer.Clear();
-            request.ToBytes(m_requestBuffer);
+            request.Serialize(m_requestBuffer);
         }
 
         DnsResponse DeserializeResponse()
         {
-            DnsBufferReader reader = new DnsBufferReader(m_responseBuffer.Buffer, 0, m_responseBuffer.Count);
-            return new DnsResponse(ref reader);
-        }
-        
-        void ValidateRequestID()
-        {
-            if (m_requestBuffer[0] != m_responseBuffer[0] || m_requestBuffer[1] != m_responseBuffer[1])
-            {
-                throw new DnsProtocolException(DnsProtocolError.RequestIDMismatch);
-            }
+            return new DnsResponse(m_responseBuffer.CreateReader());
         }
                 
         //--------------------------------------------
@@ -725,19 +800,27 @@ namespace DnsResolver
         //--------------------------------------------
         void ExecuteUDP()
         {
-            if (m_udpSocket == null)
-            {
-                m_udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                m_udpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, this.m_timeout);
-            }
-            m_udpSocket.SendTo(m_requestBuffer.Buffer, m_requestBuffer.Count, SocketFlags.None, m_dnsServer);
-
+            this.CloseUdpSocket();
+            this.EnsureUdpSocket();
+            
+            m_udpSocket.Send(m_requestBuffer.Buffer, m_requestBuffer.Count, SocketFlags.None);            
             m_responseBuffer.Count = m_udpSocket.Receive(m_responseBuffer.Buffer);
-
-            this.ValidateRequestID();
         }
         
-        //--------------------------------------------
+        void EnsureUdpSocket()
+        {
+            if (m_udpSocket != null)
+            {
+                return;
+            }
+            
+            m_udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            m_udpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, this.TimeoutInMilliseconds);
+            
+            m_udpSocket.Connect(m_dnsServer);
+        }
+        
+		//--------------------------------------------
         //
         // TCP Transport
         //
@@ -746,8 +829,7 @@ namespace DnsResolver
         {
             using(Socket tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
-                tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, this.m_timeout);
-                
+                tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, this.TimeoutInMilliseconds);
                 tcpSocket.Connect(m_dnsServer);
                 
                 m_lengthBuffer.Clear();
@@ -760,8 +842,14 @@ namespace DnsResolver
                 // First, receive the response message length
                 //
                 m_lengthBuffer.Clear();
-                tcpSocket.Receive(m_lengthBuffer.Buffer, m_lengthBuffer.Capacity, SocketFlags.None);
-                ushort responseSize = (ushort)(m_lengthBuffer.Buffer[0] << 8 | m_lengthBuffer.Buffer[1]);  // Network order
+                m_lengthBuffer.Count = tcpSocket.Receive(m_lengthBuffer.Buffer, m_lengthBuffer.Capacity, SocketFlags.None);
+                if (m_lengthBuffer.Count == 0)
+                {
+                    throw new DnsProtocolException(DnsProtocolError.Failed);
+                }
+                
+                DnsBufferReader reader = m_lengthBuffer.CreateReader();
+                ushort responseSize = reader.ReadUShort();
                 //
                 // Now receive the real response
                 //
@@ -769,9 +857,7 @@ namespace DnsResolver
                 if (m_responseBuffer.Count != responseSize)
                 {
                     throw new DnsProtocolException(DnsProtocolError.Failed);
-                }
-                
-                this.ValidateRequestID();
+                }                
             }
         }
                 
@@ -791,18 +877,14 @@ namespace DnsResolver
         
         ushort NextID()
         {
-            if (this.m_requestID == (ushort) ushort.MaxValue)
-            {
-                this.m_requestID = ushort.MinValue;
-                return this.m_requestID;
-            }
-            
-            this.m_requestID++;
-            return this.m_requestID;
+            return (ushort) m_requestIDGenerator.Next(ushort.MinValue, ushort.MaxValue);
         }
 
         #region IDisposable Members
 
+        /// <summary>
+        /// Frees resources for this instance.
+        /// </summary>
         public void Dispose()
         {
             this.Close();

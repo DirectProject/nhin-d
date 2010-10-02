@@ -27,10 +27,20 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 
+/**
+ * Generic settings for processing messages.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public abstract class MessageProcessingSettings
 {
 	private File saveMessagesFolder = null;
 	
+	/**
+	 * Sets the folder where messages will be written to disk.  
+	 * @param folder The folder where messages will be written to disk. 
+	 */
 	public void setSaveMessageFolder(File folder)
 	{
 		saveMessagesFolder = folder;
@@ -48,16 +58,28 @@ public abstract class MessageProcessingSettings
 		}
 	}
 	
+	/**
+	 * Gets the folder where messages will be written to desk.
+	 * @return The folder where messages will be written to desk.
+	 */
 	public File getSaveMessageFolder()
 	{
 		return saveMessagesFolder;
 	}
 	
+	/**
+	 * Indicates if messages should be written to disk.  If this setting is null, then messages will not be written.  This is
+	 * useful for debugging, but generally should not be set in a production environment.
+	 * @return
+	 */
 	public boolean hasSaveMessageFolder()
 	{
 		return getSaveMessageFolder() != null;
 	}
 	
+	/*
+	 * Ensures that a valid folder exits for messages to be written to.
+	 */
 	private void ensureSaveMessageFolder() throws IOException
 	{
 		if (hasSaveMessageFolder() && !getSaveMessageFolder().exists())

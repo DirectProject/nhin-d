@@ -23,15 +23,65 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Agent.Config
 {
+    /// <summary>
+    /// An XML-serializable representation of agent configuration settings.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// AgentSettings settings = AgentSettings.LoadFile("config.xml");
+    /// settings.Validate()
+    /// NHINDAgent agent = settings.CreateAgent();
+    /// </code>
+    /// </example>
     [XmlType("AgentSettings")]
     public class AgentSettings
     {
         CryptographerSettings m_cryptographerSettings;
+        bool m_allowNonWrappedIncoming = true;
+        bool m_wrapOutgoing = true;
         
+        /// <summary>
+        /// Basic constructor (normally called via XML serialization in one of the Load* static methods in this class)
+        /// </summary>
         public AgentSettings()
         {
         }
         
+        /// <summary>
+        /// By default, the agent will accept messages that are NOT wrapped with message/rfc822 - i.e. sent by any SMIME client
+        /// </summary>
+        [XmlElement]
+        public bool AllowNonWrappedIncoming
+        {
+            get
+            {
+                return m_allowNonWrappedIncoming;
+            }
+            set
+            {
+                m_allowNonWrappedIncoming = value;
+            }
+        }
+        
+        /// <summary>
+        /// By default, the agent will wrap all outgoing messages into message/rfc822 before encrypting/signing
+        /// </summary>
+        [XmlElement]
+        public bool WrapOutgoing
+        {
+            get
+            {
+                return m_wrapOutgoing;
+            }
+            set
+            {
+                m_wrapOutgoing = value;
+            }
+        }
+        
+        /// <summary>
+        /// The domains the agent manages
+        /// </summary>
         [XmlElement("Domain", typeof(string))]
         public string[] Domains
         {
@@ -39,6 +89,9 @@ namespace NHINDirect.Agent.Config
             set;
         }
         
+        /// <summary>
+        /// <see cref="CertificateSettings"/> for private certificates
+        /// </summary>
         [XmlElement("PrivateCerts")]
         public CertificateSettings PrivateCerts
         {
@@ -46,13 +99,19 @@ namespace NHINDirect.Agent.Config
             set;
         }
 
+        /// <summary>
+        /// <see cref="CertificateSettings"/> for public certificates
+        /// </summary>
         [XmlElement("PublicCerts")]
         public CertificateSettings PublicCerts
         {
             get;
             set;
         }
-        
+
+        /// <summary>
+        /// <see cref="TrustAnchorSettings"/> for trust anchors used by the agent.
+        /// </summary>
         [XmlElement("Anchors")]
         public TrustAnchorSettings Anchors
         {
@@ -60,6 +119,9 @@ namespace NHINDirect.Agent.Config
             set;
         }   
         
+        /// <summary>
+        /// <see cref="CryptographerSettings"/> defining the cryptography methods used by the agent.
+        /// </summary>
         [XmlElement("Cryptographer")]
         public CryptographerSettings Cryptographer
         {
@@ -78,6 +140,10 @@ namespace NHINDirect.Agent.Config
             }
         }
         
+        /// <summary>
+        /// Validates settings, throwing <see cref="AgentConfigException"/> for validation errors.
+        /// </summary>
+        /// <exception cref="AgentConfigException">When configuration settings are missing or malformed.</exception>
         public virtual void Validate()
         {
             if (!AgentDomains.Validate(this.Domains))
@@ -104,6 +170,10 @@ namespace NHINDirect.Agent.Config
             this.Anchors.Validate();
         }
         
+        /// <summary>
+        /// Creates a agent from settings.
+        /// </summary>
+        /// <returns>The configured agent instance.</returns>
         public NHINDAgent CreateAgent()
         {
             this.Validate();
@@ -112,14 +182,29 @@ namespace NHINDirect.Agent.Config
             ICertificateResolver publicCerts = this.PublicCerts.Resolver.CreateResolver();
             ITrustAnchorResolver trustAnchors = this.Anchors.Resolver.CreateResolver();
 
-            return new NHINDAgent(this.Domains, privateCerts, publicCerts, trustAnchors, TrustModel.Default, this.Cryptographer.Create());
+            NHINDAgent agent = new NHINDAgent(this.Domains, privateCerts, publicCerts, trustAnchors, TrustModel.Default, this.Cryptographer.Create());
+            agent.AllowNonWrappedIncoming = m_allowNonWrappedIncoming;
+            agent.WrapMessages = m_wrapOutgoing;
+                        
+            return agent;
         }
         
+        /// <summary>
+        /// Load agent settings from an XML string containing settings.
+        /// </summary>
+        /// <param name="configXml">An XML string containing settings</param>
+        /// <returns>Agent settings</returns>
         public static AgentSettings Load(string configXml)
         {
             return Load<AgentSettings>(configXml);
         }
 
+        /// <summary>
+        /// Load agent settings from an XML string containing settings.
+        /// </summary>
+        /// <param name="configXml">An XML string containing settings</param>
+        /// <returns>Agent settings</returns>
+        /// <typeparam name="T">Must be <see cref="AgentSettings"/></typeparam>
         public static T Load<T>(string configXml)
             where T : AgentSettings
         {
@@ -129,7 +214,23 @@ namespace NHINDirect.Agent.Config
                 return (T) serializer.Deserialize(reader);
             }
         }
-        
+
+        /// <summary>
+        /// Loads agent configurations from a file.
+        /// </summary>
+        /// <param name="filePath">A string containing a valid path and filename of a valid XML configuration file.</param>
+        /// <returns>The settings defined in the file</returns>
+        public static AgentSettings LoadFile(string filePath)
+        {
+            return LoadFile<AgentSettings>(filePath);
+        }
+
+        /// <summary>
+        /// Loads agent configurations from a file.
+        /// </summary>
+        /// <typeparam name="T">Must be <see cref="AgentSettings"/></typeparam>
+        /// <param name="filePath">A string containing a valid path and filename of a valid XML configuration file.</param>
+        /// <returns>The settings defined in the file</returns>
         public static T LoadFile<T>(string filePath)
             where T : AgentSettings
         {

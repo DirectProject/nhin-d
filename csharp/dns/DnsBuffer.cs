@@ -18,20 +18,41 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net.Sockets;
 
 namespace DnsResolver
 {
-    internal class DnsBuffer
+    /// <summary>
+    /// A raw data buffer with utilities facilitating reading and writing of DNS wire format data.
+    /// </summary>
+    public class DnsBuffer
     {
         byte[] m_buffer;
         int m_count;
-
+        
+        /// <summary>
+        /// Initializes a buffer with capacity == DnsStandard.MaxUdpMessageLength
+        /// </summary>
+        public DnsBuffer()
+            : this(DnsStandard.MaxUdpMessageLength)
+        {
+        }
+        
+        /// <summary>
+        /// Initializes a buffer with the requested capacity.
+        /// </summary>
+        /// <param name="capacity">The capacity of this buffer in <c>byte</c>s</param>
         public DnsBuffer(int capacity)
         {
             m_buffer = new byte[capacity];
             m_count = 0;
         }
         
+        /// <summary>
+        /// Returns the byte at the zero-based index position in this buffer.
+        /// </summary>
+        /// <param name="index">The zero-based index position to access.</param>
+        /// <returns>The <c>byte</c> at the requested index.</returns>
         public byte this[int index]
         {
             get
@@ -51,7 +72,10 @@ namespace DnsResolver
                 m_buffer[index] = value;
             }
         }
-        
+
+        /// <summary>
+        /// Gets the underying buffer.
+        /// </summary>
         public byte[] Buffer
         {
             get
@@ -60,6 +84,9 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Count of <c>byte</c>s added to this buffer.
+        /// </summary>
         public int Count
         {
             get
@@ -70,13 +97,16 @@ namespace DnsResolver
             {
                 if (value < 0 || value > m_buffer.Length)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentOutOfRangeException("value", "value less than 0 or greater than the buffer length");
                 }
 
                 m_count = value;
             }
         }
 
+        /// <summary>
+        /// The capacity of this buffer in <c>byte</c>s
+        /// </summary>
         public int Capacity
         {
             get
@@ -85,45 +115,73 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Adds a <c>byte</c> value to the buffer, first ensuring the buffer has capacity.
+        /// </summary>
+        /// <param name="item">The raw <c>byte</c> to add.</param>
         public void AddByte(byte item)
         {
             this.EnsureCapacity();
             m_buffer[m_count++] = item;
         }
 
+
+        /// <summary>
+        /// Adds a <c>byte</c> value to the buffer without ensuring the buffer has capacity.
+        /// </summary>
+        /// <param name="item">The raw <c>byte</c> to add.</param>
         public void AddByteNoCheck(byte item)
         {
             m_buffer[m_count++] = item;
         }
 
+        /// <summary>
+        /// Adds raw <c>byte</c> values to the buffer.
+        /// </summary>
+        /// <param name="items">The raw data to add.</param>
         public void AddBytes(byte[] items)
         {
             if (items == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("items");
             }
 
             this.ReserveCapacity(items.Length);
             System.Buffer.BlockCopy(items, 0, m_buffer, m_count, items.Length);
+            m_count += items.Length;
         }
         
         /// <summary>
-        /// Add the given string as ASCII bytes
+        /// Add the given string to the buffer as ASCII bytes
         /// </summary>
         public void AddChars(string item)
         {
             if (item == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("item");
             }
             this.AddChars(item, 0, item.Length);
         }
-
+        
+        /// <summary>
+        /// Add a subset of the given string as ASCII bytes, starting at a zero-based index position.
+        /// </summary>
+        /// <param name="item">The string from which to add characters</param>
+        /// <param name="length">The number of characters to add</param>
+        /// <param name="startAt">The zero-based postition of <paramref name="item"/> to start reading from</param>
         public void AddChars(string item, int startAt, int length)
         {
-            if (item == null || startAt < 0 || length < 0)
+            if (item == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("item");
+            }
+            if (startAt < 0)
+            {
+                throw new ArgumentException("value was less than 0", "startAt");
+            }
+            if (length < 0)
+            {
+                throw new ArgumentException("value was less than 0", "length");
             }
             
             if (length == 0)
@@ -139,33 +197,33 @@ namespace DnsResolver
             }
             m_count = newCount;
         }
-        
+
         /// <summary>
-        /// Adds the short in network order
+        /// Add a <c>short</c> in network order
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">The value to add to the buffer.</param>
         public void AddShort(short value)
         {
             this.ReserveCapacity(2);
             this.AddByteNoCheck((byte)((short)value >> 8));
             this.AddByteNoCheck((byte)(value));
         }
-        
+
         /// <summary>
-        /// Adds a ushort in network order
+        /// Add a <c>ushort</c> in network order
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">The value to add to the buffer.</param>
         public void AddUshort(ushort value)
         {
             this.ReserveCapacity(2);
             this.AddByteNoCheck((byte)(value >> 8));
             this.AddByteNoCheck((byte)(value));
         }
-        
+
         /// <summary>
-        /// Add an int in network order
+        /// Add a <c>int</c> in network order
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">The value to add to the buffer.</param>
         public void AddInt(int value)
         {
             this.ReserveCapacity(4);
@@ -174,7 +232,24 @@ namespace DnsResolver
             this.AddByteNoCheck((byte)(value >> 8));
             this.AddByteNoCheck((byte)(value));
         }
-        
+
+        /// <summary>
+        /// Add a <c>uint</c> in network order
+        /// </summary>
+        /// <param name="value">The value to add to the buffer.</param>
+        public void AddUint(uint value)
+        {
+            this.ReserveCapacity(4);
+            this.AddByteNoCheck((byte)(value >> 24));
+            this.AddByteNoCheck((byte)(value >> 16));
+            this.AddByteNoCheck((byte)(value >> 8));
+            this.AddByteNoCheck((byte)(value));
+        }
+
+        /// <summary>
+        /// Add a <c>long</c> in network order
+        /// </summary>
+        /// <param name="value">The value to add to the buffer.</param>
         public void AddLong(long value)
         {
             this.AddInt((int) value >> 32);
@@ -189,19 +264,30 @@ namespace DnsResolver
         {
             if (label == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("label");
             }
             this.AddLabel(label, 0, label.Length);
         }
 
+        /// <summary>
+        /// Adds a subset of a string as a DNS label.
+        /// </summary>
+        /// <param name="source">The source string from which to add characters</param>
+        /// <param name="startAt">The zero-based starting position from which to add characters.</param>
+        /// <param name="length">The number of characters to add.</param>
         public void AddLabel(string source, int startAt, int length)
         {
-            if (source == null || length <= 0)
+            if (source == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("source");
             }
 
-            if (length > Dns.MAXLABELLENGTH)
+            if (length < 1)
+            {
+                throw new ArgumentException("value was less than 1", "length");
+            }
+
+            if (length > DnsStandard.MaxLabelLength)
             {
                 throw new DnsProtocolException(DnsProtocolError.LabelTooLong);
             }
@@ -210,11 +296,15 @@ namespace DnsResolver
             this.AddChars(source, startAt, length);
         }
         
-        public void AddPath(string path)
+        /// <summary>
+        /// Add a domain name (QNAME, path)...
+        /// </summary>
+        /// <param name="path">The string representation of the domain name to add</param>
+        public void AddDomainName(string path)
         {
             if (string.IsNullOrEmpty(path))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "path");
             }
             //
             // Zero length labels are allowed
@@ -248,11 +338,17 @@ namespace DnsResolver
             this.AddByte((byte) 0);
         }
         
+        /// <summary>
+        /// Clears this buffer. Does not erase data.
+        /// </summary>
         public void Clear()
         {
             m_count = 0;
         }
 
+        /// <summary>
+        /// Clears and erases data from this buffer.
+        /// </summary>
         public void Erase()
         {
             this.Clear();
@@ -262,6 +358,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Ensures this buffer has at least one byte of free capacity.
+        /// </summary>
         public void EnsureCapacity()
         {
             if (m_count == m_buffer.Length)
@@ -270,6 +369,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Ensures this buffer has at least <paramref name="newItemCount"/> capacity.
+        /// </summary>
+        /// <param name="newItemCount">The number of <c>byte</c>s for which to ensure capacity.</param>
         public void ReserveCapacity(int newItemCount)
         {
             int capacity = m_count + newItemCount;
@@ -279,6 +382,10 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Creates a reader for this buffer.
+        /// </summary>
+        /// <returns>The newly initialized reader</returns>
         public DnsBufferReader CreateReader()
         {
             return new DnsBufferReader(m_buffer, 0, m_count);

@@ -22,7 +22,6 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp.provider;
 
-import org.nhindirect.gateway.smtp.BounceMessageCreator;
 import org.nhindirect.gateway.smtp.DefaultSmtpAgent;
 import org.nhindirect.gateway.smtp.SmtpAgent;
 import org.nhindirect.gateway.smtp.SmtpAgentSettings;
@@ -37,18 +36,14 @@ public class DefaultSmtpAgentProvider implements Provider<SmtpAgent>
 	private NHINDAgent agent; // provided by injection... assumes can be created
 	
 	private final SmtpAgentSettings settings;
-	private final BounceMessageCreator outgoingBounce;
-	private final BounceMessageCreator incomingBounce;
 	
-	public DefaultSmtpAgentProvider(SmtpAgentSettings settings, BounceMessageCreator outgoingBounce, BounceMessageCreator incomingBounce)
+	public DefaultSmtpAgentProvider(SmtpAgentSettings settings)
 	{
 		this.settings = settings;
-		this.outgoingBounce = outgoingBounce;
-		this.incomingBounce = incomingBounce;
 	}
 	
 	public SmtpAgent get()
 	{
-		return new DefaultSmtpAgent(settings, agent, outgoingBounce, incomingBounce);
+		return new DefaultSmtpAgent(settings, agent);
 	}
 }

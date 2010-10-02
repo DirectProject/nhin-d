@@ -20,8 +20,15 @@ using System.Text;
 
 namespace NHINDirect.Tools.Command
 {
+    /// <summary>
+    /// Common things most Console apps do on the command line
+    /// </summary>
     public static class CommandUI
     {
+        /// <summary>
+        /// Print a prompt sign, then get line
+        /// </summary>
+        /// <returns></returns>
         public static string GetInput()
         {
             Console.Write('>');
@@ -42,6 +49,11 @@ namespace NHINDirect.Tools.Command
         {
             Console.WriteLine("------");
         }
+
+        public static void PrintHeading(string format, params object[] parameters)
+        {
+            PrintHeading(string.Format(format, parameters));
+        }
         
         public static void PrintHeading(string heading)
         {
@@ -52,11 +64,36 @@ namespace NHINDirect.Tools.Command
             Console.WriteLine("|");
             PrintDivider();
         }
-
+        
+        public static void PrintHilite(string format, params object[] parameters)
+        {
+            PrintHilite(string.Format(format, parameters));
+        }
+        
         public static void PrintHilite(string message)
         {
             Console.Write("# ");
             Console.WriteLine(message);
+        }
+
+        public static void PrintBold(string format, params object[] parameters)
+        {
+            PrintBold(string.Format(format, parameters));
+        }
+
+        public static void PrintBold(string message)
+        {
+            Console.WriteLine("**{0}**", message);
+        }
+
+        public static void PrintUpperCase(string format, params object[] parameters)
+        {
+            PrintUpperCase(string.Format(format, parameters));
+        }
+        
+        public static void PrintUpperCase(string message)
+        {
+            Console.WriteLine(message.ToUpper());
         }
         
         public static void Print(Exception ex)

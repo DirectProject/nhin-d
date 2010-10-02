@@ -21,38 +21,69 @@ using System.Text;
 
 namespace DnsResolver
 {
-    //                                  1  1  1  1  1  1
-    //    0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
-    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //  |                                               |
-    //  /                                               /
-    //  /                      NAME                     /
-    //  |                                               |
-    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //  |                      TYPE                     |
-    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //  |                     CLASS                     |
-    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //  |                      TTL                      |
-    //  |                                               |
-    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    //  |                   RDLENGTH                    |
-    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--|
-    //  /                     RDATA                     /
-    //  /                                               /
-    //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    
+    /// <summary>
+    /// Represents an RR
+    /// </summary>
+    /// <remarks>
+    /// See RFC 1035, 3.2.1
+    /// RR top level format:
+    /// <code>
+    ///                                  1  1  1  1  1  1
+    ///    0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
+    ///  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    ///  |                                               |
+    ///  /                                               /
+    ///  /                      NAME                     /
+    ///  |                                               |
+    ///  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    ///  |                      TYPE                     |
+    ///  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    ///  |                     CLASS                     |
+    ///  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    ///  |                      TTL                      |
+    ///  |                                               |
+    ///  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    ///  |                   RDLENGTH                    |
+    ///  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--|
+    ///  /                     RDATA                     /
+    ///  /                                               /
+    ///  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    ///  </code>
+    /// </remarks>
     public abstract class DnsResourceRecord
     {
-        static Func<Dns.RecordType, DnsResourceRecord> s_recordObjectFactory = DnsResourceRecord.CreateRecordObject;
+        static Func<DnsStandard.RecordType, DnsResourceRecord> s_recordObjectFactory = DnsResourceRecord.CreateRecordObject;
         DnsResourceRecordHeader m_header;        
         
         internal DnsResourceRecord()
         {
         }
+        
+        /// <summary>
+        /// Instantiates a new Dns Resource Record
+        /// </summary>
+        /// <param name="name">the domain name for which this is a record</param>
+        /// <param name="type">the record type</param>
+        protected DnsResourceRecord(string name, DnsStandard.RecordType type)
+        {
+            this.Name = name;
+            this.Type = type;
+            this.Class = DnsStandard.Class.IN;
+        }
+        
         //
         // NAME
         //
+        /// <summary>
+        /// Gets and sets the Name
+        /// </summary>
+        /// <remarks>
+        /// Per RFC 1035, a name is:
+        /// <para>
+        /// an owner name, i.e., the name of the node to which this
+        /// resource record pertains.</para>
+        /// Generally a domain name, or (in cases such as SRV), a pseudo-domain.
+        /// </remarks>
         public string Name
         {
             get
@@ -61,15 +92,19 @@ namespace DnsResolver
             }
             set
             {
-                if (value == null)
+                if (string.IsNullOrEmpty(value))
                 {
                     throw new DnsProtocolException(DnsProtocolError.InvalidRecordName);
                 }
                 m_header.Name = value;
             }
         }
-        // TYPE
-        public Dns.RecordType Type
+
+        /// <summary>
+        /// Gets or sets the record type
+        /// </summary>
+        /// <remarks>See remarks for <see cref="DnsStandard.RecordType"/></remarks>
+        public DnsStandard.RecordType Type
         {
             get
             {
@@ -81,8 +116,11 @@ namespace DnsResolver
             }
         }
 
-        // CLASS
-        public Dns.Class Class
+        /// <summary>
+        /// Gets and sets the class
+        /// </summary>
+        /// <remarks>See remarks for <see cref="Class"/></remarks>
+        public DnsStandard.Class Class
         {
             get
             {
@@ -94,7 +132,22 @@ namespace DnsResolver
             }
         }
 
-        // TTL
+        /// <summary>
+        /// Gets and sets the TTL
+        /// </summary>
+        /// <remarks>
+        /// RFC 1035, 3.2.1
+        /// <para>
+        /// a 32 bit signed integer that specifies the time interval
+        /// that the resource record may be cached before the source
+        /// of the information should again be consulted.  Zero
+        /// values are interpreted to mean that the RR can only be
+        /// used for the transaction in progress, and should not be
+        /// cached.  For example, SOA records are always distributed
+        /// with a zero TTL to prohibit caching.  Zero values can
+        /// also be used for extremely volatile data.
+        /// </para>
+        /// </remarks>
         public int TTL
         {
             get
@@ -106,9 +159,13 @@ namespace DnsResolver
                 m_header.TTL = value;
             }
         }
-        
-        
-        // RDLENGTH
+                
+        /// <summary>
+        /// Gets and sets the RDLENGTH
+        /// </summary>
+        /// <remarks>
+        /// RFC 1035, 2.3.1: "an unsigned 16 bit integer that specifies the length in
+        /// octets of the RDATA field."</remarks>
         public short RecordDataLength
         {
             get
@@ -120,30 +177,95 @@ namespace DnsResolver
                 m_header.RecordDataLength = value;
             }
         }
-
+                
         internal void Deserialize(ref DnsResourceRecordHeader header, ref DnsBufferReader reader)
         {
             m_header = header;
             this.DeserializeRecordData(ref reader);
         }
+
+        /// <summary>
+        /// Tests equality between this RR and the other <paramref name="record"/>
+        /// </summary>
+        /// <remarks>
+        /// Compares all fields except TTL , since that can vary
+        /// </remarks>
+        /// <returns><c>true</c> if equal</returns>
+        public virtual bool Equals(DnsResourceRecord record)
+        {
+            if (record == null)
+            {
+                return false;
+            }
+            
+            return (
+                    this.Type == record.Type
+                &&  this.Class == record.Class
+                &&  DnsStandard.Equals(this.Name, record.Name)
+            );
+        }
+
+        /// <summary>
+        /// Serialize this DnsResourceRecord into the given buffer, as per the DNS RFC
+        /// </summary>
+        /// <param name="buffer">buffer to write into</param>
+        public void Serialize(DnsBuffer buffer)
+        {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException("buffer");
+            }
+            
+            m_header.Serialize(buffer);
+            int headerSize = buffer.Count;
+            int recordLengthOffset = headerSize - sizeof(short);
+            this.SerializeRecordData(buffer);
+            this.RecordDataLength = (short) (buffer.Count - headerSize);
+            
+            buffer.Buffer[recordLengthOffset++] = (byte) ((short) this.RecordDataLength >> 8);
+            buffer.Buffer[recordLengthOffset] = ((byte)(this.RecordDataLength));            
+        }
         
-        protected abstract void DeserializeRecordData(ref DnsBufferReader reader);
-        
-        internal static DnsResourceRecord Deserialize(ref DnsBufferReader reader)
+        /// <summary>
+        /// Deserialize the buffer into a DnsResourceRecord object
+        /// </summary>
+        /// <param name="reader">reader over a buffer containing raw Dns record bytes</param>
+        /// <returns>DnsResourceRecord</returns>                
+        public static DnsResourceRecord Deserialize(ref DnsBufferReader reader)
         {
             //
             // We have to parse the header before we can figure out what kind of record this is
             //
             DnsResourceRecordHeader header = new DnsResourceRecordHeader();
-            header.Parse(ref reader);
+            header.Deserialize(ref reader);
 
             DnsResourceRecord record = DnsResourceRecord.CreateRecordObject(header.Type);
             record.Deserialize(ref header, ref reader);
 
             return record;
         }
-
-        public static DnsResourceRecord CreateRecordObject(Dns.RecordType recordType)
+        
+        /// <summary>
+        /// Override to serialize record specific information
+        /// </summary>
+        /// <param name="buffer"></param>        
+        protected virtual void SerializeRecordData(DnsBuffer buffer)
+        {
+            throw new NotSupportedException();
+        }
+        
+        /// <summary>
+        /// Override to deserialize record specific information
+        /// </summary>
+        /// <param name="reader"></param>
+        protected abstract void DeserializeRecordData(ref DnsBufferReader reader);
+        
+        /// <summary>
+        /// Factory for DnsResourceRecord objects
+        /// </summary>
+        /// <param name="recordType"></param>
+        /// <returns></returns>
+        public static DnsResourceRecord CreateRecordObject(DnsStandard.RecordType recordType)
         {
             DnsResourceRecord record;
             switch (recordType)
@@ -152,35 +274,35 @@ namespace DnsResolver
                     record = new RawRecord();
                     break;
 
-                case Dns.RecordType.ANAME:
+                case DnsStandard.RecordType.ANAME:
                     record = new AddressRecord();
                     break;
 
-                case Dns.RecordType.NS:
+                case DnsStandard.RecordType.NS:
                     record = new NSRecord();
                     break;
 
-                case Dns.RecordType.CNAME:
+                case DnsStandard.RecordType.CNAME:
                     record = new CNameRecord();
                     break;
 
-                case Dns.RecordType.SOA:
+                case DnsStandard.RecordType.SOA:
                     record = new SOARecord();
                     break;
 
-                case Dns.RecordType.TXT:
+                case DnsStandard.RecordType.TXT:
                     record = new TextRecord();
                     break;
 
-                case Dns.RecordType.MX:
+                case DnsStandard.RecordType.MX:
                     record = new MXRecord();
                     break;
                 
-                case Dns.RecordType.PTR:
+                case DnsStandard.RecordType.PTR:
                     record = new PtrRecord();
                     break;
                     
-                case Dns.RecordType.CERT:
+                case DnsStandard.RecordType.CERT:
                     record = new CertRecord();
                     break;
             }
@@ -188,7 +310,10 @@ namespace DnsResolver
             return record;
         }
         
-        public static Func<Dns.RecordType, DnsResourceRecord> ResourceRecordFactory
+        /// <summary>
+        /// Gets and sets the function used to map from record types to specific resource records.
+        /// </summary>
+        public static Func<DnsStandard.RecordType, DnsResourceRecord> ResourceRecordFactory
         {
             get
             {
@@ -223,7 +348,8 @@ namespace DnsResolver
                 }
             }
             
-            internal Dns.RecordType Type;
+            internal DnsStandard.RecordType Type;
+            
             internal int TTL
             {
                 get
@@ -240,7 +366,9 @@ namespace DnsResolver
                     m_ttl = value;
                 }
             }
-            internal Dns.Class Class;
+            
+            internal DnsStandard.Class Class;
+            
             internal short RecordDataLength
             {
                 get
@@ -257,13 +385,22 @@ namespace DnsResolver
                     m_recordDataLength = value;
                 }
             }
-
-            internal void Parse(ref DnsBufferReader reader)
+            
+            internal void Serialize(DnsBuffer buffer)
             {
-                this.Name = reader.ReadString();
-                this.Type = (Dns.RecordType) reader.ReadShort();
+                buffer.AddDomainName(this.Name);
+                buffer.AddShort((short) this.Type);
+                buffer.AddShort((short) this.Class);
+                buffer.AddInt(this.TTL);
+                buffer.AddShort(this.RecordDataLength);
+            }
+            
+            internal void Deserialize(ref DnsBufferReader reader)
+            {
+                this.Name = reader.ReadDomainName();
+                this.Type = (DnsStandard.RecordType) reader.ReadShort();
 
-                this.Class = (Dns.Class) reader.ReadShort();
+                this.Class = (DnsStandard.Class) reader.ReadShort();
                 this.TTL = reader.ReadInt();
                 this.RecordDataLength = reader.ReadShort();
             }

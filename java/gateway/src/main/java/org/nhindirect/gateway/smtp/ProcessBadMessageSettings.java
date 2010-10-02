@@ -22,8 +22,17 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp;
 
+/**
+ * Settings specific to processing failed messages.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public class ProcessBadMessageSettings extends MessageProcessingSettings
 {
+	/**
+	 * Constructor with default settings.
+	 */
 	public ProcessBadMessageSettings()
 	{
 		super();

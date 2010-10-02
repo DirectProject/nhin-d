@@ -15,19 +15,34 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Net.Mime;
-
-using NHINDirect.Cryptography;
+using System.Collections.Generic;
 
 namespace NHINDirect.Mime
 {
+    /// <summary>
+    /// Holds extension methods.
+    /// </summary>
     public static class Extensions
     {
+        /// <summary>
+        /// Tests if this content type is same one represented by the specified <paramref name="mediaType"/>
+        /// </summary>
+        /// <param name="contentType">This <see cref="ContentType"/></param>
+        /// <param name="mediaType">The content type string to test against this instance.</param>
+        /// <returns></returns>
         public static bool IsMediaType(this ContentType contentType, string mediaType)
         {
             return (MimeStandard.Equals(contentType.MediaType, mediaType));
         }
         
-        public static bool IsParameter(this ContentType contentType, string parameter, string value)
+        /// <summary>
+        /// Tests if this content type has the named parameter and parameter value.
+        /// </summary>
+        /// <param name="contentType">The content type to test</param>
+        /// <param name="parameter">The parameter name to test</param>
+        /// <param name="value">The parameter value to test</param>
+        /// <returns><c>true</c> if the content type has the named parameter with the parameter value</returns>
+        public static bool HasParameter(this ContentType contentType, string parameter, string value)
         {
             string paramValue = contentType.Parameters[parameter];
             if (paramValue == null)
@@ -38,44 +53,45 @@ namespace NHINDirect.Mime
             return MimeStandard.Equals(paramValue, value);
         }
 
-		public static string AsString(this DigestAlgorithm algorithm)
+        /// <summary>
+        /// Returns a  string representation of <paramref name="encoding"/> compatable with the <c>micalg</c> parameter
+        /// </summary>
+        /// <param name="encoding">The <see cref="TransferEncoding"/> to stringify.</param>
+        /// <returns>The string representation of the encoding compatable with the <c>Content-Transfer-Encoding</c> header</returns>
+        public static string AsString(this TransferEncoding encoding)
 		{
-			switch (algorithm)
-			{
-				default:
-					throw new NotSupportedException();
-
-				case DigestAlgorithm.SHA1:
-					return "sha1";
-
-				case DigestAlgorithm.SHA256:
-					return "sha256";
-
-				case DigestAlgorithm.SHA384:
-					return "sha384";
-
-				case DigestAlgorithm.SHA512:
-					return "sha512";
-			}
+		    return MimeStandard.ToString(encoding);
 		}
 
-		public static string AsString(this TransferEncoding encoding)
-		{
-			switch (encoding)
-			{
-				default:
-					throw new NotSupportedException();
+        // TODO: turn supplied code example into a unit test.
 
-				case TransferEncoding.Base64:
-					return MimeStandard.TransferEncodingBase64;
-
-				case TransferEncoding.SevenBit:
-					return MimeStandard.TransferEncoding7Bit;
-
-				case TransferEncoding.QuotedPrintable:
-					return MimeStandard.TransferEncodingQuoted;
-			}
-		}
+        /// <summary>
+        /// Splits the supplied <see cref="StringSegment"/> by <paramref name="separator"/>, returning an enumeration of <see cref="StringSegment"/> instances for each header subpart.
+        /// </summary>
+        /// <param name="source">Segment to split.</param>
+        /// <param name="separator">The value separator to split on.</param>
+        /// <example>
+        /// <code>
+        /// StringSegment text = new StringSegment("a, b, c;d, e, f:g, e");
+        /// IEnumerable&lt;StringSegment&gt; parts = Split(text, ',');
+        /// foreach(StringSegment part in parts)
+        /// {
+        ///     Console.WriteLine(part);
+        /// }
+        /// // Prints:
+        /// // a
+        /// // b
+        /// // c;d
+        /// // e
+        /// // f:g
+        /// // e
+        /// </code>
+        /// </example>
+        /// <returns>An enumeration of <see cref="StringSegment"/> instances, one for each parsed part.</returns>
+        public static IEnumerable<StringSegment> Split(this StringSegment source, char separator)
+        {
+            return StringSegment.Split(source, separator);
+        }
 
     }
 }

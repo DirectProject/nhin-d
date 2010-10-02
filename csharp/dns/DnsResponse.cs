@@ -21,51 +21,45 @@ using System.Text;
 
 namespace DnsResolver
 {
-    public class DnsResponse
+    /// <summary>
+    /// Represents a DNS server response.
+    /// </summary>
+    public class DnsResponse : DnsMessage
     {
-        DnsHeader m_header;
-        DnsQuestion m_question;
         DnsResourceRecordCollection m_answerRecords;
         DnsResourceRecordCollection m_nameServerRecords;
         DnsResourceRecordCollection m_additionalRecords;
         
-        internal DnsResponse(ref DnsBufferReader reader)
+        /// <summary>
+        /// Creates a fresh new blank Dns response
+        /// </summary>
+        public DnsResponse()
         {
-            this.Parse(ref reader);
         }
         
-        public bool IsSuccess
+        /// <summary>
+        /// Instantiate a new instance with the provided <paramref name="reader"/>
+        /// </summary>
+        /// <param name="reader">The reader that has been initialized with the response buffer.</param>
+        public DnsResponse(DnsBufferReader reader)
+            : base(ref reader)
         {
-            get
-            {
-                return (this.m_header != null && m_header.ResponseCode == Dns.ResponseCode.SUCCESS);
-            }
         }
         
-        public bool IsNameError
+        /// <summary>
+        /// Construct a response to a request
+        /// </summary>
+        /// <param name="request"></param>
+        public DnsResponse(DnsRequest request)
+            : base()
         {
-            get
-            {
-                return (this.m_header != null && m_header.ResponseCode == Dns.ResponseCode.NAME_ERROR);
-            }
-        }
-        
-        public DnsHeader Header
-        {
-            get
-            {
-                return m_header;
-            }
-        }
-        
-        public DnsQuestion Question
-        {
-            get
-            {
-                return m_question;
-            }
-        }
-        
+            this.Init(request);
+         }        
+                        
+        /// <summary>
+        /// Gets the answer records for this response.
+        /// </summary>
+        /// <value>A possibly empty collection of answer records.</value>
         public DnsResourceRecordCollection AnswerRecords
         {
             get
@@ -78,6 +72,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets if this response has answer records.
+        /// </summary>
         public bool HasAnswerRecords
         {
             get
@@ -86,6 +83,11 @@ namespace DnsResolver
             }
         }        
         
+
+        /// <summary>
+        /// Gets NS records for this response.
+        /// </summary>
+        /// <value>A possibly empty collection of NS records.</value>
         public DnsResourceRecordCollection NameServerRecords
         {
             get
@@ -99,6 +101,9 @@ namespace DnsResolver
             
         }
 
+        /// <summary>
+        /// Gets if this response has nameserver records.
+        /// </summary>
         public bool HasNameServerRecords
         {
             get
@@ -107,6 +112,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Gets other records (not A or NS) for this reponse
+        /// </summary>
+        /// <value>A possibly empty collection of records.</value>
         public DnsResourceRecordCollection AdditionalRecords
         {
             get
@@ -119,6 +128,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets if this response has non-A or NS records.
+        /// </summary>
         public bool HasAdditionalRecords
         {
             get
@@ -126,15 +138,167 @@ namespace DnsResolver
                 return (m_additionalRecords != null && m_additionalRecords.Count > 0);
             }
         }
-                                
-        internal void Parse(ref DnsBufferReader reader)
+        
+        /// <summary>
+        /// Initialize a response to the given request
+        /// </summary>
+        public void Init(DnsRequest request)
         {
-            m_header = new DnsHeader(ref reader);
-            m_question = new DnsQuestion(ref reader);
+            if (request == null)
+            {
+                throw new ArgumentNullException();
+            }
             
-            this.AnswerRecords.Deserialize(this.Header.AnswerCount, ref reader);
-            this.NameServerRecords.Deserialize(this.Header.NameServerAnswerCount, ref reader);
-            this.AdditionalRecords.Deserialize(this.Header.AdditionalAnswerCount, ref reader);
+            this.RequestID = request.RequestID;
+            this.Header.IsRecursionDesired = request.Header.IsRecursionDesired;
+            this.Header.IsRequest = false;
+            this.Question = request.Question;
+        }
+        
+        /// <summary>
+        /// Clear the request...
+        /// </summary>
+        public override void Clear()
+        {
+            base.Clear();
+            this.ClearAnswers();
+        }        
+        
+        /// <summary>
+        /// Wipe all answers
+        /// </summary>
+        public void ClearAnswers()
+        {
+            if (this.HasAnswerRecords)
+            {
+                m_answerRecords.Clear();
+            }
+            if (this.HasNameServerRecords)
+            {
+                m_nameServerRecords.Clear();
+            }
+            if (this.HasAdditionalRecords)
+            {
+                m_additionalRecords.Clear();
+            }
+            this.UpdateAnswerCountsInHeader();
+        }
+                
+        /// <summary>
+        /// Serialize this DnsResponse to the buffer as DNS wire format data.
+        /// </summary>
+        /// <param name="buffer">The buffer to which to serialize</param>
+        public override void Serialize(DnsBuffer buffer)
+        {
+            this.UpdateAnswerCountsInHeader();
+            
+            base.Serialize(buffer);
+            
+            if (this.HasAnswerRecords)            
+            {
+                this.AnswerRecords.Serialize(buffer);
+            }
+            if (this.HasNameServerRecords)
+            {
+                this.NameServerRecords.Serialize(buffer);
+            }
+            if (this.HasAdditionalRecords)
+            {
+                this.AdditionalRecords.Serialize(buffer);
+            }
+        } 
+        
+        void UpdateAnswerCountsInHeader()
+        {
+            if (this.HasAnswerRecords)
+            {
+                if (this.AnswerRecords.Count > short.MaxValue)
+                {
+                    throw new DnsProtocolException(DnsProtocolError.InvalidAnswerCount);
+                }
+                
+                this.Header.AnswerCount = (short)this.AnswerRecords.Count;
+            }
+            else
+            {
+                this.Header.AnswerCount = 0;
+            }
+            
+            if (this.HasNameServerRecords)
+            {
+                if (this.NameServerRecords.Count > short.MaxValue)
+                {
+                    throw new DnsProtocolException(DnsProtocolError.InvalidNameServerAnswerCount);
+                }
+                this.Header.NameServerAnswerCount = (short)this.NameServerRecords.Count;
+            }
+            else
+            {
+                this.Header.NameServerAnswerCount = 0;
+            }
+            
+            if (this.HasAdditionalRecords)
+            {
+                if (this.AdditionalRecords.Count > short.MaxValue)
+                {
+                    throw new DnsProtocolException(DnsProtocolError.InvalidAdditionalAnswerCount);
+                }
+                this.Header.AdditionalAnswerCount = (short)this.AdditionalRecords.Count;
+            }
+            else
+            {
+                this.Header.AdditionalAnswerCount = 0;
+            }
+        }
+        
+        /// <summary>
+        /// Reads DNS wire format data to this response.
+        /// </summary>
+        /// <param name="reader">The reader that has already buffered response data.</param>
+        protected override void Deserialize(ref DnsBufferReader reader)
+        {
+            base.Deserialize(ref reader);
+            if (reader.IsDone)
+            {
+                //
+                // No answers!
+                //
+                return;
+            }
+            
+            if (this.Header.AnswerCount > 0)
+            {
+                this.AnswerRecords.Deserialize(this.Header.AnswerCount, ref reader);
+            }
+            if (this.Header.NameServerAnswerCount > 0)
+            {
+                this.NameServerRecords.Deserialize(this.Header.NameServerAnswerCount, ref reader);
+            }
+            if (this.Header.AdditionalAnswerCount > 0)
+            {
+                this.AdditionalRecords.Deserialize(this.Header.AdditionalAnswerCount, ref reader);
+            }
+        }
+        
+        /// <summary>
+        /// Validate the response. Throws DnsProtcolException if validation fails
+        /// </summary>
+        public override void Validate()
+        {
+            base.Validate();            
+            if (this.Header.IsRequest)              
+            {
+                throw new DnsProtocolException(DnsProtocolError.InvalidResponse);
+            }
+        }
+        
+        /// <summary>
+        /// Truncate the response. Clear all answers and set the truncate flag
+        /// </summary>
+        public void Truncate()
+        {
+            this.Header.IsTruncated = true;
+            this.ClearAnswers();
         }
     }
 }

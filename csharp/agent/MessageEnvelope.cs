@@ -35,22 +35,22 @@ namespace NHINDirect.Agent
         NHINDAddressCollection m_bcc;
         NHINDAddressCollection m_recipients;
         NHINDAddressCollection m_rejectedRecipients;
-
+        
         /// <summary>
         /// Creates an instance from  a <see cref="Message"/>
         /// </summary>
         /// <param name="message">The <see cref="Message"/> instance to use as the underlying message for this envelope.</param>
     	public MessageEnvelope(Message message)
         {
-            Message = message;
-            Recipients = CollectRecipients();
+            this.Message = message;
+            this.Recipients = CollectRecipients();
             
             Header from = message.From;
             if (from == null)
             {
                 throw new AgentException(AgentError.MissingFrom);
-            }            
-            Sender = new NHINDAddress(from.Value);
+            }
+            this.Sender = new NHINDAddress(from.Value);
         }
         
         /// <summary>
@@ -60,7 +60,7 @@ namespace NHINDirect.Agent
         public MessageEnvelope(string messageText)
             : this(MimeSerializer.Default.Deserialize<Message>(messageText))
         {
-            RawMessage = messageText;
+            this.RawMessage = messageText;
         }
         
 
@@ -73,9 +73,9 @@ namespace NHINDirect.Agent
         /// <param name="sender">The <see cref="NHINDAddress"/> of the sender; takes precendence over the <c>From:</c> header.</param>
         public MessageEnvelope(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
         {
-            Message = message;
-            Recipients = recipients;
-            Sender = sender;
+            this.Message = message;
+            this.Recipients = recipients;
+            this.Sender = sender;
         }
 
         /// <summary>
@@ -88,19 +88,27 @@ namespace NHINDirect.Agent
         public MessageEnvelope(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
             : this(MimeSerializer.Default.Deserialize<Message>(messageText), recipients, sender)
         {
-            RawMessage = messageText;
+            this.RawMessage = messageText;
         }
-                
+        
+        /// <summary>
+        /// Creates an instance from a <see cref="Message"/> instance, with explicitly assigned raw message, recipients and sender,
+        /// which take precendece over what may be in the message object or text.
+        /// </summary>
+        /// <param name="message">The <see cref="Message"/> this envelopes</param>
+        /// <param name="recipients">The <see cref="NHINDAddressCollection"/> of reciepients; takes precedence over the <c>To:</c> header</param>
+        /// <param name="sender">The <see cref="NHINDAddress"/> of the sender; takes precendence over the <c>From:</c> header.</param>
+        /// <param name="rawMessage">The RFC 5322 message string to use ae the raw message for this instance.</param>
         protected MessageEnvelope(Message message, string rawMessage, NHINDAddressCollection recipients, NHINDAddress sender)
             : this(message, recipients, sender)
         {
-            RawMessage = rawMessage;
+            this.RawMessage = rawMessage;
         }
         
         internal MessageEnvelope(MessageEnvelope envelope)
         {
             m_agent = envelope.m_agent;
-            RawMessage = envelope.RawMessage;
+            this.RawMessage = envelope.RawMessage;
             m_message = envelope.m_message;
             if (envelope.m_recipients != null)
             {
@@ -127,7 +135,7 @@ namespace NHINDirect.Agent
                 }
                 
                 m_message = value;
-                RawMessage = null;
+                this.RawMessage = null;
             }
         }
         
@@ -159,13 +167,13 @@ namespace NHINDirect.Agent
             {
                 if (m_recipients == null)
                 {
-                    CollectRecipients();
+                    this.CollectRecipients();
                 }
                 return m_recipients;
             }
             internal set
             {
-                if (value == null || value.Count == 0)
+                if (value.IsNullOrEmpty())
                 {
                     throw new AgentException(AgentError.NoRecipients);
                 }
@@ -211,23 +219,46 @@ namespace NHINDirect.Agent
             }
         }
 
-        public NHINDAddressCollection DomainRecipients { get; internal set; }
+        /// <summary>
+        /// Gets the domain managed recipients for this envelope
+        /// </summary>
+        public NHINDAddressCollection DomainRecipients 
+        { 
+            get;
+            internal set;
+        }
 
-    	public bool HasDomainRecipients
+
+        /// <summary>
+        /// Indicates if this envelope has domain managed recipients.
+        /// </summary>
+        /// <value><c>true</c> if this envelope has domain managed recipients, <c>false</c> otherwise</value>
+        public bool HasDomainRecipients
         {
             get
             {
-                return (DomainRecipients != null && DomainRecipients.Count > 0);
+                return (!this.DomainRecipients.IsNullOrEmpty());
             }
         }
 
-    	public MailAddressCollection OtherRecipients { get; set; }
+        /// <summary>
+        /// Gets and sets the non-domain recipients for this evelope.
+        /// </summary>
+        public MailAddressCollection OtherRecipients
+        {
+            get;
+            internal set;
+        }
 
+        /// <summary>
+        /// Indicates if this envelope has non-domain managed recipients.
+        /// </summary>
+        /// <value><c>true</c> if this envelope has non-domain managed recipients, <c>false</c> otherwise</value>
     	public bool HasOtherRecipients
         {
             get
             {
-                return (OtherRecipients != null && OtherRecipients.Count > 0);
+                return (!this.OtherRecipients.IsNullOrEmpty());
             }
         }
         
@@ -280,6 +311,12 @@ namespace NHINDirect.Agent
 
     	internal string RawMessage { get; set; }
 
+
+        /// <summary>
+        /// Creates an RFC 5322 representation of this evelope's message. Does not serialize the custom properties, only the underlying
+        /// message instance associated with this envelope.
+        /// </summary>
+        /// <returns>An RFC 5322 string representation of this envelope's message.</returns>
     	public string SerializeMessage()
         {
             return MimeSerializer.Default.Serialize(m_message);
@@ -298,8 +335,6 @@ namespace NHINDirect.Agent
             m_bcc = null;
             m_recipients = null;
             m_rejectedRecipients = null;
-            DomainRecipients = null;
-            OtherRecipients = null;
         }
         
         internal virtual void Validate()
@@ -326,42 +361,47 @@ namespace NHINDirect.Agent
 
         internal void UpdateRoutingHeaders(NHINDAddressCollection rejectedRecipients)
         {
-            if (rejectedRecipients == null || rejectedRecipients.Count == 0) return;
+            if (rejectedRecipients.IsNullOrEmpty()) 
+            {
+                return;
+            }
 
-			UpdateRecipientHeader(To, MailStandard.ToHeader, rejectedRecipients, header => Message.To = header);
-			UpdateRecipientHeader(Cc, MailStandard.CcHeader, rejectedRecipients, header =>  Message.Cc = header);
-			UpdateRecipientHeader(Bcc, MailStandard.BccHeader, rejectedRecipients, header => Message.Bcc = header);
+            this.UpdateRecipientHeader(To, MailStandard.Headers.To, rejectedRecipients);
+            this.UpdateRecipientHeader(Cc, MailStandard.Headers.Cc, rejectedRecipients);
+            this.UpdateRecipientHeader(Bcc, MailStandard.Headers.Bcc, rejectedRecipients);
         }
-
-		// TODO: revist this, I'm not sure this is any cleaner than before...
-    	private static void UpdateRecipientHeader(NHINDAddressCollection recipients, string headerName, 
-			IEnumerable<NHINDAddress> rejectedRecipients, Action<Header> headerSetter)
+        
+    	void UpdateRecipientHeader(NHINDAddressCollection recipients, string headerName, IEnumerable<NHINDAddress> rejectedRecipients)
     	{
-    		if (recipients == null) return;
-   
-			recipients.Remove(rejectedRecipients);
-    		if (recipients.Count > 0)
+    		if (recipients != null) 
     		{
-    			headerSetter(new Header(headerName, recipients.ToString()));
-    		}
+			    recipients.Remove(rejectedRecipients);
+                this.Message.Headers[headerName] = (recipients.Count > 0) ? new Header(headerName, recipients.ToString()) : null;	   
+            }
     	}
 
     	internal void UpdateRoutingHeaders()
         {
-            if (HasRejectedRecipients)
+            if (this.HasRejectedRecipients)
             {
-                UpdateRoutingHeaders(RejectedRecipients);
+                this.UpdateRoutingHeaders(RejectedRecipients);
             }
         }
         
+        /// <summary>
+        /// If recipients have  not been categorized by domain, categorizes by domain.
+        /// </summary>
+        /// <param name="domains">Domains to treat as  domain recipients.</param>
         public void EnsureRecipientsCategorizedByDomain(AgentDomains domains)
         {
-            if (HasDomainRecipients || HasOtherRecipients)
+            // We only want to categorize if we haven't done it already
+            // Do NOT change these to IsNullOrEmpty
+            if (this.DomainRecipients != null || this.OtherRecipients != null)
             {
                 return;
             }
             
-            CategorizeRecipientsByDomain(domains);
+            this.CategorizeRecipientsByDomain(domains);
         }
         
         /// <summary>
@@ -369,7 +409,7 @@ namespace NHINDirect.Agent
         /// - are they in the local domain or are they external
         /// </summary>
         /// <param name="domains"></param>
-        internal virtual void CategorizeRecipientsByDomain(AgentDomains domains)
+        internal void CategorizeRecipientsByDomain(AgentDomains domains)
         {
             NHINDAddressCollection recipients = Recipients;
             NHINDAddressCollection domainRecipients = null;
@@ -396,14 +436,21 @@ namespace NHINDirect.Agent
                 }
             }
 
-            DomainRecipients = domainRecipients;
-            OtherRecipients = otherRecipients;
+            this.DomainRecipients = domainRecipients;
+            this.OtherRecipients = otherRecipients;
         }
 
         internal virtual void CategorizeRecipientsByTrust(TrustEnforcementStatus minTrustStatus)
         {
             m_rejectedRecipients = NHINDAddressCollection.Create(Recipients.GetUntrusted(minTrustStatus));
-            Recipients.RemoveUntrusted(minTrustStatus);
+            if (this.HasRecipients)
+            {
+                this.Recipients.RemoveUntrusted(minTrustStatus);
+            }
+            if (this.HasDomainRecipients)
+            {
+                this.DomainRecipients.RemoveUntrusted(minTrustStatus);
+            }
         }
     }    
 }

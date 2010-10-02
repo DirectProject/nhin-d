@@ -21,32 +21,48 @@ using NHINDirect.Mime;
 
 namespace NHINDirect.Cryptography
 {
+    /// <summary>
+    /// Represents a <c>multipart/signed</c> MIME entity.
+    /// </summary>
     public class SignedEntity : MultipartEntity
     {
         MimeEntity m_content;
         MimeEntity m_signature;
         
+        /// <summary>
+        /// Creates an entity consisting of the content and signature.
+        /// </summary>
+        /// <param name="algorithm">The digest algorithm used in the signature, used for the <c>micalg</c> parameter</param>
+        /// <param name="content">The content entity that was signed.</param>
+        /// <param name="signature">The signature entity</param>
         public SignedEntity(DigestAlgorithm algorithm, MimeEntity content, MimeEntity signature)
             : base(CreateContentType(algorithm))
         {
             if (content == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("content");
             }
             
             Content = content;
             Signature = signature;
         }
-        
+
+        /// <summary>
+        /// Creates an entity from the <paramref name="parts"/> of which the first part must be the content and the second
+        /// part the signature..
+        /// </summary>
+        /// <param name="contentType">The content type header for the new entity.</param>
+        /// <param name="parts">The body parts, which must consist of two parts, of which the first must be the content and the second part the signature</param>
         public SignedEntity(ContentType contentType, IEnumerable<MimeEntity> parts)
             : base(contentType)
         {
             if (parts == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("parts");
             }
             
             int count = 0;
+
             foreach(MimeEntity part in parts)
             {
                 switch(count)
@@ -66,6 +82,9 @@ namespace NHINDirect.Cryptography
             }
         }
         
+        /// <summary>
+        /// Gets and sets the content body part
+        /// </summary>
         public MimeEntity Content
         {
             get
@@ -76,13 +95,16 @@ namespace NHINDirect.Cryptography
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("value");
                 }
                 
                 m_content = value;
             }
         }
         
+        /// <summary>
+        /// Gets and sets the signature body part.
+        /// </summary>
         public MimeEntity Signature
         {
             get
@@ -93,7 +115,7 @@ namespace NHINDirect.Cryptography
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("value");
                 }
                 
                 if (!SMIMEStandard.IsDetachedSignature(value))
@@ -104,17 +126,26 @@ namespace NHINDirect.Cryptography
             }
         }
                 
+        /// <summary>
+        /// Gets an enumeration of the content and signature body parts
+        /// </summary>
+        /// <returns>An enumeration of the content and signature body parts</returns>
         public override IEnumerator<MimeEntity> GetEnumerator()
         {
             yield return m_content;
             yield return m_signature;
         }
         
+        /// <summary>
+        /// Creates a signed entity from a <see cref="MimeEntity"/>, which must be multipart and have a content and signed part.
+        /// </summary>
+        /// <param name="source">The source entity.</param>
+        /// <returns>The newly initialized signed entity.</returns>
         public static SignedEntity Load(MimeEntity source)
         {
             if (source == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("source");
             }
 
             if (!source.IsMultiPart)
@@ -129,7 +160,7 @@ namespace NHINDirect.Cryptography
         {
             ContentType contentType = new ContentType(SMIMEStandard.MultiPartTypeSigned);
             contentType.Parameters.Add(SMIMEStandard.ProtocolParameterKey, SMIMEStandard.SignatureProtocol);
-			contentType.Parameters.Add(SMIMEStandard.MICAlgorithmKey, digestAlgorithm.AsString());
+			contentType.Parameters.Add(SMIMEStandard.MICAlgorithmKey, digestAlgorithm.ToString());
             return contentType;
         }
     }

@@ -33,7 +33,7 @@ import com.google.inject.ImplementedBy;
 
 /**
  * The SmtpAgent is a generic gateway to the security trust agent that handles message over the SMTP protocol.  It is intended to sit between an SMTP
- * server implementation coupled with an server specific bridge and the security trust bridge.  Because each SMPT server potentially 
+ * server implementation coupled with an server specific bridge and the security trust bridge.  Because each SMTP server potentially 
  * handles custom message processing differently and creates server specific message/SMTP envelope wrappers, bridge implementations are specific
  * to the servers that they are coupled with.  The bridges are responsible for intercepting messages through the SMTP stack, gathers routing information
  * (either from the message routing headers or the SMTP envelope headers), calling the SmtpAgent, and moving processed messages forward through the SMTP
@@ -46,13 +46,26 @@ import com.google.inject.ImplementedBy;
 @ImplementedBy(DefaultSmtpAgent.class)
 public interface SmtpAgent 
 {
+	/**
+	 * Processes an message from an SMTP stack.  The bridge component between the SMTP stack and the SMTP agent is responsible for
+	 * extracting the message, the recipient list, and the sender.  In some cases, the routing headers may have different information than
+	 * what is populated in the SMTP MAIL FROM and RCTP TO headers.  In these cases, the SMTP headers should be favored over the routing
+	 * headers in the message and passed as the recipient collection and sender to this method.
+	 * @param message The message in the SMTP envelope.
+	 * @param recipients The recipients of the message.  The RCTP TO headers should be used over the message routing headers.
+	 * @param sender The send of the message. The MAIL FROM header should be used over the From: routing header in the message.
+	 */
 	public MessageProcessResult processMessage(MimeMessage message, NHINDAddressCollection recipients, NHINDAddress sender);
 	
+	/**
+	 * Gets a references to the security and trust agent used by the SmtpAgent.
+	 * @return A references to the security and trust agent used by the SmtpAgent
+	 */
 	public NHINDAgent getAgent();
 	
+	/**
+	 * Gets the configuration settings of the SmtpAgent.
+	 * @return The configuration settings of the SmtpAgent.
+	 */
 	public SmtpAgentSettings getSmtpAgentSettings();
-	
-	public BounceMessageCreator getIncomingBounceCreator();
-	
-	public BounceMessageCreator getOutgoingBounceCreator();	
 }

@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DocumentationFile>..\bin\Release\nhinCommon.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +31,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DocumentationFile>..\bin\Release\nhinCommon.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -37,9 +41,12 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\CachingBase.cs" />
+    <Compile Include="Caching\DnsResponseCache.cs" />
     <Compile Include="Certificates\CertificateIndex.cs" />
     <Compile Include="Certificates\CertificateResolver.cs" />
     <Compile Include="Certificates\CertificateStore.cs" />
@@ -52,6 +59,8 @@
     <Compile Include="Certificates\SystemX509Store.cs" />
     <Compile Include="Certificates\TrustAnchorResolver.cs" />
     <Compile Include="Certificates\UniformCertificateStore.cs" />
+    <Compile Include="Container\IoC.cs" />
+    <Compile Include="Container\SimpleDependencyResolver.cs" />
     <Compile Include="Cryptography\CryptographicException.cs" />
     <Compile Include="Cryptography\DigestAlgorithm.cs" />
     <Compile Include="Cryptography\EncryptionAlgorithm.cs" />
@@ -63,17 +72,48 @@
     <Compile Include="Cryptography\SignedEntity.cs" />
     <Compile Include="Cryptography\SMIMECryptographer.cs" />
     <Compile Include="Cryptography\SMIMEStandard.cs" />
-    <Compile Include="Diagnostics\LogEventType.cs" />
-    <Compile Include="Diagnostics\LogFile.cs" />
-    <Compile Include="Diagnostics\LogFileSettings.cs" />
-    <Compile Include="Diagnostics\LogListener.cs" />
-    <Compile Include="Diagnostics\LogWriter.cs" />
+    <Compile Include="Diagnostics\AuditNames.cs" />
+    <Compile Include="Diagnostics\EventLogAuditor.cs" />
+    <Compile Include="Diagnostics\IAuditor.cs" />
+    <Compile Include="Diagnostics\ILogFactory.cs" />
+    <Compile Include="Diagnostics\ILogger.cs" />
+    <Compile Include="Diagnostics\Log.cs" />
+    <Compile Include="Diagnostics\LogFileSettings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Diagnostics\LoggingLevel.cs" />
+    <Compile Include="Diagnostics\MethodTracer.cs" />
+    <Compile Include="Diagnostics\NullAuditor.cs" />
+    <Compile Include="Dns\DnsClientWithCache.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Container\IDependencyResolver.cs" />
+    <Compile Include="Mail\Notifications\Disposition.cs" />
+    <Compile Include="Mail\Notifications\Extensions.cs" />
+    <Compile Include="Mail\Notifications\MdnGateway.cs" />
+    <Compile Include="Mail\Notifications\Notification.cs" />
     <Compile Include="Mail\MailParser.cs" />
     <Compile Include="Mail\Extensions.cs" />
+    <Compile Include="Mail\Notifications\NotificationMessage.cs" />
+    <Compile Include="Mail\Notifications\MDNStandard.cs" />
     <Compile Include="Mail\Message.cs" />
     <Compile Include="Mail\MailStandard.cs" />
+    <Compile Include="Mail\Notifications\ReportingUserAgent.cs" />
     <Compile Include="Mail\WrappedMessage.cs" />
+    <Compile Include="Metadata\Institution.cs" />
+    <Compile Include="Metadata\PostalAddress.cs" />
+    <Compile Include="Metadata\Author.cs" />
+    <Compile Include="Metadata\CodedValue.cs" />
+    <Compile Include="Metadata\ConfidentialtyCode.cs" />
+    <Compile Include="Metadata\DocumentClass.cs" />
+    <Compile Include="Metadata\DocumentMetadata.cs" />
+    <Compile Include="Metadata\DocumentPackage.cs" />
+    <Compile Include="Metadata\Extensions.cs" />
+    <Compile Include="Metadata\FacilityCode.cs" />
+    <Compile Include="Metadata\FormatCode.cs" />
+    <Compile Include="Metadata\PatientID.cs" />
+    <Compile Include="Metadata\Person.cs" />
+    <Compile Include="Metadata\Recipient.cs" />
+    <Compile Include="Metadata\SpecialtyCode.cs" />
     <Compile Include="Mime\Body.cs" />
     <Compile Include="Mime\CharReader.cs" />
     <Compile Include="Mime\DefaultSerializer.cs" />

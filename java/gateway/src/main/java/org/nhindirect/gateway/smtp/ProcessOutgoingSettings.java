@@ -22,23 +22,19 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp;
 
+/**
+ * Settings specific to processing outgoing messages.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ *
+ */
 public class ProcessOutgoingSettings extends MessageProcessingSettings
 {
-	private boolean relayEnabled;
-	
+	/**
+	 * Constructor with default settings.
+	 */
 	public ProcessOutgoingSettings()
 	{
 		super();
-		relayEnabled = true;
 	}
-	
-	public boolean isRelayEnabled() 
-	{
-		return relayEnabled;
-	}
-
-	public void setRelayEnabled(boolean relayEnabled) 
-	{
-		this.relayEnabled = relayEnabled;
-	}	
 }

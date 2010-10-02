@@ -22,16 +22,25 @@ using NHINDirect.Cryptography;
 
 namespace NHINDirect.Agent.Config
 {
+    /// <summary>
+    /// Settings for cryptographic methods.
+    /// </summary>
     [XmlType("CryptographerSettings")]
     public class CryptographerSettings
     {        
         EncryptionAlgorithm m_defaultEncryption = EncryptionAlgorithm.AES128;
         DigestAlgorithm m_defaultDigest = DigestAlgorithm.SHA1;
         
+        /// <summary>
+        /// Creates an instance, normally called via one of the <see cref="AgentSettings"/> class factory methods.
+        /// </summary>
         public CryptographerSettings()
         {
         }
-        
+
+        /// <summary>
+        /// The default encryption algorithm to use.
+        /// </summary>
         [XmlElement]
         public EncryptionAlgorithm DefaultEncryption
         {
@@ -45,6 +54,9 @@ namespace NHINDirect.Agent.Config
             }
         }
         
+        /// <summary>
+        /// The default digest algorithm to use.
+        /// </summary>
         [XmlElement]
         public DigestAlgorithm DefaultDigest
         {
@@ -58,6 +70,10 @@ namespace NHINDirect.Agent.Config
             }
         }
         
+        /// <summary>
+        /// Creates an <see cref="SMIMECryptographer"/> with the configured settings
+        /// </summary>
+        /// <returns>The configured cryptographer.</returns>
         public SMIMECryptographer Create()
         {
             return new SMIMECryptographer(m_defaultEncryption, m_defaultDigest);

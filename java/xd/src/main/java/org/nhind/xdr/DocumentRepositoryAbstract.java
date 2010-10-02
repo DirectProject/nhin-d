@@ -1,66 +1,121 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * Copyright (c) 2010, NHIN Direct Project
+ * All rights reserved.
+ *  
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright 
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.  
+ * 3. Neither the name of the the NHIN Direct Project (nhindirect.org)
+ *    nor the names of its contributors may be used to endorse or promote products 
+ *    derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY 
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY 
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.nhind.xdr;
 
 import ihe.iti.xds_b._2007.DocumentRepositoryPortType;
 import ihe.iti.xds_b._2007.DocumentRepositoryService;
-import ihe.iti.xds_b._2007.ObjectFactory;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
+
 import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-
-
 import javax.mail.util.ByteArrayDataSource;
-
-import javax.xml.ws.soap.SOAPBinding;
 import javax.naming.InitialContext;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.MTOMFeature;
+import javax.xml.ws.soap.SOAPBinding;
+
 import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
+
+import org.nhind.util.XMLUtils;
 import org.nhind.xdm.SMTPMailClient;
 
 /**
- *
+ * Base class for handling incoming XDR requests.
+ * 
  * @author Vince
  */
-public class DocumentRepositoryAbstract {
-
+public abstract class DocumentRepositoryAbstract {
 
     protected WebServiceContext mywscontext;
+    
     protected String endpoint = null;
     protected String messageId = null;
     protected String relatesTo = null;
     protected String action = null;
     protected String to = null;
-    protected String thisHost = null;
-    protected String remoteHost = null;
-    protected String pid = null;
-    protected String from = null;
-    protected String suffix = null;
+    
+    private String thisHost = null;
+    private String remoteHost = null;
+    private String pid = null;
+    private String from = null;
+    private String suffix = null;
     private String replyEmail = null;
 
-    @SuppressWarnings("unused")
-    private String docObjectId = null; // TODO: is this needed?
-    
-    String thincoid = "2.16.840.1.113883.3.402";
+    /**
+     * Class logger
+     */
+    private static final Logger LOGGER = Logger.getLogger(DocumentRepositoryAbstract.class.getPackage().getName());
 
-    public RegistryResponseType provideAndRegisterDocumentSet(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
+    /**
+     * Handle an incoming XDR request with a
+     * ProvideAndRegisterDocumentSetRequestType object.
+     * 
+     * @param body
+     *            The ProvideAndRegisterDocumentSetRequestType object
+     *            representing an XDR message
+     * @return a RegistryResponseType object
+     */
+    public abstract RegistryResponseType documentRepositoryProvideAndRegisterDocumentSetB(ProvideAndRegisterDocumentSetRequestType body);
+    
+    /**
+     * Handle an incoming XDR request with a RetrieveDocumentSetRequestType
+     * object
+     * 
+     * @param body
+     *            The RetrieveDocumentSetRequestType object representing an XDR
+     *            message
+     * @return a RetrieveDocumentSetRequestType object
+     */
+    public abstract RetrieveDocumentSetResponseType documentRepositoryRetrieveDocumentSet(RetrieveDocumentSetRequestType body);
+    
+    /**
+     * Handle an incoming ProvideAndRegisterDocumentSetRequestType object and
+     * transform to XDM or relay to another XDR endponit.
+     * 
+     * @param prdst
+     *            The incoming ProvideAndRegisterDocumentSetRequestType object
+     * @return a RegistryResponseType object
+     * @throws Exception
+     */
+    protected RegistryResponseType provideAndRegisterDocumentSet(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
         RegistryResponseType resp = null;
         try {
             getHeaderData();
@@ -69,13 +124,13 @@ public class DocumentRepositoryAbstract {
             InitialContext ctx = new InitialContext();
             
             QName qname = new QName("urn:ihe:iti:xds-b:2007", "ProvideAndRegisterDocumentSet_bRequest");
-            String body = marshal(qname, prdst);
-            QName sname = new QName("urn:ihe:iti:xds-b:2007", "SubmitObjectsRequest");
+            String body = XMLUtils.marshal(qname, prdst, ihe.iti.xds_b._2007.ObjectFactory.class);
+            QName sname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0", "SubmitObjectsRequest");
             SubmitObjectsRequest sor = prdst.getSubmitObjectsRequest();
-            String meta = marshal(sname, sor);
+            String meta = XMLUtils.marshal(sname, sor,  oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
             List<String> forwards = provideAndRegister(prdst);
 
-            String rmessageId = fowardMessage(4, body, forwards, replyEmail, prdst, messageId, endpoint, suffix, meta);
+            String rmessageId = fowardMessage( body, forwards, replyEmail, prdst, messageId, suffix, meta);
 
             resp = getRepositoryProvideResponse(rmessageId);
 
@@ -83,6 +138,7 @@ public class DocumentRepositoryAbstract {
             action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
             messageId = rmessageId;
             to = endpoint;
+            
             setHeaderData();
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,6 +148,15 @@ public class DocumentRepositoryAbstract {
         return resp;
     }
 
+    /**
+     * Handle an incoming ProvideAndRegisterDocumentSetRequestType object and
+     * transform to XDM or relay to another XDR endponit.
+     * 
+     * @param prdst
+     *            The incoming ProvideAndRegisterDocumentSetRequestType object
+     * @return a RegistryResponseType object
+     * @throws Exception
+     */
     protected List<String> provideAndRegister(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
         List<String> forwards = null;
 
@@ -117,7 +182,15 @@ public class DocumentRepositoryAbstract {
         return forwards;
     }
 
-    public RegistryResponseType getRepositoryProvideResponse(String messageId) throws Exception {
+    /**
+     * Create a RegistryResponseType object.
+     * 
+     * @param messageId
+     *            The message ID
+     * @return a RegistryResponseType object
+     * @throws Exception
+     */
+    protected RegistryResponseType getRepositoryProvideResponse(String messageId) throws Exception {
         RegistryResponseType rrt = null;
         try { // Call Web Service Operation
 
@@ -130,7 +203,7 @@ public class DocumentRepositoryAbstract {
 
 
             } catch (Exception ex) {
-                Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "not sure what this ");
+                LOGGER.info("not sure what this ");
                 ex.printStackTrace();
             }
 
@@ -141,7 +214,27 @@ public class DocumentRepositoryAbstract {
         return rrt;
     }
 
-    public String fowardMessage(int type, String body, List<String> forwards, String replyEmail, ProvideAndRegisterDocumentSetRequestType prdst, String messageId, String endpoint, String suffix, String meta) throws Exception {
+    /**
+     * Forward a message to an email recipient or to an XDR relay endpoint.
+     * 
+     * @param body
+     *            The message body
+     * @param forwards
+     *            The list of email recipients and relay endponits
+     * @param replyEmail
+     *            The reply-to email address
+     * @param prdst
+     *            The ProvideAndRegisterDocumentSetRequestType object
+     * @param messageId
+     *            The message ID
+     * @param suffix
+     *            The file extension of the XDR document
+     * @param meta
+     *            The XDR metadata
+     * @return a message ID
+     * @throws Exception
+     */
+    public String fowardMessage( String body, List<String> forwards, String replyEmail, ProvideAndRegisterDocumentSetRequestType prdst, String messageId, String suffix, String meta) throws Exception {
 
         try {
             messageId = UUID.randomUUID().toString();
@@ -149,7 +242,7 @@ public class DocumentRepositoryAbstract {
 
             if (requestForward && forwards.size() > 0) {
 
-                forwardRepositoryRequest(type, messageId, forwards, prdst, replyEmail, body, suffix, meta);
+                forwardRepositoryRequest( messageId, forwards, prdst, replyEmail, body, suffix, meta);
             }
 
         } catch (Exception x) {
@@ -159,7 +252,26 @@ public class DocumentRepositoryAbstract {
         return messageId;
     }
 
-    private void forwardRepositoryRequest(int type, String messageId, List<String> provideEndpoints, ProvideAndRegisterDocumentSetRequestType prdst, String fromEmail, String body, String suffix, String meta) throws Exception {
+    /**
+     * Forward a message to an email recipient or to an XDR relay endpoint.
+     * 
+     * @param messageId
+     *            The message ID
+     * @param provideEndpoints
+     *            The list of email recipients and relay endponits
+     * @param prdst
+     *            The ProvideAndRegisterDocumentSetRequestType object
+     * @param fromEmail
+     *            The reply-to email address
+     * @param body
+     *            The message body
+     * @param suffix
+     *            The file extension of the XDR document
+     * @param meta
+     *            The XDR metadata
+     * @throws Exception
+     */
+    private void forwardRepositoryRequest( String messageId, List<String> provideEndpoints, ProvideAndRegisterDocumentSetRequestType prdst, String fromEmail, String body, String suffix, String meta) throws Exception {
         try {
             for (String reqEndpoint : provideEndpoints) {
                 if (reqEndpoint.indexOf('@') > 0) {
@@ -172,7 +284,7 @@ public class DocumentRepositoryAbstract {
                     String to = reqEndpoint;
                     to = to.replace("?wsdl", "");
                     Long threadId = new Long(Thread.currentThread().getId());
-                    Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "THREAD ID " + threadId);
+                    LOGGER.info("THREAD ID " + threadId);
                     ThreadData threadData = new ThreadData(threadId);
                     threadData.setTo(to);
 
@@ -193,7 +305,7 @@ public class DocumentRepositoryAbstract {
 
                     docs.add(doc);
 
-                    Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, " SENDING TO ENDPOINT " + to);
+                    LOGGER.info(" SENDING TO ENDPOINT " + to);
                     DocumentRepositoryService service = new DocumentRepositoryService();
                     service.setHandlerResolver(new RepositoryHandlerResolver());
 
@@ -223,38 +335,39 @@ public class DocumentRepositoryAbstract {
         }
     }
 
-    private String marshal(QName altName, Object jaxb) {
-
-        String ret = null;
-        try {
-            //   javax.xml.bind.JAXBContext jaxbCtx = javax.xml.bind.JAXBContext.newInstance(msg.getClass().getPackage().getName());
-            javax.xml.bind.JAXBContext jc = javax.xml.bind.JAXBContext.newInstance(ObjectFactory.class);
-            Marshaller u = jc.createMarshaller();
-
-            StringWriter sw = new StringWriter();
-            u.marshal(new JAXBElement(altName, jaxb.getClass(), jaxb), sw);
-            StringBuffer sb = sw.getBuffer();
-            ret = new String(sb);
-
-        } catch (Exception ex) {
-            Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "marshall. Exception msg=" + ex.getMessage());
-            ex.printStackTrace();
-
-        }
-        return ret;
-    }
-
-  
-
+    /**
+     * Mail a recipient the XDR data.
+     * 
+     * @param email
+     *            The email recipient
+     * @param from
+     *            The reply-to email address
+     * @param messageId
+     *            The message ID
+     * @param message
+     *            The raw message to be sent
+     * @param suffix
+     *            The file extension of the XDR document
+     * @param meta
+     *            The XDR metadata
+     * @throws Exception
+     */
     private void mailDocument(String email, String from, String messageId, byte[] message, String suffix, byte[] meta) throws Exception {
         SMTPMailClient smc = new SMTPMailClient();
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "SENDING EMAIL TO " + email + " with message id " + messageId);
+        LOGGER.info("SENDING EMAIL TO " + email + " with message id " + messageId);
         List<String> recipients = new ArrayList<String>();
         recipients.add(email);
 
         smc.postMail(recipients, "data", messageId, "data attached", message, from, suffix, meta);
     }
 
+    /**
+     * Extract the documents from the XDR message.
+     * 
+     * @param prdst
+     *            The XDR message
+     * @return the raw documents from the XDR message
+     */
     private byte[] getDocs(ProvideAndRegisterDocumentSetRequestType prdst) {
         List<Document> documents = prdst.getDocument();
 
@@ -273,31 +386,43 @@ public class DocumentRepositoryAbstract {
         return ret;
     }
 
+    /**
+     * Extract header values from a ThreadData object.
+     */
     protected void getHeaderData() {
         Long threadId = new Long(Thread.currentThread().getId());
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "DTHREAD ID " + threadId);
+        LOGGER.info("DTHREAD ID " + threadId);
+        
         ThreadData threadData = new ThreadData(threadId);
-        endpoint = threadData.getReplyAddress();
-        messageId = threadData.getMessageId();
-        to = threadData.getTo();
-        thisHost = threadData.getThisHost();
-        remoteHost = threadData.getRemoteHost();
-        pid = threadData.getPid();
-        action = threadData.getAction();
-        from = threadData.getFrom();
+        this.endpoint = threadData.getReplyAddress();
+        this.messageId = threadData.getMessageId();
+        this.to = threadData.getTo();
+        this.thisHost = threadData.getThisHost();
+        this.remoteHost = threadData.getRemoteHost();
+        this.pid = threadData.getPid();
+        this.action = threadData.getAction();
+        this.from = threadData.getFrom();
+        
+        LOGGER.info(threadData.toString());
     }
 
+    /**
+     * Build a ThreadData object with header information.
+     */
     protected void setHeaderData() {
         Long threadId = new Long(Thread.currentThread().getId());
-        Logger.getLogger(this.getClass().getPackage().getName()).log(Level.INFO, "THREAD ID " + threadId);
+        LOGGER.info("THREAD ID " + threadId);
+        
         ThreadData threadData = new ThreadData(threadId);
-        threadData.setTo(to);
-        threadData.setMessageId(messageId);
-        threadData.setRelatesTo(relatesTo);
-        threadData.setAction(action);
-        threadData.setThisHost(thisHost);
-        threadData.setRemoteHost(remoteHost);
-        threadData.setPid(pid);
-        threadData.setFrom(from);
+        threadData.setTo(this.to);
+        threadData.setMessageId(this.messageId);
+        threadData.setRelatesTo(this.relatesTo);
+        threadData.setAction(this.action);
+        threadData.setThisHost(this.thisHost);
+        threadData.setRemoteHost(this.remoteHost);
+        threadData.setPid(this.pid);
+        threadData.setFrom(this.from);
+        
+        LOGGER.info(threadData.toString());
     }
 }

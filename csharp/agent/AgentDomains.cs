@@ -59,7 +59,7 @@ namespace NHINDirect.Agent
         {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
             
             return this.IsManaged(address.Host);
@@ -68,14 +68,14 @@ namespace NHINDirect.Agent
         /// <summary>
         /// Tests if an address is managed.
         /// </summary>
-        /// <param name="address">The domain in <c>string</c> form to test</param>
+        /// <param name="domain">The domain in <c>string</c> form to test</param>
         /// <returns><c>true</c> if the address's domain is managed by the agent,
         /// <c>false</c> otherwise.</returns>
         public bool IsManaged(string domain)
         {
             if (string.IsNullOrEmpty(domain))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "domain");
             }
             
             return m_managedDomains.ContainsKey(domain);

@@ -14,22 +14,19 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Configuration;
-using NHINDirect.Diagnostics;
+
+using NHINDirect.Config.Store;
 
 namespace NHINDirect.Config.Service
 {
     public class ServiceSettings
     {
-        public const string ConfigConnectString = "configStoreConnectString";
-        public const string LogDirectory = "logDirectory";
+        public const string ConfigConnectStringKey = "configStore";
+        public const string QueryTimeoutKey = "queryTimeout";
         
         string m_connectString;
-        LogFileSettings m_logSettings;
-        
+        TimeSpan m_dbTimeout;
         
         public ServiceSettings()
         {
@@ -44,17 +41,17 @@ namespace NHINDirect.Config.Service
             }
         }
         
-        public LogFileSettings LogSettings
+        public TimeSpan QueryTimeout
         {
             get
             {
-                return m_logSettings;
+                return m_dbTimeout;
             }
         }
         
         public string GetSetting(string name)
         {
-            string value = ConfigurationSettings.AppSettings[name];
+            string value = ConfigurationManager.AppSettings[name];
             if (string.IsNullOrEmpty(value))
             {
                 throw new ConfigurationErrorsException(string.Format("Service Setting {0} not found", name));
@@ -62,32 +59,40 @@ namespace NHINDirect.Config.Service
             
             return value;
         }
-        
+
         public T GetSetting<T>(string name)
-        {
-            return (T) Convert.ChangeType(this.GetSetting(name), typeof(T));
-        }
-        
+        {        
+            return (T) Convert.ChangeType(this.GetSetting(name), typeof(T)); 
+        }         
+
         public T GetSetting<T>(string name, T defaultValue)
-        {
+        {        
             try
-            {
-                return this.GetSetting<T>(name);
-            }
-            catch
-            {
-            }
+            {        
+                return this.GetSetting<T>(name);        
+            }        
+            catch 
+            {        
+            }        
             
-            return defaultValue;
-        }
-                
+            return defaultValue; 
+        }         
+        
         void Load()
         {
-            m_connectString = this.GetSetting(ServiceSettings.ConfigConnectString);
-            
-            m_logSettings = new LogFileSettings();
-            m_logSettings.SetDefaults();
-            m_logSettings.DirectoryPath = this.GetSetting<string>(LogDirectory, m_logSettings.DirectoryPath);
+            m_connectString = ConfigurationManager.ConnectionStrings[ConfigConnectStringKey].ConnectionString;
+
+        	TimeSpan timeout;
+        	if (!TimeSpan.TryParse(GetSetting(QueryTimeoutKey), out timeout))
+        	{
+        		timeout = ConfigStore.DefaultTimeout;
+        	}
+
+        	m_dbTimeout = timeout;
+            if (m_dbTimeout.Ticks <= 0)
+            {
+                throw new ArgumentException("Invalid query timeout in config");
+            }
         }
     }
 }

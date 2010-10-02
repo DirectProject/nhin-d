@@ -14,9 +14,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 
@@ -40,7 +37,7 @@ namespace NHINDirect.Certificates
 		/// A <see cref="System.Net.Mail.MailAddress"/>
 		/// </param>
 		/// <returns>
-		/// A <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2Collection"/ or null if there are no addresses.>
+		/// A <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2Collection"/> or null if there are no addresses.
 		/// </returns>
         X509Certificate2Collection GetCertificates(MailAddress address);
     }

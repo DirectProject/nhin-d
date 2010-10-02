@@ -23,14 +23,23 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Agent.Config
 {
+    /// <summary>
+    /// Configuration for a machine store-based certificate resolver.
+    /// </summary>
     [XmlType("MachineCertificateStore")]
     public class MachineCertResolverSettings : CertResolverSettings
     {
+        /// <summary>
+        /// Creates an instance. Normally called through XML deserialization.
+        /// </summary>
         public MachineCertResolverSettings()
         {
             this.Location = StoreLocation.LocalMachine;
         }
         
+        /// <summary>
+        /// The name of this store.
+        /// </summary>
         [XmlElement]
         public string Name 
         {   
@@ -38,6 +47,9 @@ namespace NHINDirect.Agent.Config
             set;
         }
         
+        /// <summary>
+        /// The location of this store (machine or user)
+        /// </summary>
         [XmlElement]
         public StoreLocation Location 
         { 
@@ -45,6 +57,9 @@ namespace NHINDirect.Agent.Config
             set; 
         }
 
+        /// <summary>
+        /// Validates configuration settings.
+        /// </summary>
         public override void Validate()
         {
             if (string.IsNullOrEmpty(this.Name))
@@ -53,6 +68,10 @@ namespace NHINDirect.Agent.Config
             }
         }   
                      
+        /// <summary>
+        /// Creates the maachine store based certificate resolver.
+        /// </summary>
+        /// <returns>An instance of a machine-based certificate store resolver.</returns>
         public override ICertificateResolver CreateResolver()
         {
             this.Validate();
@@ -62,7 +81,11 @@ namespace NHINDirect.Agent.Config
                 return store.Index();
             }
         }
-                
+        
+        /// <summary>
+        /// Opens the machine-based certificate store.
+        /// </summary>
+        /// <returns>The configured store.</returns>
         public SystemX509Store OpenStore()
         {
             return new SystemX509Store(Certificates.Extensions.OpenStoreRead(this.Name, this.Location), null);

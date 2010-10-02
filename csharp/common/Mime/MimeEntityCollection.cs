@@ -22,31 +22,54 @@ using NHINDirect.Collections;
 
 namespace NHINDirect.Mime
 {
+    /// <summary>
+    /// Represents a collection of MIME entities in a MIME multipart entity.
+    /// </summary>
     public class MimeEntityCollection : MultipartEntity
     {
         ObjectCollection<MimeEntity> m_entities;
         
+        /// <summary>
+        /// Initializes an empty instance.
+        /// </summary>
         public MimeEntityCollection()
             : base()
         {
         }
         
+
+        /// <summary>
+        /// Initializes an empty instance of a specified content type
+        /// </summary>
+        /// <param name="contentType">The <see cref="ContentType"/> for this entity</param>
         public MimeEntityCollection(ContentType contentType)
             : base(contentType)
         {
         }
-        
+
+        /// <summary>
+        /// Initializes an empty instance of a specified content type
+        /// </summary>
+        /// <param name="contentType">The <see cref="String"/> representation of the content-type for this entity</param>
         public MimeEntityCollection(string contentType)
             : base(contentType)
         {
-        }                
-        
+        }
+
+        /// <summary>
+        /// Initializes an empty instance of a specified content type with a set of body parts
+        /// </summary>
+        /// <param name="contentType">The <see cref="String"/> representation of the content-type for this entity</param>
+        /// <param name="parts">An enumeration of <see cref="MimeEntity"/> body parts</param>
         public MimeEntityCollection(string contentType, IEnumerable<MimeEntity> parts)
             : base(contentType)
         {
             this.Entities.Add(parts);        
         }
         
+        /// <summary>
+        /// Gets if this instance has body parts.
+        /// </summary>
         public bool HasEntities
         {
             get
@@ -55,6 +78,9 @@ namespace NHINDirect.Mime
             }
         }
                 
+        /// <summary>
+        /// Gets the collection of body part entities for this multipart document
+        /// </summary>
         public ObjectCollection<MimeEntity> Entities
         {
             get
@@ -68,6 +94,10 @@ namespace NHINDirect.Mime
             }
         }
 
+        /// <summary>
+        /// Gets the enumerator for the body parts for this document.
+        /// </summary>
+        /// <returns></returns>
         public override IEnumerator<MimeEntity> GetEnumerator()
         {
             return this.Entities.GetEnumerator();

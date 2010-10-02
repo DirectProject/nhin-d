@@ -28,6 +28,11 @@ namespace NHINDirect.Config.Store
         const string Sql_DeleteAddress = "DELETE from Addresses where EmailAddress = {0}";
         const string Sql_DeleteAddressByDomain = "DELETE from Addresses where DomainID = {0}";
         const string Sql_SetStatus = "UPDATE Addresses set Status = {0}, UpdateDate={1} where EmailAddress in ({2})";
+        const string Sql_SetStatusByDomain = "UPDATE Addresses set Status = {0}, UpdateDate={1} where DomainID = {2}";
+        const string Sql_EnumDomainAddressFirst = "SELECT TOP ({0}) * from Addresses where DomainID = {1} order by EmailAddress asc";
+        const string Sql_EnumDomainAddressNext = "SELECT TOP ({0}) * from Addresses where DomainID = {1} and EmailAddress > {2} order by EmailAddress asc";
+        const string Sql_EnumAddressFirst = "SELECT TOP ({0}) * from Addresses order by EmailAddress asc";
+        const string Sql_EnumAddressNext = "SELECT TOP ({0}) * from Addresses where EmailAddress > {1} order by EmailAddress asc";
 
         static readonly Func<ConfigDatabase, string, IQueryable<Address>> Addresses = CompiledQuery.Compile(
             (ConfigDatabase db, string emailAddress) =>
@@ -57,13 +62,38 @@ namespace NHINDirect.Config.Store
             return (ConfigDatabase)table.Context;
         }
 
+        public static int GetCount(this Table<Address> table, long domainID)
+        {
+            return (from address in table.GetDB().Addresses
+                    where address.DomainID == domainID
+                    select address.ID).Count();
+        }
+        
         public static Address Get(this Table<Address> table, string emailAddress)
         {
             return Addresses(table.GetDB(), emailAddress).SingleOrDefault();
         }
 
+        public static IEnumerable<Address> Get(this Table<Address> table, string[] emailAddresses, EntityStatus? status)
+        {
+            if (emailAddresses.IsNullOrEmpty())
+            {
+                throw new ArgumentException("value was null or empty", "emailAddresses");
+            }
+            //
+            // We cannot precompile this (throws at runtime) because emailAddresses.Length can change at runtime
+            //
+            return from address in table.GetDB().Addresses
+                   where emailAddresses.Contains(address.EmailAddress) && address.Status == status
+                   select address;
+        }
+
         public static IEnumerable<Address> Get(this Table<Address> table, string[] emailAddresses)
         {
+            if (emailAddresses.IsNullOrEmpty())
+            {
+                throw new ArgumentException("value was null or empty", "emailAddresses");
+            }
             //
             // We cannot precompile this (throws at runtime) because emailAddresses.Length can change at runtime
             //
@@ -92,6 +122,16 @@ namespace NHINDirect.Config.Store
                  select address;
         }
 
+        public static IQueryable<Address> Get(this Table<Address> table, long[] ids, EntityStatus status)
+        {
+            //
+            // We cannot precompile this (throws at runtime) because ids.Length can change at runtime
+            //
+            return from address in table.GetDB().Addresses
+                   where ids.Contains(address.ID) && address.Status == status
+                   select address;
+        }
+
         public static void ExecDelete(this Table<Address> table, string emailAddress)
         {
             table.Context.ExecuteCommand(Sql_DeleteAddress, emailAddress);
@@ -105,6 +145,31 @@ namespace NHINDirect.Config.Store
         public static void ExecSetStatus(this Table<Address> table, string[] emailAddresses, EntityStatus status)
         {
             table.Context.ExecuteCommand(Sql_SetStatus, status, DateTime.Now, emailAddresses.ToIn());
+        }
+
+        public static void ExecSetStatus(this Table<Address> table, long domainID, EntityStatus status)
+        {
+            table.Context.ExecuteCommand(Sql_SetStatusByDomain, status, DateTime.Now, domainID);
+        }
+
+        public static IEnumerable<Address> ExecGet(this Table<Address> table, long domainID, string lastAddress, int maxResults)
+        {
+            if (string.IsNullOrEmpty(lastAddress))
+            {
+                return table.GetDB().ExecuteQuery<Address>(Sql_EnumDomainAddressFirst, maxResults, domainID);
+            }
+
+            return table.GetDB().ExecuteQuery<Address>(Sql_EnumDomainAddressNext, maxResults, domainID, lastAddress);
+        }
+
+        public static IEnumerable<Address> ExecGet(this Table<Address> table, string lastAddress, int maxResults)
+        {
+            if (string.IsNullOrEmpty(lastAddress))
+            {
+                return table.GetDB().ExecuteQuery<Address>(Sql_EnumAddressFirst, maxResults);
+            }
+
+            return table.GetDB().ExecuteQuery<Address>(Sql_EnumAddressNext, maxResults, lastAddress);
         }
     }
 }

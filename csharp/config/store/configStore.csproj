@@ -31,10 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nhinCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\$(Configuration)\nhinCommon.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -59,7 +55,6 @@
     <Compile Include="AnchorQueries.cs" />
     <Compile Include="AnchorResolver.cs" />
     <Compile Include="CertificateManager.cs" />
-    <Compile Include="Account.cs" />
     <Compile Include="Address.cs" />
     <Compile Include="Anchor.cs" />
     <Compile Include="Certificate.cs" />
@@ -82,6 +77,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Schema.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\nhinCommon.csproj">
+      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
+      <Name>nhinCommon</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

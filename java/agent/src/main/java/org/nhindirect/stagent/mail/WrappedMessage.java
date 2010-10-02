@@ -68,7 +68,7 @@ public class WrappedMessage
     		throw new IllegalArgumentException("Message cannot be null");
     	
     	InternetHeaders copiedHeaders = copyHeaders(message, headersToCopy);
-    	copiedHeaders.setHeader(MailStandard.ContentTypeHeader, MailStandard.MediaType_WrappedMessage);
+    	copiedHeaders.setHeader(MailStandard.Headers.ContentType, MailStandard.MediaType.WrappedMessage);
     	
     	return new Message(copiedHeaders, EntitySerializer.Default.serializeToBytes(message));    	    	
     }
@@ -104,7 +104,7 @@ public class WrappedMessage
     	
     	try
     	{    		
-    		return message.getContentType().equalsIgnoreCase(MailStandard.MediaType_WrappedMessage);
+    		return message.getContentType().equalsIgnoreCase(MailStandard.MediaType.WrappedMessage);
     	}
     	catch (MessagingException e) {/* no-op */}
     	

@@ -29,7 +29,7 @@ namespace NHINDirect.Config.Store
         {
             if (array.IsNullOrEmpty())
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "array");
             }
             return string.Join(",", array);
         }

@@ -35,7 +35,7 @@ namespace NHINDirect.Config.Store
         {
             if (anchorManager == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("anchorManager");
             }
             
             m_anchorManager = anchorManager;
@@ -78,7 +78,7 @@ namespace NHINDirect.Config.Store
             {
                 if (address == null)
                 {
-                    throw new ArgumentNullException();
+                    throw new ArgumentNullException("address");
                 }
 
                 Anchor[] anchors = null;

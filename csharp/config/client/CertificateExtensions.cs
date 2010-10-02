@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
+using NHINDirect.Certificates;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client.CertificateService;
 
@@ -25,20 +26,56 @@ namespace NHINDirect.Config.Client.CertificateService
 {
     public static class CertificateExtensions
     {
-        static CertificateGetOptions GetFullCertData = new CertificateGetOptions
+        internal static CertificateGetOptions FullCertData = new CertificateGetOptions
         {
             IncludeData = true,
             IncludePrivateKey = true
+        };
+
+        internal static CertificateGetOptions CertInfo = new CertificateGetOptions
+        {
+            IncludeData = false,
+            IncludePrivateKey = false
         };
         
         public static void AddCertificate(this CertificateStoreClient client, Certificate cert)
         {
             if (cert == null)
             {
-                throw new ArgumentNullException();  
+                throw new ArgumentNullException("cert");  
             }
             
             client.AddCertificates(new Certificate[] {cert});
+        }
+
+        public static bool Contains(this CertificateStoreClient client, X509Certificate2 certificate)
+        {
+            if (certificate == null)
+            {
+                throw new ArgumentNullException("certificate");
+            }
+
+            return client.Contains(certificate.ExtractEmailNameOrName(), certificate.Thumbprint);
+        }
+
+        public static bool Contains(this CertificateStoreClient client, string owner, string thumbprint)
+        {
+            if (string.IsNullOrEmpty(owner))
+            {
+                throw new ArgumentException("value was null or empty", "owner");
+            }
+            if (string.IsNullOrEmpty(thumbprint))
+            {
+                throw new ArgumentException("value was null or empty", "thumbprint");
+            }
+
+            Certificate cert = client.GetCertificate(owner, thumbprint, CertificateExtensions.CertInfo);
+            return (cert != null);
+        }
+
+        public static Certificate GetCertificate(this CertificateStoreClient client, string owner, string thumbprint)
+        {
+            return client.GetCertificate(owner, thumbprint, FullCertData);
         }
         
         public static Certificate GetCertificate(this CertificateStoreClient client, long certificateID, CertificateGetOptions options)
@@ -54,7 +91,14 @@ namespace NHINDirect.Config.Client.CertificateService
         
         public static Certificate[] GetCertificatesForOwner(this CertificateStoreClient client, string owner)
         {
-            return client.GetCertificatesForOwner(owner, GetFullCertData);
+            return client.GetCertificatesForOwner(owner, FullCertData);
+        }
+
+        public static Certificate[] GetCertificatesForOwner(this CertificateStoreClient client, string owner, EntityStatus status)
+        {
+            CertificateGetOptions options = FullCertData.Clone();
+            options.Status = status;
+            return client.GetCertificatesForOwner(owner, options);
         }
         
         public static X509Certificate2Collection GetX509CertificatesForOwner(this CertificateStoreClient client, string owner)
@@ -62,16 +106,26 @@ namespace NHINDirect.Config.Client.CertificateService
             return Certificate.ToX509Collection(client.GetCertificatesForOwner(owner));
         }
         
+        public static void RemoveCertificate(this CertificateStoreClient client, long certificateID)
+        {
+            client.RemoveCertificates(new long[] {certificateID});
+        }
+        
         public static IEnumerable<Certificate> EnumerateCertificates(this CertificateStoreClient client, int chunkSize)
         {
-            return client.EnumerateCertificates(chunkSize, GetFullCertData);
+            return client.EnumerateCertificates(chunkSize, FullCertData);
         }
 
         public static IEnumerable<Certificate> EnumerateCertificates(this CertificateStoreClient client, int chunkSize, CertificateGetOptions options)
         {
-            if (chunkSize <= 0 || options == null)
+            if (options == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("options");
+            }
+
+            if (chunkSize < 1)
+            {
+                throw new ArgumentException("value was less than 1", "chunkSize");
             }
 
             long lastID = -1;
@@ -95,10 +149,19 @@ namespace NHINDirect.Config.Client.CertificateService
         
         public static IEnumerable<X509Certificate2> EnumerateX509Certificates(this CertificateStoreClient client, int chunkSize)
         {
-            foreach(Certificate cert in client.EnumerateCertificates(chunkSize, GetFullCertData))
+            foreach(Certificate cert in client.EnumerateCertificates(chunkSize, FullCertData))
             {
                 yield return cert.ToX509Certificate();
             }
+        }
+        
+        public static CertificateGetOptions Clone(this CertificateGetOptions options)
+        {
+            return new CertificateGetOptions {
+                IncludeData = options.IncludeData,
+                IncludePrivateKey = options.IncludePrivateKey,
+                Status = options.Status
+            };
         }
     }
 }

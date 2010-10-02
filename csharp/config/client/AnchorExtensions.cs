@@ -18,49 +18,98 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
+using NHINDirect.Certificates;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client.CertificateService;
 
 namespace NHINDirect.Config.Client.CertificateService
 {
     public static class AnchorExtensions
-    {
-        static CertificateGetOptions GetFullCertData = new CertificateGetOptions
+    {        
+        public static void AddAnchor(this AnchorStoreClient client, Anchor anchor)
         {
-            IncludeData = true,
-            IncludePrivateKey = true
-        };
+            client.AddAnchors(new Anchor[] {anchor});
+        }
+        
+        public static bool Contains(this AnchorStoreClient client, string owner, X509Certificate2 certificate)
+        {
+            if (certificate == null)
+            {
+                throw new ArgumentNullException("certificate");
+            }
+            
+            return client.Contains(owner, certificate.Thumbprint);
+        }
 
+        public static bool Contains(this AnchorStoreClient client, string owner, string thumbprint)
+        {
+            if (string.IsNullOrEmpty(owner))
+            {
+                throw new ArgumentException("value was null or empty", "owner");
+            }
+            if (string.IsNullOrEmpty(thumbprint))
+            {
+                throw new ArgumentException("value was null or empty", "thumbprint");
+            }
+
+            Anchor anchor = client.GetAnchor(owner, thumbprint, CertificateExtensions.CertInfo);
+            return (anchor != null);
+        }
+        
         public static Anchor[] GetIncomingAnchors(this AnchorStoreClient client, string owner)
         {
-            return client.GetIncomingAnchors(owner, GetFullCertData);
+            return client.GetIncomingAnchors(owner, CertificateExtensions.FullCertData);
+        }
+
+        public static Anchor[] GetIncomingAnchors(this AnchorStoreClient client, string owner, EntityStatus status)
+        {
+            CertificateGetOptions options = CertificateExtensions.FullCertData.Clone();
+            options.Status = status;
+            return client.GetIncomingAnchors(owner, options);
         }
 
         public static Anchor[] GetOutgoingAnchors(this AnchorStoreClient client, string owner)
         {
-            return client.GetOutgoingAnchors(owner, GetFullCertData);
+            return client.GetOutgoingAnchors(owner, CertificateExtensions.FullCertData);
         }
 
-        public static X509Certificate2Collection GetIncomingAnchorX509Certificates(this AnchorStoreClient client, string owner)
+        public static Anchor[] GetOutgoingAnchors(this AnchorStoreClient client, string owner, EntityStatus status)
         {
-            return Anchor.ToX509Collection(client.GetIncomingAnchors(owner, GetFullCertData));
+            CertificateGetOptions options = CertificateExtensions.FullCertData.Clone();
+            options.Status = status;
+            return client.GetOutgoingAnchors(owner, options);
         }
 
-        public static X509Certificate2Collection GetOutgoingAnchorX509Certificates(this AnchorStoreClient client, string owner)
+        public static X509Certificate2Collection GetIncomingAnchorX509Certificates(this AnchorStoreClient client, string owner, EntityStatus status)
         {
-            return Anchor.ToX509Collection(client.GetOutgoingAnchors(owner, GetFullCertData));
+            return Anchor.ToX509Collection(client.GetIncomingAnchors(owner, status));
         }
 
+        public static X509Certificate2Collection GetOutgoingAnchorX509Certificates(this AnchorStoreClient client, string owner, EntityStatus status)
+        {
+            return Anchor.ToX509Collection(client.GetOutgoingAnchors(owner, status));
+        }
+        
+        public static void RemoveAnchor(this AnchorStoreClient client, long anchorID)
+        {
+            client.RemoveAnchors(new long[] {anchorID});
+        }
+        
         public static IEnumerable<Anchor> EnumerateAnchors(this AnchorStoreClient client, int chunkSize)
         {
-            return client.EnumerateAnchors(chunkSize, GetFullCertData);
+            return client.EnumerateAnchors(chunkSize, CertificateExtensions.FullCertData);
         }
 
         public static IEnumerable<Anchor> EnumerateAnchors(this AnchorStoreClient client, int chunkSize, CertificateGetOptions options)
         {
-            if (chunkSize <= 0 || options == null)
+            if (options == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("options");
+            }
+
+            if (chunkSize < 1)
+            {
+                throw new ArgumentException("value was less than 1", "chunkSize");
             }
 
             long lastID = -1;
@@ -83,7 +132,7 @@ namespace NHINDirect.Config.Client.CertificateService
 
         public static IEnumerable<X509Certificate2> EnumerateX509Certificates(this AnchorStoreClient client, int chunkSize)
         {
-            foreach (Anchor cert in client.EnumerateAnchors(chunkSize, GetFullCertData))
+            foreach (Anchor cert in client.EnumerateAnchors(chunkSize, CertificateExtensions.FullCertData))
             {
                 yield return cert.ToX509Certificate();
             }

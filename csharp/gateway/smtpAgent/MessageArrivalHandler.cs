@@ -15,15 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Security.Cryptography.X509Certificates;
 using System.Runtime.InteropServices;
-using System.Net.Mail;
-using NHINDirect.Agent;
-using NHINDirect.Mail;
-using CDO;
-using ADODB;
+
+using NHINDirect.Diagnostics;
 
 namespace NHINDirect.SmtpAgent
 {
@@ -34,8 +28,6 @@ namespace NHINDirect.SmtpAgent
     {
         void InitFromConfigFile(string configFilePath);
         void ProcessCDOMessage(CDO.Message message);
-        void WriteLog(string message);
-        void WriteError(string message);
     }
     
     /// <summary>
@@ -58,15 +50,27 @@ namespace NHINDirect.SmtpAgent
         // It is possible that this COM object will get created for every request - and is therefore meant to be very lightweight. 
         // Therefore, internally, we maintain a singleton of the actual agent and just proxy calls. 
         //
-        static Dictionary<string, SmtpAgent> s_agents = new Dictionary<string,SmtpAgent>(StringComparer.OrdinalIgnoreCase);
-        
-        SmtpAgent m_agent;
+        private static readonly Dictionary<string, SmtpAgent> s_agents = new Dictionary<string,SmtpAgent>(StringComparer.OrdinalIgnoreCase);
 
-        public MessageArrivalEventHandler()
+        // it's bad practice to lock on the object you're controlling access to.
+        private static readonly object s_agentsSync = new object();
+
+
+        SmtpAgent m_agent;
+        private ILogger m_logger;
+
+        private ILogger Logger
         {
-               
+            get
+            {
+                if (m_logger == null)
+                {
+                    m_logger = Log.For(this);
+                }
+                return m_logger;
+            }
         }
-        
+
         internal SmtpAgent Agent
         {
             get
@@ -88,23 +92,21 @@ namespace NHINDirect.SmtpAgent
 
         SmtpAgent EnsureAgent(string configFilePath)
         {
-            lock (s_agents)
+            lock (s_agentsSync)
             {
                 SmtpAgent agent = null;
+
                 if (!s_agents.TryGetValue(configFilePath, out agent))
-                {
-                    agent = null;
-                }
-                
-                if (agent == null)
                 {
                     try
                     {
-                        agent = this.CreateAgent(configFilePath);
+                        agent = SmtpAgentFactory.Create(configFilePath);
                         s_agents[configFilePath] = agent;
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Logger.Fatal("While EnsuringAgent with path - " + configFilePath, ex);
+                        throw;
                     }
                 }
                 
@@ -118,38 +120,24 @@ namespace NHINDirect.SmtpAgent
             {
                 this.Agent.ProcessMessage(message);
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Fatal("While ProcessCDOMessage", ex);
+
                 //
                 // Paranoia of last resort. A malconfigured or malfunctioning agent should NEVER let ANY messages through
                 //
-                message.AbortMessage();
+                try
+                {
+                    message.AbortMessage();
+                }
+                catch (Exception ex2)
+                {
+                    Logger.Fatal("While aborting message", ex2);
+                }
+
                 throw;
             }
         }
-                
-        public void WriteLog(string message)
-        {
-            this.Agent.Log.WriteLine(message);
-        }
-        
-        public void WriteError(string message)
-        {
-            this.Agent.Log.WriteError(message);
-        }
-        
-        SmtpAgent CreateAgent(string configFilePath)
-        {
-            try
-            {
-                SmtpAgentSettings settings = SmtpAgentSettings.LoadFile(configFilePath);
-                return new SmtpAgent(settings);
-            }
-            catch(Exception error)
-            {
-                this.Agent.Log.WriteError(error);
-                throw;
-            }
-        }
-    }    
+    }
 }

@@ -22,13 +22,22 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Agent.Config
 {
+    /// <summary>
+    /// Settings for agent certificate resolution.
+    /// </summary>
     [XmlType("certificateStore")]
     public class CertificateSettings
     {
+        /// <summary>
+        /// Creates an instance, normally called from one of the <see cref="AgentSettings"/> static factory methods.
+        /// </summary>
         public CertificateSettings()
         {
         }
         
+        /// <summary>
+        /// Settings for the certificate resolver.
+        /// </summary>
         [XmlElement("DnsResolver", typeof(DnsCertResolverSettings))]
         [XmlElement("MachineResolver", typeof(MachineCertResolverSettings))]
         public CertResolverSettings Resolver
@@ -37,6 +46,9 @@ namespace NHINDirect.Agent.Config
             set;
         }
         
+        /// <summary>
+        /// Validates settings.
+        /// </summary>
         public void Validate()
         {
             this.Validate(AgentConfigError.MissingResolver);

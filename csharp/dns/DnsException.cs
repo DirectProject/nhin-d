@@ -21,28 +21,51 @@ using System.Text;
 
 namespace DnsResolver
 {
+    /// <summary>
+    /// Represents program excecution errors relating to DNS requests or responses.
+    /// </summary>
     public class DnsException : Exception
     {
+        /// <summary>
+        /// Initializes a default instance.
+        /// </summary>
         public DnsException()
         {
         }
-        
+
+        /// <summary>
+        /// Initializes an instance that was triggered by the provided original exception.
+        /// </summary>
+        /// <param name="inner">The underlying exception that triggered this exception.</param>
         public DnsException(Exception inner)
             : base(null, inner)
         {
         }
     }
         
+    /// <summary>
+    /// Represents program excecution errors relating to DNS failures on request occuring at the DNS server
+    /// </summary>
+    /// <remarks>
+    /// See remarks for <see cref="ResponseCode"/> for more details.
+    /// </remarks>
     public class DnsServerException : DnsException
     {
-        Dns.ResponseCode m_responseCode;
+        DnsStandard.ResponseCode m_responseCode;
         
-        public DnsServerException(Dns.ResponseCode responseCode)
+        /// <summary>
+        /// Initializes an instace with the specified <paramref name="responseCode"/>
+        /// </summary>
+        /// <param name="responseCode">The server response code that triggered this exception.</param>
+        public DnsServerException(DnsStandard.ResponseCode responseCode)
         {
             m_responseCode = responseCode;
         }
         
-        public Dns.ResponseCode ResponseCode
+        /// <summary>
+        /// The response code that triggered this exception.
+        /// </summary>
+        public DnsStandard.ResponseCode ResponseCode
         {
             get
             {
@@ -51,6 +74,9 @@ namespace DnsResolver
             
         }
 
+        /// <summary>
+        /// A string representation of this exception.
+        /// </summary>
         public override string ToString()
         {
             return string.Format("ERROR={0}\r\n{1}", m_responseCode, base.ToString());

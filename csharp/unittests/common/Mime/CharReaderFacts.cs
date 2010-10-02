@@ -4,6 +4,7 @@
 
  Authors:
     John Theisen     john.theisen@kryptiq.com
+    Arien Malec      arien.malec@nhindirect.org
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -42,5 +43,77 @@ namespace NHINDirect.Tests.Mime
 		{
 			Assert.Throws<ArgumentException>(() => new CharReader(source));
 		}
+
+        [Fact]
+        public void CharReaderShouldReadCharacters()
+        {
+            string source = "abc";
+            CharReader reader = new CharReader(source);
+            Assert.False(reader.IsDone);
+            Assert.Equal('a', reader.Read());
+            Assert.Equal('b', reader.Read());
+            Assert.Equal('c', reader.Read());
+            Assert.Equal(CharReader.EOF, reader.Read());
+            Assert.True(reader.IsDone);
+        }
+
+        [Fact]
+        public void CharReaderShouldReadToCharacter()
+        {
+            StringSegment source = new StringSegment("abc:123");
+            CharReader reader = new CharReader(source);
+            reader.ReadTo(':', false);
+            Assert.Equal(3, reader.Position);
+        }
+
+        [Fact]
+        public void CharReaderShouldSkipEscape()
+        {
+            string source = "a\\:c:123";
+            CharReader reader = new CharReader(source);
+
+            reader.ReadTo(':', true);
+            Assert.Equal(4, reader.Position);
+        }
+
+        [Fact]
+        public void CharReaderNotAtEndIfFindsCharacter()
+        {
+            string source = "abc:123";
+            CharReader reader = new CharReader(source);
+
+            bool found = reader.ReadTo(':', false);
+            Assert.True(found);
+            Assert.False(reader.IsDone);
+        }
+
+        [Fact]
+        public void CharReaderShouldBeAtEndIfItDoesNotFindChar()
+        {
+            string source = "abc:123";
+            CharReader reader = new CharReader(source);
+
+            bool found = reader.ReadTo('?', false);
+            Assert.False(found);
+            Assert.True(reader.IsDone);
+        }
+
+        [Fact]
+        public void CharReaderKeepsReadingAfterFoundPosition()
+        {
+            string source = "abc:123";
+            CharReader reader = new CharReader(source);
+            reader.ReadTo(':', false);
+            Assert.Equal('1', reader.Read());
+        }
+
+        [Fact]
+        public void GetSegmentShouldReturnSegment()
+        {
+            string source = "abc:123";
+            CharReader reader = new CharReader(source);
+            Assert.Equal("abc", reader.GetSegment(0, 2).ToString());
+            Assert.Equal("123", reader.GetSegment(4, 6).ToString());
+        }
 	}
 }

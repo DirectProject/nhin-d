@@ -32,6 +32,7 @@ namespace NHINDirect.Config.Store
     public class Certificate
     {
         public const int MaxOwnerLength = 400;
+        public const X509KeyStorageFlags KeyStorageFlags = (X509KeyStorageFlags.Exportable);
         
         string m_owner;
         byte[] m_data;
@@ -178,19 +179,18 @@ namespace NHINDirect.Config.Store
         
         public X509Certificate2 ToX509Certificate()
         {
-            return new X509Certificate2(this.Data);
+            return new X509Certificate2(this.Data, string.Empty, X509KeyStorageFlags.MachineKeySet);
         }
 
         public X509Certificate2 ToPublicX509Certificate()
         {
-            X509Certificate2 cert = this.ToX509Certificate();
-            if (cert.HasPrivateKey)
+            X509Certificate2 certificate = this.ToX509Certificate();
+            if (certificate.HasPrivateKey)
             {
-                byte[] certBytes = cert.Export(X509ContentType.Cert);
-                cert = new X509Certificate2(certBytes);
+                certificate.PrivateKey = null;
             }            
             
-            return cert;
+            return certificate;
         }
 
         public static X509Certificate2Collection ToX509Collection(Certificate[] source)
@@ -214,7 +214,10 @@ namespace NHINDirect.Config.Store
         void SetX509Certificate(X509Certificate2 certificate)
         {
             this.Thumbprint = certificate.Thumbprint;
-            this.Data = certificate.Export(X509ContentType.Pfx, string.Empty);
+            //
+            // We always store the certificate as PFX
+            //
+            this.Data = certificate.Export(X509ContentType.Pfx);
             this.CreateDate = DateTime.Now;
             this.ValidStartDate = certificate.NotBefore;
             this.ValidEndDate = certificate.NotAfter;
@@ -227,7 +230,7 @@ namespace NHINDirect.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidX509Certificate);
             }
 
-            return new X509Certificate2(sourceFileBytes, password ?? string.Empty, X509KeyStorageFlags.Exportable);
+            return new X509Certificate2(sourceFileBytes, password, X509KeyStorageFlags.Exportable);
         }
     }
 }

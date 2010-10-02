@@ -19,6 +19,15 @@ test-results/
 tmp/
 target/
 NHINKeyStore
+*xdm.zip
+java/gateway/IncomingMsgFolder/
+java/gateway/OutgoingMsgFolder/
+java/gateway/RawMsgFolder/
+
+# Ignore Eclipse files
+.classpath
+.project
+.settings/
 
 # Ignore Visual Studio 2008 files
 *.obj
@@ -45,9 +54,29 @@ NHINKeyStore
 [Dd]ebug*/
 obj/
 [Rr]elease*/
-_ReSharper*/
 [Tt]est[Rr]esult*
 [Bb]uild[Ll]og.*
 *.[Pp]ublish.xml
-glob:csharp/unittests/xunittest.bat
-glob:smtpEventHandler_i.h
+csharp/unittests/*.bat
+smtpEventHandler_i.h
+
+# Ignore Sandcastle API generated documentation
+[Hh]elp
+csharp/*.chm
+csharp/gateway/prodinstall/HVAgentConfig.xml
+csharp/gateway/prodinstall/NHINDAgentConfig.xml
+csharp/gateway/prodinstall/RedmondAgentConfig.xml
+csharp/gateway/prodinstall/install.bat
+csharp/gateway/prodinstall/installhv.bat
+csharp/gateway/prodinstall/prop.bat
+csharp/gateway/prodinstall/readme.txt
+csharp/config/service.sln
+csharp/config/service/ve-4D36.tmp
+csharp/config/store/configStore.sln
+csharp/external/xunit/xunit.console.sln
+glob:csharp/agent/Config/AgentSettings.xsd
+glob:csharp/config/install/umeshma3.config
+glob:csharp/config/install/umeshma4.config
+glob:csharp/config/service/ve-5E8C.tmp
+glob:csharp/config/service/ve-7A85.tmp
+glob:csharp/config/service/ve-8472.tmp

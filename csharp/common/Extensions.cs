@@ -21,31 +21,94 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace NHINDirect
 {
+    /// <summary>
+    /// Extensions to core/common .NET objects. 
+    /// </summary>
     public static class Extensions
     {
+        /// <summary>
+        /// Tests if the second string is contained by the first string with the supplied <paramref name="comparison"/> operator
+        /// </summary>
+        /// <param name="x">The base string.</param>
+        /// <param name="y">The string to test if it is contained in the base string</param>
+        /// <param name="comparison">The comparison operator.</param>
+        /// <returns><c>true</c> if the second string is contained in the first with respect to the supplied form of
+        /// string comparison, <c>false</c> otherwise</returns>
         public static bool Contains(this string x, string y, StringComparison comparison)
         {
             return (x.IndexOf(y, comparison) >= 0);
         }
 
-        public static bool IsNullOrEmpty(this X509Certificate2Collection certs)
-        {
-            return (certs == null || certs.Count == 0);
-        }
-
-        public static bool IsNullOrEmpty(this X509ChainElementCollection chainElements)
-        {
-            return (chainElements == null || chainElements.Count == 0);
-        }
-        
+        /// <summary>
+        /// Tests if this array is <c>null</c> or has 0 entries.
+        /// </summary>
+        /// <param name="array">The array to test.</param>
+        /// <returns><c>true</c> if the array is <c>null</c> or has 0 entries</returns>
         public static bool IsNullOrEmpty(this Array array)
         {
             return (array == null || array.Length == 0);
         }
-        
+
+        /// <summary>
+        /// Tests if this collection is <c>null</c> or has 0 entries.
+        /// </summary>
+        /// <param name="collection">The collection to test.</param>
+        /// <returns><c>true</c> if the collection is <c>null</c> or has 0 entries</returns>
         public static bool IsNullOrEmpty(this System.Collections.ICollection collection)
         {
             return (collection == null || collection.Count == 0);
+        }
+
+        //---------------------------------------
+        //
+        // StringBuilder
+        //
+        //---------------------------------------
+                
+        /// <summary>
+        /// Appends the string version (ToString) of the value with a newline.
+        /// </summary>
+        /// <param name="builder">This builder</param>
+        /// <param name="value">The object whose string representation to add</param>
+        public static void AppendLine(this StringBuilder builder, object value)
+        {
+            builder.AppendLine(value.ToString());
+        }
+
+        /// <summary>
+        /// Appends the string version (ToString) of the value with a newline
+        /// </summary>
+        /// <param name="builder">This builder</param>
+        /// <param name="value">The object whose string representation to add</param>
+        public static void AppendLine<T>(this StringBuilder builder, T value)
+        {
+            builder.AppendLine(value.ToString());            
+        }
+
+        /// <summary>
+        /// Appends the string returned by processing a composite format string to this instance with a newline.
+        /// The formatting string contains zero or more format items; each format item is replaced by the string
+        /// representation of a corresponding argument in a parameter array.
+        /// </summary>
+        /// <remarks>See documentation for <see cref="StringBuilder.AppendFormat(string, object[])"/></remarks>
+        /// <param name="builder">This builder</param>
+        /// <param name="format">A composite format string (see Remarks).</param>
+        /// <param name="args">An array of objects to format.</param>
+        public static void AppendLineFormat(this StringBuilder builder, string format, params object[] args)
+        {
+            builder.AppendFormat(format, args);
+            builder.AppendLine();
+        }
+
+
+        /// <summary>
+        /// Appends the string version (ToString) of the value
+        /// </summary>
+        /// <param name="builder">This builder</param>
+        /// <param name="value">The object whose string representation to add</param>
+        public static void Append<T>(this StringBuilder builder, T value)
+        {
+            builder.Append(value.ToString());
         }
     }
 }

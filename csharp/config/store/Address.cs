@@ -20,11 +20,14 @@ using System.Text;
 using System.Data.SqlTypes;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
+using System.Runtime.Serialization;
 using System.Net.Mail;
+using NHINDirect.Mail;
 
 namespace NHINDirect.Config.Store
 {
     [Table(Name = "Addresses")]
+    [DataContract(Namespace = ConfigStore.Namespace)]
     public class Address
     {
         public const int MaxAddressLength = 400;
@@ -56,8 +59,9 @@ namespace NHINDirect.Config.Store
             : this(domainID, address.Address, address.DisplayName)
         {
         }
-        
-        [Column(Name = "EmailAddress", CanBeNull = false, IsPrimaryKey=true)]
+
+        [Column(Name = "EmailAddress", CanBeNull = false, IsPrimaryKey = true, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = true)]
         public string EmailAddress
         {
             get
@@ -74,22 +78,25 @@ namespace NHINDirect.Config.Store
                 m_address = value;
             }
         }
-        
-        [Column(Name="AddressID", IsDbGenerated=true)]
+
+        [Column(Name = "AddressID", IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = true)]
         public long ID
         {
             get;
             set;
         }
         
-        [Column(Name="DomainID", CanBeNull=false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name="DomainID", CanBeNull=false, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = true)]
         public long DomainID
         {
             get;
             set;
         }
         
-        [Column(Name="DisplayName", CanBeNull=false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name="DisplayName", CanBeNull=false, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = true)]
         public string DisplayName
         {
             get
@@ -107,28 +114,32 @@ namespace NHINDirect.Config.Store
             }
         }
 
-        [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = true)]
         public DateTime CreateDate
         {
             get;
             set;
         }
 
-        [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Always)]
+        [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
         public DateTime UpdateDate
         {
             get;
             set;
         }
 
-        [Column(Name = "Status", DbType = "tinyint", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "Status", DbType = "tinyint", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = true)]
         public EntityStatus Status
         {
             get;
             set;
         }
         
-        [Column(Name = "Type", DbType = "nvarchar(64)", CanBeNull = true, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "Type", DbType = "nvarchar(64)", CanBeNull = true, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = false)]
         public string Type
         {
             get;
@@ -141,6 +152,62 @@ namespace NHINDirect.Config.Store
             {
                 return (!string.IsNullOrEmpty(this.Type));
             }            
+        }
+        
+        public bool IsValidMailAddress()
+        {
+            try
+            {
+                return (this.ToMailAddress() != null);
+            }
+            catch
+            {
+            }
+            
+            return false;
+        }
+        
+        public MailAddress ToMailAddress()
+        {
+            return new MailAddress(this.EmailAddress);
+        }
+                
+        public bool Match(MailAddress address)
+        {
+            if (address == null)
+            {
+                throw new ArgumentNullException("address");
+            }
+            
+            return this.Match(address.Address);
+        }
+        
+        public bool Match(string emailAddress)
+        {
+            return MailStandard.Equals(this.EmailAddress, emailAddress);
+        }
+        
+        internal void CopyFixed(Address source)
+        {
+            this.EmailAddress = source.EmailAddress;
+            this.ID = source.ID;
+            this.DomainID = source.DomainID;
+            this.CreateDate = source.CreateDate;
+            this.UpdateDate = source.UpdateDate;
+        }        
+        /// <summary>
+        /// Only copy those fields that are allowed to change in updates
+        /// </summary>
+        internal void ApplyChanges(Address source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            this.DisplayName = source.DisplayName;
+            this.Status = source.Status;
+            this.Type = source.Type;
+            this.UpdateDate = DateTime.Now;
         }
     }
 }

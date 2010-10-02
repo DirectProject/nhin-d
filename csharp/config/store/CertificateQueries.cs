@@ -34,7 +34,7 @@ namespace NHINDirect.Config.Store
         const string Sql_UpdateStatus = "UPDATE Certificates Set Status = {0} where CertificateID = {1}";
         const string Sql_UpdateStatusByOwner = "UPDATE Certificates Set Status = {0} where Owner = {1}";
         
-        const string Sql_AllCertsByID = "SELECT * from Certificates where CertificateID in ({0})";
+        //const string Sql_AllCertsByID = "SELECT * from Certificates where CertificateID in ({0})";
         
         static readonly Func<ConfigDatabase, long, IQueryable<Certificate>> CertByID = CompiledQuery.Compile(
             (ConfigDatabase db, long id) =>
@@ -42,19 +42,18 @@ namespace NHINDirect.Config.Store
                 where cert.ID == id
                 select cert
         );
-        /*
-        static readonly Func<ConfigDatabase, long[], IQueryable<Certificate>> CertByIDs = CompiledQuery.Compile(
-            (ConfigDatabase db, long[] ids) =>
-                from cert in db.Certificates
-                where ids.Contains(cert.ID)
-                select cert
-        );
-        */
         
-        static readonly Func<ConfigDatabase, string, IQueryable<Certificate>> CertsByOwner = CompiledQuery.Compile(
+        static readonly Func<ConfigDatabase, string, IQueryable<Certificate>> AllCertsByOwner = CompiledQuery.Compile(
             (ConfigDatabase db, string owner) =>
                 from cert in db.Certificates
                 where cert.Owner == owner
+                select cert
+        );
+
+        static readonly Func<ConfigDatabase, string, EntityStatus, IQueryable<Certificate>> CertsByOwner = CompiledQuery.Compile(
+            (ConfigDatabase db, string owner, EntityStatus status) =>
+                from cert in db.Certificates
+                where cert.Owner == owner && cert.Status == status
                 select cert
         );
 
@@ -85,8 +84,10 @@ namespace NHINDirect.Config.Store
 
         public static IEnumerable<Certificate> Get(this Table<Certificate> table, long[] certIDs)
         {
-            //return CertByIDs(table.GetDB(), certIDs);
-            return table.GetDB().ExecuteQuery<Certificate>(Sql_AllCertsByID, certIDs.ToIn());
+            //return table.GetDB().ExecuteQuery<Certificate>(Sql_AllCertsByID, certIDs.ToIn());
+            return from cert in table.GetDB().Certificates
+                where certIDs.Contains(cert.ID)
+                select cert;
         }
 
         public static IQueryable<Certificate> Get(this Table<Certificate> table, long lastCertID, int maxResults)
@@ -96,7 +97,12 @@ namespace NHINDirect.Config.Store
 
         public static IQueryable<Certificate> Get(this Table<Certificate> table, string owner)
         {
-            return CertsByOwner(table.GetDB(), owner);
+            return AllCertsByOwner(table.GetDB(), owner);
+        }
+
+        public static IQueryable<Certificate> Get(this Table<Certificate> table, string owner, EntityStatus status)
+        {
+            return CertsByOwner(table.GetDB(), owner, status);
         }
 
         public static Certificate Get(this Table<Certificate> table, string owner, string thumbprint)

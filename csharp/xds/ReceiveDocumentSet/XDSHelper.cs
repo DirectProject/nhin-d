@@ -1,21 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using System.IO;
 using System.Xml.Schema;
-using System.Configuration;
-using System.Security.Cryptography;
-using log4net;
 
+using NHINDirect.Diagnostics;
 
 namespace NHINDirect.XDS
 {
     public class XDSHelper
     {
-        private ILog logger = LogManager.GetLogger("XDS");
+        private readonly ILogger m_logger;
         bool IsSchemaError = false;
-        //To create slots for meta data.
+
+        public XDSHelper()
+        {
+            m_logger = Log.For(this);
+        }
+
+		//To create slots for meta data.
         public XmlDocument CreateRepositoryMetadata(XmlDocument xmlDocMsgBody, string slotName, string slotValue, string documentID)
         {
             XmlDocument xmlDocRepositoryMetadata = new XmlDocument();
@@ -55,7 +58,7 @@ namespace NHINDirect.XDS
             }
             catch (Exception ex)
             {
-                logger.Error("Unexpected error", ex);
+                m_logger.Error("Unexpected error", ex);
                 throw;
             }
             return xmlDocRepositoryMetadata;
@@ -72,23 +75,77 @@ namespace NHINDirect.XDS
                 XmlNodeList xdsDocuments = rootElement.SelectNodes(@"//*[local-name()='Document']");
                 foreach (XmlNode xdsDocument in xdsDocuments)
                 {
-                    if (xdsDocument.Attributes["id"].Value.ToString() == xdsUniqueId)
+                    if (xdsDocument.Attributes["id"].Value == xdsUniqueId)
                     {
-                        string strContent = xdsDocument.InnerText.ToString();
-                        documentContent = System.Text.ASCIIEncoding.ASCII.GetBytes(strContent);
+                        string strContent = xdsDocument.InnerText;
+                        documentContent = System.Text.Encoding.ASCII.GetBytes(strContent);
                     }
 
                 }
             }
             catch (Exception ex)
             {
-                logger.Error("Unexpected error", ex);
+                m_logger.Error("Unexpected error", ex);
                 throw;
             }
             return documentContent;
 
         }
 
+        public XmlDocument CreateRepositorySlotElement(XmlDocument xmlDocRequest, string slotName, string slotValue, string documentEntryUUID)
+        {
+            try
+            {
+                XmlElement eltRoot = null;
+                XmlNode nodeExtrinsicObject = null;
+                XmlNode nodeExtrinsicObjectSlotValue = null;
+                string xpathExtrinsicObject = @".//*[local-name()='ExtrinsicObject'][@id='$id$']";
+                string xpathExtrinsicObjectSlotValue = @".//*[local-name()='ExtrinsicObject'][@id='$id$']/*[local-name()='Slot'][@name='$name$']/*[local-name()='ValueList']/*[local-name()='Value']";
+
+                //Root Element
+                eltRoot = xmlDocRequest.DocumentElement;
+
+                //ExtrinsicObject element of particular id/entryUUID
+                xpathExtrinsicObject = xpathExtrinsicObject.Replace("$id$", documentEntryUUID);
+                nodeExtrinsicObject = eltRoot.SelectSingleNode(xpathExtrinsicObject);
+
+                //ExtrinsicObject->Slot->ValueList->Value
+                xpathExtrinsicObjectSlotValue = xpathExtrinsicObjectSlotValue.Replace("$id$", documentEntryUUID);
+                xpathExtrinsicObjectSlotValue = xpathExtrinsicObjectSlotValue.Replace("$name$", slotName);
+                nodeExtrinsicObjectSlotValue = eltRoot.SelectSingleNode(xpathExtrinsicObjectSlotValue);
+
+                if (nodeExtrinsicObject == null)
+                    return xmlDocRequest;
+
+                if (nodeExtrinsicObjectSlotValue != null)
+                {
+                    nodeExtrinsicObjectSlotValue.InnerText = slotValue;
+                }
+                else
+                {
+                    XmlElement eltSlot = xmlDocRequest.CreateElement("Slot", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0");
+                    XmlAttribute attribName = xmlDocRequest.CreateAttribute("name");
+                    attribName.Value = slotName;
+                    eltSlot.Attributes.Append(attribName);
+
+                    XmlElement eltValueList = xmlDocRequest.CreateElement("ValueList", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0");
+                    eltSlot.AppendChild(eltValueList);
+
+                    XmlElement eltValue = xmlDocRequest.CreateElement("Value", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0");
+                    eltValue.InnerText = slotValue;
+                    eltValueList.AppendChild(eltValue);
+
+                    nodeExtrinsicObject.InsertAfter(eltSlot, null);
+                }
+
+                return xmlDocRequest;
+            }
+            catch (Exception ex)
+            {
+                m_logger.Error("Unexpected error", ex);
+                throw;
+            }
+        }
         public Stream GetDocumentContentStream(XmlDocument xmlDocRequest, string documentUniqueId)
         {
             Stream documentContentStream = null;
@@ -115,7 +172,7 @@ namespace NHINDirect.XDS
             }
             catch (Exception ex)
             {
-                logger.Error("Unexpected error", ex);
+                m_logger.Error("Unexpected error", ex);
                 throw;
             }
 
@@ -152,7 +209,7 @@ namespace NHINDirect.XDS
             }
             catch (Exception ex)
             {
-                logger.Error("Error attempting to validate schema", ex);
+                m_logger.Error("Error attempting to validate schema", ex);
                 IsSchemaValid = false;
                 throw ex;
             }

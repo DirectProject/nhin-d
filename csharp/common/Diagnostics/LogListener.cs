@@ -21,10 +21,17 @@ using System.Diagnostics;
 
 namespace NHINDirect.Diagnostics
 {
+    /// <summary>
+    /// Listens on events and logs them.
+    /// </summary>
     public class LogListener : TraceListener
     {
         LogWriter m_log;
         
+        /// <summary>
+        /// Initializes a listener with the specified log writer
+        /// </summary>
+        /// <param name="log">The <see cref="LogWriter"/> to which to write events</param>
         public LogListener(LogWriter log)
         {
             if (log == null)
@@ -35,11 +42,19 @@ namespace NHINDirect.Diagnostics
             m_log = log;
         }
         
+        /// <summary>
+        /// Writes the message to the log
+        /// </summary>
+        /// <param name="message">The message to write</param>
         public override void Write(string message)
         {
             m_log.WriteLine(message);
         }
 
+        /// <summary>
+        /// Writes the message line to the log
+        /// </summary>
+        /// <param name="message">The message line to write</param>
         public override void WriteLine(string message)
         {
             m_log.WriteLine(message);

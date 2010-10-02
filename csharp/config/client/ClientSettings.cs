@@ -1,23 +1,47 @@
-﻿using System;
+﻿/* 
+ Copyright (c) 2010, NHIN Direct Project
+ All rights reserved.
+
+ Authors:
+    Umesh Madan     umeshma@microsoft.com
+  
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using System.ServiceModel;
+using NHINDirect.Config.Client.CertificateService;
+using NHINDirect.Config.Client.DomainManager;
 
 namespace NHINDirect.Config.Client
 {
     /// <summary>
-    /// I can't believe we have to write this manually. We need configuration to create WCF Bindings. 
+    /// I can't believe we have to write this manually. 
+    /// We need configuration to create WCF Bindings. Unfortunately:
     /// Since we will run within SmtpSvc, there is no app.config. 
     /// One could create an inetinfo.exe.config, I suppose, but that seems equally fishy
-    /// The guidance from the WCF team is to roll your own
+    /// The guidance from the WCF team is to roll your own for now.
+    /// 
+    /// These properties map to the WCF BasicHttpBinding
+    /// 
     /// </summary>
     [XmlType]
     public class ClientSettings
     {
         int m_maxReceivedMessageSize = int.MaxValue;   // No limits by default
         string m_url;
+        bool m_secure = false;
+        int m_receiveTimeout = -1;
+        int m_sendTimeout = -1;
         EndpointAddress m_endpoint;
         BasicHttpBinding m_binding;
         
@@ -25,6 +49,9 @@ namespace NHINDirect.Config.Client
         {
         }
         
+        /// <summary>
+        /// The Service Url
+        /// </summary>
         [XmlElement]
         public string Url
         {
@@ -36,10 +63,11 @@ namespace NHINDirect.Config.Client
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value was null or empty", "value");
                 }
                 m_url = value;
                 m_endpoint = new EndpointAddress(m_url);
+                m_binding = null;
             }
         }
         
@@ -52,11 +80,50 @@ namespace NHINDirect.Config.Client
             }
             set
             {
-                if (value <= 0)
+                if (value < 1)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value was less than 1", "value");
                 }
                 m_maxReceivedMessageSize = value;
+            }
+        }
+        
+        [XmlElement]        
+        public bool Secure
+        {
+            get
+            {
+                return m_secure;
+            }
+            set
+            {
+                m_secure = value;
+            }
+        }
+        
+        [XmlElement("ReceiveTimeout")]
+        public int ReceiveTimeoutSeconds
+        {
+            get
+            {
+                return m_receiveTimeout;
+            }
+            set
+            {
+                m_receiveTimeout = value;
+            }
+        }
+
+        [XmlElement("SendTimeout")]
+        public int SendTimeoutSeconds
+        {
+            get
+            {
+                return m_sendTimeout;
+            }
+            set
+            {
+                m_sendTimeout = value;
             }
         }
         
@@ -74,21 +141,67 @@ namespace NHINDirect.Config.Client
         {
             get
             {
-                if (m_binding == null)
-                {
-                    m_binding = BindingFactory.CreateBasic(m_maxReceivedMessageSize);
-                }
-                
+                this.EnsureBinding();
                 return m_binding;
             }
         }
         
+        public void SetHost(string host, int port)
+        {
+            Uri current = new Uri(this.Url);
+            UriBuilder builder = new UriBuilder(current);
+            builder.Host = host;
+            if (port > 0)
+            {
+                builder.Port = port;
+            }
+            this.Url = builder.ToString();
+        }
+                
         public void Validate()
         {
             if (string.IsNullOrEmpty(this.Url))
             {
                 throw new ArgumentException("Invalid ServiceUrl");
             }
+        }
+        
+        void EnsureBinding()
+        {
+            if (m_binding != null)
+            {
+                return;
+            }
+            
+            m_binding = BindingFactory.CreateBasic(m_maxReceivedMessageSize, m_secure);
+            if (m_receiveTimeout > 0)
+            {
+                m_binding.ReceiveTimeout = TimeSpan.FromSeconds(m_receiveTimeout);
+            }
+            if (m_sendTimeout > 0)
+            {
+                m_binding.SendTimeout = TimeSpan.FromSeconds(m_sendTimeout);
+            }
+        }        
+        
+        public DomainManagerClient CreateDomainManagerClient()
+        {
+            return new DomainManagerClient(this.Binding, this.Endpoint);
+        }
+        
+        public AddressManagerClient CreateAddressManagerClient()
+        {
+            return new AddressManagerClient(this.Binding, this.Endpoint);
+        }
+        
+        public CertificateStoreClient CreateCertificateStoreClient()
+        {
+            return new CertificateStoreClient(this.Binding, this.Endpoint);
+        }
+        
+        public AnchorStoreClient CreateAnchorStoreClient()
+        {
+            return new AnchorStoreClient(this.Binding, this.Endpoint);
         }
     }
 }

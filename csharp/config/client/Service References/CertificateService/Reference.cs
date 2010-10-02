@@ -28,6 +28,9 @@ namespace NHINDirect.Config.Client.CertificateService {
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private bool IncludePrivateKeyField;
         
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<NHINDirect.Config.Store.EntityStatus> StatusField;
+        
         [global::System.ComponentModel.BrowsableAttribute(false)]
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
             get {
@@ -60,6 +63,19 @@ namespace NHINDirect.Config.Client.CertificateService {
                 if ((this.IncludePrivateKeyField.Equals(value) != true)) {
                     this.IncludePrivateKeyField = value;
                     this.RaisePropertyChanged("IncludePrivateKey");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<NHINDirect.Config.Store.EntityStatus> Status {
+            get {
+                return this.StatusField;
+            }
+            set {
+                if ((this.StatusField.Equals(value) != true)) {
+                    this.StatusField = value;
+                    this.RaisePropertyChanged("Status");
                 }
             }
         }
@@ -212,6 +228,11 @@ namespace NHINDirect.Config.Client.CertificateService {
             "aultFault", Name="ConfigStoreFault")]
         void AddAnchors(NHINDirect.Config.Store.Anchor[] anchors);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchor", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorConfigStoreFa" +
+            "ultFault", Name="ConfigStoreFault")]
+        NHINDirect.Config.Store.Anchor GetAnchor(string owner, string thumbprint, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsConfigStoreF" +
             "aultFault", Name="ConfigStoreFault")]
@@ -234,6 +255,13 @@ namespace NHINDirect.Config.Client.CertificateService {
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetOutgoingAnchorsConf" +
             "igStoreFaultFault", Name="ConfigStoreFault")]
         NHINDirect.Config.Store.Anchor[] GetOutgoingAnchors(string owner, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwne" +
+            "r", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwne" +
+            "rResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwne" +
+            "rConfigStoreFaultFault", Name="ConfigStoreFault")]
+        void SetAnchorStatusForOwner(string owner, NHINDirect.Config.Store.EntityStatus status);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/EnumerateAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/EnumerateAnchorsRespon" +
             "se")]
@@ -284,6 +312,10 @@ namespace NHINDirect.Config.Client.CertificateService {
             base.Channel.AddAnchors(anchors);
         }
         
+        public NHINDirect.Config.Store.Anchor GetAnchor(string owner, string thumbprint, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
+            return base.Channel.GetAnchor(owner, thumbprint, options);
+        }
+        
         public NHINDirect.Config.Store.Anchor[] GetAnchors(long[] anchorIDs, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.GetAnchors(anchorIDs, options);
         }
@@ -298,6 +330,10 @@ namespace NHINDirect.Config.Client.CertificateService {
         
         public NHINDirect.Config.Store.Anchor[] GetOutgoingAnchors(string owner, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.GetOutgoingAnchors(owner, options);
+        }
+        
+        public void SetAnchorStatusForOwner(string owner, NHINDirect.Config.Store.EntityStatus status) {
+            base.Channel.SetAnchorStatusForOwner(owner, status);
         }
         
         public NHINDirect.Config.Store.Anchor[] EnumerateAnchors(long lastAnchorID, int maxResults, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {

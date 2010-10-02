@@ -25,22 +25,73 @@ namespace NHINDirect.Agent
     /// </summary>
     public enum AgentError
     {
+        /// <summary>
+        /// Unexpected or other unknown error status.
+        /// </summary>
         Unexpected = 0,
+        /// <summary>
+        /// A message is missing the required <c>To:</c> header
+        /// </summary>
         MissingTo,
+        /// <summary>
+        /// A message is missing the required <c>From:</c> header
+        /// </summary>
         MissingFrom,
+        /// <summary>
+        /// A message is missing the message body.
+        /// </summary>
         MissingMessage,
+        /// <summary>
+        /// The message was expected to be a wrapped message on decryption but was not.
+        /// </summary>
         MessageNotWrapped,
+        /// <summary>
+        /// The message was asked to set a null or empty recipients list.
+        /// </summary>
         NoRecipients,
+        /// <summary>
+        /// The message was asked to set a null or missing sender.
+        /// </summary>
         NoSender,
+        /// <summary>
+        /// The signature could not be read
+        /// </summary>
         InvalidSignature,
+        /// <summary>
+        /// The encrypted message was malformed.
+        /// </summary>
         InvalidEncryption,
+        /// <summary>
+        /// This message is not trusted (could not be decrypted or is unsigned)
+        /// </summary>
         UntrustedMessage,
+        /// <summary>
+        /// The sender of this message is not trusted.
+        /// </summary>
         UntrustedSender,
+        /// <summary>
+        /// Certificates for the recipient could not be retrieved and are required.
+        /// </summary>
         UnknownRecipient,
+        /// <summary>
+        /// This message has no signatures.
+        /// </summary>
         UnsignedMessage,
+        /// <summary>
+        /// The message is missing sender signatures
+        /// </summary>
         MissingSenderSignature,
+        /// <summary>
+        /// The message is missing sender certificates
+        /// </summary>
         MissingSenderCertificate,
+        /// <summary>
+        /// The message is missing recipient certificates in the signature
+        /// </summary>
         MissingRecipientCertificate,
+        /// <summary>
+        /// There are no trusted recipients for this message after trust enforcement.
+        /// </summary>
         NoTrustedRecipients
     }
 }

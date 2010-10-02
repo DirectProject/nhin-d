@@ -1,7 +1,31 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * Copyright (c) 2010, NHIN Direct Project
+ * All rights reserved.
+ *  
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright 
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.  
+ * 3. Neither the name of the the NHIN Direct Project (nhindirect.org)
+ *    nor the names of its contributors may be used to endorse or promote products 
+ *    derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY 
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY 
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.nhind.xdm;
 
 import java.io.BufferedInputStream;
@@ -12,10 +36,13 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import javax.activation.DataHandler;
 
+import javax.activation.DataHandler;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -28,8 +55,12 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.lang.StringUtils;
+
+
 /**
- *
+ * This class handles the packaging and sending of XDM data over SMTP.
+ * 
  * @author vlewis
  */
 public class SMTPMailClient {
@@ -43,13 +74,40 @@ public class SMTPMailClient {
     private static final String SMTP_AUTH_USER = "lewistower1@gmail.com";
     private static final String SMTP_AUTH_PWD = "hadron106";
  
-
+    /**
+     * Class logger.
+     */
+    private static final Logger LOGGER = Logger.getLogger(SMTPMailClient.class.getPackage().getName());
+    
+    /**
+     * Create and send a message over SMTP.
+     * 
+     * @param recipients
+     *            The list of recipient addresses for the mail message.
+     * @param subject
+     *            The subject of the mail message.
+     * @param messageId
+     *            The message ID.
+     * @param body
+     *            The body body of the message.
+     * @param message
+     *            The data to be zipped and attached to the mail message.
+     * @param from
+     *            The sender of the mail message.
+     * @param suffix
+     *            The suffix of the data to be zipped and attached to the mail
+     *            message.
+     * @param meta
+     *            The metadata to be included in the zip and attached to the
+     *            mail message.
+     * @throws MessagingException
+     */
     public void postMail(List<String> recipients, String subject, String messageId, String body,
             byte[] message, String from, String suffix, byte[] meta) throws MessagingException {
         boolean debug = false;
         java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 
-        //Set the host smtp address
+        // Set the host SMTP address
         Properties props = new Properties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.starttls.enable", "true");
@@ -61,12 +119,7 @@ public class SMTPMailClient {
 
         session.setDebug(debug);
 
-        // create a message
-        //   Message msg = new MimeMessage(session);
-
-        // set the from and to address
         InternetAddress addressFrom = new InternetAddress(from);
-        //  msg.setFrom(addressFrom);
 
         InternetAddress[] addressTo = new InternetAddress[recipients.size()];
         int i = 0;
@@ -74,6 +127,7 @@ public class SMTPMailClient {
             addressTo[i++] = new InternetAddress(recipient);
         }
 
+        // Build message object
         mmessage = new MimeMessage(session);
         mmessage.setFrom(addressFrom);
         mmessage.setRecipients(Message.RecipientType.TO, addressTo);
@@ -85,11 +139,10 @@ public class SMTPMailClient {
         mainBody.setDataHandler(new DataHandler(body, "text/plain"));
         mailBody.addBodyPart(mainBody);
 
-
         mimeAttach = new MimeBodyPart();
 
         try {
-            File zipout = getZip(message, suffix, meta);
+            File zipout = getZip(message, suffix, meta, messageId);
             mimeAttach.attachFile(zipout);
 
         } catch (Exception x) {
@@ -100,19 +153,38 @@ public class SMTPMailClient {
 
         mmessage.setContent(mailBody);
         Transport.send(mmessage);
-
-
     }
 
-    private File getZip(byte[] attachment, String suffix, byte[] meta) {
-
+    /**
+     * Write data to a .zip file and return the Flie object.
+     * 
+     * @param attachment
+     *            The attachment data to be included in the .zip file.
+     * @param suffix
+     *            The suffix for the attachment data.
+     * @param meta
+     *            The metadata to be included in the .zip file.
+     * @param messageId
+     *            Unique string representing the message ID, used as part of the
+     *            zip filename for thread safety.
+     * @return a reference to the created .zip file.
+     */
+    private File getZip(byte[] attachment, String suffix, byte[] meta, String messageId) {
         File temp = null;
+        
+        if (StringUtils.isBlank(messageId)) {
+            messageId = UUID.randomUUID().toString();
+
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.info("Message ID not provided, using random ID (" + messageId + ")");
+            }
+        }
+        
         try {
             BufferedInputStream origin = null;
-            temp = new File("xdm.zip");
+            temp = new File(messageId + "-xdm.zip");
             FileOutputStream dest = new FileOutputStream(temp);
 
-            // OutputStream dest = new ByteArrayOutputStream(attachmentString.length()*2);
             ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
             out.setMethod(ZipOutputStream.DEFLATED);
             byte data[] = new byte[BUFFER];
@@ -195,6 +267,12 @@ public class SMTPMailClient {
      */
     private class SMTPAuthenticator extends javax.mail.Authenticator {
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see javax.mail.Authenticator#getPasswordAuthentication()
+         */
+        @Override
         public PasswordAuthentication getPasswordAuthentication() {
             String username = SMTP_AUTH_USER;
             String password = SMTP_AUTH_PWD;
@@ -202,10 +280,22 @@ public class SMTPMailClient {
         }
     }
 
+    /**
+     * Create the readme string for the XDM package.
+     * 
+     * @return a string to be used as the readme for the XDM package.
+     */
     private String getReadme() {
         return "NHIN Direct - IHE Team - Implementation. This XDM message was created via the web interface.  Please view INDEX.HTM for links to the files and metadata that make up this message. ";
     }
 
+    /**
+     * Create the index file for the XDM package.
+     * 
+     * @param type
+     *            The suffix for the attachment included in the XDM package.
+     * @return a string to be used as the index for the XDM package.
+     */
     private String getIndex(String type) {
 
         String index = "<html xmlns=\"http://www.w3.org/1999/xhtml\" > <head>" +
@@ -213,7 +303,7 @@ public class SMTPMailClient {
                 "<title>XDM Message</title>" +
                 "</head><body>" +
                 "<h1>XDM Message</h1>" +
-                "<p>This package contains an XDS message.  The message was created by" +
+                "<p>This package contains an XDS message.  The message was created by " +
                 "Happy Valley Clinic and is solely intended for the intended" +
                 "recipients listed in the XDS Metadata.  Any other use is forbidden.</p>" +
                 "<h2>Package Contents</h2>" +
@@ -222,7 +312,7 @@ public class SMTPMailClient {
                 "<li><a href=\"SUBSET01/\">SUBSET01/</a> - XDS Submission Set 1" +
                 "<ul>" +
                 "<li><a href=\"SUBSET01/METADATA.XML\">SUBSET01/METADATA.XML</a> - XDS information about the content, recipient, author, etc.</li>" +
-                "<li><a href=\"SUBSET01/DOCUMENT.PDF\">SUBSET01/DOCUMENT.XXX</a> - document payload in PDF format</li>" +
+                "<li><a href=\"SUBSET01/DOCUMENT.XXX\">SUBSET01/DOCUMENT.XXX</a> - document payload in XXX format</li>" +
                 "</ul>" +
                 "</li>" +
                 "</ul>" +
@@ -231,6 +321,12 @@ public class SMTPMailClient {
         return ret;
     }
 
+    /**
+     * Return the CCD.xsl file as an array of bytes.
+     * 
+     * @return the CCD.xsl file as an array of bytes.
+     * @throws Exception
+     */
     private byte[] getXsl() throws Exception {
         InputStream is = this.getClass().getResourceAsStream("/CCD.xsl");
         byte[] theBytes = new byte[is.available()];

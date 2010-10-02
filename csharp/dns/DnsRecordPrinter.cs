@@ -22,20 +22,31 @@ using System.IO;
 
 namespace DnsResolver
 {
+    /// <summary>
+    /// Prints a textual representation of DNS transactions (request, response, records, etc.)
+    /// </summary>
     public class DnsRecordPrinter
     {
         TextWriter m_writer;
         
+        /// <summary>
+        /// Initializes the printer with <paramref name="writer"/>
+        /// </summary>
+        /// <param name="writer">The <see cref="TextWriter"/> used for output</param>
         public DnsRecordPrinter(TextWriter writer)
         {
             if (writer == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("writer");
             }
             
             this.m_writer = writer;
         }
         
+        /// <summary>
+        /// Prints a DNS response.
+        /// </summary>
+        /// <param name="response">The response to print</param>
         public void Print(DnsResponse response)
         {
             if (response == null)
@@ -45,39 +56,43 @@ namespace DnsResolver
             
             if (response.IsNameError)
             {
-                Console.WriteLine("Is Name Error");
+				this.Print("Is Name Error");
                 return;
             }
             
             if (!response.IsSuccess)
             {
-                Console.WriteLine("Failed");
+				this.Print("Failed");
                 return;
             }
             
             if (response.HasAnswerRecords)
             {
-                Console.WriteLine("***ANSWERS***");
+				this.Print("***ANSWERS***");
                 this.Print(response.AnswerRecords);
             }
             else
             {
-                Console.WriteLine("No answers");
+				this.Print("No answers");
             }              
             
             if (response.HasNameServerRecords)
             {
-                Console.WriteLine("***NAME SERVERS***");
+				this.Print("***NAME SERVERS***");
                 this.Print(response.NameServerRecords);
             }
             
             if (response.HasAdditionalRecords)
             {
-                Console.WriteLine("***Additional****");
+				this.Print("***Additional***");
                 this.Print(response.AdditionalRecords);
             }
         }
         
+        /// <summary>
+        /// Prints a collection of DNS RRs
+        /// </summary>
+        /// <param name="records">The RRs to print</param>
         public void Print(DnsResourceRecordCollection records)
         {
             if (records == null || records.Count == 0)
@@ -92,6 +107,10 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Prints an array of RRs.
+        /// </summary>
+        /// <param name="records">The RRs to print</param>
         public void Print(DnsResourceRecord[] records)
         {
             if (records == null || records.Length == 0)
@@ -106,6 +125,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Prints an RR
+        /// </summary>
+        /// <param name="record">The RR to print</param>
         public void Print(DnsResourceRecord record)
         {
             if (record == null)
@@ -123,63 +146,75 @@ namespace DnsResolver
                 default:
                     break;
                 
-                case Dns.RecordType.ANAME:
+                case DnsStandard.RecordType.ANAME:
                     this.Print((AddressRecord) record);
                     break;
 
-                case Dns.RecordType.NS:
+                case DnsStandard.RecordType.NS:
                     this.Print((NSRecord)record);
                     break;
                 
-                case Dns.RecordType.CNAME:
+                case DnsStandard.RecordType.CNAME:
                     this.Print((CNameRecord) record);
                     break;
                     
-                case Dns.RecordType.SOA:
+                case DnsStandard.RecordType.SOA:
                     this.Print((SOARecord) record);
                     break;
                         
-                case Dns.RecordType.MX:
+                case DnsStandard.RecordType.MX:
                     this.Print((MXRecord) record);
                     break;               
                 
-                case Dns.RecordType.PTR:
+                case DnsStandard.RecordType.PTR:
                     this.Print((PtrRecord) record);
                     break;
                     
-                case Dns.RecordType.TXT:
+                case DnsStandard.RecordType.TXT:
                     this.Print((TextRecord) record);
                     break;      
                 
-                case Dns.RecordType.CERT:
+                case DnsStandard.RecordType.CERT:
                     this.Print((CertRecord) record);                                       
                     break;
             }
         }
         
+        /// <summary>
+        /// Prints an A RR
+        /// </summary>
+        /// <param name="body">The RR to print</param>
         public void Print(AddressRecord body)
         {
             if (body == null)
             {
-                m_writer.WriteLine("Null A Record Body");
+                this.Print("Null A Record Body");
                 return;
             }
 
             this.Print("IPAddress", body.IPAddress.ToString());
         }
-        
+
+        /// <summary>
+        /// Prints an MX RR
+        /// </summary>
+        /// <param name="body">The RR to print</param>
         public void Print(MXRecord body)
         {
             if (body == null)
             {
-                m_writer.WriteLine("Null MX Record Body");
+                this.Print("Null MX Record Body");
                 return;
             }
             
             this.Print("Exchange", body.Exchange);
             this.Print("Preferrence", body.Preference);
         }
-        
+
+        /// <summary>
+        /// Prints a TXT RR
+        /// </summary>
+        /// <param name="body">The RR to print</param>
         public void Print(TextRecord body)
         {
             if (body == null)
@@ -205,34 +240,54 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Prints a CNAME RR
+        /// </summary>
+        /// <param name="cname">The RR to print</param>
         public void Print(CNameRecord cname)
         {
-            Console.WriteLine(cname.CName);
+			this.Print(cname.CName);
         }
         
+        /// <summary>
+        /// Prints a SOA RR
+        /// </summary>
+        /// <param name="soa">The RR to print</param>
         public void Print(SOARecord soa)
         {
-            Console.WriteLine(soa.DomainName);
+			this.Print(soa.DomainName);
         }
         
+        /// <summary>
+        /// Prints a CERT RR
+        /// </summary>
+        /// <param name="cert">The RR to print</param>
         public void Print(CertRecord cert)
         {
             if (cert.Cert != null)
             {
-                Console.WriteLine(cert.Cert.Certificate.Subject);
+				this.Print(cert.Cert.Certificate.Subject);
             }
         }
         
+        /// <summary>
+        /// Prints an NS RR
+        /// </summary>
+        /// <param name="ns">The RR to print</param>
         public void Print(NSRecord ns)
         {
-            Console.WriteLine(ns.NameServer);
+			this.Print(ns.NameServer);
         }
         
+        /// <summary>
+        /// Prints a PTR RR
+        /// </summary>
+        /// <param name="ptr">The RR to print</param>
         void Print(PtrRecord ptr)
         {
-            Console.WriteLine(ptr.Domain);
+            this.Print(ptr.Domain);
         }
-        
+
         void Print<T>(string name, T value)
         {
             this.Print(name, value.ToString());
@@ -247,10 +302,15 @@ namespace DnsResolver
         {
             this.Print(name, value.ToString());
         }
-        
+
         void Print(string name, string value)
         {
             m_writer.WriteLine("{0}={1}", name, value);
         }
+
+		void Print(string message)
+		{
+			m_writer.WriteLine(message);
+		}
     }
 }

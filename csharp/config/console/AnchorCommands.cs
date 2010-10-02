@@ -20,6 +20,8 @@ using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.IO;
 using System.Net.Mail;
+using System.ServiceModel;
+using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client;
@@ -27,90 +29,196 @@ using NHINDirect.Config.Client.CertificateService;
 
 namespace NHINDirect.Config.Command
 {
+    /// <summary>
+    /// Commands to manage Anchors
+    /// </summary>
     public class AnchorCommands
     {
-        AnchorStoreClient m_client;
-        
         public AnchorCommands()
         {
-            m_client = new AnchorStoreClient(ConfigConsole.Settings.AnchorManager.Binding, ConfigConsole.Settings.AnchorManager.Endpoint);
         }
         
-        public void Command_AnchorAdd(string[] args)
+        //---------------------------------------
+        //
+        // Commands
+        //
+        //---------------------------------------
+
+        /// <summary>
+        /// Import and add an anchor
+        /// </summary>
+        public void Command_Anchor_Add(string[] args)
         {
             string owner = args.GetRequiredValue(0);
-            string path = args.GetRequiredValue(1);
+            string filePath = args.GetRequiredValue(1);
             string password = args.GetOptionalValue(2, string.Empty);
-
-            Anchor cert = new Anchor(owner, File.ReadAllBytes(path), password);
-            m_client.AddAnchors(new Anchor[] { cert });
+            
+            PushCerts(owner, CertificateCommands.LoadCerts(filePath, password), false);
         }
-        public void Usage_AnchorAdd()
+        public void Usage_Anchor_Add()
         {
             Console.WriteLine("Import an anchor certificate from a file and push it into the store.");
-            Console.WriteLine("    anchoradd owner filepath [password]");
+            Console.WriteLine("The anchor is used for both incoming & outgoing trust.");
+            Console.WriteLine("    owner filepath [password]");
+            Console.WriteLine("\t owner: Anchor owner");
+            Console.WriteLine("\t filePath: path fo the certificate file. Can be .DER, .CER or .PFX");
+            Console.WriteLine("\t password: (optional) file password");
         }
         
-        public void Command_AnchorGetByID(string[] args)
+        /// <summary>
+        /// Retrieve an anchor by its ID
+        /// </summary>
+        public void Command_Anchor_ByID_Get(string[] args)
         {
             long anchorID = args.GetRequiredValue<int>(0);
             CertificateGetOptions options = CertificateCommands.GetOptions(args, 1);
 
-            Anchor[] anchors = m_client.GetAnchors(new long[] { anchorID }, options);
+            Anchor[] anchors = ConfigConsole.Current.AnchorClient.GetAnchors(new long[] { anchorID }, options);
             this.Print(anchors);
         }
-        public void Usage_AnchorGetByID()
+        public void Usage_Anchor_ByID_Get()
         {
             Console.WriteLine("Get an anchor by its id.");
-            Console.WriteLine("    anchorgetbyid anchorID [options]");
+            Console.WriteLine("    anchorID [options]");
             CertificateCommands.PrintOptionsUsage();
         }
-                
-        public void Command_AnchorsGet(string[] args)
+        
+        /// <summary>
+        /// Get all anchors for an owner
+        /// </summary>
+        public void Command_Anchors_Get(string[] args)
         {
             string owner = args.GetRequiredValue(0);
             CertificateGetOptions options = CertificateCommands.GetOptions(args,1);
      
-            Anchor[] anchors = m_client.GetAnchorsForOwner(owner, options);
+            Anchor[] anchors = ConfigConsole.Current.AnchorClient.GetAnchorsForOwner(owner, options);
             this.Print(anchors);
         }
-        public void Usage_AnchorsGet()
+        public void Usage_Anchors_Get()
         {
             Console.WriteLine("Get all anchors for an owner.");
-            Console.WriteLine("  anchorsget owner [options]");
+            Console.WriteLine("  owner [options]");
+            Console.WriteLine("\t owner: Anchor owner");
             CertificateCommands.PrintOptionsUsage();
         }
         
-        public void Command_AnchorsResolve(string[] args)
-        {
-            MailAddress mail = new MailAddress(args.GetRequiredValue(0));
-            ConfigAnchorResolver resolver = new ConfigAnchorResolver(m_client);
-            
-            X509Certificate2Collection matches = resolver.IncomingAnchors.GetCertificates(mail);
-            CertificateCommands.Print(matches);
-            
-            matches = resolver.OutgoingAnchors.GetCertificates(mail);
-            CertificateCommands.Print(matches);
-        }
-        public void Usage_AnchorsResolve()
-        {
-            Console.WriteLine("Resolve anchors like the agent would.");
-            Console.WriteLine("    anchorsresolve emailaddress");
-        }
-        
-        public void Command_AnchorsList(string[] args)
+        /// <summary>
+        /// List ALL anchors
+        /// </summary>
+        public void Command_Anchors_List(string[] args)
         {
             CertificateGetOptions options = CertificateCommands.GetOptions(args, 0);
-            foreach(Anchor anchor in m_client.EnumerateAnchors(10, options))
+            //
+            // TODO: Give the ability to "more" through this list
+            //
+            foreach(Anchor anchor in ConfigConsole.Current.AnchorClient.EnumerateAnchors(10, options))
             {
                 this.Print(anchor);
                 CommandUI.PrintSectionBreak();
             }
         }
-        public void Usage_AnchorsList()
+        public void Usage_Anchors_List()
         {
             Console.WriteLine("List all anchors");
             CertificateCommands.PrintOptionsUsage();
+        }
+        
+        /// <summary>
+        /// Set the status of all anchors for an owner
+        /// </summary>
+        public void Command_Anchor_Status_Set(string[] args)
+        {
+            string owner = args.GetRequiredValue(0);
+            EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
+
+            ConfigConsole.Current.AnchorClient.SetAnchorStatusForOwner(owner, status);
+        }
+        public void Usage_Anchor_Status_Set()
+        {
+            Console.WriteLine("Set the status for ALL anchors for an owner.");
+            Console.WriteLine("    owner");
+            Console.WriteLine("\t owner: Anchor owner");
+            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString);
+        }
+        
+        /// <summary>
+        /// Remove an anchor
+        /// </summary>
+        public void Command_Anchor_Remove(string[] args)
+        {
+            long anchorID = args.GetRequiredValue<long>(0);
+            ConfigConsole.Current.AnchorClient.RemoveAnchor(anchorID);
+        }
+        
+        public void Usage_Anchor_Remove()
+        {
+            Console.WriteLine("Remove anchors with given ID");
+            Console.WriteLine("    anchorID");
+        }
+        
+        /// <summary>
+        /// Mirrors what the production gateway would do
+        /// </summary>
+        public void Command_Anchor_Resolve(string[] args)
+        {
+            MailAddress owner = new MailAddress(args.GetRequiredValue(0));
+            CertificateGetOptions options = CertificateCommands.GetOptions(args, 1);
+
+            Anchor[] anchors = ConfigConsole.Current.AnchorClient.GetAnchorsForOwner(owner.Address, options);
+            if (anchors.IsNullOrEmpty())
+            {
+                anchors = ConfigConsole.Current.AnchorClient.GetAnchorsForOwner(owner.Host, options);
+            }
+            this.Print(anchors);
+        }
+        public void Usage_Anchor_Resolve()
+        {
+            Console.WriteLine("Resolves anchors for an owner - like the Smtp Gateway would.");
+            Console.WriteLine("    owner [options]");
+            Console.WriteLine("\t owner: Anchor owner");
+            CertificateCommands.PrintOptionsUsage();
+        }
+
+        //---------------------------------------
+        //
+        // Implementation details
+        //
+        //---------------------------------------               
+        internal static void PushCerts(string owner, IEnumerable<X509Certificate2> certs, bool checkForDupes)
+        {
+            AnchorStoreClient client = ConfigConsole.Current.AnchorClient;
+            foreach (X509Certificate2 cert in certs)
+            {
+                try
+                {
+                    if (!checkForDupes || !client.Contains(owner, cert))
+                    {
+                        client.AddAnchor(new Anchor(owner, cert, true, true));
+                        Console.WriteLine("Added {0}", cert.Subject);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Exists {0}", cert.ExtractEmailNameOrName());
+                    }
+                }
+                catch(FaultException<ConfigStoreFault> ex)
+                {
+                    if (ex.Detail.Error == ConfigStoreError.UniqueConstraint)
+                    {
+                        Console.WriteLine("Exists {0}", cert.Subject);
+                    }
+                    else
+                    {
+                        throw;
+                    }                    
+                }
+            }
+        }
+
+        internal static void PushCerts(string owner, IEnumerable<X509Certificate2> certs, bool checkForDupes, EntityStatus status)
+        {
+            PushCerts(owner, certs, checkForDupes);
+            ConfigConsole.Current.AnchorClient.SetAnchorStatusForOwner(owner, EntityStatus.Enabled);
         }
         
         void Print(Anchor[] anchors)

@@ -21,10 +21,22 @@ using System.Text;
 
 namespace NHINDirect.Collections
 {
+    /// <summary>
+    /// Change types for event observation
+    /// </summary>
     public enum CollectionChangeType
     {
+        /// <summary>
+        /// An item has been added
+        /// </summary>
         Add,
+        /// <summary>
+        /// An item has been removed
+        /// </summary>
         Remove,
+        /// <summary>
+        /// An item has been changed
+        /// </summary>
         Update
     }
 
@@ -34,22 +46,37 @@ namespace NHINDirect.Collections
     /// </summary>
     public class ObjectCollection<T> : Collection<T>
     {        
+
+        /// <summary>
+        /// Initializes a new empty instance.
+        /// </summary>
         public ObjectCollection()
         {
         }
         
+        /// <summary>
+        /// Initializes a new instance containing the provided items.
+        /// </summary>
+        /// <param name="items">An enumeration of items with which to initialize this instance</param>
         public ObjectCollection(IEnumerable<T> items)
         {
             this.Add(items);
         }
         
+        /// <summary>
+        /// An event sink to register for observing container item changes.
+        /// </summary>
         public event Action<CollectionChangeType, T> Changed;
         
+        /// <summary>
+        /// Adds the provided items to this instance.
+        /// </summary>
+        /// <param name="items">An enumeration of items to add to this instance</param>
         public void Add(IEnumerable<T> items)
         {
             if (items == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("items");
             }
             
             foreach(T item in items)
@@ -61,7 +88,16 @@ namespace NHINDirect.Collections
         /// <summary>
         /// Remove all items matching the given filter
         /// </summary>
-        /// <param name="filter"></param>
+        /// <example>
+        /// <code>
+        /// ObjectCollection&lt;int&gt; coll = new ObjectCollection&lt;int&gt;();
+        /// coll.Add(1);
+        /// coll.Add(2);
+        /// coll.Add(3);
+        /// coll.Remove(x => i % 2 == 0); // Removes 2
+        /// </code>
+        /// </example>
+        /// <param name="filter">The filter taking items and returning <c>bool</c></param>
         public void Remove(Predicate<T> filter)
         {
             this.Remove(filter, true);
@@ -70,7 +106,7 @@ namespace NHINDirect.Collections
         /// <summary>
         /// Remove all items EXCEPT those that match this filter
         /// </summary>
-        /// <param name="filter"></param>
+        /// <param name="filter">The filter delegat taking items and returning <c>bool</c></param>
         public void RemoveExcept(Predicate<T> filter)
         {
             this.Remove(filter, false);
@@ -80,7 +116,7 @@ namespace NHINDirect.Collections
         {
             if (filter == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("filter");
             }
 
             int i = 0;
@@ -98,28 +134,43 @@ namespace NHINDirect.Collections
                 }
             }
         }
-                   
+
+        /// <summary>
+        /// Inserts the provided item at the provided index, moving items at and past the insertion
+        /// point down.
+        /// </summary>
+        /// <param name="index">The index where the new item will appear.</param>
+        /// <param name="item">The item to insert.</param>
         protected override void InsertItem(int index, T item)
         {
             if (item == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("item");
             }
             base.InsertItem(index, item);
             this.Notify(CollectionChangeType.Add, item);
         }
 
+        /// <summary>
+        /// Sets an item at an index position.
+        /// </summary>
+        /// <param name="index">The index position to update.</param>
+        /// <param name="item">The item to update at the index position.</param>
         protected override void SetItem(int index, T item)
         {
             if (item == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("item");
             }
             
             base.SetItem(index, item);
             this.Notify(CollectionChangeType.Update, item);
         }
 
+        /// <summary>
+        /// Removes the item at the specified index position (moving subsequent items up)
+        /// </summary>
+        /// <param name="index">The index position for which to remove the item.</param>
         protected override void RemoveItem(int index)
         {
             T item = this[index];

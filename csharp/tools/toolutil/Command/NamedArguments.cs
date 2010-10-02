@@ -20,6 +20,9 @@ using System.Text;
 
 namespace NHINDirect.Tools.Command
 {
+    /// <summary>
+    /// A Dictionary of name value pairs, where value is optional 
+    /// </summary>
     public class NamedArguments
     {
         string[] m_rawArgs;
@@ -29,7 +32,7 @@ namespace NHINDirect.Tools.Command
         {
             if (args == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("args");
             }
 
             m_rawArgs = args;
@@ -41,7 +44,7 @@ namespace NHINDirect.Tools.Command
         }
 
         public NamedArguments(string parameters)
-            : this(parameters.SplitLikeCommandLine().ToArray())
+            : this(parameters.ParseAsCommandLine().ToArray())
         {
         }
 
@@ -92,7 +95,7 @@ namespace NHINDirect.Tools.Command
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value null or empty", "name");
             }
 
             if (value == null)

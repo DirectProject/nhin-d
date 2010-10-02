@@ -14,53 +14,50 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 
 namespace NHINDirect.Certificates
 {
-	/// <summary>
-	/// Supports resolution of certificates by address.
-	/// </summary>
+    /// <summary>
+    /// Supports resolution of certificates by address.
+    /// </summary>
     public class CertificateResolver : ICertificateResolver
     {
-        IX509CertificateIndex m_certIndex;
-        
-	/// <summary>
-	/// Creates a certificate resolver from a certificate index instance. 
-	/// </summary>
-	/// <param name="index">
-	/// An index instance providing <see cref="IX509CertificateIndex"/>
-	/// </param>
+        private readonly IX509CertificateIndex m_certIndex;
+
+        /// <summary>
+        /// Creates a certificate resolver from a certificate index instance. 
+        /// </summary>
+        /// <param name="index">
+        /// An index instance providing <see cref="IX509CertificateIndex"/>
+        /// </param>
         public CertificateResolver(IX509CertificateIndex index)
         {
             if (index == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("index");
             }
-        
+
             m_certIndex = index;
         }
-        
-		/// <summary>
-		/// Gets a collection of certificates by mail address. 
-		/// </summary>
-		/// <param name="address">
-		/// The <see cref="MailAddress"/> for which to retrieve certificates.
-		/// </param>
-		/// <returns>
-		/// The <see cref="X509Certificate2Collection"/> of certificates for the requested address.
-		/// </returns>
+
+        /// <summary>
+        /// Gets a collection of certificates by mail address. 
+        /// </summary>
+        /// <param name="address">
+        /// The <see cref="MailAddress"/> for which to retrieve certificates.
+        /// </param>
+        /// <returns>
+        /// The <see cref="X509Certificate2Collection"/> of certificates for the requested address.
+        /// </returns>
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
-            
+
             X509Certificate2Collection addressCerts = m_certIndex[address.Address];
             X509Certificate2Collection hostCerts = m_certIndex[address.Host];
             if (addressCerts == null && hostCerts == null)
@@ -78,8 +75,7 @@ namespace NHINDirect.Certificates
                 matches.Add(hostCerts);
             }
 
-            return matches;            
+            return matches;
         }
-        
     }
 }

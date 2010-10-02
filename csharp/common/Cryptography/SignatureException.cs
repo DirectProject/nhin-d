@@ -20,13 +20,25 @@ using System.Text;
 
 namespace NHINDirect.Cryptography
 {
+    /// <summary>
+    /// Represents program excecution errors relating to S/MIME signatures.
+    /// </summary>
     public class SignatureException : CryptographicException<SignatureError>
     {
+        /// <summary>
+        /// Initializes a new exception with the specified error type.
+        /// </summary>
+        /// <param name="error">The error type for this exception.</param>
         public SignatureException(SignatureError error)
             : base(error)
         {
         }
 
+        /// <summary>
+        /// Initializes a new exception with the specified error type and a custom message.
+        /// </summary>
+        /// <param name="error">The error type for this exception.</param>
+        /// <param name="message">The custom message for this exception.</param>
         public SignatureException(SignatureError error, string message)
             : base(error, message)
         {

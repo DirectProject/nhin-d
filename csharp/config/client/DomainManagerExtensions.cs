@@ -24,11 +24,38 @@ namespace NHINDirect.Config.Client.DomainManager
 {
     public static class DomainManagerExtensions
     {
+        public static bool DomainExists(this DomainManagerClient client, string domainName)
+        {
+            Domain domain = client.GetDomain(domainName);
+            return (domain != null);
+        }
+        
+        public static Domain GetDomain(this DomainManagerClient client, string domainName, EntityStatus? status)
+        {
+            if (string.IsNullOrEmpty(domainName))
+            {
+                throw new ArgumentException("value was null or empty", "domainName");
+            }
+
+            Domain[] domains = client.GetDomains(new string[] { domainName }, status);
+            if (domains.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            return domains[0];
+        }
+
+        public static Domain GetDomain(this DomainManagerClient client, string domainName)
+        {
+            return client.GetDomain(domainName, null);
+        }
+
         public static Domain GetDomain(this DomainManagerClient client, MailAddress address)
         {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
             
             return client.GetDomain(address.Host);
@@ -38,25 +65,25 @@ namespace NHINDirect.Config.Client.DomainManager
         {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
 
             client.RemoveDomain(address.Host);
         }
-        
+
         public static IEnumerable<Domain> EnumerateDomains(this DomainManagerClient client, int chunkSize)
         {
-            if (chunkSize <= 0)
+            if (chunkSize < 1)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was less than 1", "chunkSize");
             }
 
-            long lastID = -1;
+            string lastDomain = null;
 
             Domain[] domains;
             while (true)
             {
-                domains = client.EnumerateDomains(lastID, chunkSize);
+                domains = client.EnumerateDomains(lastDomain, chunkSize);
                 if (domains.IsNullOrEmpty())
                 {
                     yield break;
@@ -65,7 +92,7 @@ namespace NHINDirect.Config.Client.DomainManager
                 {
                     yield return domains[i];
                 }
-                lastID = domains[domains.Length - 1].ID;
+                lastDomain = domains[domains.Length - 1].Name;
             }
         }
     }
