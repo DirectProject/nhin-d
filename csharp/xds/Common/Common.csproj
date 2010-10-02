@@ -39,6 +39,9 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -50,10 +53,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonUtility.cs" />
+    <Compile Include="Content.cs" />
     <Compile Include="GlobalValues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegistryError.cs" />
     <Compile Include="RegistryErrorList.cs" />
+    <Compile Include="XdsMetadata\AssociationType.cs" />
+    <Compile Include="XdsMetadata\ClassificationType.cs" />
+    <Compile Include="XdsMetadata\ExternalIdentifierType.cs" />
+    <Compile Include="XdsMetadata\ExtrinsicObjectType.cs" />
+    <Compile Include="XdsMetadata\InternationalStringType.cs" />
+    <Compile Include="XdsMetadata\LocalizedStringType.cs" />
+    <Compile Include="XdsMetadata\ObjectRefType.cs" />
+    <Compile Include="XdsMetadata\RegistryEntryType.cs" />
+    <Compile Include="XdsMetadata\RegistryObjectListType.cs" />
+    <Compile Include="XdsMetadata\RegistryObjectType.cs" />
+    <Compile Include="XdsMetadata\RegistryPackageType.cs" />
+    <Compile Include="XdsMetadata\SlotType.cs" />
+    <Compile Include="XdsMetadata\SubmitObjectsRequest.cs" />
+    <Compile Include="XdsMetadata\ValueListType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

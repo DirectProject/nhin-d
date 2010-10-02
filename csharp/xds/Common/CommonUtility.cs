@@ -35,17 +35,17 @@ namespace NHINDirect.XDS.Common
             XmlAttribute attrib = null;
             XmlDocument xmlDocRegistryResponse = new XmlDocument();
 
-            eltRegistryResponse = xmlDocRegistryResponse.CreateElement("tns:RegistryResponse", @"urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0");
+            eltRegistryResponse = xmlDocRegistryResponse.CreateElement("tns:RegistryResponse", @GlobalValues.ebXmlRS3Namespace);
             xmlDocRegistryResponse.AppendChild(eltRegistryResponse);
 
             //tns
             attrib = xmlDocRegistryResponse.CreateAttribute("xmlns:tns");
-            attrib.Value = "urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0";
+            attrib.Value = GlobalValues.ebXmlRS3Namespace;
             eltRegistryResponse.Attributes.Append(attrib);
 
             //rim
             attrib = xmlDocRegistryResponse.CreateAttribute("xmlns:rim");
-            attrib.Value = GlobalValues.CONST_XML_NAMESPACE_x;
+            attrib.Value = GlobalValues.ebXmlRIMNamespace;
             eltRegistryResponse.Attributes.Append(attrib);
 
             attrib = xmlDocRegistryResponse.CreateAttribute("status");
@@ -60,7 +60,7 @@ namespace NHINDirect.XDS.Common
             }
 
             //RegistryErrorList
-            eltRegistryErrorList = xmlDocRegistryResponse.CreateElement("tns:RegistryErrorList", @"urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0");
+            eltRegistryErrorList = xmlDocRegistryResponse.CreateElement("tns:RegistryErrorList", @GlobalValues.ebXmlRS3Namespace);
 
             //Append RegistryErrorList
             eltRegistryResponse.AppendChild(eltRegistryErrorList);
@@ -74,7 +74,7 @@ namespace NHINDirect.XDS.Common
             {
 
                 //RegistryError
-                eltRegistryError = xmlDocRegistryResponse.CreateElement("tns:RegistryError", @"urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0");
+                eltRegistryError = xmlDocRegistryResponse.CreateElement("tns:RegistryError", @GlobalValues.ebXmlRS3Namespace);
 
                 //codeContext
                 attrib = xmlDocRegistryResponse.CreateAttribute("codeContext");
@@ -120,7 +120,7 @@ namespace NHINDirect.XDS.Common
 
             //xmlns
             rootElement.Attributes.Append(objRegistryDocument.CreateAttribute("xmlns"));
-            rootElement.Attributes["xmlns"].Value = "urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0";
+            rootElement.Attributes["xmlns"].Value = GlobalValues.ebXmlRS3Namespace;
 
 
             //xmlns:rim

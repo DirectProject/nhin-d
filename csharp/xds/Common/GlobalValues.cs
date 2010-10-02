@@ -6,6 +6,26 @@ namespace NHINDirect.XDS.Common
 {
     public static class GlobalValues
     {
+        //XML namespaces
+        public const string HL7v3Namespace = "urn:hl7-org:v3";
+        public const string IHEXDSbNamespace = "urn:ihe:iti:xds-b:2007";
+        public const string ebXmlRS3Namespace = "urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0";
+        public const string ebXmlLCMNamespace = "urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0";
+        public const string ebXmlRIMNamespace = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
+        public const string ebXmlQueryNamespace = "urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0";
+        public const string XSINamespace = "http://www.w3.org/2001/XMLSchema-instance";
+        public const string Soap12Namespace = "http://www.w3.org/2003/05/soap-envelope";
+        public const string WebServicesAddressingNamespace = "http://www.w3.org/2005/08/addressing";
+        public const string WebServicesXmlMimeNamespace = "http://www.w3.org/2005/05/xmlmime";
+
+        //Association Type
+        public const string HasMember = "urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember";
+        public const string RPLC = "urn:oasis:names:tc:ebxml-regrep:AssociationType:RPLC";
+        public const string APND = "urn:oasis:names:tc:ebxml-regrep:AssociationType:APND";
+        public const string XFRM = "urn:oasis:names:tc:ebxml-regrep:AssociationType:XFRM";
+        public const string XFRM_RPLC = "urn:oasis:names:tc:ebxml-regrep:AssociationType:XFRM_RPLC";
+        public const string signs = "urn:oasis:names:tc:ebxml-regrep:AssociationType:signs";
+        
         public enum AssociationType
         {
             APND = 1, //The current document is an addendum to the parent document
@@ -14,6 +34,13 @@ namespace NHINDirect.XDS.Common
             XFRM_RPLC // The current document is both transformation and a replacement of the parent document
         }
 
+        //Registry Entry Status
+        public const string Approved = "urn:oasis:names:tc:ebxml-regrep:StatusType:Approved";
+        public const string Submitted = "urn:oasis:names:tc:ebxml-regrep:StatusType:Submitted";
+        public const string Deprecated = "urn:oasis:names:tc:ebxml-regrep:StatusType:Deprecated";
+        public const string Withdrawn = "urn:oasis:names:tc:ebxml-regrep:StatusType:Withdrawn";
+
+        //IHE XDS Metadata UUIDs
         public const string APNDUUID = "urn:uuid:917dc511-f7da-4417-8664-de25b34d3def";
         public const string RPLCUUID = "urn:uuid:60fd13eb-b8f6-4f11-8f28-9ee000184339";
         public const string signsUUID = "urn:uuid:8ea93462-ad05-4cdc-8e54-a102584f6aff94";
@@ -63,7 +90,6 @@ namespace NHINDirect.XDS.Common
 
         public const string CONST_ACTION_RegisterDocumentSetResponse = "urn:ihe:iti:2007:RegisterDocumentSet-bResponse";
         public const string CONST_ACTION_RegistryStoredQueryResponse = "urn:ihe:iti:2007:RegistryStoredQueryResponse";
-        public const string CONST_ACTION_PatientIdentityFeedResponse = "urn:hl7-org:v3:MCCI_IN000002UV"; // modified by iLink
 
         public const string CONST_SEVERITY_TYPE_ERROR = "urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error";
 
@@ -107,38 +133,6 @@ namespace NHINDirect.XDS.Common
         //Sekar-iLink
         public const string CONST_SLOT_LASTUPDATETIME = "lastUpdateTime";
         #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public const string CONST_XML_NAMESPACE_x = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
-        public const string CONST_XML_NAMESPACE_tns = "urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0";
-        public const string CONST_XML_NAMESPACE_xsi = "http://www.w3.org/2001/XMLSchema-instance";
-        public const string CONST_XML_NAMESPACE_rim = "urn:oasis:names:tc:ebxml-regrep:rim:xsd:3.0";
-        public const string CONST_XML_NAMESPACE_rs = "urn:oasis:names:tc:ebxml-regrep:registry:xsd:3.0";
-
-        //xmlns:tns="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" 
-        //xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" 
-        //xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-        //xsi:schemaLocation="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0"
-        public const string CONST_XML_NAMESPACE_QUERY = "urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0";
-        public const string CONST_XML_NAMESPACE_QUERY_rim = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
-        public const string CONST_XML_NAMESPACE_QUERY_xsi = "http://www.w3.org/2001/XMLSchema-instance";
-        public const string CONST_XML_NAMESPACE_QUERY_xsi_schemaLocation = "urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0";
-
 
     }
 }
