@@ -37,9 +37,7 @@ namespace NHINDirect.Xd
 
             DocumentPackage docPackage = new DocumentPackage();
 
-            IEnumerable<XElement> docXEls = from el in docPackageXElement.Descendants("ExtrinsicObjectType")
-                                            where (string) el.Attribute(XDMetadataStandard.ObjectTypeAttr) == XDMetadataStandard.DocumentEntryUUID
-                                            select el;
+            IEnumerable<XElement> docXEls = docPackageXElement.DocumentEntries();
 
             foreach (XElement docXEl in docXEls)
             {
