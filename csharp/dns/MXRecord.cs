@@ -21,13 +21,29 @@ using System.Text;
 
 namespace DnsResolver
 {
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    // |                  PREFERENCE                   |
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    // /                   EXCHANGE                    /
-    // /                                               /
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-
+    
+    /// <summary>
+    /// Represents RDATA for an MX DNS RR.
+    /// </summary>
+    /// <remarks>
+    /// RFC 1035, 3.3.9. MX RDATA format
+    /// <code>
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                  PREFERENCE                   |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                   EXCHANGE                    /
+    /// /                                               /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
+    /// where:
+    ///
+    /// PREFERENCE      A 16 bit integer which specifies the preference given to
+    ///                 this RR among others at the same owner.  Lower values
+    ///                 are preferred.
+    ///
+    /// EXCHANGE        A %lt;domain-name%gt; which specifies a host willing to act as
+    ///                 a mail exchange for the owner name.
+    /// </remarks>
     public class MXRecord : DnsResourceRecord
     {
         string m_exchange;
@@ -36,12 +52,46 @@ namespace DnsResolver
         {
         }
         
+        /// <summary>
+        /// Initializes a record with the supplied data and default preference.
+        /// </summary>
+        /// <param name="name">the domain name for which this is a record</param>
+        /// <param name="exchange">The domain name for the SMTP server for this domain.</param>
+        public MXRecord(string name, string exchange)
+            : this(name, exchange, 10)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a record with the supplied data and default preference.
+        /// </summary>
+        /// <param name="name">the domain name for which this is a record</param>
+        /// <param name="exchange">The domain name for the SMTP server for this domain.</param>
+        /// <param name="preference">The preference given to
+        /// this RR among others at the same owner.  Lower values
+        /// are preferred.</param>
+        public MXRecord(string name, string exchange, short preference)
+            : base(name, DnsStandard.RecordType.MX)
+        {
+            this.Preference = preference;
+            this.Exchange = exchange;
+        }
+        
+        /// <summary>
+        /// The preference given to
+        /// this RR among others at the same owner.  Lower values
+        /// are preferred.
+        /// </summary>
         public short Preference
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// The mail exchange (SMTP server) domain name
+        /// </summary>
+        /// <value>A <see cref="string"/> representation of the domain name.</value>
         public string Exchange
         {
             get
@@ -59,10 +109,48 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Tests equality between this TXT record and the other <paramref name="record"/>.
+        /// </summary>
+        /// <param name="record">The other record.</param>
+        /// <returns><c>true</c> if the RRs are equal, <c>false</c> otherwise.</returns>
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+            
+            MXRecord mxRecord = record as MXRecord;
+            if (mxRecord == null)
+            {
+                return false;
+            }
+            
+            return (
+                    DnsStandard.Equals(m_exchange, mxRecord.m_exchange)
+                &&  this.Preference == mxRecord.Preference
+            );
+        }
+
+        /// <summary>
+        /// Writes this RR in DNS wire format to the <paramref name="buffer"/>
+        /// </summary>
+        /// <param name="buffer">The buffer to which DNS wire data are written</param>
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            buffer.AddShort(this.Preference);
+            buffer.AddDomainName(m_exchange);
+        }
+
+        /// <summary>
+        /// Reads data into this RR from the DNS wire format data in <paramref name="reader"/>
+        /// </summary>
+        /// <param name="reader">Reader in which wire format data for this RR is already buffered.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
-            Preference = reader.ReadShort();
-            Exchange = reader.ReadString();
+            this.Preference = reader.ReadShort();
+            this.Exchange = reader.ReadDomainName();
         }
     }
 }

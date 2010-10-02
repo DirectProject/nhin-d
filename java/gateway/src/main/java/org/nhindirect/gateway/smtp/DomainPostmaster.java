@@ -24,38 +24,67 @@ package org.nhindirect.gateway.smtp;
 
 import javax.mail.internet.InternetAddress;
 
+/**
+ * Indicates the postmaster account for a domain.
+ * @author Greg Meyer
+ * @author Umesh Madan
+ */
 public class DomainPostmaster
 {
 	private String domain;
 	private InternetAddress postmaster;
 	
+	/**
+	 * Constructs an empty postmaster.
+	 */
 	public DomainPostmaster()
 	{
 		domain = "";
 		postmaster = new InternetAddress();
 	}
 	
+	/**
+	 * Constructs a postmaster for a domain with a postmaster address.
+	 * @param domain The mail domain of the postmater.
+	 * @param postmaster The postmaster's email address.
+	 */
 	public DomainPostmaster(String domain, InternetAddress postmaster)
 	{
 		this.domain = domain;
 		this.postmaster = postmaster;
 	}
 
+	/**
+	 * Gets the postmaster domain.
+	 * @return The postmaster domain.
+	 */
 	public String getDomain() 
 	{
 		return domain;
 	}
 
+	/**
+	 * Sets the postmaster's domain.
+	 * @param domain The postmaster's domain.
+	 */
 	public void setDomain(String domain) 
 	{
 		this.domain = domain;
 	}
 
+	/**
+	 * Get's the postmaster's email address.
+	 * @return The postmaster's email address.
+	 */
 	public InternetAddress getPostmaster() 
 	{
 		return postmaster;
 	}
 
+	/**
+	 * Sets the postmaster's email address.
+	 * @param postmaster The postmaster's email address.
+	 */
 	public void setPostmasters(InternetAddress postmaster) 
 	{
 		this.postmaster = postmaster;

@@ -22,9 +22,20 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Agent.Config
 {
+    /// <summary>
+    /// Settings for trust anchor resolver configuration.
+    /// </summary>
     public abstract class TrustAnchorResolverSettings
     {
+        /// <summary>
+        /// Validates the settings.
+        /// </summary>
         public abstract void Validate();
+
+        /// <summary>
+        /// Creates the configured trust anchor resolver.
+        /// </summary>
+        /// <returns>The configured trust anchor resolver.</returns>
         public abstract ITrustAnchorResolver CreateResolver();
     }
 }

@@ -47,7 +47,7 @@ namespace NHINDirect.Agent
     /// { 
     ///     foreach(recipient in incoming.RejectedRecipients) 
     ///     { 
-    ///         Console.WriteLine("Rejected {0}", recipient.Address); 
+    ///         Console.WriteLine("Rejected {0}", recipient.PostalAddress); 
     ///     } 
     /// } 
     /// OutgoingMessage outgoing = agent.ProcessOutgoing(outgoingmsg); 
@@ -55,7 +55,7 @@ namespace NHINDirect.Agent
     /// { 
     ///     foreach(recipient in outgoing.RejectedRecipients) 
     ///     { 
-    ///         Console.WriteLine("Rejected {0}", recipient.Address); 
+    ///         Console.WriteLine("Rejected {0}", recipient.PostalAddress); 
     ///     } 
     /// } 
     /// </code> 
@@ -113,6 +113,24 @@ namespace NHINDirect.Agent
         {
         }
 
+        /// <summary>
+        /// Creates an NHINDAgent instance, specifying private, external and trust anchor certificate stores, and
+        /// and defaulting to the standard trust and cryptography models.
+        /// </summary>
+        /// <param name="domains">
+        /// The local domain names managed by this agent.
+        /// </param>
+        /// <param name="privateCerts">
+        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
+        /// for senders of outgoing messages and receivers of incoming messages.
+        /// </param>
+        /// <param name="publicCerts">
+        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
+        /// for receivers of outgoing messages and senders of incoming messages. 
+        /// </param>
+        /// <param name="anchors">
+        /// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
+        /// </param>
         public NHINDAgent(string[] domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
             : this(domains, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default)
         {
@@ -147,6 +165,31 @@ namespace NHINDirect.Agent
         {
         }
 
+
+        /// <summary>
+        /// Creates an NHINDAgent instance, specifying private, external and trust anchor certificate stores, and 
+        /// trust and cryptography models.
+        /// </summary>
+        /// <param name="domains">
+        /// An array of local domain name managed by this agent.
+        /// </param>
+        /// <param name="privateCerts">
+        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
+        /// for senders of outgoing messages and receivers of incoming messages.
+        /// </param>
+        /// <param name="publicCerts">
+        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
+        /// for receivers of outgoing messages and senders of incoming messages. 
+        /// </param>
+        /// <param name="anchors">
+        /// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
+        /// </param>
+        /// <param name="trustModel">
+        /// An instance or subclass of <see cref="NHINDirect.Agent.TrustModel"/> providing a custom trust model.
+        /// </param>
+        /// <param name="cryptographer">
+        /// An instance or subclass of <see cref="NHINDirect.Cryptography.SMIMECryptographer"/> providing a custom cryptography model.
+        /// </param>
         public NHINDAgent(string[] domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
         {
             m_managedDomains = new AgentDomains(domains);
@@ -237,6 +280,9 @@ namespace NHINDirect.Agent
             }
         }
         
+        /// <summary>
+        /// Should this agent allow incoming messages that are not wrapped <c>message/822</c> MIME entities?
+        /// </summary>
         public bool AllowNonWrappedIncoming
         {
             get
@@ -253,7 +299,7 @@ namespace NHINDirect.Agent
         /// Gets the public certificate resolver (set in the constructor).  
         /// </summary> 
         /// <value> 
-        /// The <see cref="NHINDirect.Certificates.ICertificateResolver" instance used for resolving public certificates. 
+        /// The <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance used for resolving public certificates. 
         /// </value> 
         public ICertificateResolver PublicCertResolver
         {
@@ -267,7 +313,7 @@ namespace NHINDirect.Agent
         /// Gets the private certificate resolver (set in the constructor).  
         /// </summary> 
         /// <value> 
-        /// The <see cref="NHINDirect.Certificates.ICertificateResolver" instance used for resolving private certificates. 
+        /// The <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance used for resolving private certificates. 
         /// </value> 
         public ICertificateResolver PrivateCertResolver
         {
@@ -280,7 +326,7 @@ namespace NHINDirect.Agent
         /// Getst the trust anchor resolver (set in the constructor).  
         /// </summary> 
         /// <value> 
-        /// The <see cref="NHINDirect.Certificates.ITrustAnchorResolver" instance used for resolving trust anchors. 
+        /// The <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance used for resolving trust anchors. 
         /// </value>
         public ITrustAnchorResolver TrustAnchors
         {
@@ -303,7 +349,7 @@ namespace NHINDirect.Agent
             {
                 if (value < TrustEnforcementStatus.Success)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value has a non-successful status", "value");
                 }
                 this.m_minTrustRequirement = value;
             }
@@ -368,7 +414,7 @@ namespace NHINDirect.Agent
         {
             if (string.IsNullOrEmpty(messageText))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "messageText");
             }
 
             return this.ProcessIncoming(new IncomingMessage(messageText));
@@ -409,7 +455,7 @@ namespace NHINDirect.Agent
         {
             if (envelope == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("envelope");
             }
             
             return this.ProcessIncoming(new IncomingMessage(envelope));
@@ -418,7 +464,7 @@ namespace NHINDirect.Agent
 		/// <summary>
 		/// Decrypts and verifies trust in an IncomingMessage instance with signed and encrypted message content.
 		/// </summary>
-		/// <param name="envelope">
+		/// <param name="message">
 		/// A <see cref="IncomingMessage"/> instance with signed and encrypted content for decryption and trust verification.
 		/// </param>
 		/// <returns>
@@ -428,7 +474,7 @@ namespace NHINDirect.Agent
         {
             if (message == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("message");
             }
 
             try
@@ -454,10 +500,17 @@ namespace NHINDirect.Agent
         {
             if (message.Sender == null)
             {
-                throw new AgentException(AgentError.UntrustedSender);
-            }
-
-            message.CategorizeRecipientsByDomain(m_managedDomains);
+                throw new AgentException(AgentError.NoSender);
+            }            
+            if (!message.HasRecipients)
+            {
+                throw new AgentException(AgentError.NoRecipients);
+            }            
+            message.EnsureRecipientsCategorizedByDomain(m_managedDomains);
+            if (!message.HasDomainRecipients)
+            {
+                throw new AgentException(AgentError.NoTrustedRecipients);
+            }            
             //
             // Map each address to its certificates/trust settings
             //
@@ -506,44 +559,15 @@ namespace NHINDirect.Agent
         }
 
         void DecryptSignedContent(IncomingMessage message)
-        {   
-            MimeEntity decryptedEntity = this.DecryptMessage(message);
-            SignedCms signatures;
-            MimeEntity payload;
-            
-            if (SMIMEStandard.IsContentEnvelopedSignature(decryptedEntity.ParsedContentType))
-            {
-                signatures = m_cryptographer.DeserializeEnvelopedSignature(decryptedEntity);                
-                payload = MimeSerializer.Default.Deserialize<MimeEntity>(signatures.ContentInfo.Content);
-            }                        
-            else if (SMIMEStandard.IsContentMultipartSignature(decryptedEntity.ParsedContentType))
-            {
-                SignedEntity signedEntity = SignedEntity.Load(decryptedEntity);                
-                signatures = m_cryptographer.DeserializeDetachedSignature(signedEntity);
-                payload = signedEntity.Content; 
-            }
-            else
-            {
-                throw new AgentException(AgentError.UnsignedMessage);
-            }
-            
-            message.Signatures = signatures;
-            //
-            // Alter body to contain actual content. Also clean up mime headers on the message that were there to support
-            // signatures etc
-            //
-            HeaderCollection headers = message.Message.Headers;
-            message.Message.Headers = headers.SelectNonMimeHeaders();
-            message.Message.ApplyBody(payload); // this will merge in content + content specific mime headers
-        }
-
-        MimeEntity DecryptMessage(IncomingMessage message)
         {
-            MimeEntity decryptedEntity = null;
+            SignedCms signatures = null;
+            MimeEntity payload = null;
+            bool success = false;
+            
             if (this.m_encryptionEnabled)
             {
                 //
-                // Yes, this can be optimized heavily for multiple certs. 
+                // Yes, this can be optimized for multiple certs. 
                 // But we will start with the easy to understand simple version
                 //            
                 // Decrypt and parse message body into a signature entity - the envelope that contains our data + signature
@@ -554,8 +578,11 @@ namespace NHINDirect.Agent
                 {
                     try
                     {
-                        decryptedEntity = this.m_cryptographer.Decrypt(message.Message, cert);
-                        break;
+                        success = this.DecryptSignatures(message, cert, out signatures, out payload);
+                        if (success)
+                        {
+                            break;
+                        }
                     }
                     catch
                     {
@@ -564,15 +591,63 @@ namespace NHINDirect.Agent
             }
             else
             {
-                decryptedEntity = message.Message;
+                success = this.DecryptSignatures(message, null, out signatures, out payload);
             }
-            
-            if (decryptedEntity == null)
+
+            if (!success || signatures == null || payload == null)
             {
                 throw new AgentException(AgentError.UntrustedMessage);
             }
+            
+            message.Signatures = signatures;
+            //
+            // Alter body to contain actual content. Also clean up mime headers on the message that were there to support
+            // signatures etc
+            //
+            HeaderCollection headers = message.Message.Headers;
+            message.Message.Headers = headers.SelectNonMimeHeaders();
+            message.Message.UpdateBody(payload); // this will merge in content + content specific mime headers
+        }
+        
+        /// <summary>
+        /// Decrypt (optionally) the given message and try to extract signatures
+        /// </summary>
+        bool DecryptSignatures(IncomingMessage message, X509Certificate2 certificate, out SignedCms signatures, out MimeEntity payload)
+        {
+            MimeEntity decryptedEntity = null;
+            signatures = null;
+            payload = null;
+            
+            if (certificate != null)
+            {
+                decryptedEntity = this.m_cryptographer.Decrypt(message.Message, certificate);
+            }
+            else
+            {
+                decryptedEntity = message.Message;
+            }
+            if (decryptedEntity == null)
+            {
+                return false;
+            }
 
-            return decryptedEntity;
+            if (SMIMEStandard.IsContentEnvelopedSignature(decryptedEntity.ParsedContentType))
+            {
+                signatures = m_cryptographer.DeserializeEnvelopedSignature(decryptedEntity);
+                payload = MimeSerializer.Default.Deserialize<MimeEntity>(signatures.ContentInfo.Content);
+            }
+            else if (SMIMEStandard.IsContentMultipartSignature(decryptedEntity.ParsedContentType))
+            {
+                SignedEntity signedEntity = SignedEntity.Load(decryptedEntity);
+                signatures = m_cryptographer.DeserializeDetachedSignature(signedEntity);
+                payload = signedEntity.Content;
+            }
+            else
+            {
+                throw new AgentException(AgentError.UnsignedMessage);
+            }
+            
+            return true;
         }
 
         //-------------------------------------------------------------------
@@ -594,7 +669,7 @@ namespace NHINDirect.Agent
         {
             if (string.IsNullOrEmpty(messageText))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "messageText");
             }
 
             OutgoingMessage message = new OutgoingMessage(this.WrapMessage(messageText));
@@ -637,7 +712,7 @@ namespace NHINDirect.Agent
         {
             if (envelope == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("envelope");
             }
             
             OutgoingMessage message = new OutgoingMessage(envelope);
@@ -647,7 +722,7 @@ namespace NHINDirect.Agent
 		/// <summary>
         /// Encrypts, verifies recipient trust, and signs an OutgoingMessage containing a message to prepare for send.
 		/// </summary>
-		/// <param name="envelope">
+		/// <param name="message">
         /// An <see cref="OutgoingMessage"/> instance containing the message to prepare for send.
 		/// </param>
 		/// <returns>
@@ -657,7 +732,7 @@ namespace NHINDirect.Agent
         {
             if (message == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("message");
             }
 
             try
@@ -688,7 +763,11 @@ namespace NHINDirect.Agent
             
             if (message.Sender == null)
             {
-                throw new AgentException(AgentError.MissingFrom);
+                throw new AgentException(AgentError.NoSender);
+            }            
+            if (!message.HasRecipients)
+            {
+                throw new AgentException(AgentError.NoRecipients);
             }
             //
             // Ensure we support this sender's domain
@@ -700,7 +779,7 @@ namespace NHINDirect.Agent
             //
             // Categorize recipients as local/external
             //
-            message.CategorizeRecipientsByDomain(m_managedDomains);
+            message.EnsureRecipientsCategorizedByDomain(m_managedDomains);
             //
             // Bind addresses to Certs etc
             //
@@ -722,13 +801,13 @@ namespace NHINDirect.Agent
                 throw new AgentException(AgentError.NoTrustedRecipients);
             }
             //
+            // And update routing headers to remove any recipients we had yanked
+            //
+            message.UpdateRoutingHeaders();
+            //
             // Finally, sign and encrypt the message
             //
             this.SignAndEncryptMessage(message);
-            //
-            // Not all recipients may be trusted. Remove them from Routing headers
-            //
-            message.UpdateRoutingHeaders();
         }
 
         void BindAddresses(OutgoingMessage message)
@@ -804,11 +883,11 @@ namespace NHINDirect.Agent
                 //
                 // Alter message content to contain encrypted data
                 //
-                message.Message.ApplyBody(encryptedEntity);
+                message.Message.UpdateBody(encryptedEntity);
             }
             else
             {
-                message.Message.ApplyBody(signedEntity);
+                message.Message.UpdateBody(signedEntity);
             }
         }
 
@@ -889,9 +968,10 @@ namespace NHINDirect.Agent
         {
             try
             {
-                if (this.ErrorIncoming != null)
+                Action<IncomingMessage, Exception> errorIncoming = ErrorIncoming;
+                if (errorIncoming != null)
                 {
-                    this.ErrorIncoming(message, ex);
+                    errorIncoming(message, ex);
                 }
             }
             catch
@@ -903,9 +983,10 @@ namespace NHINDirect.Agent
         {
             try
             {
-                if (this.ErrorOutgoing != null)
+                Action<OutgoingMessage, Exception> errorOutgoing = ErrorOutgoing;
+                if (errorOutgoing != null)
                 {
-                    this.ErrorOutgoing(message, ex);
+                    errorOutgoing(message, ex);
                 }
             }
             catch
@@ -917,9 +998,10 @@ namespace NHINDirect.Agent
         {
             try
             {
-                if (this.Error != null)
+                var error = this.Error;
+                if (error != null)
                 {
-                    this.Error(this, ex);
+                    error(this, ex);
                 }
             }
             catch

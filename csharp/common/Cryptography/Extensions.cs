@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Net.Mail;
+using System.Net.Mime;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
@@ -27,18 +28,27 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Cryptography
 {
+    /// <summary>
+    /// Extension methods for cryto
+    /// </summary>
     public static class Extensions
     {
         //---------------------------------------
         //
         // SignerInfoCollection extensions (PKS7)
         //
-        //---------------------------------------        
+        //---------------------------------------   
+        /// <summary>
+        /// Returns the first index position of this colleciton of signers matching <paramref name="matcher"/>
+        /// </summary>
+        /// <param name="signers">This collection to search</param>
+        /// <param name="matcher">The predicate to match elements against.</param>
+        /// <returns>The zero-based index of the first matching <see cref="SignerInfo"/> or -1 if no elements match</returns>
         public static int IndexOf(this SignerInfoCollection signers, Predicate<SignerInfo> matcher)
         {
             if (matcher == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("matcher");
             }
             
             for (int i = 0, count = signers.Count; i < count; ++i)
@@ -52,6 +62,12 @@ namespace NHINDirect.Cryptography
             return -1;
         }
 
+        /// <summary>
+        /// Returns the first element of this colleciton of signers matching <paramref name="matcher"/>
+        /// </summary>
+        /// <param name="signers">This collection to search</param>
+        /// <param name="matcher">The predicate to match elements against.</param>
+        /// <returns>The first matching <see cref="SignerInfo"/> or null if no elements match</returns>
         public static SignerInfo Find(this SignerInfoCollection signers, Predicate<SignerInfo> matcher)
         {
             int index = signers.IndexOf(matcher);
@@ -63,24 +79,114 @@ namespace NHINDirect.Cryptography
             return null;
         }
 
+        //TODO: doesn't match or use the logic for X509Certifiate2.MatchEmailNameOrName. Why?
+        /// <summary>
+        /// Searches this collection for the first signature whose certificate has subject name or email <paramref name="name"/>
+        /// </summary>
+        /// <param name="signers">This collection to search</param>
+        /// <param name="name">The subject name or email to match against.</param>
+        /// <returns>The first matching <see cref="SignerInfo"/> or null if no elements match</returns>
         public static SignerInfo FindByName(this SignerInfoCollection signers, string name)
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "name");
             }
 
             return signers.Find(x => (x.Certificate.MatchName(name) || x.Certificate.MatchEmailName(name)));
         }
 
+        /// <summary>
+        /// Searches this collection for the first signature whose certificate has <paramref name="thumbprint"/>
+        /// </summary>
+        /// <param name="signers">This collection to search</param>
+        /// <param name="thumbprint">The certificate thumbprint to match against.</param>
+        /// <returns>The first matching <see cref="SignerInfo"/> or null if no elements match</returns>
         public static SignerInfo FindByThumbprint(this SignerInfoCollection signers, string thumbprint)
         {
             if (string.IsNullOrEmpty(thumbprint))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "thumbprint");
             }
 
             return signers.Find(x => x.Certificate.Thumbprint == thumbprint);
+        }
+
+        //---------------------------------------
+        //
+        // ContentType
+        //
+        //---------------------------------------      
+  
+        /// <summary>
+        /// Tests if the content type indicates enveloped (encrypted or enveloped signed) data.
+        /// </summary>
+        /// <param name="contentType">The content type to test</param>
+        /// <returns><c>true</c> if this is enveloped content, <c>false</c> if not</returns>
+        public static bool IsCms(this ContentType contentType)
+        {
+            return SMIMEStandard.IsContentCms(contentType);
+        }
+
+        /// <summary>
+        /// Tests content type to determine if it indicates encrypted data
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is encrypted content, <c>false</c> if not</returns>
+        public static bool IsEncrypted(this ContentType contentType)
+        {
+            return SMIMEStandard.IsContentEncrypted(contentType);
+        }
+
+
+        /// <summary>
+        /// Tests content type to determine if it indicates enveloped (non-detached) signature data
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is eveloped signature content, <c>false</c> if not</returns>
+        public static bool IsEnvelopedSignature(this ContentType contentType)
+        {
+            return SMIMEStandard.IsContentEnvelopedSignature(contentType);
+        }
+
+        /// <summary>
+        /// Tests content type to determine if it indicates a multipart message with detached signature
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is multipart signature content, <c>false</c> if not</returns>
+        public static bool IsMultipartSignature(this ContentType contentType)
+        {
+            return SMIMEStandard.IsContentMultipartSignature(contentType);
+        }
+
+        /// <summary>
+        /// Tests content type to determine if it indicates a detached signature
+        /// </summary>
+        /// <param name="contentType">The content-type to examine</param>
+        /// <returns><c>true</c> if this is a detached signature, <c>false</c> if not</returns>
+        public static bool IsDetachedSignature(this ContentType contentType)
+        {
+            return SMIMEStandard.IsContentDetachedSignature(contentType);
+        }
+
+        /// <summary>
+        /// Transforms the <paramref name="algorithm"/> to a string suitable for the <c>micalg</c> parameter value
+        /// </summary>
+        /// <param name="algorithm">The digest algorithm to transform</param>
+        /// <returns>A string suitable for the value of the <c>micalg</c> parameter</returns>
+        public static string AsString(this DigestAlgorithm algorithm)
+        {
+            return SMIMEStandard.ToString(algorithm);
+        }
+
+        /// <summary>
+        /// Maps the supplied <paramref name="type"/> to an instance of <see cref="AlgorithmIdentifier"/>
+        /// </summary>
+        /// <param name="algorithm">The encryption algorithm to map</param>
+        /// <returns>The corresponding <see cref="AlgorithmIdentifier"/></returns>
+        public static AlgorithmIdentifier AsAlgorithmIdentifier(this EncryptionAlgorithm algorithm)
+        {
+            return SMIMECryptographer.ToAlgorithmID(algorithm);
         }
     }
  }

@@ -35,11 +35,11 @@ namespace NHINDirect.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Address[] GetAddresses(string[] emailAddresses);
+        Address[] GetAddresses(string[] emailAddresses, EntityStatus? status);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Address[] GetAddressesByID(long[] addressIDs);
+        Address[] GetAddressesByID(long[] addressIDs, EntityStatus? status);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
@@ -51,10 +51,18 @@ namespace NHINDirect.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Address[] EnumerateDomainAddresses(long domainID, long lastAddressID, int maxResults);
+        void SetDomainAddressesStatus(long domainID, EntityStatus status);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Address[] EnumerateAddresses(long lastAddressID, int maxResults);
+        int GetAddressCount(string domainName);
+        
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Address[] EnumerateDomainAddresses(string domainName, string lastAddress, int maxResults);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Address[] EnumerateAddresses(string lastAddress, int maxResults);
     }
 }

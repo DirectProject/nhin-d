@@ -26,6 +26,21 @@ namespace DnsResolver
       /                   PTRDNAME                    /
       +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
      */
+
+    /// <summary>
+    /// Represents a PTR DNS RR
+    /// </summary>
+    /// <remarks>
+    /// RFC 1035, 
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                   PTRDNAME                    /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    ///
+    /// where:
+    ///
+    /// PTRDNAME        A &lt;domain-name&gt; which points to some location in the
+    ///                domain name space.
+    /// </remarks>
     public class PtrRecord : DnsResourceRecord
     {    
         string m_domain;
@@ -34,6 +49,20 @@ namespace DnsResolver
         {
         }
 
+        /// <summary>
+        /// Instantiates a new RR
+        /// </summary>
+        /// <param name="name">The domain name for which this is a record</param>
+        /// <param name="domain">The domain name to which the PTR points</param>
+        public PtrRecord(string name, string domain)
+            : base(name, DnsStandard.RecordType.PTR)
+        {
+            this.Domain = domain;
+        }
+        
+        /// <summary>
+        /// The domain name to which the PTR points
+        /// </summary>
         public string Domain
         {
             get
@@ -50,10 +79,44 @@ namespace DnsResolver
                 m_domain = value;
             }
         }
-        
+
+        /// <summary>
+        /// Tests equality between this PTR record and the other <paramref name="record"/>.
+        /// </summary>
+        /// <param name="record">The other record.</param>
+        /// <returns><c>true</c> if the RRs are equal, <c>false</c> otherwise.</returns>
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+
+            PtrRecord ptrRecord = record as PtrRecord;
+            if (ptrRecord == null)
+            {
+                return false;
+            }
+            
+            return (DnsStandard.Equals(this.m_domain, ptrRecord.m_domain));
+        }
+
+        /// <summary>
+        /// Writes this RR in DNS wire format to the <paramref name="buffer"/>
+        /// </summary>
+        /// <param name="buffer">The buffer to which DNS wire data are written</param>
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            buffer.AddDomainName(m_domain);
+        }
+
+        /// <summary>
+        /// Reads data into this RR from the DNS wire format data in <paramref name="reader"/>
+        /// </summary>
+        /// <param name="reader">Reader in which wire format data for this RR is already buffered.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
-            this.Domain = reader.ReadString();
+            this.Domain = reader.ReadDomainName();
         }
     }
 }

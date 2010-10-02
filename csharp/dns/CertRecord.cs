@@ -21,8 +21,12 @@ using System.Text;
 
 namespace DnsResolver
 {
-    /// <summary>A representation of a CERT RR</summary>
+    /// <summary>A representation of CERT DNS RDATA</summary>
     /// <remarks>
+    /// RFC 4398.
+    ///
+    /// Record format:
+    /// <code>
     ///                     1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
     /// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -32,6 +36,7 @@ namespace DnsResolver
     /// +---------------+            certificate or CRL                 /
     /// /                                                               /
     /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|
+    /// </code>
     /// </remarks>
     public class CertRecord : DnsResourceRecord
     {
@@ -39,16 +44,46 @@ namespace DnsResolver
         /// <summary>
         /// Enumeration of the CERT RR supported certificate types
         /// </summary>
+        /// <remarks>
+        /// RFC 4398, Section 2.1
+        /// </remarks>
         public enum CertificateType
         {
+            /// <summary>
+            /// Reserved certificate type.
+            /// </summary>
             Reserved = 0,
+            /// <summary>
+            /// X509 certificate
+            /// </summary>
             X509 = 1,
+            /// <summary>
+            /// SPKI certificate
+            /// </summary>
             SPKI,
+            /// <summary>
+            /// OpenPGP certificate
+            /// </summary>
             PGP,        // Open PGP
-            IPKIX,      // Url to an X509 data object
-            ISPKI,      // Url of n SPKI certificate
-            IPGP,       // fingerprint + URL of an OpenPGP packet
-            ACPKIX,     // Attribute cert 
+            /// <summary>
+            /// URL to an X.509 data object 
+            /// </summary>
+            IPKIX,      
+            /// <summary>
+            ///  Url of an SPKI certificate
+            /// </summary>
+            ISPKI,
+            /// <summary>
+            /// fingerprint + URL of an OpenPGP packet
+            /// </summary>
+            IPGP,
+            /// <summary>
+            /// Attribute Certificate
+            /// </summary>
+            ACPKIX,
+            /// <summary>
+            /// The URL of an Attribute Certificate
+            /// </summary>
             IACPKIK
         }       
         
@@ -63,6 +98,19 @@ namespace DnsResolver
         }
         
         /// <summary>
+        /// Initializes an instance with the supplied certificate.
+        /// </summary>
+        /// <param name="cert">The certificate for this record.</param>
+        public CertRecord(DnsX509Cert cert)
+            : base(cert.Name, DnsStandard.RecordType.CERT)
+        {
+            this.Cert = cert;
+            this.CertType = CertificateType.X509;
+            this.KeyTag = cert.KeyTag;
+            this.Algorithm = 5;  // RFC 4034
+        }
+        
+        /// <summary>
         /// Gets and sets the certificate type
         /// </summary>
         /// <value>The CERT RR type of this certificate</value>
@@ -72,7 +120,7 @@ namespace DnsResolver
             {
                 return m_certType;
             }
-            set
+            internal set
             {
                 m_certType = value;
             }
@@ -87,7 +135,7 @@ namespace DnsResolver
             {
                 return m_keyTag;
             }
-            set
+            internal set
             {
                 m_keyTag = value;
             }
@@ -102,7 +150,7 @@ namespace DnsResolver
             {
                 return m_algorithm;
             }
-            set
+            internal set
             {
                 m_algorithm = value;
             }
@@ -137,7 +185,13 @@ namespace DnsResolver
             }          
             set
             {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+                
                 m_cert = value;
+                m_certData = value.GetData();
             }  
         }
         
@@ -145,10 +199,52 @@ namespace DnsResolver
         {
             if (m_cert == null && m_certType == CertificateType.X509)
             {
-                m_cert = new DnsX509Cert(m_keyTag, m_certData);
+                m_cert = new DnsX509Cert(m_certData, m_keyTag);
             }
         }
-        
+
+        /// <summary>
+        /// Tests equality between this CERT record and the other <paramref name="record"/>.
+        /// </summary>
+        /// <param name="record">The other record.</param>
+        /// <returns><c>true</c> if the RRs are equal, <c>false</c> otherwise.</returns>
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+            
+            CertRecord certRecord = record as CertRecord;
+            if (certRecord == null)
+            {
+                return false;
+            }
+            
+            return (
+                    this.m_algorithm == certRecord.m_algorithm
+                &&  this.m_certType == certRecord.m_certType
+                &&  this.m_keyTag == certRecord.m_keyTag
+                &&  DnsStandard.Equals(this.Cert.Name, certRecord.Cert.Name)
+            );
+        }
+
+        /// <summary>
+        /// Writes this RR in DNS wire format to the <paramref name="buffer"/>
+        /// </summary>
+        /// <param name="buffer">The buffer to which DNS wire data are written</param>
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            buffer.AddUshort((ushort) m_certType);
+            buffer.AddUshort(m_keyTag);
+            buffer.AddByte(m_algorithm);
+            buffer.AddBytes(m_certData);
+        }
+
+        /// <summary>
+        /// Reads data into this RR from the DNS wire format data in <paramref name="reader"/>
+        /// </summary>
+        /// <param name="reader">Reader in which wire format data for this RR is already buffered.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             ushort certType = reader.ReadUShort();
@@ -159,7 +255,7 @@ namespace DnsResolver
             m_certType = (CertificateType) certType;
             m_keyTag = reader.ReadUShort();
             m_algorithm = reader.ReadByte();
-            m_certData = reader.ReadBytes(this.RecordDataLength - 5);
+            m_certData = reader.ReadBytes(this.RecordDataLength - 5); // 5 == # of bytes we've already read (certType, keytag etc)
             
             this.EnsureDnsCert();            
         }

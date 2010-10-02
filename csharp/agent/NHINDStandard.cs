@@ -28,14 +28,14 @@ namespace NHINDirect.Agent
         public readonly static string[] MailHeadersUsed = new[]
         {
             VersionHeader,
-            FromHeader,
-            ToHeader,
-            CcHeader,
-            BccHeader,
-            OrigDateHeader,
-            MessageIDHeader,
-            InReplyToHeader,
-            ReferencesHeader
+            Headers.From,
+            Headers.To,
+            Headers.Cc,
+            Headers.Bcc,
+            Headers.OrigDate,
+            Headers.MessageID,
+            Headers.InReplyTo,
+            Headers.References
         };
     }
 }

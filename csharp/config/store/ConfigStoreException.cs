@@ -165,7 +165,7 @@ namespace NHINDirect.Config.Store
                 return new ConfigStoreFault(ConfigStoreError.DatabaseError, dbex.Message);
             }
             
-            return new ConfigStoreFault(ConfigStoreError.Unknown);
+            return new ConfigStoreFault(ConfigStoreError.Unknown, ex.Message);
         }
 
         public override string ToString()

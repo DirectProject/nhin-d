@@ -21,21 +21,33 @@ using System.Text;
 
 namespace DnsResolver
 {
-    //                                 1  1  1  1  1  1
-    //   0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    // |                                               |
-    // /                     QNAME                     /
-    // /                                               /
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    // |                     QTYPE                     |
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    // |                     QCLASS                    |
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-
+    /// <summary>
+    /// Represents the question section of a DNS message
+    /// </summary>
+    /// <remarks>
+    /// See RFC 1035, Section 4.1.2, Question Section Format.
+    /// <para>
+    /// The question section is used to carry the "question" in most queries,
+    /// i.e., the parameters that define what is being asked.  The section
+    /// contains QDCOUNT (usually 1) entries, each of the following format:
+    /// <code>
+    ///                                 1  1  1  1  1  1
+    ///   0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                                               |
+    /// /                     QNAME                     /
+    /// /                                               /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                     QTYPE                     |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// |                     QCLASS                    |
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
+    /// </para>
+    /// </remarks>
     public class DnsQuestion
     {
-        string m_qname;
+        string m_domain;
         
         internal DnsQuestion()
         {
@@ -43,65 +55,121 @@ namespace DnsResolver
 
         internal DnsQuestion(ref DnsBufferReader reader)
         {
-            this.Parse(ref reader);
+            this.Deserialize(ref reader);
         }
         
-        public DnsQuestion(string qName, Dns.RecordType qType)
-            : this(qName, qType, Dns.Class.IN)
+        /// <summary>
+        /// Initializes an instance for the specified domain and type
+        /// </summary>
+        /// <param name="domain">The domain we are querying.</param>
+        /// <param name="type">The record type we are querying.</param>
+        public DnsQuestion(string domain, DnsStandard.RecordType type)
+            : this(domain, type, DnsStandard.Class.IN)
         {
         }
-        
-        public DnsQuestion(string qName, Dns.RecordType qType, Dns.Class qClass)
+
+        /// <summary>
+        /// Initializes an instance for the specified domain and type
+        /// </summary>
+        /// <param name="domain">The domain we are querying.</param>
+        /// <param name="type">The record type we are querying.</param>
+        /// <param name="qClass">Use to define a non Internet DNS query</param>
+        public DnsQuestion(string domain, DnsStandard.RecordType type, DnsStandard.Class qClass)
         {
-            this.QName = qName;
-            this.QType = qType;
-            this.QClass = qClass;
+            this.Domain = domain;
+            this.Type = type;
+            this.Class = qClass;
         }
         
-        // QNAME
-        public string QName
+        /// <summary>
+        /// Gets and sets the domain name.
+        /// This is actually a domain name, rather than a QNAME, despite the method name.
+        /// </summary>
+        /// <remarks>
+        /// It gets transformed to a QNAME in the underlying code.
+        /// 
+        /// RFC 1035, Section 4.1.2
+        /// <para>
+        /// A domain name represented as a sequence of labels, where
+        /// each label consists of a length octet followed by that
+        /// number of octets.  The domain name terminates with the
+        /// zero length octet for the null label of the root.  Note
+        /// that this field may be an odd number of octets; no
+        /// padding is used.
+        /// </para>
+        /// </remarks>
+        public string Domain
         {
             get
             {
-                return this.m_qname;
+                return this.m_domain;
             }
             set
             {
-                if (value == null)
+                if (string.IsNullOrEmpty(value))
                 {
                     throw new DnsProtocolException(DnsProtocolError.InvalidQName);
                 }
-                
-                this.m_qname = value;
+                    
+                this.m_domain = value;
             }
         }
 
-        // QTYPE
-        public Dns.RecordType QType
+        /// <summary>
+        /// Gets and sets the QTYPE
+        /// </summary>
+        /// <remarks>
+        /// See <see cref="DnsStandard.RecordType"/> for details.
+        /// </remarks>
+        public DnsStandard.RecordType Type
         {
             get;
             set;
-        }
-        
-        // QCLASS 
-        public Dns.Class QClass
-        {
-            get;
-            set;
-        }
-        
-        internal void Parse(ref DnsBufferReader reader)
-        {
-            this.QName = reader.ReadString();
-            this.QType = (Dns.RecordType) reader.ReadShort();
-            this.QClass = (Dns.Class) reader.ReadShort();
         }
 
-        internal void ToBytes(DnsBuffer buffer)
+        /// <summary>
+        /// Gets and sets the QClass
+        /// </summary>
+        /// <remarks>
+        /// See <see cref="DnsStandard.Class"/> for details.
+        /// </remarks>
+        public DnsStandard.Class Class
         {
-            buffer.AddPath(this.QName);
-            buffer.AddShort((short)QType);
-            buffer.AddShort((short)QClass);
+            get;
+            set;
+        }
+        
+        /// <summary>
+        /// Tests this instance for equality with the other <paramref name="question"/>
+        /// </summary>
+        /// <param name="question">The other question.</param>
+        /// <returns><c>true</c> if the instances represent the same question, <c>false</c> otherwise.</returns>
+        public bool Equals(DnsQuestion question)
+        {
+            if (question == null)
+            {
+                return false;
+            }
+            
+            return (
+                    DnsStandard.Equals(question.Domain, this.Domain)
+                &&  question.Type == this.Type
+                &&  question.Class == this.Class
+            );
+        }
+        
+        internal void Deserialize(ref DnsBufferReader reader)
+        {
+            this.Domain = reader.ReadDomainName();
+            this.Type = (DnsStandard.RecordType) reader.ReadShort();
+            this.Class = (DnsStandard.Class) reader.ReadShort();
+        }
+
+        internal void Serialize(DnsBuffer buffer)
+        {
+            buffer.AddDomainName(this.Domain);
+            buffer.AddShort((short)Type);
+            buffer.AddShort((short)Class);
         }
     }
 }

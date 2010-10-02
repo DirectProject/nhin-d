@@ -30,30 +30,39 @@ package org.nhindirect.stagent.mail;
  */
 public class MailStandard 
 {
-    public static final String ToHeader = "to";
-    public static final String CCHeader = "cc";
-    public static final String BCCHeader = "bcc";
-    public static final String FromHeader = "from";
-    public static final String SenderHeader = "sender";
-    public static final String MessageIDHeader = "message-id";
-    public static final String SubjectHeader = "subject";
-    public static final String DateHeader = "date";
-    public static final String OrigDateHeader = "orig-date";
-    public static final String InReplyToHeader = "in-reply-to";
-    public static final String ReferencesHeader = "references";
-    public static final String ContentTypeHeader = "content-type";
-    
-    public static final String[] DestinationHeaders = new String[] {
-    	ToHeader, 
-        FromHeader,
-        CCHeader,
-        BCCHeader};
+	
+	public static class Headers
+	{
+	    public static final String To = "to";
+	    public static final String CC = "cc";
+	    public static final String BCC = "bcc";
+	    public static final String From = "from";
+	    public static final String Sender = "sender";
+	    public static final String MessageID = "message-id";
+	    public static final String Subject = "subject";
+	    public static final String Date = "date";
+	    public static final String OrigDate = "orig-date";
+	    public static final String InReplyTo = "in-reply-to";
+	    public static final String References = "references";
+	    public static final String ContentType = "content-type";
+	}
+	
+    public static final String[] DestinationHeaders = new String[] 
+    {
+    	Headers.To, 
+    	Headers.From,
+    	Headers.CC,
+    	Headers.BCC
+    };
     
     public static final String[] OriginHeaders = new String[] {
-    	FromHeader, 
-    	SenderHeader};    
+    	Headers.From, 
+    	Headers.Sender};    
     
     public static final char MailAddressSeparator = ',';
     
-    public static final String MediaType_WrappedMessage = "message/rfc822";
+    public static class MediaType
+    {
+    	public static final String WrappedMessage = "message/rfc822";
+    }
 }

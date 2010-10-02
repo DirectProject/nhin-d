@@ -14,40 +14,38 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NHINDirect.Config.Store
 {
     public class ConfigStore
     {
         public const string Namespace = "http://www.nhindirect.org/config/store/082010";
-        
-        public static int DefaultTimeoutSeconds = 5;
+
+    	public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
         
         string m_connectString;
-        int m_timeout;
+        TimeSpan m_timeout;
         DomainManager m_domains;
         AddressManager m_addresses;
         CertificateManager m_certificates;
         AnchorManager m_anchors;
         
         public ConfigStore(string connectString)
-            : this(connectString, DefaultTimeoutSeconds)
+            : this(connectString, DefaultTimeout)
         {
         }
         
-        public ConfigStore(string connectString, int timeout)
+        public ConfigStore(string connectString, TimeSpan timeout)
         {
             if (string.IsNullOrEmpty(connectString))
             {
                 throw new ArgumentException("connectString");
             }
-            if (timeout <= 0)
+            if (timeout.Ticks <= 0)
             {
                 throw new ArgumentException("timeout");
             }
+
             m_timeout = timeout;
             m_connectString = connectString;
             m_domains = new DomainManager(this);
@@ -91,14 +89,14 @@ namespace NHINDirect.Config.Store
         public ConfigDatabase CreateContext()
         {
             ConfigDatabase db = new ConfigDatabase(m_connectString);
-            db.CommandTimeout = m_timeout;
+            db.CommandTimeout = (int)m_timeout.TotalSeconds;
             return db;
         }
 
         public ConfigDatabase CreateReadContext()
         {
             ConfigDatabase db = new ConfigDatabase(m_connectString);
-            db.CommandTimeout = m_timeout;
+            db.CommandTimeout = (int)m_timeout.TotalSeconds;
             db.ObjectTrackingEnabled = false;            
             return db;
         }

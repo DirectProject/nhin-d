@@ -48,19 +48,32 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
+        internal string CreateUniqueCopyFileName()
+        {
+            if (!this.HasCopyFolder)
+            {
+                throw new InvalidOperationException();
+            }
+            
+            string uniqueFileName = Extensions.CreateUniqueFileName();
+            return Path.Combine(this.CopyFolder, uniqueFileName);
+        }
+        
         public virtual void Validate()
         {
         }
         
         internal virtual void EnsureFolders()
         {
-            if (this.HasCopyFolder)
+            if (this.HasCopyFolder && !Directory.Exists(this.CopyFolder))
             {
-                //
-                // If the directory already exists, CreateDirectory does nothing
-                //
                 Directory.CreateDirectory(this.CopyFolder);
             }
+        }
+
+        public override string ToString()
+        {
+            return "CopyFolder=" + CopyFolder;
         }
     }
 
@@ -99,6 +112,11 @@ namespace NHINDirect.SmtpAgent
                 m_enableRelay = value;
             }
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " EnableRelay=" + EnableRelay;
+        }
     }
 
     [XmlType("ProcessOutgoing")]
@@ -127,6 +145,11 @@ namespace NHINDirect.SmtpAgent
                 m_enableRelay = value;
             }
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " EnableRelay=" + EnableRelay;
+        }
     }
 
     [XmlType("ProcessBadMessage")]
@@ -136,5 +159,5 @@ namespace NHINDirect.SmtpAgent
             : base()
         {
         }
-    }
+    }  
 }

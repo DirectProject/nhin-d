@@ -76,7 +76,8 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return this.ApplyGetOptions(Service.Current.Store.Certificates.Get(owner), options);
+                options = options ?? CertificateGetOptions.Default;
+                return this.ApplyGetOptions(Service.Current.Store.Certificates.Get(owner, options.Status), options);
             }
             catch (Exception ex)
             {
@@ -161,6 +162,18 @@ namespace NHINDirect.Config.Service
             }
         }
         
+        public Anchor GetAnchor(string owner, string thumbprint, CertificateGetOptions options)
+        {
+            try
+            {
+                return this.ApplyGetOptions(Service.Current.Store.Anchors.Get(owner, thumbprint), options);
+            }
+            catch(Exception ex)
+            {
+                throw Service.CreateFault(ex);
+            }
+        }
+                      
         public Anchor[] GetAnchors(long[] anchorIDs, CertificateGetOptions options)
         {
             try
@@ -189,7 +202,8 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return this.ApplyGetOptions(Service.Current.Store.Anchors.GetIncoming(owner), options);
+                options = options ?? CertificateGetOptions.Default;
+                return this.ApplyGetOptions(Service.Current.Store.Anchors.GetIncoming(owner, options.Status), options);
             }
             catch (Exception ex)
             {
@@ -201,7 +215,20 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return this.ApplyGetOptions(Service.Current.Store.Anchors.GetOutgoing(owner), options);
+                options = options ?? CertificateGetOptions.Default;
+                return this.ApplyGetOptions(Service.Current.Store.Anchors.GetOutgoing(owner, options.Status), options);
+            }
+            catch (Exception ex)
+            {
+                throw Service.CreateFault(ex);
+            }
+        }
+
+        public void SetAnchorStatusForOwner(string owner, EntityStatus status)
+        {
+            try
+            {
+                Service.Current.Store.Anchors.SetStatus(owner, status);
             }
             catch (Exception ex)
             {

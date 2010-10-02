@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Linq;
 
 using NHINDirect.Mime;
 
@@ -91,6 +92,13 @@ namespace NHINDirect.Tests.Mime
 			Assert.Equal(start, segment.StartIndex);
 			Assert.Equal(expectedSegment, segment.ToString());
 		}
+
+        [Fact]
+        public void ToStringOnNullSegment()
+        {
+            StringSegment nullSegment = StringSegment.Null;
+            Assert.Equal("", nullSegment.ToString());
+        }
 
 		[Fact]
 		public void NullSource()
@@ -263,6 +271,8 @@ namespace NHINDirect.Tests.Mime
 		[Theory]
 		[InlineData(0, 5, 5, 10, 0, 10)]
 		[InlineData(1, 5, 0, 3, 0, 5)]
+        [InlineData(0, 2, 4, 10, 0, 10)] //Disjoint segments
+        [InlineData(4, 10, 0, 2, 0, 10)] //Same but reversed
 		public void UnionCases(int firstStart, int firstEnd, int secondStart, int secondEnd, int expectedStart, int expectedEnd)
 		{
 			var segment = new StringSegment(TestContent, firstStart, firstEnd);
@@ -270,6 +280,17 @@ namespace NHINDirect.Tests.Mime
 			segment.Union(segment2);
 			Assert.Equal(expectedStart, segment.StartIndex);
 			Assert.Equal(expectedEnd, segment.EndIndex);
+		}
+
+		[Theory]
+		[InlineData(0, null)]
+		[InlineData(0, "")]
+		[InlineData(1, "0")]
+		[InlineData(2, "0,1")]
+		[InlineData(3, "0,1,2")]
+		public void Split(int expectedCount, string value)
+		{
+			Assert.Equal(expectedCount, StringSegment.Split(value, ',').Count());
 		}
 	}
 }

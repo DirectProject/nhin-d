@@ -20,13 +20,34 @@ using System.Text;
 
 namespace NHINDirect.Cryptography
 {
+    /// <summary>
+    /// An enumeration of encryption errors for use with <see cref="EncryptionException"/>
+    /// </summary>
     public enum EncryptionError
     {
+        /// <summary>
+        /// A MIME entity was provided for encryption but was <c>null</c>
+        /// </summary>
         NullEntity,
+        /// <summary>
+        /// An empty MIME entity was provided for encryption.
+        /// </summary>
         NullContent,
+        /// <summary>
+        /// Data was provide for encryption but was not a data container.
+        /// </summary>
         ContentNotDataContainer,
+        /// <summary>
+        /// No certificates were provided for encryption.
+        /// </summary>
         NoCertificates,
+        /// <summary>
+        /// No private key was available for encryption.
+        /// </summary>
         NoPrivateKey,
+        /// <summary>
+        /// An entity was provided for decryption but was not encrypted.
+        /// </summary>
         NotEncrypted
     }
 }

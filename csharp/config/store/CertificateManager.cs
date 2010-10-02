@@ -60,7 +60,7 @@ namespace NHINDirect.Config.Store
         {
             if (certs == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("certs");
             }            
             using (ConfigDatabase db = this.Store.CreateContext())
             {
@@ -113,7 +113,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             
             return db.Certificates.Get(certID);
@@ -131,7 +131,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
 
             return db.Certificates.Get(lastCertID, maxResults).ToArray();
@@ -149,7 +149,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
 
             return db.Certificates.Get(owner, thumbprint);
@@ -165,17 +165,35 @@ namespace NHINDirect.Config.Store
 
         public IEnumerable<Certificate> Get(ConfigDatabase db, string owner)
         {
+            return this.Get(db, owner, (EntityStatus?) null);
+        }
+
+        public Certificate[] Get(string owner, EntityStatus? status)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, owner, status).ToArray();
+            }
+        }
+
+        public IEnumerable<Certificate> Get(ConfigDatabase db, string owner, EntityStatus? status)
+        {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
-            
+
             if (string.IsNullOrEmpty(owner))
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
             
-            return db.Certificates.Get(owner);
+            if (status == null)
+            {
+                return db.Certificates.Get(owner);
+            }
+            
+            return db.Certificates.Get(owner, status.Value);
         }
                 
         public void SetStatus(long[] certificateIDs, EntityStatus status)
@@ -211,7 +229,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             
             db.Certificates.ExecUpdateStatus(certificateID, status);
@@ -230,7 +248,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
 
             db.Certificates.ExecUpdateStatus(owner, status);
@@ -248,7 +266,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             
             db.Certificates.ExecDelete(certificateID);
@@ -268,7 +286,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             if (certificateIDs.IsNullOrEmpty())
             {
@@ -295,7 +313,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             
             if (string.IsNullOrEmpty(ownerName))

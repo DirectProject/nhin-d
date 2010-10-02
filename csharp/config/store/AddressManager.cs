@@ -57,7 +57,7 @@ namespace NHINDirect.Config.Store
         {
             if (addresses == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("addresses");
             }
             
             using (ConfigDatabase db = this.Store.CreateContext())
@@ -75,10 +75,15 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             
             if (address == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
+            }
+            
+            if (!address.IsValidMailAddress())
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
             }
@@ -99,7 +104,7 @@ namespace NHINDirect.Config.Store
         {
             if (addresses == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("addresses");
             }
             using (ConfigDatabase db = this.Store.CreateContext())
             {
@@ -115,23 +120,31 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
+
             if (address == null)
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
             }
-
-            Address current = this.Get(db, address.EmailAddress);
-            if (current == null)
+            if (!address.IsValidMailAddress())
             {
-                this.Add(db, address);
+                throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
             }
-            else
+            
+            Address update = new Address();
+            update.CopyFixed(address);
+            
+            db.Addresses.Attach(update);
+            update.ApplyChanges(address);             
+        }
+        
+        public int Count(long domainID)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                address.UpdateDate = DateTime.Now;
-                db.Addresses.Attach(address, current);
-            }
+                return db.Addresses.GetCount(domainID);
+            }            
         }
                
         public Address Get(string emailAddress)
@@ -146,7 +159,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("db");
             }
             
             return db.Addresses.Get(emailAddress);
@@ -154,42 +167,39 @@ namespace NHINDirect.Config.Store
 
         public Address[] Get(string[] emailAddresses)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, emailAddresses).ToArray();
-            }
+            return this.Get(emailAddresses, null);
         }
 
         public IEnumerable<Address> Get(ConfigDatabase db, string[] emailAddresses)
         {
+            return this.Get(db, emailAddresses, null);
+        }
+
+        public Address[] Get(string[] emailAddresses, EntityStatus? status)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, emailAddresses, status).ToArray();
+            }
+        }
+
+        public IEnumerable<Address> Get(ConfigDatabase db, string[] emailAddresses, EntityStatus? status)
+        {
             if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("db");
             }
-            
+
             this.VerifyEmailAddresses(emailAddresses);
-            return db.Addresses.Get(emailAddresses);
-        }
-
-        public Address[] Get(long domainID, long lastAddressID, int maxResults)
-        {
-            using(ConfigDatabase db = this.Store.CreateReadContext())
+            if (status == null)
             {
-                return this.Get(db, domainID, lastAddressID, maxResults).ToArray();
-            }
-        }
-
-        public IEnumerable<Address> Get(ConfigDatabase db, long domainID, long lastAddressID, int maxResults)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException();
+                return db.Addresses.Get(emailAddresses);
             }
             
-            return db.Addresses.Get(domainID, lastAddressID, maxResults);
+            return db.Addresses.Get(emailAddresses, status.Value);
         }
 
-        public Address[] Get(long lastAddressID, int maxResults)
+        public Address[] Get(string lastAddressID, int maxResults)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
@@ -197,32 +207,65 @@ namespace NHINDirect.Config.Store
             }
         }
 
-        public IEnumerable<Address> Get(ConfigDatabase db, long lastAddressID, int maxResults)
+        public IEnumerable<Address> Get(ConfigDatabase db, string lastAddressID, int maxResults)
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
 
-            return db.Addresses.Get(lastAddressID, maxResults);
+            return db.Addresses.ExecGet(lastAddressID, maxResults);
         }
-        
-        public Address[] Get(long[] addressIDs)
+
+        public Address[] Get(long domainID, string lastAddressID, int maxResults)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                return this.Get(db, addressIDs).ToArray();
-            }            
+                return this.Get(db, domainID, lastAddressID, maxResults).ToArray();
+            }
+        }
+
+        public IEnumerable<Address> Get(ConfigDatabase db, long domainID, string lastAddressID, int maxResults)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+
+            return db.Addresses.ExecGet(domainID, lastAddressID, maxResults);
+        }
+                
+        public Address[] Get(long[] addressIDs)
+        {
+            return this.Get(addressIDs, null);
         }
 
         public IEnumerable<Address> Get(ConfigDatabase db, long[] addressIDs)
         {
+            return this.Get(db, addressIDs, null);
+        }
+
+        public Address[] Get(long[] addressIDs, EntityStatus? status)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, addressIDs, status).ToArray();
+            }
+        }
+
+        public IEnumerable<Address> Get(ConfigDatabase db, long[] addressIDs, EntityStatus? status)
+        {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
-
-            return db.Addresses.Get(addressIDs);
+            
+            if (status == null)
+            {
+                return db.Addresses.Get(addressIDs);
+            }
+            
+            return db.Addresses.Get(addressIDs, status.Value);
         }
                 
         public void Remove(string emailAddress)
@@ -269,17 +312,29 @@ namespace NHINDirect.Config.Store
         
         public void SetStatus(string[] emailAddresses, EntityStatus status)
         {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                this.SetStatus(db, emailAddresses, status);
+            }
         }
         
         public void SetStatus(ConfigDatabase db, string[] emailAddresses, EntityStatus status)
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             
             this.VerifyEmailAddresses(emailAddresses);
             db.Addresses.ExecSetStatus(emailAddresses, status);
+        }
+
+        public void SetStatus(long domainID, EntityStatus status)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                db.Addresses.ExecSetStatus(domainID, status);
+            }
         }
         
         void VerifyEmailAddresses(string[] emailAddresses)

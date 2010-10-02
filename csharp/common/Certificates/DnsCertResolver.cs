@@ -15,11 +15,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
+
 using DnsResolver;
 
 namespace NHINDirect.Certificates
@@ -30,11 +29,11 @@ namespace NHINDirect.Certificates
     /// </summary>
     public class DnsCertResolver : ICertificateResolver
     {
-        public const int DefaultTimeoutMs = 5000; // Milliseconds
-        
-        IPAddress m_serverIP;
+    	private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
+
+    	IPAddress m_serverIP;
         string m_fallbackDomain = string.Empty;
-        int m_timeout;
+        TimeSpan m_timeout;
         int m_maxRetries = 1;
         
         /// <summary>
@@ -42,7 +41,7 @@ namespace NHINDirect.Certificates
         /// </summary>
         /// <param name="serverIP">An <see cref="IPAddress"/> instance providing the IP address of the DNS server</param>
         public DnsCertResolver(IPAddress serverIP)
-            : this(serverIP, DnsCertResolver.DefaultTimeoutMs)
+            : this(serverIP, DefaultTimeout)
         {
         }
 
@@ -50,9 +49,9 @@ namespace NHINDirect.Certificates
         /// Create a DNS certificate resolver.
         /// </summary>
         /// <param name="serverIP">An <see cref="IPAddress"/> instance providing the IP address of the DNS server</param>
-        /// <param name="timeoutMs">Timeout in milliseconds</param>
-        public DnsCertResolver(IPAddress serverIP, int timeoutMs)
-            : this(serverIP, timeoutMs, null)
+        /// <param name="timeout">Timeout value</param>
+        public DnsCertResolver(IPAddress serverIP, TimeSpan timeout)
+            : this(serverIP, timeout, null)
         {
         }
         
@@ -60,24 +59,28 @@ namespace NHINDirect.Certificates
         /// Creates a DNS certificate resolver with a custom timeout and a fallback domain.
         /// </summary>
         /// <param name="serverIP">An <see cref="IPAddress"/> instance providing the IP address of the DNS server</param>
-        /// <param name="timeoutMs">Timeout in milliseconds</param>
+        /// <param name="timeout">Timeout value</param>
         /// <param name="fallbackDomain">A fallback domain name to try if the main domain name is not resolved.</param>
-        public DnsCertResolver(IPAddress serverIP, int timeoutMs, string fallbackDomain)
+        public DnsCertResolver(IPAddress serverIP, TimeSpan timeout, string fallbackDomain)
         {
             if (serverIP == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("serverIP");
             }
-            if (timeoutMs < 0)
+            if (timeout.Ticks < 0)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("timeout value was less than zero", "timeout");
             }
+
             m_serverIP = serverIP;
-            m_timeout = timeoutMs;
+            m_timeout = timeout;
             m_fallbackDomain = fallbackDomain;
         }
 
-        public event Action<DnsCertResolver, Exception> Error;
+        /// <summary>
+        /// Event to subscribe to for notification of errors.
+        /// </summary>
+        public event Action<ICertificateResolver, Exception> Error;
         
         /// <summary>
         /// The DNS <see cref="IPAddress"/> resolved against.
@@ -104,7 +107,7 @@ namespace NHINDirect.Certificates
         /// <summary>
         /// Timeout in milliseconds.
         /// </summary>
-        public int Timeout
+        public TimeSpan Timeout
         {
             get
             {
@@ -123,9 +126,9 @@ namespace NHINDirect.Certificates
             }
             set
             {
-                if (value <= 0)
+                if (value < 1)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("value was less than 1", "value");
                 }
                 
                 m_maxRetries = value;
@@ -143,8 +146,6 @@ namespace NHINDirect.Certificates
             }
         }
         
-        public bool AssumeWildcardSupport = false;
-        
         /// <summary>
         /// Resolves X509 certificates for a mail address.
         /// </summary>
@@ -156,28 +157,29 @@ namespace NHINDirect.Certificates
         {
             using(DnsClient client = new DnsClient(m_serverIP))
             {
-                if (m_timeout > 0)
+                if (Timeout.Ticks > 0)
                 {
-                    client.Timeout = m_timeout;
+                    client.Timeout = Timeout;
                 }
                 
                 client.UseUDPFirst = false;
                 client.MaxRetries = m_maxRetries;
                 X509Certificate2Collection certs = null;
-                
+                //
+                // First, try to resolve the full email address directly
+                //                
                 certs = this.ResolveDomain(client, address.Address);
                 if (!certs.IsNullOrEmpty())
                 {
                     return certs;
                 }
-                
-                if (!this.AssumeWildcardSupport)
+                //
+                // No certificates found. Perhaps certificates are available at the the (Domain) level
+                //
+                certs = this.ResolveDomain(client, address.Host);
+                if (!certs.IsNullOrEmpty())
                 {
-                    certs = this.ResolveDomain(client, address.Host);
-                    if (!certs.IsNullOrEmpty())
-                    {
-                        return certs;
-                    }
+                    return certs;
                 }
 
                 if (this.HasFallbackDomain)
@@ -188,14 +190,11 @@ namespace NHINDirect.Certificates
                         return certs;
                     }
                     
-                    if (!this.AssumeWildcardSupport)
+                    certs = this.ResolveExtendedDomain(client, address.Host);
+                    if (!certs.IsNullOrEmpty())
                     {
-                        certs = this.ResolveExtendedDomain(client, address.Host);
-                        if (!certs.IsNullOrEmpty())
-                        {
-                            return certs;
-                        }
-                    }                    
+                        return certs;
+                    }
                 }
             }
             
@@ -215,7 +214,7 @@ namespace NHINDirect.Certificates
             }
             catch (DnsServerException dnsEx)
             {
-                if (dnsEx.ResponseCode != DnsResolver.Dns.ResponseCode.REFUSED)
+                if (dnsEx.ResponseCode != DnsResolver.DnsStandard.ResponseCode.Refused)
                 {
                     throw;
                 }
@@ -252,11 +251,12 @@ namespace NHINDirect.Certificates
         
         void NotifyException(Exception ex)
         {
-            if (this.Error != null)
+        	var errorHandler = this.Error;
+            if (errorHandler != null)
             {
                 try
                 {
-                    this.Error(this, ex);
+                    errorHandler(this, ex);
                 }
                 catch
                 {

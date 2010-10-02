@@ -14,57 +14,118 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NHINDirect
 {
+    /// <summary>
+    /// Represents Direct specific errors that occur during application execution.
+    /// </summary>
     public class NHINDException : Exception
     {
+        /// <summary>
+        /// Initializes a new instance of an <see cref="NHINDException"/>.
+        /// </summary>
         public NHINDException()
         {
         }
-        
+
+        /// <summary>
+        /// Initializes a new instance of an <see cref="NHINDException"/> with a specified error message
+        /// </summary>
+        /// <param name="message">The message that describes the error. </param>
         public NHINDException(string message)
             : base(message)
         {
         
         }
-        
+
+        /// <summary>
+        /// Initializes a new instance of an <see cref="NHINDException"/> with a reference 
+        /// to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="message">The message that describes the error. </param>
+        /// <param name="innerException">The inner exception reference.</param>
         public NHINDException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
     }
     
+    /// <summary>
+    /// Represents Direct specific exceptions specialized to a specific type of error
+    /// </summary>
+    /// <remarks>
+    /// The generic version of this class is used to create specialized exceptions with an enumeration error type
+    /// that provides the subtype of error.
+    /// </remarks>
+    /// <typeparam name="T">The type of error this exception type is specialized to, generally an enumeration</typeparam>
     public class NHINDException<T> : NHINDException
     {
         T m_error;
-        
+
+        /// <summary>
+        /// Initializes a new specialized instance of an <see cref="NHINDException"/>
+        /// </summary>
+        /// <param name="error">The error type for this instance.</param>
         public NHINDException(T error)
+            : base(FormatMessage(error, ""))
         {
             m_error = error;
         }
 
+        /// <summary>
+        /// Initializes a new specialized instance of an <see cref="NHINDException"/>
+        /// </summary>
+        /// <param name="error">The error type for this instance.</param>
+        /// <param name="message">The message that describes the error. </param>
         public NHINDException(T error, string message)
-            : base(message)
+            : base(FormatMessage(error, message))
         {
             m_error = error;
         }
-        
+
+        /// <summary>
+        /// Initializes a new specialized instance of an <see cref="NHINDException"/>
+        /// </summary>
+        /// <param name="error">The error type for this instance.</param>
+        /// <param name="innerException">The inner exception reference.</param>
         public NHINDException(T error, Exception innerException)
             : this(error, string.Empty, innerException)
         {
             m_error = error;
         }
-        
+
+        /// <summary>
+        /// Initializes a new specialized instance of an <see cref="NHINDException"/>
+        /// </summary>
+        /// <param name="error">The error type for this instance.</param>
+        /// <param name="message">The message that describes the error. </param>
+        /// <param name="innerException">The inner exception reference.</param>
         public NHINDException(T error, string message, Exception innerException)
-            : base(message, innerException)
+            : base(FormatMessage(error, message), innerException)
         {
             m_error = error;
         }
-        
+
+        /// <summary>
+        /// Private helper method to format the message passed to the base exception ctor.
+        /// </summary>
+        /// <param name="error">The error object</param>
+        /// <param name="message">The message</param>
+        /// <returns>Returns a formatted error message</returns>
+        private static string FormatMessage(T error, string message)
+        {
+            string msg = "Error=" + error;
+            if (!string.IsNullOrEmpty(message))
+            {
+                msg += Environment.NewLine + message;
+            }
+            return msg;
+        }
+
+        /// <summary>
+        /// The specific error type for this instance.
+        /// </summary>
         public T Error
         {
             get
@@ -75,11 +136,6 @@ namespace NHINDirect
             {
                 m_error = value;
             }
-        }
-
-        public override string ToString()
-        {
-            return string.Format("ERROR={0};\r\n", m_error, base.ToString());
         }
     }
 }

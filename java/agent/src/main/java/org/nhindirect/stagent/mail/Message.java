@@ -36,6 +36,7 @@ import javax.mail.internet.MimeMessage;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
 /**
+ * Extension to Java MimeMessage with utility methods. 
  * @author Greg Meyer
  * @author Umesh Madan
  *
@@ -112,7 +113,7 @@ public class Message extends MimeMessage
      */
     public String getToHeader()
     {    	
-    	return getRawHeaderLine(MailStandard.ToHeader);
+    	return getRawHeaderLine(MailStandard.Headers.To);
     }
     
     /**
@@ -121,7 +122,7 @@ public class Message extends MimeMessage
      */    
     public String getCCHeader()
     {
-    	return getRawHeaderLine(MailStandard.CCHeader);
+    	return getRawHeaderLine(MailStandard.Headers.CC);
     }     
     
     /**
@@ -130,7 +131,7 @@ public class Message extends MimeMessage
      */    
     public String getBCCHeader()
     {
-    	return getRawHeaderLine(MailStandard.BCCHeader);
+    	return getRawHeaderLine(MailStandard.Headers.BCC);
     }               
     
     /**
@@ -139,7 +140,7 @@ public class Message extends MimeMessage
      */    
     public String getFromHeader()
     {
-    	return getRawHeaderLine(MailStandard.FromHeader);
+    	return getRawHeaderLine(MailStandard.Headers.From);
     }         
     
     /**
@@ -148,7 +149,7 @@ public class Message extends MimeMessage
      */    
     public String getSubjectHeader()
     {
-    	return getRawHeaderLine(MailStandard.SubjectHeader);
+    	return getRawHeaderLine(MailStandard.Headers.Subject);
     }       
     
     /**
@@ -157,7 +158,7 @@ public class Message extends MimeMessage
      */    
     public String getIDHeader()
     {
-    	return getRawHeaderLine(MailStandard.MessageIDHeader);
+    	return getRawHeaderLine(MailStandard.Headers.MessageID);
     }        
     
     /**
@@ -166,7 +167,7 @@ public class Message extends MimeMessage
      */    
     public String getDateHeader()
     {
-    	return getRawHeaderLine(MailStandard.DateHeader);
+    	return getRawHeaderLine(MailStandard.Headers.Date);
     }      
     
 	/**
@@ -292,6 +293,6 @@ public class Message extends MimeMessage
         {
             return false;
         }
-        return MimeStandard.contains(contentType, MimeStandard.MediaType_Multipart);
+        return MimeStandard.contains(contentType, MimeStandard.MediaType.Multipart);
     }         
 }

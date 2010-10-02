@@ -1,18 +1,22 @@
 package org.nhindirect.gateway.smtp;
 
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+
+import javax.mail.Message.RecipientType;
 
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.gateway.smtp.module.SmtpAgentConfigModule;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
+import org.nhindirect.stagent.mail.Message;
+import org.nhindirect.stagent.mail.notifications.NotificationHelper;
+import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 import org.nhindirect.stagent.provider.MockNHINDAgentProvider;
 import org.nhindirect.stagent.utils.InjectionUtils;
-import org.nhindirect.stagent.AgentError;
-import org.nhindirect.stagent.AgentException;
 import org.nhindirect.stagent.DefaultMessageEnvelope;
 import org.nhindirect.stagent.NHINDAgent;
 
@@ -42,7 +46,14 @@ public class DefaultSmtpAgent_ProcessMessage_Test extends TestCase
 			if (agentProvider == null)
 				agentProvider = new MockNHINDAgentProvider(Arrays.asList(new String[] {"cerner.com", "securehealthemail.com"}));
 			
-			modules.add(SmtpAgentConfigModule.create(configfile, null, agentProvider));
+			try
+			{
+				modules.add(SmtpAgentConfigModule.create(new URL("file://" + configfile), null, agentProvider));	
+			}
+			catch (Exception e)
+			{
+				throw new RuntimeException(e);
+			}
 			
 			Injector injector = Guice.createInjector(modules);
 			SmtpAgentConfig config = injector.getInstance(SmtpAgentConfig.class);
@@ -88,13 +99,88 @@ public class DefaultSmtpAgent_ProcessMessage_Test extends TestCase
 			{
 				assertNotNull(result);
 				assertNotNull(result.getProcessedMessage());
-				assertNull(result.getIncomingBounceMessage());
-				assertNull(result.getOutgoingBounceMessage());
 			}
 			
 		}.perform();
 	}
 	
+	public void testProcessValidIncomingMessageWithMDNRequest_AssertSuccessfulResultWithNoBounces() throws Exception 
+	{
+		new TestPlan() 
+		{			
+			protected String getMessageToProcess() throws Exception
+			{
+				return TestUtils.readMessageResource("PlainIncomingMessage.txt");
+			}	
+			
+			@Override
+			protected void performInner() throws Exception 
+			{
+				DefaultMessageEnvelope env = new DefaultMessageEnvelope(getMessageToProcess());
+				
+				// add the notification request
+				NotificationHelper.requestNotification(env.getMessage());
+				
+				MessageProcessResult result = agent.processMessage(env.getMessage(), env.getRecipients(), env.getSender());			
+				doAssertions(result);
+			}
+			
+			@Override
+			protected void doAssertions(MessageProcessResult result) throws Exception
+			{
+				assertNotNull(result);
+				assertNotNull(result.getProcessedMessage());
+				assertNotNull(result.getProcessedMessage().getMessage());
+				assertNotNull(result.getNotificationMessages());
+				assertTrue(result.getNotificationMessages().size() > 0);
+				
+				// get the first message
+				NotificationMessage notiMsg = result.getNotificationMessages().iterator().next();
+				
+				assertEquals(1, notiMsg.getRecipients(RecipientType.TO).length);
+				
+				Message processedMessage = result.getProcessedMessage().getMessage();
+				String processedSender = processedMessage.getFrom()[0].toString();
+				String notiRecip = notiMsg.getRecipients(RecipientType.TO)[0].toString();
+				// make sure the to and from are the same
+				assertEquals(processedSender, notiRecip);
+				
+			}
+			
+		}.perform();
+	}
+	
+	public void testProcessValidOutgoingMessageWithMDNRequest_AssertSuccessfulResult() throws Exception 
+	{
+		new TestPlan() 
+		{			
+			protected String getMessageToProcess() throws Exception
+			{
+				return TestUtils.readMessageResource("PlainOutgoingMessage.txt");
+			}	
+			
+			@Override
+			protected void performInner() throws Exception 
+			{
+				DefaultMessageEnvelope env = new DefaultMessageEnvelope(getMessageToProcess());
+				
+				// add the notification request
+				NotificationHelper.requestNotification(env.getMessage());
+				
+				MessageProcessResult result = agent.processMessage(env.getMessage(), env.getRecipients(), env.getSender());			
+				doAssertions(result);
+			}			
+			
+			@Override
+			protected void doAssertions(MessageProcessResult result) throws Exception
+			{
+				assertNotNull(result);
+				assertNotNull(result.getProcessedMessage());
+			}
+			
+		}.perform();
+	}	
+
 	public void testProcessValidOutgoingMessage_AssertSuccessfulResultWithNoBounces() throws Exception 
 	{
 		new TestPlan() 
@@ -109,84 +195,6 @@ public class DefaultSmtpAgent_ProcessMessage_Test extends TestCase
 			{
 				assertNotNull(result);
 				assertNotNull(result.getProcessedMessage());
-				assertNull(result.getIncomingBounceMessage());
-				assertNull(result.getOutgoingBounceMessage());
-			}
-			
-		}.perform();
-	}	
-	
-	public void testOutgoingMessageNoTrustedRecips_AssertOutgoingBounce() throws Exception 
-	{
-		new TestPlan() 
-		{	
-			@Override
-			public void setupMocks()
-			{
-				modules.add(new AbstractModule()
-				{
-					@Override
-					protected void configure()
-					{
-						bind(AgentException.class).
-						annotatedWith(Names.named("MockAgentOutgoingException")).toInstance(new AgentException(AgentError.NoTrustedRecipients));						
-					}
-				});
-				super.setupMocks();
-			}
-			
-			protected String getMessageToProcess() throws Exception
-			{
-				return TestUtils.readMessageResource("PlainOutgoingMessage.txt");
-			}	
-			
-			@Override
-			protected void doAssertions(MessageProcessResult result) throws Exception
-			{
-				assertNotNull(result);
-				assertNull(result.getProcessedMessage());
-				assertNull(result.getIncomingBounceMessage());
-				assertNotNull(result.getOutgoingBounceMessage());
-			}
-			
-		}.perform();
-	}		
-	
-	public void testIncomingMessageNoTrustedRecips_AssertOutgoingBounce() throws Exception 
-	{
-		new TestPlan() 
-		{	
-			@Override
-			public void setupMocks()
-			{
-				modules.add(new AbstractModule()
-				{
-					@Override
-					protected void configure()
-					{
-						bind(InjectionUtils.collectionOf(String.class)).
-						annotatedWith(Names.named("MockAgentAnchorDomains")).
-							toInstance(Arrays.asList(new String[] {"starugh-stateline.com"}));								
-						
-						bind(AgentException.class).
-						annotatedWith(Names.named("MockAgentIncomingException")).toInstance(new AgentException(AgentError.NoTrustedRecipients));						
-					}
-				});
-				super.setupMocks();
-			}
-			
-			protected String getMessageToProcess() throws Exception
-			{
-				return TestUtils.readMessageResource("PlainIncomingMessage.txt");
-			}	
-			
-			@Override
-			protected void doAssertions(MessageProcessResult result) throws Exception
-			{
-				assertNotNull(result);
-				assertNull(result.getProcessedMessage());
-				assertNotNull(result.getIncomingBounceMessage());
-				assertNull(result.getOutgoingBounceMessage());
 			}
 			
 		}.perform();
@@ -262,8 +270,6 @@ public class DefaultSmtpAgent_ProcessMessage_Test extends TestCase
 			{
 				assertNotNull(result);
 				assertNotNull(result.getProcessedMessage());
-				assertNull(result.getIncomingBounceMessage());
-				assertNotNull(result.getOutgoingBounceMessage());
 			}
 			
 		}.perform();

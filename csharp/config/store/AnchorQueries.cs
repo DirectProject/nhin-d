@@ -28,7 +28,8 @@ namespace NHINDirect.Config.Store
         const string Sql_DeleteAnchorByOwner = "DELETE from Anchors where Owner = {0}";
         const string Sql_DeleteAnchorByThumbprint = "DELETE from Anchors where Owner = {0} and Thumbprint = {1}";
         const string Sql_DeleteAnchorByID = "DELETE from Anchors where CertificateID = {0}";
-        
+        const string Sql_UpdateStatusByOwner = "UPDATE Anchors Set Status = {0} where Owner = {1}";
+       
         static readonly Func<ConfigDatabase, long, IQueryable<Anchor>> AnchorByID = CompiledQuery.Compile(
             (ConfigDatabase db, long id) =>
                 from anchor in db.Anchors
@@ -58,18 +59,32 @@ namespace NHINDirect.Config.Store
                 select anchor
         );
 
-        static readonly Func<ConfigDatabase, string, IQueryable<Anchor>> IncomingAnchors = CompiledQuery.Compile(
+        static readonly Func<ConfigDatabase, string, IQueryable<Anchor>> AllIncomingAnchorsForOwner = CompiledQuery.Compile(
             (ConfigDatabase db, string owner) =>
                 from anchor in db.Anchors
                 where anchor.Owner == owner && anchor.ForIncoming == true
                 select anchor
         );
-        static readonly Func<ConfigDatabase, string, IQueryable<Anchor>> OutgoingAnchors = CompiledQuery.Compile(
+        static readonly Func<ConfigDatabase, string, IQueryable<Anchor>> AllOutgoingAnchorsForOwner = CompiledQuery.Compile(
             (ConfigDatabase db, string owner) =>
                 from anchor in db.Anchors
                 where anchor.Owner == owner && anchor.ForOutgoing == true
                 select anchor
         );
+
+        static readonly Func<ConfigDatabase, string, EntityStatus, IQueryable<Anchor>> IncomingAnchorsForOwner = CompiledQuery.Compile(
+            (ConfigDatabase db, string owner, EntityStatus status) =>
+                from anchor in db.Anchors
+                where anchor.Owner == owner && anchor.ForIncoming == true && anchor.Status == status
+                select anchor
+        );
+        static readonly Func<ConfigDatabase, string, EntityStatus, IQueryable<Anchor>> OutgoingAnchorsForOwner = CompiledQuery.Compile(
+            (ConfigDatabase db, string owner, EntityStatus status) =>
+                from anchor in db.Anchors
+                where anchor.Owner == owner && anchor.ForOutgoing == true && anchor.Status == status
+                select anchor
+        );
+        
         static readonly Func<ConfigDatabase, IQueryable<Anchor>> AllIncomingAnchors = CompiledQuery.Compile(
             (ConfigDatabase db) =>
                 from anchor in db.Anchors
@@ -117,7 +132,12 @@ namespace NHINDirect.Config.Store
 
         public static IEnumerable<Anchor> GetIncoming(this Table<Anchor> table, string owner)
         {
-            return IncomingAnchors(table.GetDB(), owner);
+            return AllIncomingAnchorsForOwner(table.GetDB(), owner);
+        }
+
+        public static IEnumerable<Anchor> GetIncoming(this Table<Anchor> table, string owner, EntityStatus status)
+        {
+            return IncomingAnchorsForOwner(table.GetDB(), owner, status);
         }
 
         public static IEnumerable<Anchor> GetAllIncoming(this Table<Anchor> table)
@@ -127,7 +147,12 @@ namespace NHINDirect.Config.Store
 
         public static IEnumerable<Anchor> GetOutgoing(this Table<Anchor> table, string owner)
         {
-            return OutgoingAnchors(table.GetDB(), owner);
+            return AllOutgoingAnchorsForOwner(table.GetDB(), owner);
+        }
+
+        public static IEnumerable<Anchor> GetOutgoing(this Table<Anchor> table, string owner, EntityStatus status)
+        {
+            return OutgoingAnchorsForOwner(table.GetDB(), owner, status);
         }
 
         public static IEnumerable<Anchor> GetAllOutgoing(this Table<Anchor> table)
@@ -148,6 +173,11 @@ namespace NHINDirect.Config.Store
         public static void ExecDelete(this Table<Anchor> table, long certificateID)
         {
             table.Context.ExecuteCommand(Sql_DeleteAnchorByID, certificateID);
+        }
+
+        public static void ExecUpdateStatus(this Table<Anchor> table, string owner, EntityStatus status)
+        {
+            table.Context.ExecuteCommand(Sql_UpdateStatusByOwner, status, owner);
         }
     }
 }

@@ -10,7 +10,6 @@ import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFilePassword;
 import org.nhindirect.stagent.cert.impl.annotation.CertStoreKeyFilePrivKeyPassword;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.name.Names;
 
 public class CertResolverTestModule extends AbstractModule 
 {

@@ -24,11 +24,17 @@ namespace NHINDirect.Config.Client.DomainManager
 {
     public static class AddressManagerExtensions
     {
+        public static bool AddressExists(this AddressManagerClient client, MailAddress emailAddress)
+        {
+            Address address = client.GetAddress(emailAddress);
+            return (address != null);
+        }
+        
         public static void AddAddress(this AddressManagerClient client, Address address)
         {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
             
             client.AddAddresses(new Address[] {address});
@@ -38,7 +44,7 @@ namespace NHINDirect.Config.Client.DomainManager
         {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
 
             client.UpdateAddresses(new Address[] { address });
@@ -46,22 +52,32 @@ namespace NHINDirect.Config.Client.DomainManager
         
         public static Address GetAddress(this AddressManagerClient client, MailAddress address)
         {
+            return client.GetAddress(address.Address, null);
+        }
+
+        public static Address GetAddress(this AddressManagerClient client, MailAddress address, EntityStatus? status)
+        {
             if (address == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("address");
             }
-            
-            return client.GetAddress(address.Address);
+
+            return client.GetAddress(address.Address, status);
         }
         
         public static Address GetAddress(this AddressManagerClient client, string emailAddress)
         {
+            return client.GetAddress(emailAddress, null);
+        }
+        
+        public static Address GetAddress(this AddressManagerClient client, string emailAddress, EntityStatus? status)
+        {
             if (string.IsNullOrEmpty(emailAddress))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "emailAddress");
             }
             
-            Address[] addresses = client.GetAddresses(new string[] {emailAddress});
+            Address[] addresses = client.GetAddresses(new string[] {emailAddress}, status);
             if (addresses.IsNullOrEmpty())
             {
                 return null;
@@ -72,14 +88,29 @@ namespace NHINDirect.Config.Client.DomainManager
         
         public static Address GetAddress(this AddressManagerClient client, long addressID)
         {
+            return client.GetAddress(addressID, null);
+        }
+        
+        public static Address GetAddress(this AddressManagerClient client, long addressID, EntityStatus? status)
+        {
             // use ids..
-            Address[] addresses = client.GetAddressesByID(new long[] { addressID });
+            Address[] addresses = client.GetAddressesByID(new long[] { addressID }, status);
             if (addresses.IsNullOrEmpty())
             {
                 return null;
             }
             
             return addresses[0];
+        }
+        
+        public static Address[] GetAddresses(this AddressManagerClient client, string[] emailAddresses)
+        {
+            return client.GetAddresses(emailAddresses, null);
+        }
+
+        public static Address[] GetAddressesByID(this AddressManagerClient client, long[] addressIDs)
+        {
+            return client.GetAddressesByID(addressIDs, null);
         }
         
         public static void RemoveAddress(this AddressManagerClient client, MailAddress emailAddress)
@@ -91,24 +122,24 @@ namespace NHINDirect.Config.Client.DomainManager
         {
             if (string.IsNullOrEmpty(emailAddress))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was null or empty", "emailAddress");
             }
             
             client.RemoveAddresses(new string[] {emailAddress});
         }
         
-        public static IEnumerable<Address> EnumerateDomainAddresses(this AddressManagerClient client, long domainID, int chunkSize)
+        public static IEnumerable<Address> EnumerateDomainAddresses(this AddressManagerClient client, string domainName, int chunkSize)
         {
-            if (chunkSize <= 0)
+            if (chunkSize < 1)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was less than 1", "chunkSize");
             }
 
-            long lastID = -1;
+            string lastAddress = null;
             Address[] addresses;
             while (true)
             {
-                addresses = client.EnumerateDomainAddresses(domainID, lastID, chunkSize);
+                addresses = client.EnumerateDomainAddresses(domainName, lastAddress, chunkSize);
                 if (addresses.IsNullOrEmpty())
                 {
                     yield break;
@@ -117,22 +148,22 @@ namespace NHINDirect.Config.Client.DomainManager
                 {
                     yield return addresses[i];
                 }
-                lastID = addresses[addresses.Length - 1].ID;
+                lastAddress = addresses[addresses.Length - 1].EmailAddress;
             }
         }
 
         public static IEnumerable<Address> EnumerateAddresses(this AddressManagerClient client, int chunkSize)
         {
-            if (chunkSize <= 0)
+            if (chunkSize < 1)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("value was less than 1", "chunkSize");
             }
 
-            long lastID = -1;
+            string lastAddress = null;
             Address[] addresses;
             while (true)
             {
-                addresses = client.EnumerateAddresses(lastID, chunkSize);
+                addresses = client.EnumerateAddresses(lastAddress, chunkSize);
                 if (addresses.IsNullOrEmpty())
                 {
                     yield break;
@@ -141,7 +172,7 @@ namespace NHINDirect.Config.Client.DomainManager
                 {
                     yield return addresses[i];
                 }
-                lastID = addresses[addresses.Length - 1].ID;
+                lastAddress = addresses[addresses.Length - 1].EmailAddress;
             }
         }
     }

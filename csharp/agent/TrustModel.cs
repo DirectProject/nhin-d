@@ -25,10 +25,22 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Agent
 {
+    /// <summary>
+    /// Status of trust checking
+    /// </summary>
     public enum TrustEnforcementStatus
     {
+        /// <summary>
+        /// Failed trust enforcement
+        /// </summary>
         Failed = -1,
+        /// <summary>
+        /// Trust status could not be determined
+        /// </summary>
         Unknown = 0,
+        /// <summary>
+        /// Trust checked and confirmed.
+        /// </summary>
         Success= 1,                     // Signature valid, siging cert trusted, and certs match perfectly
     }
         
@@ -37,6 +49,9 @@ namespace NHINDirect.Agent
     /// </summary>
     public class TrustModel
     {
+        /// <summary>
+        /// A trust model with default configurations for chain validator
+        /// </summary>
         public static readonly TrustModel Default = new TrustModel();
         
         TrustChainValidator m_certChainValidator;
@@ -57,7 +72,7 @@ namespace NHINDirect.Agent
         {
             if (validator == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("validator");
             }
             
             m_certChainValidator = validator;
@@ -84,7 +99,7 @@ namespace NHINDirect.Agent
         {
             if (message == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("message");
             }
             
             if (!message.HasSignatures)
@@ -114,7 +129,9 @@ namespace NHINDirect.Agent
                 if (trustedSignature != null)
                 {
                     recipient.Status = TrustEnforcementStatus.Success;
-                    //TODO: Then, verify that signer's signature
+                    //
+                    // Signature has already been verified by FindTrustedSignature!
+                    //
                 } 
             }            
         }
@@ -128,7 +145,7 @@ namespace NHINDirect.Agent
         {
             if (message == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("message");
             }
             
             NHINDAddress sender = message.Sender;

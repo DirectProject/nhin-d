@@ -12,9 +12,10 @@
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>testSmtpAgent</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
+    <Level>Trace</Level>
   </Log>
   <Cryptographer>
-    <DefaultEncryption>RSA_3DES</DefaultEncryption>
+    <DefaultEncryption>AES128</DefaultEncryption>
     <DefaultDigest>SHA1</DefaultDigest>
   </Cryptographer>
   <PrivateCerts>
@@ -23,12 +24,6 @@
     </MachineResolver>
   </PrivateCerts>
   <PublicCerts>
-    <!--
-    <DnsResolver>
-      <ServerIP>127.0.0.1</ServerIP>
-      <Timeout>5000</Timeout>
-    </DnsResolver>
-    -->
     <MachineResolver>
       <Name>NHINDExternal</Name>
     </MachineResolver>
@@ -43,15 +38,12 @@
       </Outgoing>
     </MachineResolver>
   </Anchors>
-  <MessageBounce>
-    <MailPickupFolder>C:\inetpub\mailroot\pickup</MailPickupFolder>
-    <EnableForOutgoing>true</EnableForOutgoing>
-    <EnableForIncoming>false</EnableForIncoming>
-    <OutgoingTemplate>
-      <Subject>Message Delivery Failure</Subject>
-      <Body>The following recipients are not trusted: </Body>
-    </OutgoingTemplate>
-  </MessageBounce>
+  <IncomingRoutes>
+    <Route>
+      <AddressType>XDR</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\xdr</CopyFolder>
+    </Route>
+  </IncomingRoutes>
   <RawMessage>
     <CopyFolder>C:\inetpub\mailroot\raw</CopyFolder>
   </RawMessage>

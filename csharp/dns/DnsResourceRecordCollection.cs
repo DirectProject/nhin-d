@@ -21,17 +21,30 @@ using System.Text;
 
 namespace DnsResolver
 {
+    /// <summary>
+    /// Encapsulates a collection of RRs
+    /// </summary>
     public class DnsResourceRecordCollection : List<DnsResourceRecord>
     {
+
+        /// <summary>
+        /// Initializes an empty collection.
+        /// </summary>
         public DnsResourceRecordCollection()
         {
         }
         
+        /// <summary>
+        /// Initializes an empty collection of the specified <paramref name="capacity"/>
+        /// </summary>
         public DnsResourceRecordCollection(int capacity)
             : base(capacity)
         {
         }
         
+        /// <summary>
+        /// Provides an eumeration of raw records.
+        /// </summary>
         public IEnumerable<RawRecord> Raw
         {
             get
@@ -47,63 +60,90 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Provides an enumeration of contained A RRs
+        /// </summary>
         public IEnumerable<AddressRecord> A
         {
             get
             {
-                return this.Enumerate<AddressRecord>(Dns.RecordType.ANAME);
+                return this.Enumerate<AddressRecord>(DnsStandard.RecordType.ANAME);
             }
         }
-        
+
+        /// <summary>
+        /// Provides an enumeration of contained PTR RRs
+        /// </summary>
         public IEnumerable<PtrRecord> PTR
         {
             get
             {
-                return this.Enumerate<PtrRecord>(Dns.RecordType.PTR);
+                return this.Enumerate<PtrRecord>(DnsStandard.RecordType.PTR);
             }
         }
-        
+
+        /// <summary>
+        /// Provides an enumeration of contained PTR RRs
+        /// </summary>
         public IEnumerable<NSRecord> NS
         {
             get
             {
-                return this.Enumerate<NSRecord>(Dns.RecordType.NS);
+                return this.Enumerate<NSRecord>(DnsStandard.RecordType.NS);
             }
         }
-        
+
+        /// <summary>
+        /// Provides an enumeration of contained MX RRs
+        /// </summary>
         public IEnumerable<MXRecord> MX
         {
             get
             {
-                return this.Enumerate<MXRecord>(Dns.RecordType.MX);
+                return this.Enumerate<MXRecord>(DnsStandard.RecordType.MX);
             }
         }
-        
+
+        /// <summary>
+        /// Provides an enumeration of contained TXT RRs
+        /// </summary>
         public IEnumerable<TextRecord> TXT
         {
             get
             {
-                return this.Enumerate<TextRecord>(Dns.RecordType.TXT);
+                return this.Enumerate<TextRecord>(DnsStandard.RecordType.TXT);
             }
         }
 
+        /// <summary>
+        /// Provides an enumeration of contained CERT RRs
+        /// </summary>
         public IEnumerable<CertRecord> CERT
         {
             get
             {
-                return this.Enumerate<CertRecord>(Dns.RecordType.CERT);
+                return this.Enumerate<CertRecord>(DnsStandard.RecordType.CERT);
             }
         }
-        
+
+        /// <summary>
+        /// Provides an enumeration of contained SOA RRs
+        /// </summary>
         public IEnumerable<SOARecord> SOA
         {
             get
             {
-                return this.Enumerate<SOARecord>(Dns.RecordType.SOA);
+                return this.Enumerate<SOARecord>(DnsStandard.RecordType.SOA);
             }
         }
         
-        public IEnumerable<T> Enumerate<T>(Dns.RecordType type)
+        /// <summary>
+        /// Provides an enumeration of records of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The RR type</typeparam>
+        /// <param name="type">The RR type to enumerate</param>
+        /// <returns>The enumeration of RRs of the specified type.</returns>
+        public IEnumerable<T> Enumerate<T>(DnsStandard.RecordType type)
             where T : DnsResourceRecord
         {
             foreach(DnsResourceRecord record in this)
@@ -116,6 +156,14 @@ namespace DnsResolver
                         yield return typedRecord;
                     }
                 }
+            }
+        }
+        
+        internal void Serialize(DnsBuffer buffer)
+        {
+            for (int i = 0, count = this.Count; i < count; ++i)
+            {
+                this[i].Serialize(buffer);
             }
         }
         

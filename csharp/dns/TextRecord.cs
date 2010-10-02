@@ -21,10 +21,21 @@ using System.Text;
 
 namespace DnsResolver
 {
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    // /                   TXT-DATA                    /
-    // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-
+    /// <summary>Represents a TXT RR</summary>
+    /// <remarks>
+    /// RFC 1035, 3.3.14, TXT RDATA format
+    /// <code>
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                   TXT-DATA                    /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
+    /// where:
+    /// TXT-DATA        One or more &lt;character-string&gt;s.
+    /// <para>
+    /// TXT RRs are used to hold descriptive text.  The semantics of the text
+    /// depends on the domain where it is found.
+    /// </para>
+    /// </remarks>
     public class TextRecord : DnsResourceRecord
     {
         IList<string> m_strings;
@@ -33,7 +44,21 @@ namespace DnsResolver
         {
             // nothing
         }
-
+        
+        /// <summary>
+        /// Initializes a new instance with the supplied strings.
+        /// </summary>
+        /// <param name="name">the domain name for which this is a record</param>
+        /// <param name="strings">The strings held by this TXT RR</param>
+        public TextRecord(string name, IList<string> strings)
+            : base(name, DnsStandard.RecordType.TXT)
+        {
+            this.Strings = strings;
+        }
+        
+        /// <summary>
+        /// Gets and sets the strings held by this RR.
+        /// </summary>
         public IList<string> Strings
         {
             get
@@ -51,6 +76,9 @@ namespace DnsResolver
             }
         }
         
+        /// <summary>
+        /// Gets if this TXT RR has strings associated with it.
+        /// </summary>
         public bool HasStrings
         {
             get
@@ -59,6 +87,63 @@ namespace DnsResolver
             }
         }
 
+
+        /// <summary>
+        /// Tests equality between this TXT record and the other <paramref name="record"/>.
+        /// </summary>
+        /// <param name="record">The other record.</param>
+        /// <returns><c>true</c> if the RRs are equal, <c>false</c> otherwise.</returns>
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+
+            TextRecord textRecord = record as TextRecord;
+            if (textRecord == null)
+            {
+                return false;
+            }
+            
+            if (this.HasStrings != textRecord.HasStrings || m_strings.Count != textRecord.Strings.Count)
+            {
+                return false;
+            }
+            
+            for (int i = 0, count = m_strings.Count; i < count; ++i)
+            {
+                if (!string.Equals(m_strings[i], textRecord.Strings[i], StringComparison.Ordinal))
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        /// <summary>
+        /// Writes this RR in DNS wire format to the <paramref name="buffer"/>
+        /// </summary>
+        /// <param name="buffer">The buffer to which DNS wire data are written</param>
+        protected override void SerializeRecordData(DnsBuffer buffer)
+        {
+            foreach(string text in this.m_strings)
+            {
+                if (text.Length > byte.MaxValue)
+                {
+                    throw new DnsProtocolException(DnsProtocolError.StringTooLong);
+                }
+                
+                buffer.AddByte((byte) text.Length);
+                buffer.AddChars(text);
+            }
+        }
+        
+        /// <summary>
+        /// Reads data into this RR from the DNS wire format data in <paramref name="reader"/>
+        /// </summary>
+        /// <param name="reader">Reader in which wire format data for this RR is already buffered.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
             List<string> stringList = new List<string>();
@@ -75,7 +160,7 @@ namespace DnsResolver
                 stringList.Add(sb.ToString());
             }
 
-            Strings = stringList;
+            this.Strings = stringList;
         }
     }
 }

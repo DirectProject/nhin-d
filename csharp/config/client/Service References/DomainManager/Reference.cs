@@ -31,13 +31,13 @@ namespace NHINDirect.Config.Client.DomainManager {
             "e")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesConfigS" +
             "toreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Address[] GetAddresses(string[] emailAddresses);
+        NHINDirect.Config.Store.Address[] GetAddresses(string[] emailAddresses, System.Nullable<NHINDirect.Config.Store.EntityStatus> status);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByID", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByIDRes" +
             "ponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByIDCon" +
             "figStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Address[] GetAddressesByID(long[] addressIDs);
+        NHINDirect.Config.Store.Address[] GetAddressesByID(long[] addressIDs, System.Nullable<NHINDirect.Config.Store.EntityStatus> status);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddressesResp" +
             "onse")]
@@ -52,18 +52,31 @@ namespace NHINDirect.Config.Client.DomainManager {
             "esConfigStoreFaultFault", Name="ConfigStoreFault")]
         void RemoveDomainAddresses(long domainID);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesS" +
+            "tatus", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesS" +
+            "tatusResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesS" +
+            "tatusConfigStoreFaultFault", Name="ConfigStoreFault")]
+        void SetDomainAddressesStatus(long domainID, NHINDirect.Config.Store.EntityStatus status);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressCount", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressCountResp" +
+            "onse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressCountConf" +
+            "igStoreFaultFault", Name="ConfigStoreFault")]
+        int GetAddressCount(string domainName);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddr" +
             "esses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddr" +
             "essesResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddr" +
             "essesConfigStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Address[] EnumerateDomainAddresses(long domainID, long lastAddressID, int maxResults);
+        NHINDirect.Config.Store.Address[] EnumerateDomainAddresses(string domainName, string lastAddress, int maxResults);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateAddressesR" +
             "esponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateAddressesC" +
             "onfigStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Address[] EnumerateAddresses(long lastAddressID, int maxResults);
+        NHINDirect.Config.Store.Address[] EnumerateAddresses(string lastAddress, int maxResults);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
@@ -101,12 +114,12 @@ namespace NHINDirect.Config.Client.DomainManager {
             base.Channel.UpdateAddresses(address);
         }
         
-        public NHINDirect.Config.Store.Address[] GetAddresses(string[] emailAddresses) {
-            return base.Channel.GetAddresses(emailAddresses);
+        public NHINDirect.Config.Store.Address[] GetAddresses(string[] emailAddresses, System.Nullable<NHINDirect.Config.Store.EntityStatus> status) {
+            return base.Channel.GetAddresses(emailAddresses, status);
         }
         
-        public NHINDirect.Config.Store.Address[] GetAddressesByID(long[] addressIDs) {
-            return base.Channel.GetAddressesByID(addressIDs);
+        public NHINDirect.Config.Store.Address[] GetAddressesByID(long[] addressIDs, System.Nullable<NHINDirect.Config.Store.EntityStatus> status) {
+            return base.Channel.GetAddressesByID(addressIDs, status);
         }
         
         public void RemoveAddresses(string[] emailAddresses) {
@@ -117,12 +130,20 @@ namespace NHINDirect.Config.Client.DomainManager {
             base.Channel.RemoveDomainAddresses(domainID);
         }
         
-        public NHINDirect.Config.Store.Address[] EnumerateDomainAddresses(long domainID, long lastAddressID, int maxResults) {
-            return base.Channel.EnumerateDomainAddresses(domainID, lastAddressID, maxResults);
+        public void SetDomainAddressesStatus(long domainID, NHINDirect.Config.Store.EntityStatus status) {
+            base.Channel.SetDomainAddressesStatus(domainID, status);
         }
         
-        public NHINDirect.Config.Store.Address[] EnumerateAddresses(long lastAddressID, int maxResults) {
-            return base.Channel.EnumerateAddresses(lastAddressID, maxResults);
+        public int GetAddressCount(string domainName) {
+            return base.Channel.GetAddressCount(domainName);
+        }
+        
+        public NHINDirect.Config.Store.Address[] EnumerateDomainAddresses(string domainName, string lastAddress, int maxResults) {
+            return base.Channel.EnumerateDomainAddresses(domainName, lastAddress, maxResults);
+        }
+        
+        public NHINDirect.Config.Store.Address[] EnumerateAddresses(string lastAddress, int maxResults) {
+            return base.Channel.EnumerateAddresses(lastAddress, maxResults);
         }
     }
     
@@ -141,10 +162,16 @@ namespace NHINDirect.Config.Client.DomainManager {
             "oreFaultFault", Name="ConfigStoreFault")]
         void UpdateDomain(NHINDirect.Config.Store.Domain domain);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomain", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainConfigStore" +
-            "FaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Domain GetDomain(string domainName);
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCount", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCountRespon" +
+            "se")]
+        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCountConfig" +
+            "StoreFaultFault", Name="ConfigStoreFault")]
+        int GetDomainCount();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomains", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainsResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainsConfigStor" +
+            "eFaultFault", Name="ConfigStoreFault")]
+        NHINDirect.Config.Store.Domain[] GetDomains(string[] domainNames, System.Nullable<NHINDirect.Config.Store.EntityStatus> status);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/RemoveDomain", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/RemoveDomainResponse" +
             "")]
@@ -156,7 +183,7 @@ namespace NHINDirect.Config.Client.DomainManager {
             "onse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/EnumerateDomainsConf" +
             "igStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Domain[] EnumerateDomains(long lastDomainID, int maxResults);
+        NHINDirect.Config.Store.Domain[] EnumerateDomains(string lastDomainName, int maxResults);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
@@ -194,16 +221,20 @@ namespace NHINDirect.Config.Client.DomainManager {
             base.Channel.UpdateDomain(domain);
         }
         
-        public NHINDirect.Config.Store.Domain GetDomain(string domainName) {
-            return base.Channel.GetDomain(domainName);
+        public int GetDomainCount() {
+            return base.Channel.GetDomainCount();
+        }
+        
+        public NHINDirect.Config.Store.Domain[] GetDomains(string[] domainNames, System.Nullable<NHINDirect.Config.Store.EntityStatus> status) {
+            return base.Channel.GetDomains(domainNames, status);
         }
         
         public void RemoveDomain(string domainName) {
             base.Channel.RemoveDomain(domainName);
         }
         
-        public NHINDirect.Config.Store.Domain[] EnumerateDomains(long lastDomainID, int maxResults) {
-            return base.Channel.EnumerateDomains(lastDomainID, maxResults);
+        public NHINDirect.Config.Store.Domain[] EnumerateDomains(string lastDomainName, int maxResults) {
+            return base.Channel.EnumerateDomains(lastDomainName, maxResults);
         }
     }
 }

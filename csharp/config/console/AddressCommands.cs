@@ -24,77 +24,197 @@ using NHINDirect.Config.Client.DomainManager;
 
 namespace NHINDirect.Config.Command
 {
+    /// <summary>
+    /// Commands to manage Addresses
+    /// </summary>
     public class AddressCommands
     {
-        DomainManagerClient m_domainClient;
-        AddressManagerClient m_addressClient;
-        
+        const int DefaultChunkSize = 25;
+                
         public AddressCommands()
         {            
-            m_domainClient = new DomainManagerClient(ConfigConsole.Settings.DomainManager.Binding, ConfigConsole.Settings.DomainManager.Endpoint);
-            m_addressClient = new AddressManagerClient(ConfigConsole.Settings.AddressManager.Binding, ConfigConsole.Settings.AddressManager.Endpoint);
         }
-        
-        public void Command_AddressAdd(string[] args)
+
+        //---------------------------------------
+        //
+        // Commands
+        //
+        //---------------------------------------
+        /// <summary>
+        /// Add a new email address
+        /// </summary>
+        public void Command_Address_Add(string[] args)
         {
-            MailAddress address = new MailAddress(args.GetRequiredValue(0));
-            string displayName = address.DisplayName;
+            MailAddress address = new MailAddress(args.GetRequiredValue(0));            
+            string addressType = args.GetOptionalValue(1, "SMTP");
+            string displayName = args.GetOptionalValue(2, string.Empty);
             if (string.IsNullOrEmpty(displayName))
             {
-                displayName = args.GetOptionalValue(1, string.Empty);
+                displayName = address.DisplayName;
             }
             
-            Domain domain = DomainCommands.DomainGet(m_domainClient, address.Host);
-            m_addressClient.AddAddress(new Address(domain.ID, address.Address, displayName));
+            if (ConfigConsole.Current.AddressClient.AddressExists(address))
+            {
+                Console.WriteLine("Exists {0}", address);
+            }
+            else
+            {
+                Domain domain = DomainCommands.DomainGet(ConfigConsole.Current.DomainClient, address.Host);
+                Address newAddress = new Address(domain.ID, address.Address, displayName);
+                newAddress.Type = addressType;
+                
+                ConfigConsole.Current.AddressClient.AddAddress(newAddress);
+                Console.WriteLine("Added {0}", address);
+            }
         }                
-        public void Usage_AddressAdd()
+        public void Usage_Address_Add()
         {
             Console.WriteLine("Add a new email address. The address domain must already exist.");
-            Console.WriteLine("    emailAddress [displayName]");
+            Console.WriteLine("    emailAddress [addressType] [displayName]");
+            Console.WriteLine("\t emailAddress: valid email address. Verifies that the domain already exists.");
+            Console.WriteLine("\t addressType: (optional) such as XDR. Used for routing. default:SMTP");
+            Console.WriteLine("\t displayName: (optional)");
         }
         
-        public void Command_AddressGet(string[] args)
+        /// <summary>
+        /// Set the display name for an address
+        /// </summary>
+        /// <param name="args"></param>
+        public void Command_Address_DisplayName_Set(string[] args)
+        {
+            string emailAddress = args.GetRequiredValue(0);
+            string displayName = args.GetRequiredValue(1);
+            
+            Address address = ConfigConsole.Current.AddressClient.GetAddress(emailAddress);
+            if (address == null)
+            {
+                throw new ArgumentException(string.Format("{0} not found", emailAddress));
+            }
+            
+            address.DisplayName = displayName;
+            ConfigConsole.Current.AddressClient.UpdateAddress(address);
+        }        
+        public void Usage_Address_DisplayName_Set()
+        {
+            Console.WriteLine("Set the display name for the given address");
+            Console.WriteLine("    emailAddress displayname");
+            Console.WriteLine("\t emailAddress: existing email address.");
+            Console.WriteLine("\t displayname: new display name.");
+        }
+        
+        /// <summary>
+        /// Retrieve an existing address
+        /// </summary>
+        public void Command_Address_Get(string[] args)
         {
             MailAddress email = new MailAddress(args.GetRequiredValue(0));
             
             Address address = GetAddress(email.Address);
             Print(address);
         }
-        public void Usage_AddressGet()
+        public void Usage_Address_Get()
         {
             Console.WriteLine("Retrieve an existing address.");
-            Console.WriteLine("    addressget emailAddress");
-        }
-                
-        public void Command_AddressRemove(string[] args)
-        {
-            MailAddress address = new MailAddress(args.GetRequiredValue(0));
-            m_addressClient.RemoveAddress(address);
-        }
-        public void Usage_AddressRemove()
-        {
-            Console.WriteLine("Remove an existing address.");
-            Console.WriteLine("    addressremove emailAddress.");
+            Console.WriteLine("    emailAddress");
         }
         
-        public void Command_AddressList(string[] args)
+        /// <summary>
+        /// Remove an existing email address
+        /// </summary>
+        public void Command_Address_Remove(string[] args)
         {
-            string domainName = args.GetRequiredValue(0);            
-            int chunkSize = args.GetOptionalValue<int>(1, 25);
+            MailAddress address = new MailAddress(args.GetRequiredValue(0));
+            ConfigConsole.Current.AddressClient.RemoveAddress(address);
+        }
+        public void Usage_Address_Remove()
+        {
+            Console.WriteLine("Remove an existing address.");
+            Console.WriteLine("    emailAddress");
+        }
+        
+        /// <summary>
+        /// List all email addresses in a domain
+        /// </summary>
+        public void Command_Address_List(string[] args)
+        {
+            string domainName = args.GetRequiredValue(0);
+            int chunkSize = args.GetOptionalValue<int>(1, DefaultChunkSize);
          
-            Domain domain = DomainCommands.DomainGet(m_domainClient, domainName);
-            Print(m_addressClient.EnumerateDomainAddresses(domain.ID, chunkSize));
+            Print(ConfigConsole.Current.AddressClient.EnumerateDomainAddresses(domainName, chunkSize));
         }        
-        public void Usage_AddressList()
+        public void Usage_Address_List()
         {
             Console.WriteLine("List addresses for a domain.");
-            Console.WriteLine("    addresslist domainName [chunkSize] [displayChunkSize]");
+            Console.WriteLine("   domainName [chunkSize]");
+            Console.WriteLine("\t domainName: list addresses for this domain");
+            Console.WriteLine("\tchunkSize: (optional) Number of addresses to download from service at a time. Default is {0}", DefaultChunkSize);
+        }
+        
+        /// <summary>
+        /// List all email addresses
+        /// </summary>
+        /// <param name="args"></param>
+        public void Command_Address_ListAll(string[] args)
+        {
+            int chunkSize = args.GetOptionalValue<int>(0, DefaultChunkSize);
+            Print(ConfigConsole.Current.AddressClient.EnumerateAddresses(chunkSize));
+        }
+        public void Usage_Address_ListAll()
+        {
+            Console.WriteLine("List all addresses.");
+            Console.WriteLine("    [chunkSize]");
             Console.WriteLine("\tchunkSize: Number of addresses to download from service at a time.");
         }
         
+        /// <summary>
+        /// Set the status of a specific email address
+        /// </summary>
+        /// <param name="args"></param>
+        public void Command_Address_Status_Set(string[] args)
+        {
+            MailAddress emailAddress = new MailAddress(args.GetRequiredValue(0));
+            EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
+            
+            Address address = ConfigConsole.Current.AddressClient.GetAddress(emailAddress);
+            if (address == null)
+            {
+                throw new ArgumentException("Address not found");
+            }
+            
+            address.Status = status;
+            ConfigConsole.Current.AddressClient.UpdateAddress(address);
+        }        
+        public void Usage_Address_Status_Set()
+        {
+            Console.WriteLine("Set the status of an address");
+            Console.WriteLine("    emailAddress status");
+            Console.WriteLine("\t emailAddress: set the status of this address");
+            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString);
+        }
+        
+        /// <summary>
+        /// Return # of addresses in a domain
+        /// </summary>
+        public void Command_Address_Count(string[] args)
+        {
+            string domainName = args.GetRequiredValue(0);
+            Console.WriteLine("{0} addresses", ConfigConsole.Current.AddressClient.GetAddressCount(domainName));
+        }
+        public void Usage_Address_Count()
+        {
+            Console.WriteLine("Retrieve # of addresses in given domain.");
+            Console.WriteLine("  domainName");
+        }
+
+        //---------------------------------------
+        //
+        // Impl
+        //
+        //---------------------------------------
+        
         internal Address GetAddress(string email)
         {
-            return GetAddress(m_addressClient, email);
+            return GetAddress(ConfigConsole.Current.AddressClient, email);
         }
         
         internal static Address GetAddress(AddressManagerClient client, string email)
@@ -124,6 +244,7 @@ namespace NHINDirect.Config.Command
             CommandUI.Print("DisplayName", address.DisplayName);
             CommandUI.Print("DomainID", address.DomainID);
             CommandUI.Print("Type", address.Type);
+            CommandUI.Print("Status", address.Status);
             CommandUI.Print("CreateDate", address.CreateDate);
             CommandUI.Print("UpdateDate", address.UpdateDate);
         }

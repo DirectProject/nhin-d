@@ -99,7 +99,7 @@ namespace NHINDirect.Config.Store
         {
             if (anchors == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("anchors");
             }
             using (ConfigDatabase db = this.Store.CreateContext())
             {
@@ -115,7 +115,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException("db");
             }
             if (anchor == null)
             {
@@ -150,7 +150,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
 
             return db.Anchors.Get(lastCertID, maxResults);
@@ -168,7 +168,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             if (string.IsNullOrEmpty(owner))
             {
@@ -180,6 +180,11 @@ namespace NHINDirect.Config.Store
 
         public Anchor[] GetIncoming(string ownerName)
         {
+            return this.GetIncoming(ownerName, null);
+        }
+
+        public Anchor[] GetIncoming(string ownerName, EntityStatus? status)
+        {
             if (string.IsNullOrEmpty(ownerName))
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
@@ -187,11 +192,26 @@ namespace NHINDirect.Config.Store
 
             using (ConfigDatabase db = this.Store.CreateContext())
             {
-                return db.Anchors.GetIncoming(ownerName).ToArray();
+                IEnumerable<Anchor> matches;
+                if (status == null)
+                {
+                    matches = db.Anchors.GetIncoming(ownerName);
+                }
+                else
+                {
+                    matches = db.Anchors.GetIncoming(ownerName, status.Value);
+                }
+                
+                return matches.ToArray();
             }
         }
 
         public Anchor[] GetOutgoing(string ownerName)
+        {
+            return this.GetOutgoing(ownerName, null);
+        }
+
+        public Anchor[] GetOutgoing(string ownerName, EntityStatus? status)
         {
             if (string.IsNullOrEmpty(ownerName))
             {
@@ -200,7 +220,18 @@ namespace NHINDirect.Config.Store
 
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                return db.Anchors.GetOutgoing(ownerName).ToArray();
+                IEnumerable<Anchor> matches;
+                
+                if (status == null)
+                {
+                    matches = db.Anchors.GetOutgoing(ownerName);
+                }
+                else
+                {
+                    matches = db.Anchors.GetOutgoing(ownerName, status.Value);
+                }
+                
+                return matches.ToArray();                    
             }
         }
 
@@ -216,7 +247,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             if (string.IsNullOrEmpty(owner))            
             {
@@ -227,6 +258,25 @@ namespace NHINDirect.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidThumbprint);
             }
             return db.Anchors.Get(owner, thumbprint);
+        }
+
+        public void SetStatus(string owner, EntityStatus status)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                this.SetStatus(db, owner, status);
+                //db.SubmitChanges(); // Not needed, since we do a direct update
+            }
+        }
+
+        public void SetStatus(ConfigDatabase db, string owner, EntityStatus status)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+
+            db.Anchors.ExecUpdateStatus(owner, status);
         }
 
         public void Remove(long[] certificateIDs)
@@ -243,7 +293,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             if (certificateIDs.IsNullOrEmpty())
             {
@@ -270,7 +320,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             if (string.IsNullOrEmpty(owner))
             {
@@ -301,7 +351,7 @@ namespace NHINDirect.Config.Store
         {
             if (db == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("db");
             }
             if (string.IsNullOrEmpty(ownerName))
             {

@@ -22,98 +22,137 @@ using System.Threading;
 
 namespace DnsResolver
 {
-    public class DnsRequest
+    /// <summary>
+    /// A Dns Request (query) issued to the server
+    /// </summary>
+    public class DnsRequest : DnsMessage
     {
-        internal DnsHeader m_header;
-        internal DnsQuestion m_question;
-
-        public DnsRequest(Dns.RecordType qType, string qName)
+        /// <summary>
+        /// Initializes a query for domain 
+        /// </summary>
+        /// <param name="qType">The record type to query</param>
+        /// <param name="domain">The domain to query.</param>
+        public DnsRequest(DnsStandard.RecordType qType, string domain)
+            : this(new DnsQuestion(domain, qType))
         {
-            m_header = new DnsHeader();
-
-            m_header.IsRequest = true;
-            m_header.OpCode = Dns.OpCode.QUERY;
-
-            m_header.IsAuthoritativeAnswer = false;
-            m_header.IsTruncated = false;
-            m_header.IsRecursionDesired = true;
-            m_header.IsRecursionAvailable = false;
-            m_header.ResponseCode = Dns.ResponseCode.SUCCESS;
-            m_header.QuestionCount = 1;
-            m_header.AnswerCount = 0;
-            m_header.NameServerAnswerCount = 0;
-            m_header.AdditionalAnswerCount = 0;
-
-            m_question = new DnsQuestion(qName, qType, Dns.Class.IN);
         }
         
-        public DnsHeader Header
+        /// <summary>
+        /// Construct a new Dns Question
+        /// </summary>
+        public DnsRequest(DnsQuestion question)
+            : base(question)
         {
-            get
+            this.Header.IsRequest = true;
+            this.Header.IsTruncated = false;
+            this.Header.ResponseCode = DnsStandard.ResponseCode.Success;
+        }
+        /// <summary>
+        /// Construct a new Dns request object by parsing the data supplied by the given reader
+        /// </summary>
+        public DnsRequest(DnsBufferReader reader)
+            : base(ref reader)
+        {
+        }
+        
+        /// <summary>
+        /// Deserialize the dns request using the given reader
+        /// </summary>
+        /// <param name="reader"></param>
+        protected override void Deserialize(ref DnsBufferReader reader)
+        {
+            base.Deserialize(ref reader);            
+            this.Validate();            
+        }   
+        
+        /// <summary>
+        /// Validate the request. Throws DnsProtcolException if validation fails
+        /// </summary>        
+        public override void Validate()
+        {
+            base.Validate();
+            
+            DnsHeader header = this.Header;
+            if (
+                    !header.IsRequest
+                || header.AnswerCount != 0
+                || header.AdditionalAnswerCount != 0
+                || header.NameServerAnswerCount != 0
+                || header.IsTruncated
+            )                
             {
-                return m_header;
+                throw new DnsProtocolException(DnsProtocolError.InvalidRequest);
             }
         }
-        
-        public DnsQuestion Question
-        {
-            get
-            {
-                return m_question;
-            }            
-        }
-        
-        public ushort RequestID
-        {
-            get
-            {
-                return this.m_header.UniqueID;
-            }
-            set
-            {
-                this.m_header.UniqueID = value;
-            }
-        }
-        
-        internal void ToBytes(DnsBuffer buffer)
-        {
-            m_header.ToBytes(buffer);
-            m_question.ToBytes(buffer);
-        }        
-        
+             
+        /// <summary>
+        /// Creates a new A request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateA(string domain)
         {
-            return new DnsRequest(Dns.RecordType.ANAME, domain);
-        }
-        
-        public static DnsRequest CreatePTR(string domain)
-        {
-            return new DnsRequest(Dns.RecordType.PTR, domain);
+            return new DnsRequest(DnsStandard.RecordType.ANAME, domain);
         }
 
+        /// <summary>
+        /// Creates a new PTR request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
+        public static DnsRequest CreatePTR(string domain)
+        {
+            return new DnsRequest(DnsStandard.RecordType.PTR, domain);
+        }
+
+        /// <summary>
+        /// Creates a new NS request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateNS(string domain)
         {
-            return new DnsRequest(Dns.RecordType.NS, domain);
+            return new DnsRequest(DnsStandard.RecordType.NS, domain);
         }
-        
+
+        /// <summary>
+        /// Creates a new MX request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateMX(string domain)
         {
-            return new DnsRequest(Dns.RecordType.MX, domain);
+            return new DnsRequest(DnsStandard.RecordType.MX, domain);
         }
-        
+
+        /// <summary>
+        /// Creates a new TXT request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateTXT(string domain)
         {
-            return new DnsRequest(Dns.RecordType.TXT, domain);
+            return new DnsRequest(DnsStandard.RecordType.TXT, domain);
         }
-                
+
+        /// <summary>
+        /// Creates a new CERT request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateCERT(string domain)
         {
-            return new DnsRequest(Dns.RecordType.CERT, domain);
+            return new DnsRequest(DnsStandard.RecordType.CERT, domain);
         }
-        
+
+        /// <summary>
+        /// Creates a new SOA request (query)
+        /// </summary>
+        /// <param name="domain">The domain to query.</param>
+        /// <returns>The newly created request instance.</returns>
         public static DnsRequest CreateSOA(string domain)
         {
-            return new DnsRequest(Dns.RecordType.SOA, domain);
+            return new DnsRequest(DnsStandard.RecordType.SOA, domain);
         }
     }
 }

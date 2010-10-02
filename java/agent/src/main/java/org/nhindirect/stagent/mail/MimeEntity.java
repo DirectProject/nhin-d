@@ -86,7 +86,7 @@ public class MimeEntity extends MimeBodyPart
         {
             return false;
         }
-        return MimeStandard.contains(contentType, MimeStandard.MediaType_Multipart);
+        return MimeStandard.contains(contentType, MimeStandard.MediaType.Multipart);
     }
 
             

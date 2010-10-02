@@ -20,6 +20,12 @@ using System.Text;
 
 namespace DnsResolver
 {
+    /// <summary>
+    /// Reader specialized to perform reads of DNS responses from a buffer.
+    /// </summary>
+    /// <remarks>
+    /// This reader reads in DNS network byte ordering. See RFC 1035, 2.3.2. The character set for DNS is ASCII, transported in octets.
+    /// </remarks>
     public struct DnsBufferReader
     {
         byte[] m_buffer;
@@ -27,22 +33,47 @@ namespace DnsResolver
         int m_index;
         StringBuilder m_stringBuilder;
 
-        internal DnsBufferReader(byte[] buffer, int startAt, int count)
+        /// <summary>
+        /// Initializes an instance with a buffer, starting postion, and count.
+        /// </summary>
+        /// <param name="buffer">The buffer supplying data</param>
+        /// <param name="startAt">The starting postition in the buffer from which to read</param>
+        /// <param name="count">The number of bytes read into in the buffer.</param>
+        public DnsBufferReader(byte[] buffer, int startAt, int count)
         {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException("buffer");
+            }
             m_buffer = buffer;
             m_count = count;
             m_index = startAt;
             m_stringBuilder = null;
         }
 
-        internal DnsBufferReader(byte[] buffer, int startAt, int count, StringBuilder sb)
+        /// <summary>
+        /// Initializes an instance with a buffer, starting postion, count and a <see cref="StringBuilder"/>
+        /// </summary>
+        /// <param name="buffer">The buffer supplying data</param>
+        /// <param name="startAt">The starting postition in the buffer from which to read</param>
+        /// <param name="count">The number of bytes read into in the buffer.</param>
+        /// <param name="sb">A <see cref="StringBuilder"/> for reading strings, will be destructively altered by this reader</param>
+        public DnsBufferReader(byte[] buffer, int startAt, int count, StringBuilder sb)
         {
+            if (buffer == null)
+            {
+                throw new ArgumentNullException("buffer");
+            }
+            
             m_buffer = buffer;
             m_count = count;
             m_index = startAt;
             m_stringBuilder = sb;
         }
 
+        /// <summary>
+        /// Gets the current zero-based index postition in the buffer from which bytes are read.
+        /// </summary>
         public int Index
         {
             get
@@ -51,6 +82,9 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Returns the current character read in the buffer.
+        /// </summary>
         public byte Current
         {
             get
@@ -59,6 +93,12 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Returns the character in the buffer at the indexed position.
+        /// </summary>
+        /// <param name="index">Zero-based offset from the start of the buffer.</param>
+        /// <exception cref="IndexOutOfRangeException">On attempts to read outside of the currently read area of the buffer.</exception>
+        /// <returns>The <see cref="byte"/> in the buffer at the indexed position.</returns>
         public byte this[int index]
         {
             get
@@ -71,7 +111,21 @@ namespace DnsResolver
                 return this.m_buffer[index];
             }
         }
-
+        
+        /// <summary>
+        /// Gets if this reader has reached the end of data read into the buffer.
+        /// </summary>
+        public bool IsDone
+        {
+            get
+            {
+                return (m_index >= m_count);
+            }
+        }
+        
+        /// <summary>
+        /// Gets the <see cref="StringBuilder"/> used to create strings from the buffer.
+        /// </summary>
         public StringBuilder StringBuilder
         {
             get
@@ -80,61 +134,115 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Returns a shallow clone of this instance.
+        /// </summary>
+        /// <returns>The shallow clone</returns>
         public DnsBufferReader Clone()
         {
             return new DnsBufferReader(m_buffer, m_index, m_count, m_stringBuilder);
         }
 
+        /// <summary>
+        /// Returns a shallow clone of this instance with a new starting position.
+        /// </summary>
+        /// <param name="startAt">The zero based index from which to start reading in the buffer.</param>
+        /// <returns>The shallow clone</returns>
         public DnsBufferReader Clone(int startAt)
         {
             return new DnsBufferReader(m_buffer, startAt, m_count, m_stringBuilder);
         }
 
+        /// <summary>
+        /// Resets the reader to the beginning of the buffer.
+        /// </summary>
         public void Reset()
         {
             this.m_index = 0;
         }
 
+        /// <summary>
+        /// Advances the index by one position in the buffer.
+        /// </summary>
         public void Advance()
         {
             m_index++;
         }
 
+        /// <summary>
+        /// Reads a <see cref="byte"/> from the index and advances the current buffer position.
+        /// </summary>
+        /// <returns>The <see cref="byte"/> at the current position.</returns>
         public byte ReadByte()
         {
             return this[m_index++];
         }
-
+        
+        /// <summary>
+        /// Reads a <see cref="char"/> from the buffer and advances the buffer index.
+        /// </summary>
+        /// <remarks>
+        /// DNS uses ASCII characters, so this method reads bytes as characters.
+        /// </remarks>
+        /// <returns>The <see cref="char"/> at the current buffer index.</returns>
         public char ReadChar()
         {
+            // DNS uses 8-bit characters
             return (char)this.ReadByte();
         }
 
+
+        /// <summary>
+        /// Reads a <see cref="ushort"/> from the buffer and advances the buffer index.
+        /// </summary>
+        /// <returns>The <see cref="ushort"/> starting from the current buffer index.</returns>
         public ushort ReadUShort()
         {
             return (ushort)((this[m_index++] << 8) | this[m_index++]);
         }
 
+        /// <summary>
+        /// Reads a <see cref="short"/> from the buffer and advances the buffer index.
+        /// </summary>
+        /// <returns>The <see cref="short"/> starting from the current buffer index.</returns>
         public short ReadShort()
         {
             return (short)((this[m_index++] << 8) | this[m_index++]);
         }
 
+        /// <summary>
+        /// Reads an <see cref="int"/> from the buffer and advances the buffer index.
+        /// </summary>
+        /// <returns>The <see cref="int"/> starting from the current buffer index.</returns>
         public int ReadInt()
         {
             return (int)((this[m_index++] << 24) | (this[m_index++] << 16) | (this[m_index++] << 8) | (this[m_index++]));
         }
 
+        /// <summary>
+        /// Reads a <see cref="uint"/> from the buffer and advances the buffer index.
+        /// </summary>
+        /// <returns>The <see cref="uint"/> starting from the current buffer index.</returns>
         public uint ReadUint()
         {
             return (uint)((this[m_index++] << 24) | (this[m_index++] << 16) | (this[m_index++] << 8) | (this[m_index++]));
         }
 
+
+        /// <summary>
+        /// Reads a <see cref="long"/> from the buffer and advances the buffer index.
+        /// </summary>
+        /// <returns>The <see cref="long"/> starting from the current buffer index.</returns>
         public long ReadLong()
         {
             return (long)(this.ReadInt() << 32 | this.ReadInt());
         }
 
+        /// <summary>
+        /// Reads an array of <paramref name="count"/> <see cref="byte"/> from the buffer and advances the buffer
+        /// </summary>
+        /// <param name="count">The number of <see cref="byte"/>s to read</param>
+        /// <returns>The array</returns>
         public byte[] ReadBytes(int count)
         {
             byte[] buffer = new byte[count];
@@ -148,15 +256,26 @@ namespace DnsResolver
             return buffer;
         }
 
+        /// <summary>
+        /// Reads the rest of the buffer into a <see cref="byte"/> array.
+        /// </summary>
+        /// <returns>The array of <see cref="byte"/> from the current position to the end of the buffer.</returns>
         public byte[] ReadBytes()
         {
             return this.ReadBytes(m_count - m_index);
         }
-
-        public string ReadStringRaw()
+        
+        /// <summary>
+        /// Reads a raw string. The string does not have a leading length byte nor are pointers resolved
+        /// Reads till the end of
+        /// </summary>
+        /// <param name="endAt">Index of the byte up to which we pull in the string</param>
+        /// <returns></returns>
+        public string ReadString(int endAt)
         {
             StringBuilder sb = this.EnsureStringBuilder();
-            while (m_index < m_count)
+            int maxIndex = Math.Min(m_count, endAt);
+            while (m_index < maxIndex)
             {
                 sb.Append(this.ReadChar());
             }
@@ -164,14 +283,48 @@ namespace DnsResolver
             return sb.ToString();
         }
 
-        public string ReadString()
+        /// <summary>
+        /// Reads a string from the current buffer, accounting for pointers, and advances the buffer.
+        /// </summary>
+        /// <returns>The string from the current buffer</returns>
+        public string ReadDomainName()
         {
             StringBuilder sb = this.EnsureStringBuilder();
-            this.ReadStringInternal();
+            this.ReadLabel();
             return sb.ToString();
         }
-
-        void ReadStringInternal()
+        /// <summary>
+        /// Tests if the current index position is a pointer label.
+        /// </summary>
+        /// <remarks>RFC 1035, 4.1.4, Message compression:
+        /// <para>
+        /// In order to reduce the size of messages, the domain system utilizes a
+        /// compression scheme which eliminates the repetition of domain names in a
+        /// message.  In this scheme, an entire domain name or a list of labels at
+        /// the end of a domain name is replaced with a pointer to a prior occurance
+        /// of the same name.
+        ///
+        /// The pointer takes the form of a two octet sequence:
+        /// <code>
+        /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+        /// | 1  1|                OFFSET                   |
+        /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+        /// </code>
+        /// </para>
+        /// </remarks>
+        /// <returns><c>true</c> if the current position is a pointer, <c>false</c> otherwise</returns>
+        bool IsPointer()
+        {
+            // 0xC0 = 0b11000000, bitmask for pointer octet
+            return ((this.Current & 0xC0) != 0);
+        }
+               
+        bool IsPlainLabel()
+        {
+            return ((this.Current & 0xC0) == 0);
+        }
+        
+        void ReadLabel()
         {
             while (true)
             {
@@ -182,21 +335,29 @@ namespace DnsResolver
                     break;
                 }
 
-                if ((this.Current & 0xC0) != 0)
+                if (this.IsPointer())
                 {
                     // rest of string is found elsewhere. go get it.
+                    // 0x3FFF = 0b0011111111111111, bitmask for pointer value.
                     int stringStartAt = (this.ReadShort() & 0x3FFF);
-                    this.Clone(stringStartAt).ReadStringInternal();
+                    this.Clone(stringStartAt).ReadLabel();
                     break;
                 }
-
+                
+                if (!this.IsPlainLabel())
+                {
+                    throw new DnsProtocolException(DnsProtocolError.InvalidLabelType);
+                }
+                
                 StringBuilder sb = this.StringBuilder;
                 // found a segment
                 if (sb.Length != 0)
                 {
                     sb.Append(".");
                 }
-
+                //
+                // The current byte contains the string length
+                //
                 int maxIndex = this.ReadByte() + this.Index;
                 while (this.Index < maxIndex)
                 {
@@ -205,6 +366,10 @@ namespace DnsResolver
             }
         }
 
+        /// <summary>
+        /// Ensures that there is a current <see cref="StringBuilder"/> for the reader.
+        /// </summary>
+        /// <returns>The current <see cref="StringBuilder"/></returns>
         public StringBuilder EnsureStringBuilder()
         {
             if (m_stringBuilder == null)

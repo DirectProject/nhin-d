@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Text;
 using System.Xml;
-using log4net;
+
+using NHINDirect.Diagnostics;
 using NHINDirect.XDS.Common;
 
 namespace NHINDirect.XDS
 {
-    public class ReceiveDocumentSet : IReceiveDocumentSet
+	public class ReceiveDocumentSet : IReceiveDocumentSet
     {
         Message IReceiveDocumentSet.ReceiveDocumentSet(Message msgRequest)
         {
@@ -22,7 +20,7 @@ namespace NHINDirect.XDS
             XDSHelper xdsHelper = null;
             StringDictionary stringDictionary = null;
 
-            ILog logger = LogManager.GetLogger("XDS");
+        	ILogger logger = Log.For(this);
 
             try
             {

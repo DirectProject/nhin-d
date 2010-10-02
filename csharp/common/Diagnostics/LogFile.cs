@@ -28,6 +28,10 @@ namespace NHINDirect.Diagnostics
     {
         LogWriter m_writer;
 
+        /// <summary>
+        /// Initializes an instace with the specified <paramref name="writer"/>
+        /// </summary>
+        /// <param name="writer">The <see cref="LogWriter"/> this file uses to write.</param>
         public LogFile(LogWriter writer)
         {
             if (writer == null)
@@ -37,6 +41,10 @@ namespace NHINDirect.Diagnostics
             m_writer = writer;
         }
         
+        /// <summary>
+        /// Logs an exception
+        /// </summary>
+        /// <param name="exception">The exception to log</param>
         public void WriteError(Exception exception)
         {
             lock(m_writer)
@@ -45,6 +53,10 @@ namespace NHINDirect.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Logs an error with a cusom message
+        /// </summary>
+        /// <param name="message">The message to log</param>
         public void WriteError(string message)
         {
             lock (m_writer)
@@ -53,6 +65,11 @@ namespace NHINDirect.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Writes an object string representation to the log.
+        /// </summary>
+        /// <param name="type">The <see cref="LogEventType"/> severity level.</param>
+        /// <param name="message">The object whose string representation will be to logged.</param>
         public void WriteLine(LogEventType type, object message)
         {
             lock(m_writer)
@@ -61,6 +78,11 @@ namespace NHINDirect.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Writes a message to the log
+        /// </summary>
+        /// <param name="type">The <see cref="LogEventType"/> severity level.</param>
+        /// <param name="message">The message to log.</param>
         public void WriteLine(LogEventType type, string message)
         {
             lock(m_writer)
@@ -69,6 +91,11 @@ namespace NHINDirect.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Writes a message of nonstandard severity level to the log.
+        /// </summary>
+        /// <param name="type">The non-standard message type</param>
+        /// <param name="message">The message to log.</param>
         public void WriteLine(string type, string message)
         {
             lock (m_writer)
@@ -77,6 +104,10 @@ namespace NHINDirect.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Writes an informative message to the log (severity level <see cref="LogEventType.Info"/>)
+        /// </summary>
+        /// <param name="message">The message to log.</param>
         public void WriteLine(string message)
         {
             lock(m_writer)
@@ -85,6 +116,9 @@ namespace NHINDirect.Diagnostics
             }
         }
         
+        /// <summary>
+        /// Frees resources for this instance.
+        /// </summary>
         public void Dispose()
         {
             if (m_writer != null)

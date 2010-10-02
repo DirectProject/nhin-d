@@ -17,6 +17,16 @@
                 <role>owner</role>
             </roles>              
         </developer>   
+        <developer>
+            <name>Manjiri Namjoshi</name>
+            <id>NM019057</id>
+            <email>Manjiri.Namjoshi@cerner.com</email>
+        </developer>
+        <developer>
+            <name>John Pavlecich</name>
+            <id>JP018858</id>
+            <email>John.Pavlecich@cerner.com</email>
+        </developer>                          
      </developers>
      <organization>
         <name>HNIN Direct</name>
@@ -26,8 +36,13 @@
         <maven>2.0.4</maven>
    </prerequisites>   
   <scm>
-    <url>https://nhin-d.googlecode.com/hg/</url>
+     <url>http://code.google.com/p/nhin-d/source/browse/#hg/java/agent</url>  
+     <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/agent</connection>
   </scm> 
+  <issueManagement>
+     <system>Google Code</system>
+     <url>http://code.google.com/p/nhin-d/issues/list</url>
+  </issueManagement>	    
   <repositories>
 	<repository>
 	    <id>codehaus-release-repo</id>
@@ -81,6 +96,65 @@
 			<scope>test</scope>
 		</dependency>  
 		<dependency>
+			<groupId>org.apache.directory.server</groupId>
+			<artifactId>apacheds-core</artifactId>
+			<version>1.0.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.directory.shared</groupId>
+			<artifactId>shared-ldap</artifactId>
+			<version>0.9.5.5</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>org.apache.directory.server</groupId>
+			<artifactId>apacheds-core-entry</artifactId>
+			<version>1.5.5</version>
+			<scope>test</scope>
+		</dependency>
+		 -->
+		 <dependency>
+			<groupId>org.apache.directory.server</groupId>
+			<artifactId>apacheds-server-jndi</artifactId>
+			<version>1.0.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.directory.server</groupId>
+			<artifactId>apacheds-protocol-ldap</artifactId>
+			<version>1.0.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.5.6</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.5.6</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
+			<scope>test</scope>
+		</dependency>
+		 -->
+		<dependency>
+			<groupId>org.apache.directory.server</groupId>
+			<artifactId>apacheds-server-unit</artifactId>
+			<version>1.0.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 		    <groupId>bouncycastle</groupId>
 		    <artifactId>bcprov-jdk15</artifactId>
 		    <version>140</version>    
@@ -89,17 +163,7 @@
 		    <groupId>bouncycastle</groupId>
 		    <artifactId>bcmail-jdk15</artifactId>
 		    <version>140</version>	    
-		</dependency>
-		<dependency>
-		    <groupId>org.apache.james</groupId>
-		    <artifactId>apache-mailet</artifactId>
-		    <version>2.4</version>	    
-		</dependency>
-		<dependency>
-		    <groupId>org.apache.james</groupId>
-		    <artifactId>apache-mailet-base</artifactId>
-		    <version>1.1</version>	    
-		</dependency>		
+		</dependency>	
 		<dependency>
 		    <groupId>org.dnsjava</groupId>
 		    <artifactId>dnsjava</artifactId>
@@ -109,7 +173,19 @@
 		    <groupId>org.apache.jcs</groupId>
 		    <artifactId>jcs</artifactId>
 		    <version>1.3</version>	    
-		</dependency>																																																																																		
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.directory.server</groupId>
+		    <artifactId>apacheds-server-unit</artifactId>
+		    <version>1.0.2</version>
+		    <scope>test</scope>	    
+		</dependency>
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>nlog4j</artifactId>
+		    <version>1.2.25</version>
+		    <scope>test</scope>	    
+		</dependency>																																																																																									
   </dependencies>      
   <build>
   	<extensions>
@@ -118,6 +194,16 @@
   			<artifactId>wagon-webdav</artifactId> 
   			<version>RELEASE</version> 
   		</extension>
+	    <extension>
+	      <groupId>org.apache.maven.wagon</groupId>
+	       <artifactId>wagon-ssh-external</artifactId>
+	       <version>1.0-beta-6</version>
+	    </extension>
+	    <extension>
+	      <groupId>org.apache.maven.wagon</groupId>
+	       <artifactId>wagon-ssh</artifactId>
+	       <version>1.0-beta-6</version>
+	    </extension>  		
    	</extensions>
     <resources>
       <resource>
@@ -161,8 +247,8 @@
 			<optimize>true</optimize>
 			<showDeprecation>true</showDeprecation>
 			<encoding>UTF-8</encoding>
-			<source>1.5</source>
-			<target>1.5</target>
+			<source>1.6</source>
+			<target>1.6</target>
 		</configuration>
 	</plugin>	     
       <plugin>
@@ -176,7 +262,26 @@
             </goals>
           </execution>
         </executions>
-      </plugin>     
+      </plugin>    
+        <plugin>
+            <groupId>com.atlassian.maven.plugins</groupId>
+            <artifactId>maven-clover2-plugin</artifactId>
+            <version>3.0.2</version>
+            <configuration>
+                <jdk>1.6</jdk>
+			<licenseLocation>
+				${project.basedir}/../licenses/clover.license
+			</licenseLocation>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>pre-site</phase>
+                    <goals>
+                        <goal>instrument</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>	    
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
@@ -187,31 +292,27 @@
                </archive>
             </configuration>
          </plugin>
-	    <plugin>
-	        <groupId>com.atlassian.maven.plugins</groupId>
-	        <artifactId>maven-clover2-plugin</artifactId>
-	        <version>2.5.1</version>	        
-	        <configuration>
-	            <jdk>1.5</jdk>
-			<licenseLocation>${project.basedir}/licenses/clover.license</licenseLocation>
-	        </configuration>
-	        <executions>
-	            <execution>
-	                <phase>pre-site</phase>
-	                <goals>
-	                    <goal>instrument</goal>
-	                </goals>
-	            </execution>
-	        </executions>
-	    </plugin>       
+         <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-jar-plugin</artifactId>
+       <version>2.2</version>
+       <executions>
+         <execution>
+           <goals>
+             <goal>test-jar</goal>
+           </goals>
+         </execution>
+       </executions>
+     </plugin>
     </plugins>
   </build>                        
   <reporting>
 		<plugins>
-	      <plugin>
-	          <groupId>org.apache.maven.plugins</groupId>
-	          <artifactId>maven-project-info-reports-plugin</artifactId>
-	      </plugin>  
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-project-info-reports-plugin</artifactId>
+             <version>2.1</version>
+          </plugin>    
 	      <plugin>
 	      	<groupId>org.apache.maven.plugins</groupId> 
 	        <artifactId>maven-javadoc-plugin</artifactId>
@@ -222,9 +323,10 @@
 	          <docfilessubdirs>true</docfilessubdirs>
               <detectJavaApiLink>true</detectJavaApiLink>
               <detectLinks>true</detectLinks>
-	          <source>1.5</source>
-	          <show>protected</show>
+	          <source>1.6</source>
+	          <show>public</show>
 	          <excludePackageNames>
+	              org.nhindirect.stagent.annotation:org.nhindirect.stagent.cert.impl:org.nhindirect.stagent.cert.impl.annotation:org.nhindirect.stagent.cert.impl.module:org.nhindirect.stagent.cert.impl.provider:org.nhindirect.stagent.cryptography.annotation:org.nhindirect.stagent.module:org.nhindirect.stagent.provider:org.nhindirect.stagent.trust.annotation:org.nhindirect.stagent.trust.provider:org.nhindirect.stagent.utils
 	          </excludePackageNames>          	          
 	        </configuration>
 	      </plugin>
@@ -232,21 +334,13 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
        			<configuration>
-          			<targetJdk>1.5</targetJdk>
+          			<targetJdk>1.6</targetJdk>
         		</configuration>					
 			</plugin>
 		    <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-surefire-report-plugin</artifactId>
 		    </plugin>
-			<plugin>
-	            <groupId>com.atlassian.maven.plugins</groupId>
-	            <artifactId>maven-clover2-plugin</artifactId>
-	            <version>2.5.1</version>
-				<configuration>
-					<licenseLocation>${project.basedir}/licenses/clover.license</licenseLocation>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
@@ -290,10 +384,20 @@
 	                    <tag>@deprecated</tag>
 	                </tags>
 	            </configuration>
-	        </plugin>                            
+	        </plugin>	
+			<plugin>
+	            <groupId>com.atlassian.maven.plugins</groupId>
+	            <artifactId>maven-clover2-plugin</artifactId>
+	            <version>3.0.2</version>
+				<configuration>
+					<licenseLocation>
+						${project.basedir}/../licenses/clover.license
+					</licenseLocation>
+				</configuration>
+			</plugin>	                   
 		</plugins>
   </reporting>
-  <pluginRepositories>
+	<pluginRepositories>
 	    <pluginRepository>
 	        <id>atlassian-m2-repository</id>
 	        <name>Atlassian Maven 2.x Repository</name>
@@ -301,7 +405,13 @@
 	        <snapshots>
 	            <enabled>false</enabled>
 	        </snapshots>
-	    </pluginRepository> 
-  </pluginRepositories>     
-  <distributionManagement/>          
+	    </pluginRepository>    
+	</pluginRepositories>      
+  <distributionManagement>
+    <site>
+      <id>nhind-site</id>
+      <name>NHIN Direct API publication site</name>
+      <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/agent/${project.version}</url>
+    </site>
+  </distributionManagement>
 </project>

@@ -14,30 +14,35 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
-using System.Net.Mail;
+using System.Xml.Serialization;
+
 using NHINDirect.Agent.Config;
 using NHINDirect.Diagnostics;
-using System.Xml.Serialization;
+using NHINDirect.Config.Client;
 
 namespace NHINDirect.SmtpAgent
 {
     [XmlType("SmtpAgentConfig")]
     public class SmtpAgentSettings : AgentSettings
     {
-        string[] m_postmasters;
         RawMessageSettings m_rawMessageSettings;
         ProcessIncomingSettings m_incomingSettings;
         ProcessOutgoingSettings m_outgoingSettings;
         ProcessBadMessageSettings m_badMessageSettings;
-        bool m_logVerbose = true;
+        InternalMessageSettings m_internalMessageSettings;
+        NotificationSettings m_notificationSettings;
+        MessageRoute[] m_incomingRoutes;
         
-        public SmtpAgentSettings()
-        {
-        }
-        
+        //--------------------------------------------------------
+        //
+        // Log Settings
+        //
+        //--------------------------------------------------------
+        /// <summary>
+        /// REQUIRED: Log File Parameters
+        /// </summary>
         [XmlElement("Log")]
         public LogFileSettings LogSettings
         {
@@ -45,47 +50,171 @@ namespace NHINDirect.SmtpAgent
             set;
         }
         
+        /// <summary>
+        /// Used to fine tune the level of logging details.
+        /// NOTE: This is now DEPRECATED - use the Level attribute of <see cref="LogFileSettings.Level"/>
+        /// </summary>
+        [XmlIgnore]
         public bool LogVerbose
         {
-            get
-            {
-                return m_logVerbose;
-            }
-            set
-            {
-                m_logVerbose = value;
-            }
+            get; set;
         }
-        
-        [XmlElement("Postmaster")]
+                
+        /// <summary>
+        /// A list of postmasters for the domain.
+        /// NOTE: This is now DEPRECATED
+        /// </summary>
+        //[XmlElement("Postmaster")]
+        [XmlIgnore]
         public string[] Postmasters
         {
-            get
-            {
-                return m_postmasters;
-            }
-            set
-            {
-                m_postmasters = value;
-            }
+            get; set;
         }
+
+        //--------------------------------------------------------
+        //
+        // Config for connnecting to any Config Web Services
+        // See interfaces in configService
+        //
+        //--------------------------------------------------------
         
-        [XmlElement("MessageBounce")]
-        public MessageBounceSettings MessageBounce
+        /// <summary>
+        /// If this gateway is configured to interact with a DomainManager web Service. 
+        /// </summary>
+        [XmlElement("DomainManager")]
+        public ClientSettings DomainManagerService
         {
             get;
             set;
         }
-        
+
         [XmlIgnore]
-        public bool HasMessageBounceSettings
+        public bool HasDomainManagerService
         {
             get
             {
-                return (this.MessageBounce != null);
+                return (this.DomainManagerService != null);
+            }
+        }        
+        
+        /// <summary>
+        /// If this gateway is configured to interact with an AddressManager web service
+        /// </summary>
+        [XmlElement("AddressManager")]
+        public ClientSettings AddressManager
+        {
+            get;
+            set;
+        }
+
+        [XmlIgnore]
+        public bool HasAddressManager
+        {
+            get
+            {
+                return (this.AddressManager != null);
+            }
+        }
+
+        //--------------------------------------------------------
+        //
+        // Message Processing
+        //
+        //--------------------------------------------------------
+        
+        /// <summary>
+        /// Configure if the Agent should automatically issue MDN messages in reponse
+        /// to MDN requests
+        /// </summary>
+        [XmlElement("Notifications")]
+        public NotificationSettings Notifications
+        {
+            get
+            {
+                if (m_notificationSettings == null)
+                {
+                    m_notificationSettings = new NotificationSettings();
+                }
+
+                return m_notificationSettings;
+            }
+            set
+            {
+                m_notificationSettings = value;
             }
         }
         
+        /// <summary>
+        /// Does this server allow messaging WITHIN the domain?
+        /// If not, then all messages originating from within the domain are considered OUTGOING
+        /// </summary>
+        [XmlElement("InternalMessage")]
+        public InternalMessageSettings InternalMessage
+        {
+            get
+            {
+                if (m_internalMessageSettings == null)
+                {
+                    m_internalMessageSettings = new InternalMessageSettings();
+                }
+                return m_internalMessageSettings;
+            }
+            set
+            {
+                m_internalMessageSettings = value;
+            }
+        }
+        
+        /// <summary>
+        /// Message Routes: 
+        /// If working with an Address Service: an address can have an associated Type
+        /// You can set up routes for address types, where a route deposits a message in a specific folder
+        /// </summary>
+        [XmlArray("IncomingRoutes")]
+        [XmlArrayItem("Route")]
+        public MessageRoute[] IncomingRoutes
+        {
+            get
+            {
+                if (m_incomingRoutes == null)
+                {
+                    m_incomingRoutes = new MessageRoute[0];
+                }
+
+                return m_incomingRoutes;
+            }
+            set
+            {
+                m_incomingRoutes = value;
+            }
+        }
+
+        [XmlIgnore]
+        public bool HasRoutes
+        {
+            get
+            {
+                return (!m_incomingRoutes.IsNullOrEmpty());
+            }
+        }
+
+        [XmlIgnore]
+        internal bool AllowInternalRelay
+        {
+            get
+            {
+                return this.InternalMessage.EnableRelay;
+            }
+        }
+        
+        //--------------------------------------------------------
+        //
+        // Debugging
+        //
+        //--------------------------------------------------------
+        /// <summary>
+        /// (OPTIONAL) save a RAW copy of each message into a folder
+        /// </summary>                
         [XmlElement("RawMessage")]
         public RawMessageSettings RawMessage
         {
@@ -104,6 +233,9 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
+        /// <summary>
+        /// (OPTIONAL) Configure how incoming messages are processed
+        /// </summary>
         [XmlElement("ProcessIncoming")]
         public ProcessIncomingSettings Incoming
         {
@@ -121,7 +253,10 @@ namespace NHINDirect.SmtpAgent
                 m_incomingSettings = value;
             }
         }
-
+        
+        /// <summary>
+        /// OPTIONAL: Configure how outgoing messages are processed
+        /// </summary>
         [XmlElement("ProcessOutgoing")]
         public ProcessOutgoingSettings Outgoing
         {
@@ -140,6 +275,9 @@ namespace NHINDirect.SmtpAgent
             }
         }
 
+        /// <summary>
+        /// Optional: Configure how bad messages are processed
+        /// </summary>
         [XmlElement("BadMessage")]
         public ProcessBadMessageSettings BadMessage
         {
@@ -160,27 +298,61 @@ namespace NHINDirect.SmtpAgent
         
         public override void Validate()
         {
+            base.Validate();
+            
             if (this.LogSettings == null)
             {
                 throw new SmtpAgentException(SmtpAgentError.MissingLogSettings);
             }
             
             this.LogSettings.Validate();      
-                  
-            if (this.HasMessageBounceSettings)
-            {
-                this.MessageBounce.Validate();
-            }
-            
+            this.InternalMessage.Validate();
+            this.Notifications.Validate();
             this.RawMessage.Validate();            
             this.BadMessage.Validate();
             this.Incoming.Validate();
             this.Outgoing.Validate();
+            
+            if (this.HasDomainManagerService)
+            {
+                this.DomainManagerService.Validate();
+            }                        
+            if (this.HasAddressManager)
+            {
+                this.AddressManager.Validate();
+            }
+            if (!m_incomingRoutes.IsNullOrEmpty())
+            {
+                Array.ForEach<MessageRoute>(m_incomingRoutes, x => x.Validate());
+            }
         }
-        
-        public static SmtpAgentSettings LoadFile(string configFilePath)
+
+        public void EnsureFolders()
         {
-            return AgentSettings.LoadFile<SmtpAgentSettings>(configFilePath);
+            this.RawMessage.EnsureFolders();
+            this.Incoming.EnsureFolders();
+            this.Outgoing.EnsureFolders();
+            this.BadMessage.EnsureFolders();
+        }
+
+        public static SmtpAgentSettings LoadSettings(string configFilePath)
+        {
+            ExtensibleXmlSerializer serializer = new ExtensibleXmlSerializer();
+            serializer.AddElementOption<CertificateSettings>("Resolver", "ServiceResolver", typeof(CertServiceResolverSettings));
+            serializer.AddElementOption<TrustAnchorSettings>("Resolver", "ServiceResolver", typeof(AnchorServiceResolverSettings));            
+
+            using(Stream stream = File.OpenRead(configFilePath))
+            {
+                return serializer.Deserialize<SmtpAgentSettings>(stream);
+            }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder(GetType().Name).Append("(");
+            builder.Append("Incoming=").Append(Incoming).Append(", ");
+            builder.Append("Outgoing=").Append(Outgoing);
+            return builder.Append(")").ToString();
         }
     }
 }

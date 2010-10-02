@@ -28,11 +28,9 @@ import org.nhindirect.stagent.mail.MimeException;
 import org.nhindirect.stagent.mail.MimeStandard;
 import org.nhindirect.stagent.parser.EntitySerializer;
 import org.nhindirect.stagent.trust.DefaultTrustAnchorResolver;
-import org.nhindirect.stagent.trust.TrustAnchorResolver;
 import org.nhindirect.stagent.utils.BaseTestPlan;
 import org.nhindirect.stagent.utils.SecondaryMimeMessage;
 import org.nhindirect.stagent.utils.TestUtils;
-
 
 /**
  * Generated test case.

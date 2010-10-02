@@ -35,7 +35,11 @@ namespace NHINDirect.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Domain GetDomain(string domainName);
+        int GetDomainCount();
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Domain[] GetDomains(string[] domainNames, EntityStatus? status);
         
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
@@ -43,6 +47,6 @@ namespace NHINDirect.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Domain[] EnumerateDomains(long lastDomainID, int maxResults);
+        Domain[] EnumerateDomains(string lastDomainName, int maxResults);
     }
 }
