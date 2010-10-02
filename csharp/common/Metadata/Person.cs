@@ -193,11 +193,11 @@ namespace NHINDirect.Metadata
             string[] fields = xcn.Split('^');
             if (fields.Length < 2) throw new ArgumentException();
             p.Last =                          HL7Field(fields[1]);
-            if (fields.Length >= 2) p.First = HL7Field(fields[2]);
-            if (fields.Length >= 3) p.MI =    HL7Field(fields[3]);
-            if (fields.Length >= 4) p.Suffix =HL7Field(fields[4]);
-            if (fields.Length >= 5) p.Prefix =HL7Field(fields[5]);
-            if (fields.Length >= 6) p.Degree =HL7Field(fields[6]);
+            if (fields.Length >= 3) p.First = HL7Field(fields[2]);
+            if (fields.Length >= 4) p.MI =    HL7Field(fields[3]);
+            if (fields.Length >= 5) p.Suffix =HL7Field(fields[4]);
+            if (fields.Length >= 6) p.Prefix =HL7Field(fields[5]);
+            if (fields.Length >= 7) p.Degree =HL7Field(fields[6]);
 
             return p;
         }

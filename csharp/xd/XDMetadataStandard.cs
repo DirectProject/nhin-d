@@ -114,6 +114,11 @@ namespace NHINDirect.Xd
             return Classifications.ContainsKey(attr);
         }
 
+        /// <summary>
+        /// Element name for a DocumentEntry object (ExtrinsicObject)
+        /// </summary>
+        public const string DocumentEntryElement = "ExtrinsicObject";
+
 
         // UUIDs
 
