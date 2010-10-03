@@ -28,11 +28,28 @@ namespace NHINDirect.Xd
     {
 
         /// <summary>
+        /// Returns child elements ignoring namespace
+        /// </summary>
+        public static IEnumerable<XElement> ElementsAnyNs(this XElement source, string name)
+        {
+            return source.Elements().Where(e => e.Name.LocalName == name);
+        }
+
+        /// <summary>
+        /// Returns descendent elements ignoring namespace
+        /// </summary>
+        public static IEnumerable<XElement> DescendantsAnyNs(this XElement source, string name)
+        {
+            return source.Descendants().Where(e => e.Name.LocalName == name);
+        }
+
+
+        /// <summary>
         /// Returns classfication elements of the specified <paramref name="scheme"/>
         /// </summary>
         public static IEnumerable<XElement> Classifications(this XElement source, string scheme)
         {
-            return from el in source.Descendants(XDMetadataStandard.ClassificationElt)
+            return from el in source.DescendantsAnyNs(XDMetadataStandard.ClassificationElt)
                    where (string)el.Attribute(XDMetadataStandard.ClassificationSchemeAttr) == scheme
                    select el;
         }
@@ -55,17 +72,15 @@ namespace NHINDirect.Xd
         /// </summary>
         public static IEnumerable<XElement> Slots(this XElement source)
         {
-            return source.Elements(XDMetadataStandard.SlotElt);
+            return source.ElementsAnyNs(XDMetadataStandard.SlotElt);
         }
 
         /// <summary>
-        /// Returns slots with the appropriate name
+        /// Returns slots that are a child of the supplied with the appropriate name
         /// </summary>
         public static IEnumerable<XElement> Slots(this XElement source, string slotName)
         {
-            return from el in source.Descendants(XDMetadataStandard.SlotElt)
-                   where (string)el.Attribute(XDMetadataStandard.SlotNameAttr) == slotName
-                   select el;
+            return source.Slots().Where(s => s.Attribute(XDMetadataStandard.SlotNameAttr).Value == slotName);
         }
 
         /// <summary>
@@ -95,7 +110,7 @@ namespace NHINDirect.Xd
         {
             XElement slot = source.Slot(slotName);
             if (slot == null) return null;
-            return from el in source.Slot(slotName).Descendants("Value")
+            return from el in source.Slot(slotName).DescendantsAnyNs("Value")
                    select el.Value;
         }
         
@@ -105,7 +120,7 @@ namespace NHINDirect.Xd
         /// </summary>
         public static IEnumerable<XElement> ExternalIdentifiers(this XElement source, string scheme)
         {
-            return from el in source.Descendants("ExternalIdentifier")
+            return from el in source.DescendantsAnyNs("ExternalIdentifier")
                    where (string)el.Attribute("identificationScheme") == scheme
                    select el;
         }
@@ -121,5 +136,12 @@ namespace NHINDirect.Xd
             return elts.First().Attribute("value").Value;
         }
 
+        /// <summary>
+        /// Returns <see cref="XElement"/> instances for each document entry node for this element
+        /// </summary>
+        public static IEnumerable<XElement> DocumentEntries(this XElement source)
+        {
+            return source.DescendantsAnyNs(XDMetadataStandard.DocumentEntryElement).Where(e => e.Attribute(XDMetadataStandard.ObjectTypeAttr).Value == XDMetadataStandard.DocumentEntryUUID);
+        }
     }
 }
