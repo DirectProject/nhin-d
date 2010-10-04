@@ -62,17 +62,10 @@ $(document).ready(function()
 			<tbody>				
 				<!--  Put the data from the searchResults attribute here -->
 				<c:forEach var="domain" items="${searchResults}" varStatus="rowCounter">
-				<c:choose>
-					<c:when test="${rowCounter.count % 2 == 0}">
-					<tr class="evenRow">
-					</c:when>
-					<c:otherwise>
-					<tr class="oddRow">
-					</c:otherwise>
-				</c:choose>
+				<tr>
 				    <td><a href='../domain?id=${domain.id}/>'>${domain.domainName}</a></td>  
-				    <td>${domain.postMasterEmail}/></td>
-				    <td>${domain.status}/></td>
+				    <td>${domain.postMasterEmail}</td>
+				    <td>${domain.status}</td>
 				    <td><fmt:formatDate value="${domain.createTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
 				    <td><fmt:formatDate value="${domain.updateTime.time}" pattern="MM/dd/yyyy, hh:mm"/>/></td>
 				    <td><input type="checkbox" name="remove${domain.id}"/></td>
