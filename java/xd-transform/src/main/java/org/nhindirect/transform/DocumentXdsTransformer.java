@@ -26,7 +26,54 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package org.nhindirect.transform;
+
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+
+import java.util.List;
+
+import org.nhindirect.transform.exception.TransformationException;
+
 /**
- * Utility classes for handling the transformation of a XDS messages.
+ * Interface for handling the transformation of a Document to a
+ * ProvideAndRegisterDocumentSetRequestType object.
+ * 
+ * @author beau
  */
-package org.nhindirect.util;
+public interface DocumentXdsTransformer
+{
+    /**
+     * Transform a document to a ProvideAndRegisterDocumentSetRequestType
+     * object.
+     * 
+     * TODO: This should take a File or the like, instead of Strings
+     * representing data.
+     * 
+     * @param document
+     *            String representation of the document data.
+     * @param metadata
+     *            String representation of the metadata.
+     * @return a ProvideAndRegisterDocumentSetRequestType object.
+     * @throws TransformationException
+     */
+    public ProvideAndRegisterDocumentSetRequestType transform(String document, String metadata)
+            throws TransformationException;
+
+    /**
+     * Transform a list of documents to a
+     * ProvideAndRegisterDocumentSetRequestType object.
+     * 
+     * @param meta
+     *            The document metadata.
+     * @param docs
+     *            The document data.
+     * @return a ProvideAndRegisterDocumentSetRequestType object.
+     * @throws TransformationException
+     * @Deprecated Deprecated until we find proper construction of
+     *             multi-documents.
+     */
+    @Deprecated
+    public ProvideAndRegisterDocumentSetRequestType transform(String meta, List<String> docs)
+            throws TransformationException;
+
+}

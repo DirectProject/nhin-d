@@ -25,12 +25,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.nhindirect.xdclient;
 
 import ihe.iti.xds_b._2007.DocumentRepositoryPortType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
@@ -38,24 +41,99 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.client.util.DocumentRepositoryUtils;
-import org.nhindirect.transform.StringXdsTransformer;
-import org.nhindirect.transform.impl.DefaultStringXdsTransformer;
+import org.nhindirect.DirectDocument;
+import org.nhindirect.transform.DocumentXdsTransformer;
+import org.nhindirect.transform.exception.TransformationException;
+import org.nhindirect.transform.impl.DocumentXdsTransformerImpl;
 
 /**
  * Document repository class for handling XDS webservice calls.
  * 
  * @author Vince
  */
-public class XDClient {
+public class XDClient
+{
 
     private String to = null;
     private String action = null;
     private String messageId = null;
-    /**
-     * Class logger.
-     */
+
     private static final Log LOGGER = LogFactory.getFactory().getInstance(XDClient.class);
+
+    public void send(String endpoint, Collection<DirectDocument> documents) throws Exception
+    {
+        DocumentXdsTransformer transformer = new DocumentXdsTransformerImpl();
+
+        List<ProvideAndRegisterDocumentSetRequestType> requests = new ArrayList<ProvideAndRegisterDocumentSetRequestType>();
+
+        // Create a ProvideAndRegisterDocumentSetRequestType for each document
+        for (DirectDocument doc : documents)
+        {
+            ProvideAndRegisterDocumentSetRequestType request;
+
+            try
+            {
+                request = transformer.transform(doc.getData(), doc.getMetadata().getXml());
+                requests.add(request);
+            }
+            catch (TransformationException e)
+            {
+                LOGGER.error(
+                        "Unable to transform document/metadata into a ProvideAndRegisterDocumentSetRequstType object.",
+                        e);
+                throw new TransformationException(
+                        "Unable to transform document/metadata into a ProvideAndRegisterDocumentSetRequstType object.",
+                        e);
+            }
+        }
+
+        // Send each request
+        for (ProvideAndRegisterDocumentSetRequestType request : requests)
+        {
+            String response;
+
+            try
+            {
+                response = forward(endpoint, request);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Unable to send message " + this.messageId, e);
+            }
+
+            if (StringUtils.contains(response, "Failure"))
+                LOGGER.warn("Endpoint returned a failure for message " + this.messageId);
+        }
+    }
+
+    protected String forward(String endpoint, ProvideAndRegisterDocumentSetRequestType request) throws Exception
+    {
+        LOGGER.trace("Sending XD* request to endpoint " + endpoint);
+
+        this.to = endpoint;
+        this.messageId = UUID.randomUUID().toString();
+        this.action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
+
+        setHeaderData();
+
+        DocumentRepositoryPortType port;
+
+        try
+        {
+            port = DocumentRepositoryUtils.getDocumentRepositoryPortType(endpoint);
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Unable to create port.", e);
+        }
+
+        RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(request);
+        String response = rrt.getStatus();
+
+        LOGGER.trace("Sending complete.");
+
+        return response;
+    }
 
     /**
      * Forward a given ProvideAndRegisterDocumentSetRequestType object to the
@@ -67,14 +145,19 @@ public class XDClient {
      *            The ProvideAndRegisterDocumentSetRequestType object.
      * @throws Exception
      */
-    public String sendRequest(String endpoint, String metadata, ArrayList docs) throws Exception {
-        if (StringUtils.isBlank(endpoint)) {
+    @Deprecated
+    public String sendRequest(String endpoint, String metadata, ArrayList docs) throws Exception
+    {
+        if (StringUtils.isBlank(endpoint))
+        {
             throw new IllegalArgumentException("Endpoint must not be blank");
         }
-        if (metadata == null) {
+        if (metadata == null)
+        {
             throw new IllegalArgumentException("metadata must not be null");
         }
-        if (docs == null) {
+        if (docs == null)
+        {
             throw new IllegalArgumentException("metadata must not be null");
         }
         String response = null;
@@ -83,37 +166,42 @@ public class XDClient {
         this.messageId = UUID.randomUUID().toString();
         this.to = endpoint;
 
-        StringXdsTransformer sxt = new DefaultStringXdsTransformer();
+        DocumentXdsTransformer transformer = new DocumentXdsTransformerImpl();
 
-        ProvideAndRegisterDocumentSetRequestType prds = sxt.transform(metadata, docs);
+        ProvideAndRegisterDocumentSetRequestType prds = transformer.transform(metadata, docs);
 
         setHeaderData();
 
         DocumentRepositoryPortType port = null;
 
-        try {
+        try
+        {
             port = DocumentRepositoryUtils.getDocumentRepositoryPortType(endpoint);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             LOGGER.error("Unable to create port", e);
             throw e;
         }
 
         // Inspect the message
         //
-        // QName qname = new QName("urn:ihe:iti:xds-b:2007", "ProvideAndRegisterDocumentSet_bRequest");
-        // String body = XMLUtils.marshal(qname, prds, ihe.iti.xds_b._2007.ObjectFactory.class);
+        // QName qname = new QName("urn:ihe:iti:xds-b:2007",
+        // "ProvideAndRegisterDocumentSet_bRequest");
+        // String body = XmlUtils.marshal(qname, prds,
+        // ihe.iti.xds_b._2007.ObjectFactory.class);
         // LOGGER.info(body);
 
         RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(prds);
 
         response = rrt.getStatus();
 
-        if (StringUtils.contains(response, "Failure")) {
+        if (StringUtils.contains(response, "Failure"))
+        {
             throw new Exception("Failure Returned from XDR forward");
         }
 
         LOGGER.info("Handling complete");
-
 
         return response;
     }
@@ -122,7 +210,8 @@ public class XDClient {
      * Set header data.
      * 
      */
-    protected void setHeaderData() {
+    protected void setHeaderData()
+    {
         Long threadId = Long.valueOf(Thread.currentThread().getId());
         LOGGER.info("THREAD ID " + threadId);
 
