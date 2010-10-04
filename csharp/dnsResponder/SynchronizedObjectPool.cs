@@ -55,7 +55,7 @@ namespace DnsResponder
             }
         }
 
-        public void Put(T value)
+        public override void Put(T value)
         {
             lock (m_stack)
             {
