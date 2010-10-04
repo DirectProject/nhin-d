@@ -61,6 +61,18 @@ namespace NHINDirect.Xd
         {
             Author a = new Author();
             a.Person = Person.FromXCN(authorXEl.SlotValue(XDMetadataStandard.AuthorPersonSlot));
+            foreach (Institution i in (authorXEl.SlotValues(XDMetadataStandard.AuthorInstitutionsSlot).Select(i => Institution.FromXON(i))))
+            {
+                a.Institutions.Add(i);
+            }
+            foreach (string s in authorXEl.SlotValues(XDMetadataStandard.AuthorRolesSlot))
+            {
+                a.Roles.Add(s);
+            }
+            foreach (string s in authorXEl.SlotValues(XDMetadataStandard.AuthorSpecialitiesSlot))
+            {
+                a.Specialities.Add(s);
+            }
             return a;
         }
     }

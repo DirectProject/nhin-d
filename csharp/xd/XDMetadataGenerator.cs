@@ -244,13 +244,13 @@ namespace NHINDirect.Xd
             if (a == null)
                 yield break;
             if (a.Specialities != null)
-                yield return new Slot("authorSpecialty", a.Specialities);
+                yield return new Slot(XDMetadataStandard.AuthorSpecialitiesSlot, a.Specialities);
             if (a.Roles != null)
-                yield return new Slot("authorRole", a.Roles);
+                yield return new Slot(XDMetadataStandard.AuthorRolesSlot, a.Roles);
             if (a.Institutions != null)
-                yield return new Slot("authorInstitution", a.Institutions.Select(i => i.ToXON()));
+                yield return new Slot(XDMetadataStandard.AuthorInstitutionsSlot, a.Institutions.Select(i => i.ToXON()));
             if (a.Person != null)
-                yield return new Slot("authorPerson", a.Person.ToXCN());
+                yield return new Slot(XDMetadataStandard.AuthorPersonSlot, a.Person.ToXCN());
         }
 
         /// <summary>
