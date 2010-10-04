@@ -316,10 +316,14 @@ namespace NHINDirect.Tests.Caching
         /// adds item to the cache with speficied ttl, ensures that item exists, sleeps and checks to make sure item was
         /// removed from the cache
         /// from what I can tell so far, the notification of the removal of an item from the cache is delayed; not the exact time
+        /// 
+        /// this is commented out for now as it slows down testing, feel free to use as needed
         /// </summary>
+        /*
         [Fact]
         public void CheckTtl()
         {
+
             try
             {
                 //----------------------------------------------------------------------------------------------------
@@ -379,6 +383,6 @@ namespace NHINDirect.Tests.Caching
             DumpSuccess("Test completed successfully");
 
         }
-
+        */
 	}
 }
