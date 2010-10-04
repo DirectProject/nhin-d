@@ -15,8 +15,13 @@
 	   <!-- Scans the classpath of this application for @Components to deploy as beans -->
     <context:component-scan base-package="org.nhindirect.config.ui" />
 
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
     <!-- Forwards requests to the "/" resource to the "login" view -->
     <mvc:view-controller path="/" view-name="login"/>
+    
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
     
 	<!-- the ResourceBundleViewResolver -->
 	<bean id="viewResolver"

@@ -72,47 +72,12 @@
     	<scope>compile</scope>
     </dependency>
     
-    <!-- 
-    <dependency>
-    	<groupId>org.springframework</groupId>
-    	<artifactId>spring-web</artifactId>
-    	<version>${spring-version}</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-     -->
     <!-- @Inject -->
     <dependency>
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
         <version>1</version>
     </dependency>
-        
-    <!--  
-    <dependency>
-    	<groupId>org.springframework</groupId>
-    	<artifactId>spring-expression</artifactId>
-    	<version>3.0.4.RELEASE</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-
-     
-    <dependency>
-    	<groupId>javax.validation</groupId>
-    	<artifactId>validation-api</artifactId>
-    	<version>1.0.0.GA</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-validator</artifactId>
-        <version>4.0.2.GA</version>
-        <type>jar</type>
-        <scope>compile</scope>
-    </dependency>
-         -->
          
     <dependency>
     	<groupId>org.nhind</groupId>
@@ -120,6 +85,16 @@
     	<version>1.0-SNAPSHOT</version>
     	<type>jar</type>
     	<scope>compile</scope>
+    	<exclusions>
+    		<exclusion>
+    			<artifactId>ejb3-persistence</artifactId>
+    			<groupId>org.hibernate</groupId>
+    		</exclusion>
+    		<exclusion>
+    			<artifactId>hibernate-entitymanager</artifactId>
+    			<groupId>org.hibernate</groupId>
+    		</exclusion>
+    	</exclusions>
     </dependency>
     <dependency>
     	<groupId>org.nhind</groupId>
@@ -144,6 +119,8 @@
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
+    
+    <!-- Validation support -->
     <dependency>
     	<groupId>javax.validation</groupId>
     	<artifactId>validation-api</artifactId>
@@ -151,25 +128,44 @@
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
-    <dependency>
-    	<groupId>org.hibernate</groupId>
-    	<artifactId>hibernate-validator</artifactId>
-    	<version>4.0.0.GA</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
+    
+        <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>4.0.2.GA</version>
+        <type>jar</type>
+        <scope>compile</scope>
     </dependency>
+    <!-- 
     <dependency>
-    	<groupId>org.hibernate.javax.persistence</groupId>
-    	<artifactId>hibernate-jpa-2.0-api</artifactId>
-    	<version>1.0.0.Final</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
+	  <groupId>org.hibernate</groupId>
+	  <artifactId>hibernate-validator</artifactId>
+	  <version>4.1.0.Final</version>
+	  <type>pom.audit.json</type>
+	</dependency>
+     -->
+    
+    <!--  JSON Support -->
     <dependency>
     	<groupId>org.codehaus.jackson</groupId>
     	<artifactId>jackson-mapper-asl</artifactId>
     	<version>1.6.0</version>
     	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+    	<groupId>org.hibernate.java-persistence</groupId>
+    	<artifactId>jpa-api</artifactId>
+    	<version>2.0.Beta-20090815</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.hibernate</groupId>
+    	<artifactId>hibernate-entitymanager</artifactId>
+    	<version>3.5.3-Final</version>
+    	<type>pom</type>
     	<scope>compile</scope>
     </dependency>
   </dependencies>
@@ -188,4 +184,84 @@
     </plugins>
     <finalName>config-ui</finalName>
   </build>
+          <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.6.1</version>
+                <configuration>
+                    <charset>UTF-8</charset>
+                    <docencoding>UTF-8</docencoding>
+                    <docfilessubdirs>true</docfilessubdirs>
+                    <detectJavaApiLink>true</detectJavaApiLink>
+                    <detectLinks>true</detectLinks>
+                    <source>1.6</source>
+                    <show>protected</show>
+                    <excludePackageNames>
+                        oasis.names.tc.ebxml_regrep.xsd:ihe.iti.xds_b._2007
+                    </excludePackageNames>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <configuration>
+                    <targetJdk>1.6</targetJdk>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-changelog-plugin</artifactId>
+                <configuration>
+                    <dates>
+                        <!-- Insert the date of the most recent release -->
+                        <date>2007-01-01</date>
+                    </dates>
+                    <outputEncoding>UTF-8</outputEncoding>
+                    <type>date</type>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>clirr-maven-plugin</artifactId>
+                <configuration>
+                    <minSeverity>info</minSeverity>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>1.2</version>
+                <configuration>
+                    <effort>Max</effort>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>taglist-maven-plugin</artifactId>
+                <configuration>
+                    <tags>
+                        <tag>FIXME</tag>
+                        <tag>TODO</tag>
+                        <tag>WARN</tag>
+                        <tag>@deprecated</tag>
+                    </tags>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

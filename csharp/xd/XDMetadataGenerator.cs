@@ -98,7 +98,7 @@ namespace NHINDirect.Xd
         /// </summary>
         public static XElement GeneratePackage(DocumentPackage docPackage)
         {
-            string packageId = "urn:uuid:" + Guid.NewGuid();
+            string packageId = MakeUUID();
             XElement packageMetadata = new XElement("RegistryPackage",
                 new XAttribute("id", packageId),
                 new Classification(XDMetadataStandard.SubmissionSetClassificationUUID, packageId));
@@ -149,10 +149,10 @@ namespace NHINDirect.Xd
 
             // TODO: this method cries out for a domain specific language, but this turns out to be harder to
             // do in C# than in Ruby :-)
-            string documentName = "urn:uuid:" + Guid.NewGuid();
+            string documentName = MakeUUID();
 
-            XElement docEbX = new XElement("ExtrinsicObjectType",
-                new XAttribute("objectType", XDMetadataStandard.DocumentEntryUUID));
+            XElement docEbX = new XElement("ExtrinsicObject",
+                new XAttribute(XDMetadataStandard.ObjectTypeAttr, XDMetadataStandard.DocumentEntryUUID));
 
 
             List<Pair<Object, Func<XObject>>> specs = new List<Pair<Object, Func<XObject>>>
@@ -183,7 +183,7 @@ namespace NHINDirect.Xd
                 Map(docMetadata.MediaType,
                     () => new XAttribute("mimeType", docMetadata.MediaType) ),
                 Map(docMetadata.PatientID,
-                    () => new ExternalIdentifier(XDMetadataStandard.PatientIdentitySchemeUUID,
+                    () => new ExternalIdentifier(XDMetadataStandard.DocumentEntryPatientIdentitySchemeUUID,
                         docMetadata.PatientID.ToEscapedCx(), "XDSDocumentEntry.patientId")),
                 Map(docMetadata.ServiceStart,
                     () => new Slot(XDMetadataStandard.ServiceStartSlot, docMetadata.ServiceStart.Value.ToHL7Date())),
@@ -260,6 +260,14 @@ namespace NHINDirect.Xd
         {
             IEnumerable<string> strings = Uri.Break(128);
             return strings.Select((string s, int i) => String.Format("{0}|{1}", i + 1, s));
+        }
+
+        /// <summary>
+        /// Makes a UUID in the urn:uuid:* format
+        /// </summary>
+        public static string MakeUUID()
+        {
+            return "urn:uuid:" + Guid.NewGuid();
         }
     }
 }

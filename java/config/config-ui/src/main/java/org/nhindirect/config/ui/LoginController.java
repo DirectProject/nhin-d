@@ -21,50 +21,30 @@ THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bouncycastle.asn1.pkcs.EncryptedData;
-import org.bouncycastle.jce.provider.JCEKeyGenerator.MD5HMAC;
-
-import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.ui.form.LoginForm;
 import org.nhindirect.config.ui.form.SearchDomainForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
-
-import org.nhindirect.config.ui.flash.FlashMap;
-import org.nhindirect.config.ui.flash.FlashMap.Message;
-import org.nhindirect.config.ui.flash.FlashMap.MessageType;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-
 import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
-
-import quicktime.Errors;
 
 @Controller
 @RequestMapping("/login")
@@ -73,7 +53,8 @@ public class LoginController {
 	
 	private static final Log log = LogFactory.getLog(LoginController.class);
 	
-	private Map<Long, Domain> domains = new ConcurrentHashMap<Long, Domain>();
+	@Autowired
+	private Validator validator;
 
 	public LoginController() {
 		if (log.isDebugEnabled()) log.debug("LoginController instantiated");
@@ -110,6 +91,7 @@ public class LoginController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView authenticate(@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 			                         @ModelAttribute("loginForm") LoginForm form, 
+			                         BindingResult result,
 			                         HttpSession session, 
 			                         Model model) {
 		if (log.isDebugEnabled()) log.debug("Enter");
@@ -120,19 +102,16 @@ public class LoginController {
 		boolean ok = true;
 		
 		//TODO Implement a real authentication service invocation	
-		// if ((form.getUserid() == null)  || (form.getPassword() == null)) {
-		if ((form.getUserid() == null) ||
-			(form.getUserid().length() == 0)) {
-			msgs.put("login", "login.userid.missing");
-			ok = false;
+		if (log.isDebugEnabled()) log.debug("Userid: " + form.getUserid() + ", Password: " + form.getPassword());
+		if (validator  != null) {
+			if (log.isDebugEnabled()) log.debug("Got a validator!");
+			validator.validate(form, result);
 		}
-		if ((form.getPassword() == null) ||
-				(form.getPassword().length() == 0)) {
-				msgs.put("password", "login.password.missing");
-				ok = false;
+		else {
+			if (log.isDebugEnabled()) log.debug("No validator was injected.");
 		}
-			
-		if (!ok) {
+		
+		if (result.hasErrors()) {
 			if (log.isDebugEnabled()) log.debug("Either userid or password is null");
 			mav.setViewName("login");
 		}
@@ -165,6 +144,10 @@ public class LoginController {
 	public String handleIOException(IOException ex, HttpServletRequest request) {
 		//TODO Actually do something useful
 		return ClassUtils.getShortName(ex.getClass());
+	}
+	
+	public void setValidator(Validator validator) {
+		this.validator = validator;
 	}
 
 }

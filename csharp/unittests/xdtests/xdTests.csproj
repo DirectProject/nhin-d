@@ -8,7 +8,7 @@
     <ProjectGuid>{C6AF9782-1F93-4B72-9281-754456D053A8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>xdTests</RootNamespace>
+    <RootNamespace>NHINDirect.Tests.xdTests</RootNamespace>
     <AssemblyName>xdXunitTests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -56,6 +56,7 @@
     <Compile Include="ExtensionsTests.cs" />
     <Compile Include="MultiSlotClassificationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XdMetadataConsumerTests.cs" />
     <Compile Include="XdMetadataGeneratorTests.cs" />
   </ItemGroup>
   <ItemGroup>
