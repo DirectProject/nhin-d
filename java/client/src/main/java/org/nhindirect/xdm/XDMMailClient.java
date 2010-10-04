@@ -25,8 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package org.nhind.xdm;
+package org.nhindirect.xdm;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -34,6 +33,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
@@ -57,13 +58,12 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.StringUtils;
 
-
 /**
  * This class handles the packaging and sending of XDM data over SMTP.
  * 
  * @author vlewis
  */
-public class SMTPMailClient {
+public class XDMMailClient {
 
     private MimeMessage mmessage;
     private Multipart mailBody;
@@ -74,18 +74,19 @@ public class SMTPMailClient {
     private static final String SMTP_HOST_NAME = "gmail-smtp.l.google.com";
     private static final String SMTP_AUTH_USER = "lewistower1@gmail.com";
     private static final String SMTP_AUTH_PWD = "hadron106";
- 
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(SMTPMailClient.class.getPackage().getName());
+    private static final Logger LOGGER = Logger.getLogger(XDMMailClient.class.getPackage().getName());
 
-    public SMTPMailClient(){
+    public XDMMailClient() {
         hostName = SMTP_HOST_NAME;
     }
-    public SMTPMailClient(String hostName){
+
+    public XDMMailClient(String hostName) {
         this.hostName = hostName;
     }
+
     /**
      * Create and send a message over SMTP.
      * 
@@ -109,10 +110,12 @@ public class SMTPMailClient {
      *            mail message.
      * @throws MessagingException
      */
-    public void postMail(List<String> recipients, String subject, String messageId, String body,
-            byte[] message, String from, String suffix, byte[] meta) throws MessagingException {
+    public void sendMail( String messageId,String from , List<String> recipients,  String meta, String body, List<String> docs, String suffix) throws MessagingException {
         boolean debug = false;
         java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+
+        String subject = "data";
+
 
         // Set the host SMTP address
         Properties props = new Properties();
@@ -149,7 +152,8 @@ public class SMTPMailClient {
         mimeAttach = new MimeBodyPart();
 
         try {
-            File zipout = getZip(message, suffix, meta, messageId);
+
+            File zipout = getZip(docs, suffix, meta.getBytes(), messageId);
             mimeAttach.attachFile(zipout);
 
         } catch (Exception x) {
@@ -160,6 +164,7 @@ public class SMTPMailClient {
 
         mmessage.setContent(mailBody);
         Transport.send(mmessage);
+
     }
 
     /**
@@ -176,9 +181,9 @@ public class SMTPMailClient {
      *            zip filename for thread safety.
      * @return a reference to the created .zip file.
      */
-    private File getZip(byte[] attachment, String suffix, byte[] meta, String messageId) {
+    private File getZip(List<String> docs, String suffix, byte[] meta, String messageId) {
         File temp = null;
-        
+
         if (StringUtils.isBlank(messageId)) {
             messageId = UUID.randomUUID().toString();
 
@@ -186,7 +191,7 @@ public class SMTPMailClient {
                 LOGGER.info("Message ID not provided, using random ID (" + messageId + ")");
             }
         }
-        
+
         try {
             BufferedInputStream origin = null;
             temp = new File(messageId + "-xdm.zip");
@@ -194,27 +199,36 @@ public class SMTPMailClient {
 
             ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
             out.setMethod(ZipOutputStream.DEFLATED);
-            byte data[] = new byte[BUFFER];
 
-            byte[] bytevals = attachment;
+            Iterator<String> it = docs.iterator();
+            int dcount = 0;
+            while (it.hasNext()) {
+                byte[] attachment = it.next().getBytes();
+
+                byte data[] = new byte[BUFFER];
+
+                byte[] bytevals = attachment;
+                InputStream byteis = new ByteArrayInputStream(bytevals);
+                origin = new BufferedInputStream(byteis);
+
+                //ZipEntry entry = new ZipEntry("SUBSET01\\DOCUMENT"+ dcount +"." + suffix);
+                ZipEntry entry = new ZipEntry("SUBSET01\\DOCUMENT." + suffix);
+                dcount++;
+                out.putNextEntry(entry);
+                int count = 0;
+                while ((count = origin.read(data, 0, BUFFER)) != -1) {
+                    out.write(data, 0, count);
+                }
+
+            }
+            byte[] bytevals = meta;
             InputStream byteis = new ByteArrayInputStream(bytevals);
             origin = new BufferedInputStream(byteis);
 
-            ZipEntry entry = new ZipEntry("SUBSET01\\DOCUMENT." + suffix);
+            ZipEntry entry = new ZipEntry("SUBSET01\\METADATA.xml");
             out.putNextEntry(entry);
             int count = 0;
-            while ((count = origin.read(data, 0, BUFFER)) != -1) {
-                out.write(data, 0, count);
-            }
-
-            
-            bytevals = meta;
-            byteis = new ByteArrayInputStream(bytevals);
-            origin = new BufferedInputStream(byteis);
-
-            entry = new ZipEntry("SUBSET01\\METADATA.xml");
-            out.putNextEntry(entry);
-            count = 0;
+            byte data[] = new byte[BUFFER];
             while ((count = origin.read(data, 0, BUFFER)) != -1) {
                 out.write(data, 0, count);
             }
@@ -305,25 +319,25 @@ public class SMTPMailClient {
      */
     private String getIndex(String type) {
 
-        String index = "<html xmlns=\"http://www.w3.org/1999/xhtml\" > <head>" +
-                " <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" +
-                "<title>XDM Message</title>" +
-                "</head><body>" +
-                "<h1>XDM Message</h1>" +
-                "<p>This package contains an XDS message.  The message was created by " +
-                "Happy Valley Clinic and is solely intended for the intended" +
-                "recipients listed in the XDS Metadata.  Any other use is forbidden.</p>" +
-                "<h2>Package Contents</h2>" +
-                "<ul>" +
-                "<li><a href=\"README.TXT\">README.TXT</a> - creator contact information and other general information</li>" +
-                "<li><a href=\"SUBSET01/\">SUBSET01/</a> - XDS Submission Set 1" +
-                "<ul>" +
-                "<li><a href=\"SUBSET01/METADATA.XML\">SUBSET01/METADATA.XML</a> - XDS information about the content, recipient, author, etc.</li>" +
-                "<li><a href=\"SUBSET01/DOCUMENT.XXX\">SUBSET01/DOCUMENT.XXX</a> - document payload in XXX format</li>" +
-                "</ul>" +
-                "</li>" +
-                "</ul>" +
-                "</body></html>";
+        String index = "<html xmlns=\"http://www.w3.org/1999/xhtml\" > <head>"
+                + " <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">"
+                + "<title>XDM Message</title>"
+                + "</head><body>"
+                + "<h1>XDM Message</h1>"
+                + "<p>This package contains an XDS message.  The message was created by "
+                + "Happy Valley Clinic and is solely intended for the intended"
+                + "recipients listed in the XDS Metadata.  Any other use is forbidden.</p>"
+                + "<h2>Package Contents</h2>"
+                + "<ul>"
+                + "<li><a href=\"README.TXT\">README.TXT</a> - creator contact information and other general information</li>"
+                + "<li><a href=\"SUBSET01/\">SUBSET01/</a> - XDS Submission Set 1"
+                + "<ul>"
+                + "<li><a href=\"SUBSET01/METADATA.XML\">SUBSET01/METADATA.XML</a> - XDS information about the content, recipient, author, etc.</li>"
+                + "<li><a href=\"SUBSET01/DOCUMENT.XXX\">SUBSET01/DOCUMENT.XXX</a> - document payload in XXX format</li>"
+                + "</ul>"
+                + "</li>"
+                + "</ul>"
+                + "</body></html>";
         String ret = index.replace("XXX", type);
         return ret;
     }
@@ -335,7 +349,7 @@ public class SMTPMailClient {
      * @throws Exception
      */
     private byte[] getXsl() throws Exception {
-        InputStream is = this.getClass().getResourceAsStream("/CCD.xsl");
+        InputStream is = this.getClass().getResourceAsStream("/META-INF/main/resources/CCD.xsl");
         byte[] theBytes = new byte[is.available()];
         is.read(theBytes);
         return theBytes;
