@@ -26,33 +26,88 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.nhindclient;
+package org.nhindirect.routing;
 
 import java.util.ArrayList;
-
-import org.nhindirect.DirectMessage;
+import java.util.Collection;
 
 /**
- * @author Vince
- *
+ * 
+ * @author beau
  */
-public interface NHINDClient
+public abstract class RoutingResolver
 {
     /**
-     * @param endpoint
-     * @param metadata
-     * @param docs
-     * @param messageId
+     * @param address
      * @return
-     * @throws Exception
      */
-    @Deprecated
-    public String send(String endpoint, String metadata, ArrayList<String> docs, String messageId) throws Exception;
+    public abstract String resolve(String address);
 
     /**
-     * @param message
+     * @param address
      * @return
-     * @throws Exception
      */
-    public String send(DirectMessage message) throws Exception;
+    public abstract boolean isXdEndpoint(String address);
+
+    /**
+     * @param address
+     * @return
+     */
+    public abstract boolean isSmtpEndpoint(String address);
+
+    /**
+     * @param addresses
+     * @return
+     */
+    public Collection<String> getSmtpEndpoints(Collection<String> addresses)
+    {
+        Collection<String> smtpEndpoints = new ArrayList<String>();
+
+        for (String address : addresses)
+        {
+            if (isSmtpEndpoint(address))
+            {
+                smtpEndpoints.add(address);
+            }
+        }
+
+        return smtpEndpoints;
+    }
+
+    /**
+     * @param addresses
+     * @return
+     */
+    public Collection<String> getXdEndpoints(Collection<String> addresses)
+    {
+        Collection<String> xdEndpoints = new ArrayList<String>();
+
+        for (String address : addresses)
+        {
+            if (isXdEndpoint(address))
+            {
+                xdEndpoints.add(address);
+            }
+        }
+
+        return xdEndpoints;
+    }
+
+    /**
+     * @param addresses
+     * @return
+     */
+    public boolean hasSmtpEndpoints(Collection<String> addresses)
+    {
+        return !getSmtpEndpoints(addresses).isEmpty();
+    }
+
+    /**
+     * @param addresses
+     * @return
+     */
+    public boolean hasXdEndpoints(Collection<String> addresses)
+    {
+        return !getXdEndpoints(addresses).isEmpty();
+    }
 }

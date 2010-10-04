@@ -26,7 +26,56 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package org.nhindirect.routing.impl;
+
+import org.nhindirect.routing.RoutingResolver;
+
 /**
- * Utility classes for handling the transformation of a Mail message to an XDS request.
+ * 
+ * @author beau
  */
-package org.nhindirect.client.util;
+public class RoutingResolverImpl extends RoutingResolver
+{
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.routing.RoutingResolver#resolve(java.lang.String)
+     */
+    @Override
+    public String resolve(String address)
+    {
+        return address;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.nhindirect.routing.RoutingResolver#isSmtpEndpoint(java.lang.String)
+     */
+    @Override
+    public boolean isSmtpEndpoint(String address)
+    {
+        if (address == null)
+            return false;
+
+        return address.indexOf('@') > 0;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.nhindirect.routing.RoutingResolver#isXdEndpoint(java.lang.String)
+     */
+    @Override
+    public boolean isXdEndpoint(String address)
+    {
+        if (address == null)
+            return false;
+
+        return address.indexOf('@') <= 0;
+    }
+
+}

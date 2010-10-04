@@ -25,6 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.nhindirect.xdm;
 
 import java.io.BufferedInputStream;
@@ -33,7 +34,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -57,6 +59,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.StringUtils;
+import org.nhindirect.DirectDocument;
 
 /**
  * This class handles the packaging and sending of XDM data over SMTP.
@@ -87,6 +90,22 @@ public class XDMMailClient {
         this.hostName = hostName;
     }
 
+    public void sendMail(String from , Collection<String> recipients,  Collection<DirectDocument> documents, String body, String suffix) throws MessagingException { 
+        String messageId = UUID.randomUUID().toString();
+               
+        for (DirectDocument d : documents)
+        {
+            List<String> docs = Arrays.asList(d.getData());
+            sendMail(messageId, from, (List<String>) recipients, d.getMetadata().getXml(), body, docs, suffix);
+        }
+        
+    }
+    
+    public void sendMail(String from , List<String> recipients,  String meta, String body, List<String> docs, String suffix) throws MessagingException { 
+        String messageId = UUID.randomUUID().toString();
+        sendMail(messageId, from, recipients, meta, body, docs, suffix);
+    }
+    
     /**
      * Create and send a message over SMTP.
      * 
