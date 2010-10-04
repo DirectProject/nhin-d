@@ -26,12 +26,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.client.util;
+package org.nhindirect.xdclient;
 
 import ihe.iti.xds_b._2007.DocumentRepositoryPortType;
 import ihe.iti.xds_b._2007.DocumentRepositoryService;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.xml.namespace.QName;
@@ -41,8 +40,6 @@ import javax.xml.ws.soap.SOAPBinding;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.xdclient.RepositoryHandlerResolver;
-
 
 /**
  * General utility class for methods dealing with DocumentRepository related
@@ -50,11 +47,8 @@ import org.nhindirect.xdclient.RepositoryHandlerResolver;
  * 
  * @author beau
  */
-public class DocumentRepositoryUtils {
-
-    /**
-     * Class logger.
-     */
+public class DocumentRepositoryUtils
+{
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DocumentRepositoryUtils.class);
 
     /**
@@ -66,13 +60,17 @@ public class DocumentRepositoryUtils {
      * @return a DocumentRepositoryPortType object.
      * @throws Exception
      */
-    public static DocumentRepositoryPortType getDocumentRepositoryPortType(String endpoint) throws Exception {
+    public static DocumentRepositoryPortType getDocumentRepositoryPortType(String endpoint) throws Exception
+    {
         URL url = null;
 
-        try {
-           // url = new URL(ihe.iti.xds_b._2007.DocumentRepositoryService.class.getResource(""),"/META-INF/wsdl/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl");
-             url = ihe.iti.xds_b._2007.DocumentRepositoryService.class.getResource("/META-INF/wsdl/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl");
-        } catch (Exception e) {
+        try
+        {
+            url = ihe.iti.xds_b._2007.DocumentRepositoryService.class
+                    .getResource("/META-INF/wsdl/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl");
+        }
+        catch (Exception e)
+        {
             LOGGER.error("Unable to access WSDL", e);
             throw e;
         }
@@ -92,10 +90,10 @@ public class DocumentRepositoryUtils {
      * @throws Exception
      */
     public static DocumentRepositoryPortType getDocumentRepositoryPortType(String endpoint, URL wsdlPath)
-            throws Exception {
+            throws Exception
+    {
         QName qname = new QName("urn:ihe:iti:xds-b:2007", "DocumentRepository_Service");
         DocumentRepositoryService service = new DocumentRepositoryService(wsdlPath, qname);
- // DocumentRepositoryService service = new DocumentRepositoryService( );
         service.setHandlerResolver(new RepositoryHandlerResolver());
         DocumentRepositoryPortType port = service.getDocumentRepositoryPortSoap12(new MTOMFeature(true, 1));
 
