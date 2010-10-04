@@ -114,6 +114,11 @@ namespace NHINDirect.Xd
             return Classifications.ContainsKey(attr);
         }
 
+        /// <summary>
+        /// Element name for a DocumentEntry object (ExtrinsicObject)
+        /// </summary>
+        public const string DocumentEntryElement = "ExtrinsicObject";
+
 
         // UUIDs
 
@@ -165,7 +170,7 @@ namespace NHINDirect.Xd
         /// <summary>
         /// UUID for a patient identifier extenral identity scheme.
         /// </summary>
-        public const string PatientIdentitySchemeUUID = "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446";
+        public const string DocumentEntryPatientIdentitySchemeUUID = "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427";
 
 
         /// <summary>
@@ -271,6 +276,12 @@ namespace NHINDirect.Xd
         /// The attribute name for a classification scheme
         /// </summary>
         public const string ClassificationSchemeAttr = "classificationScheme";
+
+
+        /// <summary>
+        /// The attribute name for object type
+        /// </summary>
+        public const string ObjectTypeAttr = "objectType";
 
 
         // Slot names

@@ -20,6 +20,8 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 public class LoginForm {
 	
@@ -27,7 +29,8 @@ public class LoginForm {
 	private String password = "";
 	private String domain   = "";
 	
-
+    @NotNull
+    @Size(min=1, max=16)
 	public String getUserid() {
 		return userid;
 	}
@@ -35,7 +38,8 @@ public class LoginForm {
 		this.userid = userid;
 	}
 	
-
+    @NotNull
+    @Size(min=1, max=16)
 	public String getPassword() {
 		return password;
 	}

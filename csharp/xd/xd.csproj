@@ -56,6 +56,7 @@
     <Compile Include="Name.cs" />
     <Compile Include="ExternalIdentifier.cs" />
     <Compile Include="Slot.cs" />
+    <Compile Include="XDMetadataConsumer.cs" />
     <Compile Include="XDMetadataGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XDMetadataStandard.cs" />

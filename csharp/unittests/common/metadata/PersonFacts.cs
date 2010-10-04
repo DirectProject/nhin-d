@@ -19,6 +19,19 @@ namespace NHINDirect.Tests.metadata
             Assert.Equal("^^^^^^", p.ToXCN());
         }
 
+        [Fact]
+        public void NullEquals()
+        {
+            Assert.True(new Person().Equals(new Person()));
+        }
+
+        [Fact]
+        public void NameEquals()
+        {
+            Person p1 = new Person { First = "Bob", Last = "Smith" };
+            Person p2 = new Person { First = "Bob", Last = "Smith" };
+            Assert.True(p1.Equals(p2));
+        }
 
         [Fact]
         public void MarcusWelbyToXCN()

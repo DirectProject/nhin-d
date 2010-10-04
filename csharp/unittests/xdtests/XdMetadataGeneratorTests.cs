@@ -221,13 +221,13 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentHasPatientID()
         {
-            Assert.NotEmpty(TestDocXElement.ExternalIdentifiers(XDMetadataStandard.PatientIdentitySchemeUUID));
+            Assert.NotEmpty(TestDocXElement.ExternalIdentifiers(XDMetadataStandard.DocumentEntryPatientIdentitySchemeUUID));
         }
 
         [Fact]
         public void DocumentPatientIDHasCorrectValue()
         {
-            XElement idElts = TestDocXElement.ExternalIdentifiers(XDMetadataStandard.PatientIdentitySchemeUUID).First();
+            XElement idElts = TestDocXElement.ExternalIdentifiers(XDMetadataStandard.DocumentEntryPatientIdentitySchemeUUID).First();
             PatientID id = PatientID.FromEscapedCx(idElts.Attribute("value").Value);
             Assert.True(TestDocument.PatientID.Equals(id));
         }
@@ -476,7 +476,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void SubmitObjectsHasDocument()
         {
-            IEnumerable<XElement> docXElements = from el in TestSubmitObjectsXElement.Descendants("ExtrinsicObjectType")
+            IEnumerable<XElement> docXElements = from el in TestSubmitObjectsXElement.Descendants("ExtrinsicObject")
                                                  where (string)el.Attribute("objectType") == XDMetadataStandard.DocumentEntryUUID
                                                  select el;
             Assert.NotEmpty(docXElements);

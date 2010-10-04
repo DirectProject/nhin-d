@@ -30,6 +30,7 @@ import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,11 +61,13 @@ import sun.security.x509.X509CertImpl;
 public class CRLRevocationManager implements RevocationManager {
 
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultNHINDAgent.class);
+
+    private static final int CRL_FETCH_TIMEOUT = 3000;
     
     private Set<CRL> crlCollection;
     
     private static CertificateFactory certificateFactory;
-    
+   
     // TODO: convert to JCS cache
     private static Map<String, X509CRLImpl> cache;
     
@@ -90,13 +93,13 @@ public class CRLRevocationManager implements RevocationManager {
     }
     
     /**
-     * Return a list of CRL objects for certificates passed to the loadCRL method.
+     * Return a read-only set of CRL objects.
      * 
-     * @return a list of CRL objects.
+     * @return a read-only set of CRL objects.
      */
-    public Set<CRL> getCRLCollection() 
+    private Set<CRL> getCRLCollection() 
     {
-        return crlCollection;
+        return Collections.unmodifiableSet(crlCollection);
     }
 
     /**
@@ -180,11 +183,11 @@ public class CRLRevocationManager implements RevocationManager {
             
         synchronized(cache) 
         { 
-            X509CRLImpl crlImpl = getCache().get(crlUrlString);
+            X509CRLImpl crlImpl = cache.get(crlUrlString);
             
             if (crlImpl != null && crlImpl.getNextUpdate().before(new Date())) 
             {
-                getCache().remove(crlUrlString);
+                cache.remove(crlUrlString);
                 crlImpl = null;
             }
             
@@ -193,7 +196,7 @@ public class CRLRevocationManager implements RevocationManager {
                 try 
                 {
                     URLConnection urlConnection = new URL(crlUrlString).openConnection();
-                    urlConnection.setConnectTimeout(3000);
+                    urlConnection.setConnectTimeout(CRL_FETCH_TIMEOUT);
                     
                     InputStream crlInputStream = urlConnection.getInputStream();
                     
@@ -206,7 +209,7 @@ public class CRLRevocationManager implements RevocationManager {
                         crlInputStream.close();
                     }
                     
-                    getCache().put(crlUrlString, crlImpl);
+                    cache.put(crlUrlString, crlImpl);
                 }
                 catch (Exception e)
                 {
@@ -218,17 +221,7 @@ public class CRLRevocationManager implements RevocationManager {
             return crlImpl;
         }
     }
-    
-    /**
-     * Get the cache object.
-     * 
-     * @return the cache object.
-     */
-    private static Map<String, X509CRLImpl> getCache() 
-    {
-        return cache;
-    }
-    
+       
     /**
      * Get the URI from the standardized generalNameString.
      * 

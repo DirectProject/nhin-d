@@ -14,20 +14,18 @@
 	       <h2>NHIN Direct Java Reference Implememtation - Login</h2>
 	    </fieldset>
 	    <fieldset>
-		<form:form id="loginForm" action="login" cssClass="cleanform" commandName="loginForm" method="PUT">
+			<form:form id="loginForm" action="login" cssClass="cleanform" commandName="loginForm" method="PUT">
 			   <p>Please enter your userid and password to continue.</p>  
-			   <form:label path="userid">Userid: 
-		             <form:errors path="userid" cssClass="error" />
-			   </form:label> 
-			   <form:input path="userid" /> 
+			   <form:label path="userid">Userid:</form:label> 
+			   <form:input path="userid" /> <form:errors path="userid" cssClass="error" />
 			   <form:label path="password">Password: 
-			       <form:errors path="password" cssClass="error" />
+			       
 			   </form:label>
-			   <form:password path="password"/>
+			   <form:password path="password"/><form:errors path="password" cssClass="error" />
 			   <p>
-			   <button type="submit">Submit</button>
-			</p>
-		</form:form>
+			       <button type="submit">Submit</button>
+			   </p>
+			</form:form>
 		</fieldset>
 	</div>
 <c:if test="${!ajaxRequest}">

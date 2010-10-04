@@ -34,13 +34,14 @@
 		<servlet-name>config</servlet-name>
 		<url-pattern>/config/*</url-pattern>
 	</servlet-mapping>
-
+	
+	<!-- 
+	<listener>
+        <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+    </listener>
+    -->
 	<listener>
 		<listener-class>
 			org.springframework.web.context.request.RequestContextListener</listener-class>
-	</listener>
-
-	<listener>
-		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>
 </web-app>
