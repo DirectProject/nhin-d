@@ -33,7 +33,6 @@ namespace DnsResponder
         short m_maxOutstandingAccepts = DefaultMaxOutstandingAccepts;
         short m_maxConnectionBacklog = DefaultMaxConnectionBacklog;
         short m_maxActiveRequests = DefaultMaxActiveRequests;
-        short m_maxPooledContexts = DefaultMaxActiveRequests;
         short m_readBufferSize = DefaultReadBufferSize;
         
         public SocketServerSettings()
