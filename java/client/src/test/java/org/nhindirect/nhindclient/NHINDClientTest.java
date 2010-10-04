@@ -80,26 +80,24 @@ public class NHINDClientTest extends TestCase
         String expResult = "urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success";
         String result = instance.send(endpoint, meta, docs, messageId);
         assertEquals(expResult, result);
-
     }
 
-    public void testSendRefferal2() throws Exception
-    {
-        System.out.println("sendRefferal2");
-
-        String doc = getDoc();
-        String meta = getMeta();
-        ArrayList docs = new ArrayList();
-        docs.add(doc);
-
-        NHINDClientImpl instance = new NHINDClientImpl("gmail-smtp.l.google.com");
-        String messageId = UUID.randomUUID().toString();
-        String endpoint = "http://ELS4055:8080/xd/services/DocumentRepository_Service";
-        String result = instance.send(endpoint, meta, docs, messageId);
-        String expResult = "urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success";
-        assertEquals(expResult, result);
-
-    }
+//    public void testSendRefferal2() throws Exception
+//    {
+//        System.out.println("sendRefferal2");
+//
+//        String doc = getDoc();
+//        String meta = getMeta();
+//        ArrayList docs = new ArrayList();
+//        docs.add(doc);
+//
+//        NHINDClientImpl instance = new NHINDClientImpl("gmail-smtp.l.google.com");
+//        String messageId = UUID.randomUUID().toString();
+//        String endpoint = "http://ELS4055:8080/xd/services/DocumentRepository_Service";
+//        String result = instance.send(endpoint, meta, docs, messageId);
+//        String expResult = "urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success";
+//        assertEquals(expResult, result);
+//    }
 
     private String getDoc() throws Exception
     {
@@ -120,8 +118,9 @@ public class NHINDClientTest extends TestCase
     public void testSend() throws Exception
     {
         String sender = "lewistower1@gmail.com";
-        Collection<String> receivers = Arrays.asList("beau+receiver@id84.com", "beau+receiver2@id84.com",
-                "http://ELS4055:8080/xd/services/DocumentRepository_Service");
+//        Collection<String> receivers = Arrays.asList("beau+receiver@id84.com", "beau+receiver2@id84.com",
+//                "http://ELS4055:8080/xd/services/DocumentRepository_Service");
+        Collection<String> receivers = Arrays.asList("beau+receiver@nologs.org", "beau+receiver2@nologs.org");     
 
         DirectMessage message = new DirectMessage(sender, receivers);
 
