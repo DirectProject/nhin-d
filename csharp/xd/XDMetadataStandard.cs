@@ -292,6 +292,21 @@ namespace NHINDirect.Xd
         public const string AuthorPersonSlot = "authorPerson";
 
         /// <summary>
+        /// The slot name for an authorInstition
+        /// </summary>
+        public const string AuthorInstitutionsSlot = "authorInstitution";
+
+        /// <summary>
+        /// The slot name for an authorRole
+        /// </summary>
+        public const string AuthorRolesSlot = "authorRole";
+
+        /// <summary>
+        /// The slot name for authorSpecialty
+        /// </summary>
+        public const string AuthorSpecialitiesSlot = "authorSpecialty";
+
+        /// <summary>
         /// The slot name for hash
         /// </summary>
         public const string HashSlot = "hash";
