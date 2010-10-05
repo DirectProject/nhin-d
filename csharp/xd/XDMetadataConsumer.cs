@@ -54,6 +54,7 @@ namespace NHINDirect.Xd
         {
             DocumentMetadata doc = new DocumentMetadata();
             doc.Author = ConsumeAuthor(docXEl.Classification(XDMetadataStandard.DocumentAuthorUUID));
+            doc.Class = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.DocumentClassUUID));
             return doc;
         }
 
@@ -61,7 +62,28 @@ namespace NHINDirect.Xd
         {
             Author a = new Author();
             a.Person = Person.FromXCN(authorXEl.SlotValue(XDMetadataStandard.AuthorPersonSlot));
+            foreach (Institution i in (authorXEl.SlotValues(XDMetadataStandard.AuthorInstitutionsSlot).Select(i => Institution.FromXON(i))))
+            {
+                a.Institutions.Add(i);
+            }
+            foreach (string s in authorXEl.SlotValues(XDMetadataStandard.AuthorRolesSlot))
+            {
+                a.Roles.Add(s);
+            }
+            foreach (string s in authorXEl.SlotValues(XDMetadataStandard.AuthorSpecialitiesSlot))
+            {
+                a.Specialities.Add(s);
+            }
             return a;
+        }
+
+        static CodedValue ConsumeCodedValue(XElement codedValueClassification)
+        {
+            XAttribute nodeRep = codedValueClassification.Attribute(XDMetadataStandard.NodeRepresentationAttr);
+            string codingScheme = codedValueClassification.SlotValue(XDMetadataStandard.CodingSchemeSlot);
+            string codeLabel = codedValueClassification.NameValue();
+            if (nodeRep == null || codingScheme == null || codeLabel == null) throw new ArgumentException();
+            return new CodedValue(nodeRep.Value, codeLabel, codingScheme);
         }
     }
 }

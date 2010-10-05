@@ -36,8 +36,9 @@ namespace NHINDirect.Xd
         /// <param name="classifiedObject">The document that is being classified</param>
         /// <param name="code">The code</param>
         /// <param name="label">The code label</param>
-        public CodedValueClassification(XDAttribute attr, string classifiedObject, string code, string label)
-            : base(attr, classifiedObject)
+        /// <param name="codingScheme">The coding scheme for this code</param>
+        public CodedValueClassification(XDAttribute attr, string classifiedObject, string code, string label, string codingScheme)
+            : base(attr, codingScheme, classifiedObject)
         {
             Initialize(code, label);
         }
@@ -50,7 +51,7 @@ namespace NHINDirect.Xd
         /// <param name="classifiedObject">The document that is being classified</param>
         /// <param name="value">The <see cref="CodedValue"/> for this classification</param>
         public CodedValueClassification(XDAttribute attr, string classifiedObject, CodedValue value)
-            : base(attr, classifiedObject)
+            : base(attr, value.Code, classifiedObject)
         {
             Initialize(value);
         }
@@ -60,14 +61,14 @@ namespace NHINDirect.Xd
         /// a name element for the label and a slot for the code.
         /// </summary>
         /// <param name="scheme">The classification scheme UUID</param>
-        /// <param name="nodeRepresentation">The node representation</param>
+        /// <param name="codingScheme">The node representation</param>
         /// <param name="classifiedObject">The document that is being classified</param>
         /// <param name="code">The code</param>
         /// <param name="label">The code label</param>
-        public CodedValueClassification(string scheme, string nodeRepresentation, string classifiedObject, string code, string label)
-            : base(scheme, nodeRepresentation, classifiedObject)
+        public CodedValueClassification(string scheme, string classifiedObject, string code, string label, string codingScheme)
+            : base(scheme, code, classifiedObject)
         {
-            Initialize(code, label);
+            Initialize(codingScheme, label);
         }
 
         /// <summary>
@@ -91,14 +92,14 @@ namespace NHINDirect.Xd
             if (value == null)
                 Initialize("", "");
             else
-                Initialize(value.Code, value.Label);
+                Initialize(value.Scheme, value.Label);
         }
 
 
-        private void Initialize(string code, string label)
+        private void Initialize(string codingScheme, string label)
         {
             this.Add(new Name(label),
-                new Slot(XDMetadataStandard.CodingSchemeSlot, code));
+                new Slot(XDMetadataStandard.CodingSchemeSlot, codingScheme));
         }
 
     }
