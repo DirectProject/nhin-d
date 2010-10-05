@@ -21,7 +21,7 @@ using System.Text;
 namespace NHINDirect.Metadata
 {
 
-            /// <summary>
+        /// <summary>
         /// HITSP C80 class codes (table 2-144)
         /// </summary>
         public enum C80ClassCode
@@ -195,24 +195,18 @@ namespace NHINDirect.Metadata
     /// <summary>
     /// Represents the class code of a document.
     /// </summary>
-    public class ClassCode : CodedValue
+    public static class C80ClassCodeUtils
     {
 
-        /// <summary>
-        /// Initializes an instance from a coded enumeration value
-        /// </summary>
-        public ClassCode(Metadata.C80ClassCode code)
-            : base(Decode(code))
-        { }
 
         /// <summary>
-        /// Initializes an instance with the supplied code and label.
+        /// Returns a <see cref="CodedValue"/> for the code
         /// </summary>
-        /// <param name="code">The code for this instance</param>
-        /// <param name="value">The label for this instance</param>
-        public ClassCode(string code, string value)
-            : base(code, value)
-        { }
+        public static CodedValue ToCodedValue(this C80ClassCode code)
+        {
+            KeyValuePair<string, string> pair = Decode(code);
+            return new CodedValue(pair.Key, pair.Value, "HITSP C80 class codes (table 2-144)");
+        }
 
         private static Dictionary<C80ClassCode, KeyValuePair<string, string>> m_C80DocumentClass_mappings = new Dictionary<C80ClassCode,KeyValuePair<string,string>>()
         {

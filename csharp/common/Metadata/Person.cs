@@ -172,16 +172,6 @@ namespace NHINDirect.Metadata
         }
 
         /// <summary>
-        /// Returns the trimmed field or null if the trimmed field is empty
-        /// </summary>
-        private static string HL7Field(string field)
-        {
-            field.Trim();
-            if (field == "") return null;
-            return field;
-        }
-
-        /// <summary>
         /// Parses an XCN and returns a Person
         /// </summary>
         public static Person FromXCN(string xcn)
@@ -190,21 +180,15 @@ namespace NHINDirect.Metadata
 
             Person p = new Person();
 
-            string[] fields = xcn.Split('^');
-            if (fields.Length < 2) throw new ArgumentException();
-            p.Last =                          HL7Field(fields[1]);
-            if (fields.Length >= 3) p.First = HL7Field(fields[2]);
-            if (fields.Length >= 4) p.MI =    HL7Field(fields[3]);
-            if (fields.Length >= 5) p.Suffix =HL7Field(fields[4]);
-            if (fields.Length >= 6) p.Prefix =HL7Field(fields[5]);
-            if (fields.Length >= 7) p.Degree =HL7Field(fields[6]);
+            List<string> fields = HL7Util.SplitField(xcn, 2, 7);
+            p.Last = fields[1];
+            p.First = fields[2];
+            p.MI = fields[3];
+            p.Suffix = fields[4];
+            p.Prefix = fields[5];
+            p.Degree = fields[6];
 
             return p;
-        }
-
-        string FormatHL7Value(string prop)
-        {
-            return (prop == null ? "^" : prop + "^");
         }
 
         /// <summary>

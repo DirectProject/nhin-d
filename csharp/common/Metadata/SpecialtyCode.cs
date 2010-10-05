@@ -491,24 +491,17 @@ namespace NHINDirect.Metadata
     /// <summary>
     /// Represents a coded clinical specialty.
     /// </summary>
-    public class SpecialtyCode : CodedValue
+    public static class C80SpecialtyCodeUtils
     {
 
         /// <summary>
-        /// Initializes a clincial speciality from the supplied code.
+        /// Returns a <see cref="CodedValue"/> for the code
         /// </summary>
-        public SpecialtyCode(C80ClinicalSpecialties code)
-            : base(Decode(code))
+        public static CodedValue ToCodedValue(this C80ClinicalSpecialties code)
         {
-            
+            KeyValuePair<string, string> pair = Decode(code);
+            return new CodedValue(pair.Key, pair.Value, "HITSP C80 clincial sceciality codes");
         }
-
-        /// <summary>
-        /// Initializes a clinical speciality with the supplied code and label
-        /// </summary>
-        public SpecialtyCode(string code, string label)
-            : base(code, label)
-        { }
 
         private static Dictionary<C80ClinicalSpecialties, KeyValuePair<string, string>> m_C80ClinicalSpecialties = new Dictionary<C80ClinicalSpecialties, KeyValuePair<string, string>>()
         {
