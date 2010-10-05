@@ -1,7 +1,9 @@
-﻿/* 
+/* 
  Copyright (c) 2010, NHIN Direct Project
  All rights reserved.
-
+ 
+ Title:   InternationalStringType.cs
+ Purpose: Class representing the IHE XD* International String type
  Authors:
     Vassil Peytchev     vassil@epic.com
   
@@ -13,42 +15,37 @@ Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Xml.Serialization;
 
-namespace NHINDirect.XDS.Common
+namespace NHINDirect.XDS.Common.Metadata
 {
-    public class RegistryError
-    {
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlRootAttribute("International", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+	public class InternationalStringType
+	{
+		#region fields
+		[System.Xml.Serialization.XmlIgnoreAttribute()]
+		private LocalizedStringType[] _localizedString;
+		#endregion
 
-        private string codeContext;
-        public string CodeContext
-        {
-            get { return codeContext; }
-            set { codeContext = value; }
-        }
+		public InternationalStringType()
+		{
+		}
 
-        private string errorCode;
-        public string ErrorCode
-        {
-            get { return errorCode; }
-            set { errorCode = value; }
-        }
+		public InternationalStringType(LocalizedStringType[] localizedStrings)
+		{
+			this.LocalizedString = localizedStrings;
+		}
 
-        private string severity;
-        public string Severity
-        {
-            get { return severity; }
-            set { severity = value; }
-        }
-
-        private string location;
-        public string Location
-        {
-            get { return location; }
-            set { location = value; }
-        }
-
-    }
+		#region properties
+		[System.Xml.Serialization.XmlElementAttribute("LocalizedString")]
+		public LocalizedStringType[] LocalizedString
+		{
+			get { return _localizedString; }
+			set { _localizedString = value; }
+		}
+		#endregion
+	}
 }
