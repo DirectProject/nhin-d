@@ -188,6 +188,23 @@ namespace NHINDirect.Tests.xdTests
             Assert.True(code.Equals(doc.Class));
         }
 
+        public static IEnumerable<object[]> CommentsData
+        {
+            get
+            {
+                yield return new object[] { RoundTripDocument, TestDocument.Comments };
+                yield return new object[] { KnownValidDocument, "Test document" };
+            }
+        }
+
+        [Theory]
+        [PropertyData("CommentsData")]
+        public void ConsumerConsumesComments(XElement documentXEl, string expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.Comments);
+        }
+
 
         /// <summary>
         /// An XML file that validates against the NIST validator

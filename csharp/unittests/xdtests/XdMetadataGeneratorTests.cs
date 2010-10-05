@@ -309,13 +309,13 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentHasTitle()
         {
-            Assert.NotNull(TestDocXElement.Element(XDMetadataStandard.NameElt));
+            Assert.NotNull(TestDocXElement.Element(XDMetadataStandard.Elts.Name));
         }
 
         [Fact]
         public void TitleIsCorrect()
         {
-            Assert.Equal(TestDocument.Title, TestDocXElement.Element(XDMetadataStandard.NameElt).Descendants("LocalizedString").First().Attribute("value").Value);
+            Assert.Equal(TestDocument.Title, TestDocXElement.NameValue());
         }
 
         [Fact]
@@ -466,7 +466,7 @@ namespace NHINDirect.Tests.xdTests
             XElement elt = TestSubmitObjectsXElement.Descendants("RegistryPackage").First();
             Assert.NotNull(elt.Attribute("id").Value);
             string id = elt.Attribute("id").Value;
-            IEnumerable<XElement> classifications = from el in elt.DescendantsAnyNs(XDMetadataStandard.ClassificationElt)
+            IEnumerable<XElement> classifications = from el in elt.DescendantsAnyNs(XDMetadataStandard.Elts.Classification)
                                        where (string) el.Attribute("classificationNode") == XDMetadataStandard.UUIDs.SubmissionSetClassification
                                        select el;
             Assert.NotEmpty(classifications);
@@ -476,7 +476,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void SubmitObjectsHasDocument()
         {
-            IEnumerable<XElement> docXElements = from el in TestSubmitObjectsXElement.DescendantsAnyNs(XDMetadataStandard.DocumentEntryElement)
+            IEnumerable<XElement> docXElements = from el in TestSubmitObjectsXElement.DescendantsAnyNs(XDMetadataStandard.Elts.DocumentEntry)
                                                  where (string)el.Attribute("objectType") == XDMetadataStandard.UUIDs.DocumentEntry
                                                  select el;
             Assert.NotEmpty(docXElements);
