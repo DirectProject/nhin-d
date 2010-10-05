@@ -37,6 +37,7 @@ import java.util.UUID;
 import junit.framework.TestCase;
 
 import org.nhindirect.DirectMessage;
+import org.nhindirect.nhindclient.config.NHINDClientConfig;
 import org.nhindirect.nhindclient.impl.NHINDClientImpl;
 
 /**
@@ -75,7 +76,7 @@ public class NHINDClientTest extends TestCase
         ArrayList docs = new ArrayList();
         docs.add(doc);
 
-        NHINDClientImpl instance = new NHINDClientImpl("gmail-smtp.l.google.com");
+        NHINDClientImpl instance = new NHINDClientImpl(NHINDClientConfig.DEFAULT);
         String messageId = UUID.randomUUID().toString();
         String expResult = "urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success";
         String result = instance.send(endpoint, meta, docs, messageId);
@@ -126,8 +127,9 @@ public class NHINDClientTest extends TestCase
 
         message.setBody("data is attached");
         message.addDocument(getDoc(), getMeta());
+        message.addDocument(getDoc(), getMeta());
 
-        NHINDClient client = new NHINDClientImpl("gmail-smtp.l.google.com");
+        NHINDClient client = new NHINDClientImpl(NHINDClientConfig.DEFAULT);
         client.send(message);
     }
 }

@@ -36,6 +36,7 @@ import javax.mail.MessagingException;
 import org.apache.commons.lang.StringUtils;
 import org.nhindirect.DirectMessage;
 import org.nhindirect.nhindclient.NHINDClient;
+import org.nhindirect.nhindclient.config.NHINDClientConfig;
 import org.nhindirect.routing.RoutingResolver;
 import org.nhindirect.routing.impl.RoutingResolverImpl;
 import org.nhindirect.xdclient.XDClient;
@@ -48,15 +49,15 @@ import org.nhindirect.xdm.XDMMailClient;
 public class NHINDClientImpl implements NHINDClient
 {
     private RoutingResolver routingResolver = new RoutingResolverImpl();
-
-    private String smtpHost;
-
+    
+    private NHINDClientConfig config;
+    
     /**
      * @param smtpHost
      */
-    public NHINDClientImpl(String smtpHost)
+    public NHINDClientImpl(NHINDClientConfig config)
     {
-        this.smtpHost = smtpHost;
+        this.config = config;
     }
 
     /* (non-Javadoc)
@@ -67,7 +68,7 @@ public class NHINDClientImpl implements NHINDClient
         // SMTP endpoints
         if (routingResolver.hasSmtpEndpoints(message.getReceivers()))
         {
-            XDMMailClient xmc = new XDMMailClient(smtpHost);
+            XDMMailClient xmc = new XDMMailClient(config.getSmtpHostName(), config.getSmtpAuthUser(), config.getSmtpAuthPassword());
 
             Collection<String> endpoints = routingResolver.getSmtpEndpoints(message.getReceivers());
 
@@ -123,7 +124,7 @@ public class NHINDClientImpl implements NHINDClient
 
         if (routingResolver.isSmtpEndpoint(endpoint))
         {
-            XDMMailClient xmc = new XDMMailClient(smtpHost);
+            XDMMailClient xmc = new XDMMailClient(config.getSmtpHostName(), config.getSmtpAuthUser(), config.getSmtpAuthPassword());
 
             String body = "data attached";
             // TODO fix these two to use metadata
