@@ -59,7 +59,7 @@ namespace NHINDirect.Xd
         /// </summary>
         public static IEnumerable<XElement> Classifications(this XElement source, string scheme)
         {
-            return from el in source.DescendantsAnyNs(XDMetadataStandard.ClassificationElt)
+            return from el in source.DescendantsAnyNs(XDMetadataStandard.Elts.Classification)
                    where (string)el.Attribute(XDMetadataStandard.ClassificationSchemeAttr) == scheme
                    select el;
         }
@@ -82,7 +82,7 @@ namespace NHINDirect.Xd
         /// </summary>
         public static IEnumerable<XElement> Slots(this XElement source)
         {
-            return source.ElementsAnyNs(XDMetadataStandard.SlotElt);
+            return source.ElementsAnyNs(XDMetadataStandard.Elts.Slot);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace NHINDirect.Xd
         /// </summary>
         public static IEnumerable<XElement> DocumentEntries(this XElement source)
         {
-            return source.DescendantsAnyNs(XDMetadataStandard.DocumentEntryElement).Where(e => e.Attribute(XDMetadataStandard.ObjectTypeAttr).Value == XDMetadataStandard.UUIDs.DocumentEntry);
+            return source.DescendantsAnyNs(XDMetadataStandard.Elts.DocumentEntry).Where(e => e.Attribute(XDMetadataStandard.ObjectTypeAttr).Value == XDMetadataStandard.UUIDs.DocumentEntry);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace NHINDirect.Xd
         /// </summary>
         public static XElement Name(this XElement source)
         {
-            IEnumerable<XElement> names = source.ElementsAnyNs("Name");
+            IEnumerable<XElement> names = source.ElementsAnyNs(XDMetadataStandard.Elts.Name);
             if (names.Count() == 0) return null;
             return names.First();
         }
@@ -171,11 +171,36 @@ namespace NHINDirect.Xd
         {
             XElement name = source.Name();
             if (name == null) return null;
-            XElement localizedString = name.ElementAnyNs("LocalizedString");
+            XElement localizedString = name.ElementAnyNs(XDMetadataStandard.Elts.LocalizedString);
             if (localizedString == null) return null;
             XAttribute valueAttr = localizedString.Attribute("value");
             if (valueAttr == null) return null;
             return valueAttr.Value;
         }
+
+        /// <summary>
+        /// Returns the child Description element
+        /// </summary>
+        public static XElement Description(this XElement source)
+        {
+            IEnumerable<XElement> names = source.ElementsAnyNs(XDMetadataStandard.Elts.Description);
+            if (names.Count() == 0) return null;
+            return names.First();
+        }
+
+        /// <summary>
+        /// Returns the value of the child Name element
+        /// </summary>
+        public static string DescriptionValue(this XElement source)
+        {
+            XElement name = source.Description();
+            if (name == null) return null;
+            XElement localizedString = name.ElementAnyNs(XDMetadataStandard.Elts.LocalizedString);
+            if (localizedString == null) return null;
+            XAttribute valueAttr = localizedString.Attribute("value");
+            if (valueAttr == null) return null;
+            return valueAttr.Value;
+        }
+    
     }
 }

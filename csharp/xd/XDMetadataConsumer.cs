@@ -55,6 +55,7 @@ namespace NHINDirect.Xd
             DocumentMetadata doc = new DocumentMetadata();
             doc.Author = ConsumeAuthor(docXEl.Classification(XDMetadataStandard.UUIDs.DocumentAuthor));
             doc.Class = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.UUIDs.DocumentClass));
+            doc.Comments = docXEl.DescriptionValue();
             return doc;
         }
 

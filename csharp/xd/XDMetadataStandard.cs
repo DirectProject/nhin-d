@@ -86,12 +86,6 @@ namespace NHINDirect.Xd
             return ClassificationUUIDs.ContainsKey(attr);
         }
 
-        /// <summary>
-        /// Element name for a DocumentEntry object (ExtrinsicObject)
-        /// </summary>
-        public const string DocumentEntryElement = "ExtrinsicObject";
-
-
         // UUIDs
 
         /// <summary>
@@ -191,19 +185,42 @@ namespace NHINDirect.Xd
         // Element Names
 
         /// <summary>
-        /// The element name for a classification
+        /// XD* Metadata standard Element names
         /// </summary>
-        public const string ClassificationElt = "Classification";
+        public struct Elts
+        {
+            /// <summary>
+            /// Element name for a DocumentEntry object (ExtrinsicObject)
+            /// </summary>
+            public const string DocumentEntry = "ExtrinsicObject";
 
-        /// <summary>
-        /// The element name for a slot.
-        /// </summary>
-        public const string SlotElt = "Slot";
 
-        /// <summary>
-        /// Element name for a Name element
-        /// </summary>
-        public const string NameElt = "Name"; 
+            /// <summary>
+            /// The element name for a classification
+            /// </summary>
+            public const string Classification = "Classification";
+
+            /// <summary>
+            /// The element name for a slot.
+            /// </summary>
+            public const string Slot = "Slot";
+
+            /// <summary>
+            /// Element name for a Name element
+            /// </summary>
+            public const string Name = "Name";
+
+            /// <summary>
+            /// Element name for a Description element
+            /// </summary>
+            public const string Description = "Description";
+
+            /// <summary>
+            /// Element name for a LocalizedString element
+            /// </summary>
+            public const string LocalizedString = "LocalizedString";
+
+        }
 
         // Attribute names
 
