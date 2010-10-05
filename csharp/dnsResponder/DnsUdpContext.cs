@@ -26,7 +26,6 @@ namespace DnsResponder
     public class DnsUdpContext
     {
         DnsBuffer m_buffer;
-        int m_bytesTransferred;
         Socket m_socket;
         IPEndPoint m_remoteEndpoint;
         
