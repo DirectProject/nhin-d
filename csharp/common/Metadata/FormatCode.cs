@@ -98,24 +98,16 @@ namespace NHINDirect.Metadata
     /// <summary>
     /// Represents a coded document format code
     /// </summary>
-    public class FormatCode : CodedValue
+    public static class C80FormatCodeUtils
     {
-        /// <summary>
-        /// Initialize an instance from the supplied enumeration code
-        /// </summary>
-        public FormatCode (C80FormatCode code)
-            :base (Decode(code))
-        {
-        }
 
         /// <summary>
-        /// Constructs an instance from the given code, label pair.
+        /// Returns a <see cref="CodedValue"/> for the code
         /// </summary>
-        /// <param name="code">The code</param>
-        /// <param name="label">The label</param>
-        public FormatCode(string code, string label)
-            : base(code, label)
+        public static CodedValue ToCodedValue(this C80FormatCode code)
         {
+            KeyValuePair<string, string> pair = Decode(code);
+            return new CodedValue(pair.Key, pair.Value, "HITSP C80 Format");
         }
 
         private static Dictionary<C80FormatCode, KeyValuePair<string, string>> m_C80FormatCode_mappings = new Dictionary<C80FormatCode, KeyValuePair<string, string>>()

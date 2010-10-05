@@ -36,6 +36,16 @@ namespace NHINDirect.Xd
         }
 
         /// <summary>
+        /// Returns the first named child element, ignoring namespace
+        /// </summary>
+        public static XElement ElementAnyNs(this XElement source, string name)
+        {
+            IEnumerable<XElement> elts = source.ElementsAnyNs(name);
+            if (elts.Count() == 0) return null;
+            return elts.First();
+        }
+
+        /// <summary>
         /// Returns descendent elements ignoring namespace
         /// </summary>
         public static IEnumerable<XElement> DescendantsAnyNs(this XElement source, string name)
@@ -142,6 +152,30 @@ namespace NHINDirect.Xd
         public static IEnumerable<XElement> DocumentEntries(this XElement source)
         {
             return source.DescendantsAnyNs(XDMetadataStandard.DocumentEntryElement).Where(e => e.Attribute(XDMetadataStandard.ObjectTypeAttr).Value == XDMetadataStandard.DocumentEntryUUID);
+        }
+
+        /// <summary>
+        /// Returns the child Name element
+        /// </summary>
+        public static XElement Name(this XElement source)
+        {
+            IEnumerable<XElement> names = source.ElementsAnyNs("Name");
+            if (names.Count() == 0) return null;
+            return names.First();
+        }
+
+        /// <summary>
+        /// Returns the value of the child Name element
+        /// </summary>
+        public static string NameValue(this XElement source)
+        {
+            XElement name = source.Name();
+            if (name == null) return null;
+            XElement localizedString = name.ElementAnyNs("LocalizedString");
+            if (localizedString == null) return null;
+            XAttribute valueAttr = localizedString.Attribute("value");
+            if (valueAttr == null) return null;
+            return valueAttr.Value;
         }
     }
 }

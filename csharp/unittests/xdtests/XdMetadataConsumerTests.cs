@@ -42,23 +42,23 @@ namespace NHINDirect.Tests.xdTests
                     m_docMeta.Author = new Author();
                     m_docMeta.Author.Person = new Person { First = "Tom", Last = "Jones", Degree = "M.D." };
                     m_docMeta.Author.Institutions.Add(new Institution("Direct U"));
-                    m_docMeta.Class = new ClassCode(Metadata.C80ClassCode.TransferOfCareReferralNote);
+                    m_docMeta.Class = Metadata.C80ClassCode.TransferOfCareReferralNote.ToCodedValue();
                     m_docMeta.Comments = "This is a nice document";
-                    m_docMeta.Confidentiality = new ConfidentialtyCode(Metadata.C80Confidentialty.Normal);
+                    m_docMeta.Confidentiality =Metadata.C80Confidentialty.Normal.ToCodedValue();
                     m_docMeta.CreatedOn = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
                     var evtCodes = new List<CodedValue>();
-                    evtCodes.Add(new CodedValue("foo", "bar"));
+                    evtCodes.Add(new CodedValue("foo", "bar", "test"));
                     m_docMeta.EventCodes = evtCodes;
-                    m_docMeta.FormatCode = new FormatCode(Metadata.C80FormatCode.CareManagement);
+                    m_docMeta.FormatCode = Metadata.C80FormatCode.CareManagement.ToCodedValue();
                     m_docMeta.Hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-                    m_docMeta.FaciltyCode = new FacilityCode(C80FacilityCodes.PrivatePhysiciansGroupOffice);
+                    m_docMeta.FaciltyCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
                     m_docMeta.LanguageCode = "en-us";
                     m_docMeta.LegalAuthenticator = new Person { First = "Marcus", Last = "Welby", Degree = "M.D", Prefix = "Dr." };
                     m_docMeta.MediaType = "text/plain";
                     m_docMeta.PatientID = new PatientID("ABC", "123", "foo");
                     m_docMeta.ServiceStart = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
                     m_docMeta.ServiceStop = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
-                    m_docMeta.PracticeSetting = new SpecialtyCode(C80ClinicalSpecialties.FamilyPractice);
+                    m_docMeta.PracticeSetting = C80ClinicalSpecialties.FamilyPractice.ToCodedValue();
                     m_docMeta.Size = 1000;
                     m_docMeta.SourcePtId = new PatientID("XYZ", "PDQ", "foo");
                     m_docMeta.Patient = new Person
@@ -159,6 +159,35 @@ namespace NHINDirect.Tests.xdTests
                 yield return new object[] { KnownValidDocument, new List<string> { "Orthopedic" } };
             }
         }
+
+        [Theory]
+        [PropertyData("AuthorSpecialitiesData")]
+        public void ConsumerConsumesAuthorSpecialties(XElement documentXEl, List<string> expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected.Count, doc.Author.Specialities.Count);
+            foreach (string s in expected)
+                Assert.Contains(s, doc.Author.Specialities);
+        }
+
+        public static IEnumerable<object[]> ClassData
+        {
+            get
+            {
+                yield return new object[] { RoundTripDocument, TestDocument.Class };
+                yield return new object[] { KnownValidDocument, new CodedValue("Operative", "Operative", "Connect-a-thon classCodes") };
+            }
+        }
+
+        [Theory]
+        [PropertyData("ClassData")]
+        public void ConsumerConsumesClass(XElement documentXEl, CodedValue code)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(code.ToString(), doc.Class.ToString());
+            Assert.True(code.Equals(doc.Class));
+        }
+
 
         /// <summary>
         /// An XML file that validates against the NIST validator

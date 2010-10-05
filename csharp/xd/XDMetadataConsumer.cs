@@ -54,6 +54,7 @@ namespace NHINDirect.Xd
         {
             DocumentMetadata doc = new DocumentMetadata();
             doc.Author = ConsumeAuthor(docXEl.Classification(XDMetadataStandard.DocumentAuthorUUID));
+            doc.Class = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.DocumentClassUUID));
             return doc;
         }
 
@@ -74,6 +75,15 @@ namespace NHINDirect.Xd
                 a.Specialities.Add(s);
             }
             return a;
+        }
+
+        static CodedValue ConsumeCodedValue(XElement codedValueClassification)
+        {
+            XAttribute nodeRep = codedValueClassification.Attribute(XDMetadataStandard.NodeRepresentationAttr);
+            string codingScheme = codedValueClassification.SlotValue(XDMetadataStandard.CodingSchemeSlot);
+            string codeLabel = codedValueClassification.NameValue();
+            if (nodeRep == null || codingScheme == null || codeLabel == null) throw new ArgumentException();
+            return new CodedValue(nodeRep.Value, codeLabel, codingScheme);
         }
     }
 }
