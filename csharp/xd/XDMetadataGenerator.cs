@@ -101,12 +101,12 @@ namespace NHINDirect.Xd
             string packageId = MakeUUID();
             XElement packageMetadata = new XElement("RegistryPackage",
                 new XAttribute("id", packageId),
-                new Classification(XDMetadataStandard.SubmissionSetClassificationUUID, packageId));
+                new Classification(XDMetadataStandard.UUIDs.SubmissionSetClassification, packageId));
 
             List<Pair<Object, Func<XObject>>> specs = new List<Pair<Object, Func<XObject>>>
             {   
                 Map(docPackage.Author,
-                    () => new MultiSlotClassification(XDMetadataStandard.SubmissionSetAuthorUUID, "", packageId,
+                    () => new MultiSlotClassification(XDMetadataStandard.UUIDs.SubmissionSetAuthor, "", packageId,
                                 AuthorSlots(docPackage.Author))),
                 Map(docPackage.Comments,
                     () => new Description(docPackage.Comments)),
@@ -115,15 +115,15 @@ namespace NHINDirect.Xd
                 Map(docPackage.IntendedRecipients,
                     () => new Slot(XDMetadataStandard.Slots.IntendedRecipient, docPackage.IntendedRecipients.Select(r => r.ToXONXCN()))),
                 Map(docPackage.PatientId,
-                    () => new ExternalIdentifier(XDMetadataStandard.SubmissionSetPatientIdUUID, docPackage.PatientId.ToEscapedCx(), "XDSSubmissionSet.patientId")),
+                    () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetPatientId, docPackage.PatientId.ToEscapedCx(), "XDSSubmissionSet.patientId")),
                 Map(docPackage.SourceId,
-                    () => new ExternalIdentifier(XDMetadataStandard.SubmissionSetSourceIdUUID, docPackage.SourceId, "XDSSubmissionSet.sourceId")),
+                    () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetSourceId, docPackage.SourceId, "XDSSubmissionSet.sourceId")),
                 Map(docPackage.SubmissionTime,
                     () => new Slot(XDMetadataStandard.Slots.SubmissionTime, docPackage.SubmissionTime.ToHL7Date())),
                 Map(docPackage.Title,
                     () => new Name(docPackage.Title)),
                 Map(docPackage.UniqueId,
-                    () => new ExternalIdentifier(XDMetadataStandard.SubmissionSetUniqueIdUUID, docPackage.UniqueId, "XDSSubmissionSet.uniqueId")),
+                    () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetUniqueId, docPackage.UniqueId, "XDSSubmissionSet.uniqueId")),
             };
 
             foreach (Pair<Object, Func<XObject>> p in specs)
@@ -152,13 +152,13 @@ namespace NHINDirect.Xd
             string documentName = MakeUUID();
 
             XElement docEbX = new XElement("ExtrinsicObject",
-                new XAttribute(XDMetadataStandard.ObjectTypeAttr, XDMetadataStandard.DocumentEntryUUID));
+                new XAttribute(XDMetadataStandard.ObjectTypeAttr, XDMetadataStandard.UUIDs.DocumentEntry));
 
 
             List<Pair<Object, Func<XObject>>> specs = new List<Pair<Object, Func<XObject>>>
             {
                 Map(docMetadata.Author,
-                   () => new MultiSlotClassification(XDMetadataStandard.DocumentAuthorUUID, "", documentName,
+                   () => new MultiSlotClassification(XDMetadataStandard.UUIDs.DocumentAuthor, "", documentName,
                        AuthorSlots(docMetadata.Author))),
                 Map(docMetadata.Class,
                     () => new CodedValueClassification(XDAttribute.ClassCode, documentName, docMetadata.Class)),
@@ -183,7 +183,7 @@ namespace NHINDirect.Xd
                 Map(docMetadata.MediaType,
                     () => new XAttribute("mimeType", docMetadata.MediaType) ),
                 Map(docMetadata.PatientID,
-                    () => new ExternalIdentifier(XDMetadataStandard.DocumentEntryPatientIdentitySchemeUUID,
+                    () => new ExternalIdentifier(XDMetadataStandard.UUIDs.DocumentEntryPatientIdentityScheme,
                         docMetadata.PatientID.ToEscapedCx(), "XDSDocumentEntry.patientId")),
                 Map(docMetadata.ServiceStart,
                     () => new Slot(XDMetadataStandard.Slots.ServiceStart, docMetadata.ServiceStart.Value.ToHL7Date())),
@@ -203,7 +203,7 @@ namespace NHINDirect.Xd
                 Map(docMetadata.Class,
                     () => new CodedValueClassification(XDAttribute.TypeCode, documentName, docMetadata.Class) ),
                 Map(docMetadata.UniqueId,
-                    () => new ExternalIdentifier(XDMetadataStandard.DocumentUniqueIdIdentitySchemeUUID, docMetadata.UniqueId,"XDSDocumentEntry.uniqueId")),
+                    () => new ExternalIdentifier(XDMetadataStandard.UUIDs.DocumentUniqueIdIdentityScheme, docMetadata.UniqueId,"XDSDocumentEntry.uniqueId")),
                 Map(docMetadata.Uri,
                     () => new Slot(XDMetadataStandard.Slots.Uri, UriValues(docMetadata.Uri))),
             };

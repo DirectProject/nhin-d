@@ -62,15 +62,15 @@ namespace NHINDirect.Xd
     {
         private static Dictionary<XDAttribute,string> m_classifications = new Dictionary<XDAttribute, string>
         {
-            {XDAttribute.Author,DocumentAuthorUUID},
-            {XDAttribute.EventCodeList, EventCodeUUID },
-            {XDAttribute.ClassCode,DocumentClassUUID },
-            {XDAttribute.ConfidentialityCode, DocumentConfidentialityUUID },
-            {XDAttribute.FormatCode, FormatCodeUUID },
-            {XDAttribute.FacilityType, FacilityCodeUUID },
-            {XDAttribute.PracticeSettingCode, PracticeSettingUUID },
-            {XDAttribute.TypeCode, DocumentTypeUUID },
-            {XDAttribute.ContentTypeCode, ContentTypeCodeUUID},
+            {XDAttribute.Author,UUIDs.DocumentAuthor},
+            {XDAttribute.EventCodeList, UUIDs.EventCode },
+            {XDAttribute.ClassCode,UUIDs.DocumentClass },
+            {XDAttribute.ConfidentialityCode, UUIDs.DocumentConfidentiality },
+            {XDAttribute.FormatCode, UUIDs.FormatCode },
+            {XDAttribute.FacilityType, UUIDs.FacilityCode },
+            {XDAttribute.PracticeSettingCode, UUIDs.PracticeSetting },
+            {XDAttribute.TypeCode, UUIDs.DocumentType },
+            {XDAttribute.ContentTypeCode, UUIDs.ContentTypeCode},
         };
 
         /// <summary>
@@ -95,92 +95,98 @@ namespace NHINDirect.Xd
         // UUIDs
 
         /// <summary>
-        /// UUID for a Submission Set classification
+        /// XD* Metadata standard UUIDs.
         /// </summary>
-        public const string SubmissionSetClassificationUUID = "urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd";
+        public struct UUIDs
+        {
+            /// <summary>
+            /// UUID for a Submission Set classification
+            /// </summary>
+            public const string SubmissionSetClassification = "urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd";
 
-        /// <summary>
-        /// UUID for a document entry RegistryPackageType
-        /// </summary>
-        public const string DocumentEntryUUID = "urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1";
+            /// <summary>
+            /// UUID for a document entry RegistryPackageType
+            /// </summary>
+            public const string DocumentEntry = "urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1";
 
-        /// <summary>
-        /// UUID for an author classification at the document level
-        /// </summary>
-        public const string DocumentAuthorUUID = "urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d";
-
-
-        /// <summary>
-        /// UUID for an author classification at the submission set level
-        /// </summary>
-        public const string SubmissionSetAuthorUUID = "urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d";
-
-        /// <summary>
-        /// UUID for a document class code classification
-        /// </summary>
-        public const string DocumentClassUUID = "urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a";
-
-        /// <summary>
-        /// UUID for a document confidentiality code
-        /// </summary>
-        public const string DocumentConfidentialityUUID = "urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f";
-
-        /// <summary>
-        /// UUID for an event code
-        /// </summary>
-        public const string EventCodeUUID = "urn:uuid:2c6b8cb7-8b2a-4051-b291-b1ae6a575ef4";
-        /// <summary>
-        /// UUID for a format code
-        /// </summary>
-        public const string FormatCodeUUID = "urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d";
-
-        /// <summary>
-        /// UUID for a facility code
-        /// </summary>
-        public const string FacilityCodeUUID = "urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1";
-
-        /// <summary>
-        /// UUID for a patient identifier extenral identity scheme.
-        /// </summary>
-        public const string DocumentEntryPatientIdentitySchemeUUID = "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427";
+            /// <summary>
+            /// UUID for an author classification at the document level
+            /// </summary>
+            public const string DocumentAuthor = "urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d";
 
 
-        /// <summary>
-        /// UUID for a unique ID identity scheme for a document
-        /// </summary>
-        public const string DocumentUniqueIdIdentitySchemeUUID = "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab";
+            /// <summary>
+            /// UUID for an author classification at the submission set level
+            /// </summary>
+            public const string SubmissionSetAuthor = "urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d";
+
+            /// <summary>
+            /// UUID for a document class code classification
+            /// </summary>
+            public const string DocumentClass = "urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a";
+
+            /// <summary>
+            /// UUID for a document confidentiality code
+            /// </summary>
+            public const string DocumentConfidentiality = "urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f";
+
+            /// <summary>
+            /// UUID for an event code
+            /// </summary>
+            public const string EventCode = "urn:uuid:2c6b8cb7-8b2a-4051-b291-b1ae6a575ef4";
+            /// <summary>
+            /// UUID for a format code
+            /// </summary>
+            public const string FormatCode = "urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d";
+
+            /// <summary>
+            /// UUID for a facility code
+            /// </summary>
+            public const string FacilityCode = "urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1";
+
+            /// <summary>
+            /// UUID for a patient identifier extenral identity scheme.
+            /// </summary>
+            public const string DocumentEntryPatientIdentityScheme = "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427";
 
 
-        /// <summary>
-        /// UUID for a unique ID identity scheme for a submission set
-        /// </summary>
-        public const string SubmissionSetPatientIdUUID = "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446";
+            /// <summary>
+            /// UUID for a unique ID identity scheme for a document
+            /// </summary>
+            public const string DocumentUniqueIdIdentityScheme = "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab";
 
-        /// <summary>
-        /// UUID for a source ID for a submission set
-        /// </summary>
-        public const string SubmissionSetSourceIdUUID = "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832";
 
-        /// <summary>
-        /// UUID for a submission set unique ID external identifier
-        /// </summary>
-        public const string SubmissionSetUniqueIdUUID = "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8";
+            /// <summary>
+            /// UUID for a unique ID identity scheme for a submission set
+            /// </summary>
+            public const string SubmissionSetPatientId = "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446";
 
-        /// <summary>
-        /// UUID for a practice setting classification scheme
-        /// </summary>
-        public const string PracticeSettingUUID = "urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead";
+            /// <summary>
+            /// UUID for a source ID for a submission set
+            /// </summary>
+            public const string SubmissionSetSourceId = "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832";
 
-        /// <summary>
-        /// UUID for a document typeCode
-        /// </summary>
-        public const string DocumentTypeUUID = "urn:uuid:f0306f51-975f-434e-a61c-c59651d33983";
+            /// <summary>
+            /// UUID for a submission set unique ID external identifier
+            /// </summary>
+            public const string SubmissionSetUniqueId = "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8";
 
-        /// <summary>
-        /// UUID for a submission set content type code
-        /// </summary>
-        public const string ContentTypeCodeUUID = "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500";
+            /// <summary>
+            /// UUID for a practice setting classification scheme
+            /// </summary>
+            public const string PracticeSetting = "urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead";
 
+            /// <summary>
+            /// UUID for a document typeCode
+            /// </summary>
+            public const string DocumentType = "urn:uuid:f0306f51-975f-434e-a61c-c59651d33983";
+
+            /// <summary>
+            /// UUID for a submission set content type code
+            /// </summary>
+            public const string ContentTypeCode = "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500";
+
+        }
 
         // Element Names
 

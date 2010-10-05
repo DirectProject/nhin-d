@@ -151,7 +151,7 @@ namespace NHINDirect.Xd
         /// </summary>
         public static IEnumerable<XElement> DocumentEntries(this XElement source)
         {
-            return source.DescendantsAnyNs(XDMetadataStandard.DocumentEntryElement).Where(e => e.Attribute(XDMetadataStandard.ObjectTypeAttr).Value == XDMetadataStandard.DocumentEntryUUID);
+            return source.DescendantsAnyNs(XDMetadataStandard.DocumentEntryElement).Where(e => e.Attribute(XDMetadataStandard.ObjectTypeAttr).Value == XDMetadataStandard.UUIDs.DocumentEntry);
         }
 
         /// <summary>
