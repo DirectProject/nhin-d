@@ -70,6 +70,7 @@ public class SMTPMailClient {
     private MimeBodyPart mainBody;
     private MimeBodyPart mimeAttach;
     static final int BUFFER = 2048;
+    private String hostName = null;
     private static final String SMTP_HOST_NAME = "gmail-smtp.l.google.com";
     private static final String SMTP_AUTH_USER = "lewistower1@gmail.com";
     private static final String SMTP_AUTH_PWD = "hadron106";
@@ -78,7 +79,13 @@ public class SMTPMailClient {
      * Class logger.
      */
     private static final Logger LOGGER = Logger.getLogger(SMTPMailClient.class.getPackage().getName());
-    
+
+    public SMTPMailClient(){
+        hostName = SMTP_HOST_NAME;
+    }
+    public SMTPMailClient(String hostName){
+        this.hostName = hostName;
+    }
     /**
      * Create and send a message over SMTP.
      * 
@@ -111,7 +118,7 @@ public class SMTPMailClient {
         Properties props = new Properties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", SMTP_HOST_NAME);
+        props.put("mail.smtp.host", hostName);
         props.put("mail.smtp.auth", "true");
 
         Authenticator auth = new SMTPAuthenticator();

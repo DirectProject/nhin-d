@@ -135,7 +135,7 @@ namespace DnsResponderTest
                             m_failure++;
                         }     
                     }
-                    catch(Exception ex)
+                    catch
                     {
                         m_failure++;
                     }

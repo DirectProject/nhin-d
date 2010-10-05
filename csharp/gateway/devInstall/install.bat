@@ -55,5 +55,4 @@ goto :EOF
 :Done
 endlocal
 popd
-pause
 exit /b %ERRORLEVEL%

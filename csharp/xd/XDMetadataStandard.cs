@@ -60,58 +60,30 @@ namespace NHINDirect.Xd
     /// </summary>
     public class XDMetadataStandard
     {
-        /// <summary>
-        /// Required attributes for a classification
-        /// </summary>
-        public struct ClassificationAttrs
+        private static Dictionary<XDAttribute,string> m_classifications = new Dictionary<XDAttribute, string>
         {
-            string m_scheme;
-            string m_nodeRep;
-            /// <summary>
-            /// Initializes an attribution with a scheme and nodeRepresentation
-            /// </summary>
-            /// <param name="scheme"></param>
-            /// <param name="nodeRepresentation"></param>
-            public ClassificationAttrs(string scheme, string nodeRepresentation)
-            {
-                m_scheme = scheme;
-                m_nodeRep = nodeRepresentation;
-            }
-
-            /// <summary>
-            /// The node representation
-            /// </summary>
-            public string NodeRepresentation { get { return m_nodeRep; } }
-            /// <summary>
-            /// The classification scheme
-            /// </summary>
-            public string Scheme { get { return m_scheme; } }
-        }
-
-        private static Dictionary<XDAttribute, ClassificationAttrs> m_classifications = new Dictionary<XDAttribute, ClassificationAttrs>
-        {
-            {XDAttribute.Author, new ClassificationAttrs(DocumentAuthorUUID, "")},
-            {XDAttribute.EventCodeList, new ClassificationAttrs(EventCodeUUID, EventCodeNode) },
-            {XDAttribute.ClassCode,new ClassificationAttrs(DocumentClassUUID, DocumentClassNode) },
-            {XDAttribute.ConfidentialityCode, new ClassificationAttrs(DocumentConfidentialityUUID, ConfidentialityCodeNode) },
-            {XDAttribute.FormatCode, new ClassificationAttrs(FormatCodeUUID, FormatCodeNode) },
-            {XDAttribute.FacilityType, new ClassificationAttrs(FacilityCodeUUID, FacilityCodeNode) },
-            {XDAttribute.PracticeSettingCode, new ClassificationAttrs(PracticeSettingUUID, PracticeSettingNode) },
-            {XDAttribute.TypeCode, new ClassificationAttrs(DocumentTypeUUID, DocumentTypeNode) },
-            {XDAttribute.ContentTypeCode, new ClassificationAttrs(ContentTypeCodeUUID, ContentTypeNode )},
+            {XDAttribute.Author,DocumentAuthorUUID},
+            {XDAttribute.EventCodeList, EventCodeUUID },
+            {XDAttribute.ClassCode,DocumentClassUUID },
+            {XDAttribute.ConfidentialityCode, DocumentConfidentialityUUID },
+            {XDAttribute.FormatCode, FormatCodeUUID },
+            {XDAttribute.FacilityType, FacilityCodeUUID },
+            {XDAttribute.PracticeSettingCode, PracticeSettingUUID },
+            {XDAttribute.TypeCode, DocumentTypeUUID },
+            {XDAttribute.ContentTypeCode, ContentTypeCodeUUID},
         };
 
         /// <summary>
-        /// A dictionary mapping attributes to classification attributes
+        /// A dictionary mapping attributes UUID
         /// </summary>
-        public static Dictionary<XDAttribute, ClassificationAttrs> Classifications { get { return m_classifications; } }
+        public static Dictionary<XDAttribute, string> ClassificationUUIDs { get { return m_classifications; } }
 
         /// <summary>
         /// Tests if the XD metadata attribute is represented by an ebXML classification
         /// </summary>
         public static bool IsClassification(XDAttribute attr)
         {
-            return Classifications.ContainsKey(attr);
+            return ClassificationUUIDs.ContainsKey(attr);
         }
 
         /// <summary>
@@ -209,44 +181,6 @@ namespace NHINDirect.Xd
         /// </summary>
         public const string ContentTypeCodeUUID = "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500";
 
-        // Node representations
-
-        /// <summary>
-        /// Node representation for a document class code
-        /// </summary>
-        public const string DocumentClassNode = "classCode";
-
-        /// <summary>
-        /// Node representation for a document type code
-        /// </summary>
-        public const string DocumentTypeNode = "typeCode";
-
-        /// <summary>
-        /// Node representation for submission set content type code
-        /// </summary>
-        public const string ContentTypeNode = "contentTypeCode";
-
-        /// <summary>
-        /// Node representation for a confidentiality code
-        /// </summary>
-        public const string ConfidentialityCodeNode = "confidentialityCode";
-
-        /// <summary>
-        /// Note representation for an event code
-        /// </summary>
-        public const string EventCodeNode = "eventCode";
-        /// <summary>
-        /// Node representation for a format code
-        /// </summary>
-        public const string FormatCodeNode = "formatCode";
-        /// <summary>
-        /// Node representation for a facility code
-        /// </summary>
-        public const string FacilityCodeNode = "facilityCode";
-        /// <summary>
-        /// Node representation for a practice setting
-        /// </summary>
-        public const string PracticeSettingNode = "practiceSettingCode";
 
         // Element Names
 
@@ -277,6 +211,11 @@ namespace NHINDirect.Xd
         /// </summary>
         public const string ClassificationSchemeAttr = "classificationScheme";
 
+        /// <summary>
+        /// The attribute name for a node representation
+        /// </summary>
+        public const string NodeRepresentationAttr = "nodeRepresentation";
+
 
         /// <summary>
         /// The attribute name for object type
@@ -290,6 +229,21 @@ namespace NHINDirect.Xd
         /// The slot name for an authorPerson
         /// </summary>
         public const string AuthorPersonSlot = "authorPerson";
+
+        /// <summary>
+        /// The slot name for an authorInstition
+        /// </summary>
+        public const string AuthorInstitutionsSlot = "authorInstitution";
+
+        /// <summary>
+        /// The slot name for an authorRole
+        /// </summary>
+        public const string AuthorRolesSlot = "authorRole";
+
+        /// <summary>
+        /// The slot name for authorSpecialty
+        /// </summary>
+        public const string AuthorSpecialitiesSlot = "authorSpecialty";
 
         /// <summary>
         /// The slot name for hash

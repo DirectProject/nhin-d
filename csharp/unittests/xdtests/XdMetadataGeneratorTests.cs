@@ -56,23 +56,23 @@ namespace NHINDirect.Tests.xdTests
                     m_docMeta.Author = new Author();
                     m_docMeta.Author.Person = new Person { First = "Tom", Last = "Jones", Degree = "M.D." };
                     m_docMeta.Author.Institutions.Add(new Institution("Direct U"));
-                    m_docMeta.Class = new ClassCode(Metadata.C80ClassCode.TransferOfCareReferralNote);
+                    m_docMeta.Class = Metadata.C80ClassCode.TransferOfCareReferralNote.ToCodedValue();
                     m_docMeta.Comments = "This is a nice document";
-                    m_docMeta.Confidentiality = new ConfidentialtyCode(Metadata.C80Confidentialty.Normal);
+                    m_docMeta.Confidentiality = Metadata.C80Confidentialty.Normal.ToCodedValue();
                     m_docMeta.CreatedOn = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
                     var evtCodes =  new List<CodedValue>();
-                    evtCodes.Add(new CodedValue("foo", "bar"));
+                    evtCodes.Add(new CodedValue("foo", "bar", "test"));
                     m_docMeta.EventCodes = evtCodes;
-                    m_docMeta.FormatCode = new FormatCode(Metadata.C80FormatCode.CareManagement);
+                    m_docMeta.FormatCode = Metadata.C80FormatCode.CareManagement.ToCodedValue();
                     m_docMeta.Hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-                    m_docMeta.FaciltyCode = new FacilityCode(C80FacilityCodes.PrivatePhysiciansGroupOffice);
+                    m_docMeta.FaciltyCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
                     m_docMeta.LanguageCode = "en-us";
                     m_docMeta.LegalAuthenticator = new Person { First = "Marcus", Last = "Welby", Degree = "M.D", Prefix = "Dr." };
                     m_docMeta.MediaType = "text/plain";
                     m_docMeta.PatientID = new PatientID("ABC", "123", "foo");
                     m_docMeta.ServiceStart = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
                     m_docMeta.ServiceStop = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
-                    m_docMeta.PracticeSetting = new SpecialtyCode(C80ClinicalSpecialties.FamilyPractice);
+                    m_docMeta.PracticeSetting = C80ClinicalSpecialties.FamilyPractice.ToCodedValue();
                     m_docMeta.Size = 1000;
                     m_docMeta.SourcePtId = new PatientID("XYZ", "PDQ", "foo");
                     m_docMeta.Patient = new Person
@@ -116,8 +116,8 @@ namespace NHINDirect.Tests.xdTests
         public void DocumentClassCodeValueIsCorrect()
         {
             XElement node = TestDocXElement.Classifications(XDMetadataStandard.DocumentClassUUID).First();
-            string code = node.Descendants("Value").First().Value;
-            Assert.Equal(ClassCode.Decode(Metadata.C80ClassCode.TransferOfCareReferralNote).Key, code);
+            string code = node.Attribute(XDMetadataStandard.NodeRepresentationAttr).Value;
+            Assert.Equal(C80ClassCodeUtils.Decode(Metadata.C80ClassCode.TransferOfCareReferralNote).Key, code);
         }
 
         [Fact]
@@ -148,7 +148,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentEntryCodeHasCorrectValue()
         {
-            Assert.Equal("foo", TestDocXElement.Classification(XDMetadataStandard.EventCodeUUID).Descendants("Value").First().Value);
+            Assert.Equal("foo", TestDocXElement.Classification(XDMetadataStandard.EventCodeUUID).Attribute(XDMetadataStandard.NodeRepresentationAttr).Value);
         }
 
         [Fact]
@@ -160,7 +160,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentFormatCodeHasCorrectValue()
         {
-            Assert.Equal(FormatCode.Decode(C80FormatCode.CareManagement).Key, TestDocXElement.Classification(XDMetadataStandard.FormatCodeUUID).Descendants("Value").First().Value);
+            Assert.Equal(C80FormatCodeUtils.Decode(C80FormatCode.CareManagement).Key, TestDocXElement.Classification(XDMetadataStandard.FormatCodeUUID).Attribute(XDMetadataStandard.NodeRepresentationAttr).Value);
         }
 
         [Fact]
@@ -184,8 +184,8 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentFacilityCodeHasCorrectValue()
         {
-            Assert.Equal(FacilityCode.Decode(C80FacilityCodes.PrivatePhysiciansGroupOffice).Key,
-                TestDocXElement.Classification(XDMetadataStandard.FacilityCodeUUID).Descendants("Value").First().Value);
+            Assert.Equal(C80FacilityCodeUtils.Decode(C80FacilityCodes.PrivatePhysiciansGroupOffice).Key,
+                TestDocXElement.Classification(XDMetadataStandard.FacilityCodeUUID).Attribute(XDMetadataStandard.NodeRepresentationAttr).Value);
         }
 
         [Fact]
@@ -241,8 +241,8 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void PracticeSettingCodeHasCorrectValue()
         {
-            Assert.Equal(SpecialtyCode.Decode(C80ClinicalSpecialties.FamilyPractice).Key,
-                TestDocXElement.Classification(XDMetadataStandard.PracticeSettingUUID).SlotValue("codingScheme"));
+            Assert.Equal(C80SpecialtyCodeUtils.Decode(C80ClinicalSpecialties.FamilyPractice).Key,
+                TestDocXElement.Classification(XDMetadataStandard.PracticeSettingUUID).Attribute(XDMetadataStandard.NodeRepresentationAttr).Value);
         }
 
         [Fact]
@@ -354,7 +354,7 @@ namespace NHINDirect.Tests.xdTests
                     m_package = new DocumentPackage();
                     m_package.Author = new Author {Person = new Person {First = "Bob", Last = "Smith", Degree="M.D."}};
                     m_package.Comments = "This is a super cool package";
-                    m_package.ContentTypeCode = new ClassCode(C80ClassCode.ConsultationNote);
+                    m_package.ContentTypeCode = C80ClassCode.ConsultationNote.ToCodedValue();
                     m_package.Documents.Add(TestDocument);
                     m_package.PatientId = new PatientID("abc", "123", "xyz");
                     m_package.IntendedRecipients.Add(new Recipient { Person = new Person { First = "Dan", Last = "Brown" }, Institution = new Institution("Louvre", "France") });

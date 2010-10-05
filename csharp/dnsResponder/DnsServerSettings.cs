@@ -36,7 +36,6 @@ namespace DnsResponder
         SocketServerSettings m_udpServerSettings;
         short m_maxRequestSize = DefaultMaxRequestSize;
         byte m_maxQuestionCount = DefaultMaxQuestionCount;
-        short m_initialBufferSize = DnsStandard.MaxUdpMessageLength;
         
         public DnsServerSettings()
         {

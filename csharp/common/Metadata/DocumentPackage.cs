@@ -51,7 +51,7 @@ namespace NHINDirect.Metadata
         /// The code specifying the type of clinical activity that resulted in placing these
         /// Documents in this Package.
         /// </summary>
-        public ClassCode ContentTypeCode { get; set; }
+        public CodedValue ContentTypeCode { get; set; }
 
         private List<Recipient> m_recipients = new List<Recipient>();
 
