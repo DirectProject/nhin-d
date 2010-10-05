@@ -33,25 +33,37 @@ import java.util.ArrayList;
 import org.nhindirect.DirectMessage;
 
 /**
+ * Interface for handling the transmission of documents through a client.
+ * 
  * @author Vince
- *
  */
 public interface NHINDClient
 {
+
     /**
+     * Send a message.
+     * 
      * @param endpoint
+     *            The endpoint.
      * @param metadata
+     *            The document metadata.
      * @param docs
+     *            The list of documents.
      * @param messageId
-     * @return
+     *            The message ID.
+     * @return a response.
      * @throws Exception
+     * @Deprecated Moving to use DirectMessage abstraction.
      */
     @Deprecated
     public String send(String endpoint, String metadata, ArrayList<String> docs, String messageId) throws Exception;
 
     /**
+     * Send a message.
+     * 
      * @param message
-     * @return
+     *            The DirectMessage object.
+     * @return a response.
      * @throws Exception
      */
     public String send(DirectMessage message) throws Exception;

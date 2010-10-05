@@ -28,12 +28,20 @@
 
 package org.nhindirect.nhindclient.config;
 
+/**
+ * Configuration for the NHINDClient.
+ * 
+ * @author beau
+ */
 public class NHINDClientConfig
 {
     private String smtpHostName;
     private String smtpAuthUser;
     private String smtpAuthPassword;
 
+    /**
+     * A default configuration.
+     */
     public static final NHINDClientConfig DEFAULT;
 
     static
@@ -41,6 +49,9 @@ public class NHINDClientConfig
         DEFAULT = new NHINDClientConfig();
     }
 
+    /*
+     * Default constructor for default values.
+     */
     private NHINDClientConfig()
     {
         // TODO: This will eventually be removed or changed
@@ -49,6 +60,16 @@ public class NHINDClientConfig
         smtpAuthPassword = "hadron106";
     }
 
+    /**
+     * Construct a new NHINDClientConfig object.
+     * 
+     * @param smtpHostName
+     *            The SMTP host name.
+     * @param smtpAuthUser
+     *            The SMTP auth user.
+     * @param smtpAuthPassword
+     *            The SMTP auth password.
+     */
     public NHINDClientConfig(String smtpHostName, String smtpAuthUser, String smtpAuthPassword)
     {
         this.smtpHostName = smtpHostName;
@@ -57,7 +78,9 @@ public class NHINDClientConfig
     }
 
     /**
-     * @return the smtpHostName
+     * Get the value of smtpHostName.
+     * 
+     * @return the smtpHostName.
      */
     public String getSmtpHostName()
     {
@@ -65,8 +88,10 @@ public class NHINDClientConfig
     }
 
     /**
+     * Set the value of smtpHostName.
+     * 
      * @param smtpHostName
-     *            the smtpHostName to set
+     *            The smtpHostName to set.
      */
     public void setSmtpHostName(String smtpHostName)
     {
@@ -74,7 +99,9 @@ public class NHINDClientConfig
     }
 
     /**
-     * @return the smtpAuthUser
+     * Get the value of smtpAuthUser.
+     * 
+     * @return the smtpAuthUser.
      */
     public String getSmtpAuthUser()
     {
@@ -82,8 +109,10 @@ public class NHINDClientConfig
     }
 
     /**
+     * Set the value of smtpAuthUser.
+     * 
      * @param smtpAuthUser
-     *            the smtpAuthUser to set
+     *            The smtpAuthUser to set.
      */
     public void setSmtpAuthUser(String smtpAuthUser)
     {
@@ -91,7 +120,9 @@ public class NHINDClientConfig
     }
 
     /**
-     * @return the smtpAuthPassword
+     * Get the value of smtpAuthPassword.
+     * 
+     * @return the smtpAuthPassword.
      */
     public String getSmtpAuthPassword()
     {
@@ -99,8 +130,10 @@ public class NHINDClientConfig
     }
 
     /**
+     * Set the value of smtpAuthPassword.
+     * 
      * @param smtpAuthPassword
-     *            the smtpAuthPassword to set
+     *            The smtpAuthPassword to set.
      */
     public void setSmtpAuthPassword(String smtpAuthPassword)
     {

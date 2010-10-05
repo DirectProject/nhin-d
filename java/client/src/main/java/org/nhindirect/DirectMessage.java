@@ -45,11 +45,14 @@ public class DirectMessage
     private String body;
     private String subject;
 
-    public String getSender()
-    {
-        return sender;
-    }
-
+    /**
+     * Create a new DirectMessage object.
+     * 
+     * @param sender
+     *            The value of sender.
+     * @param receivers
+     *            The value of receivers.
+     */
     public DirectMessage(String sender, Collection<String> receivers)
     {
         this.sender = sender;
@@ -58,9 +61,17 @@ public class DirectMessage
         this.documents = new HashSet<DirectDocument>();
     }
 
+    /**
+     * Add a document to the message.
+     * 
+     * @param document
+     *            The document to add.
+     */
     public void addDocument(String document)
     {
         DirectDocument doc = new DirectDocument();
+
+        // TODO: default metadata
         DirectDocument.Metadata metadata = doc.new Metadata();
 
         doc.setData(document);
@@ -69,6 +80,14 @@ public class DirectMessage
         documents.add(doc);
     }
 
+    /**
+     * Add a document to the message.
+     * 
+     * @param document
+     *            The document to add.
+     * @param meta
+     *            The metadata to add.
+     */
     public void addDocument(String document, String meta)
     {
         DirectDocument doc = new DirectDocument();
@@ -82,34 +101,98 @@ public class DirectMessage
         documents.add(doc);
     }
 
+    /**
+     * Get the value of sender.
+     * 
+     * @return the value of sender.
+     */
+    public String getSender()
+    {
+        return sender;
+    }
+
+    /**
+     * Set the value of sender.
+     * 
+     * @param sender
+     *            The value of sender.
+     */
     public void setSender(String sender)
     {
         this.sender = sender;
     }
 
+    /**
+     * Get the value of receivers.
+     * 
+     * @return the value of receivers.
+     */
     public Collection<String> getReceivers()
     {
         return receivers;
     }
 
+    /**
+     * Set the value of receivers.
+     * 
+     * @param receivers
+     *            The value of receivers.
+     */
     public void setReceivers(Collection<String> receivers)
     {
         this.receivers = receivers;
     }
 
+    /**
+     * Get a read-only collection of documents.
+     * 
+     * @return a read-only collection of documents.
+     */
     public Collection<DirectDocument> getDocuments()
     {
         return Collections.unmodifiableCollection(documents);
     }
 
+    /**
+     * Get the value of body.
+     * 
+     * @return the body.
+     */
     public String getBody()
     {
         return body;
     }
 
+    /**
+     * Set the value of body.
+     * 
+     * @param body
+     *            The body to set.
+     */
     public void setBody(String body)
     {
         this.body = body;
+    }
+
+    /**
+     * Set the value of subject.
+     * 
+     * @param subject
+     *            The subject to set.
+     */
+    public void setSubject(String subject)
+    {
+        this.subject = subject;
+    }
+
+    /**
+     * Get the value of subject.
+     * 
+     * @return the subject.
+     */
+    public String getSubject()
+    {
+        return subject;
     }
 
 }

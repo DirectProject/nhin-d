@@ -190,7 +190,6 @@ public class XDMMailClient
      */
     private class SMTPAuthenticator extends javax.mail.Authenticator
     {
-
         /*
          * (non-Javadoc)
          * 
