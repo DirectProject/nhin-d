@@ -34,7 +34,7 @@ namespace NHINDirect.Metadata
         /// <summary>
         /// The code specifying the particular kind of document.
         /// </summary>
-        public ClassCode Class { get; set; }
+        public CodedValue Class { get; set; }
 
         /// <summary>
         /// Comments associated with the Document.
@@ -44,7 +44,7 @@ namespace NHINDirect.Metadata
         /// <summary>
         /// Confidentialty codes applied to this document
         /// </summary>
-        public ConfidentialtyCode Confidentiality { get; set; }
+        public CodedValue Confidentiality { get; set; }
 
         /// <summary>
         /// Document creation datetime. Must either be defined as UTC or Local time.
@@ -61,7 +61,7 @@ namespace NHINDirect.Metadata
         /// <summary>
         /// Format code for the document
         /// </summary>
-        public FormatCode FormatCode { get; set; }
+        public CodedValue FormatCode { get; set; }
 
         //TODO: include the Document and only make this get, not set
         /// <summary>
@@ -72,7 +72,7 @@ namespace NHINDirect.Metadata
         /// <summary>
         /// The facility code for this document.
         /// </summary>
-        public FacilityCode FaciltyCode { get; set; }
+        public CodedValue FaciltyCode { get; set; }
 
         /// <summary>
         /// ISO language code (e.g., en-us)
@@ -98,7 +98,7 @@ namespace NHINDirect.Metadata
         /// <summary>
         /// The code specifying the clinical specialty where the act that resulted in the document was performed
         /// </summary>
-        public SpecialtyCode PracticeSetting { get; set; }
+        public CodedValue PracticeSetting { get; set; }
 
         /// <summary>
         /// Represents the start time the service being documented took place (clinically significant,

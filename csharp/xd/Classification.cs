@@ -59,17 +59,17 @@ namespace NHINDirect.Xd
         /// the XD attribute type provided
         /// </summary>
         /// <param name="attr">The XD attribute</param>
+        /// <param name="nodeRep">The node representation for this classification</param>
         /// <param name="classifiedObject">The object being classified</param>
         /// <param name="content">Included nodes in this classification</param>
-        public Classification(XDAttribute attr, string classifiedObject, params Object[] content)
+        public Classification(XDAttribute attr, string nodeRep, string classifiedObject, params Object[] content)
             : this ()
         {
             if (!XDMetadataStandard.IsClassification(attr))
             {
                 throw new ArgumentException("Invalid Classification Type");
             }
-            string scheme = XDMetadataStandard.Classifications[attr].Scheme;
-            string nodeRep = XDMetadataStandard.Classifications[attr].NodeRepresentation;
+            string scheme = XDMetadataStandard.ClassificationUUIDs[attr];
             InitializeContentScheme(scheme, nodeRep, classifiedObject, content);
         }
 

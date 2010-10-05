@@ -347,24 +347,15 @@ namespace NHINDirect.Metadata
     /// <summary>
     /// Represents a facility code
     /// </summary>
-    public class FacilityCode : CodedValue
+    public static class C80FacilityCodeUtils
     {
         /// <summary>
-        /// Initializes an instance with the provided C80 facility code
+        /// Returns a <see cref="CodedValue"/> for the code
         /// </summary>
-        public FacilityCode(C80FacilityCodes code)
-            : base(Decode(code))
+        public static CodedValue ToCodedValue(this C80FacilityCodes code)
         {
-        }
-
-        /// <summary>
-        /// Initializes an instance from the given code, label pair.
-        /// </summary>
-        /// <param name="code">The code</param>
-        /// <param name="label">The label</param>
-        public FacilityCode(string code, string label)
-            : base(code, label)
-        { 
+            KeyValuePair<string, string> pair = Decode(code);
+            return new CodedValue(pair.Key, pair.Value, "HITSP C80 facility codes");
         }
 
 
