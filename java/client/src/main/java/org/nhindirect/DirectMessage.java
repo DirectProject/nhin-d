@@ -43,6 +43,7 @@ public class DirectMessage
     private Collection<String> receivers;
     private Collection<DirectDocument> documents;
     private String body;
+    private String subject;
 
     public String getSender()
     {
