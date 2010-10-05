@@ -99,6 +99,7 @@
     <Compile Include="Mail\MailStandard.cs" />
     <Compile Include="Mail\Notifications\ReportingUserAgent.cs" />
     <Compile Include="Mail\WrappedMessage.cs" />
+    <Compile Include="Metadata\HL7Util.cs" />
     <Compile Include="Metadata\Institution.cs" />
     <Compile Include="Metadata\PostalAddress.cs" />
     <Compile Include="Metadata\Author.cs" />

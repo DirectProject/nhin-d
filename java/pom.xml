@@ -13,6 +13,7 @@
         <module>./xd-transform</module>
         <module>./xdmail</module>
         <module>./xd</module>
+        <module>./client</module>
   </modules>
     <developers>
         <developer>

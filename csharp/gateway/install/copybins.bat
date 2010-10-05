@@ -72,12 +72,15 @@ goto :EOF
 :EnsureDirs
 echo Ensuring Directories
 if not exist %dest% md %dest%
+pushd %dest%
+del /s /q *
+popd 
 goto :EOF
 
 @rem -------------------------------
 :CopyBins
 call :PrintHeading Copying BINS to "%dest%"
-call :CopyFiles dnsResolver.dll nhinCommon.dll nhinAgent.dll nhinSmtpAgent.dll Interop.ADODB.dll Interop.CDO.dll %platform_dir%\smtpEventHandler.dll
+call :CopyFiles dnsResolver.dll nhinCommon.dll nhinAgent.dll nhinSmtpAgent.dll Interop.ADODB.dll Interop.CDO.dll %platform_dir%\smtpEventHandler.dll nhinConfigClient.dll nhinConfigStore.dll nhinToolLib.dll nhinConfigConsole.exe ConfigConsoleSettings.xml Nlog.dll Nlog.xml Health.Net.Direct.Diagnostics.NLog.dll
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------
