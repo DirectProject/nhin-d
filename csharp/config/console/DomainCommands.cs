@@ -53,12 +53,12 @@ namespace NHINDirect.Config.Command
             
             if (ConfigConsole.Current.DomainClient.DomainExists(domain.Name))
             {
-                Console.WriteLine("Exists {0}", domain);
+                Console.WriteLine("Exists {0}", domain.Name);
             }
             else
             {
                 ConfigConsole.Current.DomainClient.AddDomain(domain);
-                Console.WriteLine("Added {0}", domain);
+                Console.WriteLine("Added {0}", domain.Name);
             }
         }                   
         public void Usage_Domain_Add()

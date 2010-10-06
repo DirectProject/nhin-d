@@ -89,7 +89,7 @@ public class XDMMailClient
         for (DirectDocument d : documents)
         {
             List<String> docs = Arrays.asList(d.getData());
-            sendMail(messageId, from, (List<String>) recipients, d.getMetadata().getXml(), body, docs, suffix);
+            sendMail(messageId, from, (List<String>) recipients, d.getMetadata().getAsString(), body, docs, suffix);
         }
 
     }

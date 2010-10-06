@@ -28,8 +28,26 @@
 
 package org.nhindirect;
 
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
+import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.AssociationType1;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExternalIdentifierType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
+
+import org.nhindirect.transform.util.XmlUtils;
+
 /**
- * TODO: Implement this class (metadata, specifically)
+ * Abstract representation of a document with supporting metadata.
  * 
  * @author beau
  */
@@ -38,18 +56,31 @@ public class DirectDocument
     private Metadata metadata;
     private String data;
 
+    private static final Logger LOGGER = Logger.getLogger(DirectDocument.class.getPackage().getName());
+
+    /**
+     * Default document constructor.
+     */
     public DirectDocument()
     {
         this.metadata = new Metadata();
     }
 
+    /**
+     * Document constructor with specific metadata.
+     * 
+     * @param metadata
+     *            The document metadata.
+     */
     public DirectDocument(Metadata metadata)
     {
         this.metadata = metadata;
     }
 
     /**
-     * @return the metadata
+     * Get the value of metadata.
+     * 
+     * @return the metadata.
      */
     public Metadata getMetadata()
     {
@@ -57,8 +88,10 @@ public class DirectDocument
     }
 
     /**
+     * Set the value of metadata.
+     * 
      * @param metadata
-     *            the metadata to set
+     *            The metadata to set.
      */
     public void setMetadata(Metadata metadata)
     {
@@ -66,7 +99,9 @@ public class DirectDocument
     }
 
     /**
-     * @return the data
+     * Get the value of data.
+     * 
+     * @return the data The value of data.
      */
     public String getData()
     {
@@ -74,8 +109,10 @@ public class DirectDocument
     }
 
     /**
+     * Set the value of data.
+     * 
      * @param data
-     *            the data to set
+     *            The data to set;
      */
     public void setData(String data)
     {
@@ -89,460 +126,453 @@ public class DirectDocument
      */
     public class Metadata
     {
-        private String document_entryUUID; /* R */
-        private String document_mimeType; /* R */
-        private String document_uniqueId; /* R */
+        // TEMP
+        private SubmitObjectsRequest _sor;
 
-        private String document_author;
-        private String document_classCode;
-        private String document_confidentialityCode;
-        private String document_creationTime;
-        private String document_formatCode;
-        private String document_healthcareFacilityTypeCode;
-        private String document_languageCode;
-        private String document_patientId;
-        private String document_practiceSettingCode;
-        private String document_sourcePatientId;
-        private String document_sourcePatientInfo;
-        private String document_typeCode;
+        private String mimeType;
+        private String _objectType;
+        private String _eot_id;
 
-        private String submission_author; /* R */
-        private String submision_entryUUID; /* R */
-        private String submission_intendedRecipient; /* R */
-        private String submission_sourceId; /* R */
-        private String submission_submissionTime; /* R */
-        private String submission_uniqueId; /* R */
+        private String creationTime;
+        private String languageCode;
+        private String serviceStartTime;
+        private String serviceStopTime;
+        private String sourcePatientId;
+        private String sourcePatientInfo;
 
-        private String submission_contentTypeCode;
-        private String submission_patientId;
+        private String authorPerson;
+        private String authorInstitution;
+        private String authorRole;
+        private String authorSpecialty;
 
-        private String xml;
+        private String classCode;
+        private String classCode_localized;
 
-        /**
-         * @return the document_entryUUID
-         */
-        public String getDocument_entryUUID()
+        private String confidentialityCode;
+        private String confidentialityCode_localized;
+
+        private String formatCode;
+        private String formatCode_localized;
+
+        private String healthcareFacilityTypeCode;
+        private String healthcareFacilityTypeCode_localized;
+
+        private String practiceSettingCode;
+        private String practiceSettingCode_localized;
+
+        private String loinc;
+        private String loinc_localized;
+
+        private String patientId;
+        private String uniqueId;
+
+        private String _rpt_id;
+        private String _rpt_name;
+        private String _rpt_description;
+
+        private String ss_submissionTime;
+        private String ss_intendedRecipient;
+
+        private String ss_authorPerson;
+        private String ss_authorInstitution;
+        private String ss_authorRole;
+        private String ss_authorSpecialty;
+
+        private String contentTypeCode;
+        private String contentType_localized;
+
+        private String ss_uniqueId;
+        private String ss_sourceId;
+        private String ss_patientId;
+
+        private String submissionSetStatus;
+
+        public void generate()
         {
-            return document_entryUUID;
+            throw new UnsupportedOperationException();
         }
 
-        /**
-         * @param documentEntryUUID
-         *            the document_entryUUID to set
-         */
-        public void setDocument_entryUUID(String documentEntryUUID)
+        public void consume(String submitObjectsRequest) throws Exception
         {
-            document_entryUUID = documentEntryUUID;
+            SubmitObjectsRequest sor = (SubmitObjectsRequest) XmlUtils.unmarshal(new String(submitObjectsRequest),
+                    oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
+
+            consume(sor);
         }
 
-        /**
-         * @return the document_mimeType
-         */
-        public String getDocument_mimeType()
+        public void consume(SubmitObjectsRequest submitObjectsRequest)
         {
-            return document_mimeType;
+            // TEMP
+            this._sor = submitObjectsRequest;
+
+            RegistryObjectListType rol = submitObjectsRequest.getRegistryObjectList();
+
+            List<JAXBElement<? extends IdentifiableType>> elements = rol.getIdentifiable();
+
+            for (JAXBElement<? extends IdentifiableType> element : elements)
+            {
+                if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType)
+                {
+                    ExtrinsicObjectType eot = (ExtrinsicObjectType) element.getValue();
+
+                    mimeType = eot.getMimeType();
+                    _objectType = eot.getObjectType();
+                    _eot_id = eot.getId();
+
+                    for (SlotType1 slot : eot.getSlot())
+                    {
+                        if (slot.getName().equals("creationTime"))
+                        {
+                            if (slotNotEmpty(slot))
+                                creationTime = slot.getValueList().getValue().get(0);
+                        }
+                        else if (slot.getName().equals("languageCode"))
+                        {
+                            if (slotNotEmpty(slot))
+                                languageCode = slot.getValueList().getValue().get(0);
+                        }
+                        else if (slot.getName().equals("serviceStartTime"))
+                        {
+                            if (slotNotEmpty(slot))
+                                serviceStartTime = slot.getValueList().getValue().get(0);
+                        }
+                        else if (slot.getName().equals("serviceStopTime"))
+                        {
+                            if (slotNotEmpty(slot))
+                                serviceStopTime = slot.getValueList().getValue().get(0);
+                        }
+                        else if (slot.getName().equals("sourcePatientId"))
+                        {
+                            if (slotNotEmpty(slot))
+                                sourcePatientId = slot.getValueList().getValue().get(0);
+                        }
+                        else if (slot.getName().equals("sourcePatientInfo"))
+                        {
+                            // FIXME
+                            sourcePatientInfo = "";
+
+                            if (slotNotEmpty(slot))
+                                for (String value : slot.getValueList().getValue())
+                                {
+                                    sourcePatientInfo += value;
+                                }
+                        }
+                    }
+
+                    for (ClassificationType ct : eot.getClassification())
+                    {
+                        if (ct.getClassificationScheme().equals("urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d"))
+                        {
+                            for (SlotType1 slot : ct.getSlot())
+                            {
+                                if (slot.getName().equals("authorPerson"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                        authorPerson = slot.getValueList().getValue().get(0);
+                                }
+                                else if (slot.getName().equals("authorInstitution"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                        authorInstitution = slot.getValueList().getValue().get(0);
+                                }
+                                else if (slot.getName().equals("authorRole"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                        authorRole = slot.getValueList().getValue().get(0);
+                                }
+                                else if (slot.getName().equals("authorSpecialty"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                        authorSpecialty = slot.getValueList().getValue().get(0);
+                                }
+                            }
+                        }
+                        else if (ct.getClassificationScheme().equals("urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a"))
+                        {
+                            for (SlotType1 slot : ct.getSlot())
+                            {
+                                if (slot.getName().equals("codingScheme"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                    {
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
+                                                .getValue().get(0);
+                                    }
+                                }
+                            }
+
+                            classCode = ct.getNodeRepresentation();
+                            classCode_localized = ct.getNodeRepresentation();
+                        }
+                        else if (ct.getClassificationScheme().equals("urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f"))
+                        {
+                            for (SlotType1 slot : ct.getSlot())
+                            {
+                                if (slot.getName().equals("codingScheme"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                    {
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
+                                                .getValue().get(0);
+                                    }
+                                }
+                            }
+
+                            confidentialityCode = ct.getNodeRepresentation();
+                            confidentialityCode_localized = ct.getNodeRepresentation();
+                        }
+                        else if (ct.getClassificationScheme().equals("urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d"))
+                        {
+                            for (SlotType1 slot : ct.getSlot())
+                            {
+                                if (slot.getName().equals("codingScheme"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                    {
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
+                                                .getValue().get(0);
+                                    }
+                                }
+                            }
+
+                            formatCode = ct.getNodeRepresentation();
+                            formatCode_localized = ct.getNodeRepresentation();
+                        }
+                        else if (ct.getClassificationScheme().equals("urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1"))
+                        {
+                            for (SlotType1 slot : ct.getSlot())
+                            {
+                                if (slot.getName().equals("codingScheme"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                    {
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
+                                                .getValue().get(0);
+                                    }
+                                }
+                            }
+
+                            healthcareFacilityTypeCode = ct.getNodeRepresentation();
+                            healthcareFacilityTypeCode_localized = ct.getNodeRepresentation();
+                        }
+                        else if (ct.getClassificationScheme().equals("urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead"))
+                        {
+                            for (SlotType1 slot : ct.getSlot())
+                            {
+                                if (slot.getName().equals("codingScheme"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                    {
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
+                                                .getValue().get(0);
+                                    }
+                                }
+                            }
+
+                            practiceSettingCode = ct.getNodeRepresentation();
+                            practiceSettingCode_localized = ct.getNodeRepresentation();
+                        }
+                        else if (ct.getClassificationScheme().equals("urn:uuid:f0306f51-975f-434e-a61c-c59651d33983"))
+                        {
+                            for (SlotType1 slot : ct.getSlot())
+                            {
+                                if (slot.getName().equals("codingScheme"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                    {
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
+                                                .getValue().get(0);
+                                    }
+                                }
+                            }
+
+                            loinc = ct.getNodeRepresentation();
+                            loinc_localized = ct.getNodeRepresentation();
+                        }
+                    }
+
+                    for (ExternalIdentifierType eit : eot.getExternalIdentifier())
+                    {
+                        if (eit.getIdentificationScheme().equals("urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427"))
+                        {
+                            patientId = eit.getValue();
+                        }
+                        else if (eit.getIdentificationScheme().equals("urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab"))
+                        {
+                            uniqueId = eit.getValue();
+                        }
+                    }
+                }
+                else if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType)
+                {
+                    RegistryPackageType rpt = (RegistryPackageType) element.getValue();
+
+                    _rpt_id = rpt.getId();
+                    _rpt_name = rpt.getName().getLocalizedString().get(0).getValue();
+                    _rpt_description = rpt.getDescription().getLocalizedString().get(0).getValue();
+
+                    for (SlotType1 slot : rpt.getSlot())
+                    {
+                        if (slot.getName().equals("submissionTime"))
+                        {
+                            if (slotNotEmpty(slot))
+                                ss_submissionTime = slot.getValueList().getValue().get(0);
+                        }
+                        else if (slot.getName().equals("intendedRecipient"))
+                        {
+                            if (slotNotEmpty(slot))
+                                ss_intendedRecipient = slot.getValueList().getValue().get(0);
+                        }
+                    }
+
+                    for (ClassificationType ct : rpt.getClassification())
+                    {
+                        if (ct.getClassificationScheme().equals("urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d"))
+                        {
+                            for (SlotType1 slot : ct.getSlot())
+                            {
+                                if (slot.getName().equals("authorPerson"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                        ss_authorPerson = slot.getValueList().getValue().get(0);
+                                }
+                                else if (slot.getName().equals("authorInstitution"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                        ss_authorInstitution = slot.getValueList().getValue().get(0);
+                                    // TODO: this had two values
+                                }
+                                else if (slot.getName().equals("authorRole"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                        ss_authorRole = slot.getValueList().getValue().get(0);
+                                }
+                                else if (slot.getName().equals("authorSpecialty"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                        ss_authorSpecialty = slot.getValueList().getValue().get(0);
+                                }
+                            }
+                        }
+                        if (ct.getClassificationScheme().equals("urn:uuid:aa543740-bdda-424e-8c96-df4873be8500"))
+                        {
+                            for (SlotType1 slot : ct.getSlot())
+                            {
+                                if (slot.getName().equals("codingScheme"))
+                                {
+                                    if (slotNotEmpty(slot))
+                                    {
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
+                                                .getValue().get(0);
+                                    }
+                                }
+                            }
+
+                            contentTypeCode = ct.getNodeRepresentation();
+                            contentType_localized = ct.getName().getLocalizedString().get(0).getValue();
+                        }
+                    }
+
+                    for (ExternalIdentifierType eit : rpt.getExternalIdentifier())
+                    {
+                        if (eit.getIdentificationScheme().equals("urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8"))
+                        {
+                            ss_uniqueId = eit.getValue();
+                        }
+                        else if (eit.getIdentificationScheme().equals("urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832"))
+                        {
+                            ss_sourceId = eit.getValue();
+                        }
+                        else if (eit.getIdentificationScheme().equals("urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446"))
+                        {
+                            ss_patientId = eit.getValue();
+                        }
+                    }
+                }
+                else if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType)
+                {
+                    // Empty in example
+                }
+                else if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.AssociationType1)
+                {
+                    AssociationType1 at = (AssociationType1) element.getValue();
+
+                    for (SlotType1 slot : at.getSlot())
+                    {
+                        if (slot.getName().equals("SubmissionSetStatus"))
+                        {
+                            if (slotNotEmpty(slot))
+                                submissionSetStatus = slot.getName();
+                        }
+                    }
+                }
+            }
         }
 
-        /**
-         * @param documentMimeType
-         *            the document_mimeType to set
-         */
-        public void setDocument_mimeType(String documentMimeType)
+        public SubmitObjectsRequest getAsSubmitObjectsRequest()
         {
-            document_mimeType = documentMimeType;
+            return _sor;
         }
 
-        /**
-         * @return the document_uniqueId
-         */
-        public String getDocument_uniqueId()
+        public String getAsString()
         {
-            return document_uniqueId;
+            QName qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0", "SubmitObjectsRequest");
+            return XmlUtils.marshal(qname, getAsSubmitObjectsRequest(), ihe.iti.xds_b._2007.ObjectFactory.class);
         }
 
-        /**
-         * @param documentUniqueId
-         *            the document_uniqueId to set
-         */
-        public void setDocument_uniqueId(String documentUniqueId)
+        public void printValues()
         {
-            document_uniqueId = documentUniqueId;
+            LOGGER.info("  mimeType                             " + mimeType);
+            LOGGER.info("  _objectType                          " + _objectType);
+            LOGGER.info("  _eot_id                              " + _eot_id);
+            LOGGER.info("  creationTime                         " + creationTime);
+            LOGGER.info("  languageCode                         " + languageCode);
+            LOGGER.info("  serviceStartTime                     " + serviceStartTime);
+            LOGGER.info("  serviceStopTime                      " + serviceStopTime);
+            LOGGER.info("  sourcePatientId                      " + sourcePatientId);
+            LOGGER.info("  sourcePatientInfo                    " + sourcePatientInfo);
+            LOGGER.info("  authorPerson                         " + authorPerson);
+            LOGGER.info("  authorInstitution                    " + authorInstitution);
+            LOGGER.info("  authorRole                           " + authorRole);
+            LOGGER.info("  authorSpecialty                      " + authorSpecialty);
+            LOGGER.info("  classCode                            " + classCode);
+            LOGGER.info("  classCode_localized                  " + classCode_localized);
+            LOGGER.info("  confidentialityCode                  " + confidentialityCode);
+            LOGGER.info("  confidentialityCode_localized        " + confidentialityCode_localized);
+            LOGGER.info("  formatCode                           " + formatCode);
+            LOGGER.info("  formatCode_localized                 " + formatCode_localized);
+            LOGGER.info("  healthcareFacilityTypeCode           " + healthcareFacilityTypeCode);
+            LOGGER.info("  healthcareFacilityTypeCode_localized " + healthcareFacilityTypeCode_localized);
+            LOGGER.info("  practiceSettingCode                  " + practiceSettingCode);
+            LOGGER.info("  practiceSettingCode_localized        " + practiceSettingCode_localized);
+            LOGGER.info("  loinc                                " + loinc);
+            LOGGER.info("  loinc_localized                      " + loinc_localized);
+            LOGGER.info("  patientId                            " + patientId);
+            LOGGER.info("  uniqueId                             " + uniqueId);
+            LOGGER.info("  _rpt_id                              " + _rpt_id);
+            LOGGER.info("  _rpt_name                            " + _rpt_name);
+            LOGGER.info("  _rpt_description                     " + _rpt_description);
+            LOGGER.info("  ss_submissionTime                    " + ss_submissionTime);
+            LOGGER.info("  ss_intendedRecipient                 " + ss_intendedRecipient);
+            LOGGER.info("  ss_authorPerson                      " + ss_authorPerson);
+            LOGGER.info("  ss_authorInstitution                 " + ss_authorInstitution);
+            LOGGER.info("  ss_authorRole                        " + ss_authorRole);
+            LOGGER.info("  ss_authorSpecialty                   " + ss_authorSpecialty);
+            LOGGER.info("  contentTypeCode                      " + contentTypeCode);
+            LOGGER.info("  contentType_localized                " + contentType_localized);
+            LOGGER.info("  ss_uniqueId                          " + ss_uniqueId);
+            LOGGER.info("  ss_sourceId                          " + ss_sourceId);
+            LOGGER.info("  ss_patientId                         " + ss_patientId);
+            LOGGER.info("  submissionSetStatus                  " + submissionSetStatus);
         }
 
-        /**
-         * @return the document_author
-         */
-        public String getDocument_author()
+        private boolean slotNotEmpty(SlotType1 slot)
         {
-            return document_author;
-        }
+            if (slot.getValueList() != null && slot.getValueList().getValue() != null
+                    && !slot.getValueList().getValue().isEmpty())
+                return true;
 
-        /**
-         * @param documentAuthor
-         *            the document_author to set
-         */
-        public void setDocument_author(String documentAuthor)
-        {
-            document_author = documentAuthor;
-        }
-
-        /**
-         * @return the document_classCode
-         */
-        public String getDocument_classCode()
-        {
-            return document_classCode;
-        }
-
-        /**
-         * @param documentClassCode
-         *            the document_classCode to set
-         */
-        public void setDocument_classCode(String documentClassCode)
-        {
-            document_classCode = documentClassCode;
-        }
-
-        /**
-         * @return the document_confidentialityCode
-         */
-        public String getDocument_confidentialityCode()
-        {
-            return document_confidentialityCode;
-        }
-
-        /**
-         * @param documentConfidentialityCode
-         *            the document_confidentialityCode to set
-         */
-        public void setDocument_confidentialityCode(String documentConfidentialityCode)
-        {
-            document_confidentialityCode = documentConfidentialityCode;
-        }
-
-        /**
-         * @return the document_creationTime
-         */
-        public String getDocument_creationTime()
-        {
-            return document_creationTime;
-        }
-
-        /**
-         * @param documentCreationTime
-         *            the document_creationTime to set
-         */
-        public void setDocument_creationTime(String documentCreationTime)
-        {
-            document_creationTime = documentCreationTime;
-        }
-
-        /**
-         * @return the document_formatCode
-         */
-        public String getDocument_formatCode()
-        {
-            return document_formatCode;
-        }
-
-        /**
-         * @param documentFormatCode
-         *            the document_formatCode to set
-         */
-        public void setDocument_formatCode(String documentFormatCode)
-        {
-            document_formatCode = documentFormatCode;
-        }
-
-        /**
-         * @return the document_healthcareFacilityTypeCode
-         */
-        public String getDocument_healthcareFacilityTypeCode()
-        {
-            return document_healthcareFacilityTypeCode;
-        }
-
-        /**
-         * @param documentHealthcareFacilityTypeCode
-         *            the document_healthcareFacilityTypeCode to set
-         */
-        public void setDocument_healthcareFacilityTypeCode(String documentHealthcareFacilityTypeCode)
-        {
-            document_healthcareFacilityTypeCode = documentHealthcareFacilityTypeCode;
-        }
-
-        /**
-         * @return the document_languageCode
-         */
-        public String getDocument_languageCode()
-        {
-            return document_languageCode;
-        }
-
-        /**
-         * @param documentLanguageCode
-         *            the document_languageCode to set
-         */
-        public void setDocument_languageCode(String documentLanguageCode)
-        {
-            document_languageCode = documentLanguageCode;
-        }
-
-        /**
-         * @return the document_patientId
-         */
-        public String getDocument_patientId()
-        {
-            return document_patientId;
-        }
-
-        /**
-         * @param documentPatientId
-         *            the document_patientId to set
-         */
-        public void setDocument_patientId(String documentPatientId)
-        {
-            document_patientId = documentPatientId;
-        }
-
-        /**
-         * @return the document_practiceSettingCode
-         */
-        public String getDocument_practiceSettingCode()
-        {
-            return document_practiceSettingCode;
-        }
-
-        /**
-         * @param documentPracticeSettingCode
-         *            the document_practiceSettingCode to set
-         */
-        public void setDocument_practiceSettingCode(String documentPracticeSettingCode)
-        {
-            document_practiceSettingCode = documentPracticeSettingCode;
-        }
-
-        /**
-         * @return the document_sourcePatientId
-         */
-        public String getDocument_sourcePatientId()
-        {
-            return document_sourcePatientId;
-        }
-
-        /**
-         * @param documentSourcePatientId
-         *            the document_sourcePatientId to set
-         */
-        public void setDocument_sourcePatientId(String documentSourcePatientId)
-        {
-            document_sourcePatientId = documentSourcePatientId;
-        }
-
-        /**
-         * @return the document_sourcePatientInfo
-         */
-        public String getDocument_sourcePatientInfo()
-        {
-            return document_sourcePatientInfo;
-        }
-
-        /**
-         * @param documentSourcePatientInfo
-         *            the document_sourcePatientInfo to set
-         */
-        public void setDocument_sourcePatientInfo(String documentSourcePatientInfo)
-        {
-            document_sourcePatientInfo = documentSourcePatientInfo;
-        }
-
-        /**
-         * @return the document_typeCode
-         */
-        public String getDocument_typeCode()
-        {
-            return document_typeCode;
-        }
-
-        /**
-         * @param documentTypeCode
-         *            the document_typeCode to set
-         */
-        public void setDocument_typeCode(String documentTypeCode)
-        {
-            document_typeCode = documentTypeCode;
-        }
-
-        /**
-         * @return the submission_author
-         */
-        public String getSubmission_author()
-        {
-            return submission_author;
-        }
-
-        /**
-         * @param submissionAuthor
-         *            the submission_author to set
-         */
-        public void setSubmission_author(String submissionAuthor)
-        {
-            submission_author = submissionAuthor;
-        }
-
-        /**
-         * @return the submision_entryUUID
-         */
-        public String getSubmision_entryUUID()
-        {
-            return submision_entryUUID;
-        }
-
-        /**
-         * @param submisionEntryUUID
-         *            the submision_entryUUID to set
-         */
-        public void setSubmision_entryUUID(String submisionEntryUUID)
-        {
-            submision_entryUUID = submisionEntryUUID;
-        }
-
-        /**
-         * @return the submission_intendedRecipient
-         */
-        public String getSubmission_intendedRecipient()
-        {
-            return submission_intendedRecipient;
-        }
-
-        /**
-         * @param submissionIntendedRecipient
-         *            the submission_intendedRecipient to set
-         */
-        public void setSubmission_intendedRecipient(String submissionIntendedRecipient)
-        {
-            submission_intendedRecipient = submissionIntendedRecipient;
-        }
-
-        /**
-         * @return the submission_sourceId
-         */
-        public String getSubmission_sourceId()
-        {
-            return submission_sourceId;
-        }
-
-        /**
-         * @param submissionSourceId
-         *            the submission_sourceId to set
-         */
-        public void setSubmission_sourceId(String submissionSourceId)
-        {
-            submission_sourceId = submissionSourceId;
-        }
-
-        /**
-         * @return the submission_submissionTime
-         */
-        public String getSubmission_submissionTime()
-        {
-            return submission_submissionTime;
-        }
-
-        /**
-         * @param submissionSubmissionTime
-         *            the submission_submissionTime to set
-         */
-        public void setSubmission_submissionTime(String submissionSubmissionTime)
-        {
-            submission_submissionTime = submissionSubmissionTime;
-        }
-
-        /**
-         * @return the submission_uniqueId
-         */
-        public String getSubmission_uniqueId()
-        {
-            return submission_uniqueId;
-        }
-
-        /**
-         * @param submissionUniqueId
-         *            the submission_uniqueId to set
-         */
-        public void setSubmission_uniqueId(String submissionUniqueId)
-        {
-            submission_uniqueId = submissionUniqueId;
-        }
-
-        /**
-         * @return the submission_contentTypeCode
-         */
-        public String getSubmission_contentTypeCode()
-        {
-            return submission_contentTypeCode;
-        }
-
-        /**
-         * @param submissionContentTypeCode
-         *            the submission_contentTypeCode to set
-         */
-        public void setSubmission_contentTypeCode(String submissionContentTypeCode)
-        {
-            submission_contentTypeCode = submissionContentTypeCode;
-        }
-
-        /**
-         * @return the submission_patientId
-         */
-        public String getSubmission_patientId()
-        {
-            return submission_patientId;
-        }
-
-        /**
-         * @param submissionPatientId
-         *            the submission_patientId to set
-         */
-        public void setSubmission_patientId(String submissionPatientId)
-        {
-            submission_patientId = submissionPatientId;
-        }
-
-        /**
-         * @return the xml
-         */
-        public String getXml()
-        {
-            return xml;
-        }
-
-        /**
-         * @param xml
-         *            the xml to set
-         */
-        public void setXml(String xml)
-        {
-            this.xml = xml;
-        }
-
-    }
-
-    public boolean isValid()
-    {
-        if (this.getMetadata().getDocument_entryUUID() == null 
-                || this.getMetadata().getDocument_mimeType() == null
-                || this.getMetadata().getDocument_uniqueId() == null
-                || this.getMetadata().getSubmission_author() == null
-                || this.getMetadata().getSubmision_entryUUID() == null
-                || this.getMetadata().getSubmission_intendedRecipient() == null
-                || this.getMetadata().getSubmission_sourceId() == null
-                || this.getMetadata().getSubmission_submissionTime() == null
-                || this.getMetadata().getSubmission_uniqueId() == null)
-        {
             return false;
         }
-
-        return true;
     }
 }

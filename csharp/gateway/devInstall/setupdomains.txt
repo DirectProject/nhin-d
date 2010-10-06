@@ -13,7 +13,7 @@ echo ******************************
 // Add domains
 //
 domain_add redmond.hsgincubator.com
-domain_add nhind.hsgincubtor.com
+domain_add nhind.hsgincubator.com
 
 echo ******************************
 //
