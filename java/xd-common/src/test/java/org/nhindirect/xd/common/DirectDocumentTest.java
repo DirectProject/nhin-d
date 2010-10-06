@@ -26,13 +26,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.xd.transform.document;
+package org.nhindirect.xd.common;
 
 import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.xd.transform.document.DirectDocument;
+import org.nhindirect.xd.common.DirectDocument;
 
 /**
  * TODO: Write tests..
