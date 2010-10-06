@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.document;
+package org.nhindirect.xd.transform.document;
 
 import junit.framework.TestCase;
 
