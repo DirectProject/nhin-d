@@ -20,6 +20,7 @@ using System.Text;
 using System.Xml.Linq;
 
 using NHINDirect.Metadata;
+using System.Globalization;
 
 namespace NHINDirect.Xd
 {
@@ -57,6 +58,7 @@ namespace NHINDirect.Xd
             doc.Class = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.UUIDs.DocumentClass));
             doc.Comments = docXEl.DescriptionValue();
             doc.Confidentiality = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.UUIDs.DocumentConfidentiality));
+            doc.CreatedOn = HL7Util.DateTimeFromHL7Value(docXEl.SlotValue(XDMetadataStandard.Slots.CreationTime));
             return doc;
         }
 
@@ -87,5 +89,7 @@ namespace NHINDirect.Xd
             if (nodeRep == null || codingScheme == null || codeLabel == null) throw new ArgumentException();
             return new CodedValue(nodeRep.Value, codeLabel, codingScheme);
         }
+
+
     }
 }

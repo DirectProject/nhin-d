@@ -255,6 +255,21 @@ namespace NHINDirect.Tests.xdTests
             Assert.Equal(expected, doc.Confidentiality);
         }
 
+        public static IEnumerable<object[]> CreatedOnData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.CreatedOn.Value, new DateTime(2008, 07, 01) });
+            }
+        }
+
+        [Theory]
+        [PropertyData("CreatedOnData")]
+        public void ConsumerConsumesCreatedOn(XElement documentXEl, DateTime? expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.CreatedOn);
+        }
 
 
     }

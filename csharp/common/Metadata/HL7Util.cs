@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Globalization;
 
 namespace NHINDirect.Metadata
 {
@@ -10,6 +11,40 @@ namespace NHINDirect.Metadata
     /// </summary>
     public static class HL7Util
     {
+        /// <summary>
+        /// The standard HL7 DateTime Format at full precision
+        /// </summary>
+        public static string DateTimeFormat = "yyyyMMddHHmmss";
+
+        /// <summary>
+        /// The standard HL7 DateTime format at the precision of days
+        /// </summary>
+        public static string ShortDateTimeFormat = "yyyyMMdd";
+
+        /// <summary>
+        /// The standard HL7 DateTime format at the precision of hours and minutes
+        /// </summary>
+        public static string MediumDateTimeFormat = "yyyyMMddHHmm";
+
+
+        /// <summary>
+        /// Parses a UTC HL7 formatted datetime string and returns the UTC <see cref="DateTime"/>
+        /// </summary>
+        public static DateTime? DateTimeFromHL7Value(string value)
+        {
+            if (value == null) return null;
+            DateTime dt;
+            bool worked = false;
+
+            string[] formats = new string[] {DateTimeFormat,  MediumDateTimeFormat, ShortDateTimeFormat };
+            
+            worked = DateTime.TryParseExact(value,formats, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out dt);
+            if (worked)
+                return dt.ToUniversalTime();
+            else
+                return null;
+        }
+
         private static string TrimField(string s)
         {
             s = s.Trim();
