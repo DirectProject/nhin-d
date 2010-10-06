@@ -54,7 +54,6 @@ import org.nhindirect.transform.util.XmlUtils;
  */
 public class DocumentXdsTransformerImpl implements DocumentXdsTransformer
 {
-    @SuppressWarnings("unused")
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DocumentXdsTransformerImpl.class);
 
     /*
@@ -127,9 +126,8 @@ public class DocumentXdsTransformerImpl implements DocumentXdsTransformer
         catch (Exception e)
         {
             if (LOGGER.isErrorEnabled())
-            {
                 LOGGER.error("Unexpected MessagingException occured while handling MimeMessage", e);
-            }
+
             throw new TransformationException("Unable to complete transformation.", e);
         }
 

@@ -73,7 +73,7 @@ public class XDClient
 
             try
             {
-                request = transformer.transform(doc.getData(), doc.getMetadata().getXml());
+                request = transformer.transform(doc.getData(), doc.getMetadata().getAsString());
                 requests.add(request);
             }
             catch (TransformationException e)

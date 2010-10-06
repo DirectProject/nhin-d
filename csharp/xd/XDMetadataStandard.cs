@@ -60,210 +60,167 @@ namespace NHINDirect.Xd
     /// </summary>
     public class XDMetadataStandard
     {
-        /// <summary>
-        /// Required attributes for a classification
-        /// </summary>
-        public struct ClassificationAttrs
+        private static Dictionary<XDAttribute,string> m_classifications = new Dictionary<XDAttribute, string>
         {
-            string m_scheme;
-            string m_nodeRep;
-            /// <summary>
-            /// Initializes an attribution with a scheme and nodeRepresentation
-            /// </summary>
-            /// <param name="scheme"></param>
-            /// <param name="nodeRepresentation"></param>
-            public ClassificationAttrs(string scheme, string nodeRepresentation)
-            {
-                m_scheme = scheme;
-                m_nodeRep = nodeRepresentation;
-            }
-
-            /// <summary>
-            /// The node representation
-            /// </summary>
-            public string NodeRepresentation { get { return m_nodeRep; } }
-            /// <summary>
-            /// The classification scheme
-            /// </summary>
-            public string Scheme { get { return m_scheme; } }
-        }
-
-        private static Dictionary<XDAttribute, ClassificationAttrs> m_classifications = new Dictionary<XDAttribute, ClassificationAttrs>
-        {
-            {XDAttribute.Author, new ClassificationAttrs(DocumentAuthorUUID, "")},
-            {XDAttribute.EventCodeList, new ClassificationAttrs(EventCodeUUID, EventCodeNode) },
-            {XDAttribute.ClassCode,new ClassificationAttrs(DocumentClassUUID, DocumentClassNode) },
-            {XDAttribute.ConfidentialityCode, new ClassificationAttrs(DocumentConfidentialityUUID, ConfidentialityCodeNode) },
-            {XDAttribute.FormatCode, new ClassificationAttrs(FormatCodeUUID, FormatCodeNode) },
-            {XDAttribute.FacilityType, new ClassificationAttrs(FacilityCodeUUID, FacilityCodeNode) },
-            {XDAttribute.PracticeSettingCode, new ClassificationAttrs(PracticeSettingUUID, PracticeSettingNode) },
-            {XDAttribute.TypeCode, new ClassificationAttrs(DocumentTypeUUID, DocumentTypeNode) },
-            {XDAttribute.ContentTypeCode, new ClassificationAttrs(ContentTypeCodeUUID, ContentTypeNode )},
+            {XDAttribute.Author,UUIDs.DocumentAuthor},
+            {XDAttribute.EventCodeList, UUIDs.EventCode },
+            {XDAttribute.ClassCode,UUIDs.DocumentClass },
+            {XDAttribute.ConfidentialityCode, UUIDs.DocumentConfidentiality },
+            {XDAttribute.FormatCode, UUIDs.FormatCode },
+            {XDAttribute.FacilityType, UUIDs.FacilityCode },
+            {XDAttribute.PracticeSettingCode, UUIDs.PracticeSetting },
+            {XDAttribute.TypeCode, UUIDs.DocumentType },
+            {XDAttribute.ContentTypeCode, UUIDs.ContentTypeCode},
         };
 
         /// <summary>
-        /// A dictionary mapping attributes to classification attributes
+        /// A dictionary mapping attributes UUID
         /// </summary>
-        public static Dictionary<XDAttribute, ClassificationAttrs> Classifications { get { return m_classifications; } }
+        public static Dictionary<XDAttribute, string> ClassificationUUIDs { get { return m_classifications; } }
 
         /// <summary>
         /// Tests if the XD metadata attribute is represented by an ebXML classification
         /// </summary>
         public static bool IsClassification(XDAttribute attr)
         {
-            return Classifications.ContainsKey(attr);
+            return ClassificationUUIDs.ContainsKey(attr);
         }
-
-        /// <summary>
-        /// Element name for a DocumentEntry object (ExtrinsicObject)
-        /// </summary>
-        public const string DocumentEntryElement = "ExtrinsicObject";
-
 
         // UUIDs
 
         /// <summary>
-        /// UUID for a Submission Set classification
+        /// XD* Metadata standard UUIDs.
         /// </summary>
-        public const string SubmissionSetClassificationUUID = "urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd";
+        public struct UUIDs
+        {
+            /// <summary>
+            /// UUID for a Submission Set classification
+            /// </summary>
+            public const string SubmissionSetClassification = "urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd";
 
-        /// <summary>
-        /// UUID for a document entry RegistryPackageType
-        /// </summary>
-        public const string DocumentEntryUUID = "urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1";
+            /// <summary>
+            /// UUID for a document entry RegistryPackageType
+            /// </summary>
+            public const string DocumentEntry = "urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1";
 
-        /// <summary>
-        /// UUID for an author classification at the document level
-        /// </summary>
-        public const string DocumentAuthorUUID = "urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d";
-
-
-        /// <summary>
-        /// UUID for an author classification at the submission set level
-        /// </summary>
-        public const string SubmissionSetAuthorUUID = "urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d";
-
-        /// <summary>
-        /// UUID for a document class code classification
-        /// </summary>
-        public const string DocumentClassUUID = "urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a";
-
-        /// <summary>
-        /// UUID for a document confidentiality code
-        /// </summary>
-        public const string DocumentConfidentialityUUID = "urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f";
-
-        /// <summary>
-        /// UUID for an event code
-        /// </summary>
-        public const string EventCodeUUID = "urn:uuid:2c6b8cb7-8b2a-4051-b291-b1ae6a575ef4";
-        /// <summary>
-        /// UUID for a format code
-        /// </summary>
-        public const string FormatCodeUUID = "urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d";
-
-        /// <summary>
-        /// UUID for a facility code
-        /// </summary>
-        public const string FacilityCodeUUID = "urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1";
-
-        /// <summary>
-        /// UUID for a patient identifier extenral identity scheme.
-        /// </summary>
-        public const string DocumentEntryPatientIdentitySchemeUUID = "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427";
+            /// <summary>
+            /// UUID for an author classification at the document level
+            /// </summary>
+            public const string DocumentAuthor = "urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d";
 
 
-        /// <summary>
-        /// UUID for a unique ID identity scheme for a document
-        /// </summary>
-        public const string DocumentUniqueIdIdentitySchemeUUID = "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab";
+            /// <summary>
+            /// UUID for an author classification at the submission set level
+            /// </summary>
+            public const string SubmissionSetAuthor = "urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d";
+
+            /// <summary>
+            /// UUID for a document class code classification
+            /// </summary>
+            public const string DocumentClass = "urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a";
+
+            /// <summary>
+            /// UUID for a document confidentiality code
+            /// </summary>
+            public const string DocumentConfidentiality = "urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f";
+
+            /// <summary>
+            /// UUID for an event code
+            /// </summary>
+            public const string EventCode = "urn:uuid:2c6b8cb7-8b2a-4051-b291-b1ae6a575ef4";
+            /// <summary>
+            /// UUID for a format code
+            /// </summary>
+            public const string FormatCode = "urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d";
+
+            /// <summary>
+            /// UUID for a facility code
+            /// </summary>
+            public const string FacilityCode = "urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1";
+
+            /// <summary>
+            /// UUID for a patient identifier extenral identity scheme.
+            /// </summary>
+            public const string DocumentEntryPatientIdentityScheme = "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427";
 
 
-        /// <summary>
-        /// UUID for a unique ID identity scheme for a submission set
-        /// </summary>
-        public const string SubmissionSetPatientIdUUID = "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446";
+            /// <summary>
+            /// UUID for a unique ID identity scheme for a document
+            /// </summary>
+            public const string DocumentUniqueIdIdentityScheme = "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab";
 
-        /// <summary>
-        /// UUID for a source ID for a submission set
-        /// </summary>
-        public const string SubmissionSetSourceIdUUID = "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832";
 
-        /// <summary>
-        /// UUID for a submission set unique ID external identifier
-        /// </summary>
-        public const string SubmissionSetUniqueIdUUID = "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8";
+            /// <summary>
+            /// UUID for a unique ID identity scheme for a submission set
+            /// </summary>
+            public const string SubmissionSetPatientId = "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446";
 
-        /// <summary>
-        /// UUID for a practice setting classification scheme
-        /// </summary>
-        public const string PracticeSettingUUID = "urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead";
+            /// <summary>
+            /// UUID for a source ID for a submission set
+            /// </summary>
+            public const string SubmissionSetSourceId = "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832";
 
-        /// <summary>
-        /// UUID for a document typeCode
-        /// </summary>
-        public const string DocumentTypeUUID = "urn:uuid:f0306f51-975f-434e-a61c-c59651d33983";
+            /// <summary>
+            /// UUID for a submission set unique ID external identifier
+            /// </summary>
+            public const string SubmissionSetUniqueId = "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8";
 
-        /// <summary>
-        /// UUID for a submission set content type code
-        /// </summary>
-        public const string ContentTypeCodeUUID = "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500";
+            /// <summary>
+            /// UUID for a practice setting classification scheme
+            /// </summary>
+            public const string PracticeSetting = "urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead";
 
-        // Node representations
+            /// <summary>
+            /// UUID for a document typeCode
+            /// </summary>
+            public const string DocumentType = "urn:uuid:f0306f51-975f-434e-a61c-c59651d33983";
 
-        /// <summary>
-        /// Node representation for a document class code
-        /// </summary>
-        public const string DocumentClassNode = "classCode";
+            /// <summary>
+            /// UUID for a submission set content type code
+            /// </summary>
+            public const string ContentTypeCode = "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500";
 
-        /// <summary>
-        /// Node representation for a document type code
-        /// </summary>
-        public const string DocumentTypeNode = "typeCode";
-
-        /// <summary>
-        /// Node representation for submission set content type code
-        /// </summary>
-        public const string ContentTypeNode = "contentTypeCode";
-
-        /// <summary>
-        /// Node representation for a confidentiality code
-        /// </summary>
-        public const string ConfidentialityCodeNode = "confidentialityCode";
-
-        /// <summary>
-        /// Note representation for an event code
-        /// </summary>
-        public const string EventCodeNode = "eventCode";
-        /// <summary>
-        /// Node representation for a format code
-        /// </summary>
-        public const string FormatCodeNode = "formatCode";
-        /// <summary>
-        /// Node representation for a facility code
-        /// </summary>
-        public const string FacilityCodeNode = "facilityCode";
-        /// <summary>
-        /// Node representation for a practice setting
-        /// </summary>
-        public const string PracticeSettingNode = "practiceSettingCode";
+        }
 
         // Element Names
 
         /// <summary>
-        /// The element name for a classification
+        /// XD* Metadata standard Element names
         /// </summary>
-        public const string ClassificationElt = "Classification";
+        public struct Elts
+        {
+            /// <summary>
+            /// Element name for a DocumentEntry object (ExtrinsicObject)
+            /// </summary>
+            public const string DocumentEntry = "ExtrinsicObject";
 
-        /// <summary>
-        /// The element name for a slot.
-        /// </summary>
-        public const string SlotElt = "Slot";
 
-        /// <summary>
-        /// Element name for a Name element
-        /// </summary>
-        public const string NameElt = "Name"; 
+            /// <summary>
+            /// The element name for a classification
+            /// </summary>
+            public const string Classification = "Classification";
+
+            /// <summary>
+            /// The element name for a slot.
+            /// </summary>
+            public const string Slot = "Slot";
+
+            /// <summary>
+            /// Element name for a Name element
+            /// </summary>
+            public const string Name = "Name";
+
+            /// <summary>
+            /// Element name for a Description element
+            /// </summary>
+            public const string Description = "Description";
+
+            /// <summary>
+            /// Element name for a LocalizedString element
+            /// </summary>
+            public const string LocalizedString = "LocalizedString";
+
+        }
 
         // Attribute names
 
@@ -277,6 +234,11 @@ namespace NHINDirect.Xd
         /// </summary>
         public const string ClassificationSchemeAttr = "classificationScheme";
 
+        /// <summary>
+        /// The attribute name for a node representation
+        /// </summary>
+        public const string NodeRepresentationAttr = "nodeRepresentation";
+
 
         /// <summary>
         /// The attribute name for object type
@@ -287,74 +249,97 @@ namespace NHINDirect.Xd
         // Slot names
 
         /// <summary>
-        /// The slot name for an authorPerson
+        /// XD* Metadata standard slot names
         /// </summary>
-        public const string AuthorPersonSlot = "authorPerson";
+        public struct Slots
+        {
 
-        /// <summary>
-        /// The slot name for hash
-        /// </summary>
-        public const string HashSlot = "hash";
+            /// <summary>
+            /// The slot name for an authorPerson
+            /// </summary>
+            public const string AuthorPerson = "authorPerson";
 
-        /// <summary>
-        /// The slot name for a legal authenticator
-        /// </summary>
-        public const string LegalAuthenticatorSlot = "legalAuthenticator";
+            /// <summary>
+            /// The slot name for an authorInstition
+            /// </summary>
+            public const string AuthorInstitutions = "authorInstitution";
 
-        /// <summary>
-        /// The language code slot name
-        /// </summary>
-        public const string LanguageCodeSlot = "languageCode";
+            /// <summary>
+            /// The slot name for an authorRole
+            /// </summary>
+            public const string AuthorRoles = "authorRole";
 
-        /// <summary>
-        /// The service start slot name
-        /// </summary>
-        public const string ServiceStartSlot = "serviceStartTime";
+            /// <summary>
+            /// The slot name for authorSpecialty
+            /// </summary>
+            public const string AuthorSpecialities = "authorSpecialty";
 
-        /// <summary>
-        /// The service end slot name
-        /// </summary>
-        public const string ServiceStopSlot = "serviceStopTime";
+            /// <summary>
+            /// The slot name for hash
+            /// </summary>
+            public const string Hash = "hash";
 
-        /// <summary>
-        /// The size slot name
-        /// </summary>
-        public const string SizeSlot = "size";
+            /// <summary>
+            /// The slot name for a legal authenticator
+            /// </summary>
+            public const string LegalAuthenticator = "legalAuthenticator";
 
-        /// <summary>
-        /// The source patient ID slot name.
-        /// </summary>
-        public const string SourcePatientIDSlot = "sourcePatientId";
+            /// <summary>
+            /// The language code slot name
+            /// </summary>
+            public const string LanguageCode = "languageCode";
 
-        /// <summary>
-        /// The source patient Info slot name
-        /// </summary>
-        public const string SourcePatientInfoSlot = "sourcePatientInfo";
+            /// <summary>
+            /// The service start slot name
+            /// </summary>
+            public const string ServiceStart = "serviceStartTime";
 
-        /// <summary>
-        /// The creation time slot name
-        /// </summary>
-        public const string CreationTimeSlot =  "creationTime";
+            /// <summary>
+            /// The service end slot name
+            /// </summary>
+            public const string ServiceStop = "serviceStopTime";
 
-        /// <summary>
-        /// The coding scheme slot name
-        /// </summary>
-        public const string CodingSchemeSlot = "codingScheme";
+            /// <summary>
+            /// The size slot name
+            /// </summary>
+            public const string Size = "size";
 
-        /// <summary>
-        /// The slot name for a URI
-        /// </summary>
-        public const string UriSlot = "URI";
+            /// <summary>
+            /// The source patient ID slot name.
+            /// </summary>
+            public const string SourcePatientID = "sourcePatientId";
 
-        /// <summary>
-        /// The slot name for a submission time
-        /// </summary>
-        public const string SubmissionTimeSlot = "submissionTime";
+            /// <summary>
+            /// The source patient Info slot name
+            /// </summary>
+            public const string SourcePatientInfo = "sourcePatientInfo";
 
-        /// <summary>
-        /// The slot name for intended recipient
-        /// </summary>
-        public const string IntendedRecipientSlot = "intendedRecipient";
+            /// <summary>
+            /// The creation time slot name
+            /// </summary>
+            public const string CreationTime = "creationTime";
+
+            /// <summary>
+            /// The coding scheme slot name
+            /// </summary>
+            public const string CodingScheme = "codingScheme";
+
+            /// <summary>
+            /// The slot name for a URI
+            /// </summary>
+            public const string Uri = "URI";
+
+            /// <summary>
+            /// The slot name for a submission time
+            /// </summary>
+            public const string SubmissionTime = "submissionTime";
+
+            /// <summary>
+            /// The slot name for intended recipient
+            /// </summary>
+            public const string IntendedRecipient = "intendedRecipient";
+        }
+        
         // Object types
 
         /// <summary>

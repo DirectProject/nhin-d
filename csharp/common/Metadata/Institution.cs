@@ -50,5 +50,33 @@ namespace NHINDirect.Metadata
                 return Name;
             return String.Format("{0}^^^^^^^^^{1}", Name, AssigningAuthority);
         }
+
+        /// <summary>
+        /// Parses the XON datatype and returns the corresponding <see cref="Institution"/>
+        /// </summary>
+        public static Institution FromXON(string i)
+        {
+            List<string> fields = HL7Util.SplitField(i, 1, 10);
+            return new Institution(fields[0], fields[9]);
+        }
+
+        /// <summary>
+        /// String representation of this institution.
+        /// </summary>
+        public override string ToString()
+        {
+            return string.Format("{0}, AA: {1}", Name, AssigningAuthority ?? "none");
+        }
+
+        /// <summary>
+        /// Tests equality between this instance and another
+        /// </summary>
+        public bool Equals(Institution other)
+        {
+            if (AssigningAuthority == null && other.AssigningAuthority == null)
+                return Name == other.Name;
+            else
+                return (Name == other.Name && AssigningAuthority == other.AssigningAuthority);
+        }
     }
 }

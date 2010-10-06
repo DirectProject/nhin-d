@@ -23,27 +23,20 @@ namespace NHINDirect.Metadata
     /// <summary>
     /// Represents a coded value (code with a label)
     /// </summary>
-    public class CodedValue
+    public class CodedValue : IEquatable<CodedValue>
     {
-
-        /// <summary>
-        /// Intializes an instance from a code/label pair.
-        /// </summary>
-        /// <param name="pair">The code/label pair</param>
-        public CodedValue(KeyValuePair<string, string> pair)
-            : this(pair.Key, pair.Value)
-        {
-        }
-
         /// <summary>
         /// Initializes an instance with the supplied code and label.
         /// </summary>
         /// <param name="code">The code for this instance</param>
         /// <param name="label">The label for this instance</param>
-        public CodedValue(string code, string label)
+        /// <param name="scheme">The coding scheme for this code</param>
+        public CodedValue(string code, string label, string scheme)
         {
             Code = code;
             Label = label;
+            Scheme = scheme;
+
         }
 
         /// <summary>
@@ -55,6 +48,45 @@ namespace NHINDirect.Metadata
         /// The label for this instance.
         /// </summary>
         public string Label { get; private set; }
+
+        /// <summary>
+        /// The coding scheme for this instance
+        /// </summary>
+        public string Scheme { get; private set; }
+
+        /// <summary>
+        /// Returns a string representation of the object
+        /// </summary>
+        public override string ToString()
+        {
+            return String.Format("Code: {0} ({1}) from {2}", Code, Label, Scheme);
+        }
+
+        /// <summary>
+        /// Tests equality between this instance and another one
+        /// </summary>
+        public bool Equals(CodedValue other)
+        {
+            if (other == null) return false;
+            return Code == other.Code && Scheme == other.Scheme;
+        }
+
+        /// <summary>
+        /// Tests equality between this instance and another one
+        /// </summary>
+        public override bool Equals(Object other)
+        {
+            if (!(other is CodedValue)) return false;
+            return Equals(other);
+        }
+
+        /// <summary>
+        /// Hash code for CodedValues
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return Code.GetHashCode();
+        }
 
     }
 }

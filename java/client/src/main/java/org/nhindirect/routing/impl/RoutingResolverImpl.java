@@ -31,6 +31,7 @@ package org.nhindirect.routing.impl;
 import org.nhindirect.routing.RoutingResolver;
 
 /**
+ * Default implementation of a RoutingResolver.
  * 
  * @author beau
  */
@@ -51,8 +52,7 @@ public class RoutingResolverImpl extends RoutingResolver
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.nhindirect.routing.RoutingResolver#isSmtpEndpoint(java.lang.String)
+     * @see org.nhindirect.routing.RoutingResolver#isSmtpEndpoint(java.lang.String)
      */
     @Override
     public boolean isSmtpEndpoint(String address)
@@ -66,8 +66,7 @@ public class RoutingResolverImpl extends RoutingResolver
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.nhindirect.routing.RoutingResolver#isXdEndpoint(java.lang.String)
+     * @see org.nhindirect.routing.RoutingResolver#isXdEndpoint(java.lang.String)
      */
     @Override
     public boolean isXdEndpoint(String address)
