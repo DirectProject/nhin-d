@@ -26,36 +26,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.parse.ccd;
+package org.nhindirect.xd.transform.util;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nhindirect.xd.transform.parse.ccd.CcdParser;
+import org.nhindirect.xd.transform.util.type.MimeType;
 
 /**
- * Test methods in the CCDParser class.
+ * Test class for the MimeType enumeration.
  * 
- * TODO: This test class needs assertions.
- * 
- * @author vlewis
+ * @author beau
  */
-public class CcdParserTest extends TestCase
+public class MimeTypeTest extends TestCase
 {
-    private static final Log LOGGER = LogFactory.getFactory().getInstance(CcdParserTest.class);
 
-    public CcdParserTest(String testName)
+    /**
+     * Constructor.
+     * 
+     * @param testName
+     *            The test name
+     */
+    public MimeTypeTest(String testName)
     {
         super(testName);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
     @Override
     protected void setUp() throws Exception
     {
         super.setUp();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#tearDown()
+     */
     @Override
     protected void tearDown() throws Exception
     {
@@ -63,43 +74,37 @@ public class CcdParserTest extends TestCase
     }
 
     /**
-     * Test of parseCCD method, of class CCDParser.
+     * Test the getType method;
      */
-    public void testParseCCD() throws Exception
+    public void testGetType()
     {
-        LOGGER.info("parseCCD");
-        String ccdXml = "<ClinicalDocument>Test</ClinicalDocument>";
-        CcdParser instance = new CcdParser();
-        // instance.parseCCD(ccdXml);
+        String s = "application/ccr";
+        MimeType m = MimeType.APPLICATION_CCR;
 
+        assertEquals("Get method did not return expected value", s, m.getType());
     }
 
     /**
-     * Test of getPatientId method, of class CCDParser.
+     * Test the matches method.
      */
-    public void testGetPatientId()
+    public void testMatches()
     {
-        LOGGER.info("getPatientId");
-        CcdParser instance = new CcdParser();
-        String expResult = "";
-        String result = instance.getPatientId();
-        // assertEquals(expResult, result);
-        // TODO review the generated test code
+        // Test matches works for all values
+        for (MimeType m : MimeType.values())
+        {
+            assertTrue("Matches method does not correctly match elements", m.matches(m.getType()));
+        }
 
+        String s = null;
+        MimeType m = MimeType.TEXT_PLAIN;
+
+        s = "text";
+        assertEquals("Output does not match expected", false, m.matches(s));
+
+        s = "text/plain";
+        assertEquals("Output does not match expected", true, m.matches(s));
+
+        s = "text/plain; charset=UTF-8";
+        assertEquals("Output does not match expected", true, m.matches(s));
     }
-
-    /**
-     * Test of getOrgId method, of class CCDParser.
-     */
-    public void testGetOrgId()
-    {
-        LOGGER.info("getOrgId");
-        CcdParser instance = new CcdParser();
-        String expResult = "";
-        String result = instance.getOrgId();
-        // assertEquals(expResult, result);
-        // TODO review the generated test code
-
-    }
-
 }

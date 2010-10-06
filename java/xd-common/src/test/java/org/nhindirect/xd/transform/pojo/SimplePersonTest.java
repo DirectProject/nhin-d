@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.pojo;
+package org.nhindirect.xd.transform.pojo;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.impl;
+package org.nhindirect.xd.transform.impl;
 
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
