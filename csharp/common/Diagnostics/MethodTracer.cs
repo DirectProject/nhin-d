@@ -17,11 +17,7 @@ namespace NHINDirect.Diagnostics
     /// </example>
     public class MethodTracer : IDisposable
     {
-        private const string MethodBeginSuffix = "_Begin";
-        private const string MethodEndSuffix = "_End";
-
-        private readonly ILogger m_logger;
-        private readonly string m_methodName;
+        private readonly IMethodTracer m_tracer;
 
         ///<summary>
         /// Trace the begin and end of a block of code. 
@@ -34,42 +30,87 @@ namespace NHINDirect.Diagnostics
         }
 
         ///<summary>
-        /// Trace the begin and end of a block of code using the <paramref name="logger"/>
-        ///</summary>
-        ///<param name="methodName">The method name or prefix of the string to use.</param>
-        ///<param name="logger">The logger to log to at the Trace level</param>
-        public MethodTracer(string methodName, ILogger logger)
-        {
-            m_logger = logger;
-            m_methodName = methodName;
-            m_logger.Trace(methodName + MethodBeginSuffix);
-        }
-
-        ///<summary>
         /// Trace the begin and end of a block of code using the <paramref name="logger"/>.
         /// The method name will be obtained by grabbing the name of the method one
         /// frame up the StackFrame.
         ///</summary>
         ///<param name="logger">The logger to log to at the Trace level</param>
         public MethodTracer(ILogger logger)
+            : this(new StackTrace().GetFrame(1).GetMethod().Name, logger)
         {
-            m_logger = logger;
-            if (m_logger.IsTraceEnabled)
+        }
+
+        ///<summary>
+        /// Trace the begin and end of a block of code using the <paramref name="logger"/>
+        ///</summary>
+        ///<param name="methodName">The method name or prefix of the string to use.</param>
+        ///<param name="logger">The logger to log to at the Trace level</param>
+        public MethodTracer(string methodName, ILogger logger)
+        {
+            if (logger == null)
             {
-                m_methodName = new StackTrace().GetFrame(1).GetMethod().Name;
+                throw new ArgumentNullException("logger");
             }
 
-            m_logger.Trace(m_methodName + MethodBeginSuffix);
+            if (logger.IsTraceEnabled)
+            {
+                m_tracer = new InternalMethodTracer(methodName, logger);
+            }
+            else
+            {
+                m_tracer = new DummyMethodTracer();
+            }
         }
 
         /// <summary>
-        /// If <see cref="ILogger.IsTraceEnabled"/> is <c>true</c> and the <see cref="m_methodName"/>
-        /// is not null or empty then it will log the <see cref="m_methodName"/> + the <see cref="MethodEndSuffix"/>
+        /// If <see cref="ILogger.IsTraceEnabled"/> is <c>true</c> then it will log the methodName
         /// to <see cref="ILogger.Trace(string)"/>.
         /// </summary>
         public void Dispose()
         {
-            if (m_logger.IsTraceEnabled && !string.IsNullOrEmpty(m_methodName))
+            m_tracer.Dispose();
+        }
+
+        interface IMethodTracer : IDisposable
+        {
+        }
+
+        class DummyMethodTracer : IMethodTracer
+        {
+            public void Dispose()
+            {
+            }
+        }
+
+        /// <summary>
+        /// The InternalMethodTracer assumes that <see cref="ILogger.IsTraceEnabled"/> is true so we don't
+        /// need to repeatedly test the <see cref="ILogger.IsTraceEnabled"/>. 
+        /// </summary>
+        class InternalMethodTracer : IMethodTracer
+        {
+            private const string MethodBeginSuffix = "_Begin";
+            private const string MethodEndSuffix = "_End";
+
+            private readonly ILogger m_logger;
+            private readonly string m_methodName;
+
+            public InternalMethodTracer(string methodName, ILogger logger)
+            {
+                if (string.IsNullOrEmpty(methodName))
+                {
+                    throw new ArgumentException("methodName was null or empty", "methodName");
+                }
+                if (logger == null)
+                {
+                    throw new ArgumentNullException("logger");
+                }
+
+                m_logger = logger;
+                m_methodName = methodName;
+                m_logger.Trace(methodName + MethodBeginSuffix);
+            }
+
+            public void Dispose()
             {
                 m_logger.Trace(m_methodName + MethodEndSuffix);
             }

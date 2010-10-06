@@ -56,23 +56,23 @@ namespace NHINDirect.Tests.xdTests
                     m_docMeta.Author = new Author();
                     m_docMeta.Author.Person = new Person { First = "Tom", Last = "Jones", Degree = "M.D." };
                     m_docMeta.Author.Institutions.Add(new Institution("Direct U"));
-                    m_docMeta.Class = new ClassCode(Metadata.C80ClassCode.TransferOfCareReferralNote);
+                    m_docMeta.Class = Metadata.C80ClassCode.TransferOfCareReferralNote.ToCodedValue();
                     m_docMeta.Comments = "This is a nice document";
-                    m_docMeta.Confidentiality = new ConfidentialtyCode(Metadata.C80Confidentialty.Normal);
+                    m_docMeta.Confidentiality = Metadata.C80Confidentialty.Normal.ToCodedValue();
                     m_docMeta.CreatedOn = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
                     var evtCodes =  new List<CodedValue>();
-                    evtCodes.Add(new CodedValue("foo", "bar"));
+                    evtCodes.Add(new CodedValue("foo", "bar", "test"));
                     m_docMeta.EventCodes = evtCodes;
-                    m_docMeta.FormatCode = new FormatCode(Metadata.C80FormatCode.CareManagement);
+                    m_docMeta.FormatCode = Metadata.C80FormatCode.CareManagement.ToCodedValue();
                     m_docMeta.Hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-                    m_docMeta.FaciltyCode = new FacilityCode(C80FacilityCodes.PrivatePhysiciansGroupOffice);
+                    m_docMeta.FaciltyCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
                     m_docMeta.LanguageCode = "en-us";
                     m_docMeta.LegalAuthenticator = new Person { First = "Marcus", Last = "Welby", Degree = "M.D", Prefix = "Dr." };
                     m_docMeta.MediaType = "text/plain";
                     m_docMeta.PatientID = new PatientID("ABC", "123", "foo");
                     m_docMeta.ServiceStart = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
                     m_docMeta.ServiceStop = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
-                    m_docMeta.PracticeSetting = new SpecialtyCode(C80ClinicalSpecialties.FamilyPractice);
+                    m_docMeta.PracticeSetting = C80ClinicalSpecialties.FamilyPractice.ToCodedValue();
                     m_docMeta.Size = 1000;
                     m_docMeta.SourcePtId = new PatientID("XYZ", "PDQ", "foo");
                     m_docMeta.Patient = new Person
@@ -102,22 +102,22 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentHasAuthorClassification()
         {
-            Assert.NotEmpty(TestDocXElement.Classifications(XDMetadataStandard.DocumentAuthorUUID));
+            Assert.NotEmpty(TestDocXElement.Classifications(XDMetadataStandard.UUIDs.DocumentAuthor));
         }
 
         [Fact]
         public void DocumentHasClassCodeClassification()
         {
-            Assert.NotEmpty(TestDocXElement.Classifications(XDMetadataStandard.DocumentClassUUID));
+            Assert.NotEmpty(TestDocXElement.Classifications(XDMetadataStandard.UUIDs.DocumentClass));
         }
         
         // all the code value stuff uses the same generator, so no need to test each coded attr.
         [Fact]
         public void DocumentClassCodeValueIsCorrect()
         {
-            XElement node = TestDocXElement.Classifications(XDMetadataStandard.DocumentClassUUID).First();
-            string code = node.Descendants("Value").First().Value;
-            Assert.Equal(ClassCode.Decode(Metadata.C80ClassCode.TransferOfCareReferralNote).Key, code);
+            XElement node = TestDocXElement.Classifications(XDMetadataStandard.UUIDs.DocumentClass).First();
+            string code = node.Attribute(XDMetadataStandard.NodeRepresentationAttr).Value;
+            Assert.Equal(C80ClassCodeUtils.Decode(Metadata.C80ClassCode.TransferOfCareReferralNote).Key, code);
         }
 
         [Fact]
@@ -129,7 +129,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentHasConfidentialtyCodeClassification()
         {
-            Assert.NotEmpty(TestDocXElement.Classifications(XDMetadataStandard.DocumentConfidentialityUUID));
+            Assert.NotEmpty(TestDocXElement.Classifications(XDMetadataStandard.UUIDs.DocumentConfidentiality));
         }
 
         [Fact]
@@ -142,25 +142,25 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentHasEventCodeClassification()
         {
-            Assert.NotEmpty(TestDocXElement.Classifications(XDMetadataStandard.EventCodeUUID));
+            Assert.NotEmpty(TestDocXElement.Classifications(XDMetadataStandard.UUIDs.EventCode));
         }
 
         [Fact]
         public void DocumentEntryCodeHasCorrectValue()
         {
-            Assert.Equal("foo", TestDocXElement.Classification(XDMetadataStandard.EventCodeUUID).Descendants("Value").First().Value);
+            Assert.Equal("foo", TestDocXElement.Classification(XDMetadataStandard.UUIDs.EventCode).Attribute(XDMetadataStandard.NodeRepresentationAttr).Value);
         }
 
         [Fact]
         public void DocumentHasFormatCodeClassification()
         {
-            Assert.NotNull(TestDocXElement.Classification(XDMetadataStandard.FormatCodeUUID));
+            Assert.NotNull(TestDocXElement.Classification(XDMetadataStandard.UUIDs.FormatCode));
         }
 
         [Fact]
         public void DocumentFormatCodeHasCorrectValue()
         {
-            Assert.Equal(FormatCode.Decode(C80FormatCode.CareManagement).Key, TestDocXElement.Classification(XDMetadataStandard.FormatCodeUUID).Descendants("Value").First().Value);
+            Assert.Equal(C80FormatCodeUtils.Decode(C80FormatCode.CareManagement).Key, TestDocXElement.Classification(XDMetadataStandard.UUIDs.FormatCode).Attribute(XDMetadataStandard.NodeRepresentationAttr).Value);
         }
 
         [Fact]
@@ -178,32 +178,32 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentHasFacilityCodeClassification()
         {
-            Assert.NotNull(TestDocXElement.Classification(XDMetadataStandard.FacilityCodeUUID));
+            Assert.NotNull(TestDocXElement.Classification(XDMetadataStandard.UUIDs.FacilityCode));
         }
 
         [Fact]
         public void DocumentFacilityCodeHasCorrectValue()
         {
-            Assert.Equal(FacilityCode.Decode(C80FacilityCodes.PrivatePhysiciansGroupOffice).Key,
-                TestDocXElement.Classification(XDMetadataStandard.FacilityCodeUUID).Descendants("Value").First().Value);
+            Assert.Equal(C80FacilityCodeUtils.Decode(C80FacilityCodes.PrivatePhysiciansGroupOffice).Key,
+                TestDocXElement.Classification(XDMetadataStandard.UUIDs.FacilityCode).Attribute(XDMetadataStandard.NodeRepresentationAttr).Value);
         }
 
         [Fact]
         public void DocumentHasLanguageCode()
         {
-            Assert.Equal("en-us", TestDocXElement.SlotValue(XDMetadataStandard.LanguageCodeSlot));
+            Assert.Equal("en-us", TestDocXElement.SlotValue(XDMetadataStandard.Slots.LanguageCode));
         }
 
         [Fact]
         public void DocumentHasAuthenticator()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.LegalAuthenticatorSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.LegalAuthenticator));
         }
 
         [Fact]
         public void DocumentAuthenticatorHasCorrectValue()
         {
-            Assert.Equal(TestDocument.LegalAuthenticator.ToXCN(), TestDocXElement.SlotValue(XDMetadataStandard.LegalAuthenticatorSlot));
+            Assert.Equal(TestDocument.LegalAuthenticator.ToXCN(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.LegalAuthenticator));
         }
 
         [Fact]
@@ -221,13 +221,13 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentHasPatientID()
         {
-            Assert.NotEmpty(TestDocXElement.ExternalIdentifiers(XDMetadataStandard.DocumentEntryPatientIdentitySchemeUUID));
+            Assert.NotEmpty(TestDocXElement.ExternalIdentifiers(XDMetadataStandard.UUIDs.DocumentEntryPatientIdentityScheme));
         }
 
         [Fact]
         public void DocumentPatientIDHasCorrectValue()
         {
-            XElement idElts = TestDocXElement.ExternalIdentifiers(XDMetadataStandard.DocumentEntryPatientIdentitySchemeUUID).First();
+            XElement idElts = TestDocXElement.ExternalIdentifiers(XDMetadataStandard.UUIDs.DocumentEntryPatientIdentityScheme).First();
             PatientID id = PatientID.FromEscapedCx(idElts.Attribute("value").Value);
             Assert.True(TestDocument.PatientID.Equals(id));
         }
@@ -235,105 +235,105 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentHasPracticeSettingCode()
         {
-            Assert.NotNull(TestDocXElement.Classification(XDMetadataStandard.PracticeSettingUUID));
+            Assert.NotNull(TestDocXElement.Classification(XDMetadataStandard.UUIDs.PracticeSetting));
         }
 
         [Fact]
         public void PracticeSettingCodeHasCorrectValue()
         {
-            Assert.Equal(SpecialtyCode.Decode(C80ClinicalSpecialties.FamilyPractice).Key,
-                TestDocXElement.Classification(XDMetadataStandard.PracticeSettingUUID).SlotValue("codingScheme"));
+            Assert.Equal(C80SpecialtyCodeUtils.Decode(C80ClinicalSpecialties.FamilyPractice).Key,
+                TestDocXElement.Classification(XDMetadataStandard.UUIDs.PracticeSetting).Attribute(XDMetadataStandard.NodeRepresentationAttr).Value);
         }
 
         [Fact]
         public void DocumentHasServiceStart()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.ServiceStartSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.ServiceStart));
         }
 
         [Fact]
         public void ServiceStartHasCorrectValue()
         {
-            Assert.Equal(TestDocument.ServiceStart.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.ServiceStartSlot));
+            Assert.Equal(TestDocument.ServiceStart.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.ServiceStart));
         }
         [Fact]
         public void DocumentHasServiceStop()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.ServiceStopSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.ServiceStop));
         }
 
         [Fact]
         public void ServiceStopHasCorrectValue()
         {
-            Assert.Equal(TestDocument.ServiceStop.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.ServiceStopSlot));
+            Assert.Equal(TestDocument.ServiceStop.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.ServiceStop));
         }
 
         [Fact]
-        public void DocumentHasSizeSlot()
+        public void DocumentHasSlotSize()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.SizeSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.Size));
         }
 
         [Fact]
-        public void SizeSlotHasCorrectValue()
+        public void SlotSizeHasCorrectValue()
         {
-            Assert.Equal(TestDocument.Size, Int32.Parse(TestDocXElement.SlotValue(XDMetadataStandard.SizeSlot)));
+            Assert.Equal(TestDocument.Size, Int32.Parse(TestDocXElement.SlotValue(XDMetadataStandard.Slots.Size)));
         }
 
         [Fact]
         public void DocumentHasSourcePtIDSlot()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.SourcePatientIDSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.SourcePatientID));
         }
 
         [Fact]
         public void SourcePatientIDHasCorrectValue()
         {
             PatientID expected = new PatientID("XYZ", "PDQ", "foo");
-            PatientID actual = PatientID.FromEscapedCx(TestDocXElement.SlotValue(XDMetadataStandard.SourcePatientIDSlot));
+            PatientID actual = PatientID.FromEscapedCx(TestDocXElement.SlotValue(XDMetadataStandard.Slots.SourcePatientID));
             Assert.True(expected.Equals(actual));
         }
 
         [Fact]
         public void DocumentHasPatientInfoSlot()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.SourcePatientInfoSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.SourcePatientInfo));
         }
 
         [Fact]
         public void PatientInfoSlotHasCorrectPatient()
         {
-            Assert.Contains("PID-8|M", TestDocXElement.SlotValues(XDMetadataStandard.SourcePatientInfoSlot));
+            Assert.Contains("PID-8|M", TestDocXElement.SlotValues(XDMetadataStandard.Slots.SourcePatientInfo));
         }
 
         [Fact]
         public void DocumentHasTitle()
         {
-            Assert.NotNull(TestDocXElement.Element(XDMetadataStandard.NameElt));
+            Assert.NotNull(TestDocXElement.Element(XDMetadataStandard.Elts.Name));
         }
 
         [Fact]
         public void TitleIsCorrect()
         {
-            Assert.Equal(TestDocument.Title, TestDocXElement.Element(XDMetadataStandard.NameElt).Descendants("LocalizedString").First().Attribute("value").Value);
+            Assert.Equal(TestDocument.Title, TestDocXElement.NameValue());
         }
 
         [Fact]
         public void DocumentHasUniqueId()
         {
-            Assert.NotEmpty(TestDocXElement.ExternalIdentifiers(XDMetadataStandard.DocumentUniqueIdIdentitySchemeUUID));
+            Assert.NotEmpty(TestDocXElement.ExternalIdentifiers(XDMetadataStandard.UUIDs.DocumentUniqueIdIdentityScheme));
         }
 
         [Fact]
         public void UniqueIdHasCorrectValue()
         {
-            Assert.Equal("abc123xyz", TestDocXElement.ExternalIdentifiers(XDMetadataStandard.DocumentUniqueIdIdentitySchemeUUID).First().Attribute("value").Value);
+            Assert.Equal("abc123xyz", TestDocXElement.ExternalIdentifiers(XDMetadataStandard.UUIDs.DocumentUniqueIdIdentityScheme).First().Attribute("value").Value);
         }
 
         [Fact]
         public void DocumentHasURISlot()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.UriSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.Uri));
         }
 
         [Fact]
@@ -354,7 +354,7 @@ namespace NHINDirect.Tests.xdTests
                     m_package = new DocumentPackage();
                     m_package.Author = new Author {Person = new Person {First = "Bob", Last = "Smith", Degree="M.D."}};
                     m_package.Comments = "This is a super cool package";
-                    m_package.ContentTypeCode = new ClassCode(C80ClassCode.ConsultationNote);
+                    m_package.ContentTypeCode = C80ClassCode.ConsultationNote.ToCodedValue();
                     m_package.Documents.Add(TestDocument);
                     m_package.PatientId = new PatientID("abc", "123", "xyz");
                     m_package.IntendedRecipients.Add(new Recipient { Person = new Person { First = "Dan", Last = "Brown" }, Institution = new Institution("Louvre", "France") });
@@ -385,7 +385,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void PackageHasAuthor()
         {
-            Assert.NotNull(TestPackageXElement.Classification(XDMetadataStandard.SubmissionSetAuthorUUID));
+            Assert.NotNull(TestPackageXElement.Classification(XDMetadataStandard.UUIDs.SubmissionSetAuthor));
         }
 
         [Fact]
@@ -397,7 +397,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void PackageHasContentTypeCode()
         {
-            Assert.NotNull(TestPackageXElement.Classification(XDMetadataStandard.ContentTypeCodeUUID));
+            Assert.NotNull(TestPackageXElement.Classification(XDMetadataStandard.UUIDs.ContentTypeCode));
         }
 
         [Fact]
@@ -409,31 +409,31 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void PackageHasIntendedRecipient()
         {
-            Assert.NotNull(TestPackageXElement.Slot(XDMetadataStandard.IntendedRecipientSlot));
+            Assert.NotNull(TestPackageXElement.Slot(XDMetadataStandard.Slots.IntendedRecipient));
         }
 
         [Fact]
         public void IntendedRecipientIsCorrect()
         {
-            Assert.Equal(TestPackage.IntendedRecipients.First().ToXONXCN(), TestPackageXElement.SlotValues(XDMetadataStandard.IntendedRecipientSlot).First());
+            Assert.Equal(TestPackage.IntendedRecipients.First().ToXONXCN(), TestPackageXElement.SlotValues(XDMetadataStandard.Slots.IntendedRecipient).First());
         }
 
         [Fact]
         public void PackageHasPatientId()
         {
-            Assert.NotNull(TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.SubmissionSetSourceIdUUID));
+            Assert.NotNull(TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetSourceId));
         }
 
         [Fact]
         public void PackageHasSourceId()
         {
-            Assert.NotNull(TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.SubmissionSetSourceIdUUID));
+            Assert.NotNull(TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetSourceId));
         }
 
         [Fact]
         public void PackageHasSubmissionTime()
         {
-            Assert.NotNull(TestPackageXElement.SlotValue(XDMetadataStandard.SubmissionTimeSlot));
+            Assert.NotNull(TestPackageXElement.SlotValue(XDMetadataStandard.Slots.SubmissionTime));
         }
 
         [Fact]
@@ -445,7 +445,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void PackageHasUniqueId()
         {
-            Assert.NotNull(TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.SubmissionSetUniqueIdUUID));
+            Assert.NotNull(TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetUniqueId));
         }
 
         
@@ -466,8 +466,8 @@ namespace NHINDirect.Tests.xdTests
             XElement elt = TestSubmitObjectsXElement.Descendants("RegistryPackage").First();
             Assert.NotNull(elt.Attribute("id").Value);
             string id = elt.Attribute("id").Value;
-            IEnumerable<XElement> classifications = from el in elt.Descendants("Classification")
-                                       where (string) el.Attribute("classificationNode") == XDMetadataStandard.SubmissionSetClassificationUUID
+            IEnumerable<XElement> classifications = from el in elt.DescendantsAnyNs(XDMetadataStandard.Elts.Classification)
+                                       where (string) el.Attribute("classificationNode") == XDMetadataStandard.UUIDs.SubmissionSetClassification
                                        select el;
             Assert.NotEmpty(classifications);
             Assert.Equal(id, classifications.First().Attribute("classifiedObject").Value);
@@ -476,8 +476,8 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void SubmitObjectsHasDocument()
         {
-            IEnumerable<XElement> docXElements = from el in TestSubmitObjectsXElement.Descendants("ExtrinsicObject")
-                                                 where (string)el.Attribute("objectType") == XDMetadataStandard.DocumentEntryUUID
+            IEnumerable<XElement> docXElements = from el in TestSubmitObjectsXElement.DescendantsAnyNs(XDMetadataStandard.Elts.DocumentEntry)
+                                                 where (string)el.Attribute("objectType") == XDMetadataStandard.UUIDs.DocumentEntry
                                                  select el;
             Assert.NotEmpty(docXElements);
         }

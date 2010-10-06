@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
+ * Resolve an address for routing purposes.
  * 
  * @author beau
  */

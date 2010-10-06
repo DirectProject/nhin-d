@@ -71,28 +71,17 @@ namespace NHINDirect.Metadata
     /// <summary>
     /// Represents the confidentiality level of an item.
     /// </summary>
-    public class ConfidentialtyCode : CodedValue
+    public static class C80ConfidentialityUtils
     {
 
         /// <summary>
-        /// Constructs an instance from a code enumeration.
+        /// Returns a <see cref="CodedValue"/> for the code
         /// </summary>
-        /// <param name="code">The confidentialty code</param>
-        public ConfidentialtyCode(Metadata.C80Confidentialty code)
-            : base(Decode(code))
+        public static CodedValue ToCodedValue(this C80Confidentialty code)
         {
+            KeyValuePair<string, string> pair = Decode(code);
+            return new CodedValue(pair.Key, pair.Value, "HITSP C80 Confidentiality");
         }
-
-        /// <summary>
-        /// Constructs an instance from the given code, label pair.
-        /// </summary>
-        /// <param name="code">The code</param>
-        /// <param name="label">The label</param>
-        public ConfidentialtyCode(string code, string label)
-            : base(code, label)
-        {
-        }
-
 
         private static Dictionary<C80Confidentialty, KeyValuePair<string, string>> m_C80Confidentiality_mappings = new Dictionary<C80Confidentialty, KeyValuePair<string, string>>()
         {

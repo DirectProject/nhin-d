@@ -53,15 +53,39 @@ namespace NHINDirect.Xd
         public static DocumentMetadata ConsumeDocument(XElement docXEl)
         {
             DocumentMetadata doc = new DocumentMetadata();
-            doc.Author = ConsumeAuthor(docXEl.Classification(XDMetadataStandard.DocumentAuthorUUID));
+            doc.Author = ConsumeAuthor(docXEl.Classification(XDMetadataStandard.UUIDs.DocumentAuthor));
+            doc.Class = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.UUIDs.DocumentClass));
+            doc.Comments = docXEl.DescriptionValue();
+            doc.Confidentiality = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.UUIDs.DocumentConfidentiality));
             return doc;
         }
 
         static Author ConsumeAuthor(XElement authorXEl)
         {
             Author a = new Author();
-            a.Person = Person.FromXCN(authorXEl.SlotValue(XDMetadataStandard.AuthorPersonSlot));
+            a.Person = Person.FromXCN(authorXEl.SlotValue(XDMetadataStandard.Slots.AuthorPerson));
+            foreach (Institution i in (authorXEl.SlotValues(XDMetadataStandard.Slots.AuthorInstitutions).Select(i => Institution.FromXON(i))))
+            {
+                a.Institutions.Add(i);
+            }
+            foreach (string s in authorXEl.SlotValues(XDMetadataStandard.Slots.AuthorRoles))
+            {
+                a.Roles.Add(s);
+            }
+            foreach (string s in authorXEl.SlotValues(XDMetadataStandard.Slots.AuthorSpecialities))
+            {
+                a.Specialities.Add(s);
+            }
             return a;
+        }
+
+        static CodedValue ConsumeCodedValue(XElement codedValueClassification)
+        {
+            XAttribute nodeRep = codedValueClassification.Attribute(XDMetadataStandard.NodeRepresentationAttr);
+            string codingScheme = codedValueClassification.SlotValue(XDMetadataStandard.Slots.CodingScheme);
+            string codeLabel = codedValueClassification.NameValue();
+            if (nodeRep == null || codingScheme == null || codeLabel == null) throw new ArgumentException();
+            return new CodedValue(nodeRep.Value, codeLabel, codingScheme);
         }
     }
 }

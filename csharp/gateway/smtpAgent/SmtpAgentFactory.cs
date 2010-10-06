@@ -10,6 +10,9 @@ namespace NHINDirect.SmtpAgent
 {
     public static class SmtpAgentFactory
     {
+        private static readonly object m_initSync = new object();
+        private static bool m_initialized;
+
         public static SmtpAgent Create(string configFilePath)
         {
             SmtpAgentSettings settings = null;
@@ -17,12 +20,7 @@ namespace NHINDirect.SmtpAgent
             {
                 // move this to some package initializer...
                 settings = SmtpAgentSettings.LoadSettings(configFilePath);
-
-                IoC.Initialize(new SimpleDependencyResolver())
-                    .Register<ILogFactory>(new NLogFactory(settings.LogSettings))
-                    .Register<IAuditor>(new EventLogAuditor())
-                    ;
-
+                InitializeContainer(settings);
                 Log.For<MessageArrivalEventHandler>().Debug(settings);
                 return new SmtpAgent(settings);
             }
@@ -39,6 +37,21 @@ namespace NHINDirect.SmtpAgent
                 EventLog.WriteEntry(source, "While loading SmtpAgent settings" + ex, EventLogEntryType.Error);
 
                 throw;
+            }
+        }
+
+        private static void InitializeContainer(SmtpAgentSettings settings)
+        {
+            lock (m_initSync)
+            {
+                if (!m_initialized)
+                {
+                    IoC.Initialize(new SimpleDependencyResolver())
+                        .Register<ILogFactory>(new NLogFactory(settings.LogSettings))
+                        .Register<IAuditor>(new EventLogAuditor())
+                        ;
+                    m_initialized = true;
+                }
             }
         }
     }
