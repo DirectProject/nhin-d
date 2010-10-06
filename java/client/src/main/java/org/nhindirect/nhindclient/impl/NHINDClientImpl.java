@@ -28,17 +28,15 @@
 
 package org.nhindirect.nhindclient.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.mail.MessagingException;
 
-import org.apache.commons.lang.StringUtils;
-import org.nhindirect.DirectMessage;
 import org.nhindirect.nhindclient.NHINDClient;
 import org.nhindirect.nhindclient.config.NHINDClientConfig;
 import org.nhindirect.routing.RoutingResolver;
 import org.nhindirect.routing.impl.RoutingResolverImpl;
+import org.nhindirect.transform.document.DirectMessage;
 import org.nhindirect.xdclient.XDClient;
 import org.nhindirect.xdm.XDMMailClient;
 
@@ -49,9 +47,9 @@ import org.nhindirect.xdm.XDMMailClient;
 public class NHINDClientImpl implements NHINDClient
 {
     private RoutingResolver routingResolver = new RoutingResolverImpl();
-    
+
     private NHINDClientConfig config;
-    
+
     /**
      * @param smtpHost
      */
@@ -60,7 +58,9 @@ public class NHINDClientImpl implements NHINDClient
         this.config = config;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.nhindirect.nhindclient.NHINDClient#send(org.nhindirect.DirectMessage)
      */
     public String send(DirectMessage message) throws Exception
@@ -101,49 +101,6 @@ public class NHINDClientImpl implements NHINDClient
         }
 
         return "done";
-    }
-
-    /* (non-Javadoc)
-     * @see org.nhindirect.nhindclient.NHINDClient#send(java.lang.String, java.lang.String, java.util.ArrayList, java.lang.String)
-     */
-    @Deprecated
-    public String send(String endpoint, String metadata, ArrayList<String> docs, String messageId) throws Exception
-    {
-        // TODO not sure if the endpoint should be a param or derived from the
-        // metadata
-        if (StringUtils.isBlank(endpoint))
-            throw new IllegalArgumentException("Endpoint must not be blank");
-
-        if (metadata == null)
-            throw new IllegalArgumentException("metadata must not be null");
-
-        if (docs == null)
-            throw new IllegalArgumentException("metadata must not be null");
-
-        String response = null;
-
-        if (routingResolver.isSmtpEndpoint(endpoint))
-        {
-            XDMMailClient xmc = new XDMMailClient(config.getSmtpHostName(), config.getSmtpAuthUser(), config.getSmtpAuthPassword());
-
-            String body = "data attached";
-            // TODO fix these two to use metadata
-            String from = "vlewis@lewistower.com";
-            String recipient = routingResolver.resolve(endpoint);
-            ArrayList<String> to = new ArrayList<String>();
-            to.add(recipient);
-
-            String suffix = "xml";
-            xmc.sendMail(messageId, from, to, metadata, body, docs, suffix);
-            response = "urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success";
-        }
-        else
-        {
-            XDClient xdc = new XDClient();
-            response = xdc.sendRequest(endpoint, metadata, docs);
-        }
-
-        return response;
     }
 
 }

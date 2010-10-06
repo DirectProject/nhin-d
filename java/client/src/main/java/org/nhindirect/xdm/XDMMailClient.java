@@ -49,8 +49,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.nhindirect.DirectDocument;
 import org.nhindirect.transform.DocumentXdmTransformer;
+import org.nhindirect.transform.document.DirectDocument;
 import org.nhindirect.transform.impl.DocumentXdmTransformerImpl;
 
 /**
@@ -72,6 +72,7 @@ public class XDMMailClient
 
     private DocumentXdmTransformer transformer = new DocumentXdmTransformerImpl();
 
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = Logger.getLogger(XDMMailClient.class.getPackage().getName());
 
     public XDMMailClient(String smtpHostName, String smtpAuthUser, String smtpAuthPwd)
@@ -89,7 +90,7 @@ public class XDMMailClient
         for (DirectDocument d : documents)
         {
             List<String> docs = Arrays.asList(d.getData());
-            sendMail(messageId, from, (List<String>) recipients, d.getMetadata().getAsString(), body, docs, suffix);
+            sendMail(messageId, from, (List<String>) recipients, d.getMetadata().toString(), body, docs, suffix);
         }
 
     }

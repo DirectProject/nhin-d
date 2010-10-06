@@ -41,8 +41,8 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.DirectDocument;
 import org.nhindirect.transform.DocumentXdsTransformer;
+import org.nhindirect.transform.document.DirectDocument;
 import org.nhindirect.transform.exception.TransformationException;
 import org.nhindirect.transform.impl.DocumentXdsTransformerImpl;
 
@@ -73,7 +73,7 @@ public class XDClient
 
             try
             {
-                request = transformer.transform(doc.getData(), doc.getMetadata().getAsString());
+                request = transformer.transform(doc.getData(), doc.getMetadata().toString());
                 requests.add(request);
             }
             catch (TransformationException e)
@@ -106,7 +106,7 @@ public class XDClient
         }
     }
 
-    protected String forward(String endpoint, ProvideAndRegisterDocumentSetRequestType request) throws Exception
+    private String forward(String endpoint, ProvideAndRegisterDocumentSetRequestType request) throws Exception
     {
         LOGGER.trace("Sending XD* request to endpoint " + endpoint);
 
@@ -131,77 +131,6 @@ public class XDClient
         String response = rrt.getStatus();
 
         LOGGER.trace("Sending complete.");
-
-        return response;
-    }
-
-    /**
-     * Forward a given ProvideAndRegisterDocumentSetRequestType object to the
-     * given XDR endpoint.
-     * 
-     * @param endpoint
-     *            A URL representing an XDR endpoint.
-     * @param prds
-     *            The ProvideAndRegisterDocumentSetRequestType object.
-     * @throws Exception
-     */
-    @Deprecated
-    public String sendRequest(String endpoint, String metadata, ArrayList docs) throws Exception
-    {
-        if (StringUtils.isBlank(endpoint))
-        {
-            throw new IllegalArgumentException("Endpoint must not be blank");
-        }
-        if (metadata == null)
-        {
-            throw new IllegalArgumentException("metadata must not be null");
-        }
-        if (docs == null)
-        {
-            throw new IllegalArgumentException("metadata must not be null");
-        }
-        String response = null;
-        LOGGER.info(" SENDING TO ENDPOINT " + endpoint);
-        this.action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
-        this.messageId = UUID.randomUUID().toString();
-        this.to = endpoint;
-
-        DocumentXdsTransformer transformer = new DocumentXdsTransformerImpl();
-
-        ProvideAndRegisterDocumentSetRequestType prds = transformer.transform(metadata, docs);
-
-        setHeaderData();
-
-        DocumentRepositoryPortType port = null;
-
-        try
-        {
-            port = DocumentRepositoryUtils.getDocumentRepositoryPortType(endpoint);
-        }
-        catch (Exception e)
-        {
-            LOGGER.error("Unable to create port", e);
-            throw e;
-        }
-
-        // Inspect the message
-        //
-        // QName qname = new QName("urn:ihe:iti:xds-b:2007",
-        // "ProvideAndRegisterDocumentSet_bRequest");
-        // String body = XmlUtils.marshal(qname, prds,
-        // ihe.iti.xds_b._2007.ObjectFactory.class);
-        // LOGGER.info(body);
-
-        RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(prds);
-
-        response = rrt.getStatus();
-
-        if (StringUtils.contains(response, "Failure"))
-        {
-            throw new Exception("Failure Returned from XDR forward");
-        }
-
-        LOGGER.info("Handling complete");
 
         return response;
     }

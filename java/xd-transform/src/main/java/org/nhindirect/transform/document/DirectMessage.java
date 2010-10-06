@@ -26,8 +26,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect;
+package org.nhindirect.transform.document;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -67,6 +68,7 @@ public class DirectMessage
      * @param document
      *            The document to add.
      */
+    @Deprecated
     public void addDocument(String document)
     {
         DirectDocument doc = new DirectDocument();
@@ -88,6 +90,7 @@ public class DirectMessage
      * @param meta
      *            The metadata to add.
      */
+    @Deprecated
     public void addDocument(String document, String meta) throws Exception
     {
         DirectDocument doc = new DirectDocument();
@@ -95,10 +98,21 @@ public class DirectMessage
 
         doc.setData(document);
 
-        metadata.consume(meta);
+        metadata.extractFromSubmitObjectsRequestXml(meta);
         doc.setMetadata(metadata);
 
         documents.add(doc);
+    }
+
+    public void addDocument(File file) throws Exception
+    {
+        DirectDocument document = new DirectDocument(file);
+        documents.add(document);
+    }
+
+    public void addDocument(DirectDocument document)
+    {
+        documents.add(document);
     }
 
     /**
