@@ -49,9 +49,9 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.nhindirect.transform.DocumentXdmTransformer;
-import org.nhindirect.transform.document.DirectDocument;
-import org.nhindirect.transform.impl.DocumentXdmTransformerImpl;
+import org.nhindirect.xd.transform.DocumentXdmTransformer;
+import org.nhindirect.xd.transform.document.DirectDocument;
+import org.nhindirect.xd.transform.impl.DocumentXdmTransformerImpl;
 
 /**
  * This class handles the packaging and sending of XDM data over SMTP.

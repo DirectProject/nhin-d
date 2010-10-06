@@ -5,6 +5,7 @@ import java.io.InputStream;
 import junit.framework.TestCase;
 
 import org.apache.commons.lang.StringUtils;
+import org.nhindirect.xd.transform.util.XslConversion;
 
 /**
  * Test class for methods in the XSLConversion class.

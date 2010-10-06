@@ -31,6 +31,8 @@ package org.nhindirect.transform.pojo;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nhindirect.xd.transform.pojo.SimplePerson;
+
 import junit.framework.TestCase;
 
 /**

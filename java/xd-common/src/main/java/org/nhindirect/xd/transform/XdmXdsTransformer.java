@@ -26,85 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.util;
+package org.nhindirect.xd.transform;
 
-import junit.framework.TestCase;
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
-import org.nhindirect.xd.transform.util.type.MimeType;
+import java.io.File;
+
+import javax.activation.DataHandler;
+
+import org.nhindirect.xd.transform.exception.TransformationException;
 
 /**
- * Test class for the MimeType enumeration.
+ * This interface handles the transformation of an XDM File on DataHandler to a
+ * ProvideAndRegisterDocumentSetRequestType object.
  * 
  * @author beau
  */
-public class MimeTypeTest extends TestCase
+public interface XdmXdsTransformer
 {
+    /**
+     * Transform an XDM File to a ProvideAndRegisterDocumentSetRequestType
+     * object.
+     * 
+     * @param file
+     *            The XDM File to transform.
+     * @return a ProvideAndRegisterDocumentSetRequestType object.
+     * @throws TransformationException
+     */
+    public ProvideAndRegisterDocumentSetRequestType transform(File file) throws TransformationException;
 
     /**
-     * Constructor.
+     * Transform an XDM DataHandler to a
+     * ProvideAndRegisterDocumentSetRequestType object.
      * 
-     * @param testName
-     *            The test name
+     * @param dataHandler
+     *            The DataHandler object to transform.
+     * @return a ProvideAndRegisterDocumentSetRequestType object.
+     * @throws TransformationException
      */
-    public MimeTypeTest(String testName)
-    {
-        super(testName);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-
-    /**
-     * Test the getType method;
-     */
-    public void testGetType()
-    {
-        String s = "application/ccr";
-        MimeType m = MimeType.APPLICATION_CCR;
-
-        assertEquals("Get method did not return expected value", s, m.getType());
-    }
-
-    /**
-     * Test the matches method.
-     */
-    public void testMatches()
-    {
-        // Test matches works for all values
-        for (MimeType m : MimeType.values())
-        {
-            assertTrue("Matches method does not correctly match elements", m.matches(m.getType()));
-        }
-
-        String s = null;
-        MimeType m = MimeType.TEXT_PLAIN;
-
-        s = "text";
-        assertEquals("Output does not match expected", false, m.matches(s));
-
-        s = "text/plain";
-        assertEquals("Output does not match expected", true, m.matches(s));
-
-        s = "text/plain; charset=UTF-8";
-        assertEquals("Output does not match expected", true, m.matches(s));
-    }
+    public ProvideAndRegisterDocumentSetRequestType transform(DataHandler dataHandler) throws TransformationException;
 }

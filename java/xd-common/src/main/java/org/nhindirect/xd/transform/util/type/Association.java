@@ -26,24 +26,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.nhindclient;
-
-import org.nhindirect.xd.transform.document.DirectMessage;
+package org.nhindirect.xd.transform.util.type;
 
 /**
- * Interface for handling the transmission of documents through a client.
+ * Enumeration for data identifying an Association element.
  * 
- * @author Vince
+ * @author beau
  */
-public interface NHINDClient
+public enum Association
 {
+    HAS_MEMBER("HasMember");
+
+    private String associationType;
+
+    private Association(String associationType)
+    {
+        this.associationType = associationType;
+    }
+
     /**
-     * Send a message.
+     * Get the value of associationType.
      * 
-     * @param message
-     *            The DirectMessage object.
-     * @return a response.
-     * @throws Exception
+     * @return the value of associationType.
      */
-    public String send(DirectMessage message) throws Exception;
+    public String getAssociationType()
+    {
+        return this.associationType;
+    }
 }

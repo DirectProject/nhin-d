@@ -26,24 +26,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.nhindclient;
-
-import org.nhindirect.xd.transform.document.DirectMessage;
+package org.nhindirect.xd.transform.util.type;
 
 /**
- * Interface for handling the transmission of documents through a client.
+ * Enumeration for data identifying a Classification Node element.
  * 
- * @author Vince
+ * @author beau
  */
-public interface NHINDClient
+public enum ClassificationNode
 {
+    DOCUMENT_ENTRY("urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1"),
+    SUBMISSION_SET("urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd");
+
+    private String scheme;
+
+    private ClassificationNode(String scheme)
+    {
+        this.scheme = scheme;
+    }
+
     /**
-     * Send a message.
+     * Get the value of scheme.
      * 
-     * @param message
-     *            The DirectMessage object.
-     * @return a response.
-     * @throws Exception
+     * @return the value of scheme.
      */
-    public String send(DirectMessage message) throws Exception;
+    public String getScheme()
+    {
+        return this.scheme;
+    }
 }

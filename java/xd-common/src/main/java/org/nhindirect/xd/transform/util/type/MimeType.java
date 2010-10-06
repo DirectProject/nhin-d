@@ -26,80 +26,79 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.parse.ccd;
+package org.nhindirect.xd.transform.util.type;
 
-import junit.framework.TestCase;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nhindirect.xd.transform.parse.ccd.CcdParser;
+import org.apache.commons.lang.StringUtils;
 
 /**
- * Test methods in the CCDParser class.
+ * Enumeration of commonly used MIME types.
  * 
- * TODO: This test class needs assertions.
- * 
- * @author vlewis
+ * @author beau
  */
-public class CcdParserTest extends TestCase
+public enum MimeType
 {
-    private static final Log LOGGER = LogFactory.getFactory().getInstance(CcdParserTest.class);
+    TEXT_PLAIN("text/plain"), 
+    TEXT_XML("text/xml"), 
+    TEXT_CDA_XML("text/cda+xml"), 
+    APPLICATION_CCR("application/ccr"), 
+    APPLICATION_XML("application/xml"), 
+    APPLICATION_PDF("application/pdf"), 
+    MULTIPART_MIXED("multipart/mixed");
 
-    public CcdParserTest(String testName)
+    /**
+     * The MIME type.
+     */
+    private String type;
+
+    /**
+     * Enumeration constructor.
+     * 
+     * @param type
+     *            The MIME type.
+     */
+    private MimeType(String type)
     {
-        super(testName);
+        this.type = type;
+
     }
 
+    /**
+     * Determine if the input matches the current element by first comparing
+     * equalsIgnoreCase and then comparing startsWith.
+     * 
+     * @param type
+     *            The MIME type to compare.
+     * @return true if the string is a reasonable match, false otherwise.
+     */
+    public boolean matches(String type)
+    {
+        if (StringUtils.equalsIgnoreCase(type, this.type))
+            return true;
+        if (StringUtils.startsWith(type, this.type))
+            return true;
+
+        return false;
+    }
+
+    /**
+     * Return the type.
+     * 
+     * @return the type.
+     */
+    public String getType()
+    {
+        return type;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Enum#toString()
+     */
     @Override
-    protected void setUp() throws Exception
+    public String toString()
     {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-
-    /**
-     * Test of parseCCD method, of class CCDParser.
-     */
-    public void testParseCCD() throws Exception
-    {
-        LOGGER.info("parseCCD");
-        String ccdXml = "<ClinicalDocument>Test</ClinicalDocument>";
-        CcdParser instance = new CcdParser();
-        // instance.parseCCD(ccdXml);
-
-    }
-
-    /**
-     * Test of getPatientId method, of class CCDParser.
-     */
-    public void testGetPatientId()
-    {
-        LOGGER.info("getPatientId");
-        CcdParser instance = new CcdParser();
-        String expResult = "";
-        String result = instance.getPatientId();
-        // assertEquals(expResult, result);
-        // TODO review the generated test code
-
-    }
-
-    /**
-     * Test of getOrgId method, of class CCDParser.
-     */
-    public void testGetOrgId()
-    {
-        LOGGER.info("getOrgId");
-        CcdParser instance = new CcdParser();
-        String expResult = "";
-        String result = instance.getOrgId();
-        // assertEquals(expResult, result);
-        // TODO review the generated test code
-
+        return type;
     }
 
 }

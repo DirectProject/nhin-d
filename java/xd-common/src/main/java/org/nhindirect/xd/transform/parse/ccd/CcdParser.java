@@ -26,80 +26,64 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.parse.ccd;
-
-import junit.framework.TestCase;
+package org.nhindirect.xd.transform.parse.ccd;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.xd.transform.parse.ccd.CcdParser;
+import org.nhindirect.xd.transform.parse.ccd.jaxb.CCDDB;
+import org.nhindirect.xd.transform.parse.ccd.jaxb.PATIENT;
+import org.nhindirect.xd.transform.util.XmlUtils;
+import org.nhindirect.xd.transform.util.XslConversion;
 
 /**
- * Test methods in the CCDParser class.
- * 
- * TODO: This test class needs assertions.
+ * Utilities for parsing a CCD file.
  * 
  * @author vlewis
  */
-public class CcdParserTest extends TestCase
+public class CcdParser
 {
-    private static final Log LOGGER = LogFactory.getFactory().getInstance(CcdParserTest.class);
+    private String patientId;
+    private String orgId;
 
-    public CcdParserTest(String testName)
-    {
-        super(testName);
-    }
+    private static final String MAP_FILE = "ccdtoccddb.xsl";
 
-    @Override
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-    }
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(CcdParser.class);
 
-    @Override
-    protected void tearDown() throws Exception
+    /**
+     * Parse a CCD xml string.
+     * 
+     * @param ccdXml
+     *            The String representation of a CCD request.
+     * @throws Exception
+     */
+    public void parse(String ccdXml) throws Exception
     {
-        super.tearDown();
+        XslConversion xsl = new XslConversion();
+        String dbXml = xsl.run(MAP_FILE, ccdXml);
+        LOGGER.trace(dbXml);
+        CCDDB pcd = (CCDDB) XmlUtils.unmarshal(dbXml, org.nhindirect.xd.transform.parse.ccd.jaxb.ObjectFactory.class);
+        PATIENT patient = pcd.getPATIENT();
+        patientId = patient.getPATIENTID();
+        orgId = patient.getFACILITYID();
     }
 
     /**
-     * Test of parseCCD method, of class CCDParser.
+     * Return the value of patientId.
+     * 
+     * @return the value of patientId.
      */
-    public void testParseCCD() throws Exception
+    public String getPatientId()
     {
-        LOGGER.info("parseCCD");
-        String ccdXml = "<ClinicalDocument>Test</ClinicalDocument>";
-        CcdParser instance = new CcdParser();
-        // instance.parseCCD(ccdXml);
-
+        return patientId;
     }
 
     /**
-     * Test of getPatientId method, of class CCDParser.
+     * Return the value of orgId.
+     * 
+     * @return the value of orgId.
      */
-    public void testGetPatientId()
+    public String getOrgId()
     {
-        LOGGER.info("getPatientId");
-        CcdParser instance = new CcdParser();
-        String expResult = "";
-        String result = instance.getPatientId();
-        // assertEquals(expResult, result);
-        // TODO review the generated test code
-
+        return orgId;
     }
-
-    /**
-     * Test of getOrgId method, of class CCDParser.
-     */
-    public void testGetOrgId()
-    {
-        LOGGER.info("getOrgId");
-        CcdParser instance = new CcdParser();
-        String expResult = "";
-        String result = instance.getOrgId();
-        // assertEquals(expResult, result);
-        // TODO review the generated test code
-
-    }
-
 }

@@ -26,24 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.nhindclient;
-
-import org.nhindirect.xd.transform.document.DirectMessage;
-
 /**
- * Interface for handling the transmission of documents through a client.
- * 
- * @author Vince
+ * Custom exceptions defined for use in the transformation of XD* payloads.
  */
-public interface NHINDClient
-{
-    /**
-     * Send a message.
-     * 
-     * @param message
-     *            The DirectMessage object.
-     * @return a response.
-     * @throws Exception
-     */
-    public String send(DirectMessage message) throws Exception;
-}
+package org.nhindirect.xd.transform.exception;
