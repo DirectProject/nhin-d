@@ -11,11 +11,22 @@
     <build>
         <resources>
             <resource>
-                <targetPath>META-INF</targetPath>
-                <directory>src</directory>
-                <includes/>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/wsdl</directory>
+                <includes>
+                    <include>*.wsdl</include>
+                </includes>
             </resource>
         </resources>
+
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

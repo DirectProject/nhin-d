@@ -99,7 +99,7 @@ namespace NHINDirect.Xd
         private void Initialize(string codingScheme, string label)
         {
             this.Add(new Name(label),
-                new Slot(XDMetadataStandard.CodingSchemeSlot, codingScheme));
+                new Slot(XDMetadataStandard.Slots.CodingScheme, codingScheme));
         }
 
     }

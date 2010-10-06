@@ -191,19 +191,19 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentHasLanguageCode()
         {
-            Assert.Equal("en-us", TestDocXElement.SlotValue(XDMetadataStandard.LanguageCodeSlot));
+            Assert.Equal("en-us", TestDocXElement.SlotValue(XDMetadataStandard.Slots.LanguageCode));
         }
 
         [Fact]
         public void DocumentHasAuthenticator()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.LegalAuthenticatorSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.LegalAuthenticator));
         }
 
         [Fact]
         public void DocumentAuthenticatorHasCorrectValue()
         {
-            Assert.Equal(TestDocument.LegalAuthenticator.ToXCN(), TestDocXElement.SlotValue(XDMetadataStandard.LegalAuthenticatorSlot));
+            Assert.Equal(TestDocument.LegalAuthenticator.ToXCN(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.LegalAuthenticator));
         }
 
         [Fact]
@@ -248,62 +248,62 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentHasServiceStart()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.ServiceStartSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.ServiceStart));
         }
 
         [Fact]
         public void ServiceStartHasCorrectValue()
         {
-            Assert.Equal(TestDocument.ServiceStart.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.ServiceStartSlot));
+            Assert.Equal(TestDocument.ServiceStart.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.ServiceStart));
         }
         [Fact]
         public void DocumentHasServiceStop()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.ServiceStopSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.ServiceStop));
         }
 
         [Fact]
         public void ServiceStopHasCorrectValue()
         {
-            Assert.Equal(TestDocument.ServiceStop.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.ServiceStopSlot));
+            Assert.Equal(TestDocument.ServiceStop.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.ServiceStop));
         }
 
         [Fact]
-        public void DocumentHasSizeSlot()
+        public void DocumentHasSlotSize()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.SizeSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.Size));
         }
 
         [Fact]
-        public void SizeSlotHasCorrectValue()
+        public void SlotSizeHasCorrectValue()
         {
-            Assert.Equal(TestDocument.Size, Int32.Parse(TestDocXElement.SlotValue(XDMetadataStandard.SizeSlot)));
+            Assert.Equal(TestDocument.Size, Int32.Parse(TestDocXElement.SlotValue(XDMetadataStandard.Slots.Size)));
         }
 
         [Fact]
         public void DocumentHasSourcePtIDSlot()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.SourcePatientIDSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.SourcePatientID));
         }
 
         [Fact]
         public void SourcePatientIDHasCorrectValue()
         {
             PatientID expected = new PatientID("XYZ", "PDQ", "foo");
-            PatientID actual = PatientID.FromEscapedCx(TestDocXElement.SlotValue(XDMetadataStandard.SourcePatientIDSlot));
+            PatientID actual = PatientID.FromEscapedCx(TestDocXElement.SlotValue(XDMetadataStandard.Slots.SourcePatientID));
             Assert.True(expected.Equals(actual));
         }
 
         [Fact]
         public void DocumentHasPatientInfoSlot()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.SourcePatientInfoSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.SourcePatientInfo));
         }
 
         [Fact]
         public void PatientInfoSlotHasCorrectPatient()
         {
-            Assert.Contains("PID-8|M", TestDocXElement.SlotValues(XDMetadataStandard.SourcePatientInfoSlot));
+            Assert.Contains("PID-8|M", TestDocXElement.SlotValues(XDMetadataStandard.Slots.SourcePatientInfo));
         }
 
         [Fact]
@@ -333,7 +333,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentHasURISlot()
         {
-            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.UriSlot));
+            Assert.NotNull(TestDocXElement.Slot(XDMetadataStandard.Slots.Uri));
         }
 
         [Fact]
@@ -409,13 +409,13 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void PackageHasIntendedRecipient()
         {
-            Assert.NotNull(TestPackageXElement.Slot(XDMetadataStandard.IntendedRecipientSlot));
+            Assert.NotNull(TestPackageXElement.Slot(XDMetadataStandard.Slots.IntendedRecipient));
         }
 
         [Fact]
         public void IntendedRecipientIsCorrect()
         {
-            Assert.Equal(TestPackage.IntendedRecipients.First().ToXONXCN(), TestPackageXElement.SlotValues(XDMetadataStandard.IntendedRecipientSlot).First());
+            Assert.Equal(TestPackage.IntendedRecipients.First().ToXONXCN(), TestPackageXElement.SlotValues(XDMetadataStandard.Slots.IntendedRecipient).First());
         }
 
         [Fact]
@@ -433,7 +433,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void PackageHasSubmissionTime()
         {
-            Assert.NotNull(TestPackageXElement.SlotValue(XDMetadataStandard.SubmissionTimeSlot));
+            Assert.NotNull(TestPackageXElement.SlotValue(XDMetadataStandard.Slots.SubmissionTime));
         }
 
         [Fact]
