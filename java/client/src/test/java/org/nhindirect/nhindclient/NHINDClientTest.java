@@ -119,9 +119,9 @@ public class NHINDClientTest extends TestCase
     public void testSend() throws Exception
     {
         String sender = "lewistower1@gmail.com";
-        Collection<String> receivers = Arrays.asList("beau+receiver@nologs.org", "beau+receiver2@nologs.org",
-            "http://ELS4055:8080/xd/services/DocumentRepository_Service");
-//        Collection<String> receivers = Arrays.asList("beau+receiver@nologs.org", "beau+receiver2@nologs.org");     
+//        Collection<String> receivers = Arrays.asList("beau+receiver@nologs.org", "beau+receiver2@nologs.org",
+//            "http://ELS4055:8080/xd/services/DocumentRepository_Service");
+        Collection<String> receivers = Arrays.asList("beau+receiver@nologs.org", "beau+receiver2@nologs.org");     
 
         DirectMessage message = new DirectMessage(sender, receivers);
 
