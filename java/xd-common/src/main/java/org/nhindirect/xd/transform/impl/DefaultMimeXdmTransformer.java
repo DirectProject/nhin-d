@@ -26,85 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.util;
+package org.nhindirect.xd.transform.impl;
 
-import junit.framework.TestCase;
+import java.io.File;
 
-import org.nhindirect.xd.transform.util.type.MimeType;
+import javax.mail.internet.MimeMessage;
+import javax.naming.OperationNotSupportedException;
+
+import org.nhindirect.xd.transform.MimeXdmTransformer;
+import org.nhindirect.xd.transform.exception.TransformationException;
 
 /**
- * Test class for the MimeType enumeration.
+ * Class for handling the transformation of a MimeMessage to an XDM File.
  * 
  * @author beau
  */
-public class MimeTypeTest extends TestCase
+public class DefaultMimeXdmTransformer implements MimeXdmTransformer
 {
 
-    /**
-     * Constructor.
-     * 
-     * @param testName
-     *            The test name
-     */
-    public MimeTypeTest(String testName)
-    {
-        super(testName);
-    }
-
     /*
      * (non-Javadoc)
      * 
-     * @see junit.framework.TestCase#setUp()
+     * @see org.nhindirect.transform.MimeXdmTransformer#transform(javax.mail.internet.MimeMessage)
      */
     @Override
-    protected void setUp() throws Exception
+    public File transform(MimeMessage mimeMessage) throws TransformationException
     {
-        super.setUp();
+        OperationNotSupportedException e = new OperationNotSupportedException("This method has not been implemented");
+        throw new TransformationException("Unable to complete transformation.", e);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-
-    /**
-     * Test the getType method;
-     */
-    public void testGetType()
-    {
-        String s = "application/ccr";
-        MimeType m = MimeType.APPLICATION_CCR;
-
-        assertEquals("Get method did not return expected value", s, m.getType());
-    }
-
-    /**
-     * Test the matches method.
-     */
-    public void testMatches()
-    {
-        // Test matches works for all values
-        for (MimeType m : MimeType.values())
-        {
-            assertTrue("Matches method does not correctly match elements", m.matches(m.getType()));
-        }
-
-        String s = null;
-        MimeType m = MimeType.TEXT_PLAIN;
-
-        s = "text";
-        assertEquals("Output does not match expected", false, m.matches(s));
-
-        s = "text/plain";
-        assertEquals("Output does not match expected", true, m.matches(s));
-
-        s = "text/plain; charset=UTF-8";
-        assertEquals("Output does not match expected", true, m.matches(s));
-    }
 }

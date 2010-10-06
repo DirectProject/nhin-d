@@ -48,11 +48,12 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.transform.pojo.SimplePerson;
-import org.nhindirect.transform.util.XmlUtils;
-import org.nhindirect.transform.util.type.ExternalClassificationScheme;
-import org.nhindirect.transform.util.type.ExternalIdentifier;
-import org.nhindirect.transform.util.type.MimeType;
+import org.nhindirect.xd.transform.impl.DefaultMimeXdsTransformer;
+import org.nhindirect.xd.transform.pojo.SimplePerson;
+import org.nhindirect.xd.transform.util.XmlUtils;
+import org.nhindirect.xd.transform.util.type.ExternalClassificationScheme;
+import org.nhindirect.xd.transform.util.type.ExternalIdentifier;
+import org.nhindirect.xd.transform.util.type.MimeType;
 
 /**
  * Test class for methods in the MimeXDSTransformer class.

@@ -26,85 +26,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.transform.util;
-
-import junit.framework.TestCase;
-
-import org.nhindirect.xd.transform.util.type.MimeType;
+package org.nhindirect.xd.transform.exception;
 
 /**
- * Test class for the MimeType enumeration.
+ * Generic exception to be thrown from transformation classes.
  * 
  * @author beau
  */
-public class MimeTypeTest extends TestCase
+public class TransformationException extends java.lang.Exception
 {
+    private static final long serialVersionUID = -6617978036111712964L;
 
     /**
-     * Constructor.
+     * Construct an exception.
      * 
-     * @param testName
-     *            The test name
+     * @param message
+     *            The exception message.
+     * @param throwable
+     *            The throwable causing the exception.
      */
-    public MimeTypeTest(String testName)
+    public TransformationException(String message, Throwable throwable)
     {
-        super(testName);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-
-    /**
-     * Test the getType method;
-     */
-    public void testGetType()
-    {
-        String s = "application/ccr";
-        MimeType m = MimeType.APPLICATION_CCR;
-
-        assertEquals("Get method did not return expected value", s, m.getType());
-    }
-
-    /**
-     * Test the matches method.
-     */
-    public void testMatches()
-    {
-        // Test matches works for all values
-        for (MimeType m : MimeType.values())
-        {
-            assertTrue("Matches method does not correctly match elements", m.matches(m.getType()));
-        }
-
-        String s = null;
-        MimeType m = MimeType.TEXT_PLAIN;
-
-        s = "text";
-        assertEquals("Output does not match expected", false, m.matches(s));
-
-        s = "text/plain";
-        assertEquals("Output does not match expected", true, m.matches(s));
-
-        s = "text/plain; charset=UTF-8";
-        assertEquals("Output does not match expected", true, m.matches(s));
+        super(message, throwable);
     }
 }

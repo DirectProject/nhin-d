@@ -32,6 +32,7 @@ import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.transform.document.DirectDocument;
 
 /**
  * TODO: Write tests..

@@ -26,24 +26,54 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.nhindclient;
-
-import org.nhindirect.xd.transform.document.DirectMessage;
+package org.nhindirect.xd.transform.util.type;
 
 /**
- * Interface for handling the transmission of documents through a client.
+ * Enumeration for data identifying an External Identifier element.
  * 
- * @author Vince
+ * @author beau
  */
-public interface NHINDClient
+public enum ExternalIdentifier
 {
+    DOCUMENT_ENTRY_PATIENT_ID("ei01", "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427", "XDSDocumentEntry.patientId"), 
+    DOCUMENT_ENTRY_UNIQUE_ID("ei02", "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab", "XDSDocumentEntry.uniqueId"),
+    SUBMISSION_SET_UNIQUE_ID("ei01", "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8", "XDSSubmissionSet.uniqueId"),
+    SUBMISSION_SET_SOURCE_ID("ei02", "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832", "XDSSubmissionSet.sourceId"),
+    SUBMISSION_SET_PATIENT_ID("ei03", "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446", "XDSSubmissionSet.patientId");
+
+    private String identificationId;
+    private String identificationScheme;
+    private String localizedString;
+
+    private ExternalIdentifier(String identificationId, String identificationScheme, String localizedString)
+    {
+        this.identificationId = identificationId;
+        this.identificationScheme = identificationScheme;
+        this.localizedString = localizedString;
+    }
+
     /**
-     * Send a message.
+     * Get the value of identificationId.
      * 
-     * @param message
-     *            The DirectMessage object.
-     * @return a response.
-     * @throws Exception
+     * @return the value of identificationId.
      */
-    public String send(DirectMessage message) throws Exception;
+    public String getIdentificationId()
+    {
+        return this.identificationId;
+    }
+
+    /**
+     * Get the value of identificationScheme.
+     * 
+     * @return the value of identificationScheme.
+     */
+    public String getIdentificationScheme()
+    {
+        return this.identificationScheme;
+    }
+    
+    public String getLocalizedString()
+    {
+        return this.localizedString;
+    }
 }

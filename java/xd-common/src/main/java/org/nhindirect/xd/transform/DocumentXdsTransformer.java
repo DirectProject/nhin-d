@@ -26,24 +26,54 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.nhindclient;
+package org.nhindirect.xd.transform;
 
-import org.nhindirect.xd.transform.document.DirectMessage;
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+
+import java.util.List;
+
+import org.nhindirect.xd.transform.exception.TransformationException;
 
 /**
- * Interface for handling the transmission of documents through a client.
+ * Interface for handling the transformation of a Document to a
+ * ProvideAndRegisterDocumentSetRequestType object.
  * 
- * @author Vince
+ * @author beau
  */
-public interface NHINDClient
+public interface DocumentXdsTransformer
 {
     /**
-     * Send a message.
+     * Transform a document to a ProvideAndRegisterDocumentSetRequestType
+     * object.
      * 
-     * @param message
-     *            The DirectMessage object.
-     * @return a response.
-     * @throws Exception
+     * TODO: This should take a File or the like, instead of Strings
+     * representing data.
+     * 
+     * @param document
+     *            String representation of the document data.
+     * @param metadata
+     *            String representation of the metadata.
+     * @return a ProvideAndRegisterDocumentSetRequestType object.
+     * @throws TransformationException
      */
-    public String send(DirectMessage message) throws Exception;
+    public ProvideAndRegisterDocumentSetRequestType transform(String document, String metadata)
+            throws TransformationException;
+
+    /**
+     * Transform a list of documents to a
+     * ProvideAndRegisterDocumentSetRequestType object.
+     * 
+     * @param meta
+     *            The document metadata.
+     * @param docs
+     *            The document data.
+     * @return a ProvideAndRegisterDocumentSetRequestType object.
+     * @throws TransformationException
+     * @Deprecated Deprecated until we find proper construction of
+     *             multi-documents.
+     */
+    @Deprecated
+    public ProvideAndRegisterDocumentSetRequestType transform(String meta, List<String> docs)
+            throws TransformationException;
+
 }

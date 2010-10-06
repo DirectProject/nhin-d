@@ -41,10 +41,10 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.transform.DocumentXdsTransformer;
-import org.nhindirect.transform.document.DirectDocument;
-import org.nhindirect.transform.exception.TransformationException;
-import org.nhindirect.transform.impl.DocumentXdsTransformerImpl;
+import org.nhindirect.xd.transform.DocumentXdsTransformer;
+import org.nhindirect.xd.transform.document.DirectDocument;
+import org.nhindirect.xd.transform.exception.TransformationException;
+import org.nhindirect.xd.transform.impl.DocumentXdsTransformerImpl;
 
 /**
  * Document repository class for handling XDS webservice calls.

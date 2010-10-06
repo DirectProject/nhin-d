@@ -48,6 +48,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.transform.impl.DefaultXdmXdsTransformer;
 
 /**
  * Test methods in the DefaultXdmXdsTransformer class.
