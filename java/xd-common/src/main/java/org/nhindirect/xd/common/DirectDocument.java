@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.xd.transform.document;
+package org.nhindirect.xd.common;
 
 import java.io.File;
 import java.io.IOException;

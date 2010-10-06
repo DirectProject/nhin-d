@@ -49,8 +49,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.nhindirect.xd.common.DirectDocument;
 import org.nhindirect.xd.transform.DocumentXdmTransformer;
-import org.nhindirect.xd.transform.document.DirectDocument;
 import org.nhindirect.xd.transform.impl.DocumentXdmTransformerImpl;
 
 /**

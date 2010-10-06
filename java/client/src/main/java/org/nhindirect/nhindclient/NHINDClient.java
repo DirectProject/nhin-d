@@ -28,7 +28,7 @@
 
 package org.nhindirect.nhindclient;
 
-import org.nhindirect.xd.transform.document.DirectMessage;
+import org.nhindirect.xd.common.DirectMessage;
 
 /**
  * Interface for handling the transmission of documents through a client.

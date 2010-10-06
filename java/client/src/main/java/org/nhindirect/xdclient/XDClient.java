@@ -41,8 +41,8 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.common.DirectDocument;
 import org.nhindirect.xd.transform.DocumentXdsTransformer;
-import org.nhindirect.xd.transform.document.DirectDocument;
 import org.nhindirect.xd.transform.exception.TransformationException;
 import org.nhindirect.xd.transform.impl.DocumentXdsTransformerImpl;
 

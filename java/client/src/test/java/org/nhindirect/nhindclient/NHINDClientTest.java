@@ -39,8 +39,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.nhindclient.config.NHINDClientConfig;
 import org.nhindirect.nhindclient.impl.NHINDClientImpl;
-import org.nhindirect.xd.transform.document.DirectDocument;
-import org.nhindirect.xd.transform.document.DirectMessage;
+import org.nhindirect.xd.common.DirectDocument;
+import org.nhindirect.xd.common.DirectMessage;
 
 /**
  * 
