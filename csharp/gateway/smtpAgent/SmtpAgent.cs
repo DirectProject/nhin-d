@@ -170,8 +170,16 @@ namespace NHINDirect.SmtpAgent
             using (new MethodTracer(Logger))
             {
                 Domain[] configuredDomains = m_configService.GetDomains(m_settings.Domains);
-                if (configuredDomains.IsNullOrEmpty() || configuredDomains.Length != m_settings.Domains.Length)
+                if (configuredDomains.IsNullOrEmpty())
                 {
+                    Logger.Error("Returned configured domains was null or empty");
+                    throw new SmtpAgentException(SmtpAgentError.ConfiguredDomainsMismatch);
+                }
+                if (configuredDomains.Length != m_settings.Domains.Length)
+                {
+                    Logger.Error("Returned configured domains did not match those listed in the settings file");
+                    Logger.Error("from service={0} from settings={1}", 
+                        configuredDomains.Length, m_settings.Domains.Length);
                     throw new SmtpAgentException(SmtpAgentError.ConfiguredDomainsMismatch);
                 }
 
