@@ -226,89 +226,97 @@ namespace NHINDirect.Xd
         // Slot names
 
         /// <summary>
-        /// The slot name for an authorPerson
+        /// XD* Metadata standard slot names
         /// </summary>
-        public const string AuthorPersonSlot = "authorPerson";
+        public struct Slots
+        {
 
-        /// <summary>
-        /// The slot name for an authorInstition
-        /// </summary>
-        public const string AuthorInstitutionsSlot = "authorInstitution";
+            /// <summary>
+            /// The slot name for an authorPerson
+            /// </summary>
+            public const string AuthorPerson = "authorPerson";
 
-        /// <summary>
-        /// The slot name for an authorRole
-        /// </summary>
-        public const string AuthorRolesSlot = "authorRole";
+            /// <summary>
+            /// The slot name for an authorInstition
+            /// </summary>
+            public const string AuthorInstitutions = "authorInstitution";
 
-        /// <summary>
-        /// The slot name for authorSpecialty
-        /// </summary>
-        public const string AuthorSpecialitiesSlot = "authorSpecialty";
+            /// <summary>
+            /// The slot name for an authorRole
+            /// </summary>
+            public const string AuthorRoles = "authorRole";
 
-        /// <summary>
-        /// The slot name for hash
-        /// </summary>
-        public const string HashSlot = "hash";
+            /// <summary>
+            /// The slot name for authorSpecialty
+            /// </summary>
+            public const string AuthorSpecialities = "authorSpecialty";
 
-        /// <summary>
-        /// The slot name for a legal authenticator
-        /// </summary>
-        public const string LegalAuthenticatorSlot = "legalAuthenticator";
+            /// <summary>
+            /// The slot name for hash
+            /// </summary>
+            public const string Hash = "hash";
 
-        /// <summary>
-        /// The language code slot name
-        /// </summary>
-        public const string LanguageCodeSlot = "languageCode";
+            /// <summary>
+            /// The slot name for a legal authenticator
+            /// </summary>
+            public const string LegalAuthenticator = "legalAuthenticator";
 
-        /// <summary>
-        /// The service start slot name
-        /// </summary>
-        public const string ServiceStartSlot = "serviceStartTime";
+            /// <summary>
+            /// The language code slot name
+            /// </summary>
+            public const string LanguageCode = "languageCode";
 
-        /// <summary>
-        /// The service end slot name
-        /// </summary>
-        public const string ServiceStopSlot = "serviceStopTime";
+            /// <summary>
+            /// The service start slot name
+            /// </summary>
+            public const string ServiceStart = "serviceStartTime";
 
-        /// <summary>
-        /// The size slot name
-        /// </summary>
-        public const string SizeSlot = "size";
+            /// <summary>
+            /// The service end slot name
+            /// </summary>
+            public const string ServiceStop = "serviceStopTime";
 
-        /// <summary>
-        /// The source patient ID slot name.
-        /// </summary>
-        public const string SourcePatientIDSlot = "sourcePatientId";
+            /// <summary>
+            /// The size slot name
+            /// </summary>
+            public const string Size = "size";
 
-        /// <summary>
-        /// The source patient Info slot name
-        /// </summary>
-        public const string SourcePatientInfoSlot = "sourcePatientInfo";
+            /// <summary>
+            /// The source patient ID slot name.
+            /// </summary>
+            public const string SourcePatientID = "sourcePatientId";
 
-        /// <summary>
-        /// The creation time slot name
-        /// </summary>
-        public const string CreationTimeSlot =  "creationTime";
+            /// <summary>
+            /// The source patient Info slot name
+            /// </summary>
+            public const string SourcePatientInfo = "sourcePatientInfo";
 
-        /// <summary>
-        /// The coding scheme slot name
-        /// </summary>
-        public const string CodingSchemeSlot = "codingScheme";
+            /// <summary>
+            /// The creation time slot name
+            /// </summary>
+            public const string CreationTime = "creationTime";
 
-        /// <summary>
-        /// The slot name for a URI
-        /// </summary>
-        public const string UriSlot = "URI";
+            /// <summary>
+            /// The coding scheme slot name
+            /// </summary>
+            public const string CodingScheme = "codingScheme";
 
-        /// <summary>
-        /// The slot name for a submission time
-        /// </summary>
-        public const string SubmissionTimeSlot = "submissionTime";
+            /// <summary>
+            /// The slot name for a URI
+            /// </summary>
+            public const string Uri = "URI";
 
-        /// <summary>
-        /// The slot name for intended recipient
-        /// </summary>
-        public const string IntendedRecipientSlot = "intendedRecipient";
+            /// <summary>
+            /// The slot name for a submission time
+            /// </summary>
+            public const string SubmissionTime = "submissionTime";
+
+            /// <summary>
+            /// The slot name for intended recipient
+            /// </summary>
+            public const string IntendedRecipient = "intendedRecipient";
+        }
+        
         // Object types
 
         /// <summary>

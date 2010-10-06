@@ -5,7 +5,7 @@
     <groupId>org.nhind</groupId>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>xd-transform</artifactId>
-    <name>XD* Transformation Library</name>
+    <name>NHIN Direct XD* Transformation Library</name>
     <version>1.0-SNAPSHOT</version>
     <description>Library for handling the transformation of XD* related messages</description>
     <inceptionYear>2010</inceptionYear>

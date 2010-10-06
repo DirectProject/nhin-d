@@ -61,16 +61,16 @@ namespace NHINDirect.Xd
         static Author ConsumeAuthor(XElement authorXEl)
         {
             Author a = new Author();
-            a.Person = Person.FromXCN(authorXEl.SlotValue(XDMetadataStandard.AuthorPersonSlot));
-            foreach (Institution i in (authorXEl.SlotValues(XDMetadataStandard.AuthorInstitutionsSlot).Select(i => Institution.FromXON(i))))
+            a.Person = Person.FromXCN(authorXEl.SlotValue(XDMetadataStandard.Slots.AuthorPerson));
+            foreach (Institution i in (authorXEl.SlotValues(XDMetadataStandard.Slots.AuthorInstitutions).Select(i => Institution.FromXON(i))))
             {
                 a.Institutions.Add(i);
             }
-            foreach (string s in authorXEl.SlotValues(XDMetadataStandard.AuthorRolesSlot))
+            foreach (string s in authorXEl.SlotValues(XDMetadataStandard.Slots.AuthorRoles))
             {
                 a.Roles.Add(s);
             }
-            foreach (string s in authorXEl.SlotValues(XDMetadataStandard.AuthorSpecialitiesSlot))
+            foreach (string s in authorXEl.SlotValues(XDMetadataStandard.Slots.AuthorSpecialities))
             {
                 a.Specialities.Add(s);
             }
@@ -80,7 +80,7 @@ namespace NHINDirect.Xd
         static CodedValue ConsumeCodedValue(XElement codedValueClassification)
         {
             XAttribute nodeRep = codedValueClassification.Attribute(XDMetadataStandard.NodeRepresentationAttr);
-            string codingScheme = codedValueClassification.SlotValue(XDMetadataStandard.CodingSchemeSlot);
+            string codingScheme = codedValueClassification.SlotValue(XDMetadataStandard.Slots.CodingScheme);
             string codeLabel = codedValueClassification.NameValue();
             if (nodeRep == null || codingScheme == null || codeLabel == null) throw new ArgumentException();
             return new CodedValue(nodeRep.Value, codeLabel, codingScheme);

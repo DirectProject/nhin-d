@@ -11,7 +11,7 @@
     <groupId>org.nhind</groupId>
     <artifactId>xdmail</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>xdmail</name>
+    <name>NHIN Direct XD* Mail Gateway</name>
     <url>http://maven.apache.org</url>
 
     <scm>
