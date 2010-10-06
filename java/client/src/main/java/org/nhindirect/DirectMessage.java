@@ -88,14 +88,14 @@ public class DirectMessage
      * @param meta
      *            The metadata to add.
      */
-    public void addDocument(String document, String meta)
+    public void addDocument(String document, String meta) throws Exception
     {
         DirectDocument doc = new DirectDocument();
         DirectDocument.Metadata metadata = doc.new Metadata();
 
         doc.setData(document);
 
-        metadata.setXml(meta);
+        metadata.consume(meta);
         doc.setMetadata(metadata);
 
         documents.add(doc);
