@@ -80,7 +80,7 @@
         </dependency>
         <dependency>
             <groupId>org.nhind</groupId>
-            <artifactId>xd-transform</artifactId>
+            <artifactId>xd-common</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency> 
