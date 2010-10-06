@@ -22,12 +22,25 @@ using System.Text;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using NHINDirect.Config.Store;
+using NHINDirect.Diagnostics;
 
 namespace NHINDirect.Config.Service
 {
     // NOTE: If you change the class name "AccountService" here, you must also update the reference to "AccountService" in Web.config.
     public class DomainManagerService : IDomainManager, IAddressManager
     {
+        private readonly ILogger m_logger;
+
+        public DomainManagerService()
+        {
+            m_logger = Log.For(this);
+        }
+
+        ILogger Logger
+        {
+            get { return m_logger; }
+        }
+
         #region IDomainManager Members
 
         public void AddDomain(Domain domain)
@@ -38,6 +51,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing AddDomain()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -50,6 +64,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing UpdateDomain()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -62,6 +77,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing GetDomainCount()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -75,6 +91,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing GetDomains()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -87,6 +104,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing RemoveDomain()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -99,6 +117,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing EnumerateDomains()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -115,6 +134,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing AddAddresses()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -127,6 +147,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing UpdateAddresses()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -145,6 +166,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing GetAddressCount()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -158,6 +180,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing GetAddresses()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -170,6 +193,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing GetAddressesByID()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -182,6 +206,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing RemoveAddresses()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -194,6 +219,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing RemoveDomainAddresses()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -206,6 +232,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing SetDomainAddressesStatus()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -224,6 +251,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing EnumerateDomainAddresses()", ex);
                 throw Service.CreateFault(ex);
             }
         }
@@ -236,6 +264,7 @@ namespace NHINDirect.Config.Service
             }
             catch (Exception ex)
             {
+                Logger.Error("While performing EnumerateAddresses()", ex);
                 throw Service.CreateFault(ex);
             }
         }
