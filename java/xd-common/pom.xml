@@ -4,12 +4,12 @@
     xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <groupId>org.nhind</groupId>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>xd-transform</artifactId>
-    <name>NHIN Direct XD* Transformation Library</name>
+    <artifactId>xd-common</artifactId>
+    <name>NHIN Direct XD* Common Library</name>
     <version>1.0-SNAPSHOT</version>
-    <description>Library for handling the transformation of XD* related messages</description>
+    <description>Library for common XD* operations and objects</description>
     <inceptionYear>2010</inceptionYear>
-    <url>https://nhin-d.googlecode.com/hg/java/xd-transform/</url>
+    <url>https://nhin-d.googlecode.com/hg/java/xd-common/</url>
 
     <parent>
         <artifactId>nhind-java-reference-implementation</artifactId>
@@ -18,8 +18,8 @@
     </parent>
 
     <scm>
-        <url>https://nhin-d.googlecode.com/hg/java/xd-transform/</url>
-        <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/xd-transform
+        <url>https://nhin-d.googlecode.com/hg/java/xd-common/</url>
+        <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/xd-common
         </connection>
     </scm>
 
@@ -211,7 +211,7 @@
                     <source>1.6</source>
                     <show>protected</show>
                     <excludePackageNames>
-                        org.nhindirect.transform.parse.ccd.jaxb
+                        org.nhindirect.xd.transform.parse.ccd.jaxb
                     </excludePackageNames>
                 </configuration>
             </plugin>
@@ -286,7 +286,7 @@
         <site>
             <id>nhind-site</id>
             <name>NHIN Direct API publication site</name>
-            <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xd-transform/${project.version}
+            <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xd-common/${project.version}
             </url>
         </site>
     </distributionManagement>
