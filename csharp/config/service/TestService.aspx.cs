@@ -19,7 +19,7 @@ namespace NHINDirect.Config.Service
             }
             catch(Exception ex)
             {
-                this.TestStatus.Text = ex.Message;
+                this.TestStatus.Text = ex.Message + Environment.NewLine + ex.InnerException.Message;
             }
         }
     }
