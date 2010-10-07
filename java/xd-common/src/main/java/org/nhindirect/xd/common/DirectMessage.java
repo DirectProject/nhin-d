@@ -33,6 +33,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Abstract representation of a message sent via Direct.
  * 
@@ -45,6 +48,9 @@ public class DirectMessage
     private Collection<DirectDocument> documents;
     private String body;
     private String subject;
+
+    @SuppressWarnings("unused")
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(DirectDocument.class);
 
     /**
      * Create a new DirectMessage object.
@@ -77,28 +83,6 @@ public class DirectMessage
         DirectDocument.Metadata metadata = doc.new Metadata();
 
         doc.setData(document);
-        doc.setMetadata(metadata);
-
-        documents.add(doc);
-    }
-
-    /**
-     * Add a document to the message.
-     * 
-     * @param document
-     *            The document to add.
-     * @param meta
-     *            The metadata to add.
-     */
-    @Deprecated
-    public void addDocument(String document, String meta) throws Exception
-    {
-        DirectDocument doc = new DirectDocument();
-        DirectDocument.Metadata metadata = doc.new Metadata();
-
-        doc.setData(document);
-
-        metadata.extractFromSubmitObjectsRequestXml(meta);
         doc.setMetadata(metadata);
 
         documents.add(doc);
