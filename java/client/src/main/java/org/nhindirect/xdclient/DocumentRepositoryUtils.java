@@ -44,7 +44,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * General utility class for methods dealing with DocumentRepository related
  * objects.
- *
+ * 
  * @author beau
  */
 public class DocumentRepositoryUtils
@@ -54,7 +54,7 @@ public class DocumentRepositoryUtils
     /**
      * Construct a DocumentRepositoryPortType object using the provided
      * endpoint.
-     *
+     * 
      * @param endpoint
      *            The XDR endpoint.
      * @return a DocumentRepositoryPortType object.
@@ -66,9 +66,6 @@ public class DocumentRepositoryUtils
 
         try
         {
-
-//            url = ihe.iti.xds_b._2007.DocumentRepositoryService.class
-//                    .getResource("/META-INF/wsdl/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl");
             url = ihe.iti.xds_b._2007.DocumentRepositoryService.class.getClassLoader().getResource(
                     "XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl");
         }
@@ -84,7 +81,7 @@ public class DocumentRepositoryUtils
     /**
      * Construct a DocumentRepositoryPortType object using the provided
      * endpoint.
-     *
+     * 
      * @param endpoint
      *            The XDR endpoint.
      * @param wsdlPath
