@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -81,6 +82,7 @@
     <Compile Include="Diagnostics\LogFileSettings.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Diagnostics\LogFileSection.cs" />
     <Compile Include="Diagnostics\LoggingLevel.cs" />
     <Compile Include="Diagnostics\MethodTracer.cs" />
     <Compile Include="Diagnostics\NullAuditor.cs" />

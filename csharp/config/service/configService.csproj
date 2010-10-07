@@ -61,7 +61,6 @@
   <ItemGroup>
     <Content Include="DomainManagerService.svc" />
     <Content Include="CertificateService.svc" />
-    <Content Include="Global.asax" />
     <Content Include="TestService.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -72,9 +71,6 @@
     </Compile>
     <Compile Include="CertificateService.svc.cs">
       <DependentUpon>CertificateService.svc</DependentUpon>
-    </Compile>
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="IAddressManager.cs" />
     <Compile Include="IDomainManager.cs" />

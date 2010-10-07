@@ -20,34 +20,62 @@ using System.Web;
 using System.Configuration;
 using System.ServiceModel;
 using System.Diagnostics;
+
+using Health.Net.Direct.Diagnostics.NLog;
+
 using NHINDirect.Config.Store;
 using System.Data.Sql;
+
+using NHINDirect.Container;
+using NHINDirect.Diagnostics;
 
 namespace NHINDirect.Config.Service
 {
     public class Service
     {
-        public static Service Current = new Service();
+        public readonly static Service Current = new Service();
         
         public const string Namespace = ConfigStore.Namespace;
 
-        ServiceSettings m_settings;
-        ConfigStore m_store;
+        readonly ServiceSettings m_settings;
+        readonly ConfigStore m_store;
+        private readonly ILogger m_logger;
                 
         public Service()
         {   
             try
             {
+                InitializeContainer();
+
+                m_logger = Log.For(this);
+
                 m_settings = new ServiceSettings();
-                this.LogInfo("Starting Service");
+                Logger.Info("Starting Service");
+
                 m_store = new ConfigStore(m_settings.StoreConnectString);
-                this.LogInfo("Service Started Successfully");
+                Logger.Info("Service Started Successfully");
             }
             catch(Exception ex)
             {
-                this.LogError(ex);
+                string msg = string.Format("Fatal error while initializing: {0}", ex);
+                EventLog.WriteEntry("nhinConfigService", msg, EventLogEntryType.Error);
                 throw;
             }
+        }
+
+        private ILogger Logger
+        {
+            get { return m_logger; }
+        }
+
+        private static void InitializeContainer()
+        {
+            LogFileSettings settings = LogFileSection.GetAsSettings();
+
+            // setup the container here... grrr... we're duplicating this!
+            IoC.Initialize(new SimpleDependencyResolver()
+                               .Register<ILogFactory>(new NLogFactory(settings))
+                );
         }
 
         public string Name 
@@ -75,28 +103,6 @@ namespace NHINDirect.Config.Service
             }
         }
         
-        public void LogInfo(string message)
-        {
-            try
-            {
-                EventLog.WriteEntry(this.Name, message, EventLogEntryType.Information);
-            }
-            catch
-            {
-            }
-        }
-        
-        public void LogError(Exception error)
-        {
-            try
-            {
-                EventLog.WriteEntry(this.Name, error.ToString(), EventLogEntryType.Error);
-            }
-            catch
-            {
-            }            
-        }
-                
         public static FaultException<ConfigStoreFault> CreateFault(Exception ex)
         {
             ConfigStoreFault fault = ConfigStoreFault.ToFault(ex);
