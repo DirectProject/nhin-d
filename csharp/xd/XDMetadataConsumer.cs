@@ -65,6 +65,7 @@ namespace NHINDirect.Xd
             doc.Hash = docXEl.SlotValue(XDMetadataStandard.Slots.Hash);
             doc.LanguageCode = docXEl.SlotValue(XDMetadataStandard.Slots.LanguageCode);
             doc.LegalAuthenticator = docXEl.SlotValue<Person>(XDMetadataStandard.Slots.LegalAuthenticator, s => Person.FromXCN(s));
+            doc.MediaType = docXEl.AttributeValue(XDMetadataStandard.Attrs.MimeType);
 
             return doc;
         }
@@ -90,7 +91,7 @@ namespace NHINDirect.Xd
 
         static CodedValue ConsumeCodedValue(XElement codedValueClassification)
         {
-            XAttribute nodeRep = codedValueClassification.Attribute(XDMetadataStandard.NodeRepresentationAttr);
+            XAttribute nodeRep = codedValueClassification.Attribute(XDMetadataStandard.Attrs.NodeRepresentation);
             string codingScheme = codedValueClassification.SlotValue(XDMetadataStandard.Slots.CodingScheme);
             string codeLabel = codedValueClassification.NameValue();
             if (nodeRep == null || codingScheme == null || codeLabel == null) throw new ArgumentException();

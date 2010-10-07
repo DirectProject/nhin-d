@@ -373,5 +373,22 @@ namespace NHINDirect.Tests.xdTests
             Assert.Equal(expected, doc.LegalAuthenticator);
         }
 
+        public static IEnumerable<object[]> MediaTypeData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.MediaType, "text/plain" });
+            }
+        }
+
+        [Theory]
+        [PropertyData("MediaTypeData")]
+        public void ConsumerConsumesMediaType(XElement documentXEl, string expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.MediaType);
+        }
+
+
     }
 }
