@@ -28,30 +28,48 @@
 
 package org.nhindirect.xd.transform.util.type;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Enumeration for data identifying an External Identifier element.
  * 
  * @author beau
  */
-public enum ExternalIdentifier
+public enum ExternalIdentifierTypeEnum
 {
-    DOCUMENT_ENTRY_PATIENT_ID("ei01", "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427", "XDSDocumentEntry.patientId"), 
-    DOCUMENT_ENTRY_UNIQUE_ID("ei02", "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab", "XDSDocumentEntry.uniqueId"),
-    SUBMISSION_SET_UNIQUE_ID("ei01", "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8", "XDSSubmissionSet.uniqueId"),
-    SUBMISSION_SET_SOURCE_ID("ei02", "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832", "XDSSubmissionSet.sourceId"),
-    SUBMISSION_SET_PATIENT_ID("ei03", "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446", "XDSSubmissionSet.patientId");
+    DOC_PATIENT_ID("ei01", "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427", "XDSDocumentEntry.patientId"), 
+    DOC_UNIQUE_ID("ei02", "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab", "XDSDocumentEntry.uniqueId"),
+    SS_UNIQUE_ID("ei01", "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8", "XDSSubmissionSet.uniqueId"),
+    SS_SOURCE_ID("ei02", "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832", "XDSSubmissionSet.sourceId"),
+    SS_PATIENT_ID("ei03", "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446", "XDSSubmissionSet.patientId");
 
     private String identificationId;
     private String identificationScheme;
     private String localizedString;
 
-    private ExternalIdentifier(String identificationId, String identificationScheme, String localizedString)
+    private ExternalIdentifierTypeEnum(String identificationId, String identificationScheme, String localizedString)
     {
         this.identificationId = identificationId;
         this.identificationScheme = identificationScheme;
         this.localizedString = localizedString;
     }
 
+    /**
+     * Check to see if the given identificationScheme matches the current
+     * object.
+     * 
+     * @param identificationScheme
+     *            the identificationScheme to check.
+     * @return true if the values match, false otherwise.
+     */
+    public boolean matchesScheme(String identificationScheme)
+    {
+        if (StringUtils.equals(this.identificationScheme, identificationScheme))
+            return true;
+
+        return false;
+    }
+    
     /**
      * Get the value of identificationId.
      * 

@@ -48,11 +48,10 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.xd.transform.impl.DefaultMimeXdsTransformer;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
 import org.nhindirect.xd.transform.util.XmlUtils;
-import org.nhindirect.xd.transform.util.type.ExternalClassificationScheme;
-import org.nhindirect.xd.transform.util.type.ExternalIdentifier;
+import org.nhindirect.xd.transform.util.type.ClassificationTypeEnum;
+import org.nhindirect.xd.transform.util.type.ExternalIdentifierTypeEnum;
 import org.nhindirect.xd.transform.util.type.MimeType;
 
 /**
@@ -174,7 +173,7 @@ public class DefaultMimeXdsTransformerTest extends TestCase
         String docId = "A";
         String rep = "D";
 
-        ExternalClassificationScheme externalClassificationScheme = ExternalClassificationScheme.DOCUMENT_ENTRY_AUTHOR;
+        ClassificationTypeEnum classificationTypeEnum = ClassificationTypeEnum.DOC_AUTHOR;
 
         List<String> slotNames = Arrays.asList("codingScheme");
         List<String> slotValues = Arrays.asList("eventCodeList");
@@ -182,7 +181,7 @@ public class DefaultMimeXdsTransformerTest extends TestCase
 
         try
         {
-            transformer.addClassifications(classifs, docId, externalClassificationScheme, rep, slotNames, slotValues,
+            transformer.addClassifications(classifs, docId, classificationTypeEnum, rep, slotNames, slotValues,
                     snames);
             fail("Exception not thrown");
         }
@@ -192,7 +191,7 @@ public class DefaultMimeXdsTransformerTest extends TestCase
         }
 
         classifs = new ArrayList<ClassificationType>();
-        transformer.addClassifications(classifs, docId, externalClassificationScheme, rep, slotNames, slotValues,
+        transformer.addClassifications(classifs, docId, classificationTypeEnum, rep, slotNames, slotValues,
                 snames);
 
         assertTrue("List is null", classifs != null);
@@ -200,9 +199,9 @@ public class DefaultMimeXdsTransformerTest extends TestCase
 
         ClassificationType ct = classifs.get(0);
         assertEquals("ClassifiedObject does not match expected", docId, ct.getClassifiedObject());
-        assertEquals("ClassificationScheme does not match expected", externalClassificationScheme
+        assertEquals("ClassificationScheme does not match expected", classificationTypeEnum
                 .getClassificationScheme(), ct.getClassificationScheme());
-        assertEquals("Id does not match expected", externalClassificationScheme.getClassificationId(), ct.getId());
+        assertEquals("Id does not match expected", classificationTypeEnum.getClassificationId(), ct.getId());
         assertEquals("NodeRepresentation does not match expected", rep, ct.getNodeRepresentation());
 
         List<SlotType1> slots = ct.getSlot();
@@ -230,7 +229,7 @@ public class DefaultMimeXdsTransformerTest extends TestCase
         String docId = "A";
         String value = "E";
 
-        ExternalIdentifier externalIdentifier = ExternalIdentifier.DOCUMENT_ENTRY_PATIENT_ID;
+        ExternalIdentifierTypeEnum externalIdentifier = ExternalIdentifierTypeEnum.DOC_PATIENT_ID;
 
         try
         {
