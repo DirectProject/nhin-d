@@ -28,29 +28,50 @@
 
 package org.nhindirect.xd.transform.util.type;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
- * Enumeration for data identifying an External Classification Scheme element.
+ * Valid ClassificationType values.
  * 
  * @author beau
  */
-public enum ExternalClassificationScheme
+public enum ClassificationTypeEnum
 {
-    DOCUMENT_ENTRY_AUTHOR("c101", "urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d"), 
-    DOCUMENT_ENTRY_CLASS_CODE("c102", "uuid:41a5887f-8865-4c09-adf7-e362475b143a"),
-    DOCUMENT_ENTRY_FORMAT_CODE("c104", "urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d"),        
-    DOCUMENT_ENTRY_FACILITY_CODE("c105", "urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1"),         
-    DOCUMENT_ENTRY_PRACTICE_SETTING_CODE("c106", "urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead"),    
-    DOCUMENT_ENTRY_TYPE_CODE("c107", "urn:uuid:f0306f51-975f-434e-a61c-c59651d33983"),
-    SUBMISSION_SET_AUTHOR("c101", "urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d"),
-    SUBMISSION_SET_CONTENT_TYPE_CODE("c102", "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500");
+    DOC_AUTHOR("c101", "urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d", null), 
+    DOC_CLASS_CODE("c102", "urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a", "classCode"),
+    DOC_CONFIDENTIALITY_CODE("c103", "urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f", "Connect-a-thon confidentialityCodes"),
+    DOC_FORMAT_CODE("c104", "urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d", "Connect-a-thon confidentialityCodes"),        
+    DOC_HEALTHCARE_FACILITY_TYPE_CODE("c105", "urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1", "Connect-a-thon healthcareFacilityTypeCodes"),         
+    DOC_PRACTICE_SETTING_CODE("c106", "urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead", "Connect-a-thon practiceSettingCodes"),    
+    DOC_LOINC("c107", "urn:uuid:f0306f51-975f-434e-a61c-c59651d33983", "LOINC"),
+    SS_AUTHOR("c108", "urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d", null),
+    SS_CONTENT_TYPE_CODE("c109", "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500", "Connect-a-thon contentTypeCodes");
 
     private String classificationId;
     private String classificationScheme;
+    private String codingScheme;
 
-    private ExternalClassificationScheme(String classificationId, String classificationScheme)
+    private ClassificationTypeEnum(String classificationId, String classificationScheme, String codingScheme)
     {
         this.classificationId = classificationId;
         this.classificationScheme = classificationScheme;
+        this.codingScheme = codingScheme;
+    }
+    
+    /**
+     * Check to see if the given classificationScheme matches the current
+     * object.
+     * 
+     * @param classificationScheme
+     *            the classificationScheme to check.
+     * @return true if the values match, false otherwise.
+     */
+    public boolean matchesScheme(String classificationScheme)
+    {
+        if (StringUtils.equals(this.classificationScheme, classificationScheme))
+            return true;
+
+        return false;
     }
 
     /**
@@ -71,5 +92,15 @@ public enum ExternalClassificationScheme
     public String getClassificationScheme()
     {
         return this.classificationScheme;
+    }
+
+    /**
+     * Get the value of codingScheme.
+     * 
+     * @return the value of codingScheme.
+     */
+    public String getCodingScheme()
+    {
+        return this.codingScheme;
     }
 }
