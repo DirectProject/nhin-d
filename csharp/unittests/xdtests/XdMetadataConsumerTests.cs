@@ -406,5 +406,86 @@ namespace NHINDirect.Tests.xdTests
             Assert.Equal(expected, doc.PatientID);
         }
 
+        public static IEnumerable<object[]> ServiceStartData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.ServiceStart, new DateTime(2008, 06, 28, 11, 00, 00,00) });
+            }
+        }
+
+        [Theory]
+        [PropertyData("ServiceStartData")]
+        public void ConsumerConsumesServiceStart(XElement documentXEl, DateTime? expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.ServiceStart);
+        }
+
+        public static IEnumerable<object[]> ServiceStopData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.ServiceStop, new DateTime(2008, 06, 28, 15, 00, 00, 00) });
+            }
+        }
+
+        [Theory]
+        [PropertyData("ServiceStopData")]
+        public void ConsumerConsumesServiceStop(XElement documentXEl, DateTime? expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.ServiceStop);
+        }
+
+        public static IEnumerable<object[]> PracticeSettingCodeData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.PracticeSetting, new CodedValue("Laboratory", "Laboratory", "Connect-a-thon practiceSettingCodes") });
+            }
+        }
+
+        [Theory]
+        [PropertyData("PracticeSettingCodeData")]
+        public void ConsumerConsumesPracticeSetting(XElement documentXEl, CodedValue expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.PracticeSetting);
+        }
+
+        public static IEnumerable<object[]> SizeData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.Size, null });
+            }
+        }
+
+        [Theory]
+        [PropertyData("SizeData")]
+        public void ConsumerConsumesSize (XElement documentXEl, int? expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.Size);
+        }
+
+        public static IEnumerable<object[]> SourcePatientIdData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.SourcePtId, new PatientID("89765a87b", "fj34r", "abc") });
+            }
+        }
+
+        [Theory]
+        [PropertyData("SourcePatientIdData")]
+        public void ConsumerConsumesSourcePatientId(XElement documentXEl, PatientID expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.SourcePtId);
+        }
+
+
     }
 }
