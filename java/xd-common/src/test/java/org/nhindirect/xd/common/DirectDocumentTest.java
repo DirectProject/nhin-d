@@ -28,11 +28,13 @@
 
 package org.nhindirect.xd.common;
 
+import java.util.Date;
+
 import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.xd.common.DirectDocument;
+import org.nhindirect.xd.transform.pojo.SimplePerson;
 
 /**
  * TODO: Write tests..
@@ -89,12 +91,11 @@ public class DirectDocumentTest extends TestCase
         metadata.setMimeType("1");
         metadata.set_eot_id("2");
         metadata.set_eot_description("3");
-        metadata.setCreationTime("4");
+        metadata.setCreationTime(new Date());
         metadata.setLanguageCode("5");
-        metadata.setServiceStartTime("6");
-        metadata.setServiceStopTime("7");
-        metadata.setSourcePatientId("8");
-        metadata.setSourcePatientInfo("9");
+        metadata.setServiceStartTime(new Date());
+        metadata.setServiceStopTime(new Date());
+        metadata.setSourcePatient(new SimplePerson("Bob", "Smith"));
         metadata.setAuthorPerson("10");
         metadata.setAuthorInstitution("11");
         metadata.setAuthorRole("12");
@@ -116,7 +117,7 @@ public class DirectDocumentTest extends TestCase
         metadata.set_rpt_id("28");
         metadata.set_rpt_name("29");
         metadata.set_rpt_description("30");
-        metadata.setSs_submissionTime("31");
+        metadata.setSs_submissionTime(new Date());
         metadata.setSs_intendedRecipient("32");
         metadata.setSs_authorPerson("33");
         metadata.setSs_authorInstitution("34");
@@ -141,8 +142,7 @@ public class DirectDocumentTest extends TestCase
         LOGGER.info("languageCode                           " + metadata.getLanguageCode());
         LOGGER.info("serviceStartTime                       " + metadata.getServiceStartTime());
         LOGGER.info("serviceStopTime                        " + metadata.getServiceStopTime());
-        LOGGER.info("sourcePatientId                        " + metadata.getSourcePatientId());
-        LOGGER.info("sourcePatientInfo                      " + metadata.getSourcePatientInfo());
+        LOGGER.info("sourcePatient                          " + metadata.getSourcePatient().getLastName() + ", " + metadata.getSourcePatient().getFirstName());
         LOGGER.info("authorPerson                           " + metadata.getAuthorPerson());
         LOGGER.info("authorInstitution                      " + metadata.getAuthorInstitution());
         LOGGER.info("authorRole                             " + metadata.getAuthorRole());
