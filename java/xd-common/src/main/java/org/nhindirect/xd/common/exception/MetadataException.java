@@ -26,54 +26,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.xd.transform.util.type;
+package org.nhindirect.xd.common.exception;
 
 /**
- * Enumeration for data identifying an External Identifier element.
+ * Generic exception to be thrown from transformation classes.
  * 
  * @author beau
  */
-public enum ExternalIdentifier
+public class MetadataException extends java.lang.Exception
 {
-    DOCUMENT_ENTRY_PATIENT_ID("ei01", "urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427", "XDSDocumentEntry.patientId"), 
-    DOCUMENT_ENTRY_UNIQUE_ID("ei02", "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab", "XDSDocumentEntry.uniqueId"),
-    SUBMISSION_SET_UNIQUE_ID("ei01", "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8", "XDSSubmissionSet.uniqueId"),
-    SUBMISSION_SET_SOURCE_ID("ei02", "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832", "XDSSubmissionSet.sourceId"),
-    SUBMISSION_SET_PATIENT_ID("ei03", "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446", "XDSSubmissionSet.patientId");
-
-    private String identificationId;
-    private String identificationScheme;
-    private String localizedString;
-
-    private ExternalIdentifier(String identificationId, String identificationScheme, String localizedString)
-    {
-        this.identificationId = identificationId;
-        this.identificationScheme = identificationScheme;
-        this.localizedString = localizedString;
-    }
+    private static final long serialVersionUID = 5035431363465393651L;
 
     /**
-     * Get the value of identificationId.
+     * Construct an exception.
      * 
-     * @return the value of identificationId.
+     * @param message
+     *            The exception message.
+     * @param throwable
+     *            The throwable causing the exception.
      */
-    public String getIdentificationId()
+    public MetadataException(String message, Throwable throwable)
     {
-        return this.identificationId;
-    }
-
-    /**
-     * Get the value of identificationScheme.
-     * 
-     * @return the value of identificationScheme.
-     */
-    public String getIdentificationScheme()
-    {
-        return this.identificationScheme;
-    }
-    
-    public String getLocalizedString()
-    {
-        return this.localizedString;
+        super(message, throwable);
     }
 }

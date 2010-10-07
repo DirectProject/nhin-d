@@ -26,55 +26,89 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.routing.impl;
+package org.nhindirect.xd.routing;
 
-import org.nhindirect.routing.RoutingResolver;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * Default implementation of a RoutingResolver.
+ * Resolve an address for routing purposes.
  * 
  * @author beau
  */
-public class RoutingResolverImpl extends RoutingResolver
+public abstract class RoutingResolver
 {
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.nhindirect.routing.RoutingResolver#resolve(java.lang.String)
+    /**
+     * @param address
+     * @return
      */
-    @Override
-    public String resolve(String address)
+    public abstract String resolve(String address);
+
+    /**
+     * @param address
+     * @return
+     */
+    public abstract boolean isXdEndpoint(String address);
+
+    /**
+     * @param address
+     * @return
+     */
+    public abstract boolean isSmtpEndpoint(String address);
+
+    /**
+     * @param addresses
+     * @return
+     */
+    public Collection<String> getSmtpEndpoints(Collection<String> addresses)
     {
-        return address;
+        Collection<String> smtpEndpoints = new ArrayList<String>();
+
+        for (String address : addresses)
+        {
+            if (isSmtpEndpoint(address))
+            {
+                smtpEndpoints.add(address);
+            }
+        }
+
+        return smtpEndpoints;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.nhindirect.routing.RoutingResolver#isSmtpEndpoint(java.lang.String)
+    /**
+     * @param addresses
+     * @return
      */
-    @Override
-    public boolean isSmtpEndpoint(String address)
+    public Collection<String> getXdEndpoints(Collection<String> addresses)
     {
-        if (address == null)
-            return false;
+        Collection<String> xdEndpoints = new ArrayList<String>();
 
-        return address.indexOf('@') > 0;
+        for (String address : addresses)
+        {
+            if (isXdEndpoint(address))
+            {
+                xdEndpoints.add(address);
+            }
+        }
+
+        return xdEndpoints;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.nhindirect.routing.RoutingResolver#isXdEndpoint(java.lang.String)
+    /**
+     * @param addresses
+     * @return
      */
-    @Override
-    public boolean isXdEndpoint(String address)
+    public boolean hasSmtpEndpoints(Collection<String> addresses)
     {
-        if (address == null)
-            return false;
-
-        return address.indexOf('@') <= 0;
+        return !getSmtpEndpoints(addresses).isEmpty();
     }
 
+    /**
+     * @param addresses
+     * @return
+     */
+    public boolean hasXdEndpoints(Collection<String> addresses)
+    {
+        return !getXdEndpoints(addresses).isEmpty();
+    }
 }

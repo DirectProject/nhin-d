@@ -30,8 +30,10 @@ package org.nhindirect.xd.common;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.xml.bind.JAXBElement;
@@ -51,7 +53,16 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.common.exception.MetadataException;
+import org.nhindirect.xd.transform.pojo.SimplePerson;
 import org.nhindirect.xd.transform.util.XmlUtils;
+import org.nhindirect.xd.transform.util.type.ClassificationTypeEnum;
+import org.nhindirect.xd.transform.util.type.ExternalIdentifierTypeEnum;
+import org.nhindirect.xd.transform.util.type.SlotType1Enum;
 
 /**
  * Abstract representation of a document with supporting metadata.
@@ -63,8 +74,7 @@ public class DirectDocument
     private String data;
     private Metadata metadata;
 
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = Logger.getLogger(DirectDocument.class.getPackage().getName());
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(DirectDocument.class);
 
     /**
      * Default document constructor.
@@ -133,13 +143,13 @@ public class DirectDocument
         private String _eot_id;
         private String _eot_description;
 
-        private String creationTime;
+        private Date creationTime;
         private String languageCode;
-        private String serviceStartTime;
-        private String serviceStopTime;
-        private String sourcePatientId;
-        private String sourcePatientInfo;
-
+        private Date serviceStartTime;
+        private Date serviceStopTime;
+        
+        private SimplePerson sourcePatient = new SimplePerson();
+        
         private String authorPerson;
         private String authorInstitution;
         private String authorRole;
@@ -170,7 +180,7 @@ public class DirectDocument
         private String _rpt_name;
         private String _rpt_description;
 
-        private String ss_submissionTime;
+        private Date ss_submissionTime;
         private String ss_intendedRecipient;
 
         private String ss_authorPerson;
@@ -192,7 +202,8 @@ public class DirectDocument
          */
         public Metadata()
         {
-
+            this._eot_id = "Document01";
+            this._rpt_id = "SubmissionSet01";
         }
 
         /**
@@ -211,7 +222,7 @@ public class DirectDocument
         /**
          * Get the metadata represented as a SubmitObjectsRequest object.
          */
-        public SubmitObjectsRequest getAsSubmitObjectsRequest()
+        public SubmitObjectsRequest getSubmitObjectsRequest()
         {
             ExtrinsicObjectType extrinsicObjectType = generateExtrinsicObjectType();
             RegistryPackageType registryPackageType = generateRegistryPackageType();
@@ -221,20 +232,16 @@ public class DirectDocument
             QName qname = null;
 
             qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "ExtrinsicObject");
-            JAXBElement<ExtrinsicObjectType> jaxb_extrinsicObjectType = new JAXBElement<ExtrinsicObjectType>(qname,
-                    ExtrinsicObjectType.class, extrinsicObjectType);
+            JAXBElement<ExtrinsicObjectType> jaxb_extrinsicObjectType = new JAXBElement<ExtrinsicObjectType>(qname, ExtrinsicObjectType.class, extrinsicObjectType);
 
             qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "RegistryPackage");
-            JAXBElement<RegistryPackageType> jaxb_registryPackageType = new JAXBElement<RegistryPackageType>(qname,
-                    RegistryPackageType.class, registryPackageType);
+            JAXBElement<RegistryPackageType> jaxb_registryPackageType = new JAXBElement<RegistryPackageType>(qname, RegistryPackageType.class, registryPackageType);
 
             qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "Classification");
-            JAXBElement<ClassificationType> jaxb_classificationType = new JAXBElement<ClassificationType>(qname,
-                    ClassificationType.class, classificationType);
+            JAXBElement<ClassificationType> jaxb_classificationType = new JAXBElement<ClassificationType>(qname, ClassificationType.class, classificationType);
 
             qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "Association");
-            JAXBElement<AssociationType1> jaxb_AssociationType = new JAXBElement<AssociationType1>(qname,
-                    AssociationType1.class, associationType);
+            JAXBElement<AssociationType1> jaxb_AssociationType = new JAXBElement<AssociationType1>(qname, AssociationType1.class, associationType);
 
             SubmitObjectsRequest submitObjectsRequest = new SubmitObjectsRequest();
             RegistryObjectListType registryObjectListType = new RegistryObjectListType();
@@ -259,125 +266,125 @@ public class DirectDocument
             eot.setMimeType(mimeType);
 
             List<SlotType1> slots = eot.getSlot();
-            slots.add(makeSlot("creationTime", creationTime));
-            slots.add(makeSlot("languageCode", languageCode));
-            slots.add(makeSlot("serviceStartTime", serviceStartTime));
-            slots.add(makeSlot("serviceStopTime", serviceStopTime));
-            slots.add(makeSlot("sourcePatientId", sourcePatientId));
-            slots.add(makeSlot("sourcePatientInfo", sourcePatientInfo)); // TODO multiple values
+            slots.add(makeSlot(SlotType1Enum.CREATION_TIME, creationTime != null ? (new SimpleDateFormat("yyyyMMdd")).format(creationTime) : null));
+            slots.add(makeSlot(SlotType1Enum.LANGUAGE_CODE, languageCode));
+            slots.add(makeSlot(SlotType1Enum.SERVICE_START_TIME, serviceStartTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStartTime) : null));
+            slots.add(makeSlot(SlotType1Enum.SERVICE_STOP_TIME, serviceStopTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStopTime) : null));
+            slots.add(makeSlot(SlotType1Enum.SOURCE_PATIENT_ID, sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg() + "&ISO"));
+            slots.add(makeSlot(SlotType1Enum.SOURCE_PATIENT_INFO, sourcePatient));
 
             eot.setName(makeInternationalStringType(classCode_localized));
             eot.setDescription(makeInternationalStringType(_eot_description));
 
             // author
             ClassificationType authorClassification = new ClassificationType();
-            authorClassification.setId("cl01");
             authorClassification.setClassifiedObject(_eot_id);
-            authorClassification.setClassificationScheme("urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d");
+            authorClassification.setId(ClassificationTypeEnum.DOC_AUTHOR.getClassificationId());
+            authorClassification.setClassificationScheme(ClassificationTypeEnum.DOC_AUTHOR.getClassificationScheme());
 
             List<SlotType1> authorClassificationSlots = authorClassification.getSlot();
-            authorClassificationSlots.add(makeSlot("authorPerson", authorPerson));
-            authorClassificationSlots.add(makeSlot("authorInstitution", authorInstitution));
-            authorClassificationSlots.add(makeSlot("authorRole", authorRole));
-            authorClassificationSlots.add(makeSlot("authorSpecialty", authorSpecialty));
+            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_PERSON, authorPerson));
+            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_INSTITUTION, authorInstitution));
+            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_ROLE, authorRole));
+            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_SPECIALTY, authorSpecialty));
 
             eot.getClassification().add(authorClassification);
 
             // classCode
             ClassificationType classCodeClassification = new ClassificationType();
-            classCodeClassification.setId("cl02");
             classCodeClassification.setClassifiedObject(_eot_id);
-            classCodeClassification.setClassificationScheme("urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a");
             classCodeClassification.setNodeRepresentation(classCode);
             classCodeClassification.setName(makeInternationalStringType(classCode_localized));
+            classCodeClassification.setId(ClassificationTypeEnum.DOC_CLASS_CODE.getClassificationId());
+            classCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_CLASS_CODE.getClassificationScheme());
 
             List<SlotType1> classCodeClassificationSlots = classCodeClassification.getSlot();
-            classCodeClassificationSlots.add(makeSlot("codingScheme", "classCode"));
+            classCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CLASS_CODE.getCodingScheme()));
 
             eot.getClassification().add(classCodeClassification);
 
             // confidentialityCode
             ClassificationType confidentialityCodeClassification = new ClassificationType();
-            confidentialityCodeClassification.setId("cl03");
             confidentialityCodeClassification.setClassifiedObject(_eot_id);
-            confidentialityCodeClassification.setClassificationScheme("urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a");
             confidentialityCodeClassification.setNodeRepresentation(confidentialityCode);
             confidentialityCodeClassification.setName(makeInternationalStringType(confidentialityCode_localized));
+            confidentialityCodeClassification.setId(ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getClassificationId());
+            confidentialityCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getClassificationScheme());
 
             List<SlotType1> confidentialityCodeClassificationSlots = confidentialityCodeClassification.getSlot();
-            confidentialityCodeClassificationSlots.add(makeSlot("codingScheme", "Connect-a-thon confidentialityCodes"));
+            confidentialityCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getCodingScheme()));
 
             eot.getClassification().add(confidentialityCodeClassification);
 
             // formatCode
             ClassificationType formatCodeClassification = new ClassificationType();
-            formatCodeClassification.setId("cl04");
             formatCodeClassification.setClassifiedObject(_eot_id);
-            formatCodeClassification.setClassificationScheme("urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d");
             formatCodeClassification.setNodeRepresentation(formatCode);
             formatCodeClassification.setName(makeInternationalStringType(formatCode_localized));
+            formatCodeClassification.setId(ClassificationTypeEnum.DOC_FORMAT_CODE.getClassificationId());
+            formatCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_FORMAT_CODE.getClassificationScheme());
 
             List<SlotType1> formatCodeClassificationSlots = formatCodeClassification.getSlot();
-            formatCodeClassificationSlots.add(makeSlot("codingScheme", "Connect-a-thon confidentialityCodes"));
+            formatCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_FORMAT_CODE.getCodingScheme()));
 
             eot.getClassification().add(formatCodeClassification);
 
             // healthcareFacilityTypeCode
             ClassificationType healthcareFacilityTypeCodeClassification = new ClassificationType();
-            healthcareFacilityTypeCodeClassification.setId("cl05");
             healthcareFacilityTypeCodeClassification.setClassifiedObject(_eot_id);
-            healthcareFacilityTypeCodeClassification.setClassificationScheme("urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1");
             healthcareFacilityTypeCodeClassification.setNodeRepresentation(healthcareFacilityTypeCode);
             healthcareFacilityTypeCodeClassification.setName(makeInternationalStringType(healthcareFacilityTypeCode_localized));
+            healthcareFacilityTypeCodeClassification.setId(ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getClassificationId());
+            healthcareFacilityTypeCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getClassificationScheme());
 
             List<SlotType1> healthcareFacilityTypeCodeClassificationSlots = healthcareFacilityTypeCodeClassification.getSlot();
-            healthcareFacilityTypeCodeClassificationSlots.add(makeSlot("codingScheme", "Connect-a-thon healthcareFacilityTypeCodes"));
+            healthcareFacilityTypeCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getCodingScheme()));
 
             eot.getClassification().add(healthcareFacilityTypeCodeClassification);
 
             // practiceSettingCode
             ClassificationType practiceSettingCodeClassification = new ClassificationType();
-            practiceSettingCodeClassification.setId("cl06");
             practiceSettingCodeClassification.setClassifiedObject(_eot_id);
-            practiceSettingCodeClassification.setClassificationScheme("urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead");
             practiceSettingCodeClassification.setNodeRepresentation(practiceSettingCode);
             practiceSettingCodeClassification.setName(makeInternationalStringType(practiceSettingCode_localized));
+            practiceSettingCodeClassification.setId(ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getClassificationId());
+            practiceSettingCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getClassificationScheme());
 
             List<SlotType1> practiceSettingCodeClassificationSlots = practiceSettingCodeClassification.getSlot();
-            practiceSettingCodeClassificationSlots.add(makeSlot("codingScheme", "Connect-a-thon practiceSettingCodes"));
+            practiceSettingCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getCodingScheme()));
 
             eot.getClassification().add(practiceSettingCodeClassification);
 
             // loinc
             ClassificationType loincClassification = new ClassificationType();
-            loincClassification.setId("cl07");
             loincClassification.setClassifiedObject(_eot_id);
-            loincClassification.setClassificationScheme("urn:uuid:f0306f51-975f-434e-a61c-c59651d33983");
             loincClassification.setNodeRepresentation(loinc);
             loincClassification.setName(makeInternationalStringType(loinc_localized));
+            loincClassification.setId(ClassificationTypeEnum.DOC_LOINC.getClassificationId());
+            loincClassification.setClassificationScheme(ClassificationTypeEnum.DOC_LOINC.getClassificationScheme());
 
             List<SlotType1> loincClassificationSlots = loincClassification.getSlot();
-            loincClassificationSlots.add(makeSlot("codingScheme", "LOINC"));
+            loincClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_LOINC.getCodingScheme()));
 
             eot.getClassification().add(loincClassification);
 
             // patientId
             ExternalIdentifierType xdsDocumentEntry_patientId = new ExternalIdentifierType();
-            xdsDocumentEntry_patientId.setId("ei01");
-            xdsDocumentEntry_patientId.setRegistryObject(_eot_id);
-            xdsDocumentEntry_patientId.setIdentificationScheme("urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427");
             xdsDocumentEntry_patientId.setValue(patientId);
-            xdsDocumentEntry_patientId.setName(makeInternationalStringType("XDSDocumentEntry.patientId"));
+            xdsDocumentEntry_patientId.setRegistryObject(_eot_id);
+            xdsDocumentEntry_patientId.setId(ExternalIdentifierTypeEnum.DOC_PATIENT_ID.getIdentificationId());
+            xdsDocumentEntry_patientId.setIdentificationScheme(ExternalIdentifierTypeEnum.DOC_PATIENT_ID.getIdentificationScheme());
+            xdsDocumentEntry_patientId.setName(makeInternationalStringType(ExternalIdentifierTypeEnum.DOC_PATIENT_ID.getLocalizedString()));
 
             eot.getExternalIdentifier().add(xdsDocumentEntry_patientId);
 
             // uniqueId
             ExternalIdentifierType xdsDocumentEntry_uniqueId = new ExternalIdentifierType();
-            xdsDocumentEntry_uniqueId.setId("ei02");
-            xdsDocumentEntry_uniqueId.setRegistryObject(_eot_id);
-            xdsDocumentEntry_uniqueId.setIdentificationScheme("urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab");
             xdsDocumentEntry_uniqueId.setValue(uniqueId);
-            xdsDocumentEntry_uniqueId.setName(makeInternationalStringType("XDSDocumentEntry.uniqueId"));
+            xdsDocumentEntry_uniqueId.setRegistryObject(_eot_id);
+            xdsDocumentEntry_uniqueId.setId(ExternalIdentifierTypeEnum.DOC_UNIQUE_ID.getIdentificationId());
+            xdsDocumentEntry_uniqueId.setIdentificationScheme(ExternalIdentifierTypeEnum.DOC_UNIQUE_ID.getIdentificationScheme());
+            xdsDocumentEntry_uniqueId.setName(makeInternationalStringType(ExternalIdentifierTypeEnum.DOC_UNIQUE_ID.getLocalizedString()));
 
             eot.getExternalIdentifier().add(xdsDocumentEntry_uniqueId);
 
@@ -391,66 +398,66 @@ public class DirectDocument
             rpt.setId(_rpt_id);
 
             List<SlotType1> slots = rpt.getSlot();
-            slots.add(makeSlot("submissionTime", ss_submissionTime));
-            slots.add(makeSlot("intendedRecipient", ss_intendedRecipient));
+            slots.add(makeSlot(SlotType1Enum.SUBMISSION_TIME, ss_submissionTime != null ? (new SimpleDateFormat("yyyyMMddHHmmss")).format(ss_submissionTime) : null));
+            slots.add(makeSlot(SlotType1Enum.INTENDED_RECIPIENT, ss_intendedRecipient));
 
             rpt.setName(makeInternationalStringType(_rpt_name));
             rpt.setDescription(makeInternationalStringType(_rpt_description));
 
             // author
             ClassificationType authorClassification = new ClassificationType();
-            authorClassification.setId("cl08");
             authorClassification.setClassifiedObject(_rpt_id);
-            authorClassification.setClassificationScheme("urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d");
+            authorClassification.setId(ClassificationTypeEnum.SS_AUTHOR.getClassificationId());
+            authorClassification.setClassificationScheme(ClassificationTypeEnum.SS_AUTHOR.getClassificationScheme());
 
             List<SlotType1> authorClassificationSlots = authorClassification.getSlot();
-            authorClassificationSlots.add(makeSlot("authorPerson", ss_authorPerson));
-            authorClassificationSlots.add(makeSlot("authorInstitution", ss_authorInstitution));
-            authorClassificationSlots.add(makeSlot("authorRole", ss_authorRole));
-            authorClassificationSlots.add(makeSlot("authorSpecialty", ss_authorSpecialty));
+            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_PERSON, ss_authorPerson));
+            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_INSTITUTION, ss_authorInstitution));
+            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_ROLE, ss_authorRole));
+            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_SPECIALTY, ss_authorSpecialty));
 
             rpt.getClassification().add(authorClassification);
 
             // contentTypeCode
             ClassificationType contentTypeCodeClassification = new ClassificationType();
-            contentTypeCodeClassification.setId("cl09");
             contentTypeCodeClassification.setClassifiedObject(_rpt_id);
-            contentTypeCodeClassification.setClassificationScheme("urn:uuid:aa543740-bdda-424e-8c96-df4873be8500");
             contentTypeCodeClassification.setNodeRepresentation(contentTypeCode);
             contentTypeCodeClassification.setName(makeInternationalStringType(contentTypeCode_localized));
+            contentTypeCodeClassification.setId(ClassificationTypeEnum.SS_CONTENT_TYPE_CODE.getClassificationId());
+            contentTypeCodeClassification.setClassificationScheme(ClassificationTypeEnum.SS_CONTENT_TYPE_CODE.getClassificationScheme());
 
             List<SlotType1> contentTypeCodeClassificationSlots = contentTypeCodeClassification.getSlot();
-            contentTypeCodeClassificationSlots.add(makeSlot("codingScheme", "Connect-a-thon contentTypeCodes"));
+            contentTypeCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.SS_CONTENT_TYPE_CODE.getCodingScheme()));
 
             rpt.getClassification().add(contentTypeCodeClassification);
 
             // uniqueId
             ExternalIdentifierType xdsSubmissionSet_uniqueId = new ExternalIdentifierType();
-            xdsSubmissionSet_uniqueId.setId("ei03");
-            xdsSubmissionSet_uniqueId.setRegistryObject(_rpt_id);
-            xdsSubmissionSet_uniqueId.setIdentificationScheme("urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8");
             xdsSubmissionSet_uniqueId.setValue(ss_uniqueId);
-            xdsSubmissionSet_uniqueId.setName(makeInternationalStringType("XDSSubmissionSet.uniqueId"));
+            xdsSubmissionSet_uniqueId.setRegistryObject(_rpt_id);
+            xdsSubmissionSet_uniqueId.setId(ExternalIdentifierTypeEnum.SS_UNIQUE_ID.getIdentificationId());
+            xdsSubmissionSet_uniqueId.setIdentificationScheme(ExternalIdentifierTypeEnum.SS_UNIQUE_ID.getIdentificationScheme());
+            xdsSubmissionSet_uniqueId.setName(makeInternationalStringType(ExternalIdentifierTypeEnum.SS_UNIQUE_ID.getLocalizedString()));
 
             rpt.getExternalIdentifier().add(xdsSubmissionSet_uniqueId);
 
             // sourceId
             ExternalIdentifierType xdsSubmissionSet_sourceId = new ExternalIdentifierType();
-            xdsSubmissionSet_sourceId.setId("ei04");
-            xdsSubmissionSet_sourceId.setRegistryObject(_rpt_id);
-            xdsSubmissionSet_sourceId.setIdentificationScheme("urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832");
             xdsSubmissionSet_sourceId.setValue(ss_sourceId);
-            xdsSubmissionSet_sourceId.setName(makeInternationalStringType("XDSSubmissionSet.sourceId"));
+            xdsSubmissionSet_sourceId.setRegistryObject(_rpt_id);
+            xdsSubmissionSet_sourceId.setId(ExternalIdentifierTypeEnum.SS_SOURCE_ID.getIdentificationId());
+            xdsSubmissionSet_sourceId.setIdentificationScheme(ExternalIdentifierTypeEnum.SS_SOURCE_ID.getIdentificationScheme());
+            xdsSubmissionSet_sourceId.setName(makeInternationalStringType(ExternalIdentifierTypeEnum.SS_SOURCE_ID.getLocalizedString()));
 
             rpt.getExternalIdentifier().add(xdsSubmissionSet_sourceId);
 
             // patientId
             ExternalIdentifierType xdsSubmissionSet_patientId = new ExternalIdentifierType();
-            xdsSubmissionSet_patientId.setId("ei05");
-            xdsSubmissionSet_patientId.setRegistryObject(_rpt_id);
-            xdsSubmissionSet_patientId.setIdentificationScheme("urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446");
             xdsSubmissionSet_patientId.setValue(ss_patientId);
-            xdsSubmissionSet_patientId.setName(makeInternationalStringType("XDSSubmissionSet.patientId"));
+            xdsSubmissionSet_patientId.setRegistryObject(_rpt_id);
+            xdsSubmissionSet_patientId.setId(ExternalIdentifierTypeEnum.SS_PATIENT_ID.getIdentificationId());
+            xdsSubmissionSet_patientId.setIdentificationScheme(ExternalIdentifierTypeEnum.SS_PATIENT_ID.getIdentificationScheme());
+            xdsSubmissionSet_patientId.setName(makeInternationalStringType(ExternalIdentifierTypeEnum.SS_PATIENT_ID.getLocalizedString()));
 
             rpt.getExternalIdentifier().add(xdsSubmissionSet_patientId);
 
@@ -478,7 +485,7 @@ public class DirectDocument
             at.setTargetObject(_eot_id);
 
             List<SlotType1> slots = at.getSlot();
-            slots.add(makeSlot("SubmissionSetStatus", submissionSetStatus));
+            slots.add(makeSlot(SlotType1Enum.SUBMISSION_SET_STATUS, submissionSetStatus));
 
             return at;
         }
@@ -492,12 +499,12 @@ public class DirectDocument
          *            string.
          * @throws Exception
          */
-        public void extractFromSubmitObjectsRequestXml(String submitObjectsRequestXml) throws Exception
+        public void setValues(String submitObjectsRequestXml) throws Exception
         {
             SubmitObjectsRequest sor = (SubmitObjectsRequest) XmlUtils.unmarshal(new String(submitObjectsRequestXml),
                     oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
 
-            extractFromSubmitObjectsRequest(sor);
+            setValues(sor);
         }
 
         /**
@@ -506,7 +513,7 @@ public class DirectDocument
          * @param submitObjectsRequest
          *            A SubmitObjectsRequest object.
          */
-        public void extractFromSubmitObjectsRequest(SubmitObjectsRequest submitObjectsRequest)
+        public void setValues(SubmitObjectsRequest submitObjectsRequest) throws MetadataException
         {
             RegistryObjectListType rol = submitObjectsRequest.getRegistryObjectList();
 
@@ -520,195 +527,292 @@ public class DirectDocument
 
                     mimeType = eot.getMimeType();
                     _eot_id = eot.getId();
-                    
+
                     if (eot.getDescription() != null && eot.getDescription().getLocalizedString() != null
                             && !eot.getDescription().getLocalizedString().isEmpty())
                         _eot_description = eot.getDescription().getLocalizedString().get(0).getValue();
 
                     for (SlotType1 slot : eot.getSlot())
                     {
-                        if (slot.getName().equals("creationTime"))
+                        if (SlotType1Enum.CREATION_TIME.matches(slot.getName()))
                         {
                             if (slotNotEmpty(slot))
-                                creationTime = slot.getValueList().getValue().get(0);
+                            {
+                                try
+                                {
+                                    creationTime = DateUtils.parseDate(slot.getValueList().getValue().get(0),
+                                            new String[]
+                                            { "yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMdd" });
+                                }
+                                catch (ParseException e)
+                                {
+                                    LOGGER.error("Unable to parse creationTime", e);
+                                    throw new MetadataException("Unable to parse creationTime", e);
+                                }
+                            }
                         }
-                        else if (slot.getName().equals("languageCode"))
+                        else if (SlotType1Enum.LANGUAGE_CODE.matches(slot.getName()))
                         {
                             if (slotNotEmpty(slot))
                                 languageCode = slot.getValueList().getValue().get(0);
                         }
-                        else if (slot.getName().equals("serviceStartTime"))
+                        else if (SlotType1Enum.SERVICE_START_TIME.matches(slot.getName()))
                         {
                             if (slotNotEmpty(slot))
-                                serviceStartTime = slot.getValueList().getValue().get(0);
+                            {
+                                try
+                                {
+                                    serviceStartTime = DateUtils.parseDate(slot.getValueList().getValue().get(0),
+                                            new String[]
+                                            { "yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMdd" });
+                                }
+                                catch (ParseException e)
+                                {
+                                    LOGGER.error("Unable to parse serviceStartTime", e);
+                                    throw new MetadataException("Unable to parse serviceStartTime", e);
+                                }
+                            }
                         }
-                        else if (slot.getName().equals("serviceStopTime"))
+                        else if (SlotType1Enum.SERVICE_STOP_TIME.matches(slot.getName()))
                         {
                             if (slotNotEmpty(slot))
-                                serviceStopTime = slot.getValueList().getValue().get(0);
+                            {
+                                try
+                                {
+                                    serviceStopTime = DateUtils.parseDate(slot.getValueList().getValue().get(0),
+                                            new String[]
+                                            { "yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMdd" });
+                                }
+                                catch (ParseException e)
+                                {
+                                    LOGGER.error("Unable to parse serviceStopTime", e);
+                                    throw new MetadataException("Unable to parse serviceStopTime", e);
+                                }
+                            }
                         }
-                        else if (slot.getName().equals("sourcePatientId"))
+                        else if (SlotType1Enum.SOURCE_PATIENT_ID.matches(slot.getName()))
                         {
                             if (slotNotEmpty(slot))
-                                sourcePatientId = slot.getValueList().getValue().get(0);
-                        }
-                        else if (slot.getName().equals("sourcePatientInfo"))
-                        {
-                            // FIXME
-                            sourcePatientInfo = "";
+                            {
+                                String[] tokens = StringUtils.splitPreserveAllTokens(slot.getValueList().getValue()
+                                        .get(0), "^");
 
+                                if (tokens != null && tokens.length >= 1)
+                                    sourcePatient.setLocalId(tokens[0]);
+                                else
+                                    sourcePatient.setLocalId(slot.getValueList().getValue().get(0));
+
+                                if (tokens != null && tokens.length >= 4)
+                                {
+                                    tokens = StringUtils.splitPreserveAllTokens(slot.getValueList().getValue().get(0),
+                                            "&");
+
+                                    if (tokens.length >= 2)
+                                        sourcePatient.setLocalOrg(tokens[1]);
+                                }
+                            }
+                        }
+                        else if (SlotType1Enum.SOURCE_PATIENT_INFO.matches(slot.getName()))
+                        {
                             if (slotNotEmpty(slot))
+                            {
                                 for (String value : slot.getValueList().getValue())
                                 {
-                                    sourcePatientInfo += value;
+                                    if (StringUtils.startsWith(value, "PID-3|"))
+                                    {
+                                        // Already have this from sourcePatientId
+                                    }
+                                    else if (StringUtils.startsWith(value, "PID-5|"))
+                                    {
+                                        String[] split = StringUtils.splitPreserveAllTokens(value, "|");
+                                        String[] tokens = StringUtils.splitPreserveAllTokens(split[1], "^");
+                                        
+                                        if (tokens != null && tokens.length >= 1)
+                                            sourcePatient.setLastName(tokens[0]);
+                                        
+                                        if (tokens != null && tokens.length >= 2)
+                                            sourcePatient.setFirstName(tokens[1]);
+                                        
+                                        if (tokens != null && tokens.length >= 3)
+                                            sourcePatient.setMiddleName(tokens[2]);
+                                    }
+                                    else if (StringUtils.startsWith(value, "PID-7|"))
+                                    {
+                                        String[] split = StringUtils.splitPreserveAllTokens(value, "|");
+                                        
+                                        if (split.length >= 2)
+                                            sourcePatient.setBirthDateTime(split[1]);
+                                    }
+                                    else if (StringUtils.startsWith(value, "PID-8|"))
+                                    {
+                                        String[] split = StringUtils.splitPreserveAllTokens(value, "|");
+                                        
+                                        if (split.length >= 2)
+                                            sourcePatient.setGenderCode(split[1]);
+                                    }
+                                    else if (StringUtils.startsWith(value, "PID-11|"))
+                                    {
+                                        String[] split = StringUtils.splitPreserveAllTokens(value, "|");
+                                        String[] tokens = StringUtils.splitPreserveAllTokens(split[1], "^");
+                                        
+                                        if (tokens != null && tokens.length >= 1)
+                                            sourcePatient.setStreetAddress1(tokens[0]);
+                                        
+                                        if (tokens != null && tokens.length >= 3)
+                                            sourcePatient.setCity(tokens[2]);
+                                        
+                                        if (tokens != null && tokens.length >= 4)
+                                            sourcePatient.setState(tokens[3]);
+                                        
+                                        if (tokens != null && tokens.length >= 5)
+                                            sourcePatient.setZipCode(tokens[4]);
+                                        
+                                        // TODO country ?
+                                    }
                                 }
+                            }
                         }
                     }
 
                     for (ClassificationType ct : eot.getClassification())
                     {
-                        if (ct.getClassificationScheme().equals("urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d"))
+                        if (ClassificationTypeEnum.DOC_AUTHOR.matchesScheme(ct.getClassificationScheme()))
                         {
                             for (SlotType1 slot : ct.getSlot())
                             {
-                                if (slot.getName().equals("authorPerson"))
+                                if (SlotType1Enum.AUTHOR_PERSON.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                         authorPerson = slot.getValueList().getValue().get(0);
                                 }
-                                else if (slot.getName().equals("authorInstitution"))
+                                else if (SlotType1Enum.AUTHOR_INSTITUTION.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                         authorInstitution = slot.getValueList().getValue().get(0);
                                 }
-                                else if (slot.getName().equals("authorRole"))
+                                else if (SlotType1Enum.AUTHOR_ROLE.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                         authorRole = slot.getValueList().getValue().get(0);
                                 }
-                                else if (slot.getName().equals("authorSpecialty"))
+                                else if (SlotType1Enum.AUTHOR_SPECIALTY.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                         authorSpecialty = slot.getValueList().getValue().get(0);
                                 }
                             }
                         }
-                        else if (ct.getClassificationScheme().equals("urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a"))
+                        else if (ClassificationTypeEnum.DOC_CLASS_CODE.matchesScheme(ct.getClassificationScheme()))
                         {
                             for (SlotType1 slot : ct.getSlot())
                             {
-                                if (slot.getName().equals("codingScheme"))
+                                if (SlotType1Enum.CODING_SCHEME.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                     {
-                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
-                                                .getValue().get(0);
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList().getValue().get(0);
                                     }
                                 }
                             }
 
                             classCode = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
                                 classCode_localized = ct.getName().getLocalizedString().get(0).getValue();
                         }
-                        else if (ct.getClassificationScheme().equals("urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f"))
+                        else if (ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.matchesScheme(ct.getClassificationScheme()))
                         {
                             for (SlotType1 slot : ct.getSlot())
                             {
-                                if (slot.getName().equals("codingScheme"))
+                                if (SlotType1Enum.CODING_SCHEME.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                     {
-                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
-                                                .getValue().get(0);
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList().getValue().get(0);
                                     }
                                 }
                             }
 
                             confidentialityCode = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
                                 confidentialityCode_localized = ct.getName().getLocalizedString().get(0).getValue();
                         }
-                        else if (ct.getClassificationScheme().equals("urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d"))
+                        else if (ClassificationTypeEnum.DOC_FORMAT_CODE.matchesScheme(ct.getClassificationScheme()))
                         {
                             for (SlotType1 slot : ct.getSlot())
                             {
-                                if (slot.getName().equals("codingScheme"))
+                                if (SlotType1Enum.CODING_SCHEME.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                     {
-                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
-                                                .getValue().get(0);
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList().getValue().get(0);
                                     }
                                 }
                             }
 
                             formatCode = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
                                 formatCode_localized = ct.getName().getLocalizedString().get(0).getValue();
                         }
-                        else if (ct.getClassificationScheme().equals("urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1"))
+                        else if (ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.matchesScheme(ct.getClassificationScheme()))
                         {
                             for (SlotType1 slot : ct.getSlot())
                             {
-                                if (slot.getName().equals("codingScheme"))
+                                if (SlotType1Enum.CODING_SCHEME.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                     {
-                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
-                                                .getValue().get(0);
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList().getValue().get(0);
                                     }
                                 }
                             }
 
                             healthcareFacilityTypeCode = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
-                                healthcareFacilityTypeCode_localized = ct.getName().getLocalizedString().get(0).getValue();
+                                healthcareFacilityTypeCode_localized = ct.getName().getLocalizedString().get(0)
+                                        .getValue();
                         }
-                        else if (ct.getClassificationScheme().equals("urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead"))
+                        else if (ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.matchesScheme(ct.getClassificationScheme()))
                         {
                             for (SlotType1 slot : ct.getSlot())
                             {
-                                if (slot.getName().equals("codingScheme"))
+                                if (SlotType1Enum.CODING_SCHEME.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                     {
-                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
-                                                .getValue().get(0);
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList().getValue().get(0);
                                     }
                                 }
                             }
 
                             practiceSettingCode = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
                                 practiceSettingCode_localized = ct.getName().getLocalizedString().get(0).getValue();
                         }
-                        else if (ct.getClassificationScheme().equals("urn:uuid:f0306f51-975f-434e-a61c-c59651d33983"))
+                        else if (ClassificationTypeEnum.DOC_LOINC.matchesScheme(ct.getClassificationScheme()))
                         {
                             for (SlotType1 slot : ct.getSlot())
                             {
-                                if (slot.getName().equals("codingScheme"))
+                                if (SlotType1Enum.CODING_SCHEME.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                     {
-                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
-                                                .getValue().get(0);
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList().getValue().get(0);
                                     }
                                 }
                             }
 
                             loinc = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
                                 loinc_localized = ct.getName().getLocalizedString().get(0).getValue();
@@ -717,11 +821,11 @@ public class DirectDocument
 
                     for (ExternalIdentifierType eit : eot.getExternalIdentifier())
                     {
-                        if (eit.getIdentificationScheme().equals("urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427"))
+                        if (ExternalIdentifierTypeEnum.DOC_PATIENT_ID.matchesScheme(eit.getIdentificationScheme()))
                         {
                             patientId = eit.getValue();
                         }
-                        else if (eit.getIdentificationScheme().equals("urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab"))
+                        else if (ExternalIdentifierTypeEnum.DOC_UNIQUE_ID.matchesScheme(eit.getIdentificationScheme()))
                         {
                             uniqueId = eit.getValue();
                         }
@@ -737,12 +841,24 @@ public class DirectDocument
 
                     for (SlotType1 slot : rpt.getSlot())
                     {
-                        if (slot.getName().equals("submissionTime"))
+                        if (SlotType1Enum.SUBMISSION_TIME.matches(slot.getName()))
                         {
                             if (slotNotEmpty(slot))
-                                ss_submissionTime = slot.getValueList().getValue().get(0);
+                            {
+                                try
+                                {
+                                    ss_submissionTime = DateUtils.parseDate(slot.getValueList().getValue().get(0),
+                                            new String[]
+                                            { "yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMdd" });
+                                }
+                                catch (ParseException e)
+                                {
+                                    LOGGER.error("Unable to parse submissionTime", e);
+                                    throw new MetadataException("Unable to parse submissionTime", e);
+                                }
+                            }
                         }
-                        else if (slot.getName().equals("intendedRecipient"))
+                        else if (SlotType1Enum.INTENDED_RECIPIENT.matches(slot.getName()))
                         {
                             if (slotNotEmpty(slot))
                                 ss_intendedRecipient = slot.getValueList().getValue().get(0);
@@ -751,49 +867,49 @@ public class DirectDocument
 
                     for (ClassificationType ct : rpt.getClassification())
                     {
-                        if (ct.getClassificationScheme().equals("urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d"))
+                        if (ClassificationTypeEnum.SS_AUTHOR.matchesScheme(ct.getClassificationScheme()))
                         {
                             for (SlotType1 slot : ct.getSlot())
                             {
-                                if (slot.getName().equals("authorPerson"))
+                                if (SlotType1Enum.AUTHOR_PERSON.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                         ss_authorPerson = slot.getValueList().getValue().get(0);
                                 }
-                                else if (slot.getName().equals("authorInstitution"))
+                                else if (SlotType1Enum.AUTHOR_INSTITUTION.matches(slot.getName()))
                                 {
+                                    // FIXME: this had two values
+                                    
                                     if (slotNotEmpty(slot))
                                         ss_authorInstitution = slot.getValueList().getValue().get(0);
-                                    // TODO: this had two values
                                 }
-                                else if (slot.getName().equals("authorRole"))
+                                else if (SlotType1Enum.AUTHOR_ROLE.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                         ss_authorRole = slot.getValueList().getValue().get(0);
                                 }
-                                else if (slot.getName().equals("authorSpecialty"))
+                                else if (SlotType1Enum.AUTHOR_SPECIALTY.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                         ss_authorSpecialty = slot.getValueList().getValue().get(0);
                                 }
                             }
                         }
-                        if (ct.getClassificationScheme().equals("urn:uuid:aa543740-bdda-424e-8c96-df4873be8500"))
+                        if (ClassificationTypeEnum.SS_CONTENT_TYPE_CODE.matchesScheme(ct.getClassificationScheme()))
                         {
                             for (SlotType1 slot : ct.getSlot())
                             {
-                                if (slot.getName().equals("codingScheme"))
+                                if (SlotType1Enum.CODING_SCHEME.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
                                     {
-                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList()
-                                                .getValue().get(0);
+                                        @SuppressWarnings("unused") String codingScheme = slot.getValueList().getValue().get(0);
                                     }
                                 }
                             }
 
                             contentTypeCode = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
                                 contentTypeCode_localized = ct.getName().getLocalizedString().get(0).getValue();
@@ -802,15 +918,15 @@ public class DirectDocument
 
                     for (ExternalIdentifierType eit : rpt.getExternalIdentifier())
                     {
-                        if (eit.getIdentificationScheme().equals("urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8"))
+                        if (ExternalIdentifierTypeEnum.SS_UNIQUE_ID.matchesScheme(eit.getIdentificationScheme()))
                         {
                             ss_uniqueId = eit.getValue();
                         }
-                        else if (eit.getIdentificationScheme().equals("urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832"))
+                        else if (ExternalIdentifierTypeEnum.SS_SOURCE_ID.matchesScheme(eit.getIdentificationScheme()))
                         {
                             ss_sourceId = eit.getValue();
                         }
-                        else if (eit.getIdentificationScheme().equals("urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446"))
+                        else if (ExternalIdentifierTypeEnum.SS_PATIENT_ID.matchesScheme(eit.getIdentificationScheme()))
                         {
                             ss_patientId = eit.getValue();
                         }
@@ -826,7 +942,7 @@ public class DirectDocument
 
                     for (SlotType1 slot : at.getSlot())
                     {
-                        if (slot.getName().equals("SubmissionSetStatus"))
+                        if (SlotType1Enum.SUBMISSION_SET_STATUS.matches(slot.getName()))
                         {
                             if (slotNotEmpty(slot))
                                 submissionSetStatus = slot.getName();
@@ -845,16 +961,43 @@ public class DirectDocument
         public String toString()
         {
             QName qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0", "SubmitObjectsRequest");
-            return XmlUtils.marshal(qname, getAsSubmitObjectsRequest(), ihe.iti.xds_b._2007.ObjectFactory.class);
+            return XmlUtils.marshal(qname, getSubmitObjectsRequest(), ihe.iti.xds_b._2007.ObjectFactory.class);
         }
-        
-        private SlotType1 makeSlot(String name, String value)
+
+        private SlotType1 makeSlot(SlotType1Enum slotTypeEnum, SimplePerson person)
         {
             SlotType1 slot = new SlotType1();
             ValueListType values = new ValueListType();
             List<String> vals = values.getValue();
 
-            slot.setName(name);
+            slot.setName(slotTypeEnum.getName());
+            slot.setValueList(values);
+
+            // <rim:Value>PID-3|pid1^^^domain</rim:Value>
+            vals.add("PID-3|" + person.getLocalId() + "^^^&" + person.getLocalOrg() + "&ISO");
+
+            // <rim:Value>PID-5|Doe^John^Middle^^</rim:Value>
+            vals.add("PID-5|" + person.getLastName() + "^" + person.getFirstName() + "^" + person.getMiddleName() + "^^");
+
+            // <rim:Value>PID-7|19560527</rim:Value>
+            vals.add("PID-7|" + person.getBirthDateTime()); // TODO check this format
+
+            // <rim:Value>PID-8|M</rim:Value>
+            vals.add("PID-8|" + person.getGenderCode());
+
+            // <rim:Value>PID-11|100 Main St^^Metropolis^Il^44130^USA</rim:Value>
+            vals.add("PID-11|" + person.getStreetAddress1() + "^^" + person.getCity() + "^" + person.getState() + "^" + person.getZipCode() + "^");
+
+            return slot;
+        }
+
+        private SlotType1 makeSlot(SlotType1Enum slotTypeEnum, String value)
+        {
+            SlotType1 slot = new SlotType1();
+            ValueListType values = new ValueListType();
+            List<String> vals = values.getValue();
+
+            slot.setName(slotTypeEnum.getName());
             slot.setValueList(values);
             vals.add(value);
 
@@ -907,15 +1050,6 @@ public class DirectDocument
         }
 
         /**
-         * @param eotId
-         *            the _eot_id to set
-         */
-        public void set_eot_id(String eotId)
-        {
-            _eot_id = eotId;
-        }
-
-        /**
          * @return the _eot_description
          */
         public String get_eot_description()
@@ -924,7 +1058,8 @@ public class DirectDocument
         }
 
         /**
-         * @param eotDescription the _eot_description to set
+         * @param eotDescription
+         *            the _eot_description to set
          */
         public void set_eot_description(String eotDescription)
         {
@@ -934,7 +1069,7 @@ public class DirectDocument
         /**
          * @return the creationTime
          */
-        public String getCreationTime()
+        public Date getCreationTime()
         {
             return creationTime;
         }
@@ -943,7 +1078,7 @@ public class DirectDocument
          * @param creationTime
          *            the creationTime to set
          */
-        public void setCreationTime(String creationTime)
+        public void setCreationTime(Date creationTime)
         {
             this.creationTime = creationTime;
         }
@@ -968,7 +1103,7 @@ public class DirectDocument
         /**
          * @return the serviceStartTime
          */
-        public String getServiceStartTime()
+        public Date getServiceStartTime()
         {
             return serviceStartTime;
         }
@@ -977,7 +1112,7 @@ public class DirectDocument
          * @param serviceStartTime
          *            the serviceStartTime to set
          */
-        public void setServiceStartTime(String serviceStartTime)
+        public void setServiceStartTime(Date serviceStartTime)
         {
             this.serviceStartTime = serviceStartTime;
         }
@@ -985,7 +1120,7 @@ public class DirectDocument
         /**
          * @return the serviceStopTime
          */
-        public String getServiceStopTime()
+        public Date getServiceStopTime()
         {
             return serviceStopTime;
         }
@@ -994,43 +1129,26 @@ public class DirectDocument
          * @param serviceStopTime
          *            the serviceStopTime to set
          */
-        public void setServiceStopTime(String serviceStopTime)
+        public void setServiceStopTime(Date serviceStopTime)
         {
             this.serviceStopTime = serviceStopTime;
         }
 
         /**
-         * @return the sourcePatientId
+         * @return the sourcePatient
          */
-        public String getSourcePatientId()
+        public SimplePerson getSourcePatient()
         {
-            return sourcePatientId;
+            return sourcePatient;
         }
 
         /**
-         * @param sourcePatientId
-         *            the sourcePatientId to set
+         * @param sourcePatient
+         *            the sourcePatient to set
          */
-        public void setSourcePatientId(String sourcePatientId)
+        public void setSourcePatient(SimplePerson sourcePatient)
         {
-            this.sourcePatientId = sourcePatientId;
-        }
-
-        /**
-         * @return the sourcePatientInfo
-         */
-        public String getSourcePatientInfo()
-        {
-            return sourcePatientInfo;
-        }
-
-        /**
-         * @param sourcePatientInfo
-         *            the sourcePatientInfo to set
-         */
-        public void setSourcePatientInfo(String sourcePatientInfo)
-        {
-            this.sourcePatientInfo = sourcePatientInfo;
+            this.sourcePatient = sourcePatient;
         }
 
         /**
@@ -1348,15 +1466,6 @@ public class DirectDocument
         }
 
         /**
-         * @param rptId
-         *            the _rpt_id to set
-         */
-        public void set_rpt_id(String rptId)
-        {
-            _rpt_id = rptId;
-        }
-
-        /**
          * @return the _rpt_name
          */
         public String get_rpt_name()
@@ -1393,7 +1502,7 @@ public class DirectDocument
         /**
          * @return the ss_submissionTime
          */
-        public String getSs_submissionTime()
+        public Date getSs_submissionTime()
         {
             return ss_submissionTime;
         }
@@ -1402,7 +1511,7 @@ public class DirectDocument
          * @param ssSubmissionTime
          *            the ss_submissionTime to set
          */
-        public void setSs_submissionTime(String ssSubmissionTime)
+        public void setSs_submissionTime(Date ssSubmissionTime)
         {
             ss_submissionTime = ssSubmissionTime;
         }
