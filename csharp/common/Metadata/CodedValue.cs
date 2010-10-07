@@ -77,7 +77,7 @@ namespace NHINDirect.Metadata
         public override bool Equals(Object other)
         {
             if (!(other is CodedValue)) return false;
-            return Equals(other);
+            return Equals(other as CodedValue);
         }
 
         /// <summary>

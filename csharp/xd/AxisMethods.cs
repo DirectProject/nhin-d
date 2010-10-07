@@ -123,6 +123,19 @@ namespace NHINDirect.Xd
             return from el in source.Slot(slotName).DescendantsAnyNs("Value")
                    select el.Value;
         }
+
+        /// <summary>
+        /// Returns the slot value for a single valued slot (or the first value in a multivalued slot) using a map function
+        /// to convert to type T
+        /// </summary>
+        /// <returns>The mapped value of the slot, or <c>null</c> if the slot does not exist or has no values.</returns>
+        public static T SlotValue<T>(this XElement source, string slotName, Func<string, T> map)
+        {
+            string val = source.SlotValue(slotName);
+            if (val == null) return default(T);
+            return map(val);
+        }
+
         
 
         /// <summary>
