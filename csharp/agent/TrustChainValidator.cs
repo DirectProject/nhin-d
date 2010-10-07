@@ -28,6 +28,8 @@ namespace NHINDirect.Agent
     /// </summary>
     public class TrustChainValidator
     {
+        const int DefaultMaxIssuerChainLength = 5;
+
         /// <summary>
         /// Chain validations status treated as failing trust validation with the certificate.
         /// </summary>
@@ -41,6 +43,8 @@ namespace NHINDirect.Agent
         
         X509ChainPolicy m_policy;
         X509ChainStatusFlags m_problemFlags;
+        ICertificateResolver m_certResolver;
+        int m_maxIssuerChainLength = DefaultMaxIssuerChainLength;
         
         /// <summary>
         /// Creates an instance with default chain policy, problem flags.
@@ -89,6 +93,51 @@ namespace NHINDirect.Agent
         }
         
         /// <summary>
+        /// Get or set the CertificateResolver used by this resolver to resolve intermediate certificate issuers
+        /// Can be NULL. If null, does not attempt to resolve intermediate certificates
+        /// </summary>
+        public ICertificateResolver IssuerResolver
+        {
+            get
+            {
+                return m_certResolver;
+            }
+            set
+            {
+                m_certResolver = value;
+            }
+        }
+        
+        internal bool HasCertificateResolver
+        {
+            get
+            {
+                return (m_certResolver != null);
+            }
+        }
+        
+        /// <summary>
+        /// Gets or sets the maximum depth upto which this validator will resolve intermediate issuers by calling CertificateResolver. 
+        /// For example, with a value of 2, the validator will at most resolve a leaf certificate's grandparent
+        /// </summary>
+        public int MaxIssuerChainLength
+        {
+            get
+            {
+                return m_maxIssuerChainLength;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentException();
+                }
+
+                m_maxIssuerChainLength = value;
+            }
+        }
+        
+        /// <summary>
         /// Validates a certificate by walking the certificate chain for all trust anchor chain, validating the leaf certificate against the chain.
         /// </summary>
         /// <remarks>Currently, all intermediate certificates must be stored in the system.</remarks>
@@ -112,6 +161,10 @@ namespace NHINDirect.Agent
             X509Chain chainBuilder = new X509Chain();
             chainBuilder.ChainPolicy = m_policy.Clone();
             chainBuilder.ChainPolicy.ExtraStore.Add(anchors);
+            if (this.HasCertificateResolver)
+            {
+                this.ResolveIntermediateIssuers(certificate, chainBuilder.ChainPolicy.ExtraStore);
+            }
             
             try
             {
@@ -165,6 +218,90 @@ namespace NHINDirect.Agent
 
             // Return true if there are any status flags we care about
             return chainElementStatus.Any(s => (s.Status & m_problemFlags) != 0);
+        }
+        
+        /// <summary>
+        /// Resolve intermediate issuers for the given certificate
+        /// </summary>
+        /// <param name="certificate">The leaf <see cref="X509Certificate2"/>certificate</param>
+        /// <returns>Issuer collection</returns>
+        public X509Certificate2Collection ResolveIntermediateIssuers(X509Certificate2 certificate)
+        {
+            X509Certificate2Collection issuers = new X509Certificate2Collection();
+            this.ResolveIntermediateIssuers(certificate, issuers);
+            return issuers;
+        }
+
+        /// <summary>
+        /// Resolve intermediate issuers for the given certificate
+        /// </summary>
+        /// <param name="certificate">The leaf <see cref="X509Certificate2"/>certificate</param>
+        /// <param name="issuers">The collection of issuers to populate with resolved issuers</param>
+        /// <returns>Issuer collection</returns>
+        public void ResolveIntermediateIssuers(X509Certificate2 certificate, X509Certificate2Collection issuers)
+        {
+            if (certificate == null)
+            {
+                throw new ArgumentNullException("certificate");
+            }
+            if (issuers == null)
+            {
+                throw new ArgumentException("issuers");
+            }
+            this.ResolveIssuers(certificate, issuers, 0);
+        }
+
+        void ResolveIssuers(X509Certificate2 certificate, X509Certificate2Collection issuers, int chainLength)
+        {
+            //
+            // only look at simpleNames because intermediates are always going to be org-level, not email, certs
+            //
+            string issuerName = certificate.GetNameInfo(X509NameType.SimpleName, true); // true == "for issuer"
+            if (certificate.MatchName(issuerName))
+            {
+                // Self issued certificate 
+                return;
+            }
+            //
+            // If the issuer is already known, then we are good
+            //
+            if (issuers.FindByName(issuerName) != null)
+            {
+                return;
+            }
+
+            if (chainLength == m_maxIssuerChainLength)
+            {
+                //
+                // Chain too long. Ignore...
+                //
+                return;
+            }
+            //
+            // Retrieve the issuer's certificate
+            //
+            X509Certificate2Collection issuerCertificates = m_certResolver.SafeGetCertificates(issuerName);
+            if (issuerCertificates.IsNullOrEmpty())
+            {
+                return;
+            }
+            //
+            // Recursively fetch the issuers who issued this set of certificates
+            //
+            foreach (X509Certificate2 issuerCertificate in issuerCertificates)
+            {
+                if (issuerCertificate.MatchName(issuerName) && !issuers.ContainsThumbprint(issuerCertificate.Thumbprint))
+                {
+                    //
+                    // New issuer
+                    //
+                    issuers.Add(issuerCertificate);
+                    //
+                    // And keep working up the chain
+                    //
+                    this.ResolveIssuers(issuerCertificate, issuers, chainLength + 1);
+                }
+            }
         }
     }
 }

@@ -36,7 +36,22 @@ namespace NHINDirect.Certificates
         {
             m_certs = new X509Certificate2Collection();
         }
-
+        
+        /// <summary>
+        /// Initializes a store using the given certificate collection
+        /// </summary>
+        /// <param name="certs">The certificates to add to this store.</param>
+        public MemoryX509Store(X509Certificate2Collection certs)
+            : this()
+        {
+            if (certs == null)
+            {
+                throw new ArgumentNullException("certs");
+            }
+            
+            m_certs.Add(certs);
+        }
+        
         /// <summary>
         /// Initializes a store and adds certificates from a keyfile.
         /// </summary>
@@ -110,6 +125,15 @@ namespace NHINDirect.Certificates
                 certs = new X509Certificate2Collection(m_certs);
             }
             return certs.Enumerate().GetEnumerator();
+        }
+        
+        /// <summary>
+        /// Return a copy of this store
+        /// </summary>
+        /// <returns></returns>
+        public MemoryX509Store Clone()
+        {
+            return new MemoryX509Store(m_certs);
         }
     }
 }

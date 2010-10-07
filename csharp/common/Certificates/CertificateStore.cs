@@ -25,17 +25,15 @@ namespace NHINDirect.Certificates
     /// <summary>
     /// Abstract class for certificate storage and resolution.
     /// </summary>
-    public abstract class CertificateStore : IX509CertificateStore, ICertificateResolver
+    public abstract class CertificateStore : IX509CertificateStore
     {
         Predicate<X509Certificate2> m_criteria;
-        CertificateResolver m_resolver;
         
         /// <summary>
         /// Initializes a store without certificate validation criteria.
         /// </summary>
         protected CertificateStore()
         {
-            m_resolver = new CertificateResolver(this);
         }
         
         /// <summary>
@@ -206,6 +204,28 @@ namespace NHINDirect.Certificates
         }
 
         /// <summary>
+        /// Adds certificates to this store from a folder.
+        /// </summary>
+        /// <param name="folderPath">The path to a folder containing certificate files</param>
+        /// <param name="flags">The <see cref="X509KeyStorageFlags"/> for the keyfile</param>
+        public void ImportFolder(string folderPath, X509KeyStorageFlags flags)
+        {
+            string[] files = System.IO.Directory.GetFiles(folderPath);
+            if (files.IsNullOrEmpty())
+            {
+                return;
+            }
+            
+            X509Certificate2Collection certs = new X509Certificate2Collection();
+            foreach(string filePath in files)
+            {
+                certs.Clear();
+                certs.Import(filePath, null, flags);
+                this.Add(certs);
+            }
+        }
+
+        /// <summary>
         /// Exports this store as a keyfile
         /// </summary>
         /// <param name="filePath">The path to which to export.</param>
@@ -322,21 +342,6 @@ namespace NHINDirect.Certificates
             return this.GetEnumerator();
         }
 
-        //---------------------------------------------
-        //
-        // ICertificateResolver
-        //
-        //---------------------------------------------
-        /// <summary>
-        /// Gets the certificate for the specified <paramref name="address"/>
-        /// </summary>
-        /// <param name="address">The address for which to retrieve certificates</param>
-        /// <returns>The certificates for this address.</returns>
-        public X509Certificate2Collection GetCertificates(MailAddress address)
-        {
-            return m_resolver.GetCertificates(address);
-        }
-
         /// <summary>
         /// Returns a <see cref="CertificateIndex"/> from this store
         /// </summary>
@@ -344,6 +349,15 @@ namespace NHINDirect.Certificates
         public CertificateIndex Index()
         {
             return new CertificateIndex(this);
+        }
+
+        /// <summary>
+        /// Creates a new ICertificateResolver that can resolve certificates against this store
+        /// </summary>
+        /// <returns>A <see cref="CertificateResolver">CerticateResolver</see> for this store</returns>
+        public ICertificateResolver CreateResolver()
+        {
+            return new CertificateResolver(this.Index());
         }
 
         /// <summary>
