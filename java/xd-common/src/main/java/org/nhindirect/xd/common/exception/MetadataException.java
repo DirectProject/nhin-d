@@ -26,55 +26,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.routing.impl;
-
-import org.nhindirect.routing.RoutingResolver;
+package org.nhindirect.xd.common.exception;
 
 /**
- * Default implementation of a RoutingResolver.
+ * Generic exception to be thrown from transformation classes.
  * 
  * @author beau
  */
-public class RoutingResolverImpl extends RoutingResolver
+public class MetadataException extends java.lang.Exception
 {
+    private static final long serialVersionUID = 5035431363465393651L;
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Construct an exception.
      * 
-     * @see org.nhindirect.routing.RoutingResolver#resolve(java.lang.String)
+     * @param message
+     *            The exception message.
+     * @param throwable
+     *            The throwable causing the exception.
      */
-    @Override
-    public String resolve(String address)
+    public MetadataException(String message, Throwable throwable)
     {
-        return address;
+        super(message, throwable);
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.nhindirect.routing.RoutingResolver#isSmtpEndpoint(java.lang.String)
-     */
-    @Override
-    public boolean isSmtpEndpoint(String address)
-    {
-        if (address == null)
-            return false;
-
-        return address.indexOf('@') > 0;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.nhindirect.routing.RoutingResolver#isXdEndpoint(java.lang.String)
-     */
-    @Override
-    public boolean isXdEndpoint(String address)
-    {
-        if (address == null)
-            return false;
-
-        return address.indexOf('@') <= 0;
-    }
-
 }
