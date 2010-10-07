@@ -390,5 +390,21 @@ namespace NHINDirect.Tests.xdTests
         }
 
 
+        public static IEnumerable<object[]> PatientIdData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.PatientID, new PatientID("498ef443e7ac4a6", "1.3.6.1.4.1.21367.2005.3.7", "ISO") });
+            }
+        }
+
+        [Theory]
+        [PropertyData("PatientIdData")]
+        public void ConsumerConsumesPatientId(XElement documentXEl, PatientID expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.PatientID);
+        }
+
     }
 }

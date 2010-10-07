@@ -169,7 +169,7 @@ namespace NHINDirect.Xd
         }
 
         /// <summary>
-        /// Returns the value for a specified external identifier.
+        /// Returns the value for a specified external identifier or null if no identifier exists
         /// </summary>
         public static string ExternalIdentifierValue(this XElement source, string scheme)
         {
@@ -178,6 +178,18 @@ namespace NHINDirect.Xd
 
             return elts.First().Attribute("value").Value;
         }
+
+        /// <summary>
+        /// Returns the mapped value for a specified external identifier using the supplied mapping function. Returns <c>null</c> if no identifier exists.
+        /// </summary>
+        public static T ExternalIdentifierValue<T>(this XElement source, string scheme, Func<string, T> map)
+        {
+            string val = source.ExternalIdentifierValue(scheme);
+            if (val == null) return default(T);
+            return map(val);
+        }
+
+
 
         /// <summary>
         /// Returns <see cref="XElement"/> instances for each document entry node for this element
