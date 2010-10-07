@@ -127,29 +127,25 @@ namespace AgentTests
             return null;
         }
     }
-    
+
+
     public class TestCertFind
     {
         X509Certificate2Collection m_certs;
-        
-        static TestCertFind()
-        {
-            AgentTester.EnsureStandardMachineStores();            
-        }
-        
+
         public TestCertFind()
         {
-            m_certs = this.GetCerts();
+            m_certs = TestCertificates.AllPublicCerts;
         }
-        
+
         public static IEnumerable<object[]> MixedNames
         {
             get
             {
-                yield return new object[] {"redmond.hsgincubator.com", true};
-                yield return new object[] { "nhind.hsgincubator.com", true};
+                yield return new object[] { "redmond.hsgincubator.com", true };
+                yield return new object[] { "nhind.hsgincubator.com", true };
                 yield return new object[] { "bob@nhind.hsgincubator.com", true };
-                yield return new object[] { "jupiter@nhind.hsgincubator.com", false};
+                yield return new object[] { "jupiter@nhind.hsgincubator.com", false };
                 yield return new object[] { "pete@nhind.hsgincubator.com", false };
             }
         }
@@ -160,16 +156,16 @@ namespace AgentTests
             {
                 yield return new object[] { "redmond.hsgincubator.com", true };
                 yield return new object[] { "nhind.hsgincubator.com", true };
-                yield return new object[] { "www.healthvault.com", false};
+                yield return new object[] { "www.healthvault.com", false };
             }
         }
-                
+
         [Theory]
-        [PropertyData("MixedNames")]                
+        [PropertyData("MixedNames")]
         public void TestFindMixed(string name, bool shouldMatch)
         {
             bool found = (m_certs.Find(x => x.MatchEmailNameOrName(name)) != null);
-            Assert.True(found == shouldMatch);               
+            Assert.True(found == shouldMatch);
         }
 
         [Theory]
@@ -178,14 +174,6 @@ namespace AgentTests
         {
             bool found = (m_certs.FindByName(name) != null);
             Assert.True(found == shouldMatch);
-        }
-
-        X509Certificate2Collection GetCerts()
-        {
-            using (SystemX509Store store = SystemX509Store.OpenExternal())
-            {
-                return store.GetAllCertificates();
-            }
         }
     }
 }

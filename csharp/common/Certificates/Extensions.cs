@@ -265,7 +265,7 @@ namespace NHINDirect.Certificates
         }
 
         /// <summary>
-        /// Return the first maching element whose certificate thumbprint matches the supplied <paramref name="thumbprint"/>
+        /// Return the first matching element whose certificate thumbprint matches the supplied <paramref name="thumbprint"/>
         /// </summary>
         /// <param name="certs">The source collection to test.</param>
         /// <param name="thumbprint">The certificate thumbprint, as a string, to test against the source collection</param>
@@ -278,6 +278,17 @@ namespace NHINDirect.Certificates
             }
 
             return certs.Find(x => x.Thumbprint == thumbprint);
+        }
+        
+        /// <summary>
+        /// Returns true if the collection contains at least one certificate with the given thumbprint
+        /// </summary>
+        /// <param name="certs">The source collection to test</param>
+        /// <param name="thumbprint">The certificate thumbprint, as a string, to test against the source collection</param>
+        /// <returns>true if found, otherwise false</returns>
+        public static bool ContainsThumbprint(this X509Certificate2Collection certs, string thumbprint)
+        {
+            return (certs.FindByThumbprint(thumbprint) != null);
         }
                         
         /// <summary>
@@ -618,6 +629,55 @@ namespace NHINDirect.Certificates
         public static bool IsNullOrEmpty(this X509ChainElementCollection chainElements)
         {
             return (chainElements == null || chainElements.Count == 0);
+        }
+
+        //---------------------------------------
+        //
+        // ICertificateResolver
+        //
+        //---------------------------------------
+        /// <summary>
+        /// Calls GetCertificates, catches exceptions
+        /// Returns null if exceptions
+        /// </summary>
+        /// <param name="resolver">certificate resolver</param>
+        /// <param name="address">Retrieve certificates for this address</param>
+        /// <returns>
+        /// A <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2Collection"/> or null if there are no matches.
+        /// </returns>
+        public static X509Certificate2Collection SafeGetCertificates(this ICertificateResolver resolver, MailAddress address)
+        {
+            try
+            {
+                return resolver.GetCertificates(address);
+            }
+            catch
+            {
+            }
+            
+            return null;
+        }
+
+        /// <summary>
+        /// Calls GetCertificates, catches exceptions
+        /// Returns null if exceptions
+        /// </summary>
+        /// <param name="resolver">certificate resolver</param>
+        /// <param name="domain">Retrieve certificates for this domain</param>
+        /// <returns>
+        /// A <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2Collection"/> or null if there are no matches.
+        /// </returns>
+        public static X509Certificate2Collection SafeGetCertificates(this ICertificateResolver resolver, string domain)
+        {
+            try
+            {
+                return resolver.GetCertificatesForDomain(domain);
+            }
+            catch
+            {
+            }
+
+            return null;
         }
     }
  }
