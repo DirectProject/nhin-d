@@ -65,7 +65,7 @@ namespace NHINDirect.Tests.xdTests
                     m_docMeta.EventCodes = evtCodes;
                     m_docMeta.FormatCode = Metadata.C80FormatCode.CareManagement.ToCodedValue();
                     m_docMeta.Hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-                    m_docMeta.FaciltyCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
+                    m_docMeta.FacilityCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
                     m_docMeta.LanguageCode = "en-us";
                     m_docMeta.LegalAuthenticator = new Person { First = "Marcus", Last = "Welby", Degree = "M.D", Prefix = "Dr." };
                     m_docMeta.MediaType = "text/plain";

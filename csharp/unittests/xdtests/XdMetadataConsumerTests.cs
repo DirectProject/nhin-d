@@ -81,7 +81,7 @@ namespace NHINDirect.Tests.xdTests
                     m_docMeta.EventCodes = evtCodes;
                     m_docMeta.FormatCode = Metadata.C80FormatCode.CareManagement.ToCodedValue();
                     m_docMeta.Hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-                    m_docMeta.FaciltyCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
+                    m_docMeta.FacilityCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
                     m_docMeta.LanguageCode = "en-us";
                     m_docMeta.LegalAuthenticator = new Person { First = "Marcus", Last = "Welby", Degree = "M.D", Prefix = "Dr." };
                     m_docMeta.MediaType = "text/plain";
@@ -271,6 +271,107 @@ namespace NHINDirect.Tests.xdTests
             Assert.Equal(expected, doc.CreatedOn);
         }
 
+        public static IEnumerable<object[]> EventCodesData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.EventCodes, null });
+            }
+        }
+
+        [Theory]
+        [PropertyData("EventCodesData")]
+        public void ConsumerConsumesEventCodes(XElement documentXEl, IEnumerable<CodedValue> expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            if (expected == null)
+                Assert.True(doc.EventCodes == null || doc.EventCodes.Count() == 0);
+            else
+            {
+                foreach (CodedValue cv in expected)
+                    Assert.Contains(cv, doc.EventCodes);
+            }
+        }
+
+        public static IEnumerable<object[]> FacilityCodeData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.FacilityCode, new CodedValue("Hospital Setting", "Hospital Setting", "Connect-a-thon healthcareFacilityTypeCodes")});
+            }
+        }
+
+        [Theory]
+        [PropertyData("FacilityCodeData")]
+        public void ConsumerConsumesFacility(XElement documentXEl, CodedValue expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.FacilityCode);
+        }
+
+        public static IEnumerable<object[]> FormatCodeData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.FormatCode, new CodedValue("CDAR2/IHE 1.0", "CDAR2/IHE 1.0", "Connect-a-thon formatCodes") });
+            }
+        }
+
+        [Theory]
+        [PropertyData("FormatCodeData")]
+        public void ConsumerConsumesFormat(XElement documentXEl, CodedValue expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.FormatCode);
+        }
+
+        public static IEnumerable<object[]> HashData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.Hash, null });
+            }
+        }
+
+        [Theory]
+        [PropertyData("HashData")]
+        public void ConsumerConsumesHashCode(XElement documentXEl, string expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.Hash);
+        }
+
+        public static IEnumerable<object[]> LanguageCodeData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.LanguageCode, "en-us" });
+            }
+        }
+
+        [Theory]
+        [PropertyData("LanguageCodeData")]
+        public void ConsumerConsumesLanguageCode(XElement documentXEl, string expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.LanguageCode);
+        }
+
+        public static IEnumerable<object[]> LegalAuthenticatorData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.LegalAuthenticator, null });
+            }
+        }
+
+        [Theory]
+        [PropertyData("LegalAuthenticatorData")]
+        public void ConsumerConsumesLegalAuthenticator(XElement documentXEl, Person expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.LegalAuthenticator);
+        }
 
     }
 }
