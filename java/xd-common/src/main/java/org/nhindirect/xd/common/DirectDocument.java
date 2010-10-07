@@ -30,8 +30,10 @@ package org.nhindirect.xd.common;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.xml.bind.JAXBElement;
@@ -51,6 +53,12 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.common.exception.MetadataException;
+import org.nhindirect.xd.transform.pojo.SimplePerson;
 import org.nhindirect.xd.transform.util.XmlUtils;
 
 /**
@@ -63,8 +71,7 @@ public class DirectDocument
     private String data;
     private Metadata metadata;
 
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = Logger.getLogger(DirectDocument.class.getPackage().getName());
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(DirectDocument.class);
 
     /**
      * Default document constructor.
@@ -133,13 +140,13 @@ public class DirectDocument
         private String _eot_id;
         private String _eot_description;
 
-        private String creationTime;
+        private Date creationTime;
         private String languageCode;
-        private String serviceStartTime;
-        private String serviceStopTime;
-        private String sourcePatientId;
-        private String sourcePatientInfo;
-
+        private Date serviceStartTime;
+        private Date serviceStopTime;
+        
+        private SimplePerson sourcePatient = new SimplePerson();
+        
         private String authorPerson;
         private String authorInstitution;
         private String authorRole;
@@ -170,7 +177,7 @@ public class DirectDocument
         private String _rpt_name;
         private String _rpt_description;
 
-        private String ss_submissionTime;
+        private Date ss_submissionTime;
         private String ss_intendedRecipient;
 
         private String ss_authorPerson;
@@ -192,7 +199,10 @@ public class DirectDocument
          */
         public Metadata()
         {
-
+            // TODO: just set random values?
+            
+            this._eot_id = "Document01";
+            this._rpt_id = "SubmissionSet01";
         }
 
         /**
@@ -259,12 +269,12 @@ public class DirectDocument
             eot.setMimeType(mimeType);
 
             List<SlotType1> slots = eot.getSlot();
-            slots.add(makeSlot("creationTime", creationTime));
+            slots.add(makeSlot("creationTime", (new SimpleDateFormat("yyyyMMdd")).format(creationTime)));
             slots.add(makeSlot("languageCode", languageCode));
-            slots.add(makeSlot("serviceStartTime", serviceStartTime));
-            slots.add(makeSlot("serviceStopTime", serviceStopTime));
-            slots.add(makeSlot("sourcePatientId", sourcePatientId));
-            slots.add(makeSlot("sourcePatientInfo", sourcePatientInfo)); // TODO multiple values
+            slots.add(makeSlot("serviceStartTime", (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStartTime)));
+            slots.add(makeSlot("serviceStopTime", (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStopTime)));
+            slots.add(makeSlot("sourcePatientId", sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg() + "&ISO"));
+            slots.add(makeSlot("sourcePatientInfo", sourcePatient));
 
             eot.setName(makeInternationalStringType(classCode_localized));
             eot.setDescription(makeInternationalStringType(_eot_description));
@@ -391,7 +401,7 @@ public class DirectDocument
             rpt.setId(_rpt_id);
 
             List<SlotType1> slots = rpt.getSlot();
-            slots.add(makeSlot("submissionTime", ss_submissionTime));
+            slots.add(makeSlot("submissionTime", (new SimpleDateFormat("yyyyMMddHHmmss")).format(ss_submissionTime)));
             slots.add(makeSlot("intendedRecipient", ss_intendedRecipient));
 
             rpt.setName(makeInternationalStringType(_rpt_name));
@@ -492,12 +502,12 @@ public class DirectDocument
          *            string.
          * @throws Exception
          */
-        public void extractFromSubmitObjectsRequestXml(String submitObjectsRequestXml) throws Exception
+        public void setValues(String submitObjectsRequestXml) throws Exception
         {
             SubmitObjectsRequest sor = (SubmitObjectsRequest) XmlUtils.unmarshal(new String(submitObjectsRequestXml),
                     oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
 
-            extractFromSubmitObjectsRequest(sor);
+            setValues(sor);
         }
 
         /**
@@ -506,7 +516,7 @@ public class DirectDocument
          * @param submitObjectsRequest
          *            A SubmitObjectsRequest object.
          */
-        public void extractFromSubmitObjectsRequest(SubmitObjectsRequest submitObjectsRequest)
+        public void setValues(SubmitObjectsRequest submitObjectsRequest) throws MetadataException
         {
             RegistryObjectListType rol = submitObjectsRequest.getRegistryObjectList();
 
@@ -520,7 +530,7 @@ public class DirectDocument
 
                     mimeType = eot.getMimeType();
                     _eot_id = eot.getId();
-                    
+
                     if (eot.getDescription() != null && eot.getDescription().getLocalizedString() != null
                             && !eot.getDescription().getLocalizedString().isEmpty())
                         _eot_description = eot.getDescription().getLocalizedString().get(0).getValue();
@@ -530,7 +540,19 @@ public class DirectDocument
                         if (slot.getName().equals("creationTime"))
                         {
                             if (slotNotEmpty(slot))
-                                creationTime = slot.getValueList().getValue().get(0);
+                            {
+                                try
+                                {
+                                    creationTime = DateUtils.parseDate(slot.getValueList().getValue().get(0),
+                                            new String[]
+                                            { "yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMdd" });
+                                }
+                                catch (ParseException e)
+                                {
+                                    LOGGER.error("Unable to parse creationTime", e);
+                                    throw new MetadataException("Unable to parse creationTime", e);
+                                }
+                            }
                         }
                         else if (slot.getName().equals("languageCode"))
                         {
@@ -540,28 +562,119 @@ public class DirectDocument
                         else if (slot.getName().equals("serviceStartTime"))
                         {
                             if (slotNotEmpty(slot))
-                                serviceStartTime = slot.getValueList().getValue().get(0);
+                            {
+                                try
+                                {
+                                    serviceStartTime = DateUtils.parseDate(slot.getValueList().getValue().get(0),
+                                            new String[]
+                                            { "yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMdd" });
+                                }
+                                catch (ParseException e)
+                                {
+                                    LOGGER.error("Unable to parse serviceStartTime", e);
+                                    throw new MetadataException("Unable to parse serviceStartTime", e);
+                                }
+                            }
                         }
                         else if (slot.getName().equals("serviceStopTime"))
                         {
                             if (slotNotEmpty(slot))
-                                serviceStopTime = slot.getValueList().getValue().get(0);
+                            {
+                                try
+                                {
+                                    serviceStopTime = DateUtils.parseDate(slot.getValueList().getValue().get(0),
+                                            new String[]
+                                            { "yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMdd" });
+                                }
+                                catch (ParseException e)
+                                {
+                                    LOGGER.error("Unable to parse serviceStopTime", e);
+                                    throw new MetadataException("Unable to parse serviceStopTime", e);
+                                }
+                            }
                         }
                         else if (slot.getName().equals("sourcePatientId"))
                         {
+                            // id^^^&org&ISO
+
                             if (slotNotEmpty(slot))
-                                sourcePatientId = slot.getValueList().getValue().get(0);
+                            {
+                                String[] tokens = StringUtils.splitPreserveAllTokens(slot.getValueList().getValue()
+                                        .get(0), "^");
+
+                                if (tokens != null && tokens.length >= 1)
+                                    sourcePatient.setLocalId(tokens[0]);
+                                else
+                                    sourcePatient.setLocalId(slot.getValueList().getValue().get(0));
+
+                                if (tokens != null && tokens.length >= 4)
+                                {
+                                    tokens = StringUtils.splitPreserveAllTokens(slot.getValueList().getValue().get(0),
+                                            "&");
+
+                                    if (tokens.length >= 2)
+                                        sourcePatient.setLocalOrg(tokens[1]);
+                                }
+                            }
                         }
                         else if (slot.getName().equals("sourcePatientInfo"))
                         {
-                            // FIXME
-                            sourcePatientInfo = "";
-
                             if (slotNotEmpty(slot))
+                            {
                                 for (String value : slot.getValueList().getValue())
                                 {
-                                    sourcePatientInfo += value;
+                                    if (StringUtils.startsWith(value, "PID-3|"))
+                                    {
+                                        // TODO Anything useful?
+                                    }
+                                    else if (StringUtils.startsWith(value, "PID-5|"))
+                                    {
+                                        String[] split = StringUtils.splitPreserveAllTokens(value, "|");
+                                        String[] tokens = StringUtils.splitPreserveAllTokens(split[1], "^");
+                                        
+                                        if (tokens != null && tokens.length >= 1)
+                                            sourcePatient.setFirstName(tokens[0]);
+                                        
+                                        if (tokens != null && tokens.length >= 2)
+                                            sourcePatient.setLastName(tokens[1]);
+                                        
+                                        // TODO middle name ?
+                                    }
+                                    else if (StringUtils.startsWith(value, "PID-7|"))
+                                    {
+                                        String[] split = StringUtils.splitPreserveAllTokens(value, "|");
+                                        
+                                        if (split.length >= 2)
+                                            sourcePatient.setBirthDateTime(split[1]);
+                                    }
+                                    else if (StringUtils.startsWith(value, "PID-8|"))
+                                    {
+                                        String[] split = StringUtils.splitPreserveAllTokens(value, "|");
+                                        
+                                        if (split.length >= 2)
+                                            sourcePatient.setGenderCode(split[1]);
+                                    }
+                                    else if (StringUtils.startsWith(value, "PID-11|"))
+                                    {
+                                        String[] split = StringUtils.splitPreserveAllTokens(value, "|");
+                                        String[] tokens = StringUtils.splitPreserveAllTokens(split[1], "^");
+                                        
+                                        if (tokens != null && tokens.length >= 1)
+                                            sourcePatient.setStreetAddress1(tokens[0]);
+                                        
+                                        if (tokens != null && tokens.length >= 3)
+                                            sourcePatient.setCity(tokens[2]);
+                                        
+                                        if (tokens != null && tokens.length >= 4)
+                                            sourcePatient.setState(tokens[3]);
+                                        
+                                        if (tokens != null && tokens.length >= 5)
+                                        sourcePatient.setZipCode(tokens[4]);
+                                        
+                                        // TODO country ?
+                                    }
                                 }
+                            }
                         }
                     }
 
@@ -608,7 +721,7 @@ public class DirectDocument
                             }
 
                             classCode = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
                                 classCode_localized = ct.getName().getLocalizedString().get(0).getValue();
@@ -628,7 +741,7 @@ public class DirectDocument
                             }
 
                             confidentialityCode = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
                                 confidentialityCode_localized = ct.getName().getLocalizedString().get(0).getValue();
@@ -648,7 +761,7 @@ public class DirectDocument
                             }
 
                             formatCode = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
                                 formatCode_localized = ct.getName().getLocalizedString().get(0).getValue();
@@ -668,10 +781,11 @@ public class DirectDocument
                             }
 
                             healthcareFacilityTypeCode = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
-                                healthcareFacilityTypeCode_localized = ct.getName().getLocalizedString().get(0).getValue();
+                                healthcareFacilityTypeCode_localized = ct.getName().getLocalizedString().get(0)
+                                        .getValue();
                         }
                         else if (ct.getClassificationScheme().equals("urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead"))
                         {
@@ -688,7 +802,7 @@ public class DirectDocument
                             }
 
                             practiceSettingCode = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
                                 practiceSettingCode_localized = ct.getName().getLocalizedString().get(0).getValue();
@@ -708,7 +822,7 @@ public class DirectDocument
                             }
 
                             loinc = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
                                 loinc_localized = ct.getName().getLocalizedString().get(0).getValue();
@@ -740,7 +854,19 @@ public class DirectDocument
                         if (slot.getName().equals("submissionTime"))
                         {
                             if (slotNotEmpty(slot))
-                                ss_submissionTime = slot.getValueList().getValue().get(0);
+                            {
+                                try
+                                {
+                                    ss_submissionTime = DateUtils.parseDate(slot.getValueList().getValue().get(0),
+                                            new String[]
+                                            { "yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMdd" });
+                                }
+                                catch (ParseException e)
+                                {
+                                    LOGGER.error("Unable to parse submissionTime", e);
+                                    throw new MetadataException("Unable to parse submissionTime", e);
+                                }
+                            }
                         }
                         else if (slot.getName().equals("intendedRecipient"))
                         {
@@ -762,9 +888,10 @@ public class DirectDocument
                                 }
                                 else if (slot.getName().equals("authorInstitution"))
                                 {
+                                    // FIXME: this had two values
+                                    
                                     if (slotNotEmpty(slot))
                                         ss_authorInstitution = slot.getValueList().getValue().get(0);
-                                    // TODO: this had two values
                                 }
                                 else if (slot.getName().equals("authorRole"))
                                 {
@@ -793,7 +920,7 @@ public class DirectDocument
                             }
 
                             contentTypeCode = ct.getNodeRepresentation();
-                            
+
                             if (ct.getName() != null && ct.getName().getLocalizedString() != null
                                     && !ct.getName().getLocalizedString().isEmpty())
                                 contentTypeCode_localized = ct.getName().getLocalizedString().get(0).getValue();
@@ -847,7 +974,36 @@ public class DirectDocument
             QName qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0", "SubmitObjectsRequest");
             return XmlUtils.marshal(qname, getAsSubmitObjectsRequest(), ihe.iti.xds_b._2007.ObjectFactory.class);
         }
-        
+
+        private SlotType1 makeSlot(String name, SimplePerson person)
+        {
+            SlotType1 slot = new SlotType1();
+            ValueListType values = new ValueListType();
+            List<String> vals = values.getValue();
+
+            // FIXME
+
+            slot.setName(name);
+            slot.setValueList(values);
+
+            // <rim:Value>PID-3|pid1^^^domain</rim:Value>
+            vals.add("PID-3|" + person.getLocalId() + "^^^&" + person.getLocalOrg() + "&ISO");
+
+            // FIXME (sample) <rim:Value>PID-5|Doe^John^^^</rim:Value>
+            vals.add("PID-5|" + person.getLastName() + "^" + person.getFirstName() + "^" + person.getMiddleName());
+
+            // <rim:Value>PID-7|19560527</rim:Value>
+            vals.add("PID-7|" + person.getBirthDateTime()); // TODO check this format
+
+            // <rim:Value>PID-8|M</rim:Value>
+            vals.add("PID-8|" + person.getGenderCode());
+
+            // <rim:Value>PID-11|100 Main St^^Metropolis^Il^44130^USA</rim:Value>
+            vals.add("PID-11|" + person.getStreetAddress1() + "^^" + person.getCity() + "^" + person.getState() + "^" + person.getCity() + "^");
+
+            return slot;
+        }
+
         private SlotType1 makeSlot(String name, String value)
         {
             SlotType1 slot = new SlotType1();
@@ -924,7 +1080,8 @@ public class DirectDocument
         }
 
         /**
-         * @param eotDescription the _eot_description to set
+         * @param eotDescription
+         *            the _eot_description to set
          */
         public void set_eot_description(String eotDescription)
         {
@@ -934,7 +1091,7 @@ public class DirectDocument
         /**
          * @return the creationTime
          */
-        public String getCreationTime()
+        public Date getCreationTime()
         {
             return creationTime;
         }
@@ -943,7 +1100,7 @@ public class DirectDocument
          * @param creationTime
          *            the creationTime to set
          */
-        public void setCreationTime(String creationTime)
+        public void setCreationTime(Date creationTime)
         {
             this.creationTime = creationTime;
         }
@@ -968,7 +1125,7 @@ public class DirectDocument
         /**
          * @return the serviceStartTime
          */
-        public String getServiceStartTime()
+        public Date getServiceStartTime()
         {
             return serviceStartTime;
         }
@@ -977,7 +1134,7 @@ public class DirectDocument
          * @param serviceStartTime
          *            the serviceStartTime to set
          */
-        public void setServiceStartTime(String serviceStartTime)
+        public void setServiceStartTime(Date serviceStartTime)
         {
             this.serviceStartTime = serviceStartTime;
         }
@@ -985,7 +1142,7 @@ public class DirectDocument
         /**
          * @return the serviceStopTime
          */
-        public String getServiceStopTime()
+        public Date getServiceStopTime()
         {
             return serviceStopTime;
         }
@@ -994,43 +1151,26 @@ public class DirectDocument
          * @param serviceStopTime
          *            the serviceStopTime to set
          */
-        public void setServiceStopTime(String serviceStopTime)
+        public void setServiceStopTime(Date serviceStopTime)
         {
             this.serviceStopTime = serviceStopTime;
         }
 
         /**
-         * @return the sourcePatientId
+         * @return the sourcePatient
          */
-        public String getSourcePatientId()
+        public SimplePerson getSourcePatient()
         {
-            return sourcePatientId;
+            return sourcePatient;
         }
 
         /**
-         * @param sourcePatientId
-         *            the sourcePatientId to set
+         * @param sourcePatient
+         *            the sourcePatient to set
          */
-        public void setSourcePatientId(String sourcePatientId)
+        public void setSourcePatient(SimplePerson sourcePatient)
         {
-            this.sourcePatientId = sourcePatientId;
-        }
-
-        /**
-         * @return the sourcePatientInfo
-         */
-        public String getSourcePatientInfo()
-        {
-            return sourcePatientInfo;
-        }
-
-        /**
-         * @param sourcePatientInfo
-         *            the sourcePatientInfo to set
-         */
-        public void setSourcePatientInfo(String sourcePatientInfo)
-        {
-            this.sourcePatientInfo = sourcePatientInfo;
+            this.sourcePatient = sourcePatient;
         }
 
         /**
@@ -1393,7 +1533,7 @@ public class DirectDocument
         /**
          * @return the ss_submissionTime
          */
-        public String getSs_submissionTime()
+        public Date getSs_submissionTime()
         {
             return ss_submissionTime;
         }
@@ -1402,7 +1542,7 @@ public class DirectDocument
          * @param ssSubmissionTime
          *            the ss_submissionTime to set
          */
-        public void setSs_submissionTime(String ssSubmissionTime)
+        public void setSs_submissionTime(Date ssSubmissionTime)
         {
             ss_submissionTime = ssSubmissionTime;
         }
