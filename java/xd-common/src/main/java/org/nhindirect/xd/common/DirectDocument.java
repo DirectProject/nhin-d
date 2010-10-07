@@ -199,8 +199,6 @@ public class DirectDocument
          */
         public Metadata()
         {
-            // TODO: just set random values?
-            
             this._eot_id = "Document01";
             this._rpt_id = "SubmissionSet01";
         }
@@ -621,7 +619,7 @@ public class DirectDocument
                                 {
                                     if (StringUtils.startsWith(value, "PID-3|"))
                                     {
-                                        // TODO Anything useful?
+                                        // Already have this from sourcePatientId
                                     }
                                     else if (StringUtils.startsWith(value, "PID-5|"))
                                     {
@@ -634,7 +632,8 @@ public class DirectDocument
                                         if (tokens != null && tokens.length >= 2)
                                             sourcePatient.setFirstName(tokens[1]);
                                         
-                                        // TODO middle name ?
+                                        if (tokens != null && tokens.length >= 3)
+                                            sourcePatient.setMiddleName(tokens[2]);
                                     }
                                     else if (StringUtils.startsWith(value, "PID-7|"))
                                     {
