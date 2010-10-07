@@ -222,30 +222,37 @@ namespace NHINDirect.Xd
 
         }
 
-        // Attribute names
-
         /// <summary>
-        /// The attribute name for a slot name.
+        /// XD* Metadata standard attribute names
         /// </summary>
-        public const string SlotNameAttr = "name";
+        public struct Attrs
+        {
+            /// <summary>
+            /// The attribute name for document media type
+            /// </summary>
+            public const string MimeType = "mimeType";
+            /// <summary>
+            /// The attribute name for a slot name.
+            /// </summary>
+            public const string SlotName = "name";
 
-        /// <summary>
-        /// The attribute name for a classification scheme
-        /// </summary>
-        public const string ClassificationSchemeAttr = "classificationScheme";
+            /// <summary>
+            /// The attribute name for a classification scheme
+            /// </summary>
+            public const string ClassificationScheme = "classificationScheme";
 
-        /// <summary>
-        /// The attribute name for a node representation
-        /// </summary>
-        public const string NodeRepresentationAttr = "nodeRepresentation";
-
-
-        /// <summary>
-        /// The attribute name for object type
-        /// </summary>
-        public const string ObjectTypeAttr = "objectType";
+            /// <summary>
+            /// The attribute name for a node representation
+            /// </summary>
+            public const string NodeRepresentation = "nodeRepresentation";
 
 
+            /// <summary>
+            /// The attribute name for object type
+            /// </summary>
+            public const string ObjectType = "objectType";
+
+        }
         // Slot names
 
         /// <summary>
