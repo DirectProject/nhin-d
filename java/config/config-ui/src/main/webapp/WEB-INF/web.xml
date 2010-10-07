@@ -40,8 +40,11 @@
         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
     </listener>
     -->
+	<!-- Enables clean URLs with JSP views e.g. /welcome instead of /app/welcome -->
 	<listener>
 		<listener-class>
-			org.springframework.web.context.request.RequestContextListener</listener-class>
+			org.springframework.web.context.request.RequestContextListener
+		</listener-class>
 	</listener>
+ 
 </web-app>

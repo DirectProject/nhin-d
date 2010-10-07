@@ -21,6 +21,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 */
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -48,6 +49,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequestMapping("/main")
@@ -68,12 +70,31 @@ public class MainController {
 	 */
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public ModelAndView search (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
-						        HttpSession session, 
-						        Model model)  { 		
-		if (log.isDebugEnabled()) log.debug("Enter");
-		
+						        HttpSession session,
+						        Model model,
+						        @RequestParam(value="submitType") String actionPath)  { 		
+		if (log.isDebugEnabled()) log.debug("Enter search");
+
+		if (log.isDebugEnabled()) log.debug("Enter search");
 		String message = "Search complete";
-		ModelAndView mav = new ModelAndView(); 
+		ModelAndView mav = new ModelAndView();
+		// check to see if new domain requested
+		if(isLoggedIn(session) && actionPath.equalsIgnoreCase("newdomain")){
+			log.debug("trying to go to the new domain page");
+			HashMap<String, String> msgs = new HashMap<String, String>();
+			mav.addObject("msgs", msgs);
+			DomainForm form = (DomainForm) session.getAttribute("domainForm");
+			if (form == null) {
+				form = new DomainForm();
+			}
+			model.addAttribute("domainForm", form);
+	
+			mav.setViewName("domain");
+			mav.addObject("actionPath", actionPath);
+			mav.addObject("statusList", EntityStatus.getEntityStatusList());
+			return mav;
+		}
+		
 		if (isLoggedIn(session)) {
 			SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
 			if (form == null) { 
@@ -96,7 +117,7 @@ public class MainController {
 				return null;
 			}
 	
-			mav.setViewName("main"); 
+			mav.setViewName("main");
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 			mav.addObject("searchResults", results);
 		}

@@ -66,10 +66,7 @@ public class SimplePerson implements Serializable {
     private String localOrg;
     private String ssn;
 
-    // TODO: What does this hold? String, String? Need to specify in
-    // declaration.
-    @SuppressWarnings("unchecked")
-    private Map otherOrgIds = new HashMap();
+    private Map<String, String> otherOrgIds = new HashMap<String, String>();
 
     // portal related attribs
     private String npi;
@@ -86,7 +83,17 @@ public class SimplePerson implements Serializable {
     /**
      * Default constructor.
      */
-    public SimplePerson() {
+    public SimplePerson()
+    {
+        
+    }
+
+    public SimplePerson(String firstName, String lastName)
+    {
+        super();
+        
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     /**
@@ -94,8 +101,7 @@ public class SimplePerson implements Serializable {
      * 
      * @return the value of otherOrgIds.
      */
-    @SuppressWarnings("unchecked")
-    public Map getOtherOrgIds() {
+    public Map<String, String> getOtherOrgIds() {
         return otherOrgIds;
     }
 
@@ -105,8 +111,7 @@ public class SimplePerson implements Serializable {
      * @param otherOrgIds
      *            The value of otherOrgIds.
      */
-    @SuppressWarnings("unchecked")
-    public void setOtherOrgIds(Map otherOrgIds) {
+    public void setOtherOrgIds(Map<String, String> otherOrgIds) {
         this.otherOrgIds = otherOrgIds;
     }
 

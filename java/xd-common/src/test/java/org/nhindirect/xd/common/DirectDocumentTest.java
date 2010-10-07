@@ -28,14 +28,16 @@
 
 package org.nhindirect.xd.common;
 
+import java.util.Date;
+
 import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.xd.common.DirectDocument;
+import org.nhindirect.xd.transform.pojo.SimplePerson;
 
 /**
- * TODO: Write tests..
+ * Unit tests for the DirectDocument class.
  * 
  * @author beau
  */
@@ -77,7 +79,847 @@ public class DirectDocumentTest extends TestCase
     }
 
     /**
+     * Test mimeType.
      * 
+     * @throws Exception
+     */
+    public void testMimeType() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setMimeType(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getMimeType());
+    }
+
+    /**
+     * Test _eotDescription.
+     * 
+     * @throws Exception
+     */
+    public void test_eotDescription() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.set_eot_description(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.get_eot_description());
+    }
+
+    /**
+     * Test creationTime.
+     * 
+     * @throws Exception
+     */
+    public void testCreationTime() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        Date date = new Date(1, 2, 3, 4, 5, 6);
+        metadata.setCreationTime(date);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", date.getYear(), metadata.getCreationTime().getYear());
+        assertEquals("Output does not match expected", date.getMonth(), metadata.getCreationTime().getMonth());
+        assertEquals("Output does not match expected", date.getDate(), metadata.getCreationTime().getDate());
+        assertEquals("Output does not match expected", 0, metadata.getCreationTime().getHours());
+        assertEquals("Output does not match expected", 0, metadata.getCreationTime().getMinutes());
+        assertEquals("Output does not match expected", 0, metadata.getCreationTime().getSeconds());
+    }
+
+    /**
+     * Test languageCode.
+     * 
+     * @throws Exception
+     */
+    public void testLanguageCode() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setLanguageCode(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getLanguageCode());
+    }
+
+    /**
+     * Test serviceStartTime.
+     * 
+     * @throws Exception
+     */
+    public void testServiceStartTime() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        Date date = new Date(1, 2, 3, 4, 5, 6);
+        metadata.setServiceStartTime(date);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", date.getYear(), metadata.getServiceStartTime().getYear());
+        assertEquals("Output does not match expected", date.getMonth(), metadata.getServiceStartTime().getMonth());
+        assertEquals("Output does not match expected", date.getDate(), metadata.getServiceStartTime().getDate());
+        assertEquals("Output does not match expected", date.getHours(), metadata.getServiceStartTime().getHours());
+        assertEquals("Output does not match expected", date.getMinutes(), metadata.getServiceStartTime().getMinutes());
+        assertEquals("Output does not match expected", 0, metadata.getServiceStartTime().getSeconds());
+    }
+
+    /**
+     * Test serviceStopTime.
+     * 
+     * @throws Exception
+     */
+    public void testServiceStopTime() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        Date date = new Date(1, 2, 3, 4, 5, 6);
+        metadata.setServiceStopTime(date);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", date.getYear(), metadata.getServiceStopTime().getYear());
+        assertEquals("Output does not match expected", date.getMonth(), metadata.getServiceStopTime().getMonth());
+        assertEquals("Output does not match expected", date.getDate(), metadata.getServiceStopTime().getDate());
+        assertEquals("Output does not match expected", date.getHours(), metadata.getServiceStopTime().getHours());
+        assertEquals("Output does not match expected", date.getMinutes(), metadata.getServiceStopTime().getMinutes());
+        assertEquals("Output does not match expected", 0, metadata.getServiceStopTime().getSeconds());
+    }
+
+    /**
+     * Test sourcePatient.
+     * 
+     * @throws Exception
+     */
+    public void testSourcePatient() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        SimplePerson sourcePatient = new SimplePerson();
+        sourcePatient.setFirstName("first");
+        sourcePatient.setMiddleName("middle");
+        sourcePatient.setLastName("last");
+        sourcePatient.setLocalId("localId");
+        sourcePatient.setLocalOrg("localOrg");
+        sourcePatient.setBirthDateTime("19560527");
+        sourcePatient.setGenderCode("M");
+        sourcePatient.setStreetAddress1("street");
+        sourcePatient.setCity("city");
+        sourcePatient.setState("state");
+        sourcePatient.setZipCode("zip");
+
+        metadata.setSourcePatient(sourcePatient);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", sourcePatient.getFirstName(), metadata.getSourcePatient().getFirstName());
+        assertEquals("Output does not match expected", sourcePatient.getMiddleName(), metadata.getSourcePatient().getMiddleName());
+        assertEquals("Output does not match expected", sourcePatient.getLastName(), metadata.getSourcePatient().getLastName());
+        assertEquals("Output does not match expected", sourcePatient.getLocalId(), metadata.getSourcePatient().getLocalId());
+        assertEquals("Output does not match expected", sourcePatient.getLocalOrg(), metadata.getSourcePatient().getLocalOrg());
+        assertEquals("Output does not match expected", sourcePatient.getBirthDateTime(), metadata.getSourcePatient().getBirthDateTime());
+        assertEquals("Output does not match expected", sourcePatient.getGenderCode(), metadata.getSourcePatient().getGenderCode());
+        assertEquals("Output does not match expected", sourcePatient.getStreetAddress1(), metadata.getSourcePatient().getStreetAddress1());
+        assertEquals("Output does not match expected", sourcePatient.getCity(), metadata.getSourcePatient().getCity());
+        assertEquals("Output does not match expected", sourcePatient.getState(), metadata.getSourcePatient().getState());
+        assertEquals("Output does not match expected", sourcePatient.getZipCode(), metadata.getSourcePatient().getZipCode());
+    }
+
+    /**
+     * Test authorPerson.
+     * 
+     * @throws Exception
+     */
+    public void testAuthorPerson() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setAuthorPerson(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getAuthorPerson());
+    }
+
+    /**
+     * Test authorInstitution.
+     * 
+     * @throws Exception
+     */
+    public void testAuthorInstitution() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setAuthorInstitution(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getAuthorInstitution());
+    }
+
+    /**
+     * Test authorRole.
+     * 
+     * @throws Exception
+     */
+    public void testAuthorRole() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setAuthorRole(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getAuthorRole());
+    }
+
+    /**
+     * Test authorSpecialty.
+     * 
+     * @throws Exception
+     */
+    public void testAuthorSpecialty() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setAuthorSpecialty(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getAuthorSpecialty());
+    }
+
+    /**
+     * Test classCode.
+     * 
+     * @throws Exception
+     */
+    public void testClassCode() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setClassCode(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getClassCode());
+    }
+
+    /**
+     * Test classCode_localized.
+     * 
+     * @throws Exception
+     */
+    public void testClassCode_localized() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setClassCode_localized(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getClassCode_localized());
+    }
+
+    /**
+     * Test confidentialityCode.
+     * 
+     * @throws Exception
+     */
+    public void testConfidentialityCode() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setConfidentialityCode(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getConfidentialityCode());
+    }
+
+    /**
+     * Test confidentialityCode_localized.
+     * 
+     * @throws Exception
+     */
+    public void testConfidentialityCode_localized() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setConfidentialityCode_localized(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getConfidentialityCode_localized());
+    }
+
+    /**
+     * Test formatCode.
+     * 
+     * @throws Exception
+     */
+    public void testFormatCode() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setFormatCode(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getFormatCode());
+    }
+
+    /**
+     * Test formatCode_localized.
+     * 
+     * @throws Exception
+     */
+    public void testFormatCode_localized() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setFormatCode_localized(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getFormatCode_localized());
+    }
+
+    /**
+     * Test healthcareFacilityTypeCode.
+     * 
+     * @throws Exception
+     */
+    public void testHealthcareFacilityTypeCode() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setHealthcareFacilityTypeCode(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getHealthcareFacilityTypeCode());
+    }
+
+    /**
+     * Test healthcareFacilityTypeCode_localized.
+     * 
+     * @throws Exception
+     */
+    public void testHealthcareFacilityTypeCode_localized() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setHealthcareFacilityTypeCode_localized(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getHealthcareFacilityTypeCode_localized());
+    }
+
+    /**
+     * Test practiceSettingCode.
+     * 
+     * @throws Exception
+     */
+    public void testPracticeSettingCode() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setPracticeSettingCode(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getPracticeSettingCode());
+    }
+
+    /**
+     * Test practiceSettingCode_localized.
+     * 
+     * @throws Exception
+     */
+    public void testPracticeSettingCode_localized() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setPracticeSettingCode_localized(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getPracticeSettingCode_localized());
+    }
+
+    /**
+     * Test loinc.
+     * 
+     * @throws Exception
+     */
+    public void testLoinc() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setLoinc(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getLoinc());
+    }
+
+    /**
+     * Test loinc_localized.
+     * 
+     * @throws Exception
+     */
+    public void testLoinc_localized() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setLoinc_localized(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getLoinc_localized());
+    }
+
+    /**
+     * Test patientId.
+     * 
+     * @throws Exception
+     */
+    public void testPatientId() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setPatientId(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getPatientId());
+    }
+
+    /**
+     * Test uniqueId.
+     * 
+     * @throws Exception
+     */
+    public void testUniqueId() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setUniqueId(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getUniqueId());
+    }
+
+    /**
+     * Test _rpt_name.
+     * 
+     * @throws Exception
+     */
+    public void test_rpt_name() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.set_rpt_name(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.get_rpt_name());
+    }
+
+    /**
+     * Test _rpt_description.
+     * 
+     * @throws Exception
+     */
+    public void test_rpt_description() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.set_rpt_description(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.get_rpt_description());
+    }
+
+    /**
+     * Test ss_submissionTime.
+     * 
+     * @throws Exception
+     */
+    public void testSs_submissionTime() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        Date date = new Date(1, 2, 3, 4, 5, 6);
+        metadata.setSs_submissionTime(date);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", date.getYear(), metadata.getSs_submissionTime().getYear());
+        assertEquals("Output does not match expected", date.getMonth(), metadata.getSs_submissionTime().getMonth());
+        assertEquals("Output does not match expected", date.getDate(), metadata.getSs_submissionTime().getDate());
+        assertEquals("Output does not match expected", date.getHours(), metadata.getSs_submissionTime().getHours());
+        assertEquals("Output does not match expected", date.getMinutes(), metadata.getSs_submissionTime().getMinutes());
+        assertEquals("Output does not match expected", date.getSeconds(), metadata.getSs_submissionTime().getSeconds());
+    }
+
+    /**
+     * Test ss_intendedRecipient.
+     * 
+     * @throws Exception
+     */
+    public void testSs_intendedRecipient() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setSs_intendedRecipient(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getSs_intendedRecipient());
+    }
+
+    /**
+     * Test ss_authorPerson.
+     * 
+     * @throws Exception
+     */
+    public void testSs_authorPerson() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setSs_authorPerson(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getSs_authorPerson());
+    }
+
+    /**
+     * Test ss_authorInstitution.
+     * 
+     * @throws Exception
+     */
+    public void testSs_authorInstitution() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setSs_authorInstitution(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getSs_authorInstitution());
+    }
+
+    /**
+     * Test ss_authorRole.
+     * 
+     * @throws Exception
+     */
+    public void testSs_authorRole() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setSs_authorRole(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getSs_authorRole());
+    }
+
+    /**
+     * Test ss_authorSpecialty.
+     * 
+     * @throws Exception
+     */
+    public void testSs_authorSpecialty() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setSs_authorSpecialty(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getSs_authorSpecialty());
+    }
+
+    /**
+     * Test contentTypeCode.
+     * 
+     * @throws Exception
+     */
+    public void testContentTypeCode() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setContentTypeCode(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getContentTypeCode());
+    }
+
+    /**
+     * Test contentTypeCode_localized.
+     * 
+     * @throws Exception
+     */
+    public void testContentTypeCode_localized() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setContentTypeCode_localized(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getContentTypeCode_localized());
+    }
+
+    /**
+     * Test ss_uniqueId.
+     * 
+     * @throws Exception
+     */
+    public void testSs_uniqueId() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setSs_uniqueId(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getSs_uniqueId());
+    }
+
+    /**
+     * Test ss_sourceId.
+     * 
+     * @throws Exception
+     */
+    public void testSs_sourceId() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setSs_sourceId(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getSs_sourceId());
+    }
+
+    /**
+     * Test ss_patientId.
+     * 
+     * @throws Exception
+     */
+    public void testSs_patientId() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setSs_patientId(value);
+
+        String xml = metadata.toString();
+
+        metadata = document.new Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getSs_patientId());
+    }
+
+    /**
+     * Generic setter test.
      */
     public void testDirectDocumentMetadata()
     {
@@ -87,14 +929,12 @@ public class DirectDocumentTest extends TestCase
         displayMetadata(metadata);
 
         metadata.setMimeType("1");
-        metadata.set_eot_id("2");
         metadata.set_eot_description("3");
-        metadata.setCreationTime("4");
+        metadata.setCreationTime(new Date());
         metadata.setLanguageCode("5");
-        metadata.setServiceStartTime("6");
-        metadata.setServiceStopTime("7");
-        metadata.setSourcePatientId("8");
-        metadata.setSourcePatientInfo("9");
+        metadata.setServiceStartTime(new Date());
+        metadata.setServiceStopTime(new Date());
+        metadata.setSourcePatient(new SimplePerson("Bob", "Smith"));
         metadata.setAuthorPerson("10");
         metadata.setAuthorInstitution("11");
         metadata.setAuthorRole("12");
@@ -113,10 +953,9 @@ public class DirectDocumentTest extends TestCase
         metadata.setLoinc_localized("25");
         metadata.setPatientId("26");
         metadata.setUniqueId("27");
-        metadata.set_rpt_id("28");
         metadata.set_rpt_name("29");
         metadata.set_rpt_description("30");
-        metadata.setSs_submissionTime("31");
+        metadata.setSs_submissionTime(new Date());
         metadata.setSs_intendedRecipient("32");
         metadata.setSs_authorPerson("33");
         metadata.setSs_authorInstitution("34");
@@ -141,8 +980,7 @@ public class DirectDocumentTest extends TestCase
         LOGGER.info("languageCode                           " + metadata.getLanguageCode());
         LOGGER.info("serviceStartTime                       " + metadata.getServiceStartTime());
         LOGGER.info("serviceStopTime                        " + metadata.getServiceStopTime());
-        LOGGER.info("sourcePatientId                        " + metadata.getSourcePatientId());
-        LOGGER.info("sourcePatientInfo                      " + metadata.getSourcePatientInfo());
+        LOGGER.info("sourcePatient                          " + metadata.getSourcePatient().getLastName() + ", " + metadata.getSourcePatient().getFirstName());
         LOGGER.info("authorPerson                           " + metadata.getAuthorPerson());
         LOGGER.info("authorInstitution                      " + metadata.getAuthorInstitution());
         LOGGER.info("authorRole                             " + metadata.getAuthorRole());

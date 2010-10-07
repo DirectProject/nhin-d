@@ -9,15 +9,17 @@
 		http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.0.xsd 
 		http://www.springframework.org/schema/mvc 
 		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
-	
+
 	<mvc:annotation-driven/>
 	<context:annotation-config />
 	   <!-- Scans the classpath of this application for @Components to deploy as beans -->
     <context:component-scan base-package="org.nhindirect.config.ui" />
 
+	<bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
-
+    <bean id="handlerAdapter" class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="alwaysUseFullPath" value="true"/>
+    </bean>
     <!-- Forwards requests to the "/" resource to the "login" view -->
     <mvc:view-controller path="/" view-name="login"/>
     
@@ -32,8 +34,6 @@
 		<property name="suffix" value=".jsp" />
 	
 	</bean>
-
-	<bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping" />
 	
 	<!-- Application Message Bundle -->
     <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
