@@ -31,7 +31,7 @@ namespace NHINDirect.Metadata
         /// </summary>
         public static string ToHL7Date(this DateTime datetime)
         {
-            return datetime.ToUniversalTime().ToString("yyyyMMddHHmmss", System.Globalization.DateTimeFormatInfo.InvariantInfo);
+            return datetime.ToUniversalTime().ToString(HL7Util.DateTimeFormat, System.Globalization.DateTimeFormatInfo.InvariantInfo);
         }
 
         /// <summary>

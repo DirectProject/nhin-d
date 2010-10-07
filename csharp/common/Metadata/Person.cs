@@ -44,7 +44,7 @@ namespace NHINDirect.Metadata
     /// <summary>
     /// Represents a human person
     /// </summary>
-    public class Person
+    public class Person : IEquatable<Person>
     {
 
         /// <summary>
@@ -132,6 +132,24 @@ namespace NHINDirect.Metadata
             bool sexEquals = (Sex == null && other.Sex == null) || Sex == other.Sex;
             bool dobEquals = (Dob == null && other.Dob == null) || Dob == other.Dob;
             return firstEquals && lastEquals && miEquals && suffixEquals && prefixEquals && degreeEquals && sexEquals && dobEquals;
+        }
+
+        /// <summary>
+        /// Tests if this instance equals another
+        /// </summary>
+        public override bool Equals(object other)
+        {
+            if (other == null) return false;
+            if (other is Person) return Equals(other as Person);
+            return false;
+        }
+
+        /// <summary>
+        /// Returns a hash of this object
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
         }
 
         /// <summary>

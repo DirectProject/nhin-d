@@ -20,6 +20,7 @@ using System.Text;
 using System.Xml.Linq;
 
 using NHINDirect.Metadata;
+using System.Globalization;
 
 namespace NHINDirect.Xd
 {
@@ -53,8 +54,25 @@ namespace NHINDirect.Xd
         public static DocumentMetadata ConsumeDocument(XElement docXEl)
         {
             DocumentMetadata doc = new DocumentMetadata();
-            doc.Author = ConsumeAuthor(docXEl.Classification(XDMetadataStandard.DocumentAuthorUUID));
-            doc.Class = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.DocumentClassUUID));
+            doc.Author = ConsumeAuthor(docXEl.Classification(XDMetadataStandard.UUIDs.DocumentAuthor));
+            doc.Class = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.UUIDs.DocumentClass));
+            doc.Comments = docXEl.DescriptionValue();
+            doc.Confidentiality = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.UUIDs.DocumentConfidentiality));
+            doc.CreatedOn = docXEl.SlotValue<DateTime?>(XDMetadataStandard.Slots.CreationTime, s => HL7Util.DateTimeFromHL7Value(s));
+            doc.EventCodes = docXEl.Classifications(XDMetadataStandard.UUIDs.EventCode).Select(c => ConsumeCodedValue(c));
+            doc.FormatCode = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.UUIDs.FormatCode));
+            doc.FacilityCode = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.UUIDs.FacilityCode));
+            doc.Hash = docXEl.SlotValue(XDMetadataStandard.Slots.Hash);
+            doc.LanguageCode = docXEl.SlotValue(XDMetadataStandard.Slots.LanguageCode);
+            doc.LegalAuthenticator = docXEl.SlotValue<Person>(XDMetadataStandard.Slots.LegalAuthenticator, s => Person.FromXCN(s));
+            doc.MediaType = docXEl.AttributeValue(XDMetadataStandard.Attrs.MimeType);
+            doc.PatientID = docXEl.ExternalIdentifierValue(XDMetadataStandard.UUIDs.DocumentEntryPatientIdentityScheme, s => PatientID.FromEscapedCx(s));
+            doc.ServiceStart = docXEl.SlotValue<DateTime?>(XDMetadataStandard.Slots.ServiceStart, s => HL7Util.DateTimeFromHL7Value(s));
+            doc.ServiceStop = docXEl.SlotValue<DateTime?>(XDMetadataStandard.Slots.ServiceStop, s => HL7Util.DateTimeFromHL7Value(s));
+            doc.PracticeSetting = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.UUIDs.PracticeSetting));
+            doc.Size = docXEl.SlotValue<int?>(XDMetadataStandard.Slots.Size, s => Parse(s));
+            doc.SourcePtId = docXEl.SlotValue<PatientID>(XDMetadataStandard.Slots.SourcePatientID, s => PatientID.FromEscapedCx(s));
+
             return doc;
         }
 
@@ -79,11 +97,20 @@ namespace NHINDirect.Xd
 
         static CodedValue ConsumeCodedValue(XElement codedValueClassification)
         {
-            XAttribute nodeRep = codedValueClassification.Attribute(XDMetadataStandard.NodeRepresentationAttr);
+            XAttribute nodeRep = codedValueClassification.Attribute(XDMetadataStandard.Attrs.NodeRepresentation);
             string codingScheme = codedValueClassification.SlotValue(XDMetadataStandard.Slots.CodingScheme);
             string codeLabel = codedValueClassification.NameValue();
             if (nodeRep == null || codingScheme == null || codeLabel == null) throw new ArgumentException();
             return new CodedValue(nodeRep.Value, codeLabel, codingScheme);
         }
+
+        static int? Parse(string s)
+        {
+            int i;
+            bool worked = Int32.TryParse(s, out i);
+            return worked ? i as int? : null;
+        }
+
+
     }
 }

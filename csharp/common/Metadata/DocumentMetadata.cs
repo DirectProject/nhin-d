@@ -72,7 +72,7 @@ namespace NHINDirect.Metadata
         /// <summary>
         /// The facility code for this document.
         /// </summary>
-        public CodedValue FaciltyCode { get; set; }
+        public CodedValue FacilityCode { get; set; }
 
         /// <summary>
         /// ISO language code (e.g., en-us)

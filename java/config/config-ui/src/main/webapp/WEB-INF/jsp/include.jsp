@@ -3,6 +3,9 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 	
 	<script src="<c:url value="/resources/jquery/1.4.2/jquery.js"/>" ></script>
 	<script src="<c:url value="/resources/jqueryui/1.8.4/jquery-ui-1.8.4.custom.js"/>" ></script>

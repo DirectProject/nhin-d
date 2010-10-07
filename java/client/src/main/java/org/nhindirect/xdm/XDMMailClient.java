@@ -49,9 +49,9 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.nhindirect.DirectDocument;
-import org.nhindirect.transform.DocumentXdmTransformer;
-import org.nhindirect.transform.impl.DocumentXdmTransformerImpl;
+import org.nhindirect.xd.common.DirectDocument;
+import org.nhindirect.xd.transform.DocumentXdmTransformer;
+import org.nhindirect.xd.transform.impl.DocumentXdmTransformerImpl;
 
 /**
  * This class handles the packaging and sending of XDM data over SMTP.
@@ -72,6 +72,7 @@ public class XDMMailClient
 
     private DocumentXdmTransformer transformer = new DocumentXdmTransformerImpl();
 
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = Logger.getLogger(XDMMailClient.class.getPackage().getName());
 
     public XDMMailClient(String smtpHostName, String smtpAuthUser, String smtpAuthPwd)
@@ -89,7 +90,7 @@ public class XDMMailClient
         for (DirectDocument d : documents)
         {
             List<String> docs = Arrays.asList(d.getData());
-            sendMail(messageId, from, (List<String>) recipients, d.getMetadata().getXml(), body, docs, suffix);
+            sendMail(messageId, from, (List<String>) recipients, d.getMetadata().toString(), body, docs, suffix);
         }
 
     }

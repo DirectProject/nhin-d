@@ -24,10 +24,9 @@ $(document).ready(function()
 	<center><h3>NHIN Direct Java Reference Implememtation - Manage Domains</h3></center>
 	</fieldset>
 	<fieldset>
-	<form:form id="searchDomainForm"
-		action="main/search" cssClass="cleanform"
-		commandName="searchDomainForm" method="GET">
-			<p>Enter the Domain search criteria below, or click the button 
+	<spring:url value="/config/main/search" var="formUrl"/>
+	<form:form id="searchDomainForm" action="${fn:escapeXml(formUrl)}" cssClass="cleanform" commandName="searchDomainForm" method="GET">
+				<p>Enter the Domain search criteria below, or click the button 
 			to add a new domain</p>
 			<form:label path="domainName">Domain Name: 
 		       <form:errors path="domainName" cssClass="error" />
@@ -39,15 +38,18 @@ $(document).ready(function()
 			 <form:radiobuttons path="status" items="${statusList}"/> 
 	        </fieldset>
 		<p>
-		<button type="submit">Search</button>
-		<button type="submit" onclick='this.form.action = "domain"; return true;' style="align:right;">New Domain</button>
+	<!-- 	<button type="submit">Search</button> -->
+		<button name="submitType" id="submitType" type="submit" value="search">Search</button>		
+<!-- 		<button type="submit" onclick='this.form.action = "domain"; return true;' style="align:right;">New Domain</button> -->
+        <button name="submitType" id="submitType" type="submit" value="newdomain">New Domain</button>
+		
 		</p>
 	</form:form>
 	</fieldset>
 	</div>
 	<c:if test="${not empty searchResults}">
 	<div id="dynamic">
-	   <form:form id="removeDomainForm" action="domain/remove" cssClass="cleanform" method="POST" commandName="removeDomainForm" >
+	   <form:form id="removeDomainForm" action="../domain/remove" cssClass="cleanform" method="POST" commandName="removeDomainForm" >
 		<table class="tablesorter" id="domainTable">
 			<thead>
 				<tr>

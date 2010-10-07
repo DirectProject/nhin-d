@@ -54,8 +54,8 @@ import org.jmock.integration.junit3.JUnit3Mockery;
 import org.jmock.lib.legacy.ClassImposteriser;
 import org.nhind.mail.service.DocumentRepository;
 import org.nhind.testutils.MockMailetConfig;
-import org.nhindirect.transform.MimeXdsTransformer;
-import org.nhindirect.transform.impl.DefaultMimeXdsTransformer;
+import org.nhindirect.xd.transform.MimeXdsTransformer;
+import org.nhindirect.xd.transform.impl.DefaultMimeXdsTransformer;
 
 
 /**

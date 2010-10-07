@@ -36,6 +36,7 @@ import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.ui.form.DomainForm;
 import org.nhindirect.config.ui.form.LoginForm;
+import org.nhindirect.config.ui.form.SearchDomainForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,6 +48,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.validation.BindException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/domain")
@@ -57,8 +62,13 @@ public class DomainController {
 	private DomainService dService;
 	
 	public DomainController() {
-		if (log.isDebugEnabled()) log.debug("MainController initialized");
+		if (log.isDebugEnabled()) log.debug("DomainController initialized");
 	}
+	@RequestMapping(method = RequestMethod.POST)
+	public ModelAndView onSubmitAndView(Object command){
+		log.debug("Enter onSubmit");
+		return new ModelAndView(new RedirectView("main"));
+	}	
 	
 	/**
 	 * Display a Domain
@@ -129,65 +139,78 @@ public class DomainController {
 	}
 	
 	/**
-	 * Execute the search and return the results
+	 * Execute the save and return the results
 	 */
-	@RequestMapping(method=RequestMethod.POST )
+	@RequestMapping(value="/saveupdate", method=RequestMethod.POST )
 	public ModelAndView saveDomain (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 							   
 									HttpSession session, 
 									@RequestParam(value="submitType") String actionPath,
 							        @ModelAttribute("domainForm") DomainForm form,
 							        Model model)  { 		
 		if (log.isDebugEnabled()) log.debug("Enter");
+		if (log.isDebugEnabled()) log.debug("Entered saveDomain");
+		if (log.isDebugEnabled()) log.debug("The value of actionPath: "+actionPath);
 		ModelAndView mav = new ModelAndView(); 
-		HashMap<String, String> msgs = new HashMap<String, String>();
-		mav.addObject("msgs", msgs);
-		
-		if (isLoggedIn(session)) {
-			mav.setViewName("domain"); 
-			if (form.isValid()) {
-				if (log.isDebugEnabled()) log.debug("Form passed validation");
-				try {
-					if (actionPath.equals("add")) {
-						dService.addDomain(form.getDomainFromForm());
-						List<Domain> result = new ArrayList<Domain>(dService.searchDomain(form.getDomainName(), form.getStatus()));
-						if (result.size() > 0) {
-							form = new DomainForm();
-							form.populate(result.get(0));							
-							msgs.put("msg", "domain.add.success");	
-						}
-					}
-					else if (actionPath.equals("update")) {
-						dService.updateDomain(form.getDomainFromForm());
-						List<Domain> result = new ArrayList<Domain>(dService.searchDomain(form.getDomainName(), form.getStatus()));
-						if (result.size() > 0) {
-							form = new DomainForm();
-							form.populate(result.get(0));
-						}
-						msgs.put("msg", "domain.update.success");
-					}
-					
-					if (log.isDebugEnabled()) log.debug("Stored domain: " + form.getDomainFromForm().toString());
-				
-				} catch (ConfigurationServiceException e) {
-					log.error(e);
-					msgs.put("domainService", "domainService.add.error");
-				}
-			}
-			model.addAttribute(form != null ? form : new DomainForm());
-			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+		if (isLoggedIn(session) && actionPath.equalsIgnoreCase("cancel")) {
+			if (log.isDebugEnabled()) log.debug("trying to cancel from saveupdate");
+			SearchDomainForm form2 = (SearchDomainForm) session
+					.getAttribute("searchDomainForm");
+			model.addAttribute(form2 != null ? form2 : new SearchDomainForm());
+			model.addAttribute("ajaxRequest", AjaxUtils
+					.isAjaxRequest(requestedWith));
+
+			mav.setViewName("main");
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
-			mav.addObject("actionPath", actionPath);
+			return mav;
+		} else {
+			HashMap<String, String> msgs = new HashMap<String, String>();
+			mav.addObject("msgs", msgs);
+			if (log.isDebugEnabled()) log.debug("submitType: " + actionPath);
+			if (isLoggedIn(session)) {
+				mav.setViewName("domain");
+				if (form.isValid()) {
+					if (log.isDebugEnabled())
+						log.debug("Form passed validation");
+					try {
+						if (actionPath.equals("add")) {
+							dService.addDomain(form.getDomainFromForm());
+							List<Domain> result = new ArrayList<Domain>(
+									dService.searchDomain(form.getDomainName(),
+											form.getStatus()));
+							if (result.size() > 0) {
+								form = new DomainForm();
+								form.populate(result.get(0));
+								msgs.put("msg", "domain.add.success");
+							}
+						} else if (actionPath.equals("update")) {
+							dService.updateDomain(form.getDomainFromForm());
+							List<Domain> result = new ArrayList<Domain>(
+									dService.searchDomain(form.getDomainName(),
+											form.getStatus()));
+							if (result.size() > 0) {
+								form = new DomainForm();
+								form.populate(result.get(0));
+							}
+							msgs.put("msg", "domain.update.success");
+						}
+
+						if (log.isDebugEnabled())
+							log.debug("Stored domain: "
+									+ form.getDomainFromForm().toString());
+
+					} catch (ConfigurationServiceException e) {
+						log.error(e);
+						msgs.put("domainService", "domainService.add.error");
+					}
+				}
+			} else {
+				model.addAttribute(new LoginForm());
+				mav.setViewName("login");
+			}
 		}
-		else {
-			model.addAttribute(new LoginForm());
-			mav.setViewName("login");
-		}
-		
 		if (log.isDebugEnabled()) log.debug("Exit");
 		return mav;
 	}
-
-	
 	private boolean isLoggedIn(HttpSession session) {
 		Boolean result = (Boolean)session.getAttribute("authComplete");
 		if (result == null) {
