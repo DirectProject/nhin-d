@@ -66,7 +66,8 @@ namespace NHINDirect.Xd
             doc.LanguageCode = docXEl.SlotValue(XDMetadataStandard.Slots.LanguageCode);
             doc.LegalAuthenticator = docXEl.SlotValue<Person>(XDMetadataStandard.Slots.LegalAuthenticator, s => Person.FromXCN(s));
             doc.MediaType = docXEl.AttributeValue(XDMetadataStandard.Attrs.MimeType);
-
+            doc.PatientID = docXEl.ExternalIdentifierValue(XDMetadataStandard.UUIDs.DocumentEntryPatientIdentityScheme, s => PatientID.FromEscapedCx(s)); 
+            
             return doc;
         }
 
