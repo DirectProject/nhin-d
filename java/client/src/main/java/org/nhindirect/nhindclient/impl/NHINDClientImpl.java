@@ -34,9 +34,9 @@ import javax.mail.MessagingException;
 
 import org.nhindirect.nhindclient.NHINDClient;
 import org.nhindirect.nhindclient.config.NHINDClientConfig;
-import org.nhindirect.routing.RoutingResolver;
-import org.nhindirect.routing.impl.RoutingResolverImpl;
 import org.nhindirect.xd.common.DirectMessage;
+import org.nhindirect.xd.routing.RoutingResolver;
+import org.nhindirect.xd.routing.impl.RoutingResolverImpl;
 import org.nhindirect.xdclient.XDClient;
 import org.nhindirect.xdm.XDMMailClient;
 
