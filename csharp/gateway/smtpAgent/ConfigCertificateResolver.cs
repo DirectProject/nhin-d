@@ -27,17 +27,32 @@ using NHINDirect.Config.Client.CertificateService;
 
 namespace NHINDirect.SmtpAgent
 {
-    public class ConfigCertificateResolver : ICertificateResolver, IX509CertificateIndex
+    /// <summary>
+    /// Resolve Certificates from the Configuration Service. 
+    /// Used by the Mail Gateway to resolve Private Certs from the Config Service.
+    /// 
+    /// To resolve certificates, calls the CertificateService using the supplied settings.
+    /// Before resolving certificates for an address, can verify that addresses exist by calling the AddressService using supplied settings
+    /// </summary>
+    public class ConfigCertificateResolver : CertificateResolver
     {
         ClientSettings m_certClientSettings;
         ClientSettings m_addressClientSettings;
-        CertificateResolver m_resolver;
-        
+
+        /// <summary>
+        /// Create a new resolver
+        /// </summary>
+        /// <param name="certClientSettings">Settings for the certificate service to use for certificate resolution</param>    
         public ConfigCertificateResolver(ClientSettings certClientSettings)
             : this(certClientSettings, null)
         {
         }
         
+        /// <summary>
+        /// Create a new resolver
+        /// </summary>
+        /// <param name="certClientSettings">Resolve certificates from this certificate service</param>
+        /// <param name="addressClientSettings">Optional Address Service. If NOT null, then before returning certificates, check if addresses exist by calling the address service</param>
         public ConfigCertificateResolver(ClientSettings certClientSettings, ClientSettings addressClientSettings)
         {
             if (certClientSettings == null)
@@ -47,13 +62,21 @@ namespace NHINDirect.SmtpAgent
             
             m_certClientSettings = certClientSettings;
             m_addressClientSettings = addressClientSettings;
-            m_resolver = new CertificateResolver(this);
         }
-
-        public X509Certificate2Collection GetCertificates(MailAddress address)
-        {
+        
+        /// <summary>
+        /// Resolve certificates for the given mail address
+        /// 1. Optionally checks if the mail address exists
+        /// 2. Then resolves appropriate certificates for the address
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public override X509Certificate2Collection GetCertificates(MailAddress address)
+        {            
             if (m_addressClientSettings != null)
             {
+                // We are configured to verify that the mail address exists
+                // Resolve certificates for the address only if the address is valid
                 Address registeredAddress = this.ResolveAddress(address);
                 if (registeredAddress == null)
                 {
@@ -61,17 +84,14 @@ namespace NHINDirect.SmtpAgent
                 }
             }
             
-            return m_resolver.GetCertificates(address);
+            return base.GetCertificates(address);
         }
-
-        public X509Certificate2Collection this[string subjectName]
+                
+        protected override X509Certificate2Collection Resolve(string name)
         {
-            get 
-            { 
-                using(CertificateStoreClient client = this.CreateCertClient())
-                {
-                    return Certificate.ToX509Collection(client.GetCertificatesForOwner(subjectName, EntityStatus.Enabled));
-                }
+            using(CertificateStoreClient client = this.CreateCertClient())
+            {
+                return Certificate.ToX509Collection(client.GetCertificatesForOwner(name, EntityStatus.Enabled));
             }
         }
         

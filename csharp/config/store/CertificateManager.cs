@@ -28,15 +28,13 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Config.Store
 {
-    public class CertificateManager : IX509CertificateIndex, ICertificateResolver
+    public class CertificateManager : IX509CertificateIndex
     {
         ConfigStore m_store;
-        CertificateResolver m_resolver;
 
         internal CertificateManager(ConfigStore store)
         {
             m_store = store;
-            m_resolver = new CertificateResolver(this);
         }
 
         internal ConfigStore Store
@@ -335,11 +333,6 @@ namespace NHINDirect.Config.Store
             return x509Coll;
         }
 
-        public X509Certificate2Collection GetCertificates(MailAddress address)
-        {
-            return m_resolver.GetCertificates(address);
-        }
-        
         public X509Certificate2Collection this[string subjectName]
         {
             get 

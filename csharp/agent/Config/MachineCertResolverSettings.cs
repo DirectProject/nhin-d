@@ -78,7 +78,7 @@ namespace NHINDirect.Agent.Config
             
             using(SystemX509Store store = this.OpenStore())
             {
-                return store.Index();
+                return store.CreateResolver();
             }
         }
         

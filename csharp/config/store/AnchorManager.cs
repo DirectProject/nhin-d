@@ -28,21 +28,13 @@ using NHINDirect.Certificates;
 
 namespace NHINDirect.Config.Store
 {
-    public class AnchorManager : ITrustAnchorResolver
+    public class AnchorManager
     {
         ConfigStore m_store;
-        AnchorIndex m_incomingIndex;
-        AnchorIndex m_outgoingIndex;
-        CertificateResolver m_incomingResolver;
-        CertificateResolver m_outgoingResolver;
         
         internal AnchorManager(ConfigStore store)
         {
             m_store = store;
-            m_incomingIndex = new AnchorIndex(this, true);
-            m_outgoingIndex = new AnchorIndex(this, false);
-            m_incomingResolver = new CertificateResolver(m_incomingIndex);
-            m_outgoingResolver = new CertificateResolver(m_outgoingIndex);
         }
 
         internal ConfigStore Store
@@ -53,38 +45,6 @@ namespace NHINDirect.Config.Store
             }
         }
         
-        public IX509CertificateIndex IncomingIndex
-        {
-            get
-            {
-                return m_incomingIndex;
-            }
-        }
-        
-        
-        public IX509CertificateIndex OutgoingIndex
-        {
-            get
-            {
-                return m_outgoingIndex;
-            }
-        }
-        
-        public ICertificateResolver IncomingAnchors
-        {
-            get 
-            { 
-                return m_incomingResolver;
-            }
-        }
-
-        public ICertificateResolver OutgoingAnchors
-        {
-            get 
-            { 
-                return m_outgoingResolver;
-            }
-        }
         
         public void Add(Anchor anchor)
         {
@@ -359,27 +319,6 @@ namespace NHINDirect.Config.Store
             }
 
             db.Anchors.ExecDelete(ownerName);
-        }
-        
-        internal class AnchorIndex : IX509CertificateIndex
-        {
-            AnchorManager m_anchorManager;       
-            bool m_incoming;
-            
-            internal AnchorIndex(AnchorManager anchors, bool incoming)
-            {
-                m_anchorManager = anchors;
-                m_incoming = incoming;
-            }
-
-            public X509Certificate2Collection this[string subjectName]
-            {
-                get 
-                { 
-                    Anchor[] anchors = (m_incoming) ? m_anchorManager.GetIncoming(subjectName) : m_anchorManager.GetOutgoing(subjectName);
-                    return Anchor.ToX509Collection(anchors);
-                }
-            }
         }
     }
  }

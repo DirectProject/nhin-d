@@ -84,8 +84,8 @@ namespace NHINDirect.Agent
         /// The local domain name managed by this agent. 
         /// </param> 
         public NHINDAgent(string domain)
-            : this(domain, SystemX509Store.OpenPrivate().Index(), 
-                           SystemX509Store.OpenExternal().Index(),
+            : this(domain, SystemX509Store.OpenPrivate().CreateResolver(), 
+                           SystemX509Store.OpenExternal().CreateResolver(),
                            TrustAnchorResolver.CreateDefault())
         {
         }
@@ -215,12 +215,17 @@ namespace NHINDirect.Agent
                 throw new ArgumentNullException("cryptographer");
             }
 
-            this.m_privateCertResolver = privateCerts;
-            this.m_publicCertResolver = publicCerts;
-            this.m_cryptographer = cryptographer;
-            this.m_trustAnchors = anchors;
-            this.m_trustModel = trustModel;
-            this.m_minTrustRequirement = TrustEnforcementStatus.Success;
+            m_privateCertResolver = privateCerts;
+            m_publicCertResolver = publicCerts;
+            m_cryptographer = cryptographer;
+            m_trustAnchors = anchors;
+            m_trustModel = trustModel;
+            if (!m_trustModel.CertChainValidator.HasCertificateResolver)
+            {
+                m_trustModel.CertChainValidator.IssuerResolver = m_publicCertResolver;
+            }
+            
+            m_minTrustRequirement = TrustEnforcementStatus.Success;
         }
         
 		/// <summary>
@@ -231,7 +236,7 @@ namespace NHINDirect.Agent
         {
             get
             {
-                return this.m_managedDomains;
+                return m_managedDomains;
             }
         }
 
@@ -243,7 +248,7 @@ namespace NHINDirect.Agent
         {
             get
             {
-                return this.m_cryptographer;
+                return m_cryptographer;
             }
         }
 
@@ -255,11 +260,11 @@ namespace NHINDirect.Agent
         {
             get
             {
-                return this.m_encryptionEnabled;
+                return m_encryptionEnabled;
             }
             set
             {
-                this.m_encryptionEnabled = value;
+                m_encryptionEnabled = value;
             }
         }
         
@@ -272,11 +277,11 @@ namespace NHINDirect.Agent
         {
             get
             {
-                return this.m_wrappingEnabled;
+                return m_wrappingEnabled;
             }
             set
             {
-                this.m_wrappingEnabled = value;
+                m_wrappingEnabled = value;
             }
         }
         
@@ -305,7 +310,7 @@ namespace NHINDirect.Agent
         {
             get
             {
-                return this.m_publicCertResolver;
+                return m_publicCertResolver;
             }
         }
 
@@ -319,7 +324,7 @@ namespace NHINDirect.Agent
         {
             get
             {
-                return this.m_privateCertResolver;
+                return m_privateCertResolver;
             }
         }
         /// <summary> 
@@ -332,7 +337,7 @@ namespace NHINDirect.Agent
         {
             get
             {
-                return this.m_trustAnchors;
+                return m_trustAnchors;
             }
         }
 
@@ -343,7 +348,7 @@ namespace NHINDirect.Agent
         {
             get
             {
-                return this.m_minTrustRequirement;
+                return m_minTrustRequirement;
             }
             set
             {
@@ -351,10 +356,21 @@ namespace NHINDirect.Agent
                 {
                     throw new ArgumentException("value has a non-successful status", "value");
                 }
-                this.m_minTrustRequirement = value;
+                m_minTrustRequirement = value;
             }
         }
-
+        
+        /// <summary>
+        /// Returns the currently configured trust model 
+        /// </summary>
+        public TrustModel TrustModel
+        {
+            get
+            {
+                return m_trustModel;
+            }
+        }
+        
         //
         // You can participate in the agent pipeline by subscribing to these events
         // You can choose to do FURTHER post-processing on the message:
@@ -526,13 +542,13 @@ namespace NHINDirect.Agent
             //
             // Enforce trust requirements, including checking signatures
             //
-            this.m_trustModel.Enforce(message);
+            m_trustModel.Enforce(message);
             //
             // Remove any untrusted recipients...
             //
             if (message.HasDomainRecipients)
             {
-                message.CategorizeRecipientsByTrust(this.m_minTrustRequirement);
+                message.CategorizeRecipientsByTrust(m_minTrustRequirement);
             }
             if (!message.HasDomainRecipients)
             {
@@ -554,7 +570,7 @@ namespace NHINDirect.Agent
             {
                 NHINDAddress recipient = recipients[i];
                 recipient.Certificates = this.ResolvePrivateCerts(recipient, false);
-                recipient.TrustAnchors = this.m_trustAnchors.IncomingAnchors.GetCertificates(recipient);
+                recipient.TrustAnchors = m_trustAnchors.IncomingAnchors.GetCertificates(recipient);
             }
         }
 
@@ -564,7 +580,7 @@ namespace NHINDirect.Agent
             MimeEntity payload = null;
             bool success = false;
             
-            if (this.m_encryptionEnabled)
+            if (m_encryptionEnabled)
             {
                 //
                 // Yes, this can be optimized for multiple certs. 
@@ -620,7 +636,7 @@ namespace NHINDirect.Agent
             
             if (certificate != null)
             {
-                decryptedEntity = this.m_cryptographer.Decrypt(message.Message, certificate);
+                decryptedEntity = m_cryptographer.Decrypt(message.Message, certificate);
             }
             else
             {
@@ -791,11 +807,11 @@ namespace NHINDirect.Agent
             //
             // Enforce the trust model.
             //
-            this.m_trustModel.Enforce(message);
+            m_trustModel.Enforce(message);
             //
             // Remove any non-trusted recipients
             //
-            message.CategorizeRecipientsByTrust(this.m_minTrustRequirement);
+            message.CategorizeRecipientsByTrust(m_minTrustRequirement);
             if (!message.HasRecipients)
             {
                 throw new AgentException(AgentError.NoTrustedRecipients);
@@ -815,7 +831,7 @@ namespace NHINDirect.Agent
             //
             // Retrieving the sender's private certificate is requied for encryption
             //
-            message.Sender.TrustAnchors = this.m_trustAnchors.OutgoingAnchors.GetCertificates(message.Sender);
+            message.Sender.TrustAnchors = m_trustAnchors.OutgoingAnchors.GetCertificates(message.Sender);
             message.Sender.Certificates = this.ResolvePrivateCerts(message.Sender, true);
             //
             // Bind each recipient's certs
@@ -872,14 +888,14 @@ namespace NHINDirect.Agent
         //
         void SignAndEncryptMessage(OutgoingMessage message)
         {
-            SignedEntity signedEntity = this.m_cryptographer.Sign(message.Message, message.Sender.Certificates);
+            SignedEntity signedEntity = m_cryptographer.Sign(message.Message, message.Sender.Certificates);
 
-            if (this.m_encryptionEnabled)
+            if (m_encryptionEnabled)
             {
                 //
                 // Encrypt the outbound message with all known trusted certs
                 //
-                MimeEntity encryptedEntity = this.m_cryptographer.Encrypt(signedEntity, message.Recipients.GetCertificates());
+                MimeEntity encryptedEntity = m_cryptographer.Encrypt(signedEntity, message.Recipients.GetCertificates());
                 //
                 // Alter message content to contain encrypted data
                 //
@@ -896,7 +912,7 @@ namespace NHINDirect.Agent
             X509Certificate2Collection certs = null;
             try
             {
-                certs = this.m_privateCertResolver.GetCertificates(address);
+                certs = m_privateCertResolver.GetCertificates(address);
                 if (certs == null && required)
                 {
                     throw new AgentException(AgentError.UnknownRecipient);
@@ -919,7 +935,7 @@ namespace NHINDirect.Agent
             X509Certificate2Collection cert = null;
             try
             {
-                cert = this.m_publicCertResolver.GetCertificates(address);
+                cert = m_publicCertResolver.GetCertificates(address);
                 if (cert == null && required)
                 {
                     throw new AgentException(AgentError.UnknownRecipient);

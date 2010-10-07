@@ -46,7 +46,7 @@ namespace NHINDirect.Certificates
         /// <param name="outgoingAnchors">Trust anchors used to validate messages for sending</param>
         /// <param name="incomingAnchors">Trust anchors used to validate messages on reciept.</param>
         public TrustAnchorResolver(X509Certificate2Collection outgoingAnchors, X509Certificate2Collection incomingAnchors)
-            : this(new UniformCertificateStore(outgoingAnchors), new UniformCertificateStore(incomingAnchors))
+            : this(new UniformCertificateResolver(outgoingAnchors), new UniformCertificateResolver(incomingAnchors))
         {
         }
 
@@ -65,7 +65,7 @@ namespace NHINDirect.Certificates
         /// <param name="outgoingAnchors">Trust anchor store used to validate messages for sending</param>
         /// <param name="incomingAnchors">Trust anchor store used to validate messages on reciept.</param>
         public TrustAnchorResolver(IX509CertificateStore outgoingAnchors, IX509CertificateStore incomingAnchors)
-            : this(new UniformCertificateStore(outgoingAnchors), new UniformCertificateStore(incomingAnchors))
+            : this(new UniformCertificateResolver(outgoingAnchors), new UniformCertificateResolver(incomingAnchors))
         {
         }
         
@@ -128,7 +128,7 @@ namespace NHINDirect.Certificates
         {
             using (SystemX509Store store = SystemX509Store.OpenAnchor())
             {
-                UniformCertificateStore anchors = new UniformCertificateStore(store.GetAllCertificates());
+                UniformCertificateResolver anchors = new UniformCertificateResolver(store.GetAllCertificates());
                 return new TrustAnchorResolver(anchors);
             }
         }

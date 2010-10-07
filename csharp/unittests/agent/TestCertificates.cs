@@ -14,38 +14,50 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Net.Mail;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.IO;
+using NHINDirect.Certificates;
 using System.Security.Cryptography.X509Certificates;
 
-namespace NHINDirect.Certificates
+namespace AgentTests
 {
-	/// <summary>
-	/// Supports resolution of certificates.
-    /// If no certificate for address, methods return null
-    /// Throw exceptions if there was an error during retrieval, such as network issues
-    /// Implementations may use implementation specific caching policies.
-    /// </summary>
-    public interface ICertificateResolver
+    public class TestCertificates
     {
-		/// <summary>
-		/// Returns the valid certficates for a mail address.
-		/// Implementations representing remote certificate stores (e.g., DNS) may throw network exceptions.
-		/// </summary>
-		/// <param name="address">
-		/// A <see cref="System.Net.Mail.MailAddress"/>
-		/// </param>
-		/// <returns>
-		/// A <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2Collection"/> or null if there are no matches.
-		/// </returns>
-        X509Certificate2Collection GetCertificates(MailAddress address);
-        /// <summary>
-        /// Returns the valid certificates for a domain
-        /// Implementations representing remote certificate stores (e.g., DNS) may throw network exceptions.
-        /// </summary>
-        /// <param name="domain">domain</param>
-        /// <returns>
-        /// A <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2Collection"/> or null if there are no matches.
-        /// </returns>
-        X509Certificate2Collection GetCertificatesForDomain(string domain);
+        static TestCertificates()
+        {
+            AgentTester.EnsureStandardMachineStores();
+            ChainCertsStore = LoadCertificateFolder("Chain");
+            PublicCertsStore = new MemoryX509Store(LoadAllPublic());
+            AllPublicCerts = LoadAllPublic();
+        }
+
+        public static MemoryX509Store ChainCertsStore;
+        public static MemoryX509Store PublicCertsStore;        
+        public static X509Certificate2Collection AllPublicCerts;
+        
+        public static MemoryX509Store LoadCertificateFolder(string folderPath)
+        {
+            string path = FullPath(folderPath);
+            MemoryX509Store store = new MemoryX509Store();
+            store.ImportFolder(path, X509KeyStorageFlags.DefaultKeySet);
+
+            return store;
+        }
+        
+        public static X509Certificate2Collection LoadAllPublic()
+        {
+            using (SystemX509Store store = SystemX509Store.OpenExternal())
+            {
+                return store.GetAllCertificates();
+            }
+        }
+
+        public static string FullPath(string subpath)
+        {
+            string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Certificates");
+            return Path.Combine(folderPath, subpath);
+        }
     }
 }

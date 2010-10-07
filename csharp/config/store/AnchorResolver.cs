@@ -80,15 +80,25 @@ namespace NHINDirect.Config.Store
                 {
                     throw new ArgumentNullException("address");
                 }
+                
+                return this.GetCertificatesForDomain(address.Address);
+            }
+            
+            public X509Certificate2Collection GetCertificatesForDomain(string domain)
+            {
+                if (string.IsNullOrEmpty(domain))
+                {
+                    throw new ArgumentException("domain");
+                }
 
                 Anchor[] anchors = null;
                 if (m_incoming)
                 {
-                    anchors = m_anchorManager.GetIncoming(address.Address);
+                    anchors = m_anchorManager.GetIncoming(domain);
                 }
                 else
                 {
-                    anchors = m_anchorManager.GetOutgoing(address.Address);
+                    anchors = m_anchorManager.GetOutgoing(domain);
                 }
 
                 return this.ToCerts(anchors);
