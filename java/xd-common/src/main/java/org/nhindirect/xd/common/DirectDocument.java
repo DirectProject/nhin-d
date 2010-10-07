@@ -221,7 +221,7 @@ public class DirectDocument
         /**
          * Get the metadata represented as a SubmitObjectsRequest object.
          */
-        public SubmitObjectsRequest getAsSubmitObjectsRequest()
+        public SubmitObjectsRequest getSubmitObjectsRequest()
         {
             ExtrinsicObjectType extrinsicObjectType = generateExtrinsicObjectType();
             RegistryPackageType registryPackageType = generateRegistryPackageType();
@@ -231,20 +231,16 @@ public class DirectDocument
             QName qname = null;
 
             qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "ExtrinsicObject");
-            JAXBElement<ExtrinsicObjectType> jaxb_extrinsicObjectType = new JAXBElement<ExtrinsicObjectType>(qname,
-                    ExtrinsicObjectType.class, extrinsicObjectType);
+            JAXBElement<ExtrinsicObjectType> jaxb_extrinsicObjectType = new JAXBElement<ExtrinsicObjectType>(qname, ExtrinsicObjectType.class, extrinsicObjectType);
 
             qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "RegistryPackage");
-            JAXBElement<RegistryPackageType> jaxb_registryPackageType = new JAXBElement<RegistryPackageType>(qname,
-                    RegistryPackageType.class, registryPackageType);
+            JAXBElement<RegistryPackageType> jaxb_registryPackageType = new JAXBElement<RegistryPackageType>(qname, RegistryPackageType.class, registryPackageType);
 
             qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "Classification");
-            JAXBElement<ClassificationType> jaxb_classificationType = new JAXBElement<ClassificationType>(qname,
-                    ClassificationType.class, classificationType);
+            JAXBElement<ClassificationType> jaxb_classificationType = new JAXBElement<ClassificationType>(qname, ClassificationType.class, classificationType);
 
             qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "Association");
-            JAXBElement<AssociationType1> jaxb_AssociationType = new JAXBElement<AssociationType1>(qname,
-                    AssociationType1.class, associationType);
+            JAXBElement<AssociationType1> jaxb_AssociationType = new JAXBElement<AssociationType1>(qname, AssociationType1.class, associationType);
 
             SubmitObjectsRequest submitObjectsRequest = new SubmitObjectsRequest();
             RegistryObjectListType registryObjectListType = new RegistryObjectListType();
@@ -269,10 +265,10 @@ public class DirectDocument
             eot.setMimeType(mimeType);
 
             List<SlotType1> slots = eot.getSlot();
-            slots.add(makeSlot("creationTime", (new SimpleDateFormat("yyyyMMdd")).format(creationTime)));
+            slots.add(makeSlot("creationTime", creationTime != null ? (new SimpleDateFormat("yyyyMMdd")).format(creationTime) : null));
             slots.add(makeSlot("languageCode", languageCode));
-            slots.add(makeSlot("serviceStartTime", (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStartTime)));
-            slots.add(makeSlot("serviceStopTime", (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStopTime)));
+            slots.add(makeSlot("serviceStartTime", serviceStartTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStartTime) : null));
+            slots.add(makeSlot("serviceStopTime", serviceStopTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStopTime) : null));
             slots.add(makeSlot("sourcePatientId", sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg() + "&ISO"));
             slots.add(makeSlot("sourcePatientInfo", sourcePatient));
 
@@ -310,7 +306,7 @@ public class DirectDocument
             ClassificationType confidentialityCodeClassification = new ClassificationType();
             confidentialityCodeClassification.setId("cl03");
             confidentialityCodeClassification.setClassifiedObject(_eot_id);
-            confidentialityCodeClassification.setClassificationScheme("urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a");
+            confidentialityCodeClassification.setClassificationScheme("urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f");
             confidentialityCodeClassification.setNodeRepresentation(confidentialityCode);
             confidentialityCodeClassification.setName(makeInternationalStringType(confidentialityCode_localized));
 
@@ -401,7 +397,7 @@ public class DirectDocument
             rpt.setId(_rpt_id);
 
             List<SlotType1> slots = rpt.getSlot();
-            slots.add(makeSlot("submissionTime", (new SimpleDateFormat("yyyyMMddHHmmss")).format(ss_submissionTime)));
+            slots.add(makeSlot("submissionTime", ss_submissionTime != null ? (new SimpleDateFormat("yyyyMMddHHmmss")).format(ss_submissionTime) : null));
             slots.add(makeSlot("intendedRecipient", ss_intendedRecipient));
 
             rpt.setName(makeInternationalStringType(_rpt_name));
@@ -633,10 +629,10 @@ public class DirectDocument
                                         String[] tokens = StringUtils.splitPreserveAllTokens(split[1], "^");
                                         
                                         if (tokens != null && tokens.length >= 1)
-                                            sourcePatient.setFirstName(tokens[0]);
+                                            sourcePatient.setLastName(tokens[0]);
                                         
                                         if (tokens != null && tokens.length >= 2)
-                                            sourcePatient.setLastName(tokens[1]);
+                                            sourcePatient.setFirstName(tokens[1]);
                                         
                                         // TODO middle name ?
                                     }
@@ -972,7 +968,7 @@ public class DirectDocument
         public String toString()
         {
             QName qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0", "SubmitObjectsRequest");
-            return XmlUtils.marshal(qname, getAsSubmitObjectsRequest(), ihe.iti.xds_b._2007.ObjectFactory.class);
+            return XmlUtils.marshal(qname, getSubmitObjectsRequest(), ihe.iti.xds_b._2007.ObjectFactory.class);
         }
 
         private SlotType1 makeSlot(String name, SimplePerson person)
@@ -981,16 +977,14 @@ public class DirectDocument
             ValueListType values = new ValueListType();
             List<String> vals = values.getValue();
 
-            // FIXME
-
             slot.setName(name);
             slot.setValueList(values);
 
             // <rim:Value>PID-3|pid1^^^domain</rim:Value>
             vals.add("PID-3|" + person.getLocalId() + "^^^&" + person.getLocalOrg() + "&ISO");
 
-            // FIXME (sample) <rim:Value>PID-5|Doe^John^^^</rim:Value>
-            vals.add("PID-5|" + person.getLastName() + "^" + person.getFirstName() + "^" + person.getMiddleName());
+            // <rim:Value>PID-5|Doe^John^Middle^^</rim:Value>
+            vals.add("PID-5|" + person.getLastName() + "^" + person.getFirstName() + "^" + person.getMiddleName() + "^^");
 
             // <rim:Value>PID-7|19560527</rim:Value>
             vals.add("PID-7|" + person.getBirthDateTime()); // TODO check this format
@@ -999,7 +993,7 @@ public class DirectDocument
             vals.add("PID-8|" + person.getGenderCode());
 
             // <rim:Value>PID-11|100 Main St^^Metropolis^Il^44130^USA</rim:Value>
-            vals.add("PID-11|" + person.getStreetAddress1() + "^^" + person.getCity() + "^" + person.getState() + "^" + person.getCity() + "^");
+            vals.add("PID-11|" + person.getStreetAddress1() + "^^" + person.getCity() + "^" + person.getState() + "^" + person.getZipCode() + "^");
 
             return slot;
         }
@@ -1060,15 +1054,6 @@ public class DirectDocument
         public String get_eot_id()
         {
             return _eot_id;
-        }
-
-        /**
-         * @param eotId
-         *            the _eot_id to set
-         */
-        public void set_eot_id(String eotId)
-        {
-            _eot_id = eotId;
         }
 
         /**
@@ -1485,15 +1470,6 @@ public class DirectDocument
         public String get_rpt_id()
         {
             return _rpt_id;
-        }
-
-        /**
-         * @param rptId
-         *            the _rpt_id to set
-         */
-        public void set_rpt_id(String rptId)
-        {
-            _rpt_id = rptId;
         }
 
         /**
