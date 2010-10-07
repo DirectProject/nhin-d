@@ -10,7 +10,7 @@
     <modules>
         <module>./agent</module>
         <module>./gateway</module>
-        <module>./xd-transform</module>
+        <module>./xd-common</module>
         <module>./xdmail</module>
         <module>./xd</module>
         <module>./client</module>

@@ -2,21 +2,24 @@
 <project
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
     xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <groupId>org.nhind</groupId>
     <modelVersion>4.0.0</modelVersion>
+    <artifactId>xd-common</artifactId>
+    <name>NHIN Direct XD* Common Library</name>
+    <version>1.0-SNAPSHOT</version>
+    <description>Library for common XD* operations and objects</description>
+    <inceptionYear>2010</inceptionYear>
+    <url>https://nhin-d.googlecode.com/hg/java/xd-common/</url>
+
     <parent>
         <artifactId>nhind-java-reference-implementation</artifactId>
         <groupId>org.nhind</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <groupId>org.nhind</groupId>
-    <artifactId>xdmail</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <name>NHIN Direct XD* Mail Gateway</name>
-    <url>http://maven.apache.org</url>
 
     <scm>
-        <url>https://nhin-d.googlecode.com/hg/java/xdmail/</url>
-        <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/xdmail
+        <url>https://nhin-d.googlecode.com/hg/java/xd-common/</url>
+        <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/xd-common
         </connection>
     </scm>
 
@@ -36,31 +39,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>webservices-rt</artifactId>
             <version>1.4</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.james</groupId>
-            <artifactId>apache-mailet</artifactId>
-            <version>2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.james</groupId>
-            <artifactId>apache-mailet-base</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.5</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -69,21 +51,32 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.jmock</groupId>
-            <artifactId>jmock-junit3</artifactId>
-            <version>2.5.1</version>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.5</version>
         </dependency>
         <dependency>
-            <groupId>org.jmock</groupId>
-            <artifactId>jmock-legacy</artifactId>
-            <version>2.5.1</version>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.4</version>
         </dependency>
         <dependency>
-            <groupId>org.nhind</groupId>
-            <artifactId>xd-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.1</version>
             <scope>compile</scope>
-        </dependency> 
+        </dependency>
     </dependencies>
 
     <build>
@@ -183,7 +176,7 @@
                         ${project.basedir}/../licenses/clover.license
                     </licenseLocation>
                     <excludes>
-                        <exclude>**/ccddb/*</exclude>
+                        <exclude>**/jaxb/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -194,76 +187,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <!--
-                DOXIA does not yet copy resources to the generated-site or site
-                location. Bug DOXIA-355 was submitted in July of 09 and is listed to
-                be resolved in DOXIA 1.2. This plugin a is work around for copying
-                the resources from the book source to the generate site.
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>book</id>
-                        <phase>pre-site</phase>
-                        <configuration>
-                        <!-- 
-                            <tasks>
-                                <copy
-                                    todir="${project.build.directory}/generated-site/xdoc/users-guide/images/">
-                                    <fileset dir="${basedir}/src/books/users-guide/images/" />
-                                </copy>
-                                <copy todir="${project.build.directory}/site/users-guide/images/">
-                                    <fileset dir="${basedir}/src/books/users-guide/images/" />
-                                </copy>
-                            </tasks>
-                        -->
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.doxia</groupId>
-                <artifactId>doxia-maven-plugin</artifactId>
-                <version>1.1.3</version>
-                <executions>
-                    <execution>
-                        <phase>pre-site</phase>
-                        <goals>
-                            <goal>render-books</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <books>
-                        <book>
-                            <directory>src/books/users-guide</directory>
-                            <descriptor>src/books/users-guide.xml</descriptor>
-                            <formats>
-                                <format>
-                                    <id>xdoc</id>
-                                </format>
-                            </formats>
-                        </book>
-                    </books>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.plexus</groupId>
-                        <artifactId>plexus-utils</artifactId>
-                        <version>1.5.12</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-module-confluence</artifactId>
-                        <version>1.1.3</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -288,7 +211,7 @@
                     <source>1.6</source>
                     <show>protected</show>
                     <excludePackageNames>
-                        oasis.names.tc.ebxml_regrep.xsd:ihe.iti.xds_b._2007
+                        org.nhindirect.xd.transform.parse.ccd.jaxb
                     </excludePackageNames>
                 </configuration>
             </plugin>
@@ -363,7 +286,7 @@
         <site>
             <id>nhind-site</id>
             <name>NHIN Direct API publication site</name>
-            <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xdmail/${project.version}
+            <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xd-common/${project.version}
             </url>
         </site>
     </distributionManagement>
