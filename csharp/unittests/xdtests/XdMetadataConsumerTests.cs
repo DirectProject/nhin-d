@@ -96,7 +96,7 @@ namespace NHINDirect.Tests.xdTests
                         First = "Bob",
                         Last = "Smith",
                         Sex = Sex.Male,
-                        Dob = DateTime.Parse("05/05/1975"),
+                        Dob = new DateTime(1975, 05, 05, 00, 00,00, DateTimeKind.Utc),
                         Address = new PostalAddress { Street = "150 Main St", City = "Anywhere", State = "CA", Zip = "90000" }
                     };
                     m_docMeta.Title = "The foo document";
@@ -485,6 +485,32 @@ namespace NHINDirect.Tests.xdTests
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
             Assert.Equal(expected, doc.SourcePtId);
         }
+
+        public static IEnumerable<object[]> SourcePatientInfoData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.Patient, new Person { First = "Joe", Last = "Doe", Dob = new DateTime(1956,05,27), Sex = Sex.Male, Address = new PostalAddress {Street = "100 Main St Metropolis", City = "Chicago", State = "IL", Zip = "44130" } }});
+            }
+        }
+
+        [Theory]
+        [PropertyData("SourcePatientInfoData")]
+        public void ConsumerConsumesPatient(XElement documentXEl, Person expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected.First, doc.Patient.First);
+            Assert.Equal(expected.Last, doc.Patient.Last);
+            Assert.Equal(expected.MI, doc.Patient.MI);
+            Assert.Equal(expected.Degree, doc.Patient.Degree);
+            Assert.Equal(expected.Prefix, doc.Patient.Prefix);
+            Assert.Equal(expected.Suffix, doc.Patient.Suffix);
+            Assert.Equal(expected.Sex, doc.Patient.Sex);
+            Assert.Equal(expected.Dob, doc.Patient.Dob);
+            Assert.Equal(expected, doc.Patient);
+            Assert.Equal(expected.Address, doc.Patient.Address);
+        }
+
 
 
     }

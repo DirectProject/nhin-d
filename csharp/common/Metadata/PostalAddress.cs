@@ -23,7 +23,7 @@ namespace NHINDirect.Metadata
     /// <summary>
     /// Represents a US Postal address
     /// </summary>
-    public struct PostalAddress
+    public struct PostalAddress : IEquatable<PostalAddress>
     {
         private string m_Street;
         private string m_City;
@@ -60,6 +60,50 @@ namespace NHINDirect.Metadata
                 State ?? "",
                 Zip ?? "");
 
+        }
+
+        /// <summary>
+        /// Parses an HL7 AD type field and returns a new instance
+        /// </summary>
+        public static PostalAddress FromHL7Ad(string ad)
+        {
+            List<string> fields = HL7Util.SplitField(ad, 1, 5);
+            return new PostalAddress { Street = fields[0], City = fields[2], State = fields[3], Zip = fields[4] };
+        }
+
+
+        /// <summary>
+        /// Tests equality between this instance and another
+        /// </summary>
+        public bool Equals(PostalAddress other)
+        {
+            return Street == other.Street && City == other.City && State == other.State && Zip == other.Zip;
+        }
+
+        /// <summary>
+        /// Tests equality between this instance and another
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (obj is PostalAddress) return Equals((PostalAddress) obj);
+            return false;
+        }
+
+        /// <summary>
+        /// Returns a string representation of the address
+        /// </summary>
+        public override string ToString()
+        {
+            return String.Format("{0}\n{1},{2} {3}", Street, City, State, Zip);
+        }
+
+        /// <summary>
+        /// Returns a hash of this instance.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
         }
     }
 }
