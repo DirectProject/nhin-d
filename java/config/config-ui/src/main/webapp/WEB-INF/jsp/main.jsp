@@ -49,7 +49,8 @@ $(document).ready(function()
 	</div>
 	<c:if test="${not empty searchResults}">
 	<div id="dynamic">
-	   <form:form id="removeDomainForm" action="../domain/remove" cssClass="cleanform" method="POST" commandName="removeDomainForm" >
+		<spring:url value="/config/domain/remove" var="formUrlremove"/>
+	   <form:form action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST" commandName="removeDomainForm" >
 		<table class="tablesorter" id="domainTable">
 			<thead>
 				<tr>
@@ -85,6 +86,7 @@ $(document).ready(function()
 		        </tr>
 			</tfoot>
 		</table>
+		<button name="submitType" id="submitType" type="submit" value="delete">Delete</button>
 		</form:form>
 	</div>
 	</c:if>

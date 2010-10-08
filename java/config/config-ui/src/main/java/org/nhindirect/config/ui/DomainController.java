@@ -66,12 +66,18 @@ public class DomainController {
 	}
 	
 	@RequestMapping(value="/remove", method = RequestMethod.POST)
-	public ModelAndView removeDomain (@ModelAttribute DomainForm simpleForm,
-						        Model model)  { 		
+	public ModelAndView removeDomain (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+						        HttpSession session,
+						        @ModelAttribute DomainForm simpleForm,
+						        Model model,
+						        @RequestParam(value="submitType") String actionPath)  { 		
 	
 		log.debug("Enter domain/remove");
 		
 		ModelAndView mav = new ModelAndView(); 
+		SearchDomainForm form2 = (SearchDomainForm) session.getAttribute("searchDomainForm");
+		model.addAttribute(form2 != null ? form2 : new SearchDomainForm());
+		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 
 		mav.setViewName("main");
 		mav.addObject("statusList", EntityStatus.getEntityStatusList());
