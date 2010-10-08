@@ -129,7 +129,7 @@ public class Certificate {
      */
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public long getId() {
         return id;
     }
