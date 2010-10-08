@@ -45,6 +45,38 @@ namespace NHINDirect.Metadata
                 return null;
         }
 
+        /// <summary>
+        /// Formats the provided value as a string suitable for inclusion in HL7
+        /// </summary>
+        public static string ToHL7Value(Sex? s)
+        {
+            if (s == null) return "U";
+            switch (s)
+            {
+                case Sex.Female:
+                    return "F";
+                case Sex.Male:
+                    return "M";
+                case Sex.Other:
+                    return "U";
+            }
+            return "U";
+        }
+
+        /// <summary>
+        /// Parses the provided value (which should represent an HL7 value) as a <see cref="Sex"/> value
+        /// </summary>
+        public static Sex? FromHL7Value(string s)
+        {
+            switch (s)
+            {
+                case "F": return Sex.Female;
+                case "M": return Sex.Male;
+                case "U": return null;
+                default: throw new ArgumentException();
+            }
+        }
+
         private static string TrimField(string s)
         {
             s = s.Trim();
