@@ -226,6 +226,47 @@ namespace NHINDirect.Metadata
             yield return "PID-11|" + addressValue;
         }
 
+        /// <summary>
+        /// Intializes a new <see cref="Person"/> from data found in a sourcePatientInfo field
+        /// </summary>
+        public static Person FromSourcePatientInfoValues(IEnumerable<string> values)
+        {
+            Person p = null;
+            Sex? sex = null;
+            DateTime? dob = null;
+            PostalAddress? postal = null;
+
+            foreach (string[] fields in values.Select(s => s.Split('|')))
+            {
+
+                if (fields.Length != 2) throw new ArgumentException();
+                switch (fields[0])
+                {
+                    case "PID-3":
+                        break;
+                    case "PID-5":
+                        p = Person.FromXCN(fields[1]);
+                        break;
+                    case "PID-7":
+                        dob = HL7Util.DateTimeFromHL7Value(fields[1]);
+                        break;
+                    case "PID-8":
+                        sex = HL7Util.FromHL7Value(fields[1]);
+                        break;
+                    case "PID-11":
+                        postal = PostalAddress.FromHL7Ad(fields[1]);
+                        break;
+                }
+            }
+
+            if (p == null) throw new ArgumentException();
+            if (dob != null) p.Dob = dob;
+            if (sex != null) p.Sex = sex;
+            if (postal != null) p.Address = postal;
+            return p;
+
+        }
+
 
     }
 }

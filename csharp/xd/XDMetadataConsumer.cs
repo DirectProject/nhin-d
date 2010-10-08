@@ -72,6 +72,7 @@ namespace NHINDirect.Xd
             doc.PracticeSetting = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.UUIDs.PracticeSetting));
             doc.Size = docXEl.SlotValue<int?>(XDMetadataStandard.Slots.Size, s => Parse(s));
             doc.SourcePtId = docXEl.SlotValue<PatientID>(XDMetadataStandard.Slots.SourcePatientID, s => PatientID.FromEscapedCx(s));
+            doc.Patient = Person.FromSourcePatientInfoValues(docXEl.SlotValues(XDMetadataStandard.Slots.SourcePatientInfo));
 
             return doc;
         }
