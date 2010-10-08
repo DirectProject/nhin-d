@@ -8,7 +8,7 @@ namespace NHINDirect.Metadata
     /// <summary>
     /// Represents an institution
     /// </summary>
-    public struct Institution
+    public struct Institution : IEquatable<Institution>
     {
         private string m_name;
         private string m_assigningAuthority;
@@ -77,6 +77,24 @@ namespace NHINDirect.Metadata
                 return Name == other.Name;
             else
                 return (Name == other.Name && AssigningAuthority == other.AssigningAuthority);
+        }
+
+        /// <summary>
+        /// Tests equality between this instance and another
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (obj is Institution) return Equals((Institution) obj);
+            return false;
+        }
+
+        /// <summary>
+        /// Returns the hashcode for the specified object
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
         }
     }
 }

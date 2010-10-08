@@ -93,6 +93,7 @@ namespace NHINDirect.Xd
         /// </summary>
         public struct UUIDs
         {
+
             /// <summary>
             /// UUID for a Submission Set classification
             /// </summary>
@@ -194,6 +195,10 @@ namespace NHINDirect.Xd
             /// </summary>
             public const string DocumentEntry = "ExtrinsicObject";
 
+            /// <summary>
+            /// Element name for a submission set (RegistryPackage)
+            /// </summary>
+            public const string SubmissionSet = "RegistryPackage";
 
             /// <summary>
             /// The element name for a classification
@@ -227,6 +232,7 @@ namespace NHINDirect.Xd
         /// </summary>
         public struct Attrs
         {
+
             /// <summary>
             /// The attribute name for document media type
             /// </summary>
@@ -242,9 +248,18 @@ namespace NHINDirect.Xd
             public const string ClassificationScheme = "classificationScheme";
 
             /// <summary>
+            /// The attribute name for a classification node
+            /// </summary>
+            public const string ClassificationNode = "classificationNode";
+            /// <summary>
             /// The attribute name for a node representation
             /// </summary>
             public const string NodeRepresentation = "nodeRepresentation";
+
+            /// <summary>
+            /// The attribute name for a classified object
+            /// </summary>
+            public const string ClassifiedObject = "classifiedObject";
 
 
             /// <summary>

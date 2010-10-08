@@ -45,57 +45,11 @@ namespace NHINDirect.Tests.xdTests
             Assert.Empty(empty.Descendants());
         }
 
-        DocumentMetadata m_docMeta;
-        DocumentMetadata TestDocument
-        {
-            get
-            {
-                if (m_docMeta == null)
-                {
-                    m_docMeta = new DocumentMetadata();
-                    m_docMeta.Author = new Author();
-                    m_docMeta.Author.Person = new Person { First = "Tom", Last = "Jones", Degree = "M.D." };
-                    m_docMeta.Author.Institutions.Add(new Institution("Direct U"));
-                    m_docMeta.Class = Metadata.C80ClassCode.TransferOfCareReferralNote.ToCodedValue();
-                    m_docMeta.Comments = "This is a nice document";
-                    m_docMeta.Confidentiality = Metadata.C80Confidentialty.Normal.ToCodedValue();
-                    m_docMeta.CreatedOn = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
-                    var evtCodes =  new List<CodedValue>();
-                    evtCodes.Add(new CodedValue("foo", "bar", "test"));
-                    m_docMeta.EventCodes = evtCodes;
-                    m_docMeta.FormatCode = Metadata.C80FormatCode.CareManagement.ToCodedValue();
-                    m_docMeta.Hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-                    m_docMeta.FacilityCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
-                    m_docMeta.LanguageCode = "en-us";
-                    m_docMeta.LegalAuthenticator = new Person { First = "Marcus", Last = "Welby", Degree = "M.D", Prefix = "Dr." };
-                    m_docMeta.MediaType = "text/plain";
-                    m_docMeta.PatientID = new PatientID("ABC", "123", "foo");
-                    m_docMeta.ServiceStart = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
-                    m_docMeta.ServiceStop = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
-                    m_docMeta.PracticeSetting = C80ClinicalSpecialties.FamilyPractice.ToCodedValue();
-                    m_docMeta.Size = 1000;
-                    m_docMeta.SourcePtId = new PatientID("XYZ", "PDQ", "foo");
-                    m_docMeta.Patient = new Person
-                    {
-                        First = "Bob",
-                        Last = "Smith",
-                        Sex = Sex.Male,
-                        Dob = DateTime.Parse("05/05/1975"),
-                        Address = new PostalAddress { Street = "150 Main St", City = "Anywhere", State = "CA", Zip = "90000" }
-                    };
-                    m_docMeta.Title = "The foo document";
-                    m_docMeta.UniqueId = "abc123xyz";
-                    m_docMeta.Uri = "http://www.google.com?q=the+foo+document";
-                }
-                return m_docMeta;
-            }
-        }
-
         XElement TestDocXElement
         {
             get
             {
-                return TestDocument.Generate();
+                return Examples.TestDocument.Generate();
             }
         }
 
@@ -203,7 +157,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentAuthenticatorHasCorrectValue()
         {
-            Assert.Equal(TestDocument.LegalAuthenticator.ToXCN(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.LegalAuthenticator));
+            Assert.Equal(Examples.TestDocument.LegalAuthenticator.ToXCN(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.LegalAuthenticator));
         }
 
         [Fact]
@@ -229,7 +183,7 @@ namespace NHINDirect.Tests.xdTests
         {
             XElement idElts = TestDocXElement.ExternalIdentifiers(XDMetadataStandard.UUIDs.DocumentEntryPatientIdentityScheme).First();
             PatientID id = PatientID.FromEscapedCx(idElts.Attribute("value").Value);
-            Assert.True(TestDocument.PatientID.Equals(id));
+            Assert.True(Examples.TestDocument.PatientID.Equals(id));
         }
 
         [Fact]
@@ -254,7 +208,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void ServiceStartHasCorrectValue()
         {
-            Assert.Equal(TestDocument.ServiceStart.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.ServiceStart));
+            Assert.Equal(Examples.TestDocument.ServiceStart.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.ServiceStart));
         }
         [Fact]
         public void DocumentHasServiceStop()
@@ -265,7 +219,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void ServiceStopHasCorrectValue()
         {
-            Assert.Equal(TestDocument.ServiceStop.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.ServiceStop));
+            Assert.Equal(Examples.TestDocument.ServiceStop.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.ServiceStop));
         }
 
         [Fact]
@@ -277,7 +231,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void SlotSizeHasCorrectValue()
         {
-            Assert.Equal(TestDocument.Size, Int32.Parse(TestDocXElement.SlotValue(XDMetadataStandard.Slots.Size)));
+            Assert.Equal(Examples.TestDocument.Size, Int32.Parse(TestDocXElement.SlotValue(XDMetadataStandard.Slots.Size)));
         }
 
         [Fact]
@@ -315,7 +269,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void TitleIsCorrect()
         {
-            Assert.Equal(TestDocument.Title, TestDocXElement.NameValue());
+            Assert.Equal(Examples.TestDocument.Title, TestDocXElement.NameValue());
         }
 
         [Fact]
@@ -343,109 +297,71 @@ namespace NHINDirect.Tests.xdTests
             Assert.DoesNotThrow(() => XDMetadataGenerator.GeneratePackage(package));
         }
 
-        DocumentPackage m_package;
-
-        DocumentPackage TestPackage
-        {
-            get 
-            {
-                if (m_package == null)
-                {
-                    m_package = new DocumentPackage();
-                    m_package.Author = new Author {Person = new Person {First = "Bob", Last = "Smith", Degree="M.D."}};
-                    m_package.Comments = "This is a super cool package";
-                    m_package.ContentTypeCode = C80ClassCode.ConsultationNote.ToCodedValue();
-                    m_package.Documents.Add(TestDocument);
-                    m_package.PatientId = new PatientID("abc", "123", "xyz");
-                    m_package.IntendedRecipients.Add(new Recipient { Person = new Person { First = "Dan", Last = "Brown" }, Institution = new Institution("Louvre", "France") });
-                    m_package.SourceId = "0.1.2.3.4.5.6.7.8.1000";
-                    m_package.SubmissionTime = DateTime.Now;
-                    m_package.Title = "Title: Awesome";
-                    m_package.UniqueId = "0.1.2.3.4.5.6.7.8.1001";
-                }
-                return m_package;
-            }
-        }
-
-        XElement m_packageXEl;
-
-        XElement TestPackageXElement
-        {
-            get
-            {
-                if (m_packageXEl == null)
-                {
-                    m_packageXEl = XDMetadataGenerator.GeneratePackage(TestPackage);
-                }
-                return m_packageXEl;
-            }
-        }
-
 
         [Fact]
         public void PackageHasAuthor()
         {
-            Assert.NotNull(TestPackageXElement.Classification(XDMetadataStandard.UUIDs.SubmissionSetAuthor));
+            Assert.NotNull(Examples.TestPackageXElement.Classification(XDMetadataStandard.UUIDs.SubmissionSetAuthor));
         }
 
         [Fact]
         public void PackageHasComments()
         {
-            Assert.NotEmpty(TestPackageXElement.Descendants("Description"));
+            Assert.NotEmpty(Examples.TestPackageXElement.Descendants("Description"));
         }
 
         [Fact]
         public void PackageHasContentTypeCode()
         {
-            Assert.NotNull(TestPackageXElement.Classification(XDMetadataStandard.UUIDs.ContentTypeCode));
+            Assert.NotNull(Examples.TestPackageXElement.Classification(XDMetadataStandard.UUIDs.ContentTypeCode));
         }
 
         [Fact]
         public void PackageHasId()
         {
-            Assert.NotNull(TestPackageXElement.Attribute("id"));
+            Assert.NotNull(Examples.TestPackageXElement.Attribute("id"));
         }
 
         [Fact]
         public void PackageHasIntendedRecipient()
         {
-            Assert.NotNull(TestPackageXElement.Slot(XDMetadataStandard.Slots.IntendedRecipient));
+            Assert.NotNull(Examples.TestPackageXElement.Slot(XDMetadataStandard.Slots.IntendedRecipient));
         }
 
         [Fact]
         public void IntendedRecipientIsCorrect()
         {
-            Assert.Equal(TestPackage.IntendedRecipients.First().ToXONXCN(), TestPackageXElement.SlotValues(XDMetadataStandard.Slots.IntendedRecipient).First());
+            Assert.Equal(Examples.TestPackage.IntendedRecipients.First().ToXONXCN(), Examples.TestPackageXElement.SlotValues(XDMetadataStandard.Slots.IntendedRecipient).First());
         }
 
         [Fact]
         public void PackageHasPatientId()
         {
-            Assert.NotNull(TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetSourceId));
+            Assert.NotNull(Examples.TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetSourceId));
         }
 
         [Fact]
         public void PackageHasSourceId()
         {
-            Assert.NotNull(TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetSourceId));
+            Assert.NotNull(Examples.TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetSourceId));
         }
 
         [Fact]
         public void PackageHasSubmissionTime()
         {
-            Assert.NotNull(TestPackageXElement.SlotValue(XDMetadataStandard.Slots.SubmissionTime));
+            Assert.NotNull(Examples.TestPackageXElement.SlotValue(XDMetadataStandard.Slots.SubmissionTime));
         }
 
         [Fact]
         public void PackageHasTitle()
         {
-            Assert.NotEmpty(TestPackageXElement.Descendants("Name"));
+            Assert.NotEmpty(Examples.TestPackageXElement.Descendants("Name"));
         }
 
         [Fact]
         public void PackageHasUniqueId()
         {
-            Assert.NotNull(TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetUniqueId));
+            Assert.NotNull(Examples.TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetUniqueId));
         }
 
         
@@ -455,7 +371,7 @@ namespace NHINDirect.Tests.xdTests
             get
             {
                 if (m_testPackage == null)
-                    m_testPackage = TestPackage.Generate();
+                    m_testPackage = Examples.TestPackage.Generate();
                 return m_testPackage;
             }
         }

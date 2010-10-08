@@ -200,6 +200,27 @@ namespace NHINDirect.Xd
         }
 
         /// <summary>
+        /// Returns the <see cref="XElement"/> corresponding to the Submission Set
+        /// </summary>
+        public static XElement SubmissionSet(this XElement source)
+        {
+            IEnumerable<XElement> classifications = from el in source.DescendantsAnyNs(XDMetadataStandard.Elts.Classification)
+                                                    where (string)el.Attribute(XDMetadataStandard.Attrs.ClassificationNode) == XDMetadataStandard.UUIDs.SubmissionSetClassification
+                                                    select el;
+
+            //TODO More specific exception
+            if (classifications.Count() != 1) throw new ArgumentException();
+            string id = classifications.First().AttributeValue(XDMetadataStandard.Attrs.ClassifiedObject);
+
+            IEnumerable<XElement> submissionsets = from el in source.DescendantsAnyNs(XDMetadataStandard.Elts.SubmissionSet)
+                                                   where (string)el.Attribute("id") == id
+                                                   select el;
+            //TODO More specific exception
+            if (submissionsets.Count() != 1) throw new ArgumentException();
+
+            return submissionsets.First();
+        }
+        /// <summary>
         /// Returns the child Name element
         /// </summary>
         public static XElement Name(this XElement source)

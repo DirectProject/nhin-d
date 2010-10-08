@@ -29,7 +29,7 @@ namespace NHINDirect.Metadata
     /// Author a = new Author() {First = "Tom", Last = "Jones"};
     /// </code>
     /// </example>
-    public class Author
+    public class Author : IEquatable<Author>
     {
         /// <summary>
         /// The author (if the author is a person)
@@ -59,5 +59,21 @@ namespace NHINDirect.Metadata
         /// The Health Internet Address of the author
         /// </summary>
         public MailAddress HealthInternetAddress { get; set; }
+
+
+        /// <summary>
+        /// Tests equality between this instance and another
+        /// </summary>
+        public bool Equals(Author other)
+        {
+            if (other == null) return false;
+
+            bool personEqual = Person.Equals(other.Person);
+            bool institutionsEqual = (Institutions.Count == other.Institutions.Count) && Institutions.All(i => other.Institutions.Contains(i));
+            bool rolesEqual = (Roles.Count == other.Roles.Count) && Roles.All(r => other.Roles.Contains(r));
+            bool specialitiesEqual = (Specialities.Count == other.Specialities.Count) && Specialities.All(s => other.Specialities.Contains(s));
+
+            return personEqual && institutionsEqual && rolesEqual && specialitiesEqual;
+        }
     }
 }

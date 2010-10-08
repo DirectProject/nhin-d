@@ -99,7 +99,7 @@ namespace NHINDirect.Xd
         public static XElement GeneratePackage(DocumentPackage docPackage)
         {
             string packageId = MakeUUID();
-            XElement packageMetadata = new XElement("RegistryPackage",
+            XElement packageMetadata = new XElement(XDMetadataStandard.Elts.SubmissionSet,
                 new XAttribute("id", packageId),
                 new Classification(XDMetadataStandard.UUIDs.SubmissionSetClassification, packageId));
 
@@ -151,7 +151,7 @@ namespace NHINDirect.Xd
             // do in C# than in Ruby :-)
             string documentName = MakeUUID();
 
-            XElement docEbX = new XElement("ExtrinsicObject",
+            XElement docEbX = new XElement(XDMetadataStandard.Elts.DocumentEntry,
                 new XAttribute(XDMetadataStandard.Attrs.ObjectType, XDMetadataStandard.UUIDs.DocumentEntry));
 
 
