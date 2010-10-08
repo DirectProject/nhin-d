@@ -16,17 +16,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.Text;
-using System.Data.Linq;
-using System.Data.Linq.Mapping;
+
 using NHINDirect.Config.Store;
 
 namespace NHINDirect.Config.Service
 {    
     // NOTE: If you change the class name "CertificateStore" here, you must also update the reference to "CertificateStore" in Web.config.
-    public class CertificateService : ICertificateStore, IAnchorStore
+    public class CertificateService : ConfigServiceBase, ICertificateStore, IAnchorStore
     {        
         #region ICertificateStore
         
@@ -39,11 +35,11 @@ namespace NHINDirect.Config.Service
             
             try
             {
-                Service.Current.Store.Certificates.Add(certificates);
+                Store.Certificates.Add(certificates);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("AddCertificates", ex);
             }
         }
 
@@ -51,11 +47,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return this.ApplyGetOptions(Service.Current.Store.Certificates.Get(owner, thumbprint), options);
+                return this.ApplyGetOptions(Store.Certificates.Get(owner, thumbprint), options);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetCertificate", ex);
             }
         }
 
@@ -63,12 +59,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Certificate[] certs = this.ApplyGetOptions(Service.Current.Store.Certificates.Get(certificateIDs), options);
-                return certs;
+                return this.ApplyGetOptions(Store.Certificates.Get(certificateIDs), options);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetCertificates", ex);
             }
         }
 
@@ -77,11 +72,11 @@ namespace NHINDirect.Config.Service
             try
             {
                 options = options ?? CertificateGetOptions.Default;
-                return this.ApplyGetOptions(Service.Current.Store.Certificates.Get(owner, options.Status), options);
+                return this.ApplyGetOptions(Store.Certificates.Get(owner, options.Status), options);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetCertificatesForOwner", ex);
             }
         }
 
@@ -89,12 +84,12 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                IEnumerable<Certificate> certs = Service.Current.Store.Certificates.Get(lastCertificateID, maxResults);
+                IEnumerable<Certificate> certs = Store.Certificates.Get(lastCertificateID, maxResults);
                 return this.ApplyGetOptions(certs.ToArray(), options);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("EnumerateCertificates", ex);
             }
         }
 
@@ -102,11 +97,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Certificates.SetStatus(certificateIDs, status);
+                Store.Certificates.SetStatus(certificateIDs, status);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("SetCertificateStatus", ex);
             }
         }
 
@@ -114,11 +109,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Certificates.SetStatus(owner, status);
+                Store.Certificates.SetStatus(owner, status);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("SetCertificateStatusForOwner", ex);
             }
         }
 
@@ -126,11 +121,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Certificates.Remove(certificateIDs);
+                Store.Certificates.Remove(certificateIDs);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("RemoveCertificates", ex);
             }
         }
 
@@ -138,11 +133,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Certificates.Remove(owner);
+                Store.Certificates.Remove(owner);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("RemoveCertificatesForOwner", ex);
             }
         }
         
@@ -154,11 +149,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Anchors.Add(anchors);
+                Store.Anchors.Add(anchors);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("AddAnchors", ex);
             }
         }
         
@@ -166,11 +161,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return this.ApplyGetOptions(Service.Current.Store.Anchors.Get(owner, thumbprint), options);
+                return this.ApplyGetOptions(Store.Anchors.Get(owner, thumbprint), options);
             }
             catch(Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetAnchor", ex);
             }
         }
                       
@@ -178,11 +173,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return this.ApplyGetOptions(Service.Current.Store.Anchors.Get(anchorIDs), options);
+                return this.ApplyGetOptions(Store.Anchors.Get(anchorIDs), options);
             }
             catch(Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetAnchors", ex);
             }
         }
 
@@ -190,11 +185,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return this.ApplyGetOptions(Service.Current.Store.Anchors.Get(owner), options);
+                return this.ApplyGetOptions(Store.Anchors.Get(owner), options);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetAnchorsForOwner", ex);
             }
         }
 
@@ -203,11 +198,11 @@ namespace NHINDirect.Config.Service
             try
             {
                 options = options ?? CertificateGetOptions.Default;
-                return this.ApplyGetOptions(Service.Current.Store.Anchors.GetIncoming(owner, options.Status), options);
+                return this.ApplyGetOptions(Store.Anchors.GetIncoming(owner, options.Status), options);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetIncomingAnchors", ex);
             }
         }
 
@@ -216,11 +211,11 @@ namespace NHINDirect.Config.Service
             try
             {
                 options = options ?? CertificateGetOptions.Default;
-                return this.ApplyGetOptions(Service.Current.Store.Anchors.GetOutgoing(owner, options.Status), options);
+                return this.ApplyGetOptions(Store.Anchors.GetOutgoing(owner, options.Status), options);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetOutgoingAnchors", ex);
             }
         }
 
@@ -228,11 +223,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Anchors.SetStatus(owner, status);
+                Store.Anchors.SetStatus(owner, status);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("SetAnchorStatusForOwner", ex);
             }
         }
 
@@ -240,11 +235,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return this.ApplyGetOptions(Service.Current.Store.Anchors.Get(lastAnchorID, maxResults), options);
+                return this.ApplyGetOptions(Store.Anchors.Get(lastAnchorID, maxResults), options);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("EnumerateAnchors", ex);
             }
         }
 
@@ -252,11 +247,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Anchors.Remove(anchorIDs);
+                Store.Anchors.Remove(anchorIDs);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("RemoveAnchors", ex);
             }
         }
 
@@ -264,11 +259,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Anchors.Remove(owner);
+                Store.Anchors.Remove(owner);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("RemoveAnchorsForOwner", ex);
             }
         }
         

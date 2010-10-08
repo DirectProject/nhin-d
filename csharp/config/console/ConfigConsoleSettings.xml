@@ -1,5 +1,5 @@
 ﻿<ConsoleSettings>
-   <DomainManager>
+  <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
   <AddressManager>
@@ -14,7 +14,10 @@
   <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
-<!--
+  <!--
+  <DomainManager>
+    <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
+  </DomainManager>
   <AddressManager>
     <Url>http://localhost:6692/DomainManagerService.svc/Addresses</Url>
   </AddressManager>
@@ -22,7 +25,10 @@
     <Url>http://localhost:6692/CertificateService.svc/Certificates</Url>
   </CertificateManager>
   <AnchorManager>
-    <Url>http://localhost:6692/CertificateService.svc/Anchors</Url> 
+    <Url>http://localhost:6692/CertificateService.svc/Anchors</Url>
   </AnchorManager>
+  <DomainManager>
+    <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
+  </DomainManager>
   -->
 </ConsoleSettings>

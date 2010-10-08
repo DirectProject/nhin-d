@@ -45,7 +45,7 @@ Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags
 Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion;
 
-Source: "..\gateway\devInstall\install*.bat"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "..\gateway\devInstall\install.bat"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\gateway\devInstall\*.xml"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\gateway\devInstall\setupdomains.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\gateway\devInstall\simple.eml"; DestDir: "{app}\Samples"; Flags: ignoreversion;
@@ -58,18 +58,19 @@ Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion
 Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion;
 
 Source: "createconfigsvc.bat"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "configconsole.bat"; DestDir: "{app}"; Flags: ignoreversion;
 
 [Icons]
+Name: "{group}\NHIN Config Console"; Filename: "{app}\nhinConfigConsole.exe"; WorkingDir: "{app}";
+Name: "{group}\Test Database"; Filename: "http://localhost/ConfigService/TestService.aspx";
 Name: "{group}\{cm:UninstallProgram,NHIN .NET Gateway}"; Filename: "{uninstallexe}";
 
 [Run]
 Filename: "{app}\Libraries\vcredist.exe"; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked;
-Filename: "{app}\install.bat"; Parameters: "nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall runascurrentuser unchecked;
-; Commented out until we determine why there is an issue with certificates
-;Filename: "{app}\SQL\createdatabase.bat"; Parameters: ".\sqlexpress NHINDConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: postinstall runascurrentuser unchecked;
-;Filename: "{app}\createconfigsvc.bat"; Parameters: """{app}\ConfigService"""; Description: Create Config Service; Flags: postinstall runascurrentuser unchecked;
-;Filename: "{app}\install.bat"; Parameters: """{app}\DevAgentWithServiceConfig.xml"" nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall runascurrentuser unchecked;
-;Filename: "{app}\nhinConfigConsole.exe"; Parameters: "batch setupdomains.txt"; Description: "Install Certs in Configuration Service"; Flags: postinstall runascurrentuser unchecked;
+Filename: "{app}\SQL\createdatabase.bat"; Parameters: ".\sqlexpress NHINDConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: postinstall runascurrentuser unchecked;
+Filename: "{app}\createconfigsvc.bat"; Parameters: """{app}\ConfigService"""; Description: Create Config Service; Flags: postinstall runascurrentuser unchecked;
+Filename: "{app}\install.bat"; Parameters: """{app}\DevAgentWithServiceConfig.xml"" nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall runascurrentuser unchecked;
+Filename: "{app}\configConsole.bat"; WorkingDir: "{app}"; Parameters: "batch setupdomains.txt"; Description: "Install Certs in Configuration Service"; Flags: postinstall runascurrentuser unchecked;
 
 [UninstallRun]
 Filename: "{app}\unregisterGateway.bat"; Flags: shellexec runascurrentuser;

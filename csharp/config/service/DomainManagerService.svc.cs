@@ -14,19 +14,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.Text;
-using System.Data.Linq;
-using System.Data.Linq.Mapping;
+
 using NHINDirect.Config.Store;
 
 namespace NHINDirect.Config.Service
 {
-    // NOTE: If you change the class name "AccountService" here, you must also update the reference to "AccountService" in Web.config.
-    public class DomainManagerService : IDomainManager, IAddressManager
+    // NOTE: If you change the class name "DomainManagerService" here, you must also update the reference to "DomainManagerService" in Web.config.
+    public class DomainManagerService : ConfigServiceBase, IDomainManager, IAddressManager
     {
         #region IDomainManager Members
 
@@ -34,23 +28,23 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Domains.Add(domain);
+                Store.Domains.Add(domain);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("AddDomain", ex);
             }
         }
-        
+
         public void UpdateDomain(Domain domain)
         {
             try
             {
-                Service.Current.Store.Domains.Update(domain);
+                Store.Domains.Update(domain);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("UpdateDomain", ex);
             }
         }
 
@@ -58,11 +52,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return Service.Current.Store.Domains.Count();
+                return Store.Domains.Count();
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetDomainCount", ex);
             }
         }
         
@@ -70,12 +64,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Domain[] matches = Service.Current.Store.Domains.Get(domainNames, status);
-                return matches;
+                return Store.Domains.Get(domainNames, status);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetDomains", ex);
             }
         }
 
@@ -83,11 +76,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Domains.Remove(domainName);
+                Store.Domains.Remove(domainName);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("RemoveDomain", ex);
             }
         }
 
@@ -95,11 +88,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return Service.Current.Store.Domains.Get(lastDomainName, maxResults);
+                return Store.Domains.Get(lastDomainName, maxResults);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("EnumerateDomains", ex);
             }
         }
 
@@ -111,11 +104,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Addresses.Add(addresses);
+                Store.Addresses.Add(addresses);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("AddAddresses", ex);
             }
         }
         
@@ -123,11 +116,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Addresses.Update(addresses);
+                Store.Addresses.Update(addresses);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("UpdateAddresses", ex);
             }
         }
 
@@ -135,17 +128,17 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Domain domain = Service.Current.Store.Domains.Get(domainName);
+                Domain domain = Store.Domains.Get(domainName);
                 if (domain == null)
                 {
                     return 0;
                 }
 
-                return Service.Current.Store.Addresses.Count(domain.ID);
+                return Store.Addresses.Count(domain.ID);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetAddressCount", ex);
             }
         }
         
@@ -153,12 +146,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Address[] matches = Service.Current.Store.Addresses.Get(emailAddresses, status);
-                return matches;
+                return Store.Addresses.Get(emailAddresses, status);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetAddresses", ex);
             }
         }
 
@@ -166,11 +158,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return Service.Current.Store.Addresses.Get(addressIDs, status);
+                return Store.Addresses.Get(addressIDs, status);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("GetAddressesByID", ex);
             }
         }
 
@@ -178,11 +170,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Addresses.Remove(emailAddresses);
+                Store.Addresses.Remove(emailAddresses);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("RemoveAddresses", ex);
             }
         }
 
@@ -190,11 +182,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Addresses.RemoveDomain(domainID);
+                Store.Addresses.RemoveDomain(domainID);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("RemoveDomainAddresses", ex);
             }
         }
         
@@ -202,11 +194,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Service.Current.Store.Addresses.SetStatus(domainID, status);
+                Store.Addresses.SetStatus(domainID, status);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("SetDomainAddressesStatus", ex);
             }
         }
         
@@ -214,17 +206,17 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                Domain domain = Service.Current.Store.Domains.Get(domainName);
+                Domain domain = Store.Domains.Get(domainName);
                 if (domain == null)
                 {
                     return null;
                 }
                 
-                return Service.Current.Store.Addresses.Get(domain.ID, lastAddress, maxResults);
+                return Store.Addresses.Get(domain.ID, lastAddress, maxResults);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("EnumerateDomainAddresses", ex);
             }
         }
 
@@ -232,11 +224,11 @@ namespace NHINDirect.Config.Service
         {
             try
             {
-                return Service.Current.Store.Addresses.Get(lastAddress, maxResults);
+                return Store.Addresses.Get(lastAddress, maxResults);
             }
             catch (Exception ex)
             {
-                throw Service.CreateFault(ex);
+                throw CreateFault("EnumerateAddresses", ex);
             }
         }
 

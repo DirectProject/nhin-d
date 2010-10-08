@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CertificateGetOptions.cs" />
+    <Compile Include="ConfigServiceBase.cs" />
     <Compile Include="DomainManagerService.svc.cs">
       <DependentUpon>DomainManagerService.svc</DependentUpon>
     </Compile>
@@ -92,13 +93,14 @@
       <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
       <Name>nhinCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\diagnostics\diagnostics.csproj">
+      <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
+      <Name>diagnostics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\store\configStore.csproj">
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>configStore</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets')" Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />
@@ -118,8 +120,7 @@
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>6692</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>
-          </IISUrl>
+          <IISUrl>http://localhost/configService</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
