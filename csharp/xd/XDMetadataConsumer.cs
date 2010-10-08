@@ -73,6 +73,10 @@ namespace NHINDirect.Xd
             doc.Size = docXEl.SlotValue<int?>(XDMetadataStandard.Slots.Size, s => Parse(s));
             doc.SourcePtId = docXEl.SlotValue<PatientID>(XDMetadataStandard.Slots.SourcePatientID, s => PatientID.FromEscapedCx(s));
             doc.Patient = Person.FromSourcePatientInfoValues(docXEl.SlotValues(XDMetadataStandard.Slots.SourcePatientInfo));
+            doc.Title = docXEl.NameValue();
+            // Ignore TypeCode
+            doc.UniqueId = docXEl.ExternalIdentifierValue(XDMetadataStandard.UUIDs.DocumentUniqueIdIdentityScheme);
+            doc.Uri = ConsumeUriValues(docXEl.SlotValues(XDMetadataStandard.Slots.Uri));
 
             return doc;
         }
@@ -101,6 +105,7 @@ namespace NHINDirect.Xd
             XAttribute nodeRep = codedValueClassification.Attribute(XDMetadataStandard.Attrs.NodeRepresentation);
             string codingScheme = codedValueClassification.SlotValue(XDMetadataStandard.Slots.CodingScheme);
             string codeLabel = codedValueClassification.NameValue();
+            //TODO: should be more specific parsing error
             if (nodeRep == null || codingScheme == null || codeLabel == null) throw new ArgumentException();
             return new CodedValue(nodeRep.Value, codeLabel, codingScheme);
         }
@@ -110,6 +115,20 @@ namespace NHINDirect.Xd
             int i;
             bool worked = Int32.TryParse(s, out i);
             return worked ? i as int? : null;
+        }
+
+        static string ConsumeUriValues(IEnumerable<string> values)
+        {
+            if (values == null) return null;
+            if (values.Count() == 1)
+            {
+                string[] vals = values.First().Split('|');
+                return (vals.Length == 1) ? vals[0] : vals[1];
+            }
+            List<string> valList = values.ToList<string>();
+            valList.Sort();
+            //TODO: Assumes strings properly formatted; should return parsing error
+            return Extensions.Join("", valList.Select(s => s.Split('|')[1]));
         }
 
 
