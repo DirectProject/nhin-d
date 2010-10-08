@@ -45,7 +45,10 @@ namespace AgentTests
 		[PropertyData("GoodAddresses")]
         public void GetCertificateWithGoodAddress(string address)
         {
-        	var resolver = new DnsCertResolver(IPAddress.Parse(ServerIP), TimeSpan.FromSeconds(5), "hsgincubator.com");
+        	var resolver = new DnsCertResolver(IPAddress.Parse(ServerIP)
+                , TimeSpan.FromSeconds(5)
+                , "hsgincubator.com"
+                , false);
         	X509Certificate2Collection certs = resolver.GetCertificates(new MailAddress(address));
         	Assert.True(certs.Count > 0);
         }

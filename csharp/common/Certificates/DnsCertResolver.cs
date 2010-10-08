@@ -33,6 +33,7 @@ namespace NHINDirect.Certificates
 
     	IPAddress m_serverIP;
         string m_fallbackDomain = string.Empty;
+        bool m_cacheEnabled = false;
         TimeSpan m_timeout;
         int m_maxRetries = 1;
         
@@ -51,7 +52,19 @@ namespace NHINDirect.Certificates
         /// <param name="serverIP">An <see cref="IPAddress"/> instance providing the IP address of the DNS server</param>
         /// <param name="timeout">Timeout value</param>
         public DnsCertResolver(IPAddress serverIP, TimeSpan timeout)
-            : this(serverIP, timeout, null)
+            : this(serverIP, timeout, null, false)
+        {
+        }
+
+        /// <summary>
+        /// Creates a DNS certificate resolver with a custom timeout and a fallback domain.
+        /// </summary>
+        /// <param name="serverIP">An <see cref="IPAddress"/> instance providing the IP address of the DNS server</param>
+        /// <param name="timeout">Timeout value</param>
+        /// <param name="fallbackDomain">A fallback domain name to try if the main domain name is not resolved.</param>
+        public DnsCertResolver(IPAddress serverIP
+            , TimeSpan timeout
+            , string fallbackDomain) : this(serverIP, timeout,fallbackDomain, false)
         {
         }
         
@@ -61,7 +74,11 @@ namespace NHINDirect.Certificates
         /// <param name="serverIP">An <see cref="IPAddress"/> instance providing the IP address of the DNS server</param>
         /// <param name="timeout">Timeout value</param>
         /// <param name="fallbackDomain">A fallback domain name to try if the main domain name is not resolved.</param>
-        public DnsCertResolver(IPAddress serverIP, TimeSpan timeout, string fallbackDomain)
+        /// <param name="cacheEnabled">boolean flag indicating whether or not to use the client with cache</param>
+        public DnsCertResolver(IPAddress serverIP
+            , TimeSpan timeout
+            , string fallbackDomain
+            , bool cacheEnabled)
         {
             if (serverIP == null)
             {
@@ -75,6 +92,7 @@ namespace NHINDirect.Certificates
             m_serverIP = serverIP;
             m_timeout = timeout;
             m_fallbackDomain = fallbackDomain;
+            m_cacheEnabled = cacheEnabled;
         }
 
         /// <summary>
@@ -155,7 +173,7 @@ namespace NHINDirect.Certificates
         /// or <c>null</c> if no certificates are found.</returns>
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
-            using(DnsClient client = this.CreateDnsClient())
+            using (DnsClient client = CreateDnsClient())
             {
                 X509Certificate2Collection certs = null;
                 //
@@ -256,7 +274,7 @@ namespace NHINDirect.Certificates
         
         DnsClient CreateDnsClient()
         {
-            DnsClient client = new DnsClient(m_serverIP);
+            DnsClient client = (m_cacheEnabled) ? new NHINDirect.Dns.DnsClientWithCache(m_serverIP) : new DnsClient(m_serverIP);
             if (Timeout.Ticks > 0)
             {
                 client.Timeout = Timeout;

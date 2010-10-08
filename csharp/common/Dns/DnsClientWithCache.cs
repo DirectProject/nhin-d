@@ -155,6 +155,7 @@ namespace NHINDirect.Dns
             {
                 //----------------------------------------------------------------------------------------------------
                 //---if found store in the cache for future use
+                //---Potential for negative caching here 
                 m_cache.Put(dr);
             }
             return dr;
