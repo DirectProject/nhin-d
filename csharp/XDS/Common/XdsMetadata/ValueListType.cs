@@ -1,8 +1,11 @@
-﻿/* 
+/* 
  Copyright (c) 2010, NHIN Direct Project
  All rights reserved.
-
+ 
+ Title:   ValueList.cs
+ Purpose: Class representing the IHE XD* ValueList metadata element
  Authors:
+    Justin Stauffer     justin@epic.com
     Vassil Peytchev     vassil@epic.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,42 +16,38 @@ Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Xml.Serialization;
 
-namespace NHINDirect.XDS.Common
+namespace NHINDirect.XDS.Common.Metadata
 {
-    public class RegistryError
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlRootAttribute("ValueList", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+    public class ValueListType
     {
+		#region fields
 
-        private string codeContext;
-        public string CodeContext
+		[System.Xml.Serialization.XmlIgnoreAttribute()]
+		private string[] _value;
+
+		#endregion
+
+
+		public ValueListType()
         {
-            get { return codeContext; }
-            set { codeContext = value; }
         }
+		
 
-        private string errorCode;
-        public string ErrorCode
-        {
-            get { return errorCode; }
-            set { errorCode = value; }
-        }
+		#region properties
 
-        private string severity;
-        public string Severity
-        {
-            get { return severity; }
-            set { severity = value; }
-        }
+		[System.Xml.Serialization.XmlElementAttribute("Value")]
+		public string[] Value
+		{
+			get { return _value; }
+			set { _value = value; }
+		}
 
-        private string location;
-        public string Location
-        {
-            get { return location; }
-            set { location = value; }
-        }
-
+		#endregion
     }
 }

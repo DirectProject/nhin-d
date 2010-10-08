@@ -1,4 +1,19 @@
-﻿using System;
+﻿/* 
+ Copyright (c) 2010, NHIN Direct Project
+ All rights reserved.
+
+ Authors:
+    Vassil Peytchev     vassil@epic.com
+  
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+*/
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
@@ -35,17 +50,17 @@ namespace NHINDirect.XDS.Common
             XmlAttribute attrib = null;
             XmlDocument xmlDocRegistryResponse = new XmlDocument();
 
-            eltRegistryResponse = xmlDocRegistryResponse.CreateElement("tns:RegistryResponse", @"urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0");
+            eltRegistryResponse = xmlDocRegistryResponse.CreateElement("tns:RegistryResponse", @GlobalValues.ebXmlRS3Namespace);
             xmlDocRegistryResponse.AppendChild(eltRegistryResponse);
 
             //tns
             attrib = xmlDocRegistryResponse.CreateAttribute("xmlns:tns");
-            attrib.Value = "urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0";
+            attrib.Value = GlobalValues.ebXmlRS3Namespace;
             eltRegistryResponse.Attributes.Append(attrib);
 
             //rim
             attrib = xmlDocRegistryResponse.CreateAttribute("xmlns:rim");
-            attrib.Value = GlobalValues.CONST_XML_NAMESPACE_x;
+            attrib.Value = GlobalValues.ebXmlRIMNamespace;
             eltRegistryResponse.Attributes.Append(attrib);
 
             attrib = xmlDocRegistryResponse.CreateAttribute("status");
@@ -60,7 +75,7 @@ namespace NHINDirect.XDS.Common
             }
 
             //RegistryErrorList
-            eltRegistryErrorList = xmlDocRegistryResponse.CreateElement("tns:RegistryErrorList", @"urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0");
+            eltRegistryErrorList = xmlDocRegistryResponse.CreateElement("tns:RegistryErrorList", @GlobalValues.ebXmlRS3Namespace);
 
             //Append RegistryErrorList
             eltRegistryResponse.AppendChild(eltRegistryErrorList);
@@ -74,7 +89,7 @@ namespace NHINDirect.XDS.Common
             {
 
                 //RegistryError
-                eltRegistryError = xmlDocRegistryResponse.CreateElement("tns:RegistryError", @"urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0");
+                eltRegistryError = xmlDocRegistryResponse.CreateElement("tns:RegistryError", @GlobalValues.ebXmlRS3Namespace);
 
                 //codeContext
                 attrib = xmlDocRegistryResponse.CreateAttribute("codeContext");
@@ -120,7 +135,7 @@ namespace NHINDirect.XDS.Common
 
             //xmlns
             rootElement.Attributes.Append(objRegistryDocument.CreateAttribute("xmlns"));
-            rootElement.Attributes["xmlns"].Value = "urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0";
+            rootElement.Attributes["xmlns"].Value = GlobalValues.ebXmlRS3Namespace;
 
 
             //xmlns:rim
