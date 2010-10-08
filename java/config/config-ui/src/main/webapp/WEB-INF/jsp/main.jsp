@@ -38,9 +38,7 @@ $(document).ready(function()
 			 <form:radiobuttons path="status" items="${statusList}"/> 
 	        </fieldset>
 		<p>
-	<!-- 	<button type="submit">Search</button> -->
 		<button name="submitType" id="submitType" type="submit" value="search">Search</button>		
-<!-- 		<button type="submit" onclick='this.form.action = "domain"; return true;' style="align:right;">New Domain</button> -->
         <button name="submitType" id="submitType" type="submit" value="newdomain">New Domain</button>
 		
 		</p>
@@ -50,7 +48,7 @@ $(document).ready(function()
 	<c:if test="${not empty searchResults}">
 	<div id="dynamic">
 		<spring:url value="/config/domain/remove" var="formUrlremove"/>
-	   <form:form action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST" commandName="removeDomainForm" >
+	   <form:form modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST" >
 		<table class="tablesorter" id="domainTable">
 			<thead>
 				<tr>
@@ -71,7 +69,8 @@ $(document).ready(function()
 				    <td>${domain.status}</td>
 				    <td><fmt:formatDate value="${domain.createTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
 				    <td><fmt:formatDate value="${domain.updateTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
-				    <td><input type="checkbox" name="remove${domain.id}"/></td>
+				    <td><form:checkbox path="remove" value="${domain.id}" /></td>
+				    
 				</tr>
 				</c:forEach>	
 			</tbody>

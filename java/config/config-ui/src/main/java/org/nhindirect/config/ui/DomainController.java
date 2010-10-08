@@ -68,11 +68,28 @@ public class DomainController {
 	@RequestMapping(value="/remove", method = RequestMethod.POST)
 	public ModelAndView removeDomain (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
-						        @ModelAttribute DomainForm simpleForm,
+						        @ModelAttribute SimpleForm simpleForm,
 						        Model model,
 						        @RequestParam(value="submitType") String actionPath)  { 		
 	
-		log.debug("Enter domain/remove");
+		if (log.isDebugEnabled()) log.debug("Enter domain/remove");
+		if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
+		Domain results = null;
+		if (dService != null) {
+			int cnt = simpleForm.getRemove().size();
+			for(int x = 0;x< cnt;x++){
+				try {
+					String strid = simpleForm.getRemove().remove(x);
+					if (log.isDebugEnabled()) log.debug("trying to remove id: "+strid);
+					Domain dom = dService.getDomain(Long.parseLong(strid));
+					if (log.isDebugEnabled()) log.debug("trying to remove name: "+dom.getDomainName());
+					dService.removeDomain(strid);
+					
+				} catch (ConfigurationServiceException e) {
+					if (log.isDebugEnabled()) log.error(e);
+				}
+			}
+		}		
 		
 		ModelAndView mav = new ModelAndView(); 
 		SearchDomainForm form2 = (SearchDomainForm) session.getAttribute("searchDomainForm");
@@ -88,10 +105,14 @@ public class DomainController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView onSubmitAndView(Object command){
-		log.debug("Enter onSubmit");
+		if (log.isDebugEnabled()) log.debug("Enter onSubmit");
 		return new ModelAndView(new RedirectView("main"));
-	}	
+	}
 	
+    @RequestMapping(value = "/simpleForm", method = RequestMethod.GET)
+    public void simpleForm(Model model) {
+            model.addAttribute(new SimpleForm());
+    }	
 	/**
 	 * Display a Domain
 	 */
