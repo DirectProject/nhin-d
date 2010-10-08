@@ -118,7 +118,7 @@ namespace NHINDirect.XDS
             XmlNodeList nodeListDocument = null;
             XmlNode nodeSubmissionSet = null;
             XmlNode nodeExternalIdentifier = null;
-//            List<DocumentEntry> lstDocumentEntry = null;
+            List<Document> docList = null;
             StringBuilder sbMetaData = null;
             string xpathExternalIdentifierDocument = @".//*[local-name()='ExtrinsicObject'][@id='$id$']/*[local-name()='ExternalIdentifier'][@identificationScheme='$identificationScheme$']";
             string xpath = null;

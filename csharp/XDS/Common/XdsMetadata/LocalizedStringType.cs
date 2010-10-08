@@ -1,7 +1,9 @@
-﻿/* 
+/* 
  Copyright (c) 2010, NHIN Direct Project
  All rights reserved.
-
+ 
+ Title:   LocalizedStringType.cs
+ Purpose: Class representing the IHE XD* Localized String type
  Authors:
     Vassil Peytchev     vassil@epic.com
   
@@ -13,42 +15,58 @@ Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Xml.Serialization;
 
-namespace NHINDirect.XDS.Common
+namespace NHINDirect.XDS.Common.Metadata
 {
-    public class RegistryError
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlRootAttribute("LocalizedString", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+    public class LocalizedStringType
     {
+		#region fields
+		
+		[System.Xml.Serialization.XmlIgnoreAttribute()]
+		private string _lang = "en-US";
+		[System.Xml.Serialization.XmlIgnoreAttribute()]
+		private string _charset = "UTF-8";
+		[System.Xml.Serialization.XmlIgnoreAttribute()]
+		private string _value;
 
-        private string codeContext;
-        public string CodeContext
+		#endregion
+
+        public LocalizedStringType()
         {
-            get { return codeContext; }
-            set { codeContext = value; }
         }
 
-        private string errorCode;
-        public string ErrorCode
-        {
-            get { return errorCode; }
-            set { errorCode = value; }
-        }
+		public LocalizedStringType(string value)
+		{
+			this.Value = value;
+		}
 
-        private string severity;
-        public string Severity
-        {
-            get { return severity; }
-            set { severity = value; }
-        }
-
-        private string location;
-        public string Location
-        {
-            get { return location; }
-            set { location = value; }
-        }
-
+		#region properties
+		//[System.Xml.Serialization.XmlAttributeAttribute(Form=System.Xml.Schema.XmlSchemaForm.Qualified, DataType="language")]
+		[System.Xml.Serialization.XmlAttributeAttribute("lang", DataType="language")]
+		[System.ComponentModel.DefaultValueAttribute("en-US")]
+		public string Lang
+		{
+			get { return _lang; }
+			set { _lang = value; }
+		}
+		[System.Xml.Serialization.XmlAttributeAttribute("charset")]
+		[System.ComponentModel.DefaultValueAttribute("UTF-8")]
+		public string Charset
+		{
+			get { return _charset; }
+			set { _charset = value; }
+		}
+		[System.Xml.Serialization.XmlAttributeAttribute("value")]
+		public string Value
+		{
+			get { return _value; }
+			set { _value = value; }
+		}	
+		#endregion
     }
 }
