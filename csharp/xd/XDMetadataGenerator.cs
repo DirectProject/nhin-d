@@ -259,6 +259,7 @@ namespace NHINDirect.Xd
         public static IEnumerable<string> UriValues(string Uri)
         {
             IEnumerable<string> strings = Uri.Break(128);
+            if (strings.Count() == 1) return strings;
             return strings.Select((string s, int i) => String.Format("{0}|{1}", i + 1, s));
         }
 
