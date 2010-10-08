@@ -44,6 +44,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -71,6 +72,7 @@ public class MainController {
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public ModelAndView search (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
+						        @ModelAttribute SimpleForm simpleForm,
 						        Model model,
 						        @RequestParam(value="submitType") String actionPath)  { 		
 		if (log.isDebugEnabled()) log.debug("Enter search");
@@ -80,15 +82,12 @@ public class MainController {
 		ModelAndView mav = new ModelAndView();
 		// check to see if new domain requested
 		if(isLoggedIn(session) && actionPath.equalsIgnoreCase("newdomain")){
-			log.debug("trying to go to the new domain page");
+			if (log.isDebugEnabled()) log.debug("trying to go to the new domain page");
 			HashMap<String, String> msgs = new HashMap<String, String>();
 			mav.addObject("msgs", msgs);
-			DomainForm form = (DomainForm) session.getAttribute("domainForm");
-			if (form == null) {
-				form = new DomainForm();
-			}
-			model.addAttribute("domainForm", form);
-	
+			
+			model.addAttribute("simpleForm",new SimpleForm());
+			
 			mav.setViewName("domain");
 			mav.addObject("actionPath", actionPath);
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());

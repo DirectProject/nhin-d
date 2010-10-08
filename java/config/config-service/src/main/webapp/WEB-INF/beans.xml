@@ -58,7 +58,8 @@
 	<!-- Exception translation bean post processor -->
 	<bean
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
-
+		
+<!-- SWAP THIS JPA IMPLEMENTATION WITH THE APPROPROATE DB CONFIGURATION
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="jpaVendorAdapter">
@@ -78,7 +79,33 @@
 		<property name="username" value="nhind" />
 		<property name="password" value="nhind" />
 	</bean>
+-->
 
+<!-- EMBEDDED DERBY JPA CONFIGURATION FOR A WORKING OUT OF THE BOX CONFIGURATION WITH NO PREREQUISITES OF
+     SETTING UP AN EXTERNAL DATABASE.  REMOVE THIS SECTION AND REPLACE WITH READ JPA CONFIGURATION (SEE
+     ABOVE SECTION) FOR PRODUCTION -->
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="true" />
+				<property name="generateDdl" value="true" />
+				<!--  <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" /> -->
+				<property name="databasePlatform" value="org.hibernate.dialect.DerbyDialect" />
+			</bean>
+		</property>
+		<property name="dataSource" ref="dataSource"/>
+		<property name="persistenceUnitName" value="config-store" />
+	</bean>	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
+		<property name="url" value="jdbc:derby:data/nhindconfig;create=true" />
+		<property name="username" value="nhind" />
+		<property name="password" value="nhind" />
+	</bean> 	
+<!--  END DERBY JPA CONFIGURATION -->
+	     
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />
 
 </beans>
