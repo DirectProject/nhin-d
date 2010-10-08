@@ -97,7 +97,7 @@ public class Domain {
      */
     @Column(name = "id", nullable = false)
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @XmlAttribute
     public Long getId() {
         if (id == null) {
