@@ -1,0 +1,2 @@
+nhinConfigConsole.exe %*
+pause
