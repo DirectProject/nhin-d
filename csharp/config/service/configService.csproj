@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CertificateGetOptions.cs" />
+    <Compile Include="ConfigServiceBase.cs" />
     <Compile Include="DomainManagerService.svc.cs">
       <DependentUpon>DomainManagerService.svc</DependentUpon>
     </Compile>
@@ -101,9 +102,6 @@
       <Name>configStore</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets')" Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />
   <Import Condition="!Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets')" Project="..\..\external\microsoft\Microsoft.WebApplication.targets" />
@@ -122,8 +120,7 @@
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>6692</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>
-          </IISUrl>
+          <IISUrl>http://localhost/configService</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
