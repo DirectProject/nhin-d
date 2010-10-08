@@ -24,13 +24,15 @@
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
 				<property name="showSql" value="true" />
 				<property name="generateDdl" value="true" />
-				<property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" />
+				<!--  <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" /> -->
+				<property name="databasePlatform" value="org.hibernate.dialect.DerbyDialect" />
 			</bean>
 		</property>
 		<property name="dataSource" ref="dataSource"/>
 		<property name="persistenceUnitName" value="config-store" />
 	</bean>
 
+<!-- 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="org.postgresql.Driver" />
@@ -38,6 +40,13 @@
 		<property name="username" value="nhind" />
 		<property name="password" value="nhind" />
 	</bean>
-
+ -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
+		<property name="url" value="jdbc:derby:nhindconfig;create=true" />
+		<property name="username" value="nhind" />
+		<property name="password" value="nhind" />
+	</bean> 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />
 </beans>
