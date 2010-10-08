@@ -64,6 +64,22 @@ public class DomainController {
 	public DomainController() {
 		if (log.isDebugEnabled()) log.debug("DomainController initialized");
 	}
+	
+	@RequestMapping(value="/remove", method = RequestMethod.POST)
+	public ModelAndView removeDomain (@ModelAttribute DomainForm simpleForm,
+						        Model model)  { 		
+	
+		log.debug("Enter domain/remove");
+		
+		ModelAndView mav = new ModelAndView(); 
+
+		mav.setViewName("main");
+		mav.addObject("statusList", EntityStatus.getEntityStatusList());
+		
+		return mav;
+	}	
+	
+	
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView onSubmitAndView(Object command){
 		log.debug("Enter onSubmit");
