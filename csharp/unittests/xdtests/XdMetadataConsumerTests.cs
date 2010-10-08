@@ -499,19 +499,58 @@ namespace NHINDirect.Tests.xdTests
         public void ConsumerConsumesPatient(XElement documentXEl, Person expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
-            Assert.Equal(expected.First, doc.Patient.First);
-            Assert.Equal(expected.Last, doc.Patient.Last);
-            Assert.Equal(expected.MI, doc.Patient.MI);
-            Assert.Equal(expected.Degree, doc.Patient.Degree);
-            Assert.Equal(expected.Prefix, doc.Patient.Prefix);
-            Assert.Equal(expected.Suffix, doc.Patient.Suffix);
-            Assert.Equal(expected.Sex, doc.Patient.Sex);
-            Assert.Equal(expected.Dob, doc.Patient.Dob);
             Assert.Equal(expected, doc.Patient);
             Assert.Equal(expected.Address, doc.Patient.Address);
         }
 
 
+        public static IEnumerable<object[]> TitleData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.Title, "Test" });
+            }
+        }
+
+        [Theory]
+        [PropertyData("TitleData")]
+        public void ConsumerConsumesTitle(XElement documentXEl, String expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.Title);
+        }
+
+        public static IEnumerable<object[]> UniqueIdData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.UniqueId, "1.3.6.1.4.1.21367.2005.3.3.1" });
+            }
+        }
+
+        [Theory]
+        [PropertyData("UniqueIdData")]
+        public void ConsumerConsumesUniqueId(XElement documentXEl, String expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.UniqueId);
+        }
+
+        public static IEnumerable<object[]> UriData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.Uri, null });
+            }
+        }
+
+        [Theory]
+        [PropertyData("UriData")]
+        public void ConsumerConsumesUri(XElement documentXEl, String expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.Uri);
+        }
 
     }
 }

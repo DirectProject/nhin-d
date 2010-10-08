@@ -56,5 +56,14 @@ namespace NHINDirect.Xd
                 remaining -= n;
             }
         }
+
+        /// <summary>
+        /// Concatenates all the elements of a string enumeration, using the specified separator between each element.
+        /// </summary>
+        public static string Join(string sep, IEnumerable<string> strings)
+        {
+            if (strings == null || strings.Count() == 0) return null;
+            return strings.Skip(1).Aggregate(strings.First(), (a, s) => a + sep + s);
+        }
     }
 }
