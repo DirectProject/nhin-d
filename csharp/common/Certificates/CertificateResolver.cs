@@ -24,10 +24,10 @@ namespace NHINDirect.Certificates
     /// </summary>
     public class CertificateResolver : ICertificateResolver
     {
-        private readonly IX509CertificateIndex m_certIndex;
+        IX509CertificateIndex m_certIndex;
 
         /// <summary>
-        /// Creates a certificate resolver from a certificate index instance. 
+        /// Creates a certificate resolver that retrieves certificates from the given certificate index instance. 
         /// </summary>
         /// <param name="index">
         /// An index instance providing <see cref="IX509CertificateIndex"/>
@@ -41,7 +41,14 @@ namespace NHINDirect.Certificates
 
             m_certIndex = index;
         }
-
+        
+        /// <summary>
+        /// Create a new certificate resolver. This constructor is used by class extenders.
+        /// </summary>
+        protected CertificateResolver()
+        {
+        }
+        
         /// <summary>
         /// Gets a collection of certificates by mail address. 
         /// </summary>
@@ -51,31 +58,60 @@ namespace NHINDirect.Certificates
         /// <returns>
         /// The <see cref="X509Certificate2Collection"/> of certificates for the requested address.
         /// </returns>
-        public X509Certificate2Collection GetCertificates(MailAddress address)
+        public virtual X509Certificate2Collection GetCertificates(MailAddress address)
         {
             if (address == null)
             {
                 throw new ArgumentNullException("address");
             }
 
-            X509Certificate2Collection addressCerts = m_certIndex[address.Address];
-            X509Certificate2Collection hostCerts = m_certIndex[address.Host];
-            if (addressCerts == null && hostCerts == null)
+            X509Certificate2Collection matches = this.GetCertificatesForDomain(address.Address);
+            if (matches.IsNullOrEmpty())
             {
-                return null;
-            }
-
-            X509Certificate2Collection matches = new X509Certificate2Collection();
-            if (addressCerts != null)
-            {
-                matches.Add(addressCerts);
-            }
-            if (hostCerts != null)
-            {
-                matches.Add(hostCerts);
+                matches = this.GetCertificatesForDomain(address.Host);
             }
 
             return matches;
+        }
+        
+        /// <summary>
+        /// Gets a collection of certificates by domain. 
+        /// </summary>
+        /// <param name="domain">Domain for which to return certificates</param>
+        /// <returns>
+        /// The <see cref="X509Certificate2Collection"/> of certificates for the requested domain.
+        /// </returns>
+        public virtual X509Certificate2Collection GetCertificatesForDomain(string domain)
+        {
+            if (string.IsNullOrEmpty(domain))
+            {
+                throw new ArgumentException("domain");
+            }
+            
+            X509Certificate2Collection domainCerts = this.Resolve(domain);
+            if (domainCerts.IsNullOrEmpty())
+            {
+                return null;
+            }
+            
+            return new X509Certificate2Collection(domainCerts);
+        }
+        
+        /// <summary>
+        /// Actually resolves a certificate for the given name. Override to customize. 
+        /// </summary>
+        /// <param name="name">Return certificates for this name</param>
+        /// <returns>
+        /// The <see cref="X509Certificate2Collection"/> of certificates for the requested name.
+        /// </returns>
+        protected virtual X509Certificate2Collection Resolve(string name)
+        {
+            if (m_certIndex != null)
+            {
+                return m_certIndex[name];
+            }
+
+            return null;
         }
     }
 }

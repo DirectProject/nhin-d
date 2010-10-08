@@ -53,6 +53,26 @@ namespace NHINDirect.Xd
             return source.Descendants().Where(e => e.Name.LocalName == name);
         }
 
+        /// <summary>
+        /// Returns the value of a named attribute, or <c>null</c> if no such attribute exists.
+        /// </summary>
+        public static string AttributeValue(this XElement source, string name)
+        {
+            XAttribute attr = source.Attribute(name);
+            if (attr == null) return null;
+            return attr.Value;
+        }
+
+        /// <summary>
+        /// Returns the value of a named attribute, transformed by a mapping function to a specialized return type.
+        /// </summary>
+        public static T AttributeValue<T>(this XElement source, string name, Func<string, T> map)
+        {
+            string val = source.AttributeValue(name);
+            if (val == null) return default(T);
+            return map(val);
+        }
+
 
         /// <summary>
         /// Returns classfication elements of the specified <paramref name="scheme"/>
@@ -60,7 +80,7 @@ namespace NHINDirect.Xd
         public static IEnumerable<XElement> Classifications(this XElement source, string scheme)
         {
             return from el in source.DescendantsAnyNs(XDMetadataStandard.Elts.Classification)
-                   where (string)el.Attribute(XDMetadataStandard.ClassificationSchemeAttr) == scheme
+                   where (string)el.Attribute(XDMetadataStandard.Attrs.ClassificationScheme) == scheme
                    select el;
         }
 
@@ -90,7 +110,7 @@ namespace NHINDirect.Xd
         /// </summary>
         public static IEnumerable<XElement> Slots(this XElement source, string slotName)
         {
-            return source.Slots().Where(s => s.Attribute(XDMetadataStandard.SlotNameAttr).Value == slotName);
+            return source.Slots().Where(s => s.Attribute(XDMetadataStandard.Attrs.SlotName).Value == slotName);
         }
 
         /// <summary>
@@ -123,6 +143,19 @@ namespace NHINDirect.Xd
             return from el in source.Slot(slotName).DescendantsAnyNs("Value")
                    select el.Value;
         }
+
+        /// <summary>
+        /// Returns the slot value for a single valued slot (or the first value in a multivalued slot) using a map function
+        /// to convert to type T
+        /// </summary>
+        /// <returns>The mapped value of the slot, or <c>null</c> if the slot does not exist or has no values.</returns>
+        public static T SlotValue<T>(this XElement source, string slotName, Func<string, T> map)
+        {
+            string val = source.SlotValue(slotName);
+            if (val == null) return default(T);
+            return map(val);
+        }
+
         
 
         /// <summary>
@@ -136,7 +169,7 @@ namespace NHINDirect.Xd
         }
 
         /// <summary>
-        /// Returns the value for a specified external identifier.
+        /// Returns the value for a specified external identifier or null if no identifier exists
         /// </summary>
         public static string ExternalIdentifierValue(this XElement source, string scheme)
         {
@@ -147,11 +180,23 @@ namespace NHINDirect.Xd
         }
 
         /// <summary>
+        /// Returns the mapped value for a specified external identifier using the supplied mapping function. Returns <c>null</c> if no identifier exists.
+        /// </summary>
+        public static T ExternalIdentifierValue<T>(this XElement source, string scheme, Func<string, T> map)
+        {
+            string val = source.ExternalIdentifierValue(scheme);
+            if (val == null) return default(T);
+            return map(val);
+        }
+
+
+
+        /// <summary>
         /// Returns <see cref="XElement"/> instances for each document entry node for this element
         /// </summary>
         public static IEnumerable<XElement> DocumentEntries(this XElement source)
         {
-            return source.DescendantsAnyNs(XDMetadataStandard.Elts.DocumentEntry).Where(e => e.Attribute(XDMetadataStandard.ObjectTypeAttr).Value == XDMetadataStandard.UUIDs.DocumentEntry);
+            return source.DescendantsAnyNs(XDMetadataStandard.Elts.DocumentEntry).Where(e => e.Attribute(XDMetadataStandard.Attrs.ObjectType).Value == XDMetadataStandard.UUIDs.DocumentEntry);
         }
 
         /// <summary>

@@ -23,9 +23,10 @@ using System.Security.Cryptography.X509Certificates;
 namespace NHINDirect.Certificates
 {
     /// <summary>
-    /// Represents a certificate store for an entire organization that is represented by the same organization certificate
-    /// </summary>
-    public class UniformCertificateStore : ICertificateResolver
+    /// Represents a certificate store where any address or domain uses the same collection of certificates
+    /// Typically used at an organization level: where the same certificates apply to the entire organization.
+    /// </summary>b
+    public class UniformCertificateResolver : CertificateResolver
     {
         X509Certificate2Collection m_certs;
         
@@ -33,16 +34,9 @@ namespace NHINDirect.Certificates
         /// Initializes an instance with the single certificate for the organization.
         /// </summary>
         /// <param name="cert">The certificate to use for the organization.</param>
-        public UniformCertificateStore(X509Certificate2 cert)
+        public UniformCertificateResolver(X509Certificate2 cert)
+            : this(new X509Certificate2Collection(cert))
         {
-            if (cert == null)
-            {
-                throw new ArgumentNullException("cert");
-            }
-            
-            X509Certificate2Collection certs = new X509Certificate2Collection();
-            certs.Add(cert);
-            this.Certificates = certs;
         }
 
         /// <summary>
@@ -50,7 +44,7 @@ namespace NHINDirect.Certificates
         /// for the organization.
         /// </summary>
         /// <param name="certs">The certificates to use for the organization.</param>
-        public UniformCertificateStore(X509Certificate2Collection certs)
+        public UniformCertificateResolver(X509Certificate2Collection certs)
         {
             this.Certificates = certs;
         }
@@ -60,13 +54,9 @@ namespace NHINDirect.Certificates
         /// for the organization.
         /// </summary>
         /// <param name="certs">The certificates to use for the organization.</param>
-        public UniformCertificateStore(IX509CertificateStore certs)
+        public UniformCertificateResolver(IX509CertificateStore certs)
+            : this(certs.GetAllCertificates())
         {
-            if (certs == null)
-            {
-                throw new ArgumentNullException("certs");
-            }
-            this.Certificates = certs.GetAllCertificates();
         }
         
         /// <summary>
@@ -76,7 +66,7 @@ namespace NHINDirect.Certificates
         {
             get
             {
-                return this.m_certs;
+                return m_certs;
             }
             set
             {
@@ -85,23 +75,20 @@ namespace NHINDirect.Certificates
                     throw new ArgumentNullException("value");
                 }
 
-                this.m_certs = value;
+                m_certs = value;
             }
         }
 
         /// <summary>
-        /// Gets the certificates for an address; always returns the same collection
+        /// Actually resolves a certificate for the given name. Override to customize. 
         /// </summary>
-        /// <param name="address">The address for which to retrieve certificates</param>
-        /// <returns>The organizational certificates.</returns>
-        public X509Certificate2Collection GetCertificates(MailAddress address)
+        /// <param name="name">Return certificates for this name</param>
+        /// <returns>
+        /// The <see cref="X509Certificate2Collection"/> of certificates for the requested name.
+        /// </returns>
+        protected override X509Certificate2Collection Resolve(string name)
         {
-            if (address == null)
-            {
-                throw new ArgumentNullException("address");
-            }
-
-            return this.m_certs;
+            return m_certs;            
         }
     }
 }

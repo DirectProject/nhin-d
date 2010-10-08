@@ -155,52 +155,57 @@ namespace NHINDirect.Certificates
         /// or <c>null</c> if no certificates are found.</returns>
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
-            using(DnsClient client = new DnsClient(m_serverIP))
+            using(DnsClient client = this.CreateDnsClient())
             {
-                if (Timeout.Ticks > 0)
-                {
-                    client.Timeout = Timeout;
-                }
-                
-                client.UseUDPFirst = false;
-                client.MaxRetries = m_maxRetries;
                 X509Certificate2Collection certs = null;
                 //
                 // First, try to resolve the full email address directly
                 //                
-                certs = this.ResolveDomain(client, address.Address);
-                if (!certs.IsNullOrEmpty())
+                certs = this.GetCertificates(client, address.Address);
+                if (certs.IsNullOrEmpty())
                 {
-                    return certs;
+                    //
+                    // No certificates found. Perhaps certificates are available at the the (Domain) level
+                    //
+                    certs = this.GetCertificates(client, address.Host);
                 }
-                //
-                // No certificates found. Perhaps certificates are available at the the (Domain) level
-                //
-                certs = this.ResolveDomain(client, address.Host);
-                if (!certs.IsNullOrEmpty())
-                {
-                    return certs;
-                }
-
-                if (this.HasFallbackDomain)
-                {
-                    certs = this.ResolveExtendedDomain(client, address.Address);
-                    if (!certs.IsNullOrEmpty())
-                    {
-                        return certs;
-                    }
-                    
-                    certs = this.ResolveExtendedDomain(client, address.Host);
-                    if (!certs.IsNullOrEmpty())
-                    {
-                        return certs;
-                    }
-                }
+                
+                return certs;
             }
-            
-            return null;
         }
 
+        /// <summary>
+        /// Resolves X509 certificates for a domain.
+        /// </summary>
+        /// <param name="domain">The domain for which certificates should be resolved.</param>
+        /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
+        /// or <c>null</c> if no certificates are found.</returns>
+        public X509Certificate2Collection GetCertificatesForDomain(string domain)
+        {
+            if (string.IsNullOrEmpty(domain))
+            {
+                throw new ArgumentException("domain");
+            }
+            
+            using(DnsClient client = this.CreateDnsClient())
+            {
+                return this.GetCertificates(client, domain);
+            }            
+        }
+
+        X509Certificate2Collection GetCertificates(DnsClient client, string domain)
+        {
+            X509Certificate2Collection certs = null;
+
+            certs = this.ResolveDomain(client, domain);
+            if (certs.IsNullOrEmpty() && this.HasFallbackDomain)
+            {
+                certs = this.ResolveExtendedDomain(client, domain);
+            }
+
+            return certs;
+        }
+        
         X509Certificate2Collection ResolveDomain(DnsClient client, string name)
         {
             name = name.Replace('@', '.');
@@ -249,6 +254,20 @@ namespace NHINDirect.Certificates
             return certs;
         }
         
+        DnsClient CreateDnsClient()
+        {
+            DnsClient client = new DnsClient(m_serverIP);
+            if (Timeout.Ticks > 0)
+            {
+                client.Timeout = Timeout;
+            }
+            
+            client.UseUDPFirst = false;
+            client.MaxRetries = m_maxRetries;
+            
+            return client;
+        }
+                
         void NotifyException(Exception ex)
         {
         	var errorHandler = this.Error;

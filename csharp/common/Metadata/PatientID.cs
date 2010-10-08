@@ -25,7 +25,7 @@ namespace NHINDirect.Metadata
     /// <summary>
     /// Represents a patient identifier
     /// </summary>
-    public class PatientID
+    public class PatientID : IEquatable<PatientID>
     {
 
         /// <summary>
@@ -138,6 +138,24 @@ namespace NHINDirect.Metadata
         public bool Equals(PatientID other)
         {
             return (this.Id == other.Id) && (this.AssigningAuthority == other.AssigningAuthority) && (this.AssigningAuthorityType == other.AssigningAuthorityType);
+        }
+
+        /// <summary>
+        /// Tests equality with another object
+        /// </summary>
+        public override bool Equals(object other)
+        {
+            if (other == null) return false;
+            if (other is PatientID) return Equals(other as PatientID);
+            return false;
+        }
+
+        /// <summary>
+        /// Hash for this instance.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
         }
     }
 }

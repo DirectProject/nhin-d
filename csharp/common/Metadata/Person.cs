@@ -44,7 +44,7 @@ namespace NHINDirect.Metadata
     /// <summary>
     /// Represents a human person
     /// </summary>
-    public class Person
+    public class Person : IEquatable<Person>
     {
 
         /// <summary>
@@ -135,6 +135,24 @@ namespace NHINDirect.Metadata
         }
 
         /// <summary>
+        /// Tests if this instance equals another
+        /// </summary>
+        public override bool Equals(object other)
+        {
+            if (other == null) return false;
+            if (other is Person) return Equals(other as Person);
+            return false;
+        }
+
+        /// <summary>
+        /// Returns a hash of this object
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
+        }
+
+        /// <summary>
         /// Provides a string representation of the Person
         /// </summary>
         /// <returns>A string representation of the person</returns>
@@ -206,6 +224,47 @@ namespace NHINDirect.Metadata
             yield return "PID-7|" + dateValue;
             yield return "PID-8|" + sexValue;
             yield return "PID-11|" + addressValue;
+        }
+
+        /// <summary>
+        /// Intializes a new <see cref="Person"/> from data found in a sourcePatientInfo field
+        /// </summary>
+        public static Person FromSourcePatientInfoValues(IEnumerable<string> values)
+        {
+            Person p = null;
+            Sex? sex = null;
+            DateTime? dob = null;
+            PostalAddress? postal = null;
+
+            foreach (string[] fields in values.Select(s => s.Split('|')))
+            {
+
+                if (fields.Length != 2) throw new ArgumentException();
+                switch (fields[0])
+                {
+                    case "PID-3":
+                        break;
+                    case "PID-5":
+                        p = Person.FromXCN(fields[1]);
+                        break;
+                    case "PID-7":
+                        dob = HL7Util.DateTimeFromHL7Value(fields[1]);
+                        break;
+                    case "PID-8":
+                        sex = HL7Util.FromHL7Value(fields[1]);
+                        break;
+                    case "PID-11":
+                        postal = PostalAddress.FromHL7Ad(fields[1]);
+                        break;
+                }
+            }
+
+            if (p == null) throw new ArgumentException();
+            if (dob != null) p.Dob = dob;
+            if (sex != null) p.Sex = sex;
+            if (postal != null) p.Address = postal;
+            return p;
+
         }
 
 

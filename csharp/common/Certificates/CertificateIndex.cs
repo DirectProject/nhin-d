@@ -26,12 +26,10 @@ namespace NHINDirect.Certificates
     /// <summary>
     /// Represents an index of certificates by subject.
     /// </summary>
-    public class CertificateIndex : IX509CertificateIndex, ICertificateResolver
+    public class CertificateIndex : IX509CertificateIndex
     {
         IX509CertificateStore m_store;
-        CertificateDictionary m_certIndex;
-        CertificateResolver m_resolver;
-        
+        CertificateDictionary m_certIndex;        
         /// <summary>
         /// Creates an instance of an index initialized from an <see cref="IX509CertificateStore"/>
         /// </summary>
@@ -45,8 +43,6 @@ namespace NHINDirect.Certificates
             
             m_store = store;
             this.Refresh();
-            
-            m_resolver = new CertificateResolver(this);
         }
         
         /// <summary>
@@ -80,36 +76,6 @@ namespace NHINDirect.Certificates
                 CertificateDictionary index = m_certIndex;
                 return index.Keys;
             }
-        }
-
-        /// <summary>
-        /// Returns the valid certficates for a mail address.
-        /// Implementations representing remote certificate stores (e.g., DNS) may throw network exceptions.
-        /// </summary>
-        /// <param name="address">
-        /// A <see cref="MailAddress"/>
-        /// </param>
-        /// <returns>
-        /// A <see cref="X509Certificate2Collection"/>or null if there are no addresses.
-        /// </returns>
-        public X509Certificate2Collection GetCertificates(MailAddress address)
-        {
-            return m_resolver.GetCertificates(address);
-        }
-
-        /// <summary>
-        /// Returns the valid certficates for a mail address.
-        /// Implementations representing remote certificate stores (e.g., DNS) may throw network exceptions.
-        /// </summary>
-        /// <param name="address">
-        /// A <c>string</c> representation an email address.
-        /// </param>
-        /// <returns>
-        /// A <see cref="X509Certificate2Collection"/> or <c>null</c> if there are no addresses.
-        /// </returns>
-        public X509Certificate2Collection GetCertificates(string address)
-        {
-            return this.GetCertificates(new MailAddress(address));
         }
 
         /// <summary>

@@ -13,8 +13,9 @@
     <fieldset>
     <center><h3>NHIN Direct Java Reference Implememtation - Add/Update a Domain</h3></center>
     </fieldset>
+    <spring:url value="/config/domain/saveupdate" var="formUrl"/>
     <form:form id="domainForm"
-        action="domain" cssClass="cleanform"
+        action="${fn:escapeXml(formUrl)}" cssClass="cleanform"
         commandName="domainForm" method="POST">
         <div class=error">
             <form:errors path="*" cssClass="error" />
@@ -92,11 +93,11 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th width="30%">Email Address</th>
-                    <th width="25%">Display Name</th>
-                    <th width="15%">Type</th>
-                    <th width="15%">Status</th>
-                    <th width="15%">Sel</th>
+                    <th width="30%"></th>
+                    <th width="25%"></th>
+                    <th width="15%"></th>
+                    <th width="15%"></th>
+                    <th width="15%"></th>
                 </tr>
             </tfoot>
         </table>
@@ -107,15 +108,14 @@
         </fieldset>
         <p>
         <c:choose>
-            <c:when test='${empty actionPath || actionPath == "Add" }'>
-                <button name="submitType" type="submit" value="add">Add</button>
+            <c:when test='${empty action || action == "Add" }'>
+                <button name="submitType" id="submitType" type="submit" value="add">Add</button>
             </c:when>
             <c:otherwise>
-                <button name="submitType" type="submit" value="update">Update</button>
+                <button name="submitType" id="submitType" type="submit" value="update">Update</button>
             </c:otherwise>
         </c:choose>
-        
-        <button type="submit" onclick="this.form.action = 'main'; return true;">Cancel</button>
+        <button name="submitType" id="submitType" type="submit" value="cancel">Cancel</button>
         </p>
     </form:form>
     </fieldset>

@@ -20,15 +20,13 @@ using System.Security.Cryptography.X509Certificates;
 namespace NHINDirect.Certificates
 {
 	/// <summary>
-	/// Supports resolution of certificates by address.
-	/// </summary>
+	/// Supports resolution of certificates.
+    /// If no certificate for address, methods return null
+    /// Throw exceptions if there was an error during retrieval, such as network issues
+    /// Implementations may use implementation specific caching policies.
+    /// </summary>
     public interface ICertificateResolver
     {
-        //
-        // If no certificate for address, return null
-        // Throw exceptions if there was an error during retrieval, such as network issues
-        //
-		
 		/// <summary>
 		/// Returns the valid certficates for a mail address.
 		/// Implementations representing remote certificate stores (e.g., DNS) may throw network exceptions.
@@ -37,8 +35,17 @@ namespace NHINDirect.Certificates
 		/// A <see cref="System.Net.Mail.MailAddress"/>
 		/// </param>
 		/// <returns>
-		/// A <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2Collection"/> or null if there are no addresses.
+		/// A <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2Collection"/> or null if there are no matches.
 		/// </returns>
         X509Certificate2Collection GetCertificates(MailAddress address);
+        /// <summary>
+        /// Returns the valid certificates for a domain
+        /// Implementations representing remote certificate stores (e.g., DNS) may throw network exceptions.
+        /// </summary>
+        /// <param name="domain">domain</param>
+        /// <returns>
+        /// A <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2Collection"/> or null if there are no matches.
+        /// </returns>
+        X509Certificate2Collection GetCertificatesForDomain(string domain);
     }
 }

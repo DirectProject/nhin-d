@@ -181,7 +181,7 @@ namespace AgentTests
                                                 (IX509CertificateStore) LoadIncomingAnchors(certsBasePath),
                                                 (IX509CertificateStore) LoadOutgoingAnchors(certsBasePath));
 
-            return new NHINDAgent(domain, privateCerts.Index(), publicCerts.Index(), anchors);
+            return new NHINDAgent(domain, privateCerts.CreateResolver(), publicCerts.CreateResolver(), anchors);
         }
         
         static string MakeCertificatesPath(string basePath, string agentFolder)
@@ -330,6 +330,12 @@ namespace AgentTests
             }
 
             return certs;
+        }
+        
+        public X509Certificate2Collection GetCertificatesForDomain(string domain)
+        {
+            // Not supported
+            return null;
         }
     }
 }

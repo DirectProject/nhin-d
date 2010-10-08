@@ -81,7 +81,7 @@ namespace NHINDirect.Tests.xdTests
                     m_docMeta.EventCodes = evtCodes;
                     m_docMeta.FormatCode = Metadata.C80FormatCode.CareManagement.ToCodedValue();
                     m_docMeta.Hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-                    m_docMeta.FaciltyCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
+                    m_docMeta.FacilityCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
                     m_docMeta.LanguageCode = "en-us";
                     m_docMeta.LegalAuthenticator = new Person { First = "Marcus", Last = "Welby", Degree = "M.D", Prefix = "Dr." };
                     m_docMeta.MediaType = "text/plain";
@@ -96,7 +96,7 @@ namespace NHINDirect.Tests.xdTests
                         First = "Bob",
                         Last = "Smith",
                         Sex = Sex.Male,
-                        Dob = DateTime.Parse("05/05/1975"),
+                        Dob = new DateTime(1975, 05, 05, 00, 00,00, DateTimeKind.Utc),
                         Address = new PostalAddress { Street = "150 Main St", City = "Anywhere", State = "CA", Zip = "90000" }
                     };
                     m_docMeta.Title = "The foo document";
@@ -253,6 +253,262 @@ namespace NHINDirect.Tests.xdTests
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
             Assert.Equal(expected, doc.Confidentiality);
+        }
+
+        public static IEnumerable<object[]> CreatedOnData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.CreatedOn.Value, new DateTime(2008, 07, 01) });
+            }
+        }
+
+        [Theory]
+        [PropertyData("CreatedOnData")]
+        public void ConsumerConsumesCreatedOn(XElement documentXEl, DateTime? expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.CreatedOn);
+        }
+
+        public static IEnumerable<object[]> EventCodesData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.EventCodes, null });
+            }
+        }
+
+        [Theory]
+        [PropertyData("EventCodesData")]
+        public void ConsumerConsumesEventCodes(XElement documentXEl, IEnumerable<CodedValue> expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            if (expected == null)
+                Assert.True(doc.EventCodes == null || doc.EventCodes.Count() == 0);
+            else
+            {
+                foreach (CodedValue cv in expected)
+                    Assert.Contains(cv, doc.EventCodes);
+            }
+        }
+
+        public static IEnumerable<object[]> FacilityCodeData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.FacilityCode, new CodedValue("Hospital Setting", "Hospital Setting", "Connect-a-thon healthcareFacilityTypeCodes")});
+            }
+        }
+
+        [Theory]
+        [PropertyData("FacilityCodeData")]
+        public void ConsumerConsumesFacility(XElement documentXEl, CodedValue expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.FacilityCode);
+        }
+
+        public static IEnumerable<object[]> FormatCodeData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.FormatCode, new CodedValue("CDAR2/IHE 1.0", "CDAR2/IHE 1.0", "Connect-a-thon formatCodes") });
+            }
+        }
+
+        [Theory]
+        [PropertyData("FormatCodeData")]
+        public void ConsumerConsumesFormat(XElement documentXEl, CodedValue expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.FormatCode);
+        }
+
+        public static IEnumerable<object[]> HashData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.Hash, null });
+            }
+        }
+
+        [Theory]
+        [PropertyData("HashData")]
+        public void ConsumerConsumesHashCode(XElement documentXEl, string expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.Hash);
+        }
+
+        public static IEnumerable<object[]> LanguageCodeData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.LanguageCode, "en-us" });
+            }
+        }
+
+        [Theory]
+        [PropertyData("LanguageCodeData")]
+        public void ConsumerConsumesLanguageCode(XElement documentXEl, string expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.LanguageCode);
+        }
+
+        public static IEnumerable<object[]> LegalAuthenticatorData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.LegalAuthenticator, null });
+            }
+        }
+
+        [Theory]
+        [PropertyData("LegalAuthenticatorData")]
+        public void ConsumerConsumesLegalAuthenticator(XElement documentXEl, Person expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.LegalAuthenticator);
+        }
+
+        public static IEnumerable<object[]> MediaTypeData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.MediaType, "text/plain" });
+            }
+        }
+
+        [Theory]
+        [PropertyData("MediaTypeData")]
+        public void ConsumerConsumesMediaType(XElement documentXEl, string expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.MediaType);
+        }
+
+
+        public static IEnumerable<object[]> PatientIdData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.PatientID, new PatientID("498ef443e7ac4a6", "1.3.6.1.4.1.21367.2005.3.7", "ISO") });
+            }
+        }
+
+        [Theory]
+        [PropertyData("PatientIdData")]
+        public void ConsumerConsumesPatientId(XElement documentXEl, PatientID expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.PatientID);
+        }
+
+        public static IEnumerable<object[]> ServiceStartData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.ServiceStart, new DateTime(2008, 06, 28, 11, 00, 00,00) });
+            }
+        }
+
+        [Theory]
+        [PropertyData("ServiceStartData")]
+        public void ConsumerConsumesServiceStart(XElement documentXEl, DateTime? expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.ServiceStart);
+        }
+
+        public static IEnumerable<object[]> ServiceStopData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.ServiceStop, new DateTime(2008, 06, 28, 15, 00, 00, 00) });
+            }
+        }
+
+        [Theory]
+        [PropertyData("ServiceStopData")]
+        public void ConsumerConsumesServiceStop(XElement documentXEl, DateTime? expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.ServiceStop);
+        }
+
+        public static IEnumerable<object[]> PracticeSettingCodeData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.PracticeSetting, new CodedValue("Laboratory", "Laboratory", "Connect-a-thon practiceSettingCodes") });
+            }
+        }
+
+        [Theory]
+        [PropertyData("PracticeSettingCodeData")]
+        public void ConsumerConsumesPracticeSetting(XElement documentXEl, CodedValue expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.PracticeSetting);
+        }
+
+        public static IEnumerable<object[]> SizeData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.Size, null });
+            }
+        }
+
+        [Theory]
+        [PropertyData("SizeData")]
+        public void ConsumerConsumesSize (XElement documentXEl, int? expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.Size);
+        }
+
+        public static IEnumerable<object[]> SourcePatientIdData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.SourcePtId, new PatientID("89765a87b", "fj34r", "abc") });
+            }
+        }
+
+        [Theory]
+        [PropertyData("SourcePatientIdData")]
+        public void ConsumerConsumesSourcePatientId(XElement documentXEl, PatientID expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected, doc.SourcePtId);
+        }
+
+        public static IEnumerable<object[]> SourcePatientInfoData
+        {
+            get
+            {
+                return TestData(new object[] { TestDocument.Patient, new Person { First = "Joe", Last = "Doe", Dob = new DateTime(1956,05,27), Sex = Sex.Male, Address = new PostalAddress {Street = "100 Main St Metropolis", City = "Chicago", State = "IL", Zip = "44130" } }});
+            }
+        }
+
+        [Theory]
+        [PropertyData("SourcePatientInfoData")]
+        public void ConsumerConsumesPatient(XElement documentXEl, Person expected)
+        {
+            DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
+            Assert.Equal(expected.First, doc.Patient.First);
+            Assert.Equal(expected.Last, doc.Patient.Last);
+            Assert.Equal(expected.MI, doc.Patient.MI);
+            Assert.Equal(expected.Degree, doc.Patient.Degree);
+            Assert.Equal(expected.Prefix, doc.Patient.Prefix);
+            Assert.Equal(expected.Suffix, doc.Patient.Suffix);
+            Assert.Equal(expected.Sex, doc.Patient.Sex);
+            Assert.Equal(expected.Dob, doc.Patient.Dob);
+            Assert.Equal(expected, doc.Patient);
+            Assert.Equal(expected.Address, doc.Patient.Address);
         }
 
 

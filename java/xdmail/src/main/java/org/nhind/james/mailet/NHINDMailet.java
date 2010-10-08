@@ -40,8 +40,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.base.GenericMailet;
 import org.nhind.mail.service.DocumentRepository;
-import org.nhindirect.transform.MimeXdsTransformer;
-import org.nhindirect.transform.impl.DefaultMimeXdsTransformer;
+import org.nhindirect.xd.transform.MimeXdsTransformer;
+import org.nhindirect.xd.transform.impl.DefaultMimeXdsTransformer;
 
 /**
  * An Apache James Mailet that converts clinical messages into IHE

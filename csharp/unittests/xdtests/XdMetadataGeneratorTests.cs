@@ -65,7 +65,7 @@ namespace NHINDirect.Tests.xdTests
                     m_docMeta.EventCodes = evtCodes;
                     m_docMeta.FormatCode = Metadata.C80FormatCode.CareManagement.ToCodedValue();
                     m_docMeta.Hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-                    m_docMeta.FaciltyCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
+                    m_docMeta.FacilityCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
                     m_docMeta.LanguageCode = "en-us";
                     m_docMeta.LegalAuthenticator = new Person { First = "Marcus", Last = "Welby", Degree = "M.D", Prefix = "Dr." };
                     m_docMeta.MediaType = "text/plain";
@@ -116,7 +116,7 @@ namespace NHINDirect.Tests.xdTests
         public void DocumentClassCodeValueIsCorrect()
         {
             XElement node = TestDocXElement.Classifications(XDMetadataStandard.UUIDs.DocumentClass).First();
-            string code = node.Attribute(XDMetadataStandard.NodeRepresentationAttr).Value;
+            string code = node.Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value;
             Assert.Equal(C80ClassCodeUtils.Decode(Metadata.C80ClassCode.TransferOfCareReferralNote).Key, code);
         }
 
@@ -148,7 +148,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentEntryCodeHasCorrectValue()
         {
-            Assert.Equal("foo", TestDocXElement.Classification(XDMetadataStandard.UUIDs.EventCode).Attribute(XDMetadataStandard.NodeRepresentationAttr).Value);
+            Assert.Equal("foo", TestDocXElement.Classification(XDMetadataStandard.UUIDs.EventCode).Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value);
         }
 
         [Fact]
@@ -160,7 +160,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void DocumentFormatCodeHasCorrectValue()
         {
-            Assert.Equal(C80FormatCodeUtils.Decode(C80FormatCode.CareManagement).Key, TestDocXElement.Classification(XDMetadataStandard.UUIDs.FormatCode).Attribute(XDMetadataStandard.NodeRepresentationAttr).Value);
+            Assert.Equal(C80FormatCodeUtils.Decode(C80FormatCode.CareManagement).Key, TestDocXElement.Classification(XDMetadataStandard.UUIDs.FormatCode).Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value);
         }
 
         [Fact]
@@ -185,7 +185,7 @@ namespace NHINDirect.Tests.xdTests
         public void DocumentFacilityCodeHasCorrectValue()
         {
             Assert.Equal(C80FacilityCodeUtils.Decode(C80FacilityCodes.PrivatePhysiciansGroupOffice).Key,
-                TestDocXElement.Classification(XDMetadataStandard.UUIDs.FacilityCode).Attribute(XDMetadataStandard.NodeRepresentationAttr).Value);
+                TestDocXElement.Classification(XDMetadataStandard.UUIDs.FacilityCode).Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value);
         }
 
         [Fact]
@@ -242,7 +242,7 @@ namespace NHINDirect.Tests.xdTests
         public void PracticeSettingCodeHasCorrectValue()
         {
             Assert.Equal(C80SpecialtyCodeUtils.Decode(C80ClinicalSpecialties.FamilyPractice).Key,
-                TestDocXElement.Classification(XDMetadataStandard.UUIDs.PracticeSetting).Attribute(XDMetadataStandard.NodeRepresentationAttr).Value);
+                TestDocXElement.Classification(XDMetadataStandard.UUIDs.PracticeSetting).Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value);
         }
 
         [Fact]

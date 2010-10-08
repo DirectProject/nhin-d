@@ -152,7 +152,7 @@ namespace NHINDirect.Xd
             string documentName = MakeUUID();
 
             XElement docEbX = new XElement("ExtrinsicObject",
-                new XAttribute(XDMetadataStandard.ObjectTypeAttr, XDMetadataStandard.UUIDs.DocumentEntry));
+                new XAttribute(XDMetadataStandard.Attrs.ObjectType, XDMetadataStandard.UUIDs.DocumentEntry));
 
 
             List<Pair<Object, Func<XObject>>> specs = new List<Pair<Object, Func<XObject>>>
@@ -174,14 +174,14 @@ namespace NHINDirect.Xd
                     () =>  new CodedValueClassification(XDAttribute.FormatCode, documentName, docMetadata.FormatCode)),
                 Map(docMetadata.Hash,
                     () => new Slot(XDMetadataStandard.Slots.Hash, docMetadata.Hash)),
-                Map(docMetadata.FaciltyCode,
-                    () => new CodedValueClassification(XDAttribute.FacilityType, documentName,docMetadata.FaciltyCode)),
+                Map(docMetadata.FacilityCode,
+                    () => new CodedValueClassification(XDAttribute.FacilityType, documentName,docMetadata.FacilityCode)),
                 Map(docMetadata.LanguageCode,
                     () => new Slot(XDMetadataStandard.Slots.LanguageCode, docMetadata.LanguageCode)),
                 Map(docMetadata.LegalAuthenticator,
                     () => new Slot(XDMetadataStandard.Slots.LegalAuthenticator, docMetadata.LegalAuthenticator.ToXCN())),
                 Map(docMetadata.MediaType,
-                    () => new XAttribute("mimeType", docMetadata.MediaType) ),
+                    () => new XAttribute(XDMetadataStandard.Attrs.MimeType, docMetadata.MediaType) ),
                 Map(docMetadata.PatientID,
                     () => new ExternalIdentifier(XDMetadataStandard.UUIDs.DocumentEntryPatientIdentityScheme,
                         docMetadata.PatientID.ToEscapedCx(), "XDSDocumentEntry.patientId")),
