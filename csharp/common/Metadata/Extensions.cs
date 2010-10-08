@@ -39,17 +39,7 @@ namespace NHINDirect.Metadata
         /// </summary>
         public static string AsString(this Sex? s)
         {
-            if (s == null) return "U";
-            switch (s)
-            {
-                case Sex.Female:
-                    return "F";
-                case Sex.Male:
-                    return "M";
-                case Sex.Other:
-                    return "U";
-            }
-            return "U";
+            return HL7Util.ToHL7Value(s);
         }
 
     }
