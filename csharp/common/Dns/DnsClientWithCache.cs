@@ -124,6 +124,89 @@ namespace NHINDirect.Dns
             Initialize();
         }
 
+
+
+        /// <summary>
+        ///   Creates a DnsClient instance specifying a string representation of the IP address and using the default DNS port.
+        /// </summary>
+        /// <param name="server">
+        /// A string representation of the DNS server IP address.
+        /// </param>
+        /// <param name="cache">DnsResponseCache instance to be used for caching</param>
+        /// <example><c>var client = new DnsClientWithCache("8.8.8.8");</c></example>
+        public DnsClientWithCache(string server
+            , DnsResponseCache cache) : this(server)
+        {
+            m_cache = cache;
+        }
+
+        /// <summary>
+        ///   Creates a DnsClient instance specifying the DNS port.
+        /// </summary>
+        /// <param name="server">
+        /// A string representation of the DNS server IP address.
+        /// </param>
+        /// <param name="port">
+        /// The port to use for the DNS requests.
+        /// </param>
+        /// <param name="cache">DnsResponseCache instance to be used for caching</param>
+        /// <example><c>var client = new DnsClientWithCache("8.8.8.8", 8888);</c></example>
+        public DnsClientWithCache(string server
+            , int port
+            , DnsResponseCache cache) : this(server, port)
+        {
+            m_cache = cache;
+        }
+
+        /// <summary>
+        /// Creates a DnsClient instance specifying an IPAddress representation of the IP address.
+        /// </summary>
+        /// <param name="server">
+        /// The IPAddress of the DNS server. A <see cref="IPAddress"/>
+        /// </param>
+        /// <param name="cache">DnsResponseCache instance to be used for caching</param>
+        public DnsClientWithCache(IPAddress server
+            , DnsResponseCache cache) : this(server)
+        {
+            m_cache = cache;
+        }
+
+        /// <summary>
+        /// Creates a DnsClient instance specifying an IPEndPoint representation of the IP address and port.
+        /// </summary>
+        /// <param name="server">
+        /// A <see cref="IPEndPoint"/>
+        /// </param>
+        /// <param name="cache">DnsResponseCache instance to be used for caching</param>
+        public DnsClientWithCache(IPEndPoint server
+            , DnsResponseCache cache) : this(server)
+        {
+            m_cache = cache;
+        }
+
+        /// <summary>
+        /// Creates a DnsClient instance specifying an IPEndPoint representation of the IP address and port and 
+        /// specifying the timeout and buffer size to use.
+        /// </summary>
+        /// <param name="server">
+        /// A <see cref="IPEndPoint"/>
+        /// </param>
+        /// <param name="timeout">
+        /// Timeout value.
+        /// </param>
+        /// <param name="maxBufferSize">
+        /// Maximum buffer size.
+        /// </param>
+        /// <param name="cache">DnsResponseCache instance to be used for caching</param>
+        public DnsClientWithCache(IPEndPoint server
+            , TimeSpan timeout
+            , int maxBufferSize
+            , DnsResponseCache cache) : this(server, timeout, maxBufferSize)
+        {
+            m_cache = cache;
+        }
+
+
         /// <summary>
         /// initializes any object(s) utilized by an instance of this class
         /// </summary>
