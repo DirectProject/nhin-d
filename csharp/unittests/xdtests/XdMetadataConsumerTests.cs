@@ -589,6 +589,7 @@ namespace NHINDirect.Tests.xdTests
                 Assert.Null(expected);
             else
             {
+                // .Net sometimes translates identical dates with slightly different numbers of Ticks.
                 TimeSpan ts = package.SubmissionTime.Value.Subtract(expected.Value);
                 Assert.True(ts.Ticks < TimeSpan.TicksPerSecond);
             }
@@ -628,6 +629,28 @@ namespace NHINDirect.Tests.xdTests
             DocumentPackage package = XDMetadataConsumer.Consume(xl);
             Assert.Equal(package.UniqueId, expected);
         }
+
+        public static IEnumerable<object[]> PackageRecipients
+        {
+            get
+            {
+                return PackageTestData(Examples.TestPackage.IntendedRecipients, new List<Recipient> { });
+            }
+        }
+
+
+        [Theory]
+        [PropertyData("PackageRecipients")]
+        public void ConsumerConsumesPackageRecipients(XElement xl, List<Recipient> expected)
+        {
+            DocumentPackage package = XDMetadataConsumer.Consume(xl);
+            Assert.Equal(package.IntendedRecipients.Aggregate("", (a, s) => a + " " + s),
+                expected.Aggregate("", (a, s) => a + " " + s));
+            Assert.Equal(package.IntendedRecipients.Count, expected.Count);
+            foreach (Recipient r in package.IntendedRecipients)
+                Assert.Contains(r, expected);
+        }
+
 
 
     }

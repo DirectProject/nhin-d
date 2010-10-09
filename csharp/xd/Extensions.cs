@@ -28,6 +28,19 @@ namespace NHINDirect.Xd
     {
 
         /// <summary>
+        /// Adds an enumeration of elements to this list
+        /// </summary>
+        public static void AddAll<T>(this IList<T> target, IEnumerable<T> elements)
+        {
+            if (elements == null) return;
+            foreach (T elt in elements)
+            {
+                target.Add(elt);
+            }
+        }
+
+
+        /// <summary>
         /// Breaks this string into substrings, each of which is length <paramref name="n"/>, except for the last,
         /// which will have the remainder strings.
         /// </summary>

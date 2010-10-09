@@ -156,6 +156,18 @@ namespace NHINDirect.Xd
             return map(val);
         }
 
+
+        /// <summary>
+        /// Returns the slot values for a multivalued slot using a map function to convert to type T
+        /// </summary>
+        /// <returns>The mapped values of the slot, or null if the slot does not exist or has no values</returns>
+        public static IEnumerable<T> SlotValues<T>(this XElement source, string slotName, Func<string, T> map)
+        {
+            IEnumerable<string> vals = source.SlotValues(slotName);
+            if (vals == null) return null;
+            return vals.Select(map);
+        }
+
         
 
         /// <summary>
