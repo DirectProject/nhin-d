@@ -486,6 +486,13 @@ namespace NHINDirect.Tests.xdTests
             }
         }
 
+        [Fact]
+        public void PackageHasOneDocument()
+        {
+            DocumentPackage package = XDMetadataConsumer.Consume(Examples.RoundTripPackage);
+            Assert.Equal(1, package.Documents.Count);
+        }
+
 
         [Theory]
         [PropertyData("PackageAuthorData")]
@@ -494,5 +501,134 @@ namespace NHINDirect.Tests.xdTests
             DocumentPackage package = XDMetadataConsumer.Consume(xl);
             Assert.Equal(package.Author, expected);
         }
+
+
+        public static IEnumerable<object[]> PackageComments
+        {
+            get
+            {
+                return PackageTestData(Examples.TestPackage.Comments, "Test submission" );
+            }
+        }
+
+
+        [Theory]
+        [PropertyData("PackageComments")]
+        public void ConsumerConsumesPackageComments(XElement xl, string expected)
+        {
+            DocumentPackage package = XDMetadataConsumer.Consume(xl);
+            Assert.Equal(package.Comments, expected);
+        }
+
+        public static IEnumerable<object[]> PackageTypeCode
+        {
+            get
+            {
+                return PackageTestData(Examples.TestPackage.ContentTypeCode, new CodedValue("Discharge summarization", "Discharge summarization", "Connect-a-thon contentTypeCodes"));
+            }
+        }
+
+
+        [Theory]
+        [PropertyData("PackageTypeCode")]
+        public void ConsumerConsumesPackageTypeCode(XElement xl, CodedValue expected)
+        {
+            DocumentPackage package = XDMetadataConsumer.Consume(xl);
+            Assert.Equal(package.ContentTypeCode, expected);
+        }
+
+        public static IEnumerable<object[]> PackagePatientId
+        {
+            get
+            {
+                return PackageTestData(Examples.TestPackage.PatientId, new PatientID("498ef443e7ac4a6", "1.3.6.1.4.1.21367.2005.3.7", "ISO"));
+            }
+        }
+
+
+        [Theory]
+        [PropertyData("PackagePatientId")]
+        public void ConsumerConsumesPackagePatientId(XElement xl, PatientID expected)
+        {
+            DocumentPackage package = XDMetadataConsumer.Consume(xl);
+            Assert.Equal(package.PatientId, expected);
+        }
+
+        public static IEnumerable<object[]> PackageSourceId
+        {
+            get
+            {
+                return PackageTestData(Examples.TestPackage.SourceId, "1.3.6.1.4.1.21367.2005.3.999.900");
+            }
+        }
+
+
+        [Theory]
+       [PropertyData("PackageSourceId")]
+        public void ConsumerConsumesPackageSourceId(XElement xl, string expected)
+        {
+            DocumentPackage package = XDMetadataConsumer.Consume(xl);
+            Assert.Equal(package.SourceId, expected);
+        }
+
+        public static IEnumerable<object[]> PackageSubmissionTime
+        {
+            get
+            {
+                return PackageTestData(Examples.TestPackage.SubmissionTime.Value.ToUniversalTime(), new DateTime(2008,08,26,00,00,00,DateTimeKind.Utc) );
+            }
+        }
+
+
+        [Theory]
+        [PropertyData("PackageSubmissionTime")]
+        public void ConsumerConsumesPackageSubmissionTime(XElement xl, DateTime? expected)
+        {
+            DocumentPackage package = XDMetadataConsumer.Consume(xl);
+            if (package.SubmissionTime == null)
+                Assert.Null(expected);
+            else
+            {
+                TimeSpan ts = package.SubmissionTime.Value.Subtract(expected.Value);
+                Assert.True(ts.Ticks < TimeSpan.TicksPerSecond);
+            }
+        }
+
+
+        public static IEnumerable<object[]> PackageTitle
+        {
+            get
+            {
+                return PackageTestData(Examples.TestPackage.Title, "Test 1");
+            }
+        }
+
+
+        [Theory]
+        [PropertyData("PackageTitle")]
+        public void ConsumerConsumesPackageTitle(XElement xl, string expected)
+        {
+            DocumentPackage package = XDMetadataConsumer.Consume(xl);
+            Assert.Equal(package.Title, expected);
+        }
+
+        public static IEnumerable<object[]> PackageUniqueId
+        {
+            get
+            {
+                return PackageTestData(Examples.TestPackage.UniqueId, "1.3.6.1.4.1.21367.2005.3.1.1");
+            }
+        }
+
+
+        [Theory]
+        [PropertyData("PackageUniqueId")]
+        public void ConsumerConsumesPackageUniqueId(XElement xl, string expected)
+        {
+            DocumentPackage package = XDMetadataConsumer.Consume(xl);
+            Assert.Equal(package.UniqueId, expected);
+        }
+
+
     }
 }
