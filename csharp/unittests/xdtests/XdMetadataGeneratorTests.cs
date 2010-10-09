@@ -208,7 +208,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void ServiceStartHasCorrectValue()
         {
-            Assert.Equal(Examples.TestDocument.ServiceStart.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.ServiceStart));
+            Assert.Equal(Examples.TestDocument.ServiceStart.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.ServiceStart));
         }
         [Fact]
         public void DocumentHasServiceStop()
@@ -219,7 +219,7 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void ServiceStopHasCorrectValue()
         {
-            Assert.Equal(Examples.TestDocument.ServiceStop.Value.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.ServiceStop));
+            Assert.Equal(Examples.TestDocument.ServiceStop.ToHL7Date(), TestDocXElement.SlotValue(XDMetadataStandard.Slots.ServiceStop));
         }
 
         [Fact]

@@ -73,7 +73,7 @@ namespace NHINDirect.Metadata
         /// <summary>
         /// Point in Time at the Document Source when the Submission Set was created and sent
         /// </summary>
-        public DateTime SubmissionTime { get; set; }
+        public DateTime? SubmissionTime { get; set; }
 
         /// <summary>
         /// The title of the package

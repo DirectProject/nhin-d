@@ -75,5 +75,17 @@ namespace NHINDirect.Metadata
 
             return personEqual && institutionsEqual && rolesEqual && specialitiesEqual;
         }
+
+        /// <summary>
+        /// String representation of this author
+        /// </summary>
+        public override string ToString()
+        {
+            return String.Format("Person: {0}\nInstitions: {1}\nRoles: {2}\nSpecialties{3}",
+                Person == null ? "none" : Person.ToString(),
+                Institutions == null || Institutions.Count == 0 ? "none" : Institutions.Skip(1).Aggregate(Institutions.First().ToString(), (a, i) => a + ", " + i.ToString()),
+                String.Join(", ", Roles == null || Roles.Count == 0 ? new string[] {"none"} : Roles.ToArray()),
+                String.Join(", ", Specialities == null || Specialities.Count == 0 ? new string[] {"none"}: Specialities.ToArray()));
+        }
     }
 }

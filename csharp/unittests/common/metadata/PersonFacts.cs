@@ -51,7 +51,7 @@ namespace NHINDirect.Tests.metadata
         public void ToSourcePatientInfoResturnsCorrectDobValue()
         {
             Person p = new Person { First = "John", Last = "Jacob", Dob = new DateTime(1969, 06, 20) };
-            Assert.Contains("PID-7|" + p.Dob.Value.ToHL7Date(), p.ToSourcePatientInfoValues(null));
+            Assert.Contains("PID-7|" + p.Dob.ToHL7Date(), p.ToSourcePatientInfoValues(null));
         }
 
         [Fact]

@@ -57,6 +57,14 @@ namespace NHINDirect.Xd
         {
             DocumentPackage package = new DocumentPackage();
             package.Author = ConsumeAuthor(packageXEl.Classification(XDMetadataStandard.UUIDs.SubmissionSetAuthor));
+            package.Comments = packageXEl.DescriptionValue();
+            package.ContentTypeCode = ConsumeCodedValue(packageXEl.Classification(XDMetadataStandard.UUIDs.ContentTypeCode));
+            //TODO: package.IntendedRecipients = ???
+            package.PatientId = packageXEl.ExternalIdentifierValue<PatientID>(XDMetadataStandard.UUIDs.SubmissionSetPatientId, s => PatientID.FromEscapedCx(s));
+            package.SourceId = packageXEl.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetSourceId);
+            package.SubmissionTime = packageXEl.SlotValue<DateTime?>(XDMetadataStandard.Slots.SubmissionTime, s => HL7Util.DateTimeFromHL7Value(s));
+            package.Title = packageXEl.NameValue();
+            package.UniqueId = packageXEl.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetUniqueId);
 
             return package;
         }

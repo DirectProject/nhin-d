@@ -464,11 +464,35 @@ namespace NHINDirect.Tests.xdTests
             Assert.Equal(expected, doc.Uri);
         }
 
-        [Fact]
-        public void ConsumerConsumesPackageAuthor()
+        static IEnumerable<object[]> PackageTestData(object a, object b)
         {
-            DocumentPackage package = XDMetadataConsumer.Consume(Examples.RoundTripPackage);
-            Assert.Equal(Examples.TestPackage.Author, package.Author);
+            yield return new object[] { Examples.RoundTripPackage, a };
+            yield return new object[] { Examples.KnownValidPackage, b };
+        }
+
+
+
+        public static IEnumerable<object[]> PackageAuthorData
+        {
+            get
+            {
+                Author expected = new Author();
+                expected.Person = new Person { First = "Gerald", Last = "Smitty", Prefix = "MD", Suffix = "Dr" };
+                expected.Institutions.AddRange(new List<Institution> { new Institution("Clevland Clinic"), new Institution("Parma Community") });
+                expected.Roles.Add("Primary Surgon");
+                expected.Specialities.Add("Orthopedic");
+
+                return PackageTestData(Examples.TestPackage.Author, expected);
+            }
+        }
+
+
+        [Theory]
+        [PropertyData("PackageAuthorData")]
+        public void ConsumerConsumesPackageAuthor(XElement xl, Author expected)
+        {
+            DocumentPackage package = XDMetadataConsumer.Consume(xl);
+            Assert.Equal(package.Author, expected);
         }
     }
 }
