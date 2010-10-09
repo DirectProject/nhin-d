@@ -216,7 +216,7 @@ namespace NHINDirect.Metadata
         {
             string idValue = (id == null) ? "" : id.ToEscapedCx();
             string nameValue =  ToXCN();
-            string dateValue =  Dob == null ? "" : Dob.Value.ToHL7Date();
+            string dateValue =  Dob == null ? "" : Dob.ToHL7Date();
             string sexValue = Sex == null ? "" : Sex.AsString();
             string addressValue = Address == null ? "" : Address.Value.ToHL7Ad();
             yield return "PID-3|" + idValue;

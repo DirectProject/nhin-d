@@ -29,9 +29,10 @@ namespace NHINDirect.Metadata
         /// <summary>
         /// Converts the supplied date to an HL7 formatted UTC datetime string
         /// </summary>
-        public static string ToHL7Date(this DateTime datetime)
+        public static string ToHL7Date(this DateTime? datetime)
         {
-            return datetime.ToUniversalTime().ToString(HL7Util.DateTimeFormat, System.Globalization.DateTimeFormatInfo.InvariantInfo);
+            if (datetime == null) return null;
+            return datetime.Value.ToUniversalTime().ToString(HL7Util.DateTimeFormat, System.Globalization.DateTimeFormatInfo.InvariantInfo);
         }
 
         /// <summary>

@@ -31,14 +31,14 @@ namespace NHINDirect.Tests.xdTests
         [Fact]
         public void HL7SimpleDate()
         {
-            DateTime dt = new DateTime(2000, 09, 16, 0, 0, 0, DateTimeKind.Utc);
+            DateTime? dt = new DateTime(2000, 09, 16, 0, 0, 0, DateTimeKind.Utc);
             Assert.Equal("20000916000000", dt.ToHL7Date());
         }
 
         [Fact]
         public void HL7DateHMS()
         {
-            DateTime dt = new DateTime(2000, 09, 16, 12, 9, 2, DateTimeKind.Utc);
+            DateTime? dt = new DateTime(2000, 09, 16, 12, 9, 2, DateTimeKind.Utc);
             Assert.Equal("20000916120902", dt.ToHL7Date());
         }
 
