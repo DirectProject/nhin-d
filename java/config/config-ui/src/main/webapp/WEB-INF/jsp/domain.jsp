@@ -61,7 +61,27 @@
 	           </td>
 	        </tr>
         </table>
+        <p>
+        <c:choose>
+            <c:when test='${empty action || action == "Add" }'>
+                <button name="submitType" id="submitType" type="submit" value="add">Add</button>
+            </c:when>
+            <c:otherwise>
+                <button name="submitType" id="submitType" type="submit" value="update">Update</button>
+            </c:otherwise>
+        </c:choose>
+        <button name="submitType" id="submitType" type="submit" value="cancel">Cancel</button>
+        </p>
+    </form:form>
+    </div>
+        
+ 	<c:if test="${not empty addressesResults}">
+	<div id="dynamicaddresses">
+        
         <fieldset style="width:90%;" title="Addresses">
+		<spring:url value="/config/domain/removeaddresses" var="formUrlremove"/>
+	   <form:form modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST" >
+	   	<form:hidden path="id"/>
         <table cellpadding="1px" cellspacing="1px" id="addressTable">
             <thead>
                 <tr>
@@ -74,7 +94,7 @@
             </thead>
             <tbody>             
                 <!--  Put the data from the searchResults attribute here -->
-                <c:forEach var="address" items="${domain.addresses}" varStatus="rowCounter">
+                <c:forEach var="address" items="${addressesResults}" varStatus="rowCounter">
                 <c:choose>
                     <c:when test="${rowCounter.count % 2 == 0}">
                     <tr class="evenRow">
@@ -87,7 +107,7 @@
                     <td width="25%"><c:out value="${address.displayName}"/></td>
                     <td width="15%"><c:out value="${address.type}"/></td>
                     <td width="15%"><c:out value="${address.status}"/></td>
-                    <td width="15%">TBD</td>
+                    <td width="15%"><form:checkbox path="remove" value="${address.id}" /></td>
                 </tr>
                 </c:forEach>    
             </tbody>
@@ -103,22 +123,11 @@
         </table>
             <!-- Wire this up to jQuery to add an input row to the table.  
                  Don't submit it all until the final submit is done -->
-            <button type="submit" onclick="return false;">New Address</button>
-            <button type="submit" onclick="return false;" disabled="disabled">Remove Selected</button>
+            <button name="submitType" id="submitType" type="submit" value="newaddress">New Address</button>
+            <button name="submitType" id="submitType" type="submit" value="delete">Remove Selected</button>
+            </form:form>
         </fieldset>
-        <p>
-        <c:choose>
-            <c:when test='${empty action || action == "Add" }'>
-                <button name="submitType" id="submitType" type="submit" value="add">Add</button>
-            </c:when>
-            <c:otherwise>
-                <button name="submitType" id="submitType" type="submit" value="update">Update</button>
-            </c:otherwise>
-        </c:choose>
-        <button name="submitType" id="submitType" type="submit" value="cancel">Cancel</button>
-        </p>
-    </form:form>
-    </fieldset>
-    </div>
+	</div>
+	</c:if>
 </body>
 </html>

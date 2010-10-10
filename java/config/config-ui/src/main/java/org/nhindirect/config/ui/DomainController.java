@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.service.ConfigurationServiceException;
 import org.nhindirect.config.service.DomainService;
 import org.nhindirect.config.store.Domain;
+import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.ui.form.DomainForm;
 import org.nhindirect.config.ui.form.LoginForm;
@@ -65,39 +66,114 @@ public class DomainController {
 		if (log.isDebugEnabled()) log.debug("DomainController initialized");
 	}
 	
+	@RequestMapping(value="/removeaddresses", method = RequestMethod.POST)
+	public ModelAndView removeAddresses (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+						        HttpSession session,
+						        @ModelAttribute SimpleForm simpleForm,
+						        Model model,
+						        @RequestParam(value="submitType") String actionPath)  { 		
+
+		ModelAndView mav = new ModelAndView(); 
+	
+		if (log.isDebugEnabled()) log.debug("Enter domain/removeaddresses");
+		if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
+		if (isLoggedIn(session)) {
+			if (dService != null && actionPath.equalsIgnoreCase("delete")) {
+				int cnt = simpleForm.getRemove().size();
+				String strid = ""+simpleForm.getId();
+				Domain dom = dService.getDomain(Long.parseLong(strid));
+				String domname = dom.getDomainName();
+				if (log.isDebugEnabled()) log.debug("removing addresses for domain with name: " + domname);
+				try{
+					for (int x = 0; x < cnt; x++) {
+						String removeid = simpleForm.getRemove().get(x);
+					    for (Address t : dom.getAddresses()){
+					    	if(t.getId() == Long.parseLong(removeid)){
+						    	if (log.isDebugEnabled()){
+						    		log.debug(" ");
+						    		log.debug("domain address id: " + t.getId());
+						    		log.debug(" ");
+						    	}
+					    		dom.getAddresses().remove(t);	
+						    	if (log.isDebugEnabled()){
+						    		log.debug(" REMOVED ");
+						    		log.debug(" ");
+						    		break;
+						    	}
+					    	}
+						}			
+					}
+				    log.debug(" Trying to update the domain with removed addresses");
+		    		dService.updateDomain(dom);
+		    		log.debug(" SUCCESS Trying to update the domain with removed addresses");
+		    		log.debug(" NEW DOMAIN LIST OF ADDRESSES IS: "+dom.getAddresses().toString());
+					model.addAttribute("addressesResults", dom.getAddresses());
+					model.addAttribute("simpleForm",new SimpleForm());
+				} catch (ConfigurationServiceException e) {
+					if (log.isDebugEnabled())
+						log.error(e);
+				}
+			}
+			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+
+			mav.setViewName("domain"); 
+			// the Form's default button action
+			String action = "Add";
+			DomainForm form = (DomainForm) session.getAttribute("domainForm");
+			if (form == null) {
+				form = new DomainForm();
+			}
+			model.addAttribute("domainForm", form);
+			model.addAttribute("action", action);
+			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+			mav.addObject("action", action);
+	
+			mav.addObject("statusList", EntityStatus.getEntityStatusList());
+		}else{
+			model.addAttribute(new LoginForm());
+			mav.setViewName("login");
+		}
+		
+		return mav;
+	}		
+	
 	@RequestMapping(value="/remove", method = RequestMethod.POST)
 	public ModelAndView removeDomain (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
 						        @ModelAttribute SimpleForm simpleForm,
 						        Model model,
 						        @RequestParam(value="submitType") String actionPath)  { 		
+
+		ModelAndView mav = new ModelAndView(); 
 	
 		if (log.isDebugEnabled()) log.debug("Enter domain/remove");
 		if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
-		Domain results = null;
-		if (dService != null) {
-			int cnt = simpleForm.getRemove().size();
-			for(int x = 0;x< cnt;x++){
-				try {
-					String strid = simpleForm.getRemove().remove(x);
-					if (log.isDebugEnabled()) log.debug("trying to remove id: "+strid);
-					Domain dom = dService.getDomain(Long.parseLong(strid));
-					if (log.isDebugEnabled()) log.debug("trying to remove name: "+dom.getDomainName());
-					dService.removeDomain(strid);
-					
-				} catch (ConfigurationServiceException e) {
-					if (log.isDebugEnabled()) log.error(e);
+		if (isLoggedIn(session)) {
+			if (dService != null) {
+				int cnt = simpleForm.getRemove().size();
+				for (int x = 0; x < cnt; x++) {
+					try {
+						String strid = simpleForm.getRemove().remove(x);
+						Domain dom = dService.getDomain(Long.parseLong(strid));
+						String domname = dom.getDomainName();
+						if (log.isDebugEnabled()) log.debug("removing domain with name: " + domname);
+						dService.removeDomain(strid);
+					} catch (ConfigurationServiceException e) {
+						if (log.isDebugEnabled())
+							log.error(e);
+					}
 				}
 			}
-		}		
-		
-		ModelAndView mav = new ModelAndView(); 
-		SearchDomainForm form2 = (SearchDomainForm) session.getAttribute("searchDomainForm");
-		model.addAttribute(form2 != null ? form2 : new SearchDomainForm());
-		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-
-		mav.setViewName("main");
-		mav.addObject("statusList", EntityStatus.getEntityStatusList());
+			SearchDomainForm form2 = (SearchDomainForm) session.getAttribute("searchDomainForm");
+			model.addAttribute(form2 != null ? form2 : new SearchDomainForm());
+			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+	
+			mav.setViewName("main");
+			mav.addObject("statusList", EntityStatus.getEntityStatusList());
+		}else{
+			model.addAttribute(new LoginForm());
+			mav.setViewName("login");
+		}
 		
 		return mav;
 	}	
@@ -153,6 +229,23 @@ public class DomainController {
 						form.populate(results);
 						action = "Update";
 						model.addAttribute("action", action);
+						// SETTING THE ADDRESSES OBJECT
+						int numaddr = results.getAddresses().size();
+						
+					    for (Address t : results.getAddresses()){
+					    	if (log.isDebugEnabled()){
+					    		log.debug(" ");
+					    		log.debug("domain has this number of addresses id: " + t.getId());
+					    		log.debug("domain has this number of addresses displayname: " + t.getDisplayName());
+					    		log.debug("domain has this number of addresses emailaddress: " + t.getEmailAddress());
+					    		log.debug(" ");
+					    	}
+						}						
+						
+						model.addAttribute("addressesResults", results.getAddresses());
+						SimpleForm simple = new SimpleForm();
+						simple.setId(dId);
+						model.addAttribute("simpleForm",simple);
 						mav.addObject("action", action);
 					}
 					else {
@@ -205,15 +298,14 @@ public class DomainController {
 			mav.setViewName("main");
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 			return mav;
-		} else {
+		} else if (isLoggedIn(session) && actionPath.equalsIgnoreCase("update")){
 			HashMap<String, String> msgs = new HashMap<String, String>();
 			mav.addObject("msgs", msgs);
-			if (log.isDebugEnabled()) log.debug("submitType: " + actionPath);
+			if (log.isDebugEnabled()) log.debug("Inside update else if: submitType: " + actionPath);
 			if (isLoggedIn(session)) {
 				mav.setViewName("domain");
-				if (form.isValid()) {
-					if (log.isDebugEnabled())
-						log.debug("Form passed validation");
+//				if (form.isValid()) {
+					if (log.isDebugEnabled()) log.debug("Form passed validation");
 					try {
 						if (actionPath.equals("add")) {
 							dService.addDomain(form.getDomainFromForm());
@@ -245,7 +337,7 @@ public class DomainController {
 						log.error(e);
 						msgs.put("domainService", "domainService.add.error");
 					}
-				}
+//				}
 			} else {
 				model.addAttribute(new LoginForm());
 				mav.setViewName("login");
