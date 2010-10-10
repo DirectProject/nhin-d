@@ -64,7 +64,8 @@ $(document).ready(function()
 				<!--  Put the data from the searchResults attribute here -->
 				<c:forEach var="domain" items="${searchResults}" varStatus="rowCounter">
 				<tr>
-				    <td><a href='../domain?id=${domain.id}'>${domain.domainName}</a></td>  
+					<spring:url value="/config/domain?id=${domain.id}" var="formUrlclick"/>
+				    <td><a href='${fn:escapeXml(formUrlclick)}'>${domain.domainName}</a></td>  
 				    <td>${domain.postMasterEmail}</td>
 				    <td>${domain.status}</td>
 				    <td><fmt:formatDate value="${domain.createTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
