@@ -8,3 +8,5 @@ set dbuser="IIS AppPool\DefaultAppPool"
 sqlcmd -S "%server%" -E -Q "CREATE DATABASE %databasename%"
 sqlcmd -S "%server%" -E -i "%schemafile%"
 sqlcmd -S "%server%" -E -i "%userfile%" -v DBUSER = %dbuser%
+
+if "%DEBUGINSTALLER%" == "1" pause
