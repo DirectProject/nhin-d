@@ -38,6 +38,8 @@
                     <form:input path="domainName" /> 
                 </td>
             </tr>
+        <c:choose>
+            <c:when test='${empty action || action == "Add" }'>
             <tr>
                 <td>
 		            <form:label path="postmasterEmail">Postmaster E-Mail Address:
@@ -48,6 +50,10 @@
 	               <form:input path="postmasterEmail" /> 
 	            </td>
 	        </tr>
+            </c:when>
+            <c:otherwise>
+            </c:otherwise>
+        </c:choose>
 	        <tr>
 	           <td>
 	            <form:label path="status">Status: 
@@ -78,8 +84,59 @@
  	<c:if test="${not empty addressesResults}">
 	<div id="dynamicaddresses">
         
-        <fieldset style="width:90%;" title="Addresses">
-		<spring:url value="/config/domain/removeaddresses" var="formUrlremove"/>
+        <fieldset style="width:90%;" title="Address">
+		<spring:url value="/config/domain/addaddress" var="formUrladdaddress"/>
+	   <form:form modelAttribute="addressForm" action="${fn:escapeXml(formUrladdaddress)}" cssClass="cleanform" method="POST" >
+		   	<form:hidden path="id"/>
+		   	<table cellpadding="1px" cellspacing="1px" id="addressTable">
+		   	<tr>
+		   		<th>
+		        <form:label path="displayName">Display name:
+		            <form:errors path="displayName" cssClass="error" />
+		        </form:label>
+		        </th>
+		        <th>
+		        <form:input path="displayName" />
+		        </th>
+			</tr>
+		   	<tr>
+		   		<th>
+		        <form:label path="emailAddress">E-Mail Address:
+		            <form:errors path="emailAddress" cssClass="error" />
+		        </form:label>
+		        </th>
+		        <th>
+		        <form:input path="emailAddress" />
+		        </th>
+			</tr>		        
+		   	<tr>
+		   		<th>
+	            <form:label path="aStatus">Status: 
+	                <form:errors path="aStatus" cssClass="error" />
+	            </form:label>
+	            </th>
+	            <th>
+	            <form:select path="aStatus">
+	                <form:options items="${statusList}"/>
+	            </form:select>
+		        </th>
+			</tr>		        
+		   	<tr>
+		   		<th>
+		        <form:label path="type">Type:
+		            <form:errors path="type" cssClass="error" />
+		        </form:label>
+		        </th>
+		        <th>
+		        <form:input path="type" />
+		        </th>
+			</tr>		        
+		    </table>
+			<button name="submitType" id="submitType" type="submit" value="newaddress">Add Address</button>
+		</form:form>
+		</fieldset>
+		<fieldset style="width:90%;" title="Addresses">
+	   <spring:url value="/config/domain/removeaddresses" var="formUrlremove"/>
 	   <form:form modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST" >
 	   	<form:hidden path="id"/>
         <table cellpadding="1px" cellspacing="1px" id="addressTable">
@@ -123,7 +180,6 @@
         </table>
             <!-- Wire this up to jQuery to add an input row to the table.  
                  Don't submit it all until the final submit is done -->
-            <button name="submitType" id="submitType" type="submit" value="newaddress">New Address</button>
             <button name="submitType" id="submitType" type="submit" value="delete">Remove Selected</button>
             </form:form>
         </fieldset>

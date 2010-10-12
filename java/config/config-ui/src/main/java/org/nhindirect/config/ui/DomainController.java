@@ -36,6 +36,7 @@ import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.ui.form.DomainForm;
+import org.nhindirect.config.ui.form.AddressForm;
 import org.nhindirect.config.ui.form.LoginForm;
 import org.nhindirect.config.ui.form.SearchDomainForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
@@ -66,6 +67,80 @@ public class DomainController {
 		if (log.isDebugEnabled()) log.debug("DomainController initialized");
 	}
 	
+	
+	@RequestMapping(value="/addaddress", method = RequestMethod.POST)
+	public ModelAndView addAddress (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+						        HttpSession session,
+						        @ModelAttribute AddressForm addressForm,
+						        Model model,
+						        @RequestParam(value="submitType") String actionPath)  { 		
+
+		ModelAndView mav = new ModelAndView(); 
+	
+		if (log.isDebugEnabled()) log.debug("Enter domain/removeaddresses");
+		if (isLoggedIn(session)) {
+			if(actionPath.equalsIgnoreCase("newaddress")){
+				String strid = ""+addressForm.getId();
+				Domain dom = dService.getDomain(Long.parseLong(strid));
+				// insert the new address into the Domain list of Addresses
+				String anEmail = addressForm.getEmailAddress();
+				String displayname = addressForm.getDisplayName();
+				EntityStatus estatus = addressForm.getaStatus();
+				String etype = addressForm.getType();
+				
+				if (log.isDebugEnabled()) log.debug(" Trying to add address: "+anEmail);
+				Address e = new Address();
+				e.setEmailAddress(anEmail);
+				e.setDisplayName(displayname);
+				e.setStatus(estatus);
+				e.setType(etype);
+				
+				dom.getAddresses().add(e);
+				
+				addressForm = new AddressForm();
+				
+				addressForm.setDisplayName("");
+				addressForm.setEmailAddress("");
+				addressForm.setType("");
+				addressForm.setId(Long.parseLong(strid));
+				
+				model.addAttribute("addressForm",addressForm);
+				try{
+					dService.updateDomain(dom);
+					if (log.isDebugEnabled()) log.debug(" After attempt to insert new email address ");
+				} catch (ConfigurationServiceException ed) {
+					if (log.isDebugEnabled())
+						log.error(ed);
+				}
+				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+				SimpleForm simple = new SimpleForm();
+				simple.setId(Long.parseLong(strid));
+				model.addAttribute("simpleForm",simple);
+	
+				model.addAttribute("addressesResults", dom.getAddresses());
+				mav.setViewName("domain"); 
+				// the Form's default button action
+				String action = "Add";
+				DomainForm form = (DomainForm) session.getAttribute("domainForm");
+				if (form == null) {
+					form = new DomainForm();
+					form.populate(dom);
+				}
+				model.addAttribute("domainForm", form);
+				model.addAttribute("action", action);
+				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+		
+				mav.addObject("statusList", EntityStatus.getEntityStatusList());
+			}
+		}else{
+			model.addAttribute(new LoginForm());
+			mav.setViewName("login");
+		}
+		
+		return mav;
+	}		
+	
+	
 	@RequestMapping(value="/removeaddresses", method = RequestMethod.POST)
 	public ModelAndView removeAddresses (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
@@ -76,13 +151,15 @@ public class DomainController {
 		ModelAndView mav = new ModelAndView(); 
 	
 		if (log.isDebugEnabled()) log.debug("Enter domain/removeaddresses");
-		if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
+		if(simpleForm.getRemove() != null){
+			if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
+		}
 		if (isLoggedIn(session)) {
-			if (dService != null && actionPath.equalsIgnoreCase("delete")) {
+			String strid = ""+simpleForm.getId();
+			Domain dom = dService.getDomain(Long.parseLong(strid));
+			String domname = dom.getDomainName();
+			if (dService != null && actionPath.equalsIgnoreCase("delete") && simpleForm.getRemove() != null) {
 				int cnt = simpleForm.getRemove().size();
-				String strid = ""+simpleForm.getId();
-				Domain dom = dService.getDomain(Long.parseLong(strid));
-				String domname = dom.getDomainName();
 				if (log.isDebugEnabled()) log.debug("removing addresses for domain with name: " + domname);
 				try{
 					for (int x = 0; x < cnt; x++) {
@@ -103,25 +180,47 @@ public class DomainController {
 					    	}
 						}			
 					}
-				    log.debug(" Trying to update the domain with removed addresses");
+					if (log.isDebugEnabled()) log.debug(" Trying to update the domain with removed addresses");
 		    		dService.updateDomain(dom);
-		    		log.debug(" SUCCESS Trying to update the domain with removed addresses");
-		    		log.debug(" NEW DOMAIN LIST OF ADDRESSES IS: "+dom.getAddresses().toString());
-					model.addAttribute("addressesResults", dom.getAddresses());
+		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed addresses");
+		    		if (log.isDebugEnabled()) log.debug(" NEW DOMAIN LIST OF ADDRESSES IS: "+dom.getAddresses().toString());
 					model.addAttribute("simpleForm",new SimpleForm());
+					AddressForm addrform = new AddressForm();
+					addrform.setId(dom.getId());
+					model.addAttribute("addressForm",addrform);
 				} catch (ConfigurationServiceException e) {
 					if (log.isDebugEnabled())
 						log.error(e);
 				}
+			}else if (dService != null && actionPath.equalsIgnoreCase("newaddress")) {
+				// insert the new address into the Domain list of Addresses
+				String anEmail = simpleForm.getPostmasterEmail();
+				if (log.isDebugEnabled()) log.debug(" Trying to add address: "+anEmail);
+				Address e = new Address();
+				e.setEmailAddress(anEmail);
+				dom.getAddresses().add(e);
+				simpleForm.setPostmasterEmail("");
+				try{
+					dService.updateDomain(dom);
+					if (log.isDebugEnabled()) log.debug(" After attempt to insert new email address ");
+				} catch (ConfigurationServiceException ed) {
+					if (log.isDebugEnabled())
+						log.error(ed);
+				}
+			}else{
+				// since the list of addresses to remove from the address collection is blank, return to the original display
+				model.addAttribute("simpleForm",simpleForm);
 			}
 			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 
+			model.addAttribute("addressesResults", dom.getAddresses());
 			mav.setViewName("domain"); 
 			// the Form's default button action
 			String action = "Add";
 			DomainForm form = (DomainForm) session.getAttribute("domainForm");
 			if (form == null) {
 				form = new DomainForm();
+				form.populate(dom);
 			}
 			model.addAttribute("domainForm", form);
 			model.addAttribute("action", action);
@@ -222,6 +321,11 @@ public class DomainController {
 				
 				Domain results = null;
 				Long dId = Long.decode(id);
+				
+				AddressForm addrform = new AddressForm();
+				addrform.setId(dId);
+				model.addAttribute("addressForm",addrform);
+				
 				if (dService != null) {
 					results = dService.getDomain(dId);
 					if (results != null) {

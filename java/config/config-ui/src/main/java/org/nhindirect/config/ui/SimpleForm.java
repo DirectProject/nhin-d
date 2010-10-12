@@ -3,6 +3,7 @@ package org.nhindirect.config.ui;
 import java.util.List;
 
 public class SimpleForm {
+	private String postmasterEmail;
 	private long id;
 	private List<String> remove;
 
@@ -20,5 +21,13 @@ public class SimpleForm {
 
 	public long getId() {
 		return id;
+	}
+
+	public void setPostmasterEmail(String postmasterEmail) {
+		this.postmasterEmail = postmasterEmail;
+	}
+
+	public String getPostmasterEmail() {
+		return postmasterEmail;
 	}
 }
