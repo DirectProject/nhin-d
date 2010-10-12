@@ -16,12 +16,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Activation;
 
 using NHINDirect.Config.Store;
 
 namespace NHINDirect.Config.Service
-{    
+{
+    // AspNetCompatibilityRequirements added so that the LogFileSection can dig into the HttpContent.Current
+    // to use MapPath();
     // NOTE: If you change the class name "CertificateStore" here, you must also update the reference to "CertificateStore" in Web.config.
+    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class CertificateService : ConfigServiceBase, ICertificateStore, IAnchorStore
     {        
         #region ICertificateStore

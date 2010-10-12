@@ -4,19 +4,21 @@ setlocal
 
 @rem these are the defaults, exceptions below...
 set srcbin=
-set destbin=%~dp0
+set destbin="%~dp0"
 
 @rem nocopy can occur in the first or second param
-if "%1%" NEQ "nocopy" (
+if '%1%' NEQ 'nocopy' (
 set configFile=%~f1
-if "%2" NEQ "nocopy" (
+if '%2' NEQ 'nocopy' (
 set srcbin=..\..\bin\debug
-set destbin=C:\inetpub\nhinGateway\
+set destbin="C:\inetpub\nhinGateway\"
 )
 )
 
+call :GetConfigFile %destbin% DevAgentConfig.xml
+
 if NOT "%srcbin%" == "" call copybins.bat %destbin%
-if NOT "%configFile%" == "" xcopy /y "%configFile%" "%destbin%DevAgentConfig.xml"
+if NOT "%configFile%" == "" xcopy /y "%configFile%" %configDestPath%
 
 
 @rem --------------------------------
@@ -28,12 +30,16 @@ if %ERRORLEVEL% NEQ 0 goto :Done
 Echo Succeeded
 
 call :PrintHeading "Installing Developer Gateway"
-call registerGateway.bat script 1 "%destbin%DevAgentConfig.xml" N
+call registerGateway.bat script 1 %configDestPath% N
 if %ERRORLEVEL% NEQ 0 goto :Done
 popd
 
 goto :Done
 
+@rem -------------------------------
+:GetConfigFile
+set configDestPath="%~dp1\%2"
+goto :EOF
 
 @rem -------------------------------
 :PrintHeading
@@ -55,4 +61,5 @@ goto :EOF
 :Done
 endlocal
 popd
+if "%DEBUGINSTALLER%" == "1" pause
 exit /b %ERRORLEVEL%
