@@ -14,12 +14,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.ServiceModel.Activation;
 
 using NHINDirect.Config.Store;
 
 namespace NHINDirect.Config.Service
 {
     // NOTE: If you change the class name "DomainManagerService" here, you must also update the reference to "DomainManagerService" in Web.config.
+    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class DomainManagerService : ConfigServiceBase, IDomainManager, IAddressManager
     {
         #region IDomainManager Members
