@@ -34,7 +34,7 @@ namespace NHINDirect.SmtpAgent
                                     ? "nhin" 
                                     : settings.LogSettings.EventLogSource;
 
-                EventLog.WriteEntry(source, "While loading SmtpAgent settings" + ex, EventLogEntryType.Error);
+                EventLog.WriteEntry(source, "While loading SmtpAgent settings" + ex, EventLogEntryType.Error, 1);
 
                 throw;
             }

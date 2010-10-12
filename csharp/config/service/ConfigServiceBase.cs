@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.ServiceModel;
 
 using NHINDirect.Config.Store;
@@ -13,8 +14,26 @@ namespace NHINDirect.Config.Service
 
         public ConfigServiceBase()
         {
-            m_store = Service.Current.Store;
-            m_logger = Log.For(this);
+            try
+            {
+                m_store = Service.Current.Store;
+                m_logger = Log.For(this);
+            }
+            catch (Exception ex)
+            {
+                WriteToEventLog(ex);
+                throw;
+            }
+        }
+
+        private static void WriteToEventLog(Exception ex)
+        {
+            const string source = "nhinConfigService";
+            const EventLogEntryType type = EventLogEntryType.Error;
+            const int id = 1;
+
+            EventLog.WriteEntry(source, ex.Message, type, id);
+            EventLog.WriteEntry(source, ex.GetBaseException().Message, type, id);
         }
 
         private ILogger Logger
