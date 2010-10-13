@@ -1,4 +1,19 @@
-﻿using System;
+﻿/* 
+ Copyright (c) 2010, NHIN Direct Project
+ All rights reserved.
+
+ Authors:
+    george cole     george.cole@allscripts.com
+  
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+*/
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -136,6 +151,23 @@ namespace NHINDirect.XDS
             return exportXDSB(pandRXDSBRequest, endpointAddress, clientCert);
         }
 
+        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, List<KeyValuePair<string, Stream>> docsById, EndpointAddress endpointAddress, X509Certificate2 clientCert)
+        {
+            ProvideAndRegisterRequest pandRXDSBRequest;
+            //m_Logger = Log.For(this);
+            try
+            {
+                // create request
+                pandRXDSBRequest = getPandRRequest(xdsMetadata, docsById);
+            }
+            catch (Exception ex)
+            {
+                ProvideAndRegisterResponse pandRResponse = errorResponse(GlobalValues.CONST_ERROR_CODE_XDSRepositoryError, string.Format("error: {0}; stacktrace{1}", ex.Message, ex.StackTrace));
+                return pandRResponse;
+            }
+
+            return exportXDSB(pandRXDSBRequest, endpointAddress, clientCert);
+        }
         #endregion
 
         #region private
@@ -192,6 +224,7 @@ namespace NHINDirect.XDS
             }
             return getPandRRequest(theMetadada, theDocument);
         }
+        
         private ProvideAndRegisterRequest getPandRRequest(XmlDocument xdsMetadata, string xdsDocument)
         {
             XmlDocument theDocument;
@@ -205,6 +238,29 @@ namespace NHINDirect.XDS
                 throw;
             }
             return getPandRRequest(xdsMetadata, theDocument);
+        }
+        
+        private ProvideAndRegisterRequest getPandRRequest(XmlDocument xdsMetadata, List<KeyValuePair<string, Stream>> docsById)
+        {
+            // put together a P&R Request
+            ProvideAndRegisterRequest pandRRequest = new ProvideAndRegisterRequest();
+
+            // create a SubmissionSetDocument for each document in the list
+            SubmissionDocument aSubmissionDocument = null;
+            StreamReader sr = null;
+            foreach (KeyValuePair<string, Stream> aDocByID in docsById)
+            {
+                aSubmissionDocument = new SubmissionDocument();
+                aSubmissionDocument.documentID = aDocByID.Key;
+                sr = new StreamReader(aDocByID.Value);
+                aSubmissionDocument.documentText = ASCIIEncoding.UTF8.GetBytes(sr.ReadToEnd());
+
+                pandRRequest.submissionDocuments.Add(aSubmissionDocument);
+            }
+
+            // add the metadata to the PandR Request
+            pandRRequest.submissionMetadata = xdsMetadata.DocumentElement;
+            return pandRRequest;
         }
 
         private ProvideAndRegisterResponse exportXDSB(ProvideAndRegisterRequest pandRXDSBRequest, System.ServiceModel.EndpointAddress endpointAddress, X509Certificate2 clientCert)
