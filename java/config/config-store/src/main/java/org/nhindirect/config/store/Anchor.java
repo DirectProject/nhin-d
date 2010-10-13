@@ -101,7 +101,7 @@ public class Anchor {
      * 
      * @return the value of certificateData.
      */
-    @Column(name = "certificateData")
+    @Column(name = "certificateData", length=4096)
     @Lob
     public byte[] getData() {
         return certificateData;
@@ -284,7 +284,7 @@ public class Anchor {
         this.certificateId = certificateId;
     }
 
-    private void loadCertFromData() throws CertificateException {
+    private X509Certificate loadCertFromData() throws CertificateException {
         X509Certificate cert = null;
         try {
             validate();
@@ -296,8 +296,26 @@ public class Anchor {
             setData(Certificate.NULL_CERT);
             throw new CertificateException("Data cannot be converted to a valid X.509 Certificate", e);
         }
+        
+        return cert;
     }
 
+    public X509Certificate toCertificate() throws CertificateException {
+        X509Certificate cert = null;
+        try {
+            validate();
+            ByteArrayInputStream bais = new ByteArrayInputStream(certificateData);
+            cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(bais);
+            bais.close();
+        } catch (Exception e) {
+            throw new CertificateException("Data cannot be converted to a valid X.509 Certificate", e);
+        }
+        
+        return cert;
+    }
+    
+    
+    
     private boolean hasData() {
         return ((certificateData != null) && (!certificateData.equals(Certificate.NULL_CERT))) ? true : false;
     }

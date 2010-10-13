@@ -80,6 +80,12 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     configurationService.addAnchor(anchor);
   }
   
+  public void addSetting(java.lang.String name, java.lang.String value) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.addSetting(name, value);
+  }
+  
   public void setCertificateStatusForOwner(java.lang.String owner, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
@@ -96,12 +102,6 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     if (configurationService == null)
       _initConfigurationServiceProxy();
     configurationService.updateDomain(domain);
-  }
-  
-  public void setCertificateStatus(long[] certificateIds, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
-    if (configurationService == null)
-      _initConfigurationServiceProxy();
-    configurationService.setCertificateStatus(certificateIds, status);
   }
   
   public org.nhind.config.Domain[] listDomains(java.lang.String names, int maxResults) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
@@ -122,10 +122,28 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     configurationService.updateAddress(address);
   }
   
+  public org.nhind.config.Setting getSettingByName(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getSettingByName(name);
+  }
+  
+  public void setCertificateStatus(long[] certificateIds, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.setCertificateStatus(certificateIds, status);
+  }
+  
   public void addDomain(org.nhind.config.Domain domain) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
     configurationService.addDomain(domain);
+  }
+  
+  public void deleteSetting(java.lang.String[] names) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.deleteSetting(names);
   }
   
   public boolean contains(org.nhind.config.Certificate cert) throws java.rmi.RemoteException{
@@ -158,10 +176,22 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     configurationService.addAddress(address);
   }
   
+  public org.nhind.config.Setting[] getAllSettings() throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getAllSettings();
+  }
+  
   public int getAddressCount() throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
     return configurationService.getAddressCount();
+  }
+  
+  public org.nhind.config.Setting[] getSettingsByNames(java.lang.String[] names) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getSettingsByNames(names);
   }
   
   public void removeAnchors(long[] anchorId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
@@ -174,6 +204,12 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     if (configurationService == null)
       _initConfigurationServiceProxy();
     configurationService.removeAddress(emailAddress);
+  }
+  
+  public void updateSetting(java.lang.String name, java.lang.String value) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.updateSetting(name, value);
   }
   
   public void removeDomain(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
