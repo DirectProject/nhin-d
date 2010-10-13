@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.xd.transform.util.type;
+package org.nhindirect.xd.common.type;
 
 import org.apache.commons.lang.StringUtils;
 

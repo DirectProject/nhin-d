@@ -26,31 +26,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.xd.transform.util.type;
+package org.nhindirect.xd.common.type;
 
 /**
- * Enumeration for data identifying an Association element.
+ * Valid ExtrinsicObjectType values.
  * 
  * @author beau
  */
-public enum Association
+public enum ExtrinsicObjectTypeEnum
 {
-    HAS_MEMBER("HasMember");
+    DOC("urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1");
 
-    private String associationType;
+    private String objectType;
 
-    private Association(String associationType)
+    private ExtrinsicObjectTypeEnum(String objectType)
     {
-        this.associationType = associationType;
+        this.objectType = objectType;
     }
 
     /**
-     * Get the value of associationType.
+     * Get the value of objectType.
      * 
-     * @return the value of associationType.
+     * @return the value of objectType.
      */
-    public String getAssociationType()
+    public String getObjectType()
     {
-        return this.associationType;
+        return this.objectType;
     }
 }

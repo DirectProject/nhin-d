@@ -48,10 +48,10 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.common.type.ClassificationTypeEnum;
+import org.nhindirect.xd.common.type.ExternalIdentifierTypeEnum;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
 import org.nhindirect.xd.transform.util.XmlUtils;
-import org.nhindirect.xd.transform.util.type.ClassificationTypeEnum;
-import org.nhindirect.xd.transform.util.type.ExternalIdentifierTypeEnum;
 import org.nhindirect.xd.transform.util.type.MimeType;
 
 /**

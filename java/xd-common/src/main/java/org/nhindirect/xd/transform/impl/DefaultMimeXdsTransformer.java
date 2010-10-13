@@ -88,15 +88,15 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ValueListType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.common.type.AssociationType1Enum;
+import org.nhindirect.xd.common.type.ClassificationTypeEnum;
+import org.nhindirect.xd.common.type.ExternalIdentifierTypeEnum;
 import org.nhindirect.xd.transform.MimeXdsTransformer;
 import org.nhindirect.xd.transform.XdmXdsTransformer;
 import org.nhindirect.xd.transform.exception.TransformationException;
 import org.nhindirect.xd.transform.parse.ccd.CcdParser;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
-import org.nhindirect.xd.transform.util.type.Association;
 import org.nhindirect.xd.transform.util.type.ClassificationNode;
-import org.nhindirect.xd.transform.util.type.ClassificationTypeEnum;
-import org.nhindirect.xd.transform.util.type.ExternalIdentifierTypeEnum;
 import org.nhindirect.xd.transform.util.type.MimeType;
 
 /*
@@ -479,7 +479,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                 clas);
 
         LOGGER.info("Creating AssociationType1 object inside getSubmitObjectsRequest");
-        AssociationType1 ass = getAssociation(Association.HAS_MEMBER, rpt.getId(), eot.getId());
+        AssociationType1 ass = getAssociation(AssociationType1Enum.HAS_MEMBER, rpt.getId(), eot.getId());
         qname = new QName(IDENTIFIABLE_TYPE_NS, ASSOCIATION_TYPE_1);
         JAXBElement<AssociationType1> assj = new JAXBElement<AssociationType1>(qname, AssociationType1.class, ass);
 
@@ -703,7 +703,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      * @return an AssociationType1 object with the given source object ID and
      *         document ID.
      */
-    protected AssociationType1 getAssociation(Association association, String setId, String docId)
+    protected AssociationType1 getAssociation(AssociationType1Enum association, String setId, String docId)
     {
         AssociationType1 at = new AssociationType1();
         at.setAssociationType(association.getAssociationType());
