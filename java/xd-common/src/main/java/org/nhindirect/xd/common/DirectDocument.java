@@ -137,7 +137,7 @@ public class DirectDocument
      * 
      * @author beau
      */
-    public class Metadata
+    static public class Metadata
     {
         private String mimeType;
         private String _eot_id;

@@ -78,12 +78,7 @@ public class DirectMessage
     public void addDocument(String document)
     {
         DirectDocument doc = new DirectDocument();
-
-        // TODO: default metadata
-        DirectDocument.Metadata metadata = doc.new Metadata();
-
         doc.setData(document);
-        doc.setMetadata(metadata);
 
         documents.add(doc);
     }
