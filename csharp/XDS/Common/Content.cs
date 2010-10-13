@@ -24,7 +24,7 @@ namespace NHINDirect.XDS.Common
 {
     public class Content
     {
-        public static enum TypeOfContent
+        public enum TypeOfContent
         {
             CDA = 1,
             CCD,
