@@ -28,7 +28,9 @@
 
 package org.nhindirect.xd.common;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -293,15 +295,16 @@ public class DirectDocumentTest extends TestCase
         DirectDocument document = new DirectDocument();
         DirectDocument.Metadata metadata = document.getMetadata();
 
-        String value = "input";
-        metadata.setAuthorInstitution(value);
+        List<String> values = Arrays.asList("input1", "input2");
+        metadata.setAuthorInstitution(values);
 
         String xml = metadata.toString();
 
         metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
-        assertEquals("Output does not match expected", value, metadata.getAuthorInstitution());
+        assertEquals("Output does not match expected", values.get(0), metadata.getAuthorInstitution().get(0));
+        assertEquals("Output does not match expected", values.get(1), metadata.getAuthorInstitution().get(1));
     }
 
     /**
@@ -760,15 +763,16 @@ public class DirectDocumentTest extends TestCase
         DirectDocument document = new DirectDocument();
         DirectDocument.Metadata metadata = document.getMetadata();
 
-        String value = "input";
-        metadata.setSs_authorInstitution(value);
+        List<String> values = Arrays.asList("input1", "input2");
+        metadata.setSs_authorInstitution(values);
 
         String xml = metadata.toString();
 
         metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
-        assertEquals("Output does not match expected", value, metadata.getSs_authorInstitution());
+        assertEquals("Output does not match expected", values.get(0), metadata.getSs_authorInstitution().get(0));
+        assertEquals("Output does not match expected", values.get(1), metadata.getSs_authorInstitution().get(1));
     }
 
     /**
@@ -936,7 +940,7 @@ public class DirectDocumentTest extends TestCase
         metadata.setServiceStopTime(new Date());
         metadata.setSourcePatient(new SimplePerson("Bob", "Smith"));
         metadata.setAuthorPerson("10");
-        metadata.setAuthorInstitution("11");
+        metadata.setAuthorInstitution(Arrays.asList("11.1", "11.2"));
         metadata.setAuthorRole("12");
         metadata.setAuthorSpecialty("13");
         metadata.setClassCode("14");
@@ -958,7 +962,7 @@ public class DirectDocumentTest extends TestCase
         metadata.setSs_submissionTime(new Date());
         metadata.setSs_intendedRecipient("32");
         metadata.setSs_authorPerson("33");
-        metadata.setSs_authorInstitution("34");
+        metadata.setSs_authorInstitution(Arrays.asList("34.1", "34.2"));
         metadata.setSs_authorRole("35");
         metadata.setSs_authorSpecialty("36");
         metadata.setContentTypeCode("37");

@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.xd.transform.util.type;
+package org.nhindirect.xd.common.type;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -45,7 +45,8 @@ public enum ClassificationTypeEnum
     DOC_PRACTICE_SETTING_CODE("c106", "urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead", "Connect-a-thon practiceSettingCodes"),    
     DOC_LOINC("c107", "urn:uuid:f0306f51-975f-434e-a61c-c59651d33983", "LOINC"),
     SS_AUTHOR("c108", "urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d", null),
-    SS_CONTENT_TYPE_CODE("c109", "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500", "Connect-a-thon contentTypeCodes");
+    SS_CONTENT_TYPE_CODE("c109", "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500", "Connect-a-thon contentTypeCodes"),
+    SS("cl10", "urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd", null);
 
     private String classificationId;
     private String classificationScheme;
