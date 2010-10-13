@@ -270,12 +270,12 @@ public class DirectDocument
             eot.setObjectType(ExtrinsicObjectTypeEnum.DOC.getObjectType());
             
             List<SlotType1> slots = eot.getSlot();
-            slots.add(makeSlot(SlotType1Enum.CREATION_TIME, creationTime != null ? (new SimpleDateFormat("yyyyMMdd")).format(creationTime) : null));
-            slots.add(makeSlot(SlotType1Enum.LANGUAGE_CODE, languageCode));
-            slots.add(makeSlot(SlotType1Enum.SERVICE_START_TIME, serviceStartTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStartTime) : null));
-            slots.add(makeSlot(SlotType1Enum.SERVICE_STOP_TIME, serviceStopTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStopTime) : null));
-            slots.add(makeSlot(SlotType1Enum.SOURCE_PATIENT_ID, sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg() + "&ISO"));
-            slots.add(makeSlot(SlotType1Enum.SOURCE_PATIENT_INFO, sourcePatient));
+            addSlot(slots, makeSlot(SlotType1Enum.CREATION_TIME, creationTime != null ? (new SimpleDateFormat("yyyyMMdd")).format(creationTime) : null));
+            addSlot(slots, makeSlot(SlotType1Enum.LANGUAGE_CODE, languageCode));
+            addSlot(slots, makeSlot(SlotType1Enum.SERVICE_START_TIME, serviceStartTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStartTime) : null));
+            addSlot(slots, makeSlot(SlotType1Enum.SERVICE_STOP_TIME, serviceStopTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStopTime) : null));
+            addSlot(slots, makeSlot(SlotType1Enum.SOURCE_PATIENT_ID, sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg() + "&ISO"));
+            addSlot(slots, makeSlot(SlotType1Enum.SOURCE_PATIENT_INFO, sourcePatient));
 
             eot.setName(makeInternationalStringType(classCode_localized));
             eot.setDescription(makeInternationalStringType(_eot_description));
@@ -287,10 +287,10 @@ public class DirectDocument
             authorClassification.setClassificationScheme(ClassificationTypeEnum.DOC_AUTHOR.getClassificationScheme());
 
             List<SlotType1> authorClassificationSlots = authorClassification.getSlot();
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_PERSON, authorPerson));
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_INSTITUTION, authorInstitution));
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_ROLE, authorRole));
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_SPECIALTY, authorSpecialty));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_PERSON, authorPerson));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_INSTITUTION, authorInstitution));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_ROLE, authorRole));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_SPECIALTY, authorSpecialty));
 
             eot.getClassification().add(authorClassification);
 
@@ -303,7 +303,7 @@ public class DirectDocument
             classCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_CLASS_CODE.getClassificationScheme());
 
             List<SlotType1> classCodeClassificationSlots = classCodeClassification.getSlot();
-            classCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CLASS_CODE.getCodingScheme()));
+            addSlot(classCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CLASS_CODE.getCodingScheme()));
 
             eot.getClassification().add(classCodeClassification);
 
@@ -316,7 +316,7 @@ public class DirectDocument
             confidentialityCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getClassificationScheme());
 
             List<SlotType1> confidentialityCodeClassificationSlots = confidentialityCodeClassification.getSlot();
-            confidentialityCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getCodingScheme()));
+            addSlot(confidentialityCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getCodingScheme()));
 
             eot.getClassification().add(confidentialityCodeClassification);
 
@@ -329,7 +329,7 @@ public class DirectDocument
             formatCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_FORMAT_CODE.getClassificationScheme());
 
             List<SlotType1> formatCodeClassificationSlots = formatCodeClassification.getSlot();
-            formatCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_FORMAT_CODE.getCodingScheme()));
+            addSlot(formatCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_FORMAT_CODE.getCodingScheme()));
 
             eot.getClassification().add(formatCodeClassification);
 
@@ -342,7 +342,7 @@ public class DirectDocument
             healthcareFacilityTypeCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getClassificationScheme());
 
             List<SlotType1> healthcareFacilityTypeCodeClassificationSlots = healthcareFacilityTypeCodeClassification.getSlot();
-            healthcareFacilityTypeCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getCodingScheme()));
+            addSlot(healthcareFacilityTypeCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getCodingScheme()));
 
             eot.getClassification().add(healthcareFacilityTypeCodeClassification);
 
@@ -355,7 +355,7 @@ public class DirectDocument
             practiceSettingCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getClassificationScheme());
 
             List<SlotType1> practiceSettingCodeClassificationSlots = practiceSettingCodeClassification.getSlot();
-            practiceSettingCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getCodingScheme()));
+            addSlot(practiceSettingCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getCodingScheme()));
 
             eot.getClassification().add(practiceSettingCodeClassification);
 
@@ -368,7 +368,7 @@ public class DirectDocument
             loincClassification.setClassificationScheme(ClassificationTypeEnum.DOC_LOINC.getClassificationScheme());
 
             List<SlotType1> loincClassificationSlots = loincClassification.getSlot();
-            loincClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_LOINC.getCodingScheme()));
+            addSlot(loincClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_LOINC.getCodingScheme()));
 
             eot.getClassification().add(loincClassification);
 
@@ -402,8 +402,8 @@ public class DirectDocument
             rpt.setId(_rpt_id);
 
             List<SlotType1> slots = rpt.getSlot();
-            slots.add(makeSlot(SlotType1Enum.SUBMISSION_TIME, ss_submissionTime != null ? (new SimpleDateFormat("yyyyMMddHHmmss")).format(ss_submissionTime) : null));
-            slots.add(makeSlot(SlotType1Enum.INTENDED_RECIPIENT, ss_intendedRecipient));
+            addSlot(slots, makeSlot(SlotType1Enum.SUBMISSION_TIME, ss_submissionTime != null ? (new SimpleDateFormat("yyyyMMddHHmmss")).format(ss_submissionTime) : null));
+            addSlot(slots, makeSlot(SlotType1Enum.INTENDED_RECIPIENT, ss_intendedRecipient));
 
             rpt.setName(makeInternationalStringType(_rpt_name));
             rpt.setDescription(makeInternationalStringType(_rpt_description));
@@ -415,10 +415,10 @@ public class DirectDocument
             authorClassification.setClassificationScheme(ClassificationTypeEnum.SS_AUTHOR.getClassificationScheme());
 
             List<SlotType1> authorClassificationSlots = authorClassification.getSlot();
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_PERSON, ss_authorPerson));
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_INSTITUTION, ss_authorInstitution));
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_ROLE, ss_authorRole));
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_SPECIALTY, ss_authorSpecialty));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_PERSON, ss_authorPerson));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_INSTITUTION, ss_authorInstitution));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_ROLE, ss_authorRole));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_SPECIALTY, ss_authorSpecialty));
 
             rpt.getClassification().add(authorClassification);
 
@@ -431,7 +431,7 @@ public class DirectDocument
             contentTypeCodeClassification.setClassificationScheme(ClassificationTypeEnum.SS_CONTENT_TYPE_CODE.getClassificationScheme());
 
             List<SlotType1> contentTypeCodeClassificationSlots = contentTypeCodeClassification.getSlot();
-            contentTypeCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.SS_CONTENT_TYPE_CODE.getCodingScheme()));
+            addSlot(contentTypeCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.SS_CONTENT_TYPE_CODE.getCodingScheme()));
 
             rpt.getClassification().add(contentTypeCodeClassification);
 
@@ -489,7 +489,7 @@ public class DirectDocument
             at.setAssociationType(AssociationType1Enum.HAS_MEMBER.getAssociationType());
 
             List<SlotType1> slots = at.getSlot();
-            slots.add(makeSlot(SlotType1Enum.SUBMISSION_SET_STATUS, submissionSetStatus));
+            addSlot(slots, makeSlot(SlotType1Enum.SUBMISSION_SET_STATUS, submissionSetStatus));
 
             return at;
         }
@@ -979,19 +979,50 @@ public class DirectDocument
             slot.setValueList(values);
 
             // <rim:Value>PID-3|pid1^^^domain</rim:Value>
-            vals.add("PID-3|" + person.getLocalId() + "^^^&" + person.getLocalOrg() + "&ISO");
+            StringBuffer pid3 = new StringBuffer("PID-3|");
+            pid3.append(person.getLocalId() != null ? person.getLocalId() : "");
+            pid3.append("^^^&");
+            pid3.append(person.getLocalOrg() != null ? person.getLocalOrg() : "");
+            pid3.append("&ISO");
+            
+            vals.add(pid3.toString());
 
             // <rim:Value>PID-5|Doe^John^Middle^^</rim:Value>
-            vals.add("PID-5|" + person.getLastName() + "^" + person.getFirstName() + "^" + person.getMiddleName() + "^^");
+            StringBuffer pid5 = new StringBuffer("PID-5|");
+            pid5.append(person.getLastName() != null ? person.getLastName() : "");
+            pid5.append("^");
+            pid5.append(person.getFirstName() != null ? person.getFirstName() : "");
+            pid5.append("^");
+            pid5.append(person.getMiddleName() != null ? person.getMiddleName() : "");
+            pid5.append("^^");
+            
+            vals.add(pid5.toString());
 
             // <rim:Value>PID-7|19560527</rim:Value>
-            vals.add("PID-7|" + person.getBirthDateTime());
+            StringBuffer pid7 = new StringBuffer("PID-7|");
+            pid7.append(person.getBirthDateTime() != null ? person.getBirthDateTime() : "");
 
+            vals.add(pid7.toString());
+            
             // <rim:Value>PID-8|M</rim:Value>
-            vals.add("PID-8|" + person.getGenderCode());
+            StringBuffer pid8 = new StringBuffer("PID-8|");
+            pid8.append(person.getGenderCode() != null ? person.getGenderCode() : "");
 
+            vals.add(pid8.toString());
+            
             // <rim:Value>PID-11|100 Main St^^Metropolis^Il^44130^USA</rim:Value>
-            vals.add("PID-11|" + person.getStreetAddress1() + "^^" + person.getCity() + "^" + person.getState() + "^" + person.getZipCode() + "^" + person.getCountry());
+            StringBuffer pid11 = new StringBuffer("PID-11|");
+            pid11.append(person.getStreetAddress1() != null ? person.getStreetAddress1() : "");
+            pid11.append("^^");
+            pid11.append(person.getCity() != null ? person.getCity() : "");
+            pid11.append("^");
+            pid11.append(person.getState() != null ? person.getState() : "");
+            pid11.append("^");
+            pid11.append(person.getZipCode() != null ? person.getZipCode() : "");
+            pid11.append("^");
+            pid11.append(person.getCountry() != null ? person.getCountry() : "");
+            
+            vals.add(pid11.toString());
 
             return slot;
         }
@@ -1022,6 +1053,15 @@ public class DirectDocument
             return slot;
         }
         
+        private void addSlot(List<SlotType1> slots, SlotType1 slot)
+        {
+            if (slots == null)
+                slots = new ArrayList<SlotType1>();
+
+            if (slotNotEmpty(slot))
+                slots.add(slot);
+        }
+        
         private InternationalStringType makeInternationalStringType(String value)
         {
             InternationalStringType name = new InternationalStringType();
@@ -1035,8 +1075,8 @@ public class DirectDocument
 
         private boolean slotNotEmpty(SlotType1 slot)
         {
-            if (slot.getValueList() != null && slot.getValueList().getValue() != null
-                    && !slot.getValueList().getValue().isEmpty())
+            if (slot != null && slot.getValueList() != null && slot.getValueList().getValue() != null
+                    && !slot.getValueList().getValue().isEmpty() && slot.getValueList().getValue().get(0) != null)
                 return true;
 
             return false;
@@ -1251,9 +1291,24 @@ public class DirectDocument
          */
         public void setClassCode(String classCode)
         {
-            this.classCode = classCode;
+            setClassCode(classCode, false);
         }
 
+        /**
+         * @param classCode
+         *            the classCode to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value
+         */
+        public void setClassCode(String classCode, boolean setLocalized)
+        {
+            this.classCode = classCode;
+            
+            if (setLocalized)
+                this.classCode_localized = classCode;
+        }
+        
         /**
          * @return the classCode_localized
          */
@@ -1285,9 +1340,24 @@ public class DirectDocument
          */
         public void setConfidentialityCode(String confidentialityCode)
         {
-            this.confidentialityCode = confidentialityCode;
+            setConfidentialityCode(confidentialityCode, false);
         }
 
+        /**
+         * @param confidentialityCode
+         *            the confidentialityCode to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value
+         */
+        public void setConfidentialityCode(String confidentialityCode, boolean setLocalized)
+        {
+            this.confidentialityCode = confidentialityCode;
+            
+            if (setLocalized)
+                this.confidentialityCode_localized = confidentialityCode;
+        }
+        
         /**
          * @return the confidentialityCode_localized
          */
@@ -1319,9 +1389,24 @@ public class DirectDocument
          */
         public void setFormatCode(String formatCode)
         {
-            this.formatCode = formatCode;
+            setFormatCode(formatCode, false);
         }
 
+        /**
+         * @param formatCode
+         *            the formatCode to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value
+         */
+        public void setFormatCode(String formatCode, boolean setLocalized)
+        {
+            this.formatCode = formatCode;
+            
+            if (setLocalized)
+                formatCode_localized = formatCode;
+        }
+        
         /**
          * @return the formatCode_localized
          */
@@ -1338,7 +1423,7 @@ public class DirectDocument
         {
             formatCode_localized = formatCodeLocalized;
         }
-
+        
         /**
          * @return the healthcareFacilityTypeCode
          */
@@ -1353,7 +1438,22 @@ public class DirectDocument
          */
         public void setHealthcareFacilityTypeCode(String healthcareFacilityTypeCode)
         {
+            setHealthcareFacilityTypeCode(healthcareFacilityTypeCode, false);
+        }
+        
+        /**
+         * @param healthcareFacilityTypeCode
+         *            the healthcareFacilityTypeCode to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value
+         */
+        public void setHealthcareFacilityTypeCode(String healthcareFacilityTypeCode, boolean setLocalized)
+        {
             this.healthcareFacilityTypeCode = healthcareFacilityTypeCode;
+            
+            if (setLocalized)
+                this.healthcareFacilityTypeCode_localized = healthcareFacilityTypeCode;
         }
 
         /**
@@ -1387,7 +1487,22 @@ public class DirectDocument
          */
         public void setPracticeSettingCode(String practiceSettingCode)
         {
+            setPracticeSettingCode(practiceSettingCode, false);
+        }
+        
+        /**
+         * @param practiceSettingCode
+         *            the practiceSettingCode to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value  
+         */
+        public void setPracticeSettingCode(String practiceSettingCode, boolean setLocalized)
+        {
             this.practiceSettingCode = practiceSettingCode;
+            
+            if (setLocalized)
+                this.practiceSettingCode_localized = practiceSettingCode;
         }
 
         /**
@@ -1421,9 +1536,24 @@ public class DirectDocument
          */
         public void setLoinc(String loinc)
         {
-            this.loinc = loinc;
+            setLoinc(loinc, false);
         }
 
+        /**
+         * @param loinc
+         *            the loinc to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value  
+         */
+        public void setLoinc(String loinc, boolean setLocalized)
+        {
+            this.loinc = loinc;
+            
+            if (setLocalized)
+                this.loinc_localized = loinc;
+        }
+        
         /**
          * @return the loinc_localized
          */
@@ -1633,9 +1763,24 @@ public class DirectDocument
          */
         public void setContentTypeCode(String contentTypeCode)
         {
-            this.contentTypeCode = contentTypeCode;
+            setContentTypeCode(contentTypeCode, false);
         }
 
+        /**
+         * @param contentTypeCode
+         *            the contentTypeCode to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value  
+         */
+        public void setContentTypeCode(String contentTypeCode, boolean setLocalized)
+        {
+            this.contentTypeCode = contentTypeCode;
+            
+            if (setLocalized)
+                this.contentTypeCode_localized = contentTypeCode;
+        }
+        
         /**
          * @return the contentTypeCode_localized
          */
