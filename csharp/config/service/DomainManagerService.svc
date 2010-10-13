@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="NHINDirect.Config.Service.DomainManagerService" CodeBehind="DomainManagerService.svc.cs" %>
