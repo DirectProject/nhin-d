@@ -26,15 +26,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.xd.transform.util;
+package org.nhindirect.xd.common.type;
 
 /**
- * General constants for XD* related activities.
+ * Valid FormatCode values.
  * 
  * @author beau
  */
-public class XdConstants
+public enum FormatCodeEnum
 {
-    public static final String CCD_XMLNS = "urn:hl7-org:v3";
-    public static final String CCD_EXTENSION = "POCD_HD000040";
+    TEXT("TEXT"),
+    CDAR2("CDAR2/IHE 1.0");
+
+    private String value;
+
+    private FormatCodeEnum(String value)
+    {
+        this.value = value;
+    }
+
+    /**
+     * Get the value of value.
+     * 
+     * @return the value of value.
+     */
+    public String getValue()
+    {
+        return this.value;
+    }
 }

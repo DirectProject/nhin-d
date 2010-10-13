@@ -26,15 +26,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.xd.transform.util;
+package org.nhindirect.xd.common.type;
 
 /**
- * General constants for XD* related activities.
+ * Valid Loinc values.
  * 
  * @author beau
  */
-public class XdConstants
+public enum LoincEnum
 {
-    public static final String CCD_XMLNS = "urn:hl7-org:v3";
-    public static final String CCD_EXTENSION = "POCD_HD000040";
+    LOINC_34133_9("34133-9");
+
+    private String value;
+
+    private LoincEnum(String value)
+    {
+        this.value = value;
+    }
+
+    /**
+     * Get the value of value.
+     * 
+     * @return the value of value.
+     */
+    public String getValue()
+    {
+        return this.value;
+    }
 }
