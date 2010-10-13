@@ -246,6 +246,13 @@ namespace NHINDirect.XDS
             ProvideAndRegisterRequest pandRRequest = new ProvideAndRegisterRequest();
 
             // create a SubmissionSetDocument for each document in the list
+            SubmissionDocument aSubmissionDocument = null;
+            foreach (KeyValuePair<string, Stream> aDocByID in docsById)
+            {
+                aSubmissionDocument = new SubmissionDocument();
+                aSubmissionDocument.documentID = aDocByID.Key;
+                //aSubmissionDocument.documentText = 
+            }
 
             // add the metadata to the PandR Request
             pandRRequest.submissionMetadata = xdsMetadata.DocumentElement;
