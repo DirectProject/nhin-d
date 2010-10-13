@@ -76,11 +76,11 @@ public class DomainController {
 						        @RequestParam(value="submitType") String actionPath)  { 		
 
 		ModelAndView mav = new ModelAndView(); 
-	
+		String strid = "";
 		if (log.isDebugEnabled()) log.debug("Enter domain/removeaddresses");
 		if (isLoggedIn(session)) {
 			if(actionPath.equalsIgnoreCase("newaddress")){
-				String strid = ""+addressForm.getId();
+				strid = ""+addressForm.getId();
 				Domain dom = dService.getDomain(Long.parseLong(strid));
 				// insert the new address into the Domain list of Addresses
 				String anEmail = addressForm.getEmailAddress();
@@ -97,14 +97,6 @@ public class DomainController {
 				
 				dom.getAddresses().add(e);
 				
-				addressForm = new AddressForm();
-				
-				addressForm.setDisplayName("");
-				addressForm.setEmailAddress("");
-				addressForm.setType("");
-				addressForm.setId(Long.parseLong(strid));
-				
-				model.addAttribute("addressForm",addressForm);
 				try{
 					dService.updateDomain(dom);
 					if (log.isDebugEnabled()) log.debug(" After attempt to insert new email address ");
@@ -135,7 +127,16 @@ public class DomainController {
 		}else{
 			model.addAttribute(new LoginForm());
 			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));
 		}
+		AddressForm addressForm2 = new AddressForm();
+		
+		addressForm2.setDisplayName("");
+		addressForm2.setEmailAddress("");
+		addressForm2.setType("");
+		addressForm2.setId(Long.parseLong(strid));
+		
+		model.addAttribute("addressForm",addressForm2);
 		
 		return mav;
 	}		
@@ -157,8 +158,11 @@ public class DomainController {
 		if (isLoggedIn(session)) {
 			String strid = ""+simpleForm.getId();
 			Domain dom = dService.getDomain(Long.parseLong(strid));
-			String domname = dom.getDomainName();
-			if (dService != null && actionPath.equalsIgnoreCase("delete") && simpleForm.getRemove() != null) {
+			String domname = "";
+			if( dom != null){
+				domname = dom.getDomainName();
+			}
+			if (dService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("delete") && simpleForm.getRemove() != null) {
 				int cnt = simpleForm.getRemove().size();
 				if (log.isDebugEnabled()) log.debug("removing addresses for domain with name: " + domname);
 				try{
@@ -181,10 +185,9 @@ public class DomainController {
 						}			
 					}
 					if (log.isDebugEnabled()) log.debug(" Trying to update the domain with removed addresses");
-		    		dService.updateDomain(dom);
+					//TODO: GET THIS TO ACTUALLY WORK REMOVING DATA FROM DATABASE 
+					dService.updateDomain(dom);
 		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed addresses");
-		    		if (log.isDebugEnabled()) log.debug(" NEW DOMAIN LIST OF ADDRESSES IS: "+dom.getAddresses().toString());
-					model.addAttribute("simpleForm",new SimpleForm());
 					AddressForm addrform = new AddressForm();
 					addrform.setId(dom.getId());
 					model.addAttribute("addressForm",addrform);
@@ -207,9 +210,6 @@ public class DomainController {
 					if (log.isDebugEnabled())
 						log.error(ed);
 				}
-			}else{
-				// since the list of addresses to remove from the address collection is blank, return to the original display
-				model.addAttribute("simpleForm",simpleForm);
 			}
 			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 
@@ -231,7 +231,11 @@ public class DomainController {
 		}else{
 			model.addAttribute(new LoginForm());
 			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));
 		}
+		model.addAttribute("simpleForm",simpleForm);
+		String strid = ""+simpleForm.getId();
+		if (log.isDebugEnabled()) log.debug(" the value of id of simpleform is: "+strid);
 		
 		return mav;
 	}		
@@ -272,6 +276,7 @@ public class DomainController {
 		}else{
 			model.addAttribute(new LoginForm());
 			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));
 		}
 		
 		return mav;
@@ -325,7 +330,8 @@ public class DomainController {
 				AddressForm addrform = new AddressForm();
 				addrform.setId(dId);
 				model.addAttribute("addressForm",addrform);
-				
+				model.addAttribute("certificateForm",addrform);
+				model.addAttribute("anchorForm",addrform);
 				if (dService != null) {
 					results = dService.getDomain(dId);
 					if (results != null) {
@@ -334,19 +340,10 @@ public class DomainController {
 						action = "Update";
 						model.addAttribute("action", action);
 						// SETTING THE ADDRESSES OBJECT
-						int numaddr = results.getAddresses().size();
-						
-					    for (Address t : results.getAddresses()){
-					    	if (log.isDebugEnabled()){
-					    		log.debug(" ");
-					    		log.debug("domain has this number of addresses id: " + t.getId());
-					    		log.debug("domain has this number of addresses displayname: " + t.getDisplayName());
-					    		log.debug("domain has this number of addresses emailaddress: " + t.getEmailAddress());
-					    		log.debug(" ");
-					    	}
-						}						
 						
 						model.addAttribute("addressesResults", results.getAddresses());
+						model.addAttribute("certificateResults", results.getAddresses());
+						model.addAttribute("anchorResults", results.getAddresses());
 						SimpleForm simple = new SimpleForm();
 						simple.setId(dId);
 						model.addAttribute("simpleForm",simple);
@@ -372,8 +369,8 @@ public class DomainController {
 		else {
 			model.addAttribute(new LoginForm());
 			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));
 		}
-		
 		if (log.isDebugEnabled()) log.debug("Exit");
 		return mav;
 	}
@@ -445,6 +442,7 @@ public class DomainController {
 			} else {
 				model.addAttribute(new LoginForm());
 				mav.setViewName("login");
+				mav.setView(new RedirectView("/config-ui/config/login", false));
 			}
 		}
 		if (log.isDebugEnabled()) log.debug("Exit");

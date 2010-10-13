@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.service.DomainService;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
+import org.nhindirect.config.ui.form.AddressForm;
 import org.nhindirect.config.ui.form.LoginForm;
 import org.nhindirect.config.ui.form.DomainForm;
 import org.nhindirect.config.ui.form.SearchDomainForm;
@@ -87,6 +88,19 @@ public class MainController {
 			mav.addObject("msgs", msgs);
 			
 			model.addAttribute("simpleForm",new SimpleForm());
+
+			AddressForm addrform = new AddressForm();
+			addrform.setId(0L);
+			model.addAttribute("addressForm",addrform);
+			model.addAttribute("certificateForm",addrform);
+			model.addAttribute("anchorForm",addrform);
+			String action = "Add";
+			DomainForm form = (DomainForm) session.getAttribute("domainForm");
+			if (form == null) {
+				form = new DomainForm();
+			}
+			model.addAttribute("domainForm", form);
+			model.addAttribute("action", action);
 			
 			mav.setViewName("domain");
 			mav.addObject("actionPath", actionPath);
@@ -122,6 +136,7 @@ public class MainController {
 		}
 		else {
 			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));			
 		}
 		
 		if (log.isDebugEnabled()) log.debug("Exit");
@@ -193,6 +208,7 @@ public class MainController {
 		}
 		else {
 			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));
 		}
 		
 		if (log.isDebugEnabled()) log.debug("Exit");
@@ -222,6 +238,7 @@ public class MainController {
 		else {
 			model.addAttribute(new LoginForm());
 			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));
 		}
 		
 		if (log.isDebugEnabled()) log.debug("Exit");
