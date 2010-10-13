@@ -45,6 +45,12 @@
   <message name="listAddresssResponse">
     <part name="parameters" element="tns:listAddresssResponse"/>
   </message>
+  <message name="getDomain">
+    <part name="parameters" element="tns:getDomain"/>
+  </message>
+  <message name="getDomainResponse">
+    <part name="parameters" element="tns:getDomainResponse"/>
+  </message>
   <message name="addDomain">
     <part name="parameters" element="tns:addDomain"/>
   </message>
@@ -86,12 +92,6 @@
   </message>
   <message name="searchDomainResponse">
     <part name="parameters" element="tns:searchDomainResponse"/>
-  </message>
-  <message name="getDomain">
-    <part name="parameters" element="tns:getDomain"/>
-  </message>
-  <message name="getDomainResponse">
-    <part name="parameters" element="tns:getDomainResponse"/>
   </message>
   <message name="contains">
     <part name="parameters" element="tns:contains"/>
@@ -213,6 +213,42 @@
   <message name="listAnchorsResponse">
     <part name="parameters" element="tns:listAnchorsResponse"/>
   </message>
+  <message name="addSetting">
+    <part name="parameters" element="tns:addSetting"/>
+  </message>
+  <message name="addSettingResponse">
+    <part name="parameters" element="tns:addSettingResponse"/>
+  </message>
+  <message name="getAllSettings">
+    <part name="parameters" element="tns:getAllSettings"/>
+  </message>
+  <message name="getAllSettingsResponse">
+    <part name="parameters" element="tns:getAllSettingsResponse"/>
+  </message>
+  <message name="getSettingByName">
+    <part name="parameters" element="tns:getSettingByName"/>
+  </message>
+  <message name="getSettingByNameResponse">
+    <part name="parameters" element="tns:getSettingByNameResponse"/>
+  </message>
+  <message name="getSettingsByNames">
+    <part name="parameters" element="tns:getSettingsByNames"/>
+  </message>
+  <message name="getSettingsByNamesResponse">
+    <part name="parameters" element="tns:getSettingsByNamesResponse"/>
+  </message>
+  <message name="updateSetting">
+    <part name="parameters" element="tns:updateSetting"/>
+  </message>
+  <message name="updateSettingResponse">
+    <part name="parameters" element="tns:updateSettingResponse"/>
+  </message>
+  <message name="deleteSetting">
+    <part name="parameters" element="tns:deleteSetting"/>
+  </message>
+  <message name="deleteSettingResponse">
+    <part name="parameters" element="tns:deleteSettingResponse"/>
+  </message>
   <portType name="ConfigurationService">
     <operation name="getAddresss">
       <input message="tns:getAddresss"/>
@@ -243,6 +279,10 @@
       <input message="tns:listAddresss"/>
       <output message="tns:listAddresssResponse"/>
       <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getDomain">
+      <input message="tns:getDomain"/>
+      <output message="tns:getDomainResponse"/>
     </operation>
     <operation name="addDomain">
       <input message="tns:addDomain"/>
@@ -277,10 +317,6 @@
     <operation name="searchDomain">
       <input message="tns:searchDomain"/>
       <output message="tns:searchDomainResponse"/>
-    </operation>
-    <operation name="getDomain">
-      <input message="tns:getDomain"/>
-      <output message="tns:getDomainResponse"/>
     </operation>
     <operation name="contains">
       <input message="tns:contains"/>
@@ -379,6 +415,36 @@
     <operation name="listAnchors">
       <input message="tns:listAnchors"/>
       <output message="tns:listAnchorsResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="addSetting">
+      <input message="tns:addSetting"/>
+      <output message="tns:addSettingResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getAllSettings">
+      <input message="tns:getAllSettings"/>
+      <output message="tns:getAllSettingsResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getSettingByName">
+      <input message="tns:getSettingByName"/>
+      <output message="tns:getSettingByNameResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getSettingsByNames">
+      <input message="tns:getSettingsByNames"/>
+      <output message="tns:getSettingsByNamesResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="updateSetting">
+      <input message="tns:updateSetting"/>
+      <output message="tns:updateSettingResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="deleteSetting">
+      <input message="tns:deleteSetting"/>
+      <output message="tns:deleteSettingResponse"/>
       <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
     </operation>
   </portType>

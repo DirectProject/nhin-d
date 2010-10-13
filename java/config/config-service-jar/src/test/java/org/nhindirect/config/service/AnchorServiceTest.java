@@ -30,6 +30,8 @@ package org.nhindirect.config.service;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -95,8 +97,9 @@ public class AnchorServiceTest extends MockObjectTestCase
 
         context.checking(new Expectations()
         {
-            {
-                // TODO
+            {            	
+            	for (Anchor anchor : anchors)
+            		oneOf(anchorDao).add(anchor);
             }
         });
 
@@ -124,10 +127,12 @@ public class AnchorServiceTest extends MockObjectTestCase
         final String thumbprint = "thumbprint";
         CertificateGetOptions certificateOptions = CertificateGetOptions.DEFAULT;
 
+        final List<String> owners = Arrays.asList(owner);
+        
         context.checking(new Expectations()
         {
-            {
-                // TODO
+            {   	
+            	oneOf(anchorDao).list(owners);
             }
         });
 
@@ -152,13 +157,15 @@ public class AnchorServiceTest extends MockObjectTestCase
     {
         final AnchorDao anchorDao = context.mock(AnchorDao.class);
 
-        final Collection<Long> anchorIds = Arrays.asList(7L, 8L);
+        final List<Long> anchorIds = Arrays.asList(7L, 8L);
         final CertificateGetOptions certificateOptions = CertificateGetOptions.DEFAULT;
+
 
         context.checking(new Expectations()
         {
             {
-                // TODO
+
+            	oneOf(anchorDao).listByIds(anchorIds);
             }
         });
 
@@ -168,7 +175,7 @@ public class AnchorServiceTest extends MockObjectTestCase
         try
         {
             Collection<Anchor> output = service.getAnchors(anchorIds, certificateOptions);
-            assertEquals("Output does not match expected", null, output);
+            assertEquals("Output does not match expected", Collections.emptyList(), output);
         }
         catch (Exception e)
         {
@@ -186,10 +193,12 @@ public class AnchorServiceTest extends MockObjectTestCase
         final String owner = "beau";
         final CertificateGetOptions certificateOptions = CertificateGetOptions.DEFAULT;
 
+        final List<String> owners = Arrays.asList(owner);
+        
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(anchorDao).list(owners);
             }
         });
 
@@ -199,7 +208,7 @@ public class AnchorServiceTest extends MockObjectTestCase
         try
         {
             Collection<Anchor> output = service.getAnchorsForOwner(owner, certificateOptions);
-            assertEquals("Output does not match expected", null, output);
+            assertEquals("Output does not match expected", Collections.emptyList(), output);
         }
         catch (Exception e)
         {
@@ -217,10 +226,12 @@ public class AnchorServiceTest extends MockObjectTestCase
         final String owner = "beau";
         final CertificateGetOptions certificateOptions = CertificateGetOptions.DEFAULT;
 
+        final List<String> owners = Arrays.asList(owner);
+        
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(anchorDao).list(owners);
             }
         });
 
@@ -230,7 +241,7 @@ public class AnchorServiceTest extends MockObjectTestCase
         try
         {
             Collection<Anchor> output = service.getIncomingAnchors(owner, certificateOptions);
-            assertEquals("Output does not match expected", null, output);
+            assertEquals("Output does not match expected", Collections.emptyList(), output);
         }
         catch (Exception e)
         {
@@ -248,12 +259,15 @@ public class AnchorServiceTest extends MockObjectTestCase
         final String owner = "beau";
         final CertificateGetOptions certificateOptions = CertificateGetOptions.DEFAULT;
 
+        final List<String> owners = Arrays.asList(owner);
+        
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(anchorDao).list(owners);
             }
         });
+
 
         AnchorServiceImpl service = new AnchorServiceImpl();
         service.setDao(anchorDao);
@@ -261,7 +275,7 @@ public class AnchorServiceTest extends MockObjectTestCase
         try
         {
             Collection<Anchor> output = service.getOutgoingAnchors(owner, certificateOptions);
-            assertEquals("Output does not match expected", null, output);
+            assertEquals("Output does not match expected", Collections.emptyList(), output);
         }
         catch (Exception e)
         {
@@ -279,10 +293,13 @@ public class AnchorServiceTest extends MockObjectTestCase
         final String owner = "beau";
         final EntityStatus status = EntityStatus.ENABLED;
 
+        final Anchor anchor = new Anchor();
+        anchor.setOwner(owner);
+        
         context.checking(new Expectations()
         {
-            {
-                // TODO
+            {            
+            	oneOf(anchorDao).setStatus(owner, status);
             }
         });
 
@@ -338,12 +355,12 @@ public class AnchorServiceTest extends MockObjectTestCase
     {
         final AnchorDao anchorDao = context.mock(AnchorDao.class);
 
-        final Collection<Long> anchorIds = Arrays.asList(7L, 8L);
+        final List<Long> anchorIds = Arrays.asList(7L, 8L);
 
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(anchorDao).delete(anchorIds);
             }
         });
 
@@ -372,7 +389,7 @@ public class AnchorServiceTest extends MockObjectTestCase
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(anchorDao).delete(owner);
             }
         });
 

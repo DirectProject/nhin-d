@@ -223,7 +223,7 @@ public class DomainDaoImpl implements DomainDao {
         }
 
         if (log.isDebugEnabled())
-            log.debug("Exit: " + count + " records deleted");
+            log.debug("Exit: " + count + " domain records deleted");
     }
 
     /*

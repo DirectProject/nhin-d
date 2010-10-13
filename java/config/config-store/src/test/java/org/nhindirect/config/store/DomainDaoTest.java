@@ -62,8 +62,15 @@ public class DomainDaoTest  {
 	 */
 	
 	@Test
-	public void testCleanDatabase() {
+	public void testCleanDatabase() 
+	{
 		List<Domain> domains = domainDao.searchDomain(null, null);
+		
+		if (domains != null) 
+			for (Domain dom : domains)
+				domainDao.delete(dom.getDomainName());
+						
+		domains = domainDao.searchDomain(null, null);
 		assertEquals(0, domains.size());
 	}
 	

@@ -57,6 +57,14 @@ public interface AnchorDao {
     public List<Anchor> list(List<String> owners);
 
     /**
+     * Add an anchor
+     * 
+     * @param anchor 
+     *            The anchor to add. 
+     */
+    public void add(Anchor anchor);
+    
+    /**
      * Save an Anchor.
      * 
      * @param anchor
@@ -72,6 +80,14 @@ public interface AnchorDao {
      */
     public void save(List<Anchor> anchorList);
 
+    /**
+     * Get a list by anchor ids
+     * @param anchorIds
+     *    List of ids to retrieved anchors for.
+     * @return  Collection of anchors matching the anchorIds
+     */
+    public List<Anchor> listByIds(List<Long> anchorIds);
+    
     /**
      * Set the status for a collection of Anchors.
      * 
