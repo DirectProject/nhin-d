@@ -30,6 +30,8 @@ import javax.jws.WebService;
 public interface ConfigurationService extends AddressService, 
                                               DomainService,
 		                                      CertificateService,  
-		                                      AnchorService {
+		                                      AnchorService,
+		                                      SettingService
+		                                      {
 
 }

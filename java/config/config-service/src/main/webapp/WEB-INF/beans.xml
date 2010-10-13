@@ -27,6 +27,7 @@
 				  <property name="addressSvc" ref="addressSvc"/>
 				  <property name="anchorSvc" ref="anchorSvc"/>
 				  <property name="certSvc" ref="certSvc"></property>
+				  <property name="settingSvc" ref="settingSvc"></property>
 			</bean>
 			
 		</jaxws:implementor>
@@ -48,12 +49,16 @@
 	<bean id="certSvc" class="org.nhindirect.config.service.impl.CertificateServiceImpl">
 	   <property name="dao" ref="certificateDao"/>
     </bean>
+	<bean id="settingSvc" class="org.nhindirect.config.service.impl.SettingServiceImpl">
+	   <property name="dao" ref="settingDao"/>
+	</bean>
 
     <!--  DAO's -->
     <bean id="domainDao" class="org.nhindirect.config.store.dao.impl.DomainDaoImpl"/>
     <bean id="addressDao" class="org.nhindirect.config.store.dao.impl.AddressDaoImpl"/>
     <bean id="anchorDao" class="org.nhindirect.config.store.dao.impl.AnchorDaoImpl" />
     <bean id="certificateDao" class="org.nhindirect.config.store.dao.impl.CertificateDaoImpl"/>
+    <bean id="settingDao" class="org.nhindirect.config.store.dao.impl.SettingDaoImpl"/> 
     
 	<!-- Exception translation bean post processor -->
 	<bean
@@ -100,7 +105,7 @@
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
-		<property name="url" value="jdbc:derby:data/nhindconfig;create=true" />
+		<property name="url" value="jdbc:derby:nhindconfig;create=true" />
 		<property name="username" value="nhind" />
 		<property name="password" value="nhind" />
 	</bean> 	

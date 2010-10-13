@@ -21,19 +21,41 @@
 
 package org.nhindirect.config.store.dao.impl;
 
+import java.security.cert.X509Certificate;
+import java.util.Calendar;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.store.Anchor;
+import org.nhindirect.config.store.CertificateException;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.store.dao.AnchorDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementing class for Anchor DAO methods.
  * 
  * @author ppyette
  */
+@Repository
 public class AnchorDaoImpl implements AnchorDao {
 
+    @PersistenceContext
+    @Autowired
+    private EntityManager entityManager;
+    
+    private static final Log log = LogFactory.getLog(AnchorDaoImpl.class);
+	
     /*
      * (non-Javadoc)
      * 
@@ -49,9 +71,27 @@ public class AnchorDaoImpl implements AnchorDao {
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#listAll()
      */
-    public List<Anchor> listAll() {
-        // TODO Auto-generated method stub
-        return null;
+    @SuppressWarnings("unchecked")    
+    public List<Anchor> listAll() 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+
+        List<Anchor> result = Collections.emptyList();
+
+        Query select = null;
+        select = entityManager.createQuery("SELECT a from Anchor a");
+
+
+        List rs = select.getResultList();
+        if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof Anchor)) 
+        {
+            result = (List<Anchor>) rs;
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("Exit");
+        return result;
     }
 
     /*
@@ -59,19 +99,118 @@ public class AnchorDaoImpl implements AnchorDao {
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#list(java.util.List)
      */
-    public List<Anchor> list(List<String> owners) {
-        // TODO Auto-generated method stub
-        return null;
+    @SuppressWarnings("unchecked")    
+    public List<Anchor> list(List<String> owners) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+        
+        if (owners == null || owners.size() == 0)
+        	return listAll();
+        
+        List<Anchor> result = Collections.emptyList();
+
+        Query select = null;
+        StringBuffer nameList = new StringBuffer("(");
+        for (String owner : owners) 
+        {
+            if (nameList.length() > 1) 
+            {
+                nameList.append(", ");
+            }
+            nameList.append("'").append(owner).append("'");
+        }
+        nameList.append(")");
+        String query = "SELECT a from Anchor a WHERE a.owner IN " + nameList.toString();
+ 
+        select = entityManager.createQuery(query);
+        List rs = select.getResultList();
+        if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof Anchor)) 
+        {
+            result = (List<Anchor>) rs;
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("Exit");
+        
+        return result;
     }
 
+    /**
+     * Add an anchor
+     * 
+     * @param anchor 
+     *            The anchor to add. 
+     */
+    @Transactional(readOnly = false)
+    public void add(Anchor anchor)
+    {
+
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+
+        // Save and clear Address information until the Domain is saved.
+        // This is really something that JPA should be doing, but doesn't seem
+        // to work.
+        if (anchor != null)
+        {
+
+        	anchor.setCreateTime(Calendar.getInstance());
+        	
+        	try
+        	{
+        		X509Certificate cert = anchor.toCertificate();
+        		
+        		if (anchor.getValidStartDate() == null)
+        		{
+        			Calendar startDate = Calendar.getInstance();
+        			startDate.setTime(cert.getNotBefore());
+        			anchor.setValidStartDate(startDate);
+        		}
+        		if (anchor.getValidEndDate() == null)
+        		{
+        			Calendar endDate = Calendar.getInstance();
+        			endDate.setTime(cert.getNotAfter());
+        			anchor.setValidEndDate(endDate);
+        		}
+
+        		if (anchor.getStatus() == null)
+        			anchor.setStatus(EntityStatus.NEW);
+        	}
+        	catch (CertificateException e)
+        	{
+        		
+        	}
+        	
+
+            if (log.isDebugEnabled())
+                log.debug("Calling JPA to persist the Anchor");
+
+            entityManager.persist(anchor);
+            entityManager.flush();
+
+
+            if (log.isDebugEnabled())
+                log.debug("Returned from JPA: Anchor ID=" + anchor.getId());
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("Exit");
+    }
+    
     /*
      * (non-Javadoc)
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#save(org.nhindirect.config.store.Anchor)
      */
-    public void save(Anchor anchor) {
-        // TODO Auto-generated method stub
-
+    public void save(Anchor anchor) 
+    {
+    	if (anchor != null)
+    	{
+    		List<Anchor> anchors = new ArrayList<Anchor>();
+    		anchors.add(anchor);
+    		save(anchors);
+    	}
     }
 
     /*
@@ -79,18 +218,72 @@ public class AnchorDaoImpl implements AnchorDao {
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#save(java.util.List)
      */
-    public void save(List<Anchor> anchorList) {
+    public void save(List<Anchor> anchorList) 
+    {
         // TODO Auto-generated method stub
 
     }
 
+    @SuppressWarnings("unchecked")    
+    public List<Anchor> listByIds(List<Long> anchorIds)
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+        
+        if (anchorIds == null || anchorIds.size() == 0)
+        	return Collections.emptyList();
+ 
+        List<Anchor> result = Collections.emptyList();
+        
+        Query select = null;
+        StringBuffer ids = new StringBuffer("(");
+        for (Long id : anchorIds) 
+        {
+            if (ids.length() > 1) 
+            {
+            	ids.append(", ");
+            }
+            ids.append(id);
+        }
+        ids.append(")");
+        String query = "SELECT a from Anchor a WHERE a.id IN " + ids.toString();
+ 
+        select = entityManager.createQuery(query);
+        List rs = select.getResultList();
+        if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof Anchor)) 
+        {
+            result = (List<Anchor>) rs;
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("Exit");
+        
+        return result;    	
+    }
+    
     /*
      * (non-Javadoc)
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#setStatus(java.util.List, org.nhindirect.config.store.EntityStatus)
      */
-    public void setStatus(List<Long> anchorIDs, EntityStatus status) {
-        // TODO Auto-generated method stub
+    @Transactional(readOnly = false)        
+    public void setStatus(List<Long> anchorIDs, EntityStatus status) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+        
+        List<Anchor> anchors = listByIds(anchorIDs);
+        if (anchors == null || anchors.size() == 0)
+        	return;
+        
+        for (Anchor anchor : anchors)
+        {
+        	anchor.setStatus(status);
+        		entityManager.merge(anchor);
+        }
+        	
+        if (log.isDebugEnabled())
+            log.debug("Exit");
 
     }
 
@@ -99,8 +292,29 @@ public class AnchorDaoImpl implements AnchorDao {
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#setStatus(java.lang.String, org.nhindirect.config.store.EntityStatus)
      */
-    public void setStatus(String owner, EntityStatus status) {
-        // TODO Auto-generated method stub
+    @Transactional(readOnly = false)            
+    public void setStatus(String owner, EntityStatus status) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+        
+        if (owner == null)
+        	return;
+        
+        List<String> owners = new ArrayList<String>();
+        owners.add(owner);
+        List<Anchor> anchors = list(owners);
+        if (anchors == null || anchors.size() == 0)
+        	return;
+        
+        for (Anchor anchor : anchors)
+        {
+        	anchor.setStatus(status);
+        		entityManager.merge(anchor);
+        }
+        	
+        if (log.isDebugEnabled())
+            log.debug("Exit");
 
     }
 
@@ -109,9 +323,38 @@ public class AnchorDaoImpl implements AnchorDao {
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#delete(java.util.List)
      */
-    public void delete(List<Long> idList) {
-        // TODO Auto-generated method stub
+    @Transactional(readOnly = false)    
+    public void delete(List<Long> idList) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
 
+        if (idList != null && idList.size() > 0)
+        {
+	
+	
+	        StringBuffer ids = new StringBuffer("(");
+	        for (Long id : idList) 
+	        {
+	            if (ids.length() > 1) 
+	            {
+	            	ids.append(", ");
+	            }
+	            ids.append(id);
+	        }
+	        ids.append(")");
+	        String query = "DELETE FROM Anchor a WHERE a.id IN " + ids.toString();
+	        
+	        int count = 0;
+	        Query delete = entityManager.createQuery(query);
+	        count = delete.executeUpdate();
+	
+	        if (log.isDebugEnabled())
+	            log.debug("Exit: " + count + " anchor records deleted");
+        }
+        
+        if (log.isDebugEnabled())
+            log.debug("Exit");
     }
 
     /*
@@ -119,9 +362,24 @@ public class AnchorDaoImpl implements AnchorDao {
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#delete(java.lang.String)
      */
-    public void delete(String owner) {
-        // TODO Auto-generated method stub
+    @Transactional(readOnly = false)
+    public void delete(String owner) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
 
+        if (owner == null)
+        	return;
+        
+        int count = 0;
+        if (owner != null) {
+            Query delete = entityManager.createQuery("DELETE FROM Anchor a WHERE a.owner = ?1");
+            delete.setParameter(1, owner);
+            count = delete.executeUpdate();
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("Exit: " + count + " anchor records deleted");
     }
 
 }

@@ -21,7 +21,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.config.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import javax.jws.WebService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Service class for methods related to an Anchor object.
  */
+@WebService(endpointInterface = "org.nhindirect.config.service.AnchorService")
 public class AnchorServiceImpl implements AnchorService {
 
     private static final Log log = LogFactory.getLog(AnchorServiceImpl.class);
@@ -47,8 +53,11 @@ public class AnchorServiceImpl implements AnchorService {
      * @see org.nhindirect.config.service.AnchorService#addAnchors(java.util.Collection
      * )
      */
-    public void addAnchors(Collection<Anchor> anchors) throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
+    public void addAnchors(Collection<Anchor> anchors) throws ConfigurationServiceException
+    {
+    	if (anchors != null && anchors.size() > 0)
+    		for (Anchor anchor : anchors)
+    			dao.add(anchor);
 
     }
 
@@ -58,9 +67,21 @@ public class AnchorServiceImpl implements AnchorService {
      * @see org.nhindirect.config.service.AnchorService#getAnchor(java.lang.String, java.lang.String, org.nhindirect.config.service.impl.CertificateGetOptions)
      */
     public Anchor getAnchor(String owner, String thumbprint, CertificateGetOptions options)
-            throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-        return null;
+            throws ConfigurationServiceException 
+    {    	
+    	List<String> owners = new ArrayList<String>();
+    	owners.add(owner);
+    	
+    	List<Anchor> anchors = dao.list(owners);
+    	
+    	if (anchors == null || anchors.size() == 0)
+    		return null;
+    	
+    	for (Anchor anchor : anchors)
+    		if (anchor.getThumbprint().equalsIgnoreCase(thumbprint))
+    			return anchor;
+    	
+    	return null;
     }
 
     /*
@@ -69,9 +90,13 @@ public class AnchorServiceImpl implements AnchorService {
      * @see org.nhindirect.config.service.AnchorService#getAnchors(java.util.Collection, org.nhindirect.config.service.impl.CertificateGetOptions)
      */
     public Collection<Anchor> getAnchors(Collection<Long> anchorIds, CertificateGetOptions options)
-            throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-        return null;
+            throws ConfigurationServiceException 
+    {    	
+    	if (anchorIds == null || anchorIds.size() == 0)
+    		return Collections.emptyList();
+    	
+    	List<Long> ids = new ArrayList<Long>(anchorIds);   	    	
+    	return dao.listByIds(ids);
     }
 
     /*
@@ -80,9 +105,12 @@ public class AnchorServiceImpl implements AnchorService {
      * @see org.nhindirect.config.service.AnchorService#getAnchorsForOwner(java.lang.String, org.nhindirect.config.service.impl.CertificateGetOptions)
      */
     public Collection<Anchor> getAnchorsForOwner(String owner, CertificateGetOptions options)
-            throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-        return null;
+            throws ConfigurationServiceException 
+    {
+    	List<String> owners = new ArrayList<String>();
+    	owners.add(owner);
+    	
+    	return dao.list(owners);    	    	
     }
 
     /*
@@ -91,9 +119,19 @@ public class AnchorServiceImpl implements AnchorService {
      * @see org.nhindirect.config.service.AnchorService#getIncomingAnchors(java.lang.String, org.nhindirect.config.service.impl.CertificateGetOptions)
      */
     public Collection<Anchor> getIncomingAnchors(String owner, CertificateGetOptions options)
-            throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-        return null;
+            throws ConfigurationServiceException 
+    {    	
+        Collection<Anchor> anchors = getAnchorsForOwner(owner, options);
+        
+        if (anchors == null || anchors.size() == 0)
+        	return Collections.emptyList();
+
+        Collection<Anchor> retList = new ArrayList<Anchor>();
+        for (Anchor anchor : anchors)
+        	if (anchor.isIncoming())
+        		retList.add(anchor);
+        
+        return retList;
     }
 
     /*
@@ -102,9 +140,19 @@ public class AnchorServiceImpl implements AnchorService {
      * @see org.nhindirect.config.service.AnchorService#getOutgoingAnchors(java.lang.String, org.nhindirect.config.service.impl.CertificateGetOptions)
      */
     public Collection<Anchor> getOutgoingAnchors(String owner, CertificateGetOptions options)
-            throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-        return null;
+            throws ConfigurationServiceException 
+    {
+        Collection<Anchor> anchors = getAnchorsForOwner(owner, options);
+        
+        if (anchors == null || anchors.size() == 0)
+        	return Collections.emptyList();
+
+        Collection<Anchor> retList = new ArrayList<Anchor>();
+        for (Anchor anchor : anchors)
+        	if (anchor.isOutgoing())
+        		retList.add(anchor);
+        
+        return retList;
     }
 
     /*
@@ -112,9 +160,9 @@ public class AnchorServiceImpl implements AnchorService {
      * 
      * @see org.nhindirect.config.service.AnchorService#setAnchorStatusForOwner(java.lang.String, org.nhindirect.config.store.EntityStatus)
      */
-    public void setAnchorStatusForOwner(String owner, EntityStatus status) throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-
+    public void setAnchorStatusForOwner(String owner, EntityStatus status) throws ConfigurationServiceException 
+    {
+        dao.setStatus(owner, status);    	
     }
 
     /*
@@ -123,7 +171,8 @@ public class AnchorServiceImpl implements AnchorService {
      * @see org.nhindirect.config.service.AnchorService#listAnchors(java.lang.Long, int, org.nhindirect.config.service.impl.CertificateGetOptions)
      */
     public Collection<Anchor> listAnchors(Long lastAnchorID, int maxResults, CertificateGetOptions options)
-            throws ConfigurationServiceException {
+            throws ConfigurationServiceException 
+    {
         // TODO Auto-generated method stub
         return null;
     }
@@ -133,9 +182,14 @@ public class AnchorServiceImpl implements AnchorService {
      * 
      * @see org.nhindirect.config.service.AnchorService#removeAnchors(java.util.Collection)
      */
-    public void removeAnchors(Collection<Long> anchorIds) throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-
+    public void removeAnchors(Collection<Long> anchorIds) throws ConfigurationServiceException 
+    {
+    	if (anchorIds == null || anchorIds.size() == 0)
+    		return;
+    	
+    	List<Long> ids = new ArrayList<Long>(anchorIds);
+    	
+   		dao.delete(ids);
     }
 
     /*
@@ -143,9 +197,9 @@ public class AnchorServiceImpl implements AnchorService {
      * 
      * @see org.nhindirect.config.service.AnchorService#removeAnchorsForOwner(java.lang.String)
      */
-    public void removeAnchorsForOwner(String owner) throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-
+    public void removeAnchorsForOwner(String owner) throws ConfigurationServiceException 
+    {
+    	dao.delete(owner);
     }
 
     /**

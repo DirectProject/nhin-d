@@ -76,6 +76,15 @@
         <soap:fault name="ConfigurationServiceException" use="literal"/>
       </fault>
     </operation>
+    <operation name="getDomain">
+      <soap:operation soapAction="urn:GetDomain"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
     <operation name="addDomain">
       <soap:operation soapAction="urn:AddDomain"/>
       <input>
@@ -150,15 +159,6 @@
     </operation>
     <operation name="searchDomain">
       <soap:operation soapAction="urn:SearchDomain"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-    </operation>
-    <operation name="getDomain">
-      <soap:operation soapAction="urn:GetDomain"/>
       <input>
         <soap:body use="literal"/>
       </input>
@@ -393,6 +393,78 @@
     </operation>
     <operation name="listAnchors">
       <soap:operation soapAction="urn:ListAnchors"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addSetting">
+      <soap:operation soapAction="urn:AddSetting"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getAllSettings">
+      <soap:operation soapAction="urn:GetAllSettings"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getSettingByName">
+      <soap:operation soapAction="urn:GetSettingByName"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getSettingsByNames">
+      <soap:operation soapAction="urn:GetSettingsByNames"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="updateSetting">
+      <soap:operation soapAction="urn:UpdateSetting"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="deleteSetting">
+      <soap:operation soapAction="urn:DeleteSetting"/>
       <input>
         <soap:body use="literal"/>
       </input>
