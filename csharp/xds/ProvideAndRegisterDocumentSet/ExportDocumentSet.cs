@@ -247,11 +247,15 @@ namespace NHINDirect.XDS
 
             // create a SubmissionSetDocument for each document in the list
             SubmissionDocument aSubmissionDocument = null;
+            StreamReader sr = null;
             foreach (KeyValuePair<string, Stream> aDocByID in docsById)
             {
                 aSubmissionDocument = new SubmissionDocument();
                 aSubmissionDocument.documentID = aDocByID.Key;
-                //aSubmissionDocument.documentText = 
+                sr = new StreamReader(aDocByID.Value);
+                aSubmissionDocument.documentText = ASCIIEncoding.UTF8.GetBytes(sr.ReadToEnd());
+
+                pandRRequest.submissionDocuments.Add(aSubmissionDocument);
             }
 
             // add the metadata to the PandR Request
