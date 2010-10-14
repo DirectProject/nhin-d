@@ -22,9 +22,14 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.config.store;
 
 import java.io.ByteArrayInputStream;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
+import java.util.Enumeration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,6 +52,11 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Certificate {
 
+	static
+	{
+		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+	}	
+	
     private static final Log log = LogFactory.getLog(Certificate.class);
 
     public static final byte[] NULL_CERT = new byte[] {};
@@ -59,6 +69,7 @@ public class Certificate {
     private Calendar validStartDate;
     private Calendar validEndDate;
     private EntityStatus status;
+    private boolean privateKey;
 
     /**
      * Get the value of owner.
@@ -85,7 +96,7 @@ public class Certificate {
      * 
      * @return the value of data.
      */
-    @Column(name = "certificateData")
+    @Column(name = "certificateData",  length=4096)
     @Lob
     public byte[] getData() {
         return data;
@@ -107,6 +118,27 @@ public class Certificate {
         }
     }
 
+    /**
+     * Indicates if the certificate has a private key
+     * 
+     * @return 
+     */
+    @Column(name = "privateKey")
+    public boolean isPrivateKey() {
+        return privateKey;
+    }
+
+    /**
+     * Indicates if the certificate has a private key
+     * 
+     * @param data
+     *            
+     * @throws CertificateException
+     */
+    public void setPrivateKey(boolean b) throws CertificateException {
+        this.privateKey = b;
+    }    
+    
     private void setThumbprint(String aThumbprint) {
         thumbprint = aThumbprint;
 
@@ -240,7 +272,7 @@ public class Certificate {
     }
 
     private boolean hasData() {
-        return ((data != null) && (data.equals(NULL_CERT))) ? true : false;
+        return ((data != null) && (!data.equals(NULL_CERT))) ? true : false;
     }
 
     /**
@@ -259,13 +291,92 @@ public class Certificate {
         X509Certificate cert = null;
         try {
             validate();
-            ByteArrayInputStream bais = new ByteArrayInputStream(data);
-            cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(bais);
+            CertContainer container = toCredential();
+            cert = container.getCert();
             setThumbprint(Thumbprint.toThumbprint(cert).toString());
-            bais.close();
+            setPrivateKey(container.getKey() != null);
         } catch (Exception e) {
             setData(NULL_CERT);
             throw new CertificateException("Data cannot be converted to a valid X.509 Certificate", e);
         }
+    }
+    
+    public CertContainer toCredential() throws CertificateException 
+    {
+    	CertContainer certContainer = null;
+        try 
+        {
+            validate();
+            ByteArrayInputStream bais = new ByteArrayInputStream(data);
+            
+            // lets try this a as a PKCS12 data stream first
+            try
+            {
+            	KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+            	
+            	localKeyStore.load(bais, "".toCharArray());
+            	Enumeration<String> aliases = localKeyStore.aliases();
+
+
+        		// we are really expecting only one alias 
+        		if (aliases.hasMoreElements())        			
+        		{
+        			String alias = aliases.nextElement();
+        			X509Certificate cert = (X509Certificate)localKeyStore.getCertificate(alias);
+        			
+    				// check if there is private key
+    				Key key = localKeyStore.getKey(alias, "".toCharArray());
+    				if (key != null && key instanceof PrivateKey) 
+    				{
+    					certContainer = new CertContainer(cert, key);
+    					
+    				}
+        		}
+            }
+            catch (Exception e)
+            {
+            	// must not be a PKCS12 stream, go on to next step
+            }
+   
+            if (certContainer == null)            	
+            {
+            	//try X509 certificate factory next       
+                bais.reset();
+                bais = new ByteArrayInputStream(data);
+
+            	X509Certificate cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(bais);
+            	certContainer = new CertContainer(cert, null);
+            }
+            bais.close();
+        } 
+        catch (Exception e) 
+        {
+            throw new CertificateException("Data cannot be converted to a valid X.509 Certificate", e);
+        }
+        
+        return certContainer;
+    }
+    
+    public static class CertContainer
+    {
+		private final X509Certificate cert;
+    	private final Key key;
+    	
+    	public CertContainer(X509Certificate cert, Key key)
+    	{
+    		this.cert = cert;
+    		this.key = key;
+    	}
+    	
+    	public X509Certificate getCert() 
+    	{
+			return cert;
+		}
+
+		public Key getKey() 
+		{
+			return key;
+		}
+	
     }
 }

@@ -28,8 +28,11 @@
 
 package org.nhindirect.config.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -96,7 +99,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         context.checking(new Expectations()
         {
             {
-                // TODO
+                oneOf(certificateDao).save(certificates.iterator().next());
             }
         });
 
@@ -127,7 +130,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(certificateDao).load(owner, thumbprint);
             }
         });
 
@@ -158,7 +161,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(certificateDao).list(new ArrayList<Long>(certificateIds));
             }
         });
 
@@ -168,7 +171,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         try
         {
             Collection<Certificate> output = service.getCertificates(certificateIds, certificateOptions);
-            assertEquals("Output does not match expected", null, output);
+            assertEquals("Output does not match expected", Collections.emptyList(), output);
         }
         catch (Exception e)
         {
@@ -189,7 +192,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(certificateDao).list(owner);
             }
         });
 
@@ -199,7 +202,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         try
         {
             Collection<Certificate> output = service.getCertificatesForOwner(owner, certificateOptions);
-            assertEquals("Output does not match expected", null, output);
+            assertEquals("Output does not match expected", Collections.emptyList(), output);
         }
         catch (Exception e)
         {
@@ -220,7 +223,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(certificateDao).setStatus(owner, status);
             }
         });
 
@@ -244,12 +247,12 @@ public class CertificateServiceTest extends MockObjectTestCase
     {
         final CertificateDao certificateDao = context.mock(CertificateDao.class);
 
-        final Collection<Long> certificateIds = Arrays.asList(7L, 8L);
+        final List<Long> certificateIds = Arrays.asList(7L, 8L);
 
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(certificateDao).delete(certificateIds);
             }
         });
 
@@ -278,7 +281,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(certificateDao).delete(owner);
             }
         });
 
@@ -309,7 +312,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(certificateDao).list((String)null);
             }
         });
 
@@ -319,7 +322,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         try
         {
             Collection<Certificate> output = service.listCertificates(certificateId, maxResults, certificateOptions);
-            assertEquals("Output does not match expected", null, output);
+            assertEquals("Output does not match expected", Collections.emptyList(), output);
         }
         catch (Exception e)
         {

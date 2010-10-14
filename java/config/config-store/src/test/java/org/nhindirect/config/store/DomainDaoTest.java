@@ -39,6 +39,7 @@ public class DomainDaoTest  {
 			File baseLocation = new File("dummy.txt");
 			String fullDerbyHome = baseLocation.getAbsolutePath().substring(0, baseLocation.getAbsolutePath().lastIndexOf(File.separator)) + derbyHomeLoc;
 			System.setProperty("derby.system.home", fullDerbyHome);
+			
 		}
 		catch (Exception e)
 		{
@@ -162,6 +163,7 @@ public class DomainDaoTest  {
 		testCleanDatabase();
 		
 		Domain domain = new Domain("health.newdomain.com");
+		domain.setPostMasterEmail("postmaster@health.newdomain.com");
 		domain.setStatus(EntityStatus.NEW);
 		domainDao.add(domain);
 		assertEquals(1, domainDao.count());
@@ -170,7 +172,7 @@ public class DomainDaoTest  {
 		domainDao.delete("health.newdomain.com");
 		assertEquals(0, domainDao.count());
 	}
-		
+	
 	@Test
 	public void testSearchDomain() {
 		testCleanDatabase();
