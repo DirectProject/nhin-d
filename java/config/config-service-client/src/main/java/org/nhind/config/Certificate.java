@@ -16,6 +16,8 @@ public class Certificate  implements java.io.Serializable {
 
     private java.lang.String owner;
 
+    private boolean privateKey;
+
     private org.nhind.config.EntityStatus status;
 
     private java.util.Calendar validEndDate;
@@ -30,6 +32,7 @@ public class Certificate  implements java.io.Serializable {
            byte[] data,
            long id,
            java.lang.String owner,
+           boolean privateKey,
            org.nhind.config.EntityStatus status,
            java.util.Calendar validEndDate,
            java.util.Calendar validStartDate) {
@@ -37,6 +40,7 @@ public class Certificate  implements java.io.Serializable {
            this.data = data;
            this.id = id;
            this.owner = owner;
+           this.privateKey = privateKey;
            this.status = status;
            this.validEndDate = validEndDate;
            this.validStartDate = validStartDate;
@@ -124,6 +128,26 @@ public class Certificate  implements java.io.Serializable {
 
 
     /**
+     * Gets the privateKey value for this Certificate.
+     * 
+     * @return privateKey
+     */
+    public boolean isPrivateKey() {
+        return privateKey;
+    }
+
+
+    /**
+     * Sets the privateKey value for this Certificate.
+     * 
+     * @param privateKey
+     */
+    public void setPrivateKey(boolean privateKey) {
+        this.privateKey = privateKey;
+    }
+
+
+    /**
      * Gets the status value for this Certificate.
      * 
      * @return status
@@ -204,6 +228,7 @@ public class Certificate  implements java.io.Serializable {
             ((this.owner==null && other.getOwner()==null) || 
              (this.owner!=null &&
               this.owner.equals(other.getOwner()))) &&
+            this.privateKey == other.isPrivateKey() &&
             ((this.status==null && other.getStatus()==null) || 
              (this.status!=null &&
               this.status.equals(other.getStatus()))) &&
@@ -242,6 +267,7 @@ public class Certificate  implements java.io.Serializable {
         if (getOwner() != null) {
             _hashCode += getOwner().hashCode();
         }
+        _hashCode += (isPrivateKey() ? Boolean.TRUE : Boolean.FALSE).hashCode();
         if (getStatus() != null) {
             _hashCode += getStatus().hashCode();
         }
@@ -286,6 +312,12 @@ public class Certificate  implements java.io.Serializable {
         elemField.setXmlName(new javax.xml.namespace.QName("", "owner"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("privateKey");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "privateKey"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
