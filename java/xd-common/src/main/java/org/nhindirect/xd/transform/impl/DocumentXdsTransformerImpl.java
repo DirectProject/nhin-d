@@ -42,6 +42,7 @@ import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.common.DirectDocument;
 import org.nhindirect.xd.transform.DocumentXdsTransformer;
 import org.nhindirect.xd.transform.exception.TransformationException;
 import org.nhindirect.xd.transform.util.XmlUtils;
@@ -97,7 +98,6 @@ public class DocumentXdsTransformerImpl implements DocumentXdsTransformer
      * 
      * @see org.nhindirect.transform.DocumentXdsTransformer#transform(java.lang.String, java.util.List)
      */
-    @Deprecated
     @Override
     public ProvideAndRegisterDocumentSetRequestType transform(String meta, List<String> docs)
             throws TransformationException
@@ -132,6 +132,17 @@ public class DocumentXdsTransformerImpl implements DocumentXdsTransformer
         }
 
         return request;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.xd.transform.DocumentXdsTransformer#transform(org.nhindirect.xd.common.DirectDocument)
+     */
+    @Override
+    public ProvideAndRegisterDocumentSetRequestType transform(DirectDocument document) throws TransformationException
+    {
+        return transform(document.getData(), document.getMetadata().toString());
     }
 
 }

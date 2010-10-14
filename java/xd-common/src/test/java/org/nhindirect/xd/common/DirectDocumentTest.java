@@ -38,6 +38,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
 
+import sun.awt.SunHints.Value;
+
 /**
  * Unit tests for the DirectDocument class.
  * 
@@ -787,15 +789,16 @@ public class DirectDocumentTest extends TestCase
         DirectDocument document = new DirectDocument();
         DirectDocument.Metadata metadata = document.getMetadata();
 
-        String value = "input";
-        metadata.setSs_intendedRecipient(value);
+        List<String> values = Arrays.asList("input1", "input2");
+        metadata.setSs_intendedRecipient(values);
 
         String xml = metadata.toString();
 
         metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
-        assertEquals("Output does not match expected", value, metadata.getSs_intendedRecipient());
+        assertEquals("Output does not match expected", values.get(0), metadata.getSs_intendedRecipient().get(0));
+        assertEquals("Output does not match expected", values.get(1), metadata.getSs_intendedRecipient().get(1));
     }
 
     /**
@@ -1037,7 +1040,7 @@ public class DirectDocumentTest extends TestCase
         metadata.set_rpt_name("29");
         metadata.set_rpt_description("30");
         metadata.setSs_submissionTime(new Date());
-        metadata.setSs_intendedRecipient("32");
+        metadata.setSs_intendedRecipient(Arrays.asList("32.1", "32.2"));
         metadata.setSs_authorPerson("33");
         metadata.setSs_authorInstitution(Arrays.asList("34.1", "34.2"));
         metadata.setSs_authorRole("35");
