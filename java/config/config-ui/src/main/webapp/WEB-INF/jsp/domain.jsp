@@ -109,6 +109,14 @@
 		});
 
 	});
+	$(document).ready(function() 
+		    { 
+		        $("#addressTable").tablesorter();
+		        $("#certificatesTable").tablesorter();
+		        $("#anchorsTable").tablesorter(); 
+		    } 
+	); 
+		
 	</script>
 </head>
 <body>
@@ -229,7 +237,7 @@
 			modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}"
 			cssClass="cleanform" method="POST">
 			<form:hidden path="id" />
-			<table cellpadding="1px" cellspacing="1px" id="addressTable">
+			<table cellpadding="1px" cellspacing="1px" id="addressTable" class="tablesorter" >
 				<thead>
 					<tr>
 						<th width="30%">Email Address</th>
@@ -279,7 +287,7 @@
 		</fieldset>
 		</div>
 	</c:if>
-	<c:if test="${not empty certificateResults}">
+	<c:if test="${not empty certificatesResults}">
 		<div id="tab2" class="tab_content">
 		<fieldset style="width: 90%;" title="certificategroup">
 		<legend>Certificates:</legend>
@@ -291,28 +299,28 @@
 			<form:hidden path="id" />
 			<table cellpadding="1px" cellspacing="1px" id="certificateTable">
 				<tr>
-					<th><form:label path="displayName">Owner:
-			            <form:errors path="displayName" cssClass="error" />
+					<th><form:label path="owner">Owner:
+			            <form:errors path="owner" cssClass="error" />
 					</form:label></th>
-					<th><form:input path="displayName" /></th>
+					<th><form:input path="owner" /></th>
 				</tr>
 				<tr>
-					<th><form:label path="emailAddress">Thumbprint:
-			            <form:errors path="emailAddress" cssClass="error" />
+					<th><form:label path="thumbprint">Thumbprint:
+			            <form:errors path="thumbprint" cssClass="error" />
 					</form:label></th>
-					<th><form:input path="emailAddress" /></th>
+					<th><form:input path="thumbprint" /></th>
 				</tr>
 				<tr>
-					<th><form:label path="aStatus">Status: 
-		                <form:errors path="aStatus" cssClass="error" />
+					<th><form:label path="status">Status: 
+		                <form:errors path="status" cssClass="error" />
 					</form:label></th>
-					<th><form:select path="aStatus">
+					<th><form:select path="status">
 						<form:options items="${statusList}" />
 					</form:select></th>
 				</tr>
 				<tr>
-					<th><form:label path="type">Data:
-			            <form:errors path="type" cssClass="error" />
+					<th><form:label path="data">Data:
+			            <form:errors path="data" cssClass="error" />
 					</form:label></th>
 					<th><input type="file" name="file" /></th>
 				</tr>
@@ -324,16 +332,18 @@
 			value="/config/domain/removecertifcates" var="formUrlcertificates" />
 		<form:form modelAttribute="certificateForm"
 			action="${fn:escapeXml(formUrlcertificates)}" cssClass="cleanform"
-			method="POST">
+			method="POST" >
 			<form:hidden path="id" />
-			<table cellpadding="1px" cellspacing="1px" id="certificatesTable">
+			<table cellpadding="1px" cellspacing="1px" id="certificatesTable" class="tablesorter" >
 				<thead>
 					<tr>
-						<th width="30%">Email Address</th>
-						<th width="25%">Display Name</th>
-						<th width="15%">Type</th>
-						<th width="15%">Status</th>
-						<th width="15%">Sel</th>
+						<th width="30%">Owner</th>
+						<th width="15%">Thumb</th>
+						<th width="15%">create Time</th>
+						<th width="15%">Start Date</th>
+						<th width="15%">End Date</th>
+						<th width="7%">Stat</th>
+						<th width="3%">Sel</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -348,23 +358,25 @@
 								<tr class="oddRow">
 							</c:otherwise>
 						</c:choose>
-						<td width="30%"><a
-							href='../certificate?id=<c:out value="${certificates.id}"/>'>'${certificates.emailAddress}'</a></td>
-						<td width="25%"><c:out value="${certificates.displayName}" /></td>
-						<td width="15%"><c:out value="${certificates.type}" /></td>
-						<td width="15%"><c:out value="${certificates.status}" /></td>
-						<td width="15%"><form:checkbox path="remove"
-							value="${certificates.id}" /></td>
+						<td width="30%"><a href='../certificate?id=<c:out value="${certificates.id}"/>'>'${certificates.owner}'</a></td>
+						<td width="15%"><c:out value="${certificates.thumbprint}" /></td>
+						<td width="15%"><fmt:formatDate value="${certificates.createTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
+						<td width="15%"><fmt:formatDate value="${certificates.validStartDate.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
+						<td width="15%"><fmt:formatDate value="${certificates.validEndDate.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
+						<td width="7%"><c:out value="${certificates.status}" /></td>
+						<td width="3%"><form:checkbox path="remove" value="${certificates.id}" /></td>
 						</tr>
 					</c:forEach>
 				</tbody>
 				<tfoot>
 					<tr>
 						<th width="30%"></th>
-						<th width="25%"></th>
 						<th width="15%"></th>
 						<th width="15%"></th>
 						<th width="15%"></th>
+						<th width="15%"></th>
+						<th width="7%"></th>
+						<th width="3%"></th>
 					</tr>
 				</tfoot>
 			</table>
@@ -376,7 +388,7 @@
 		</fieldset>
 		</div>
 	</c:if>
-	<c:if test="${not empty anchorResults}">
+	<c:if test="${not empty anchorsResults}">
 		<div id="tab3" class="tab_content">
 			<fieldset style="width: 90%;" title="anchorgroup">
 			<legend>Anchors:</legend>
@@ -385,28 +397,28 @@
 					<form:hidden path="id" />
 						<table cellpadding="1px" cellspacing="1px" id="anchorTable">
 							<tr>
-								<th><form:label path="displayName">Owner:
-						            <form:errors path="displayName" cssClass="error" />
+								<th><form:label path="owner">Owner:
+						            <form:errors path="owner" cssClass="error" />
 								</form:label></th>
-								<th><form:input path="displayName" /></th>
+								<th><form:input path="owner" /></th>
 							</tr>
 							<tr>
-								<th><form:label path="emailAddress">Thumbprint:
-						            <form:errors path="emailAddress" cssClass="error" />
+								<th><form:label path="thumbprint">Thumbprint:
+						            <form:errors path="thumbprint" cssClass="error" />
 								</form:label></th>
-								<th><form:input path="emailAddress" /></th>
+								<th><form:input path="thumbprint" /></th>
 							</tr>
 							<tr>
-								<th><form:label path="aStatus">Status: 
-					                <form:errors path="aStatus" cssClass="error" />
+								<th><form:label path="status">Status: 
+					                <form:errors path="status" cssClass="error" />
 								</form:label></th>
-								<th><form:select path="aStatus">
+								<th><form:select path="status">
 									<form:options items="${statusList}" />
 								</form:select></th>
 							</tr>
 							<tr>
-								<th><form:label path="type">Data:
-						            <form:errors path="type" cssClass="error" />
+								<th><form:label path="data">Data:
+						            <form:errors path="data" cssClass="error" />
 								</form:label></th>
 								<th><input type="file" name="file" /></th>
 							</tr>
@@ -416,14 +428,18 @@
 				<fieldset style="width: 90%;" title="anchors"><spring:url value="/config/domain/removeanchors" var="formUrlremoveanchor" /> 
 				<form:form  modelAttribute="anchorForm" action="${fn:escapeXml(formUrlremoveanchor)}" cssClass="cleanform" method="POST">
 					<form:hidden path="id" />
-					<table cellpadding="1px" cellspacing="1px" id="anchorsTable">
+					<table cellpadding="1px" cellspacing="1px" id="anchorsTable" class="tablesorter" >
 						<thead>
 							<tr>
-								<th width="30%">Email Address</th>
-								<th width="25%">Display Name</th>
-								<th width="15%">Type</th>
-								<th width="15%">Status</th>
-								<th width="15%">Sel</th>
+								<th width="24%">Owner</th>
+								<th width="15%">Thumb</th>
+								<th width="15%">create Time</th>
+								<th width="15%">Start Date</th>
+								<th width="15%">End Date</th>
+								<th width="7%">Stat</th>
+								<th width="3%">In</th>
+								<th width="3%">Out</th>
+								<th width="3%">Sel</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -438,23 +454,29 @@
 										<tr class="oddRow">
 									</c:otherwise>
 								</c:choose>
-								<td width="30%"><a
-									href='../anchor?id=<c:out value="${anchors.id}"/>'>'${anchors.emailAddress}'</a></td>
-								<td width="25%"><c:out value="${anchors.displayName}" /></td>
-								<td width="15%"><c:out value="${anchors.type}" /></td>
+								<td width="24%"><a href='../anchor?id=<c:out value="${anchors.id}"/>'>'${anchors.owner}'</a></td>
+								<td width="15%"><c:out value="${anchors.thumbprint}" /></td>
+								<td width="15%"><fmt:formatDate value="${anchors.createTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
+								<td width="15%"><fmt:formatDate value="${anchors.validStartDate.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
+								<td width="15%"><fmt:formatDate value="${anchors.validEndDate.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
 								<td width="15%"><c:out value="${anchors.status}" /></td>
-								<td width="15%"><form:checkbox path="remove"
-									value="${anchors.id}" /></td>
+								<td width="7%"><c:out value="${anchors.incoming}" /></td>
+								<td width="3%"><c:out value="${anchors.outgoing}" /></td>
+								<td width="3%"><form:checkbox path="remove" value="${anchors.id}" /></td>
 								</tr>
 							</c:forEach>
 						</tbody>
 						<tfoot>
 							<tr>
-								<th width="30%"></th>
-								<th width="25%"></th>
+								<th width="24%"></th>
 								<th width="15%"></th>
 								<th width="15%"></th>
 								<th width="15%"></th>
+								<th width="15%"></th>
+								<th width="7%"></th>
+								<th width="3%"></th>
+								<th width="3%"></th>
+								<th width="3%"></th>
 							</tr>
 						</tfoot>
 					</table>
