@@ -1,5 +1,6 @@
 using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Web;
 
 namespace NHINDirect.Diagnostics
@@ -8,6 +9,13 @@ namespace NHINDirect.Diagnostics
     /// The LogFileSection class allows us to specify LogFileSettings in an
     /// app.config file.
     ///</summary>
+    /// <remarks>
+    /// If you are using this from a WCF service be sure to include 
+    ///     &lt;serviceHostingEnvironment aspNetCompatibilityEnabled="true" /&gt;
+    /// in your &lt;system.serviceModel /&gt; section and annotate your service
+    /// classes with the following:
+    ///     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
+    /// </remarks>
     /// <example>
     ///   &lt;!-- place this in the configSections --&gt;
     ///   &lt;section name="logging" type="NHINDirect.Diagnostics.LogFileSection"/&gt;
@@ -43,6 +51,11 @@ namespace NHINDirect.Diagnostics
                     ? HttpContext.Current.Server.MapPath(settings.DirectoryPath)
                     : settings.DirectoryPath.Replace("~", Environment.CurrentDirectory);
             }
+
+            EventLog.WriteEntry(settings.EventLogSource,
+                                "Writing log file to " + settings.DirectoryPath,
+                                EventLogEntryType.Information, 1);
+
             return settings;
         }
 
@@ -80,7 +93,7 @@ namespace NHINDirect.Diagnostics
         ///     &lt;eventLog threshold="Fatal" source="nhinConfigService" /&gt;
         /// </example>
         [ConfigurationProperty(EventLogTag)]
-        public EventLogElement EventLog
+        public EventLogElement EventLogInfo
         {
             get { return (EventLogElement)this[EventLogTag]; }
             set { this[EventLogTag] = value; }
@@ -95,8 +108,8 @@ namespace NHINDirect.Diagnostics
                            Ext = Location.Extension,
                            FileChangeFrequency = Behavior.RolloverFrequency,
                            Level = Behavior.Level,
-                           EventLogLevel = EventLog.Threshold,
-                           EventLogSource = EventLog.Source
+                           EventLogLevel = EventLogInfo.Threshold,
+                           EventLogSource = EventLogInfo.Source
                        };
         }
     }

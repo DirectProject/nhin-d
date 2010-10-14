@@ -35,32 +35,6 @@ package org.nhindirect.xd.transform.util;
  */
 public class XdConstants
 {
-    public static final String IDENTIFIABLE_TYPE_NS = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
-
-    /*---------------------------------------- */
-
-    public static final String EXTRINSIC_OBJECT_TYPE = "ExtrinsicObject";
-    public static final String REGISTRY_PACKAGE_TYPE = "RegistryPackage";
-    public static final String CLASSIFICATION_TYPE = "Classification";
-    public static final String ASSOCIATION_TYPE_1 = "Association";
-
-    public static final String CODING_SCHEME = "codingScheme";
-
-    public static final String LOINC = "LOINC";
-
     public static final String CCD_XMLNS = "urn:hl7-org:v3";
     public static final String CCD_EXTENSION = "POCD_HD000040";
-
-    public static final String CREATION_TIME = "creationTime";
-    public static final String SOURCE_PATIENT_ID = "sourcePatientId";
-    public static final String SOURCE_PATIENT_INFO = "sourcePatientInfo";
-
-    public static final String AUTHOR_PERSON = "authorPerson";
-    public static final String AUTHOR_INSTITUTION = "authorInstitution";
-    public static final String AUTHOR_ROLE = "authorRole";
-    
-    public static final String DEFAULT_PRACTICE_SETTING_CODE = "Multidisciplinary";
-    public static final String DEFAULT_FACILITY_CODE = "OF";
-    public static final String DEFAULT_CLASS_CODE = "History and Physical";
-    public static final String DEFAULT_LOINC_CODE = "34133-9";
 }

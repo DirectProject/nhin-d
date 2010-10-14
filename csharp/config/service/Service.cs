@@ -35,25 +35,15 @@ namespace NHINDirect.Config.Service
                 
         public Service()
         {   
-            try
-            {
-                InitializeContainer();
+            InitializeContainer();
 
-                ILogger logger = Log.For(this);
+            ILogger logger = Log.For(this);
 
-                m_settings = new ServiceSettings();
-                logger.Info("Starting Service");
+            m_settings = new ServiceSettings();
+            logger.Info("Starting Service");
 
-                m_store = new ConfigStore(m_settings.StoreConnectString);
-                logger.Info("Service Started Successfully");
-            }
-            catch(Exception ex)
-            {
-                // just in case the logging failed, try to write to the event log...
-                string msg = string.Format("Fatal error while initializing: {0}", ex);
-                EventLog.WriteEntry("nhinConfigService", msg, EventLogEntryType.Error);
-                throw;
-            }
+            m_store = new ConfigStore(m_settings.StoreConnectString);
+            logger.Info("Service Started Successfully");
         }
 
         private static void InitializeContainer()

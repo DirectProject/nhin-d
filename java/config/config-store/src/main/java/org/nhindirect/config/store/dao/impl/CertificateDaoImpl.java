@@ -21,27 +21,87 @@
 
 package org.nhindirect.config.store.dao.impl;
 
+import java.io.File;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.store.Certificate;
+import org.nhindirect.config.store.CertificateException;
 import org.nhindirect.config.store.EntityStatus;
+import org.nhindirect.config.store.Certificate.CertContainer;
 import org.nhindirect.config.store.dao.CertificateDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementing class for Certificate DAO methods.
  * 
  * @author ppyette
  */
-public class CertificateDaoImpl implements CertificateDao {
+@Repository
+public class CertificateDaoImpl implements CertificateDao 
+{
+    @PersistenceContext
+    @Autowired
+    private EntityManager entityManager;
 
+    private static final Log log = LogFactory.getLog(DomainDaoImpl.class);
+    
     /*
      * (non-Javadoc)
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#load(java.lang.String, java.lang.String)
      */
-    public Certificate load(String owner, String thumbprint) {
-        // TODO Auto-generated method stub
-        return null;
+    @SuppressWarnings("unchecked")
+    public Certificate load(String owner, String thumbprint) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+
+        List<Certificate> result = null;
+        Query select = null;
+        if (owner == null && thumbprint == null) 
+        {
+        	select = entityManager.createQuery("SELECT c from Certificate c");            
+        } 
+        else if (owner != null && thumbprint == null)
+        {
+        	select = entityManager.createQuery("SELECT c from Comain c WHERE c.owner = ?1");
+        	select.setParameter(1, owner);	
+        }
+        else if (owner == null && thumbprint != null)
+        {
+        	select = entityManager.createQuery("SELECT c from Comain c WHERE c.thumbprint = ?1");
+        	select.setParameter(1, thumbprint);	
+        }
+        else
+        {
+        	select = entityManager.createQuery("SELECT c from Comain c WHERE c.thumbprint = ?1 and c.owner = ?2");
+        	select.setParameter(1, thumbprint);
+        	select.setParameter(2, owner);	        	
+        }
+
+        List rs = select.getResultList();
+        if ((rs.size() != 0) && (rs.get(0) instanceof Certificate)) {
+            result = (List<Certificate>) rs;
+        }
+        else 
+        	return null;
+        
+        if (log.isDebugEnabled())
+            log.debug("Exit");
+        
+        return result.iterator().next();
     }
 
     /*
@@ -49,9 +109,42 @@ public class CertificateDaoImpl implements CertificateDao {
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#list(java.util.List)
      */
-    public List<Certificate> list(List<Long> idList) {
-        // TODO Auto-generated method stub
-        return null;
+    @SuppressWarnings("unchecked")
+    public List<Certificate> list(List<Long> idList) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+        
+        if (idList == null || idList.size() == 0)
+        	return Collections.emptyList();
+ 
+        List<Certificate> result = Collections.emptyList();
+        
+        Query select = null;
+        StringBuffer ids = new StringBuffer("(");
+        for (Long id : idList) 
+        {
+            if (ids.length() > 1) 
+            {
+            	ids.append(", ");
+            }
+            ids.append(id);
+        }
+        ids.append(")");
+        String query = "SELECT c from Certificate c WHERE c.id IN " + ids.toString();
+ 
+        select = entityManager.createQuery(query);
+        List rs = select.getResultList();
+        if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof Certificate)) 
+        {
+            result = (List<Certificate>) rs;
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("Exit");
+        
+        return result;    	
+
     }
 
     /*
@@ -59,9 +152,34 @@ public class CertificateDaoImpl implements CertificateDao {
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#list(java.lang.String)
      */
-    public List<Certificate> list(String owner) {
-        // TODO Auto-generated method stub
-        return null;
+    @SuppressWarnings("unchecked")
+    public List<Certificate> list(String owner) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+
+        List<Certificate> result = Collections.emptyList();
+        Query select = null;
+        if (owner == null) 
+        {
+        	select = entityManager.createQuery("SELECT c from Certificate c");            
+        } 
+        else if (owner != null)
+        {
+        	select = entityManager.createQuery("SELECT c from Certificate c WHERE c.owner = ?1");
+        	select.setParameter(1, owner);	
+        }
+
+        List rs = select.getResultList();
+        if ((rs.size() != 0) && (rs.get(0) instanceof Certificate)) {
+            result = (List<Certificate>) rs;
+        }
+        
+        if (log.isDebugEnabled())
+            log.debug("Exit");
+        
+        return result;
+    	
     }
 
     /*
@@ -69,9 +187,10 @@ public class CertificateDaoImpl implements CertificateDao {
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#save(org.nhindirect.config.store.Certificate)
      */
-    public void save(Certificate cert) {
-        // TODO Auto-generated method stub
-
+    @Transactional(readOnly = false)
+    public void save(Certificate cert) 
+    {
+    	save(Arrays.asList(cert));
     }
 
     /*
@@ -79,8 +198,61 @@ public class CertificateDaoImpl implements CertificateDao {
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#save(java.util.List)
      */
-    public void save(List<Certificate> certList) {
-        // TODO Auto-generated method stub
+    @Transactional(readOnly = false)
+    public void save(List<Certificate> certList) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+
+        if (certList != null && certList.size() > 0)
+        {
+        	for (Certificate cert : certList)
+        	{
+        		cert.setCreateTime(Calendar.getInstance());
+        	
+	        	try
+	        	{
+	        		CertContainer container = cert.toCredential();
+	        		X509Certificate xcert = container.getCert();
+	        		
+	        		
+	        		if (cert.getValidStartDate() == null)
+	        		{
+	        			Calendar startDate = Calendar.getInstance();
+	        			startDate.setTime(xcert.getNotBefore());
+	        			cert.setValidStartDate(startDate);
+	        		}
+	        		if (cert.getValidEndDate() == null)
+	        		{
+	        			Calendar endDate = Calendar.getInstance();
+	        			endDate.setTime(xcert.getNotAfter());
+	        			cert.setValidEndDate(endDate);
+	        		}
+	
+	        		if (cert.getStatus() == null)
+	        			cert.setStatus(EntityStatus.NEW);
+	        		
+	        		cert.setPrivateKey(container.getKey() != null);
+	        	}
+	        	catch (CertificateException e)
+	        	{
+	        		
+	        	}
+        	
+
+	        	if (log.isDebugEnabled())
+	        		log.debug("Calling JPA to persist the Certificate");
+
+	        	entityManager.persist(cert);
+	            if (log.isDebugEnabled())
+	                log.debug("Returned from JPA: Certificate ID=" + cert.getId());
+	        	
+        	}
+            entityManager.flush();
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("Exit");
 
     }
 
@@ -89,9 +261,23 @@ public class CertificateDaoImpl implements CertificateDao {
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#setStatus(java.util.List, org.nhindirect.config.store.EntityStatus)
      */
-    public void setStatus(List<Long> certificateIDs, EntityStatus status) {
-        // TODO Auto-generated method stub
-
+    public void setStatus(List<Long> certificateIDs, EntityStatus status) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+        
+        List<Certificate> certs = this.list(certificateIDs);
+        if (certs == null || certs.size() == 0)
+        	return;
+        
+        for (Certificate cert : certs)
+        {
+        	cert.setStatus(status);
+        		entityManager.merge(cert);
+        }
+        	
+        if (log.isDebugEnabled())
+            log.debug("Exit");
     }
 
     /*
@@ -99,9 +285,24 @@ public class CertificateDaoImpl implements CertificateDao {
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#setStatus(java.lang.String, org.nhindirect.config.store.EntityStatus)
      */
-    public void setStatus(String owner, EntityStatus status) {
-        // TODO Auto-generated method stub
-
+    @Transactional(readOnly = false)        
+    public void setStatus(String owner, EntityStatus status) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+        
+        List<Certificate> certs = list(owner);
+        if (certs == null || certs.size() == 0)
+        	return;
+        
+        for (Certificate cert : certs)
+        {
+        	cert.setStatus(status);
+        		entityManager.merge(cert);
+        }
+        	
+        if (log.isDebugEnabled())
+            log.debug("Exit");
     }
 
     /*
@@ -109,8 +310,38 @@ public class CertificateDaoImpl implements CertificateDao {
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#delete(java.util.List)
      */
-    public void delete(List<Long> idList) {
-        // TODO Auto-generated method stub
+    @Transactional(readOnly = false)        
+    public void delete(List<Long> idList) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+
+        if (idList != null && idList.size() > 0)
+        {
+	
+	
+	        StringBuffer ids = new StringBuffer("(");
+	        for (Long id : idList) 
+	        {
+	            if (ids.length() > 1) 
+	            {
+	            	ids.append(", ");
+	            }
+	            ids.append(id);
+	        }
+	        ids.append(")");
+	        String query = "DELETE FROM Certificate c WHERE c.id IN " + ids.toString();
+	        
+	        int count = 0;
+	        Query delete = entityManager.createQuery(query);
+	        count = delete.executeUpdate();
+	
+	        if (log.isDebugEnabled())
+	            log.debug("Exit: " + count + " certificate records deleted");
+        }
+        
+        if (log.isDebugEnabled())
+            log.debug("Exit");
 
     }
 
@@ -119,9 +350,24 @@ public class CertificateDaoImpl implements CertificateDao {
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#delete(java.lang.String)
      */
-    public void delete(String owner) {
-        // TODO Auto-generated method stub
+    public void delete(String owner) 
+    {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
 
+        if (owner == null)
+        	return;
+        
+        int count = 0;
+        if (owner != null) 
+        {
+            Query delete = entityManager.createQuery("DELETE FROM Certificate c WHERE c.owner = ?1");
+            delete.setParameter(1, owner);
+            count = delete.executeUpdate();
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("Exit: " + count + " certificate records deleted");
     }
 
 }

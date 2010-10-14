@@ -26,31 +26,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.xd.transform.util.type;
+package org.nhindirect.xd.common.type;
 
 /**
- * Enumeration for data identifying an Association element.
+ * Valid PracticeSettingCode values.
  * 
  * @author beau
  */
-public enum Association
+public enum PracticeSettingCodeEnum
 {
-    HAS_MEMBER("HasMember");
+    MULTIDISCIPLINARY("Multidisciplinary");
 
-    private String associationType;
+    private String value;
 
-    private Association(String associationType)
+    private PracticeSettingCodeEnum(String value)
     {
-        this.associationType = associationType;
+        this.value = value;
     }
 
     /**
-     * Get the value of associationType.
+     * Get the value of value.
      * 
-     * @return the value of associationType.
+     * @return the value of value.
      */
-    public String getAssociationType()
+    public String getValue()
     {
-        return this.associationType;
+        return this.value;
     }
 }

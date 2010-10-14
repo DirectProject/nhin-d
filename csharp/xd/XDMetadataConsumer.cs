@@ -36,7 +36,7 @@ namespace NHINDirect.Xd
         public static DocumentPackage Consume(XElement docPackageXElement)
         {
 
-            DocumentPackage docPackage = new DocumentPackage();
+            DocumentPackage docPackage = ConsumePackage(docPackageXElement.SubmissionSet());
 
             IEnumerable<XElement> docXEls = docPackageXElement.DocumentEntries();
 
@@ -46,6 +46,27 @@ namespace NHINDirect.Xd
             }
 
             return docPackage;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="packageXEl"></param>
+        /// <returns></returns>
+        public static DocumentPackage ConsumePackage(XElement packageXEl)
+        {
+            DocumentPackage package = new DocumentPackage();
+            package.Author = ConsumeAuthor(packageXEl.Classification(XDMetadataStandard.UUIDs.SubmissionSetAuthor));
+            package.Comments = packageXEl.DescriptionValue();
+            package.ContentTypeCode = ConsumeCodedValue(packageXEl.Classification(XDMetadataStandard.UUIDs.ContentTypeCode));
+            package.IntendedRecipients.AddAll(packageXEl.SlotValues<Recipient>(XDMetadataStandard.Slots.IntendedRecipient, r => Recipient.FromXONXCN(r)));
+            package.PatientId = packageXEl.ExternalIdentifierValue<PatientID>(XDMetadataStandard.UUIDs.SubmissionSetPatientId, s => PatientID.FromEscapedCx(s));
+            package.SourceId = packageXEl.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetSourceId);
+            package.SubmissionTime = packageXEl.SlotValue<DateTime?>(XDMetadataStandard.Slots.SubmissionTime, s => HL7Util.DateTimeFromHL7Value(s));
+            package.Title = packageXEl.NameValue();
+            package.UniqueId = packageXEl.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetUniqueId);
+
+            return package;
         }
 
         /// <summary>
@@ -117,6 +138,15 @@ namespace NHINDirect.Xd
             return worked ? i as int? : null;
         }
 
+        /// <summary>
+        /// Takes an IHE formatted multivalue Uri string and returns the joined URI
+        /// </summary>
+        /// <remarks>
+        /// The values are:
+        /// (1) A single value of "uri"
+        /// (2) A set of values, each one is of the form "n|uripart", where n must range from 0->n but where the set
+        /// is not guaranteed to be ordered. In this form, n may equal 1 :-)
+        /// </remarks>
         static string ConsumeUriValues(IEnumerable<string> values)
         {
             if (values == null) return null;

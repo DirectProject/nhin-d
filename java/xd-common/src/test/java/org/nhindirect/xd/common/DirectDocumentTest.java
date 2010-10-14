@@ -28,7 +28,9 @@
 
 package org.nhindirect.xd.common;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -93,7 +95,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getMimeType());
@@ -114,7 +116,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.get_eot_description());
@@ -135,7 +137,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", date.getYear(), metadata.getCreationTime().getYear());
@@ -161,7 +163,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getLanguageCode());
@@ -182,7 +184,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", date.getYear(), metadata.getServiceStartTime().getYear());
@@ -208,7 +210,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", date.getYear(), metadata.getServiceStopTime().getYear());
@@ -246,7 +248,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", sourcePatient.getFirstName(), metadata.getSourcePatient().getFirstName());
@@ -277,7 +279,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getAuthorPerson());
@@ -293,15 +295,16 @@ public class DirectDocumentTest extends TestCase
         DirectDocument document = new DirectDocument();
         DirectDocument.Metadata metadata = document.getMetadata();
 
-        String value = "input";
-        metadata.setAuthorInstitution(value);
+        List<String> values = Arrays.asList("input1", "input2");
+        metadata.setAuthorInstitution(values);
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
-        assertEquals("Output does not match expected", value, metadata.getAuthorInstitution());
+        assertEquals("Output does not match expected", values.get(0), metadata.getAuthorInstitution().get(0));
+        assertEquals("Output does not match expected", values.get(1), metadata.getAuthorInstitution().get(1));
     }
 
     /**
@@ -319,7 +322,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getAuthorRole());
@@ -340,7 +343,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getAuthorSpecialty());
@@ -361,10 +364,21 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getClassCode());
+        assertEquals("Output does not match expected", null, metadata.getClassCode_localized());
+        
+        metadata.setClassCode(value, true);
+
+        xml = metadata.toString();
+
+        metadata = new DirectDocument.Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getClassCode());
+        assertEquals("Output does not match expected", value, metadata.getClassCode_localized());
     }
 
     /**
@@ -382,7 +396,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getClassCode_localized());
@@ -403,10 +417,21 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getConfidentialityCode());
+        assertEquals("Output does not match expected", null, metadata.getConfidentialityCode_localized());
+        
+        metadata.setConfidentialityCode(value, true);
+
+        xml = metadata.toString();
+
+        metadata = new DirectDocument.Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getConfidentialityCode());
+        assertEquals("Output does not match expected", value, metadata.getConfidentialityCode_localized());
     }
 
     /**
@@ -424,7 +449,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getConfidentialityCode_localized());
@@ -445,10 +470,21 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getFormatCode());
+        assertEquals("Output does not match expected", null, metadata.getFormatCode_localized());        
+
+        metadata.setFormatCode(value, true);
+
+        xml = metadata.toString();
+
+        metadata = new DirectDocument.Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getFormatCode());
+        assertEquals("Output does not match expected", value, metadata.getFormatCode_localized());    
     }
 
     /**
@@ -466,7 +502,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getFormatCode_localized());
@@ -487,10 +523,21 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getHealthcareFacilityTypeCode());
+        assertEquals("Output does not match expected", null, metadata.getHealthcareFacilityTypeCode_localized());
+        
+        metadata.setHealthcareFacilityTypeCode(value, true);
+
+        xml = metadata.toString();
+
+        metadata = new DirectDocument.Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getHealthcareFacilityTypeCode());
+        assertEquals("Output does not match expected", value, metadata.getHealthcareFacilityTypeCode_localized());
     }
 
     /**
@@ -508,7 +555,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getHealthcareFacilityTypeCode_localized());
@@ -529,10 +576,21 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getPracticeSettingCode());
+        assertEquals("Output does not match expected", null, metadata.getPracticeSettingCode_localized());
+        
+        metadata.setPracticeSettingCode(value, true);
+
+        xml = metadata.toString();
+
+        metadata = new DirectDocument.Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getPracticeSettingCode());
+        assertEquals("Output does not match expected", value, metadata.getPracticeSettingCode_localized());
     }
 
     /**
@@ -550,7 +608,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getPracticeSettingCode_localized());
@@ -571,10 +629,21 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getLoinc());
+        assertEquals("Output does not match expected", null, metadata.getLoinc_localized());
+
+        metadata.setLoinc(value, true);
+
+        xml = metadata.toString();
+
+        metadata = new DirectDocument.Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getLoinc());
+        assertEquals("Output does not match expected", value, metadata.getLoinc_localized());
     }
 
     /**
@@ -592,7 +661,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getLoinc_localized());
@@ -613,7 +682,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getPatientId());
@@ -634,7 +703,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getUniqueId());
@@ -655,7 +724,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.get_rpt_name());
@@ -676,7 +745,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.get_rpt_description());
@@ -697,7 +766,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", date.getYear(), metadata.getSs_submissionTime().getYear());
@@ -723,7 +792,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getSs_intendedRecipient());
@@ -744,7 +813,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getSs_authorPerson());
@@ -760,15 +829,16 @@ public class DirectDocumentTest extends TestCase
         DirectDocument document = new DirectDocument();
         DirectDocument.Metadata metadata = document.getMetadata();
 
-        String value = "input";
-        metadata.setSs_authorInstitution(value);
+        List<String> values = Arrays.asList("input1", "input2");
+        metadata.setSs_authorInstitution(values);
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
-        assertEquals("Output does not match expected", value, metadata.getSs_authorInstitution());
+        assertEquals("Output does not match expected", values.get(0), metadata.getSs_authorInstitution().get(0));
+        assertEquals("Output does not match expected", values.get(1), metadata.getSs_authorInstitution().get(1));
     }
 
     /**
@@ -786,7 +856,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getSs_authorRole());
@@ -807,7 +877,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getSs_authorSpecialty());
@@ -828,10 +898,21 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getContentTypeCode());
+        assertEquals("Output does not match expected", null, metadata.getContentTypeCode_localized());
+        
+        metadata.setContentTypeCode(value, true);
+
+        xml = metadata.toString();
+
+        metadata = new DirectDocument.Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getContentTypeCode());
+        assertEquals("Output does not match expected", value, metadata.getContentTypeCode_localized());        
     }
 
     /**
@@ -849,7 +930,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getContentTypeCode_localized());
@@ -870,7 +951,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getSs_uniqueId());
@@ -891,7 +972,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getSs_sourceId());
@@ -912,7 +993,7 @@ public class DirectDocumentTest extends TestCase
 
         String xml = metadata.toString();
 
-        metadata = document.new Metadata();
+        metadata = new DirectDocument.Metadata();
         metadata.setValues(xml);
 
         assertEquals("Output does not match expected", value, metadata.getSs_patientId());
@@ -936,7 +1017,7 @@ public class DirectDocumentTest extends TestCase
         metadata.setServiceStopTime(new Date());
         metadata.setSourcePatient(new SimplePerson("Bob", "Smith"));
         metadata.setAuthorPerson("10");
-        metadata.setAuthorInstitution("11");
+        metadata.setAuthorInstitution(Arrays.asList("11.1", "11.2"));
         metadata.setAuthorRole("12");
         metadata.setAuthorSpecialty("13");
         metadata.setClassCode("14");
@@ -958,7 +1039,7 @@ public class DirectDocumentTest extends TestCase
         metadata.setSs_submissionTime(new Date());
         metadata.setSs_intendedRecipient("32");
         metadata.setSs_authorPerson("33");
-        metadata.setSs_authorInstitution("34");
+        metadata.setSs_authorInstitution(Arrays.asList("34.1", "34.2"));
         metadata.setSs_authorRole("35");
         metadata.setSs_authorSpecialty("36");
         metadata.setContentTypeCode("37");
@@ -1014,5 +1095,7 @@ public class DirectDocumentTest extends TestCase
         LOGGER.info("ss_sourceId                            " + metadata.getSs_sourceId());
         LOGGER.info("ss_patientId                           " + metadata.getSs_patientId());
         LOGGER.info("submissionSetStatus                    " + metadata.getSubmissionSetStatus());
+        
+        LOGGER.info(metadata.toString());
     }
 }

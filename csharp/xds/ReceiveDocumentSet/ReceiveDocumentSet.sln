@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+# Visual C# Express 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiveDocumentSet", "ReceiveDocumentSet.csproj", "{C09C7321-8400-4DBA-950F-92C3E618AF3E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "..\Common\Common.csproj", "{8284EBE6-AE5C-4920-9738-8169A75DE618}"

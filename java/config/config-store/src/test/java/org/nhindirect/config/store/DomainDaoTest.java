@@ -2,6 +2,7 @@ package org.nhindirect.config.store;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,11 +23,29 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "file:src/test/resources/configStore-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
 public class DomainDaoTest  {
+	
+	public static final String derbyHomeLoc = "/src/test/resources/data";	
+	
+	static
+	{
+		try
+		{
+			File baseLocation = new File("dummy.txt");
+			String fullDerbyHome = baseLocation.getAbsolutePath().substring(0, baseLocation.getAbsolutePath().lastIndexOf(File.separator)) + derbyHomeLoc;
+			System.setProperty("derby.system.home", fullDerbyHome);
+			
+		}
+		catch (Exception e)
+		{
+			
+		}
+	}	
 	
 	private static final Log log = LogFactory.getLog(DomainDaoTest.class);
 	
@@ -36,14 +55,31 @@ public class DomainDaoTest  {
 	@Autowired
 	private AddressDao addressDao;
 	
+	/*
+	 * MOD: Greg Meyer
+	 * Do not rely on the order of the tests in the class to ensure that prerequisites are met.  Each test
+	 * should be able to run independently without relying on the side affects of other tests.  If side affects
+	 * are needed, the execute the dependent tests from within that executing test. 
+	 */
+	
 	@Test
-	public void testCleanDatabase() {
+	public void testCleanDatabase() 
+	{
 		List<Domain> domains = domainDao.searchDomain(null, null);
+		
+		if (domains != null) 
+			for (Domain dom : domains)
+				domainDao.delete(dom.getDomainName());
+						
+		domains = domainDao.searchDomain(null, null);
 		assertEquals(0, domains.size());
 	}
 	
 	@Test
 	public void testAddDomain() {
+		
+		testCleanDatabase();
+		
 		Domain domain = new Domain("health.testdomain.com");
 		domain.setStatus(EntityStatus.ENABLED);
 		domainDao.add(domain);
@@ -52,6 +88,8 @@ public class DomainDaoTest  {
 	
 	@Test
 	public void testGetByDomain() {
+		testCleanDatabase();
+		
 		Domain domain = new Domain("health.testdomain.com");
 		domain.setStatus(EntityStatus.ENABLED);
 		domainDao.add(domain);
@@ -65,6 +103,8 @@ public class DomainDaoTest  {
 
 	@Test
 	public void testUpdateDomain() {
+		testCleanDatabase();
+		
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SS Z");
 		Domain domain = new Domain("health.testdomain.com");
 		domain.setStatus(EntityStatus.ENABLED);
@@ -92,6 +132,8 @@ public class DomainDaoTest  {
 	
 	@Test 
 	public void testGetDomain() {
+		testCleanDatabase();
+		
 		Domain domain = new Domain("health.testdomain.com");
 		domain.setStatus(EntityStatus.NEW);
 		domainDao.add(domain);
@@ -118,7 +160,10 @@ public class DomainDaoTest  {
 	
 	@Test 
 	public void testDeleteDomain() {
+		testCleanDatabase();
+		
 		Domain domain = new Domain("health.newdomain.com");
+		domain.setPostMasterEmail("postmaster@health.newdomain.com");
 		domain.setStatus(EntityStatus.NEW);
 		domainDao.add(domain);
 		assertEquals(1, domainDao.count());
@@ -127,9 +172,11 @@ public class DomainDaoTest  {
 		domainDao.delete("health.newdomain.com");
 		assertEquals(0, domainDao.count());
 	}
-		
+	
 	@Test
 	public void testSearchDomain() {
+		testCleanDatabase();
+		
 		log.debug("Enter");
 		Domain domain = new Domain("health.newdomain.com");
 		domain.setStatus(EntityStatus.NEW);
@@ -162,6 +209,8 @@ public class DomainDaoTest  {
 	 */
 	@Test 
 	public void testAddDomainsWithAddresses() {
+		testCleanDatabase();
+		
 		Domain domain = new Domain("health.newdomain.com");
 		domain.setStatus(EntityStatus.NEW);
 		domain.getAddresses().add(new Address(domain, "test1@health.newdomain.com", "Test1"));

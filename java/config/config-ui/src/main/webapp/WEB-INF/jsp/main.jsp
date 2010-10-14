@@ -38,9 +38,7 @@ $(document).ready(function()
 			 <form:radiobuttons path="status" items="${statusList}"/> 
 	        </fieldset>
 		<p>
-	<!-- 	<button type="submit">Search</button> -->
 		<button name="submitType" id="submitType" type="submit" value="search">Search</button>		
-<!-- 		<button type="submit" onclick='this.form.action = "domain"; return true;' style="align:right;">New Domain</button> -->
         <button name="submitType" id="submitType" type="submit" value="newdomain">New Domain</button>
 		
 		</p>
@@ -49,7 +47,8 @@ $(document).ready(function()
 	</div>
 	<c:if test="${not empty searchResults}">
 	<div id="dynamic">
-	   <form:form id="removeDomainForm" action="../domain/remove" cssClass="cleanform" method="POST" commandName="removeDomainForm" >
+		<spring:url value="/config/domain/remove" var="formUrlremove"/>
+	   <form:form modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST" >
 		<table class="tablesorter" id="domainTable">
 			<thead>
 				<tr>
@@ -65,12 +64,14 @@ $(document).ready(function()
 				<!--  Put the data from the searchResults attribute here -->
 				<c:forEach var="domain" items="${searchResults}" varStatus="rowCounter">
 				<tr>
-				    <td><a href='../domain?id=${domain.id}/>'>${domain.domainName}</a></td>  
+					<spring:url value="/config/domain?id=${domain.id}" var="formUrlclick"/>
+				    <td><a href='${fn:escapeXml(formUrlclick)}'>${domain.domainName}</a></td>  
 				    <td>${domain.postMasterEmail}</td>
 				    <td>${domain.status}</td>
 				    <td><fmt:formatDate value="${domain.createTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
-				    <td><fmt:formatDate value="${domain.updateTime.time}" pattern="MM/dd/yyyy, hh:mm"/>/></td>
-				    <td><input type="checkbox" name="remove${domain.id}"/></td>
+				    <td><fmt:formatDate value="${domain.updateTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
+				    <td><form:checkbox path="remove" value="${domain.id}" /></td>
+				    
 				</tr>
 				</c:forEach>	
 			</tbody>
@@ -85,6 +86,7 @@ $(document).ready(function()
 		        </tr>
 			</tfoot>
 		</table>
+		<button name="submitType" id="submitType" type="submit" value="delete">Delete</button>
 		</form:form>
 	</div>
 	</c:if>

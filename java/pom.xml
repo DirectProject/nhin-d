@@ -8,6 +8,7 @@
     <name>NHIN Direct reference implementation components</name>
     <description>NHIN Direct parent project for java reference implementation components.</description>
     <modules>
+        <module>./config</module>
         <module>./agent</module>
         <module>./gateway</module>
         <module>./xd-common</module>

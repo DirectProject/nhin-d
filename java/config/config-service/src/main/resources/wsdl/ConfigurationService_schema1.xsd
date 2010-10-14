@@ -19,9 +19,17 @@
 
   <xs:element name="addDomainResponse" type="tns:addDomainResponse"/>
 
+  <xs:element name="addSetting" type="tns:addSetting"/>
+
+  <xs:element name="addSettingResponse" type="tns:addSettingResponse"/>
+
   <xs:element name="contains" type="tns:contains"/>
 
   <xs:element name="containsResponse" type="tns:containsResponse"/>
+
+  <xs:element name="deleteSetting" type="tns:deleteSetting"/>
+
+  <xs:element name="deleteSettingResponse" type="tns:deleteSettingResponse"/>
 
   <xs:element name="domain" type="tns:domain"/>
 
@@ -32,6 +40,10 @@
   <xs:element name="getAddresss" type="tns:getAddresss"/>
 
   <xs:element name="getAddresssResponse" type="tns:getAddresssResponse"/>
+
+  <xs:element name="getAllSettings" type="tns:getAllSettings"/>
+
+  <xs:element name="getAllSettingsResponse" type="tns:getAllSettingsResponse"/>
 
   <xs:element name="getAnchor" type="tns:getAnchor"/>
 
@@ -76,6 +88,14 @@
   <xs:element name="getOutgoingAnchors" type="tns:getOutgoingAnchors"/>
 
   <xs:element name="getOutgoingAnchorsResponse" type="tns:getOutgoingAnchorsResponse"/>
+
+  <xs:element name="getSettingByName" type="tns:getSettingByName"/>
+
+  <xs:element name="getSettingByNameResponse" type="tns:getSettingByNameResponse"/>
+
+  <xs:element name="getSettingsByNames" type="tns:getSettingsByNames"/>
+
+  <xs:element name="getSettingsByNamesResponse" type="tns:getSettingsByNamesResponse"/>
 
   <xs:element name="listAddresss" type="tns:listAddresss"/>
 
@@ -140,6 +160,10 @@
   <xs:element name="updateDomain" type="tns:updateDomain"/>
 
   <xs:element name="updateDomainResponse" type="tns:updateDomainResponse"/>
+
+  <xs:element name="updateSetting" type="tns:updateSetting"/>
+
+  <xs:element name="updateSettingResponse" type="tns:updateSettingResponse"/>
 
   <xs:complexType name="getAnchor">
     <xs:sequence>
@@ -215,6 +239,7 @@
       <xs:element name="data" type="xs:base64Binary" minOccurs="0"/>
       <xs:element name="id" type="xs:long"/>
       <xs:element name="owner" type="xs:string" minOccurs="0"/>
+      <xs:element name="privateKey" type="xs:boolean"/>
       <xs:element name="status" type="tns:entityStatus" minOccurs="0"/>
       <xs:element name="validEndDate" type="xs:dateTime" minOccurs="0"/>
       <xs:element name="validStartDate" type="xs:dateTime" minOccurs="0"/>
@@ -228,6 +253,16 @@
   </xs:complexType>
 
   <xs:complexType name="removeDomainResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="deleteSetting">
+    <xs:sequence>
+      <xs:element name="names" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="deleteSettingResponse">
     <xs:sequence/>
   </xs:complexType>
 
@@ -281,6 +316,29 @@
     <xs:attribute name="id" type="xs:long"/>
   </xs:complexType>
 
+  <xs:complexType name="getSettingByName">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getSettingByNameResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:setting" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="setting">
+    <xs:sequence>
+      <xs:element name="createTime" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="id" type="xs:long"/>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="status" type="tns:entityStatus" minOccurs="0"/>
+      <xs:element name="updateTime" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="value" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="addDomain">
     <xs:sequence>
       <xs:element name="domain" type="tns:domain" minOccurs="0"/>
@@ -305,14 +363,14 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="addAddress">
-    <xs:sequence>
-      <xs:element name="address" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
+  <xs:complexType name="getAllSettings">
+    <xs:sequence/>
   </xs:complexType>
 
-  <xs:complexType name="addAddressResponse">
-    <xs:sequence/>
+  <xs:complexType name="getAllSettingsResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:setting" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="searchDomain">
@@ -326,6 +384,16 @@
     <xs:sequence>
       <xs:element name="return" type="tns:domain" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addAddress">
+    <xs:sequence>
+      <xs:element name="address" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addAddressResponse">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="getDomains">
@@ -363,6 +431,17 @@
     <xs:sequence>
       <xs:element name="return" type="xs:int"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addSetting">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="value" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addSettingResponse">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="removeCertificates">
@@ -409,6 +488,18 @@
   <xs:complexType name="listDomainsResponse">
     <xs:sequence>
       <xs:element name="return" type="tns:domain" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getSettingsByNames">
+    <xs:sequence>
+      <xs:element name="names" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getSettingsByNamesResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:setting" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -512,6 +603,17 @@
     <xs:sequence>
       <xs:element name="return" type="xs:int"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="updateSetting">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="value" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="updateSettingResponse">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="contains">

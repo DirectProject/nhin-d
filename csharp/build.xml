@@ -18,13 +18,13 @@
 
 	<!-- Aliases -->
 	<Target Name="build" DependsOnTargets="build-all" />
-	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway;build-xds" />
+	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway"/> <!-- REMOVED! ;build-xds -->
 
 	<Target Name="clean" DependsOnTargets="clean-all" />
 	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xds" />
 
 	<Target Name="test" DependsOnTargets="test-all" />
-	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xds" />
+	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway"/> <!-- REMOVED! ;test-xds -->
 
 	<Target Name="build-agent">
 		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=Debug" />
