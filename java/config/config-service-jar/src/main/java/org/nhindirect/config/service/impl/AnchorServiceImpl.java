@@ -173,8 +173,8 @@ public class AnchorServiceImpl implements AnchorService {
     public Collection<Anchor> listAnchors(Long lastAnchorID, int maxResults, CertificateGetOptions options)
             throws ConfigurationServiceException 
     {
-        // TODO Auto-generated method stub
-        return null;
+    	// just get all for now
+    	return dao.listAll();
     }
 
     /*

@@ -38,6 +38,7 @@ public class AnchorDaoTest
 			File baseLocation = new File("dummy.txt");
 			String fullDerbyHome = baseLocation.getAbsolutePath().substring(0, baseLocation.getAbsolutePath().lastIndexOf(File.separator)) + derbyHomeLoc;
 			System.setProperty("derby.system.home", fullDerbyHome);
+			
 		}
 		catch (Exception e)
 		{

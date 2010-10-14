@@ -35,6 +35,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.nhindirect.config.store.Address;
+import org.nhindirect.config.store.ConfigurationStoreException;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.store.dao.AddressDao;
@@ -86,6 +87,9 @@ public class DomainDaoImpl implements DomainDao {
         if (log.isDebugEnabled())
             log.debug("Enter");
 
+        if (item.getDomainName() == null || item.getDomainName().isEmpty())
+        	throw new ConfigurationStoreException("Domain name cannot be empty or null");
+        
         // Save and clear Address information until the Domain is saved.
         // This is really something that JPA should be doing, but doesn't seem
         // to work.
@@ -215,13 +219,28 @@ public class DomainDaoImpl implements DomainDao {
         if (log.isDebugEnabled())
             log.debug("Enter");
 
+        // delete addresses first if they exist
+        Domain domain = getDomainByName(name);
+        if (domain != null)
+        {
+        	Address inDb = entityManager.find(Address.class, domain.getPostmasterAddressId());
+        	if (inDb != null)
+        	{
+        		entityManager.remove(inDb);
+        		entityManager.flush();  // must commit or else the delete below will cause a constraint violation
+        	}
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("Exit");
+        
         int count = 0;
         if (name != null) {
             Query delete = entityManager.createQuery("DELETE FROM Domain d WHERE d.domainName = ?1");
             delete.setParameter(1, name);
             count = delete.executeUpdate();
         }
-
+        
         if (log.isDebugEnabled())
             log.debug("Exit: " + count + " domain records deleted");
     }
@@ -240,7 +259,9 @@ public class DomainDaoImpl implements DomainDao {
 
         if (name != null) {
             Query select = entityManager.createQuery("SELECT DISTINCT d from Domain d WHERE d.domainName = ?1");
-            result = (Domain) select.setParameter(1, name).getSingleResult();
+            Query paramQuery = select.setParameter(1, name);
+            if (paramQuery.getResultList().size() > 0)
+            	result = (Domain) paramQuery.getSingleResult();
         }
 
         if (log.isDebugEnabled())
@@ -290,8 +311,7 @@ public class DomainDaoImpl implements DomainDao {
             }
 
         }
-
-        @SuppressWarnings("rawtypes")
+        
         List rs = select.getResultList();
         if ((rs.size() != 0) && (rs.get(0) instanceof Domain)) {
             result = (List<Domain>) rs;
@@ -311,6 +331,7 @@ public class DomainDaoImpl implements DomainDao {
      */
     // TODO I'm not sure if this is doing the right thing. I suspect that the
     // real intent is to do some kind of db paging
+    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public List<Domain> listDomains(String name, int count) {
         if (log.isDebugEnabled())
@@ -330,7 +351,6 @@ public class DomainDaoImpl implements DomainDao {
             select.setMaxResults(count);
         }
 
-        @SuppressWarnings("rawtypes")
         List rs = select.getResultList();
         if ((rs.size() != 0) && (rs.get(0) instanceof Domain)) {
             result = (List<Domain>) rs;

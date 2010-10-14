@@ -21,6 +21,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.config.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.jws.WebService;
@@ -70,7 +71,10 @@ public class CertificateServiceImpl implements CertificateService {
      * @see org.nhindirect.config.service.CertificateService#addCertificates(java.util.Collection)
      */
     public void addCertificates(Collection<Certificate> certs) throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
+        
+    	if (certs != null && certs.size() > 0)
+    		for (Certificate cert : certs)
+    			dao.save(cert);
 
     }
 
@@ -81,8 +85,8 @@ public class CertificateServiceImpl implements CertificateService {
      */
     public Certificate getCertificate(String owner, String thumbprint, CertificateGetOptions options)
             throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-        return null;
+
+        return dao.load(owner, thumbprint);
     }
 
     /*
@@ -92,8 +96,8 @@ public class CertificateServiceImpl implements CertificateService {
      */
     public Collection<Certificate> getCertificates(Collection<Long> certIds, CertificateGetOptions options)
             throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-        return null;
+
+    	return dao.list(new ArrayList<Long>(certIds));
     }
 
     /*
@@ -103,8 +107,8 @@ public class CertificateServiceImpl implements CertificateService {
      */
     public Collection<Certificate> getCertificatesForOwner(String owner, CertificateGetOptions options)
             throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-        return null;
+
+    	return dao.list(owner);
     }
 
     /*
@@ -114,7 +118,8 @@ public class CertificateServiceImpl implements CertificateService {
      */
     public void setCertificateStatus(Collection<Long> certificateIDs, EntityStatus status)
             throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
+       
+    	dao.setStatus(new ArrayList<Long>(certificateIDs), status);
 
     }
 
@@ -124,7 +129,8 @@ public class CertificateServiceImpl implements CertificateService {
      * @see org.nhindirect.config.service.CertificateService#setCertificateStatusForOwner(java.lang.String, org.nhindirect.config.store.EntityStatus)
      */
     public void setCertificateStatusForOwner(String owner, EntityStatus status) throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
+    	
+        dao.setStatus(owner, status);
 
     }
 
@@ -134,7 +140,8 @@ public class CertificateServiceImpl implements CertificateService {
      * @see org.nhindirect.config.service.CertificateService#removeCertificates(java.util.Collection)
      */
     public void removeCertificates(Collection<Long> certificateIds) throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
+        
+    	dao.delete(new ArrayList<Long>(certificateIds));
 
     }
 
@@ -144,7 +151,8 @@ public class CertificateServiceImpl implements CertificateService {
      * @see org.nhindirect.config.service.CertificateService#removeCertificatesForOwner(java.lang.String)
      */
     public void removeCertificatesForOwner(String owner) throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
+        
+    	dao.delete(owner);
 
     }
 
@@ -155,8 +163,9 @@ public class CertificateServiceImpl implements CertificateService {
      */
     public Collection<Certificate> listCertificates(long lastCertificateID, int maxResults,
             CertificateGetOptions options) throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-        return null;
+      
+    	// just return all for now
+    	return dao.list((String)null);
     }
 
     /*
@@ -164,9 +173,10 @@ public class CertificateServiceImpl implements CertificateService {
      * 
      * @see org.nhindirect.config.service.CertificateService#contains(org.nhindirect.config.store.Certificate)
      */
-    public boolean contains(Certificate cert) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean contains(Certificate cert) 
+    {
+        return dao.load(cert.getOwner(), cert.getThumbprint()) != null;
+ 
     }
 
 }

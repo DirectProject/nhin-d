@@ -239,6 +239,7 @@
       <xs:element name="data" type="xs:base64Binary" minOccurs="0"/>
       <xs:element name="id" type="xs:long"/>
       <xs:element name="owner" type="xs:string" minOccurs="0"/>
+      <xs:element name="privateKey" type="xs:boolean"/>
       <xs:element name="status" type="tns:entityStatus" minOccurs="0"/>
       <xs:element name="validEndDate" type="xs:dateTime" minOccurs="0"/>
       <xs:element name="validStartDate" type="xs:dateTime" minOccurs="0"/>
@@ -372,16 +373,6 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="addAddress">
-    <xs:sequence>
-      <xs:element name="address" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="addAddressResponse">
-    <xs:sequence/>
-  </xs:complexType>
-
   <xs:complexType name="searchDomain">
     <xs:sequence>
       <xs:element name="name" type="xs:string" minOccurs="0"/>
@@ -393,6 +384,16 @@
     <xs:sequence>
       <xs:element name="return" type="tns:domain" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addAddress">
+    <xs:sequence>
+      <xs:element name="address" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addAddressResponse">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="getDomains">
