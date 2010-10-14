@@ -34,6 +34,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -42,6 +43,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.common.DirectDocument;
 import org.nhindirect.xd.transform.DocumentXdmTransformer;
 
 /**
@@ -180,6 +182,29 @@ public class DocumentXdmTransformerImpl implements DocumentXdmTransformer
         return temp;
 
     }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.xd.transform.DocumentXdmTransformer#transform(org.nhindirect.xd.common.DirectDocument, java.lang.String)
+     */
+    @Override
+    public File transform(DirectDocument document, String suffix, String messageId)
+    {
+        return transform(Arrays.asList(document.getData()), suffix, document.getMetadata().toString().getBytes(), messageId);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.xd.transform.DocumentXdmTransformer#transform(org.nhindirect.xd.common.DirectDocument)
+     */
+    @Override
+    public File transform(DirectDocument document)
+    {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
 
     /*
      * Get the index file.
@@ -259,5 +284,4 @@ public class DocumentXdmTransformerImpl implements DocumentXdmTransformer
 
         return bytes;
     }
-
 }
