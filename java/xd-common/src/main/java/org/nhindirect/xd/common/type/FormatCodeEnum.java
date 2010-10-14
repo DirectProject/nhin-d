@@ -26,61 +26,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.xd.transform.util.type;
-
-import org.apache.commons.lang.StringUtils;
+package org.nhindirect.xd.common.type;
 
 /**
- * Valid SlotType1 values.
+ * Valid FormatCode values.
  * 
  * @author beau
  */
-public enum SlotType1Enum
+public enum FormatCodeEnum
 {
-    CREATION_TIME("creationTime"),
-    LANGUAGE_CODE("languageCode"),
-    SERVICE_START_TIME("serviceStartTime"),
-    SERVICE_STOP_TIME("serviceStopTime"),
-    SOURCE_PATIENT_ID("sourcePatientId"),
-    SOURCE_PATIENT_INFO("sourcePatientInfo"),
-    AUTHOR_PERSON("authorPerson"),
-    AUTHOR_INSTITUTION("authorInstitution"),
-    AUTHOR_ROLE("authorRole"),
-    AUTHOR_SPECIALTY("authorSpecialty"),
-    CODING_SCHEME("codingScheme"),
-    SUBMISSION_TIME("submissionTime"),
-    INTENDED_RECIPIENT("intendedRecipient"),
-    SUBMISSION_SET_STATUS("SubmissionSetStatus");
+    TEXT("TEXT"),
+    CDAR2("CDAR2/IHE 1.0");
 
-    private String name;
+    private String value;
 
-    private SlotType1Enum(String name)
+    private FormatCodeEnum(String value)
     {
-        this.name = name;
-    }
-    
-    /**
-     * Check to see if a given string matches the current object name.
-     * 
-     * @param name
-     *            The string to compare.
-     * @return true if the values match, false otherwise.
-     */
-    public boolean matches(String name)
-    {
-        if (StringUtils.equals(this.name, name))
-            return true;
-
-        return false;
+        this.value = value;
     }
 
     /**
-     * Get the value of name.
+     * Get the value of value.
      * 
-     * @return the value of name.
+     * @return the value of value.
      */
-    public String getName()
+    public String getValue()
     {
-        return this.name;
+        return this.value;
     }
 }

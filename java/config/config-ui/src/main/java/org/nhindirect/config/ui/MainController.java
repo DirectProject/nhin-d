@@ -33,6 +33,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.service.DomainService;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
+import org.nhindirect.config.ui.form.AddressForm;
+import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.form.LoginForm;
 import org.nhindirect.config.ui.form.DomainForm;
 import org.nhindirect.config.ui.form.SearchDomainForm;
@@ -44,6 +46,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -71,6 +74,7 @@ public class MainController {
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public ModelAndView search (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
+						        @ModelAttribute SimpleForm simpleForm,
 						        Model model,
 						        @RequestParam(value="submitType") String actionPath)  { 		
 		if (log.isDebugEnabled()) log.debug("Enter search");
@@ -80,15 +84,26 @@ public class MainController {
 		ModelAndView mav = new ModelAndView();
 		// check to see if new domain requested
 		if(isLoggedIn(session) && actionPath.equalsIgnoreCase("newdomain")){
-			log.debug("trying to go to the new domain page");
+			if (log.isDebugEnabled()) log.debug("trying to go to the new domain page");
 			HashMap<String, String> msgs = new HashMap<String, String>();
 			mav.addObject("msgs", msgs);
+			
+			model.addAttribute("simpleForm",new SimpleForm());
+
+			AddressForm addrform = new AddressForm();
+			addrform.setId(0L);
+			model.addAttribute("addressForm",addrform);
+			// TODO: once certificates and anchors are available change code accordingly
+			model.addAttribute("certificateForm",addrform);
+			model.addAttribute("anchorForm",addrform);
+			String action = "Add";
 			DomainForm form = (DomainForm) session.getAttribute("domainForm");
 			if (form == null) {
 				form = new DomainForm();
 			}
 			model.addAttribute("domainForm", form);
-	
+			model.addAttribute("action", action);
+			
 			mav.setViewName("domain");
 			mav.addObject("actionPath", actionPath);
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
@@ -123,6 +138,7 @@ public class MainController {
 		}
 		else {
 			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));			
 		}
 		
 		if (log.isDebugEnabled()) log.debug("Exit");
@@ -194,6 +210,7 @@ public class MainController {
 		}
 		else {
 			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));
 		}
 		
 		if (log.isDebugEnabled()) log.debug("Exit");
@@ -223,6 +240,7 @@ public class MainController {
 		else {
 			model.addAttribute(new LoginForm());
 			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));
 		}
 		
 		if (log.isDebugEnabled()) log.debug("Exit");

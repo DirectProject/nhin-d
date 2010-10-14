@@ -30,6 +30,7 @@ namespace NHINDirect.Certificates
     public class DnsCertResolver : ICertificateResolver
     {
     	private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
+        Caching.DnsResponseCache m_cache = null;
 
     	IPAddress m_serverIP;
         string m_fallbackDomain = string.Empty;
@@ -93,6 +94,10 @@ namespace NHINDirect.Certificates
             m_timeout = timeout;
             m_fallbackDomain = fallbackDomain;
             m_cacheEnabled = cacheEnabled;
+            if (m_cacheEnabled)
+            {
+                m_cache = new NHINDirect.Caching.DnsResponseCache();
+            }
         }
 
         /// <summary>
@@ -274,7 +279,7 @@ namespace NHINDirect.Certificates
         
         DnsClient CreateDnsClient()
         {
-            DnsClient client = (m_cacheEnabled) ? new NHINDirect.Dns.DnsClientWithCache(m_serverIP) : new DnsClient(m_serverIP);
+            DnsClient client = (m_cacheEnabled) ? new NHINDirect.Dns.DnsClientWithCache(m_serverIP, m_cache) : new DnsClient(m_serverIP);
             if (Timeout.Ticks > 0)
             {
                 client.Timeout = Timeout;

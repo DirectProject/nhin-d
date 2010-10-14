@@ -83,7 +83,7 @@ namespace NHINDirect.Xd
 
         private void InitializeContentBase(string classifiedObject)
         {
-            this.Add(new XAttribute("classifiedObject", classifiedObject),
+            this.Add(new XAttribute(XDMetadataStandard.Attrs.ClassifiedObject, classifiedObject),
                    new XAttribute("objectType", "urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"));
         }
 

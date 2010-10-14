@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -58,11 +59,14 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.xd.common.exception.MetadataException;
+import org.nhindirect.xd.common.type.AssociationType1Enum;
+import org.nhindirect.xd.common.type.ClassificationTypeEnum;
+import org.nhindirect.xd.common.type.ExternalIdentifierTypeEnum;
+import org.nhindirect.xd.common.type.ExtrinsicObjectTypeEnum;
+import org.nhindirect.xd.common.type.SlotType1Enum;
+import org.nhindirect.xd.common.type.SubmitObjectsRequestEnum;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
 import org.nhindirect.xd.transform.util.XmlUtils;
-import org.nhindirect.xd.transform.util.type.ClassificationTypeEnum;
-import org.nhindirect.xd.transform.util.type.ExternalIdentifierTypeEnum;
-import org.nhindirect.xd.transform.util.type.SlotType1Enum;
 
 /**
  * Abstract representation of a document with supporting metadata.
@@ -137,7 +141,7 @@ public class DirectDocument
      * 
      * @author beau
      */
-    public class Metadata
+    static public class Metadata
     {
         private String mimeType;
         private String _eot_id;
@@ -151,7 +155,7 @@ public class DirectDocument
         private SimplePerson sourcePatient = new SimplePerson();
         
         private String authorPerson;
-        private String authorInstitution;
+        private List<String> authorInstitution = new ArrayList<String>();
         private String authorRole;
         private String authorSpecialty;
 
@@ -184,7 +188,7 @@ public class DirectDocument
         private String ss_intendedRecipient;
 
         private String ss_authorPerson;
-        private String ss_authorInstitution;
+        private List<String> ss_authorInstitution = new ArrayList<String>();
         private String ss_authorRole;
         private String ss_authorSpecialty;
 
@@ -231,16 +235,16 @@ public class DirectDocument
 
             QName qname = null;
 
-            qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "ExtrinsicObject");
+            qname = new QName(SubmitObjectsRequestEnum.EXTRINSIC_OBJECT.getNamespaceUri(), SubmitObjectsRequestEnum.EXTRINSIC_OBJECT.getName());
             JAXBElement<ExtrinsicObjectType> jaxb_extrinsicObjectType = new JAXBElement<ExtrinsicObjectType>(qname, ExtrinsicObjectType.class, extrinsicObjectType);
 
-            qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "RegistryPackage");
+            qname = new QName(SubmitObjectsRequestEnum.REGISTRY_PACKAGE.getNamespaceUri(), SubmitObjectsRequestEnum.REGISTRY_PACKAGE.getName());
             JAXBElement<RegistryPackageType> jaxb_registryPackageType = new JAXBElement<RegistryPackageType>(qname, RegistryPackageType.class, registryPackageType);
 
-            qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "Classification");
+            qname = new QName(SubmitObjectsRequestEnum.CLASSIFICATION.getNamespaceUri(), SubmitObjectsRequestEnum.CLASSIFICATION.getName());
             JAXBElement<ClassificationType> jaxb_classificationType = new JAXBElement<ClassificationType>(qname, ClassificationType.class, classificationType);
 
-            qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0", "Association");
+            qname = new QName(SubmitObjectsRequestEnum.ASSOCIATION.getNamespaceUri(), SubmitObjectsRequestEnum.ASSOCIATION.getName());
             JAXBElement<AssociationType1> jaxb_AssociationType = new JAXBElement<AssociationType1>(qname, AssociationType1.class, associationType);
 
             SubmitObjectsRequest submitObjectsRequest = new SubmitObjectsRequest();
@@ -262,16 +266,16 @@ public class DirectDocument
             ExtrinsicObjectType eot = new ExtrinsicObjectType();
 
             eot.setId(_eot_id);
-            eot.setObjectType("urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1");
             eot.setMimeType(mimeType);
-
+            eot.setObjectType(ExtrinsicObjectTypeEnum.DOC.getObjectType());
+            
             List<SlotType1> slots = eot.getSlot();
-            slots.add(makeSlot(SlotType1Enum.CREATION_TIME, creationTime != null ? (new SimpleDateFormat("yyyyMMdd")).format(creationTime) : null));
-            slots.add(makeSlot(SlotType1Enum.LANGUAGE_CODE, languageCode));
-            slots.add(makeSlot(SlotType1Enum.SERVICE_START_TIME, serviceStartTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStartTime) : null));
-            slots.add(makeSlot(SlotType1Enum.SERVICE_STOP_TIME, serviceStopTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStopTime) : null));
-            slots.add(makeSlot(SlotType1Enum.SOURCE_PATIENT_ID, sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg() + "&ISO"));
-            slots.add(makeSlot(SlotType1Enum.SOURCE_PATIENT_INFO, sourcePatient));
+            addSlot(slots, makeSlot(SlotType1Enum.CREATION_TIME, creationTime != null ? (new SimpleDateFormat("yyyyMMdd")).format(creationTime) : null));
+            addSlot(slots, makeSlot(SlotType1Enum.LANGUAGE_CODE, languageCode));
+            addSlot(slots, makeSlot(SlotType1Enum.SERVICE_START_TIME, serviceStartTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStartTime) : null));
+            addSlot(slots, makeSlot(SlotType1Enum.SERVICE_STOP_TIME, serviceStopTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStopTime) : null));
+            addSlot(slots, makeSlot(SlotType1Enum.SOURCE_PATIENT_ID, sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg() + "&ISO"));
+            addSlot(slots, makeSlot(SlotType1Enum.SOURCE_PATIENT_INFO, sourcePatient));
 
             eot.setName(makeInternationalStringType(classCode_localized));
             eot.setDescription(makeInternationalStringType(_eot_description));
@@ -283,10 +287,10 @@ public class DirectDocument
             authorClassification.setClassificationScheme(ClassificationTypeEnum.DOC_AUTHOR.getClassificationScheme());
 
             List<SlotType1> authorClassificationSlots = authorClassification.getSlot();
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_PERSON, authorPerson));
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_INSTITUTION, authorInstitution));
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_ROLE, authorRole));
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_SPECIALTY, authorSpecialty));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_PERSON, authorPerson));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_INSTITUTION, authorInstitution));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_ROLE, authorRole));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_SPECIALTY, authorSpecialty));
 
             eot.getClassification().add(authorClassification);
 
@@ -299,7 +303,7 @@ public class DirectDocument
             classCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_CLASS_CODE.getClassificationScheme());
 
             List<SlotType1> classCodeClassificationSlots = classCodeClassification.getSlot();
-            classCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CLASS_CODE.getCodingScheme()));
+            addSlot(classCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CLASS_CODE.getCodingScheme()));
 
             eot.getClassification().add(classCodeClassification);
 
@@ -312,7 +316,7 @@ public class DirectDocument
             confidentialityCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getClassificationScheme());
 
             List<SlotType1> confidentialityCodeClassificationSlots = confidentialityCodeClassification.getSlot();
-            confidentialityCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getCodingScheme()));
+            addSlot(confidentialityCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getCodingScheme()));
 
             eot.getClassification().add(confidentialityCodeClassification);
 
@@ -325,7 +329,7 @@ public class DirectDocument
             formatCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_FORMAT_CODE.getClassificationScheme());
 
             List<SlotType1> formatCodeClassificationSlots = formatCodeClassification.getSlot();
-            formatCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_FORMAT_CODE.getCodingScheme()));
+            addSlot(formatCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_FORMAT_CODE.getCodingScheme()));
 
             eot.getClassification().add(formatCodeClassification);
 
@@ -338,7 +342,7 @@ public class DirectDocument
             healthcareFacilityTypeCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getClassificationScheme());
 
             List<SlotType1> healthcareFacilityTypeCodeClassificationSlots = healthcareFacilityTypeCodeClassification.getSlot();
-            healthcareFacilityTypeCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getCodingScheme()));
+            addSlot(healthcareFacilityTypeCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getCodingScheme()));
 
             eot.getClassification().add(healthcareFacilityTypeCodeClassification);
 
@@ -351,7 +355,7 @@ public class DirectDocument
             practiceSettingCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getClassificationScheme());
 
             List<SlotType1> practiceSettingCodeClassificationSlots = practiceSettingCodeClassification.getSlot();
-            practiceSettingCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getCodingScheme()));
+            addSlot(practiceSettingCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getCodingScheme()));
 
             eot.getClassification().add(practiceSettingCodeClassification);
 
@@ -364,7 +368,7 @@ public class DirectDocument
             loincClassification.setClassificationScheme(ClassificationTypeEnum.DOC_LOINC.getClassificationScheme());
 
             List<SlotType1> loincClassificationSlots = loincClassification.getSlot();
-            loincClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_LOINC.getCodingScheme()));
+            addSlot(loincClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_LOINC.getCodingScheme()));
 
             eot.getClassification().add(loincClassification);
 
@@ -398,8 +402,8 @@ public class DirectDocument
             rpt.setId(_rpt_id);
 
             List<SlotType1> slots = rpt.getSlot();
-            slots.add(makeSlot(SlotType1Enum.SUBMISSION_TIME, ss_submissionTime != null ? (new SimpleDateFormat("yyyyMMddHHmmss")).format(ss_submissionTime) : null));
-            slots.add(makeSlot(SlotType1Enum.INTENDED_RECIPIENT, ss_intendedRecipient));
+            addSlot(slots, makeSlot(SlotType1Enum.SUBMISSION_TIME, ss_submissionTime != null ? (new SimpleDateFormat("yyyyMMddHHmmss")).format(ss_submissionTime) : null));
+            addSlot(slots, makeSlot(SlotType1Enum.INTENDED_RECIPIENT, ss_intendedRecipient));
 
             rpt.setName(makeInternationalStringType(_rpt_name));
             rpt.setDescription(makeInternationalStringType(_rpt_description));
@@ -411,10 +415,10 @@ public class DirectDocument
             authorClassification.setClassificationScheme(ClassificationTypeEnum.SS_AUTHOR.getClassificationScheme());
 
             List<SlotType1> authorClassificationSlots = authorClassification.getSlot();
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_PERSON, ss_authorPerson));
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_INSTITUTION, ss_authorInstitution));
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_ROLE, ss_authorRole));
-            authorClassificationSlots.add(makeSlot(SlotType1Enum.AUTHOR_SPECIALTY, ss_authorSpecialty));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_PERSON, ss_authorPerson));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_INSTITUTION, ss_authorInstitution));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_ROLE, ss_authorRole));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_SPECIALTY, ss_authorSpecialty));
 
             rpt.getClassification().add(authorClassification);
 
@@ -427,7 +431,7 @@ public class DirectDocument
             contentTypeCodeClassification.setClassificationScheme(ClassificationTypeEnum.SS_CONTENT_TYPE_CODE.getClassificationScheme());
 
             List<SlotType1> contentTypeCodeClassificationSlots = contentTypeCodeClassification.getSlot();
-            contentTypeCodeClassificationSlots.add(makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.SS_CONTENT_TYPE_CODE.getCodingScheme()));
+            addSlot(contentTypeCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.SS_CONTENT_TYPE_CODE.getCodingScheme()));
 
             rpt.getClassification().add(contentTypeCodeClassification);
 
@@ -468,9 +472,9 @@ public class DirectDocument
         {
             ClassificationType ct = new ClassificationType();
 
-            ct.setId("cl10");
             ct.setClassifiedObject(_rpt_id);
-            ct.setClassificationScheme("urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd");
+            ct.setId(ClassificationTypeEnum.SS.getClassificationId());
+            ct.setClassificationScheme(ClassificationTypeEnum.SS.getClassificationScheme());
 
             return ct;
         }
@@ -479,13 +483,13 @@ public class DirectDocument
         {
             AssociationType1 at = new AssociationType1();
 
-            at.setId("as01");
-            at.setAssociationType("HasMember");
             at.setSourceObject(_rpt_id);
             at.setTargetObject(_eot_id);
+            at.setId(AssociationType1Enum.HAS_MEMBER.getAssociationId());
+            at.setAssociationType(AssociationType1Enum.HAS_MEMBER.getAssociationType());
 
             List<SlotType1> slots = at.getSlot();
-            slots.add(makeSlot(SlotType1Enum.SUBMISSION_SET_STATUS, submissionSetStatus));
+            addSlot(slots, makeSlot(SlotType1Enum.SUBMISSION_SET_STATUS, submissionSetStatus));
 
             return at;
         }
@@ -667,7 +671,8 @@ public class DirectDocument
                                         if (tokens != null && tokens.length >= 5)
                                             sourcePatient.setZipCode(tokens[4]);
                                         
-                                        // TODO country ?
+                                        if (tokens != null && tokens.length >= 6)
+                                            sourcePatient.setCountry(tokens[5]);
                                     }
                                 }
                             }
@@ -688,7 +693,8 @@ public class DirectDocument
                                 else if (SlotType1Enum.AUTHOR_INSTITUTION.matches(slot.getName()))
                                 {
                                     if (slotNotEmpty(slot))
-                                        authorInstitution = slot.getValueList().getValue().get(0);
+                                        for (String value : slot.getValueList().getValue())
+                                            authorInstitution.add(value);
                                 }
                                 else if (SlotType1Enum.AUTHOR_ROLE.matches(slot.getName()))
                                 {
@@ -878,10 +884,9 @@ public class DirectDocument
                                 }
                                 else if (SlotType1Enum.AUTHOR_INSTITUTION.matches(slot.getName()))
                                 {
-                                    // FIXME: this had two values
-                                    
                                     if (slotNotEmpty(slot))
-                                        ss_authorInstitution = slot.getValueList().getValue().get(0);
+                                        for (String value : slot.getValueList().getValue())
+                                            ss_authorInstitution.add(value);
                                 }
                                 else if (SlotType1Enum.AUTHOR_ROLE.matches(slot.getName()))
                                 {
@@ -960,7 +965,7 @@ public class DirectDocument
         @Override
         public String toString()
         {
-            QName qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0", "SubmitObjectsRequest");
+            QName qname = new QName(SubmitObjectsRequestEnum.SUBMIT_OBJECTS_REQUEST.getNamespaceUri(), SubmitObjectsRequestEnum.SUBMIT_OBJECTS_REQUEST.getName());
             return XmlUtils.marshal(qname, getSubmitObjectsRequest(), ihe.iti.xds_b._2007.ObjectFactory.class);
         }
 
@@ -974,19 +979,50 @@ public class DirectDocument
             slot.setValueList(values);
 
             // <rim:Value>PID-3|pid1^^^domain</rim:Value>
-            vals.add("PID-3|" + person.getLocalId() + "^^^&" + person.getLocalOrg() + "&ISO");
+            StringBuffer pid3 = new StringBuffer("PID-3|");
+            pid3.append(person.getLocalId() != null ? person.getLocalId() : "");
+            pid3.append("^^^&");
+            pid3.append(person.getLocalOrg() != null ? person.getLocalOrg() : "");
+            pid3.append("&ISO");
+            
+            vals.add(pid3.toString());
 
             // <rim:Value>PID-5|Doe^John^Middle^^</rim:Value>
-            vals.add("PID-5|" + person.getLastName() + "^" + person.getFirstName() + "^" + person.getMiddleName() + "^^");
+            StringBuffer pid5 = new StringBuffer("PID-5|");
+            pid5.append(person.getLastName() != null ? person.getLastName() : "");
+            pid5.append("^");
+            pid5.append(person.getFirstName() != null ? person.getFirstName() : "");
+            pid5.append("^");
+            pid5.append(person.getMiddleName() != null ? person.getMiddleName() : "");
+            pid5.append("^^");
+            
+            vals.add(pid5.toString());
 
             // <rim:Value>PID-7|19560527</rim:Value>
-            vals.add("PID-7|" + person.getBirthDateTime()); // TODO check this format
+            StringBuffer pid7 = new StringBuffer("PID-7|");
+            pid7.append(person.getBirthDateTime() != null ? person.getBirthDateTime() : "");
 
+            vals.add(pid7.toString());
+            
             // <rim:Value>PID-8|M</rim:Value>
-            vals.add("PID-8|" + person.getGenderCode());
+            StringBuffer pid8 = new StringBuffer("PID-8|");
+            pid8.append(person.getGenderCode() != null ? person.getGenderCode() : "");
 
+            vals.add(pid8.toString());
+            
             // <rim:Value>PID-11|100 Main St^^Metropolis^Il^44130^USA</rim:Value>
-            vals.add("PID-11|" + person.getStreetAddress1() + "^^" + person.getCity() + "^" + person.getState() + "^" + person.getZipCode() + "^");
+            StringBuffer pid11 = new StringBuffer("PID-11|");
+            pid11.append(person.getStreetAddress1() != null ? person.getStreetAddress1() : "");
+            pid11.append("^^");
+            pid11.append(person.getCity() != null ? person.getCity() : "");
+            pid11.append("^");
+            pid11.append(person.getState() != null ? person.getState() : "");
+            pid11.append("^");
+            pid11.append(person.getZipCode() != null ? person.getZipCode() : "");
+            pid11.append("^");
+            pid11.append(person.getCountry() != null ? person.getCountry() : "");
+            
+            vals.add(pid11.toString());
 
             return slot;
         }
@@ -994,16 +1030,38 @@ public class DirectDocument
         private SlotType1 makeSlot(SlotType1Enum slotTypeEnum, String value)
         {
             SlotType1 slot = new SlotType1();
-            ValueListType values = new ValueListType();
-            List<String> vals = values.getValue();
+            ValueListType valueListType = new ValueListType();
+            List<String> vals = valueListType.getValue();
 
             slot.setName(slotTypeEnum.getName());
-            slot.setValueList(values);
+            slot.setValueList(valueListType);
             vals.add(value);
 
             return slot;
         }
 
+        private SlotType1 makeSlot(SlotType1Enum slotTypeEnum, List<String> values)
+        {
+            SlotType1 slot = new SlotType1();
+            ValueListType valueListType = new ValueListType();
+            List<String> vals = valueListType.getValue();
+
+            slot.setName(slotTypeEnum.getName());
+            slot.setValueList(valueListType);
+            vals.addAll(values);
+
+            return slot;
+        }
+        
+        private void addSlot(List<SlotType1> slots, SlotType1 slot)
+        {
+            if (slots == null)
+                slots = new ArrayList<SlotType1>();
+
+            if (slotNotEmpty(slot))
+                slots.add(slot);
+        }
+        
         private InternationalStringType makeInternationalStringType(String value)
         {
             InternationalStringType name = new InternationalStringType();
@@ -1017,8 +1075,8 @@ public class DirectDocument
 
         private boolean slotNotEmpty(SlotType1 slot)
         {
-            if (slot.getValueList() != null && slot.getValueList().getValue() != null
-                    && !slot.getValueList().getValue().isEmpty())
+            if (slot != null && slot.getValueList() != null && slot.getValueList().getValue() != null
+                    && !slot.getValueList().getValue().isEmpty() && slot.getValueList().getValue().get(0) != null)
                 return true;
 
             return false;
@@ -1171,7 +1229,7 @@ public class DirectDocument
         /**
          * @return the authorInstitution
          */
-        public String getAuthorInstitution()
+        public List<String> getAuthorInstitution()
         {
             return authorInstitution;
         }
@@ -1180,7 +1238,7 @@ public class DirectDocument
          * @param authorInstitution
          *            the authorInstitution to set
          */
-        public void setAuthorInstitution(String authorInstitution)
+        public void setAuthorInstitution(List<String> authorInstitution)
         {
             this.authorInstitution = authorInstitution;
         }
@@ -1233,9 +1291,24 @@ public class DirectDocument
          */
         public void setClassCode(String classCode)
         {
-            this.classCode = classCode;
+            setClassCode(classCode, false);
         }
 
+        /**
+         * @param classCode
+         *            the classCode to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value
+         */
+        public void setClassCode(String classCode, boolean setLocalized)
+        {
+            this.classCode = classCode;
+            
+            if (setLocalized)
+                this.classCode_localized = classCode;
+        }
+        
         /**
          * @return the classCode_localized
          */
@@ -1267,9 +1340,24 @@ public class DirectDocument
          */
         public void setConfidentialityCode(String confidentialityCode)
         {
-            this.confidentialityCode = confidentialityCode;
+            setConfidentialityCode(confidentialityCode, false);
         }
 
+        /**
+         * @param confidentialityCode
+         *            the confidentialityCode to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value
+         */
+        public void setConfidentialityCode(String confidentialityCode, boolean setLocalized)
+        {
+            this.confidentialityCode = confidentialityCode;
+            
+            if (setLocalized)
+                this.confidentialityCode_localized = confidentialityCode;
+        }
+        
         /**
          * @return the confidentialityCode_localized
          */
@@ -1301,9 +1389,24 @@ public class DirectDocument
          */
         public void setFormatCode(String formatCode)
         {
-            this.formatCode = formatCode;
+            setFormatCode(formatCode, false);
         }
 
+        /**
+         * @param formatCode
+         *            the formatCode to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value
+         */
+        public void setFormatCode(String formatCode, boolean setLocalized)
+        {
+            this.formatCode = formatCode;
+            
+            if (setLocalized)
+                formatCode_localized = formatCode;
+        }
+        
         /**
          * @return the formatCode_localized
          */
@@ -1320,7 +1423,7 @@ public class DirectDocument
         {
             formatCode_localized = formatCodeLocalized;
         }
-
+        
         /**
          * @return the healthcareFacilityTypeCode
          */
@@ -1335,7 +1438,22 @@ public class DirectDocument
          */
         public void setHealthcareFacilityTypeCode(String healthcareFacilityTypeCode)
         {
+            setHealthcareFacilityTypeCode(healthcareFacilityTypeCode, false);
+        }
+        
+        /**
+         * @param healthcareFacilityTypeCode
+         *            the healthcareFacilityTypeCode to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value
+         */
+        public void setHealthcareFacilityTypeCode(String healthcareFacilityTypeCode, boolean setLocalized)
+        {
             this.healthcareFacilityTypeCode = healthcareFacilityTypeCode;
+            
+            if (setLocalized)
+                this.healthcareFacilityTypeCode_localized = healthcareFacilityTypeCode;
         }
 
         /**
@@ -1369,7 +1487,22 @@ public class DirectDocument
          */
         public void setPracticeSettingCode(String practiceSettingCode)
         {
+            setPracticeSettingCode(practiceSettingCode, false);
+        }
+        
+        /**
+         * @param practiceSettingCode
+         *            the practiceSettingCode to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value  
+         */
+        public void setPracticeSettingCode(String practiceSettingCode, boolean setLocalized)
+        {
             this.practiceSettingCode = practiceSettingCode;
+            
+            if (setLocalized)
+                this.practiceSettingCode_localized = practiceSettingCode;
         }
 
         /**
@@ -1403,9 +1536,24 @@ public class DirectDocument
          */
         public void setLoinc(String loinc)
         {
-            this.loinc = loinc;
+            setLoinc(loinc, false);
         }
 
+        /**
+         * @param loinc
+         *            the loinc to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value  
+         */
+        public void setLoinc(String loinc, boolean setLocalized)
+        {
+            this.loinc = loinc;
+            
+            if (setLocalized)
+                this.loinc_localized = loinc;
+        }
+        
         /**
          * @return the loinc_localized
          */
@@ -1553,7 +1701,7 @@ public class DirectDocument
         /**
          * @return the ss_authorInstitution
          */
-        public String getSs_authorInstitution()
+        public List<String> getSs_authorInstitution()
         {
             return ss_authorInstitution;
         }
@@ -1562,7 +1710,7 @@ public class DirectDocument
          * @param ssAuthorInstitution
          *            the ss_authorInstitution to set
          */
-        public void setSs_authorInstitution(String ssAuthorInstitution)
+        public void setSs_authorInstitution(List<String> ssAuthorInstitution)
         {
             ss_authorInstitution = ssAuthorInstitution;
         }
@@ -1615,9 +1763,24 @@ public class DirectDocument
          */
         public void setContentTypeCode(String contentTypeCode)
         {
-            this.contentTypeCode = contentTypeCode;
+            setContentTypeCode(contentTypeCode, false);
         }
 
+        /**
+         * @param contentTypeCode
+         *            the contentTypeCode to set
+         * @param setLocalized
+         *            whether or not to set the localized field with the same
+         *            value  
+         */
+        public void setContentTypeCode(String contentTypeCode, boolean setLocalized)
+        {
+            this.contentTypeCode = contentTypeCode;
+            
+            if (setLocalized)
+                this.contentTypeCode_localized = contentTypeCode;
+        }
+        
         /**
          * @return the contentTypeCode_localized
          */

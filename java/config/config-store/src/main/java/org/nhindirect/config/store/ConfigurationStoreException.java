@@ -24,7 +24,7 @@ package org.nhindirect.config.store;
 /**
  * Custom exception class for the configuration store.
  */
-public class ConfigurationStoreException extends Exception {
+public class ConfigurationStoreException extends RuntimeException {
 
     private static final long serialVersionUID = 5845247795833630732L;
 

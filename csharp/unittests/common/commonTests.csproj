@@ -62,6 +62,7 @@
     <Compile Include="metadata\HL7UtilFacts.cs" />
     <Compile Include="metadata\PatientIDFacts.cs" />
     <Compile Include="metadata\PersonFacts.cs" />
+    <Compile Include="metadata\RecipientFacts.cs" />
     <Compile Include="Mime\BodyFacts.cs" />
     <Compile Include="Mime\CharReaderFacts.cs" />
     <Compile Include="Mime\MimeEntityCollectionFacts.cs" />

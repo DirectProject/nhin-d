@@ -35,12 +35,14 @@ import org.nhindirect.config.service.ConfigurationFault;
 import org.nhindirect.config.service.ConfigurationService;
 import org.nhindirect.config.service.ConfigurationServiceException;
 import org.nhindirect.config.service.DomainService;
+import org.nhindirect.config.service.SettingService;
 
 import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.Anchor;
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
+import org.nhindirect.config.store.Setting;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -49,7 +51,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @WebService(endpointInterface = "org.nhindirect.config.service.ConfigurationService")
 public class ConfigurationServiceImpl implements ConfigurationService {
-    private static Log log = LogFactory.getLog(ConfigurationServiceImpl.class);
+
+
+	private static Log log = LogFactory.getLog(ConfigurationServiceImpl.class);
 
     private DomainService domainSvc;
 
@@ -59,6 +63,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private AnchorService anchorSvc;
 
+    private SettingService settingSvc;
+    
     /**
      * Initialization method.
      */
@@ -398,6 +404,26 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     /**
+     * Get the SettingService object.
+     * 
+     * @return the SettingService object.
+     */
+    public SettingService getSettingSvc() {
+        return settingSvc;
+    }
+
+    /**
+     * Set the SettingService object.
+     * 
+     * @param settingSvc
+     *            The SettingService object.
+     */
+    @Autowired
+    public void setSettingSvc(SettingService settingSvc) {
+        this.settingSvc = settingSvc;
+    }
+
+    /**
      * Get the AnchorService object.
      * 
      * @return the AnchorService object.
@@ -415,8 +441,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Autowired
     public void setAnchorSvc(AnchorService anchorSvc) {
         this.anchorSvc = anchorSvc;
-    }
-
+    }    
+    
     /*
      * (non-Javadoc)
      * 
@@ -537,4 +563,65 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return anchorSvc.listAnchors(lastAnchorID, maxResults, options);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @FaultAction(className = ConfigurationFault.class)
+	public void addSetting(String name, String value)
+			throws ConfigurationServiceException {
+    	settingSvc.addSetting(name, value);
+		
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public Collection<Setting> getAllSettings()
+			throws ConfigurationServiceException {
+		return settingSvc.getAllSettings();
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public Setting getSettingByName(String name)
+			throws ConfigurationServiceException {
+		return settingSvc.getSettingByName(name);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public Collection<Setting> getSettingsByNames(Collection<String> names)
+			throws ConfigurationServiceException {
+		return settingSvc.getSettingsByNames(names);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void updateSetting(String name, String value)
+			throws ConfigurationServiceException {
+		settingSvc.updateSetting(name, value);
+		
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void deleteSetting(Collection<String> names) throws ConfigurationServiceException {
+		settingSvc.deleteSetting(names);
+		
+	}    
 }
