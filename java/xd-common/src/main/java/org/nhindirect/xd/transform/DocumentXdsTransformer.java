@@ -32,6 +32,7 @@ import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
 import java.util.List;
 
+import org.nhindirect.xd.common.DirectDocument;
 import org.nhindirect.xd.transform.exception.TransformationException;
 
 /**
@@ -56,6 +57,7 @@ public interface DocumentXdsTransformer
      * @return a ProvideAndRegisterDocumentSetRequestType object.
      * @throws TransformationException
      */
+    @Deprecated
     public ProvideAndRegisterDocumentSetRequestType transform(String document, String metadata)
             throws TransformationException;
 
@@ -69,11 +71,20 @@ public interface DocumentXdsTransformer
      *            The document data.
      * @return a ProvideAndRegisterDocumentSetRequestType object.
      * @throws TransformationException
-     * @Deprecated Deprecated until we find proper construction of
-     *             multi-documents.
      */
     @Deprecated
     public ProvideAndRegisterDocumentSetRequestType transform(String meta, List<String> docs)
             throws TransformationException;
+    
+    /**
+     * Transform a DirectDocument to a ProvideAndRegisterDocumentSetRequestType
+     * object
+     * 
+     * @param document
+     *            The DirectDocument to transform.
+     * @return a ProvideAndRegisterDocumentSetRequestType object.
+     * @throws TransformationException
+     */
+    public ProvideAndRegisterDocumentSetRequestType transform(DirectDocument document) throws TransformationException;
 
 }
