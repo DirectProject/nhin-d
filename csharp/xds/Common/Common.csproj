@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="CommonUtility.cs" />
     <Compile Include="Content.cs" />
+    <Compile Include="Document.cs" />
     <Compile Include="GlobalValues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegistryError.cs" />
