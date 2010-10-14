@@ -25,6 +25,8 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,9 +63,16 @@ public class AnchorDaoImpl implements AnchorDao {
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#load(java.lang.String)
      */
-    public Anchor load(String owner) {
-        // TODO Auto-generated method stub
-        return null;
+    public Anchor load(String owner) 
+    {
+    	// not sure what this will accomplish...  multiple anchors are always possible for an owner
+    	
+    	Collection<Anchor> anchors =  this.list(Arrays.asList(owner));
+    	
+    	if (anchors != null && anchors.size() > 0)
+    		return anchors.iterator().next();
+
+    	return null;
     }
 
     /*
@@ -149,9 +158,6 @@ public class AnchorDaoImpl implements AnchorDao {
         if (log.isDebugEnabled())
             log.debug("Enter");
 
-        // Save and clear Address information until the Domain is saved.
-        // This is really something that JPA should be doing, but doesn't seem
-        // to work.
         if (anchor != null)
         {
 

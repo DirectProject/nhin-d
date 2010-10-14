@@ -69,13 +69,6 @@
 			<artifactId>commons-logging</artifactId>
 			<version>1.0.4</version>
 		</dependency>		
-		<dependency>
-			<groupId>org.nhind</groupId>
-			<artifactId>config-service</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<type>war</type>
-			<scope>test</scope>
-		</dependency>		
 		<dependency>  
 			<groupId>org.mortbay.jetty</groupId>  
 			<artifactId>jetty-servlet-tester</artifactId>  

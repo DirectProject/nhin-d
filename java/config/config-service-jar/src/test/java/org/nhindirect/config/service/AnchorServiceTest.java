@@ -330,7 +330,7 @@ public class AnchorServiceTest extends MockObjectTestCase
         context.checking(new Expectations()
         {
             {
-                // TODO
+            	oneOf(anchorDao).listAll();
             }
         });
 
@@ -340,7 +340,7 @@ public class AnchorServiceTest extends MockObjectTestCase
         try
         {
             Collection<Anchor> output = service.listAnchors(anchorId, maxResults, certificateOptions);
-            assertEquals("Output does not match expected", null, output);
+            assertEquals("Output does not match expected", Collections.emptyList(), output);
         }
         catch (Exception e)
         {

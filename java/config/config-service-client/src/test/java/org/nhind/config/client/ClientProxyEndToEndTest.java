@@ -63,7 +63,8 @@ public class ClientProxyEndToEndTest
 		
 		Domain domain = new Domain();
 		domain.setDomainName("health.testdomain.com");
-				
+		domain.setPostMasterEmail("postmaster@health.testdomain.com");
+		
 		proxy.addDomain(domain);
 		
 		int count = proxy.getDomainCount();

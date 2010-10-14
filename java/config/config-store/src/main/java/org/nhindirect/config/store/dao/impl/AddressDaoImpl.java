@@ -134,7 +134,7 @@ public class AddressDaoImpl implements AddressDao {
     public void delete(String name) {
         if (log.isDebugEnabled())
             log.debug("Enter");
-
+        
         int count = 0;
         if (name != null) {
             Query delete = entityManager.createQuery("DELETE FROM Address a WHERE a.emailAddress = ?1");
