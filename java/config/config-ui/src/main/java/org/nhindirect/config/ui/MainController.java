@@ -34,6 +34,7 @@ import org.nhindirect.config.service.DomainService;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.ui.form.AddressForm;
+import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.form.LoginForm;
 import org.nhindirect.config.ui.form.DomainForm;
 import org.nhindirect.config.ui.form.SearchDomainForm;
@@ -92,6 +93,7 @@ public class MainController {
 			AddressForm addrform = new AddressForm();
 			addrform.setId(0L);
 			model.addAttribute("addressForm",addrform);
+			// TODO: once certificates and anchors are available change code accordingly
 			model.addAttribute("certificateForm",addrform);
 			model.addAttribute("anchorForm",addrform);
 			String action = "Add";
