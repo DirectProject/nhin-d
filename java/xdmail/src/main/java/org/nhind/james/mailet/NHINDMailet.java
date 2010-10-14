@@ -55,10 +55,7 @@ public class NHINDMailet extends GenericMailet {
     
     private MimeXdsTransformer mimeXDSTransformer;
     private DocumentRepository documentRepository;
-    
-    /**
-     * Class logger.
-     */
+
     private static final Log LOGGER = LogFactory.getFactory().getInstance(NHINDMailet.class);
     
     /*
@@ -75,31 +72,33 @@ public class NHINDMailet extends GenericMailet {
             throw new MessagingException("NHINDMailet endpoint URL cannot be empty or null.");
         }
 
-        try {
-            boolean forwardToXdr = true; // should be based on some routing
-            
-            if (forwardToXdr) {
-                List<ProvideAndRegisterDocumentSetRequestType> requests = getMimeXDSTransformer().transform(mail
-                        .getMessage());
+        try
+        {
+            List<ProvideAndRegisterDocumentSetRequestType> requests = getMimeXDSTransformer().transform(mail.getMessage());
 
-                for (ProvideAndRegisterDocumentSetRequestType request : requests) {
-                    @SuppressWarnings("unused")
-                    String response = getDocumentRepository().forwardRequest(endpointUrl, request);
+            for (ProvideAndRegisterDocumentSetRequestType request : requests)
+            {
+                String response = getDocumentRepository().forwardRequest(endpointUrl, request);
 
-                    // if (!isSuccessful(response))
-                    // ??
-                }
-
-            } else {
-                // forward it to another email server based on routing
-                // information
+                if (!isSuccessful(response))
+                    throw new MessagingException("Unsuccessful response received");
             }
 
             mail.setState(Mail.GHOST);
-        } catch (Throwable e) {
+        }
+        catch (Throwable e)
+        {
             LOGGER.error("NHINDMailet delivery failure", e);
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean isSuccessful(String response)
+    {
+        if (StringUtils.contains(response, "Failure"))
+            return false;
+
+        return true;
     }
 
     /*
