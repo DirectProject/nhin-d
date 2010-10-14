@@ -92,7 +92,7 @@ public class NHINDClientTest extends TestCase
         DirectDocument document2 = new DirectDocument(getDocumentAsFile());
         DirectDocument.Metadata metadata2 = document2.getMetadata();
         metadata2.setValues(getMeta());
-        metadata2.setSs_intendedRecipient("|beau+document2@nologs.org^Smith^John^^^Dr^^^&amp;1.3.6.1.4.1.21367.3100.1&amp;ISO");
+        metadata2.setSs_intendedRecipient(Arrays.asList("|beau+document2@nologs.org^Smith^John^^^Dr^^^&amp;1.3.6.1.4.1.21367.3100.1&amp;ISO"));
         message.addDocument(document2);
 
         NHINDClient client = new NHINDClientImpl(NHINDClientConfig.DEFAULT);

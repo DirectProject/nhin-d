@@ -40,7 +40,7 @@ import javax.xml.namespace.QName;
 import junit.framework.TestCase;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
-import org.nhind.util.XMLUtils;
+import org.nhindirect.xd.transform.util.XmlUtils;
 
 /**
  *
@@ -86,7 +86,7 @@ public class XDRTest extends TestCase {
         ProvideAndRegisterDocumentSetRequestType body = null;
         try {
             String request = getTestRequest();
-            JAXBElement jb = (JAXBElement) XMLUtils.unmarshal(request, ihe.iti.xds_b._2007.ObjectFactory.class);
+            JAXBElement jb = (JAXBElement) XmlUtils.unmarshal(request, ihe.iti.xds_b._2007.ObjectFactory.class);
             body = (ProvideAndRegisterDocumentSetRequestType) jb.getValue();
         } catch (Exception x) {
             x.printStackTrace();
@@ -101,7 +101,7 @@ public class XDRTest extends TestCase {
         try {
             qname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0", "RegistryResponseType");
 
-            sresult = XMLUtils.marshal(qname, result, oasis.names.tc.ebxml_regrep.xsd.rs._3.ObjectFactory.class);
+            sresult = XmlUtils.marshal(qname, result, oasis.names.tc.ebxml_regrep.xsd.rs._3.ObjectFactory.class);
         } catch (Exception x) {
             x.printStackTrace();
             fail("Failed unmarshalling response");
@@ -118,6 +118,8 @@ public class XDRTest extends TestCase {
     public void testDocumentRepositoryRetrieveDocumentSet() {
         try {
             XDR instance = new XDR();
+            
+            @SuppressWarnings("unused")
             RetrieveDocumentSetResponseType response = null;
             RetrieveDocumentSetRequestType body = new RetrieveDocumentSetRequestType();
 
