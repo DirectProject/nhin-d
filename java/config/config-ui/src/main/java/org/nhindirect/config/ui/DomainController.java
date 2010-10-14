@@ -31,6 +31,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.config.service.AddressService;
+import org.nhindirect.config.service.AnchorService;
+import org.nhindirect.config.service.CertificateService;
 import org.nhindirect.config.service.ConfigurationServiceException;
 import org.nhindirect.config.service.DomainService;
 import org.nhindirect.config.store.Domain;
@@ -57,6 +60,12 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.Anchor;
+import java.io.FileOutputStream;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+
+
 @Controller
 @RequestMapping("/domain")
 public class DomainController {
@@ -64,7 +73,16 @@ public class DomainController {
 	
 	@Inject
 	private DomainService dService;
+
+	@Inject
+	private AddressService aService;
 	
+	@Inject
+	private AnchorService anchorService;
+	
+	@Inject
+	private CertificateService certService;
+
 	public DomainController() {
 		if (log.isDebugEnabled()) log.debug("DomainController initialized");
 	}
@@ -177,7 +195,11 @@ public class DomainController {
 						    		log.debug("domain address id: " + t.getId());
 						    		log.debug(" ");
 						    	}
-					    		dom.getAddresses().remove(t);	
+					    		dom.getAddresses().remove(t);
+					    		if(aService != null){
+					    			if (log.isDebugEnabled()) log.debug("Address Service is not null. Now trying to remove address: "+t.getEmailAddress());
+					    			aService.removeAddress(t.getEmailAddress());
+					    		}
 						    	if (log.isDebugEnabled()){
 						    		log.debug(" REMOVED ");
 						    		log.debug(" ");
@@ -421,8 +443,13 @@ public class DomainController {
 				addrform.setId(dId);
 				model.addAttribute("addressForm",addrform);
 				// TODO: once certificates and anchors are available change code accordingly
-				model.addAttribute("certificateForm",addrform);
-				model.addAttribute("anchorForm",addrform);
+				CertificateForm cform = new CertificateForm();
+				cform.setId(dId);
+				AnchorForm aform = new AnchorForm();
+				aform.setId(dId);
+				
+				model.addAttribute("certificateForm",cform);
+				model.addAttribute("anchorForm",aform);
 				if (dService != null) {
 					results = dService.getDomain(dId);
 					if (results != null) {
@@ -563,7 +590,7 @@ public class DomainController {
 			mav.setViewName("main");
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 			return mav;
-		} else if (isLoggedIn(session) && actionPath.equalsIgnoreCase("update")){
+		} else if (isLoggedIn(session) && (actionPath.equalsIgnoreCase("update") || actionPath.equalsIgnoreCase("add"))){
 			HashMap<String, String> msgs = new HashMap<String, String>();
 			mav.addObject("msgs", msgs);
 			if (log.isDebugEnabled()) log.debug("Inside update else if: submitType: " + actionPath);
@@ -598,8 +625,14 @@ public class DomainController {
 						addrform.setId(form.getDomainFromForm().getId());
 						model.addAttribute("domainForm",form);
 						model.addAttribute("addressForm",addrform);
-						model.addAttribute("certificateForm",addrform);
-						model.addAttribute("anchorForm",addrform);
+
+						CertificateForm cform = new CertificateForm();
+						cform.setId(form.getDomainFromForm().getId());
+						AnchorForm aform = new AnchorForm();
+						aform.setId(form.getDomainFromForm().getId());
+						
+						model.addAttribute("certificateForm",cform);
+						model.addAttribute("anchorForm",aform);
 						SimpleForm simple = new SimpleForm();
 						simple.setId(form.getDomainFromForm().getId());
 						model.addAttribute("simpleForm",simple);
