@@ -47,6 +47,11 @@ namespace AgentTests
                         </Outgoing>
                     </MachineResolver>
                 </Anchors>
+                <Trust>
+                    <MaxIssuerChainLength>4</MaxIssuerChainLength>
+                    <RevocationCheckMode>Offline</RevocationCheckMode>
+                    <Timeout>10000</Timeout>
+                </Trust>
             </AgentSettings>
         ";
         
