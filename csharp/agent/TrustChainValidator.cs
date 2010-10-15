@@ -5,6 +5,7 @@
  Authors:
     Umesh Madan     umeshma@microsoft.com
     Arien Malec     arien.malec@nhindirect.org
+    Sean Nolan      seannol@microsoft.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,8 +29,18 @@ namespace NHINDirect.Agent
     /// </summary>
     public class TrustChainValidator
     {
-        const int DefaultMaxIssuerChainLength = 5;
-
+        /// <summary>
+        /// The default setting for MaxIssuerChainLength
+        /// </summary>
+        public const int DefaultMaxIssuerChainLength = 5;
+        /// <summary>
+        /// Default setting for X509ChainPolicy.RevocationFlag
+        /// </summary>
+        public const X509RevocationFlag DefaultRevocationGranularity = X509RevocationFlag.ExcludeRoot;
+        /// <summary>
+        /// Default revocation checking mode 
+        /// </summary>
+        public const X509RevocationMode DefaultRevocationCheckMode = X509RevocationMode.Online;
         /// <summary>
         /// Chain validations status treated as failing trust validation with the certificate.
         /// </summary>
@@ -40,7 +51,7 @@ namespace NHINDirect.Agent
                 X509ChainStatusFlags.InvalidBasicConstraints |
                 X509ChainStatusFlags.CtlNotTimeValid |
                 X509ChainStatusFlags.CtlNotSignatureValid;
-        
+                
         X509ChainPolicy m_policy;
         X509ChainStatusFlags m_problemFlags;
         ICertificateResolver m_certResolver;
@@ -53,6 +64,8 @@ namespace NHINDirect.Agent
             : this(new X509ChainPolicy(), TrustChainValidator.DefaultProblemFlags)
         {
             m_policy.VerificationFlags = (X509VerificationFlags.IgnoreWrongUsage);
+            this.RevocationCheckGranularity = DefaultRevocationGranularity;
+            this.RevocationCheckMode = DefaultRevocationCheckMode;
         }
 
         /// <summary>
@@ -68,6 +81,11 @@ namespace NHINDirect.Agent
         
         /// <summary>
         /// Gets the <see cref="X509ChainPolicy"/> for this validator.
+        /// <remarks>
+        ///     Revocation Checking Defaults:
+        ///         RevocationFlag = X509RevocationFlag.EntireChain
+        ///         RevocationMode = X509RevocationMode.Online
+        /// </remarks>
         /// </summary>
         public X509ChainPolicy ValidationPolicy
         {
@@ -89,6 +107,41 @@ namespace NHINDirect.Agent
             set
             {
                 m_problemFlags = value;
+            }
+        }
+                
+        /// <summary>
+        /// Controls how Certificate Revocation is checked. 
+        /// <remarks>
+        ///  The certificate chain engine will inspect CRLs and use other means to verify that a certificate was not revoked. 
+        ///  In Online Mode, the engine will synchronously fetch fresh CRLs as necessary
+        ///  In Offline Mode, the engine will only use cached information, or any CRLs directly installed on the machine.
+        /// </remarks>
+        /// </summary>
+        public X509RevocationMode RevocationCheckMode
+        {
+            get
+            {
+                return m_policy.RevocationMode;
+            }
+            set
+            {
+                m_policy.RevocationMode = value;
+            }
+        }
+        
+        /// <summary>
+        /// Controls the granularity of revocation checks
+        /// </summary>
+        public X509RevocationFlag RevocationCheckGranularity
+        {
+            get
+            {
+                return m_policy.RevocationFlag;
+            }
+            set
+            {
+                m_policy.RevocationFlag = value;
             }
         }
         
@@ -160,6 +213,8 @@ namespace NHINDirect.Agent
 
             X509Chain chainBuilder = new X509Chain();
             chainBuilder.ChainPolicy = m_policy.Clone();
+            chainBuilder.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+            
             chainBuilder.ChainPolicy.ExtraStore.Add(anchors);
             if (this.HasCertificateResolver)
             {

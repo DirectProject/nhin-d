@@ -53,6 +53,7 @@
     <Compile Include="Config\TrustAnchorSettings.cs" />
     <Compile Include="Config\TrustAnchorResolverSettings.cs" />
     <Compile Include="Config\MachineAnchorResolverSettings.cs" />
+    <Compile Include="Config\TrustModelSettings.cs" />
     <Compile Include="MessageEnvelope.cs" />
     <Compile Include="IncomingMessage.cs" />
     <Compile Include="MessageSignature.cs" />

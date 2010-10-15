@@ -20,6 +20,7 @@ using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 using NHINDirect.Certificates;
+using NHINDirect.Cryptography;
 
 namespace NHINDirect.Agent.Config
 {
@@ -141,6 +142,17 @@ namespace NHINDirect.Agent.Config
         }
         
         /// <summary>
+        /// Settings that control how the trust model is enforced
+        /// OPTIONAL: if not supplied, system runs with defaults
+        /// </summary>
+        [XmlElement("Trust")]
+        public TrustModelSettings Trust
+        {
+            get;
+            set;
+        }
+        
+        /// <summary>
         /// Validates settings, throwing <see cref="AgentConfigException"/> for validation errors.
         /// </summary>
         /// <exception cref="AgentConfigException">When configuration settings are missing or malformed.</exception>
@@ -168,6 +180,11 @@ namespace NHINDirect.Agent.Config
                 throw new AgentConfigException(AgentConfigError.MissingAnchorSettings);
             }
             this.Anchors.Validate();
+            
+            if (this.Trust != null)
+            {
+                this.Trust.Validate();
+            }
         }
         
         /// <summary>
@@ -181,8 +198,10 @@ namespace NHINDirect.Agent.Config
             ICertificateResolver privateCerts = this.PrivateCerts.Resolver.CreateResolver();
             ICertificateResolver publicCerts = this.PublicCerts.Resolver.CreateResolver();
             ITrustAnchorResolver trustAnchors = this.Anchors.Resolver.CreateResolver();
-
-            NHINDAgent agent = new NHINDAgent(this.Domains, privateCerts, publicCerts, trustAnchors, TrustModel.Default, this.Cryptographer.Create());
+            TrustModel trustModel = (this.Trust != null) ? this.Trust.CreateTrustModel() : TrustModel.Default;
+            SMIMECryptographer cryptographer = this.Cryptographer.Create();
+            
+            NHINDAgent agent = new NHINDAgent(this.Domains, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer);
             agent.AllowNonWrappedIncoming = m_allowNonWrappedIncoming;
             agent.WrapMessages = m_wrapOutgoing;
                         

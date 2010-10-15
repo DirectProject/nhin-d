@@ -33,7 +33,7 @@ namespace NHINDirect.Config.Service
             const int id = 1;
 
             EventLog.WriteEntry(source, ex.Message, type, id);
-            EventLog.WriteEntry(source, ex.GetBaseException().Message, type, id);
+            EventLog.WriteEntry(source, ex.GetBaseException().ToString(), type, id);
         }
 
         private ILogger Logger
