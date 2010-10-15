@@ -20,7 +20,6 @@ public class AnchorForm {
     private boolean outgoing;
     private List<String> remove;
 
-    private String filename;
 	private CommonsMultipartFile fileData;
     
 	public void setOwner(String owner) {
@@ -94,12 +93,6 @@ public class AnchorForm {
 	}
 	public List<String> getRemove() {
 		return remove;
-	}
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-	public String getFilename() {
-		return filename;
 	}
 	public void setFileData(CommonsMultipartFile fileData) {
 		this.fileData = fileData;

@@ -17,9 +17,8 @@ public class CertificateForm {
     private EntityStatus status;
     private List<String> remove;
 	
-    private String filename;
 	private CommonsMultipartFile fileData;
-	
+    
 	public void setOwner(String owner) {
 		this.owner = owner;
 	}
@@ -74,17 +73,10 @@ public class CertificateForm {
 	public List<String> getRemove() {
 		return remove;
 	}
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-	public String getFilename() {
-		return filename;
-	}
 	public void setFileData(CommonsMultipartFile fileData) {
 		this.fileData = fileData;
 	}
 	public CommonsMultipartFile getFileData() {
 		return fileData;
 	}
-
 }

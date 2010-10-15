@@ -22,13 +22,16 @@ THE POSSIBILITY OF SUCH DAMAGE.
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.service.AddressService;
@@ -36,6 +39,7 @@ import org.nhindirect.config.service.AnchorService;
 import org.nhindirect.config.service.CertificateService;
 import org.nhindirect.config.service.ConfigurationServiceException;
 import org.nhindirect.config.service.DomainService;
+import org.nhindirect.config.service.impl.CertificateGetOptions;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.EntityStatus;
@@ -50,7 +54,10 @@ import org.nhindirect.config.ui.util.AjaxUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,15 +69,19 @@ import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.Anchor;
 import java.io.FileOutputStream;
 
+import java.io.File;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
-
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.ByteArrayMultipartFileEditor;
+import org.springframework.validation.BindingResult;
 
 @Controller
 @RequestMapping("/domain")
 public class DomainController {
 	private final Log log = LogFactory.getLog(getClass());
-	
+	private static final String certBasePath = "c:/";	
 	@Inject
 	private DomainService dService;
 
@@ -87,13 +98,487 @@ public class DomainController {
 		if (log.isDebugEnabled()) log.debug("DomainController initialized");
 	}
 	
+	@RequestMapping(value="/addanchor", method = RequestMethod.POST)
+	public ModelAndView addAnchor (
+								@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+						        HttpSession session,
+						        @ModelAttribute AnchorForm anchorForm,
+						        Model model,
+						        @RequestParam(value="submitType") String actionPath
+						        ) { 		
+
+		ModelAndView mav = new ModelAndView(); 
+		String strid = "";
+		if (log.isDebugEnabled()) log.debug("Enter domain/addanchor");
+		if (isLoggedIn(session)) {
+			if(actionPath.equalsIgnoreCase("newanchor")){
+				strid = ""+anchorForm.getId();
+				Domain dom = dService.getDomain(Long.parseLong(strid));
+				String owner = "Hero";
+				if(dom != null){
+					owner = dom.getDomainName();
+				}
+				// insert the new address into the Domain list of Addresses
+				EntityStatus estatus = anchorForm.getStatus();
+				if (log.isDebugEnabled()) log.debug("beginning to evaluate filedata");		
+				try{
+					if (!anchorForm.getFileData().isEmpty()) {
+						byte[] bytes = anchorForm.getFileData().getBytes();
+						// store the bytes somewhere
+						if (log.isDebugEnabled()) log.debug("store the anchor certificate into database");
+					} else {
+						if (log.isDebugEnabled()) log.debug("DO NOT store the anchor certificate into database BECAUSE THERE IS NO FILE");
+					}
+					Anchor ank = new Anchor();
+					ank.setId(1L);
+					Calendar cal7 = Calendar.getInstance();
+					cal7.setTime(new java.util.Date());
+					ank.setCreateTime(cal7);
+					ank.setIncoming(true);
+					ank.setOutgoing(false);
+					ank.setOwner(owner);
+					ank.setStatus(EntityStatus.NEW);
+					// extract values from certificate for  values below 
+					ank.setThumbprint("Hitcher");
+					Calendar cal9 = Calendar.getInstance();
+					cal9.setTime(new java.util.Date());
+					ank.setValidStartDate(cal9);
+					Calendar cal8 = Calendar.getInstance();
+					cal8.setTime(new java.util.Date());
+					ank.setValidEndDate(cal8);
+
+					ArrayList<Anchor> anchorlist = new ArrayList<Anchor>();
+					anchorlist.add(ank);
+					
+					// TODO: use the anchorService to add certificate
+//					anchorService.addAnchors(anchorlist);
+
+//				} catch (ConfigurationServiceException ed) {
+//					if (log.isDebugEnabled())
+//						log.error(ed);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				// certificate and anchor forms and results
+				try {
+					Collection<Certificate> certs = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+					model.addAttribute("certificatesResults", certs);
+					 
+					Collection<Anchor> anchors = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+					model.addAttribute("anchorsResults", anchors);
+					
+					CertificateForm cform = new CertificateForm();
+					cform.setId(dom.getId());
+					model.addAttribute("certificateForm",cform);
+					
+					AnchorForm aform = new AnchorForm();
+					aform.setId(dom.getId());
+					model.addAttribute("anchorForm",aform);
+					
+				} catch (ConfigurationServiceException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+				SimpleForm simple = new SimpleForm();
+				simple.setId(Long.parseLong(strid));
+				model.addAttribute("simpleForm",simple);
+	
+				model.addAttribute("addressesResults", dom.getAddresses());
+				mav.setViewName("domain"); 
+				// the Form's default button action
+				String action = "Update";
+				DomainForm form = (DomainForm) session.getAttribute("domainForm");
+				if (form == null) {
+					form = new DomainForm();
+					form.populate(dom);
+				}
+				model.addAttribute("domainForm", form);
+				model.addAttribute("action", action);
+				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+		
+				mav.addObject("statusList", EntityStatus.getEntityStatusList());
+			}
+		}else{
+			model.addAttribute(new LoginForm());
+			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));
+		}
+		AddressForm addressForm2 = new AddressForm();
+		
+		addressForm2.setDisplayName("");
+		addressForm2.setEmailAddress("");
+		addressForm2.setType("");
+		addressForm2.setId(Long.parseLong(strid));
+		
+		model.addAttribute("addressForm",addressForm2);
+		
+		return mav;
+	}			
+	
+	@RequestMapping(value="/removeanchors", method = RequestMethod.POST)
+	public ModelAndView removeAnchors (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+						        HttpSession session,
+						        @ModelAttribute AnchorForm simpleForm,
+						        Model model,
+						        @RequestParam(value="submitType") String actionPath)  { 		
+
+		ModelAndView mav = new ModelAndView(); 
+	
+		if (log.isDebugEnabled()) log.debug("Enter domain/removeanchor");
+		if(simpleForm.getRemove() != null){
+			if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
+		}
+		if (isLoggedIn(session)) {
+			String strid = ""+simpleForm.getId();
+			Domain dom = dService.getDomain(Long.parseLong(strid));
+			String owner = "";
+			String domname = "";
+			if( dom != null){
+				domname = dom.getDomainName();
+				owner = domname;
+			}
+			if (dService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deleteanchors") && simpleForm.getRemove() != null) {
+				int cnt = simpleForm.getRemove().size();
+				if (log.isDebugEnabled()) log.debug("removing anchors for domain with name: " + domname);
+				try{
+					// get list of certificates for this domain
+					Collection<Anchor> certs = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+					ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
+					// now iterate over each one and remove the appropriate ones
+					for (int x = 0; x < cnt; x++) {
+						String removeid = simpleForm.getRemove().get(x);
+						for (Iterator iter = certs.iterator(); iter.hasNext();) {
+							Anchor t = (Anchor) iter.next();
+							   //rest of the code block removed
+					    	if(t.getId() == Long.parseLong(removeid)){
+						    	if (log.isDebugEnabled()){
+						    		log.debug(" ");
+						    		log.debug("domain address id: " + t.getId());
+						    		log.debug(" ");
+						    	}
+						    	// create a collection of matching anchor ids
+						    	certtoberemovedlist.add(t.getId());
+						    	break;
+					    	}
+						}			
+					}
+					// with the collection of anchor ids now remove them from the anchorService
+					if (log.isDebugEnabled()) log.debug(" Trying to remove anchors from database");
+//					TODO: anchorService.removeAnchors(certtoberemovedlist);
+		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed anchors");
+					AddressForm addrform = new AddressForm();
+					addrform.setId(dom.getId());
+					model.addAttribute("addressForm",addrform);
+				} catch (ConfigurationServiceException e) {
+					if (log.isDebugEnabled())
+						log.error(e);
+				}
+			}
+			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+			// BEGIN: temporary code for mocking purposes
+			CertificateForm cform = new CertificateForm();
+			cform.setId(dom.getId());
+			model.addAttribute("certificateForm",cform);
+			
+			AnchorForm aform = new AnchorForm();
+			aform.setId(dom.getId());
+			model.addAttribute("anchorForm",aform);
+			
+			
+			model.addAttribute("addressesResults", dom.getAddresses());
+			mav.setViewName("domain"); 
+			// the Form's default button action
+			String action = "Update";
+			DomainForm form = (DomainForm) session.getAttribute("domainForm");
+			if (form == null) {
+				form = new DomainForm();
+				form.populate(dom);
+			}
+			model.addAttribute("domainForm", form);
+			model.addAttribute("action", action);
+			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+			mav.addObject("action", action);
+	
+			// SETTING THE ADDRESSES OBJECT
+			model.addAttribute("addressesResults", form.getAddresses());
+			// TODO: once certificates and anchors are available change code accordingly
+			Collection<Certificate> certlist = null;
+			try {
+				certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+			} catch (ConfigurationServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			Collection<Anchor> anchorlist = null;
+			try {
+				anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+			} catch (ConfigurationServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			model.addAttribute("certificatesResults", certlist);
+			model.addAttribute("anchorsResults", anchorlist);			
+			// END: temporary code for mocking purposes			
+			mav.addObject("statusList", EntityStatus.getEntityStatusList());
+		}else{
+			model.addAttribute(new LoginForm());
+			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));
+		}
+		model.addAttribute("simpleForm",simpleForm);
+		String strid = ""+simpleForm.getId();
+		if (log.isDebugEnabled()) log.debug(" the value of id of simpleform is: "+strid);
+		
+		return mav;
+	}			
+		
+	
+	
+	@RequestMapping(value="/addcertificate", method = RequestMethod.POST)
+	public ModelAndView addCertificate (
+								@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+						        HttpSession session,
+						        @ModelAttribute CertificateForm certificateForm,
+						        Model model,
+						        @RequestParam(value="submitType") String actionPath
+						        ) { 		
+
+		ModelAndView mav = new ModelAndView(); 
+		String strid = "";
+		if (log.isDebugEnabled()) log.debug("Enter domain/addcertificate");
+		if (isLoggedIn(session)) {
+			if(actionPath.equalsIgnoreCase("newcertificate")){
+				strid = ""+certificateForm.getId();
+				Domain dom = dService.getDomain(Long.parseLong(strid));
+				String owner = "Hero";
+				if(dom != null){
+					owner = dom.getDomainName();
+				}
+				// insert the new address into the Domain list of Addresses
+				EntityStatus estatus = certificateForm.getStatus();
+				if (log.isDebugEnabled()) log.debug("beginning to evaluate filedata");		
+				try{
+					if (!certificateForm.getFileData().isEmpty()) {
+						byte[] bytes = certificateForm.getFileData().getBytes();
+						// TODO: use the certificateService to add certificate
+						Certificate cert = new Certificate();
+						cert.setData(bytes);
+						cert.setId(Long.parseLong(strid));
+						cert.setOwner(owner);
+						cert.setStatus(EntityStatus.DISABLED);
+						// extract values from certificate for  values below						
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(new java.util.Date());
+						cert.setCreateTime(cal);
+						Calendar cal4 = Calendar.getInstance();
+						cal4.setTime(new java.util.Date());
+						cert.setValidStartDate(cal4);
+						Calendar cal3 = Calendar.getInstance();
+						cal3.setTime(new java.util.Date());
+						cert.setValidEndDate(cal3);
+
+						ArrayList<Certificate> certlist = new ArrayList<Certificate>();
+						certlist.add(cert);
+//						certService.addCertificates(certlist);
+						// store the bytes somewhere
+						if (log.isDebugEnabled()) log.debug("store the certificate into database");
+					} else {
+						if (log.isDebugEnabled()) log.debug("DO NOT store the certificate into database BECAUSE THERE IS NO FILE");
+					}
+
+//				} catch (ConfigurationServiceException ed) {
+//					if (log.isDebugEnabled())
+//						log.error(ed);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				// certificate and anchor forms and results
+				try {
+					Collection<Certificate> certs = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+					model.addAttribute("certificatesResults", certs);
+					 
+					Collection<Anchor> anchors = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+					model.addAttribute("anchorsResults", anchors);
+					
+					CertificateForm cform = new CertificateForm();
+					cform.setId(dom.getId());
+					model.addAttribute("certificateForm",cform);
+					
+					AnchorForm aform = new AnchorForm();
+					aform.setId(dom.getId());
+					model.addAttribute("anchorForm",aform);
+					
+				} catch (ConfigurationServiceException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+				SimpleForm simple = new SimpleForm();
+				simple.setId(Long.parseLong(strid));
+				model.addAttribute("simpleForm",simple);
+	
+				model.addAttribute("addressesResults", dom.getAddresses());
+				mav.setViewName("domain"); 
+				// the Form's default button action
+				String action = "Update";
+				DomainForm form = (DomainForm) session.getAttribute("domainForm");
+				if (form == null) {
+					form = new DomainForm();
+					form.populate(dom);
+				}
+				model.addAttribute("domainForm", form);
+				model.addAttribute("action", action);
+				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+		
+				mav.addObject("statusList", EntityStatus.getEntityStatusList());
+			}
+		}else{
+			model.addAttribute(new LoginForm());
+			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));
+		}
+		AddressForm addressForm2 = new AddressForm();
+		
+		addressForm2.setDisplayName("");
+		addressForm2.setEmailAddress("");
+		addressForm2.setType("");
+		addressForm2.setId(Long.parseLong(strid));
+		
+		model.addAttribute("addressForm",addressForm2);
+		
+		return mav;
+	}			
+	
+	@RequestMapping(value="/removecertifcates", method = RequestMethod.POST)
+	public ModelAndView removeCertificates (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+						        HttpSession session,
+						        @ModelAttribute CertificateForm simpleForm,
+						        Model model,
+						        @RequestParam(value="submitType") String actionPath)  { 		
+
+		ModelAndView mav = new ModelAndView(); 
+	
+		if (log.isDebugEnabled()) log.debug("Enter domain/removecertificates");
+		if(simpleForm.getRemove() != null){
+			if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
+		}
+		if (isLoggedIn(session)) {
+			String strid = ""+simpleForm.getId();
+			Domain dom = dService.getDomain(Long.parseLong(strid));
+			String owner = "";
+			String domname = "";
+			if( dom != null){
+				domname = dom.getDomainName();
+				owner = domname;
+			}
+			if (dService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deletecertificate") && simpleForm.getRemove() != null) {
+				int cnt = simpleForm.getRemove().size();
+				if (log.isDebugEnabled()) log.debug("removing certificates for domain with name: " + domname);
+				try{
+					// get list of certificates for this domain
+					Collection<Certificate> certs = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+					ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
+					// now iterate over each one and remove the appropriate ones
+					for (int x = 0; x < cnt; x++) {
+						String removeid = simpleForm.getRemove().get(x);
+						for (Iterator iter = certs.iterator(); iter.hasNext();) {
+							   Certificate t = (Certificate) iter.next();
+							   //rest of the code block removed
+					    	if(t.getId() == Long.parseLong(removeid)){
+						    	if (log.isDebugEnabled()){
+						    		log.debug(" ");
+						    		log.debug("domain address id: " + t.getId());
+						    		log.debug(" ");
+						    	}
+						    	// create a collection of matching anchor ids
+						    	certtoberemovedlist.add(t.getId());
+						    	break;
+					    	}
+						}			
+					}
+					// with the collection of anchor ids now remove them from the anchorService
+					if (log.isDebugEnabled()) log.debug(" Trying to remove certificates from database");
+//					TODO: certService.removeCertificates(certtoberemovedlist);
+		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed certificates");
+					AddressForm addrform = new AddressForm();
+					addrform.setId(dom.getId());
+					model.addAttribute("addressForm",addrform);
+				} catch (ConfigurationServiceException e) {
+					if (log.isDebugEnabled())
+						log.error(e);
+				}
+			}
+			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+			// BEGIN: temporary code for mocking purposes
+			CertificateForm cform = new CertificateForm();
+			cform.setId(dom.getId());
+			model.addAttribute("certificateForm",cform);
+			
+			AnchorForm aform = new AnchorForm();
+			aform.setId(dom.getId());
+			model.addAttribute("anchorForm",aform);
+			
+			
+			model.addAttribute("addressesResults", dom.getAddresses());
+			mav.setViewName("domain"); 
+			// the Form's default button action
+			String action = "Update";
+			DomainForm form = (DomainForm) session.getAttribute("domainForm");
+			if (form == null) {
+				form = new DomainForm();
+				form.populate(dom);
+			}
+			model.addAttribute("domainForm", form);
+			model.addAttribute("action", action);
+			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+			mav.addObject("action", action);
+	
+			// SETTING THE ADDRESSES OBJECT
+			model.addAttribute("addressesResults", form.getAddresses());
+			// TODO: once certificates and anchors are available change code accordingly
+			Collection<Certificate> certlist = null;
+			try {
+				certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+			} catch (ConfigurationServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			Collection<Anchor> anchorlist = null;
+			try {
+				anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+			} catch (ConfigurationServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			model.addAttribute("certificatesResults", certlist);
+			model.addAttribute("anchorsResults", anchorlist);			
+			// END: temporary code for mocking purposes			
+			mav.addObject("statusList", EntityStatus.getEntityStatusList());
+		}else{
+			model.addAttribute(new LoginForm());
+			mav.setViewName("login");
+			mav.setView(new RedirectView("/config-ui/config/login", false));
+		}
+		model.addAttribute("simpleForm",simpleForm);
+		String strid = ""+simpleForm.getId();
+		if (log.isDebugEnabled()) log.debug(" the value of id of simpleform is: "+strid);
+		
+		return mav;
+	}			
 	
 	@RequestMapping(value="/addaddress", method = RequestMethod.POST)
 	public ModelAndView addAddress (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
 						        @ModelAttribute AddressForm addressForm,
 						        Model model,
-						        @RequestParam(value="submitType") String actionPath)  { 		
+						        @RequestParam(value="submitType") String actionPath) { 		
 
 		ModelAndView mav = new ModelAndView(); 
 		String strid = "";
@@ -102,6 +587,7 @@ public class DomainController {
 			if(actionPath.equalsIgnoreCase("newaddress")){
 				strid = ""+addressForm.getId();
 				Domain dom = dService.getDomain(Long.parseLong(strid));
+				String owner = dom.getDomainName();
 				// insert the new address into the Domain list of Addresses
 				String anEmail = addressForm.getEmailAddress();
 				String displayname = addressForm.getDisplayName();
@@ -124,6 +610,26 @@ public class DomainController {
 					if (log.isDebugEnabled())
 						log.error(ed);
 				}
+				// certificate and anchor forms and results
+				try {
+					Collection<Certificate> certs = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+					model.addAttribute("certificatesResults", certs);
+					 
+					Collection<Anchor> anchors = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+					model.addAttribute("anchorsResults", anchors);
+					
+					CertificateForm cform = new CertificateForm();
+					cform.setId(dom.getId());
+					model.addAttribute("certificateForm",cform);
+					
+					AnchorForm aform = new AnchorForm();
+					aform.setId(dom.getId());
+					model.addAttribute("anchorForm",aform);
+					
+				} catch (ConfigurationServiceException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 				SimpleForm simple = new SimpleForm();
 				simple.setId(Long.parseLong(strid));
@@ -132,7 +638,7 @@ public class DomainController {
 				model.addAttribute("addressesResults", dom.getAddresses());
 				mav.setViewName("domain"); 
 				// the Form's default button action
-				String action = "Add";
+				String action = "Update";
 				DomainForm form = (DomainForm) session.getAttribute("domainForm");
 				if (form == null) {
 					form = new DomainForm();
@@ -210,11 +716,37 @@ public class DomainController {
 					}
 					if (log.isDebugEnabled()) log.debug(" Trying to update the domain with removed addresses");
 					//TODO: GET THIS TO ACTUALLY WORK REMOVING DATA FROM DATABASE 
-					dService.updateDomain(dom);
+//					dService.updateDomain(dom);
 		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed addresses");
 					AddressForm addrform = new AddressForm();
 					addrform.setId(dom.getId());
 					model.addAttribute("addressForm",addrform);
+					// BEGIN: temporary code for mocking purposes
+					String owner = "";
+					owner = dom.getDomainName();
+					model.addAttribute("addressesResults", dom.getAddresses());
+					// TODO: once certificates and anchors are available change code accordingly
+					Collection<Certificate> certlist = null;
+					try {
+						certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+					} catch (ConfigurationServiceException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					Collection<Anchor> anchorlist = null;
+					try {
+						anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+					} catch (ConfigurationServiceException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					model.addAttribute("certificatesResults", certlist);
+					model.addAttribute("anchorsResults", anchorlist);			
+				
+					// END: temporary code for mocking purposes			
+					
 				} catch (ConfigurationServiceException e) {
 					if (log.isDebugEnabled())
 						log.error(e);
@@ -236,109 +768,6 @@ public class DomainController {
 				}
 			}
 			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-			// BEGIN: temporary code for mocking purposes
-			CertificateForm cform = new CertificateForm();
-			cform.setId(dom.getId());
-			model.addAttribute("certificateForm",cform);
-			
-			AnchorForm aform = new AnchorForm();
-			aform.setId(dom.getId());
-			model.addAttribute("anchorForm",aform);
-			
-			
-			model.addAttribute("addressesResults", dom.getAddresses());
-			mav.setViewName("domain"); 
-			// the Form's default button action
-			String action = "Update";
-			DomainForm form = (DomainForm) session.getAttribute("domainForm");
-			if (form == null) {
-				form = new DomainForm();
-				form.populate(dom);
-			}
-			model.addAttribute("domainForm", form);
-			model.addAttribute("action", action);
-			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-			mav.addObject("action", action);
-	
-			// SETTING THE ADDRESSES OBJECT
-			model.addAttribute("addressesResults", form.getAddresses());
-			// TODO: once certificates and anchors are available change code accordingly
-			
-			Certificate cert = new Certificate();
-			cert.setId(1L);
-			cert.setOwner("Bruce");
-			cert.setStatus(EntityStatus.DISABLED);
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(new java.util.Date());
-			cert.setCreateTime(cal);
-			Calendar cal4 = Calendar.getInstance();
-			cal4.setTime(new java.util.Date());
-			cert.setValidStartDate(cal4);
-			Calendar cal3 = Calendar.getInstance();
-			cal3.setTime(new java.util.Date());
-			cert.setValidEndDate(cal3);
-			
-			
-			Certificate cert2 = new Certificate();
-			cert2.setId(2L);
-			cert2.setOwner("Wayne");
-			cert2.setStatus(EntityStatus.ENABLED);
-			Calendar cal2 = Calendar.getInstance();
-			cal2.setTime(new java.util.Date());
-			cert2.setCreateTime(cal2);
-			Calendar cal5 = Calendar.getInstance();
-			cal5.setTime(new java.util.Date());
-			cert2.setValidStartDate(cal5);
-			Calendar cal6 = Calendar.getInstance();
-			cal6.setTime(new java.util.Date());
-			cert2.setValidEndDate(cal6);
-			
-			ArrayList<Certificate> certlist = new ArrayList<Certificate>();
-			certlist.add(cert);
-			certlist.add(cert2);
-			
-			Anchor ank = new Anchor();
-			ank.setId(1L);
-			Calendar cal7 = Calendar.getInstance();
-			cal7.setTime(new java.util.Date());
-			ank.setCreateTime(cal7);
-			ank.setIncoming(true);
-			ank.setOutgoing(false);
-			ank.setOwner("Batman");
-			ank.setStatus(EntityStatus.NEW);
-			ank.setThumbprint("Hitcher");
-			Calendar cal9 = Calendar.getInstance();
-			cal9.setTime(new java.util.Date());
-			ank.setValidStartDate(cal9);
-			Calendar cal8 = Calendar.getInstance();
-			cal8.setTime(new java.util.Date());
-			ank.setValidEndDate(cal8);
-			
-			Anchor ank2 = new Anchor();
-			ank2.setId(2L);
-			Calendar cal10 = Calendar.getInstance();
-			cal10.setTime(new java.util.Date());
-			ank2.setCreateTime(cal10);
-			ank2.setIncoming(true);
-			ank2.setOutgoing(false);
-			ank2.setOwner("Robin");
-			ank2.setStatus(EntityStatus.ENABLED);
-			ank2.setThumbprint("42");
-			Calendar cal11 = Calendar.getInstance();
-			cal11.setTime(new java.util.Date());
-			ank2.setValidStartDate(cal11);
-			Calendar cal12 = Calendar.getInstance();
-			cal12.setTime(new java.util.Date());
-			ank2.setValidEndDate(cal12);
-			
-			
-			ArrayList<Anchor> anchorlist = new ArrayList<Anchor>();
-			anchorlist.add(ank);
-			anchorlist.add(ank2);
-			
-			model.addAttribute("certificatesResults", certlist);
-			model.addAttribute("anchorsResults", anchorlist);			
-			// END: temporary code for mocking purposes			
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		}else{
 			model.addAttribute(new LoginForm());
@@ -461,80 +890,32 @@ public class DomainController {
 						model.addAttribute("addressesResults", results.getAddresses());
 						// TODO: once certificates and anchors are available change code accordingly
 						
-						Certificate cert = new Certificate();
-						cert.setId(1L);
-						cert.setOwner("Bruce");
-						cert.setStatus(EntityStatus.DISABLED);
-						Calendar cal = Calendar.getInstance();
-						cal.setTime(new java.util.Date());
-						cert.setCreateTime(cal);
-						Calendar cal4 = Calendar.getInstance();
-						cal4.setTime(new java.util.Date());
-						cert.setValidStartDate(cal4);
-						Calendar cal3 = Calendar.getInstance();
-						cal3.setTime(new java.util.Date());
-						cert.setValidEndDate(cal3);
+						// BEGIN: temporary code for mocking purposes
+						String owner = "";
+						owner = results.getDomainName();
+						model.addAttribute("addressesResults", results.getAddresses());
+						// TODO: once certificates and anchors are available change code accordingly
+						Collection<Certificate> certlist = null;
+						try {
+							certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+						} catch (ConfigurationServiceException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						
-						
-						Certificate cert2 = new Certificate();
-						cert2.setId(2L);
-						cert2.setOwner("Wayne");
-						cert2.setStatus(EntityStatus.ENABLED);
-						Calendar cal2 = Calendar.getInstance();
-						cal2.setTime(new java.util.Date());
-						cert2.setCreateTime(cal2);
-						Calendar cal5 = Calendar.getInstance();
-						cal5.setTime(new java.util.Date());
-						cert2.setValidStartDate(cal5);
-						Calendar cal6 = Calendar.getInstance();
-						cal6.setTime(new java.util.Date());
-						cert2.setValidEndDate(cal6);
-						
-						ArrayList<Certificate> certlist = new ArrayList<Certificate>();
-						certlist.add(cert);
-						certlist.add(cert2);
-						
-						Anchor ank = new Anchor();
-						ank.setId(1L);
-						Calendar cal7 = Calendar.getInstance();
-						cal7.setTime(new java.util.Date());
-						ank.setCreateTime(cal7);
-						ank.setIncoming(true);
-						ank.setOutgoing(false);
-						ank.setOwner("Batman");
-						ank.setStatus(EntityStatus.NEW);
-						ank.setThumbprint("Hitcher");
-						Calendar cal9 = Calendar.getInstance();
-						cal9.setTime(new java.util.Date());
-						ank.setValidStartDate(cal9);
-						Calendar cal8 = Calendar.getInstance();
-						cal8.setTime(new java.util.Date());
-						ank.setValidEndDate(cal8);
-						
-						Anchor ank2 = new Anchor();
-						ank2.setId(2L);
-						Calendar cal10 = Calendar.getInstance();
-						cal10.setTime(new java.util.Date());
-						ank2.setCreateTime(cal10);
-						ank2.setIncoming(true);
-						ank2.setOutgoing(false);
-						ank2.setOwner("Robin");
-						ank2.setStatus(EntityStatus.ENABLED);
-						ank2.setThumbprint("42");
-						Calendar cal11 = Calendar.getInstance();
-						cal11.setTime(new java.util.Date());
-						ank2.setValidStartDate(cal11);
-						Calendar cal12 = Calendar.getInstance();
-						cal12.setTime(new java.util.Date());
-						ank2.setValidEndDate(cal12);
-						
-						
-						ArrayList<Anchor> anchorlist = new ArrayList<Anchor>();
-						anchorlist.add(ank);
-						anchorlist.add(ank2);
+						Collection<Anchor> anchorlist = null;
+						try {
+							anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+						} catch (ConfigurationServiceException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						
 						model.addAttribute("certificatesResults", certlist);
-						model.addAttribute("anchorsResults", anchorlist);
+						model.addAttribute("anchorsResults", anchorlist);			
+					
+						// END: temporary code for mocking purposes			
+
 						SimpleForm simple = new SimpleForm();
 						simple.setId(dId);
 						model.addAttribute("simpleForm",simple);
@@ -638,9 +1019,35 @@ public class DomainController {
 						model.addAttribute("simpleForm",simple);
 						
 						// TODO: once certificates and anchors are available change code accordingly
+						//  begin: add these dummy records too
+						String owner = form.getDomainFromForm().getDomainName();
+
+						// BEGIN: temporary code for mocking purposes
+						// TODO: once certificates and anchors are available change code accordingly
+						Collection<Certificate> certlist = null;
+						try {
+							certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+						} catch (ConfigurationServiceException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						Collection<Anchor> anchorlist = null;
+						try {
+							anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+						} catch (ConfigurationServiceException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						model.addAttribute("certificatesResults", certlist);
+						model.addAttribute("anchorsResults", anchorlist);			
+					
+						// END: temporary code for mocking purposes			
+
+							
+						//  end: add these dummy records too
 						model.addAttribute("addressesResults", form.getDomainFromForm().getAddresses());
-						model.addAttribute("certificateResults", form.getDomainFromForm().getAddresses());
-						model.addAttribute("anchorResults", form.getDomainFromForm().getAddresses());
 
 						model.addAttribute("action", "update");
 						if (log.isDebugEnabled())
@@ -650,6 +1057,8 @@ public class DomainController {
 					} catch (ConfigurationServiceException e) {
 						log.error(e);
 						msgs.put("domainService", "domainService.add.error");
+					}catch(Exception ed){
+						log.error(ed);
 					}
 //				}
 			} else {
@@ -687,6 +1096,13 @@ public class DomainController {
 
 	public void setdService(DomainService service) {
 		this.dService = service;
+	}
+	
+	private static byte[] loadCertificateData(String certFileName) throws Exception
+	{
+		File fl = new File(certBasePath + certFileName);
+        
+		return FileUtils.readFileToByteArray(fl);
 	}
 	
 }
