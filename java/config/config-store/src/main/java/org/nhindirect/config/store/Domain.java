@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -281,7 +282,7 @@ public class Domain {
      * 
      * @return a collection of addresses.
      */
-    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "domain")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "domain")
     @XmlElement(name = "address")
     public Collection<Address> getAddresses() {
         if (addresses == null) {

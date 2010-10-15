@@ -69,6 +69,14 @@ public interface DomainDao {
      *            The Domain name.
      */
     public void delete(String name);
+    
+    /**
+     * Delete a Domain.
+     * 
+     * @param name
+     *            The Domain name.
+     */
+    public void delete(Long anId);
 
     /**
      * Get a Domain.

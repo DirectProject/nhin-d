@@ -221,30 +221,44 @@ public class DomainDaoImpl implements DomainDao {
 
         // delete addresses first if they exist
         Domain domain = getDomainByName(name);
+        
         if (domain != null)
-        {
-        	Address inDb = entityManager.find(Address.class, domain.getPostmasterAddressId());
-        	if (inDb != null)
-        	{
-        		entityManager.remove(inDb);
-        		entityManager.flush();  // must commit or else the delete below will cause a constraint violation
-        	}
+        {      
+	        entityManager.remove(domain);
         }
-
+        else 
+        {
+        	log.warn("No domain matching the name: " + name + " found.  Unable to delete.");
+        }
+        
         if (log.isDebugEnabled())
             log.debug("Exit");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.config.store.dao.DomainDao#delete(java.lang.String)
+     */
+    @Transactional(readOnly = false)
+    public void delete(Long anId) {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
         
-        int count = 0;
-        if (name != null) {
-            Query delete = entityManager.createQuery("DELETE FROM Domain d WHERE d.domainName = ?1");
-            delete.setParameter(1, name);
-            count = delete.executeUpdate();
+        Domain domain = getDomain(anId);
+        if (domain != null) 
+        {
+        	entityManager.remove(domain);
+        }
+        else 
+        {
+           log.warn("No domain matching the id: " + anId + " found.  Unable to delete.");
         }
         
         if (log.isDebugEnabled())
-            log.debug("Exit: " + count + " domain records deleted");
+            log.debug("Exit");
     }
-
+    
     /*
      * (non-Javadoc)
      * 

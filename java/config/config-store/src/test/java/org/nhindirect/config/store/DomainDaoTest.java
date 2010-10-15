@@ -231,4 +231,44 @@ public class DomainDaoTest  {
 			log.info(testAddress.toString());
 		}
 	}
+	
+	/**
+	 * Don't need to clean the db before execution.  @TransactionConfiguration defaults to 
+	 * rolling back all transactions at the end of the method.   That should fail ONLY if the
+	 * tests db doesn't support transactions (in which case needs to be fixed)
+	 */
+	@Test
+	public void testDeleteDomainsWithAddresses() {
+		
+		Domain domain = new Domain("health.newdomain.com");
+		domain.setStatus(EntityStatus.NEW);
+		domain.getAddresses().add(new Address(domain, "test1@health.newdomain.com", "Test1"));
+		domain.getAddresses().add(new Address(domain, "test2@health.newdomain.com", "Test2"));
+		domain.setPostMasterEmail("postmaster@health.newdomain.com");
+		domainDao.add(domain);
+		
+		Domain test = domainDao.getDomainByName("health.newdomain.com");
+		assertEquals("postmaster@health.newdomain.com", test.getPostMasterEmail());
+		assertEquals(3, test.getAddresses().size());
+		
+		domainDao.delete("health.newdomain.com");
+		test = domainDao.getDomainByName("health.newdomain.com");
+		assertEquals(null, test);
+		
+		domain = new Domain("health.domain.com");
+		domain.setStatus(EntityStatus.NEW);
+		domain.getAddresses().add(new Address(domain, "test1@health.domain.com", "Test1"));
+		domain.getAddresses().add(new Address(domain, "test2@health.domain.com", "Test2"));
+		domain.setPostMasterEmail("postmaster@health.domain.com");
+		domainDao.add(domain);
+		
+		test = domainDao.getDomainByName("health.domain.com");
+		Long id = test.getId();
+	
+		domainDao.delete(id);
+		
+		test = domainDao.getDomain(id);
+		assertEquals(null, test);
+
+	}
 }
