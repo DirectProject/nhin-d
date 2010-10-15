@@ -185,7 +185,7 @@ public class DirectDocument
         private String _rpt_description;
 
         private Date ss_submissionTime;
-        private String ss_intendedRecipient;
+        private List<String> ss_intendedRecipient = new ArrayList<String>();
 
         private String ss_authorPerson;
         private List<String> ss_authorInstitution = new ArrayList<String>();
@@ -867,7 +867,8 @@ public class DirectDocument
                         else if (SlotType1Enum.INTENDED_RECIPIENT.matches(slot.getName()))
                         {
                             if (slotNotEmpty(slot))
-                                ss_intendedRecipient = slot.getValueList().getValue().get(0);
+                                for (String value : slot.getValueList().getValue())
+                                    ss_intendedRecipient.add(value);
                         }
                     }
 
@@ -1667,7 +1668,7 @@ public class DirectDocument
         /**
          * @return the ss_intendedRecipient
          */
-        public String getSs_intendedRecipient()
+        public List<String> getSs_intendedRecipient()
         {
             return ss_intendedRecipient;
         }
@@ -1676,7 +1677,7 @@ public class DirectDocument
          * @param ssIntendedRecipient
          *            the ss_intendedRecipient to set
          */
-        public void setSs_intendedRecipient(String ssIntendedRecipient)
+        public void setSs_intendedRecipient(List<String> ssIntendedRecipient)
         {
             ss_intendedRecipient = ssIntendedRecipient;
         }

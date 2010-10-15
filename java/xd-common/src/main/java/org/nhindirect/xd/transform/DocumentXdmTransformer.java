@@ -31,6 +31,8 @@ package org.nhindirect.xd.transform;
 import java.io.File;
 import java.util.Collection;
 
+import org.nhindirect.xd.common.DirectDocument;
+
 /**
  * Interface for handling the transformation of a Document to an XDM zip file.
  * 
@@ -55,6 +57,7 @@ public interface DocumentXdmTransformer
      *            Message ID.
      * @return an XDM zip file.
      */
+    @Deprecated
     public File transform(Collection<String> docs, String suffix, byte[] meta, String messageId);
 
     /**
@@ -68,5 +71,29 @@ public interface DocumentXdmTransformer
      *            Document metadata.
      * @return an XDM zip file.
      */
+    @Deprecated
     public File transform(Collection<String> docs, String suffix, byte[] meta);
+    
+    /**
+     * Transform a DirectDocument into an XDM zip file.
+     * 
+     * @param document
+     *            The DirectDocument to transform.
+     * @param suffix
+     *            The file suffix.
+     * @param messageId
+     *            The message ID.
+     * @return an XDM zip file.
+     */
+    @Deprecated
+    public File transform(DirectDocument document, String suffix, String messageId);
+    
+    /**
+     * Transform a DirectDocument into an XDM zip file.
+     * 
+     * @param document
+     *            The DirectDocument to transform.
+     * @return an XDM zip file.
+     */
+    public File transform(DirectDocument document);
 }

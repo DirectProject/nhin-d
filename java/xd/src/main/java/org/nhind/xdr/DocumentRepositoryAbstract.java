@@ -45,17 +45,20 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.util.ByteArrayDataSource;
 import javax.naming.InitialContext;
-import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
 
-import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
-import org.nhind.util.XMLUtils;
-import org.nhind.xdm.SMTPMailClient;
+import org.apache.commons.lang.StringUtils;
+import org.nhind.xdm.MailClient;
+import org.nhind.xdm.impl.SmtpMailClient;
+import org.nhindirect.xd.common.DirectDocument;
+import org.nhindirect.xd.common.DirectMessage;
+import org.nhindirect.xd.routing.RoutingResolver;
+import org.nhindirect.xd.routing.impl.RoutingResolverImpl;
 
 /**
  * Base class for handling incoming XDR requests.
@@ -78,10 +81,9 @@ public abstract class DocumentRepositoryAbstract {
     private String from = null;
     private String suffix = null;
     private String replyEmail = null;
+    
+    private RoutingResolver resolver = new RoutingResolverImpl();
 
-    /**
-     * Class logger
-     */
     private static final Logger LOGGER = Logger.getLogger(DocumentRepositoryAbstract.class.getPackage().getName());
 
     /**
@@ -122,21 +124,107 @@ public abstract class DocumentRepositoryAbstract {
             
             @SuppressWarnings("unused")
             InitialContext ctx = new InitialContext();
+
+            // Get metadata
+            DirectDocument.Metadata metadata = new DirectDocument.Metadata();
+            metadata.setValues(prdst.getSubmitObjectsRequest());
+
+            // Get endpoints
+            List<String> forwards = new ArrayList<String>();
+            for (String recipient : metadata.getSs_intendedRecipient())
+            {
+                String address = StringUtils.remove(recipient, "|");
+                forwards.add(StringUtils.splitPreserveAllTokens(address, "^")[0]);
+            }
             
-            QName qname = new QName("urn:ihe:iti:xds-b:2007", "ProvideAndRegisterDocumentSet_bRequest");
-            String body = XMLUtils.marshal(qname, prdst, ihe.iti.xds_b._2007.ObjectFactory.class);
-            QName sname = new QName("urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0", "SubmitObjectsRequest");
-            SubmitObjectsRequest sor = prdst.getSubmitObjectsRequest();
-            String meta = XMLUtils.marshal(sname, sor,  oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
-            List<String> forwards = provideAndRegister(prdst);
+            messageId = UUID.randomUUID().toString();
 
-            String rmessageId = fowardMessage( body, forwards, replyEmail, prdst, messageId, suffix, meta);
+            // Send to SMTP endpoints
+            if (resolver.hasSmtpEndpoints(forwards))
+            {
+                // Get a reply address
+                replyEmail = metadata.getAuthorPerson();
+                replyEmail = StringUtils.splitPreserveAllTokens(replyEmail, "^")[0];
+                replyEmail = StringUtils.contains(replyEmail, "@") ? replyEmail : "nhindirect@nhindirect.org";
 
-            resp = getRepositoryProvideResponse(rmessageId);
+                // Get a suffix
+                suffix = StringUtils.contains(metadata.getMimeType(), "pdf") ? "pdf" : "xml"; // FIXME
+                
+                // Get document
+                byte[] docs = getDocs(prdst);
+
+                LOGGER
+                        .info("SENDING EMAIL TO " + resolver.getSmtpEndpoints(forwards) + " with message id "
+                                + messageId);
+
+                // Construct message wrapper
+                DirectMessage message = new DirectMessage(replyEmail, resolver.getSmtpEndpoints(forwards));
+                message.setSubject("data");
+                message.setBody("data attached");
+                
+                // Construct document wrapper
+                DirectDocument document = new DirectDocument();
+                document.setData(new String(docs));
+                document.getMetadata().setValues(prdst.getSubmitObjectsRequest());
+                
+                // Add document to message
+                message.addDocument(document);
+                
+                // Send mail
+                MailClient mailClient = new SmtpMailClient();
+                mailClient.mail(message, messageId, suffix);
+            }
+
+            // Send to XD endpoints
+            for (String reqEndpoint : resolver.getXdEndpoints(forwards))
+            {
+                String to = StringUtils.remove(reqEndpoint, "?wsdl");
+
+                Long threadId = new Long(Thread.currentThread().getId());
+                LOGGER.info("THREAD ID " + threadId);
+                ThreadData threadData = new ThreadData(threadId);
+                threadData.setTo(to);
+
+                List<Document> docs = prdst.getDocument();
+                Document oldDoc = docs.get(0);
+                docs.clear();
+                Document doc = new Document();
+                doc.setId(oldDoc.getId());
+
+                DataHandler dh = oldDoc.getValue();
+                ByteArrayOutputStream buffOS = new ByteArrayOutputStream();
+                dh.writeTo(buffOS);
+                byte[] buff = buffOS.toByteArray();
+
+                DataSource source = new ByteArrayDataSource(buff, "application/xml; charset=UTF-8");
+                DataHandler dhnew = new DataHandler(source);
+                doc.setValue(dhnew);
+
+                docs.add(doc);
+
+                LOGGER.info(" SENDING TO ENDPOINT " + to);
+                DocumentRepositoryService service = new DocumentRepositoryService();
+                service.setHandlerResolver(new RepositoryHandlerResolver());
+
+                DocumentRepositoryPortType port = service.getDocumentRepositoryPortSoap12(new MTOMFeature(true, 1));
+
+                BindingProvider bp = (BindingProvider) port;
+                SOAPBinding binding = (SOAPBinding) bp.getBinding();
+                binding.setMTOMEnabled(true);
+
+                bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, reqEndpoint);
+
+                RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(prdst);
+                String test = rrt.getStatus();
+                if (test.indexOf("Failure") >= 0) {
+                    throw new Exception("Failure Returned from XDR forward");
+                }
+            }
+            
+            resp = getRepositoryProvideResponse(messageId);
 
             relatesTo = messageId;
             action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
-            messageId = rmessageId;
             to = endpoint;
             
             setHeaderData();
@@ -146,40 +234,6 @@ public abstract class DocumentRepositoryAbstract {
         }
 
         return resp;
-    }
-
-    /**
-     * Handle an incoming ProvideAndRegisterDocumentSetRequestType object and
-     * transform to XDM or relay to another XDR endponit.
-     * 
-     * @param prdst
-     *            The incoming ProvideAndRegisterDocumentSetRequestType object
-     * @return a RegistryResponseType object
-     * @throws Exception
-     */
-    protected List<String> provideAndRegister(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
-        List<String> forwards = null;
-
-        try {
-            @SuppressWarnings("unused")
-            InitialContext ctx = new InitialContext();
-
-            DocumentRegistry drr = new DocumentRegistry();
-            String mimeType = drr.parseRegistry(prdst);
-            forwards = drr.getForwards();
-            replyEmail = drr.getAuthorEmail();
-            if (mimeType.indexOf("pdf") >= 0) {
-                suffix = "pdf";
-            } else {
-                suffix = "xml";
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw (e);
-        }
-
-        return forwards;
     }
 
     /**
@@ -212,153 +266,6 @@ public abstract class DocumentRepositoryAbstract {
             ex.printStackTrace();
         }
         return rrt;
-    }
-
-    /**
-     * Forward a message to an email recipient or to an XDR relay endpoint.
-     * 
-     * @param body
-     *            The message body
-     * @param forwards
-     *            The list of email recipients and relay endponits
-     * @param replyEmail
-     *            The reply-to email address
-     * @param prdst
-     *            The ProvideAndRegisterDocumentSetRequestType object
-     * @param messageId
-     *            The message ID
-     * @param suffix
-     *            The file extension of the XDR document
-     * @param meta
-     *            The XDR metadata
-     * @return a message ID
-     * @throws Exception
-     */
-    public String fowardMessage( String body, List<String> forwards, String replyEmail, ProvideAndRegisterDocumentSetRequestType prdst, String messageId, String suffix, String meta) throws Exception {
-
-        try {
-            messageId = UUID.randomUUID().toString();
-            boolean requestForward = true;
-
-            if (requestForward && forwards.size() > 0) {
-
-                forwardRepositoryRequest( messageId, forwards, prdst, replyEmail, body, suffix, meta);
-            }
-
-        } catch (Exception x) {
-            x.printStackTrace();
-            throw x;
-        }
-        return messageId;
-    }
-
-    /**
-     * Forward a message to an email recipient or to an XDR relay endpoint.
-     * 
-     * @param messageId
-     *            The message ID
-     * @param provideEndpoints
-     *            The list of email recipients and relay endponits
-     * @param prdst
-     *            The ProvideAndRegisterDocumentSetRequestType object
-     * @param fromEmail
-     *            The reply-to email address
-     * @param body
-     *            The message body
-     * @param suffix
-     *            The file extension of the XDR document
-     * @param meta
-     *            The XDR metadata
-     * @throws Exception
-     */
-    private void forwardRepositoryRequest( String messageId, List<String> provideEndpoints, ProvideAndRegisterDocumentSetRequestType prdst, String fromEmail, String body, String suffix, String meta) throws Exception {
-        try {
-            for (String reqEndpoint : provideEndpoints) {
-                if (reqEndpoint.indexOf('@') > 0) {
-                    byte[] docs = getDocs(prdst);
-                    mailDocument(reqEndpoint, fromEmail, messageId, docs, suffix, meta.getBytes());
-                } else if (reqEndpoint.equals("local")) {
-                    //nothing
-                } else {
-
-                    String to = reqEndpoint;
-                    to = to.replace("?wsdl", "");
-                    Long threadId = new Long(Thread.currentThread().getId());
-                    LOGGER.info("THREAD ID " + threadId);
-                    ThreadData threadData = new ThreadData(threadId);
-                    threadData.setTo(to);
-
-                    List<Document> docs = prdst.getDocument();
-                    Document oldDoc = docs.get(0);
-                    docs.clear();
-                    Document doc = new Document();
-                    doc.setId(oldDoc.getId());
-
-                    DataHandler dh = oldDoc.getValue();
-                    ByteArrayOutputStream buffOS = new ByteArrayOutputStream();
-                    dh.writeTo(buffOS);
-                    byte[] buff = buffOS.toByteArray();
-
-                    DataSource source = new ByteArrayDataSource(buff, "application/xml; charset=UTF-8");
-                    DataHandler dhnew = new DataHandler(source);
-                    doc.setValue(dhnew);
-
-                    docs.add(doc);
-
-                    LOGGER.info(" SENDING TO ENDPOINT " + to);
-                    DocumentRepositoryService service = new DocumentRepositoryService();
-                    service.setHandlerResolver(new RepositoryHandlerResolver());
-
-
-                    DocumentRepositoryPortType port = service.getDocumentRepositoryPortSoap12(new MTOMFeature(true, 1));
-
-                    BindingProvider bp = (BindingProvider) port;
-                    SOAPBinding binding = (SOAPBinding) bp.getBinding();
-                    binding.setMTOMEnabled(true);
-
-                    bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, reqEndpoint);
-
-
-                    RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(prdst);
-                    String test = rrt.getStatus();
-                    if (test.indexOf("Failure") >= 0) {
-                        throw new Exception("Failure Returned from XDR forward");
-                    }
-
-
-                }
-            }
-
-
-        } catch (Exception x) {
-            x.printStackTrace();
-        }
-    }
-
-    /**
-     * Mail a recipient the XDR data.
-     * 
-     * @param email
-     *            The email recipient
-     * @param from
-     *            The reply-to email address
-     * @param messageId
-     *            The message ID
-     * @param message
-     *            The raw message to be sent
-     * @param suffix
-     *            The file extension of the XDR document
-     * @param meta
-     *            The XDR metadata
-     * @throws Exception
-     */
-    private void mailDocument(String email, String from, String messageId, byte[] message, String suffix, byte[] meta) throws Exception {
-        SMTPMailClient smc = new SMTPMailClient();
-        LOGGER.info("SENDING EMAIL TO " + email + " with message id " + messageId);
-        List<String> recipients = new ArrayList<String>();
-        recipients.add(email);
-
-        smc.postMail(recipients, "data", messageId, "data attached", message, from, suffix, meta);
     }
 
     /**
