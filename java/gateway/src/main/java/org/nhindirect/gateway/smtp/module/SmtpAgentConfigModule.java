@@ -27,6 +27,7 @@ import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
+import org.nhindirect.gateway.smtp.provider.WSSmtpAgentConfigProvider;
 import org.nhindirect.gateway.smtp.provider.XMLSmtpAgentConfigProvider;
 import org.nhindirect.stagent.NHINDAgent;
 
@@ -55,11 +56,20 @@ public class SmtpAgentConfigModule extends AbstractModule
 	{	
 		Provider<SmtpAgentConfig> provider = smtpAgentprovider;
 		
-		if (provider == null) // use the default XML configuration 
+		if (provider == null)  
 		{
-			// convert URL to file location
-			File fl = FileUtils.toFile(configLocation);
-			provider = new XMLSmtpAgentConfigProvider(fl.getAbsolutePath(), agentProvider);
+			if (configLocation.getProtocol().equalsIgnoreCase("HTTP") || configLocation.getProtocol().equalsIgnoreCase("HTTPS"))
+			{
+				// web services based
+				provider = new WSSmtpAgentConfigProvider(configLocation, agentProvider); 
+			}
+			else 
+			{
+				// use the default XML configuration
+				// convert URL to file location
+				File fl = FileUtils.toFile(configLocation);
+				provider = new XMLSmtpAgentConfigProvider(fl.getAbsolutePath(), agentProvider);
+			}
 		}
 		bind(SmtpAgentConfig.class).toProvider(provider);
 	}

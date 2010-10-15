@@ -178,7 +178,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	
 	private CertStoreCachePolicy getDefaultPolicy()
 	{
-		return new DefaultDNSCachePolity();
+		return new DefaultDNSCachePolicy();
 	}
 	
 	/*
@@ -186,7 +186,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	 */
 	private CertificateStore createDefaultLocalStore()
 	{
-		KeyStoreCertificateStore retVal = new KeyStoreCertificateStore(new File("NHINKeyStore"), "nH!NdK3yStor3", "31visl!v3s");
+		KeyStoreCertificateStore retVal = new KeyStoreCertificateStore(new File("DNSNHINKeyStore"), "nH!NdK3yStor3", "31visl!v3s");
 		
 		return retVal;
 	}
@@ -248,21 +248,28 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
     @Override
     public Collection<X509Certificate> getCertificates(String subjectName)
     {
+      	String realSubjectName;
+    	int index;
+		if ((index = subjectName.indexOf("EMAILADDRESS=")) > -1)
+			realSubjectName = subjectName.substring(index + "EMAILADDRESS=".length());
+		else
+			realSubjectName = subjectName;    	
+    	
     	Collection<X509Certificate> retVal;
     	
     	JCS cache = getCache();
     	
     	if (cache != null)
     	{
-    		retVal = (Collection<X509Certificate>)cache.get(subjectName);//localStoreDelegate.getCertificates(subjectName);
+    		retVal = (Collection<X509Certificate>)cache.get(realSubjectName);//localStoreDelegate.getCertificates(subjectName);
     		if (retVal == null || retVal.size() == 0)
-    			retVal = this.lookupDNS(subjectName);
+    			retVal = this.lookupDNS(realSubjectName);
     	}
     	else // cache miss
     	{
-    		retVal = this.lookupDNS(subjectName);
+    		retVal = this.lookupDNS(realSubjectName);
     		if (retVal.size() == 0 && localStoreDelegate != null)
-    			retVal = localStoreDelegate.getCertificates(subjectName); // last ditch effort is to go to the bootstrap cache
+    			retVal = localStoreDelegate.getCertificates(realSubjectName); // last ditch effort is to go to the bootstrap cache
     	}
     	
     	return retVal;
@@ -368,26 +375,28 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 		
 		// add or update the local cert store
 		if (retVal != null && retVal.size() > 0 && localStoreDelegate != null)
+		{
 			for (X509Certificate cert : retVal)
 			{
-				try
-				{
-					if (cache != null)
-						cache.put(name, retVal);
-				}
-				catch (CacheException e)
-				{
-					/*
-					 * TODO: handle exception
-					 */
-				}
+
 				
 				if (localStoreDelegate.contains(cert)) 
 					localStoreDelegate.update(cert);
 				else
 					localStoreDelegate.add(cert);
 			}			
-		
+			try
+			{
+				if (cache != null)
+					cache.put(name, retVal);
+			}
+			catch (CacheException e)
+			{
+				/*
+				 * TODO: handle exception
+				 */
+			}
+		}
 		return retVal;
 	}
 
@@ -472,7 +481,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 		applyCachePolicy(policy);
 	}
 	
-	private static class DefaultDNSCachePolity implements CertStoreCachePolicy
+	private static class DefaultDNSCachePolicy implements CertStoreCachePolicy
 	{
 
 		public int getMaxItems() 

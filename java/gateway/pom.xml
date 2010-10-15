@@ -59,6 +59,12 @@
 	    </dependency> 
 	    <dependency>
 	        <groupId>org.nhind</groupId>
+	        <artifactId>config-service-client</artifactId>
+	        <version>1.0-SNAPSHOT</version>
+	        <scope>compile</scope>
+	    </dependency>	    
+	    <dependency>
+	        <groupId>org.nhind</groupId>
 	        <artifactId>nhinAgent</artifactId>
 	        <version>1.0-SNAPSHOT</version>
 	         <type>test-jar</type>
@@ -155,12 +161,19 @@
 			<artifactId>apacheds-server-unit</artifactId>
 			<version>1.0.2</version>
 			<scope>test</scope>
-		</dependency>
-        <dependency>
-            <groupId>com.atlassian.maven.plugins</groupId>
-	   	    <artifactId>maven-clover2-plugin</artifactId>
-		<version>3.0.2</version>
-	</dependency>																																																																																
+		</dependency>		
+		<dependency>  
+			<groupId>org.mortbay.jetty</groupId>  
+			<artifactId>jetty-servlet-tester</artifactId>  
+			<version>6.1.14</version>  
+		    <scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+			</exclusions>		    	 			
+		</dependency>    																																																																															
   </dependencies>      
   <build>
   	<extensions>
@@ -227,7 +240,37 @@
             </goals>
           </execution>
         </executions>
-      </plugin>     
+      </plugin>   
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.nhind</groupId>
+                  <artifactId>config-service</artifactId>
+                  <version>1.0-SNAPSHOT</version>
+                  <type>war</type>
+                  <overWrite>true</overWrite>
+                  <destFileName>config-service.war</destFileName>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>
+                ${project.basedir}/war
+              </outputDirectory>
+              <overWriteReleases>true</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>	           
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
