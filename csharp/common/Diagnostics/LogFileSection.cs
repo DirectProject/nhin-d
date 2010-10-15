@@ -43,7 +43,11 @@ namespace NHINDirect.Diagnostics
         public static LogFileSettings GetAsSettings()
         {
             LogFileSection section = (LogFileSection)ConfigurationManager.GetSection("logging");
-
+            if (section == null)
+            {
+                return null;
+            }
+            
             LogFileSettings settings = section.ToSettings();
             if (settings.DirectoryPath.Contains("~"))
             {

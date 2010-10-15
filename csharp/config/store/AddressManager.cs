@@ -116,7 +116,7 @@ namespace NHINDirect.Config.Store
             }
         }
         
-        public void Update(ConfigDatabase db, Address address)
+        void Update(ConfigDatabase db, Address address)
         {
             if (db == null)
             {

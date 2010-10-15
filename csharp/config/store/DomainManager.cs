@@ -178,7 +178,7 @@ namespace NHINDirect.Config.Store
             }
         }
 
-        public void Update(ConfigDatabase db, Domain domain)
+        void Update(ConfigDatabase db, Domain domain)
         {
             if (db == null)
             {
