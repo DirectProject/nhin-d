@@ -299,28 +299,20 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 			<form:hidden path="id" />
 			<table cellpadding="1px" cellspacing="1px" id="certificateTable">
 				<tr>
-					<th><form:label path="owner">Owner:
-							            <form:errors path="owner" cssClass="error" />
-					</form:label></th>
-					<th><form:input path="owner" /></th>
-				</tr>
-				<tr>
-					<th><form:label path="thumbprint">Thumbprint:
-							            <form:errors path="thumbprint" cssClass="error" />
-					</form:label></th>
-					<th><form:input path="thumbprint" /></th>
+					<th>
+						<form:label for="fileData" path="fileData">Certificate:</form:label>
+					</th>
+					<th>
+						<form:input path="fileData" id="certificatefile" type="file"/>
+					</th>
 				</tr>
 				<tr>
 					<th><form:label path="status">Status: 
-						                <form:errors path="status" cssClass="error" />
+											                <form:errors path="status" cssClass="error" />
 					</form:label></th>
 					<th><form:select path="status">
 						<form:options items="${statusList}" />
 					</form:select></th>
-				</tr>
-				<tr>
-					<th></th>
-					<th></th>
 				</tr>
 			</table>
 			<button name="submitType" id="submitType" type="submit"
@@ -406,16 +398,12 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 	<form:hidden path="id" />
 	<table cellpadding="1px" cellspacing="1px" id="anchorTable">
 		<tr>
-			<th><form:label path="owner">Owner:
-										            <form:errors path="owner" cssClass="error" />
-			</form:label></th>
-			<th><form:input path="owner" /></th>
-		</tr>
-		<tr>
-			<th><form:label path="thumbprint">Thumbprint:
-										            <form:errors path="thumbprint" cssClass="error" />
-			</form:label></th>
-			<th><form:input path="thumbprint" /></th>
+			<th>
+				<form:label for="fileData" path="fileData">Certificate:</form:label>
+			</th>
+			<th>
+				<form:input path="fileData" id="certificatefile" type="file"/>
+			</th>
 		</tr>
 		<tr>
 			<th><form:label path="status">Status: 
