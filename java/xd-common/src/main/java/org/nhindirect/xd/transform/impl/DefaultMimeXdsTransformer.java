@@ -384,7 +384,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         metadata.setUniqueId(UUID.randomUUID().toString());
 
         metadata.setSs_submissionTime(sentDate);
-        metadata.setSs_intendedRecipient("|" + recip + "^last^first^^^prefix^^^&amp;1.3.6.1.4.1.21367.3100.1&amp;ISO");
+        metadata.setSs_intendedRecipient(Arrays.asList("|" + recip + "^last^first^^^prefix^^^&amp;1.3.6.1.4.1.21367.3100.1&amp;ISO"));
         metadata.setSs_authorPerson(auth);
         metadata.setSs_authorInstitution(Arrays.asList(sourcePatient.getLocalOrg()));
         metadata.setSs_authorRole(auth == null ? "System" : auth + "'s role");

@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.nhindirect.config.store.EntityStatus;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class AnchorForm {
     private String owner;
@@ -18,6 +19,9 @@ public class AnchorForm {
     private boolean incoming;
     private boolean outgoing;
     private List<String> remove;
+
+    private String filename;
+	private CommonsMultipartFile fileData;
     
 	public void setOwner(String owner) {
 		this.owner = owner;
@@ -90,6 +94,18 @@ public class AnchorForm {
 	}
 	public List<String> getRemove() {
 		return remove;
+	}
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+	public String getFilename() {
+		return filename;
+	}
+	public void setFileData(CommonsMultipartFile fileData) {
+		this.fileData = fileData;
+	}
+	public CommonsMultipartFile getFileData() {
+		return fileData;
 	}
 
 }
