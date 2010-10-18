@@ -52,8 +52,32 @@ namespace NHINDirect.Config.Store
             m_addresses = new AddressManager(this);
             m_certificates = new CertificateManager(this);
             m_anchors = new AnchorManager(this);
-        }        
-                
+        }
+
+        public TimeSpan Timeout
+        {
+            get
+            {
+                return m_timeout;
+            }
+        }
+
+        protected int TimeoutSeconds
+        {
+            get
+            {
+                return (int)m_timeout.TotalSeconds;
+            }
+        }   
+        
+        public string ConnectString
+        {
+            get
+            {
+                return m_connectString;
+            }
+        }
+        
         public DomainManager Domains
         {
             get
@@ -85,18 +109,18 @@ namespace NHINDirect.Config.Store
                 return m_anchors;
             }
         }
-                                
+                
         public ConfigDatabase CreateContext()
         {
             ConfigDatabase db = new ConfigDatabase(m_connectString);
-            db.CommandTimeout = (int)m_timeout.TotalSeconds;
+            db.CommandTimeout = this.TimeoutSeconds;
             return db;
         }
 
         public ConfigDatabase CreateReadContext()
         {
             ConfigDatabase db = new ConfigDatabase(m_connectString);
-            db.CommandTimeout = (int)m_timeout.TotalSeconds;
+            db.CommandTimeout = this.TimeoutSeconds;
             db.ObjectTrackingEnabled = false;            
             return db;
         }
