@@ -28,7 +28,17 @@
 
 package org.nhindirect.xd.routing.impl;
 
+import java.rmi.RemoteException;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nhind.config.Address;
+import org.nhind.config.ConfigurationServiceException;
+import org.nhind.config.ConfigurationServiceProxy;
+import org.nhind.config.EntityStatus;
 import org.nhindirect.xd.routing.RoutingResolver;
+import org.nhindirect.xd.routing.exception.ResolverException;
 
 /**
  * Default implementation of a RoutingResolver.
@@ -37,6 +47,28 @@ import org.nhindirect.xd.routing.RoutingResolver;
  */
 public class RoutingResolverImpl extends RoutingResolver
 {
+    private ConfigurationServiceProxy proxy;
+
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(RoutingResolverImpl.class);
+
+    /**
+     * Construct a RoutingResolverImpl without a configuration service backing.
+     */
+    public RoutingResolverImpl()
+    {
+
+    }
+
+    /**
+     * Construct a RoutingResolverImpl with a configuration service backing.
+     * 
+     * @param configServiceUrl
+     *            The configuration service backing.
+     */
+    public RoutingResolverImpl(String configServiceUrl)
+    {
+        proxy = new ConfigurationServiceProxy(configServiceUrl);
+    }
 
     /*
      * (non-Javadoc)
@@ -46,6 +78,13 @@ public class RoutingResolverImpl extends RoutingResolver
     @Override
     public String resolve(String address)
     {
+        Address addr = lookup(address);
+
+        // TODO: return a routing field
+        if (addr != null)
+            return addr.getEmailAddress();
+
+        // fallback
         return address;
     }
 
@@ -60,6 +99,17 @@ public class RoutingResolverImpl extends RoutingResolver
         if (address == null)
             return false;
 
+        Address addr = lookup(address);
+
+        if (addr != null)
+        {
+            if (StringUtils.equalsIgnoreCase(addr.getType(), "SMTP"))
+                return true;
+            else
+                return false;
+        }
+
+        // fallback
         return address.indexOf('@') > 0;
     }
 
@@ -74,7 +124,80 @@ public class RoutingResolverImpl extends RoutingResolver
         if (address == null)
             return false;
 
+        Address addr = lookup(address);
+
+        if (addr != null)
+        {
+            if (StringUtils.equalsIgnoreCase(addr.getType(), "XD"))
+                return true;
+            else
+                return false;
+        }
+
+        // fallback
         return address.indexOf('@') <= 0;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.xd.routing.RoutingResolver#isLocalEndpoint(java.lang.String
+     * )
+     */
+    @Override
+    public boolean isLocalEndpoint(String address)
+    {
+        if (address == null)
+            return false;
+
+        Address addr = lookup(address);
+
+        if (addr != null)
+        {
+            if (StringUtils.equalsIgnoreCase(addr.getType(), "LOCAL"))
+                return true;
+            else
+                return false;
+        }
+
+        // fallback
+        return false;
+    }
+
+    private Address lookup(String address)
+    {
+        if (proxy == null)
+        {
+            LOGGER.warn("Attempt to lookup address with unititialized configuration service.");
+            return null;
+        }
+
+        Address[] addr;
+
+        try
+        {
+            addr = proxy.getAddresss(new String[]
+            { address }, EntityStatus.ENABLED);
+
+            if (addr == null || addr.length == 0)
+            {
+                LOGGER.warn("Unable to find address.");
+                return null;
+            }
+
+            return addr[0];
+        }
+        catch (ConfigurationServiceException e)
+        {
+            if (LOGGER.isWarnEnabled())
+                LOGGER.warn(new ResolverException("Unable to look up address, falling back to default routing.", e));
+        }
+        catch (RemoteException e)
+        {
+            if (LOGGER.isWarnEnabled())
+                LOGGER.warn(new ResolverException("Unable to look up address, falling back to default routing.", e));
+        }
+
+        return null;
+    }
 }

@@ -350,6 +350,7 @@ public class CertificateDaoImpl implements CertificateDao
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#delete(java.lang.String)
      */
+    @Transactional(readOnly = false)     
     public void delete(String owner) 
     {
         if (log.isDebugEnabled())

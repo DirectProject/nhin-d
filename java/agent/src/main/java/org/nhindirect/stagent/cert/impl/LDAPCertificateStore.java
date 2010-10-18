@@ -182,6 +182,13 @@ public class LDAPCertificateStore extends CertificateStore implements
 	@Override
     public Collection<X509Certificate> getCertificates(String subjectName)
     {
+      	String realSubjectName;
+    	int index;
+		if ((index = subjectName.indexOf("EMAILADDRESS=")) > -1)
+			realSubjectName = subjectName.substring(index + "EMAILADDRESS=".length());
+		else
+			realSubjectName = subjectName;    	    	
+    	
     	Collection<X509Certificate> retVal;
     	
     	JCS cache = getCache();
@@ -189,17 +196,17 @@ public class LDAPCertificateStore extends CertificateStore implements
     	if (cache != null)
     	{
     		// try to get it from the cache first
-    		retVal = (Collection<X509Certificate>)cache.get(subjectName);
+    		retVal = (Collection<X509Certificate>)cache.get(realSubjectName);
     		
     		// the certificate is not in the cache, so now hit the real server
     		if (retVal == null || retVal.size() == 0) {
-    			retVal = ldapCertUtil.ldapSearch(subjectName);
+    			retVal = ldapCertUtil.ldapSearch(realSubjectName);
     			// add or update the cache and the local cert store 
     			if (retVal != null && retVal.size() > 0) {	
     				try
     				{
     					// first add the certificates to the cache 
-    					cache.putSafe(subjectName, retVal);
+    					cache.putSafe(realSubjectName, retVal);
     				}
     				catch (CacheException e)
     				{
@@ -215,17 +222,17 @@ public class LDAPCertificateStore extends CertificateStore implements
     			// couldn't retrieve the certificate from the real server, so have to go to the bootstrap
     			else {
     				if(localStoreDelegate!=null) {
-    					retVal = localStoreDelegate.getCertificates(subjectName); // last ditch effort is to go to the bootstrap cache
+    					retVal = localStoreDelegate.getCertificates(realSubjectName); // last ditch effort is to go to the bootstrap cache
     				}
     			}
     		}
     	}
     	else // cache miss
     	{
-    		retVal = ldapCertUtil.ldapSearch(subjectName);
+    		retVal = ldapCertUtil.ldapSearch(realSubjectName);
     		if(localStoreDelegate!=null) {
     			if (retVal == null ||  retVal.size() == 0) {
-    				retVal = localStoreDelegate.getCertificates(subjectName); // last ditch effort is to go to the bootstrap cache
+    				retVal = localStoreDelegate.getCertificates(realSubjectName); // last ditch effort is to go to the bootstrap cache
     			}
     			else {
     				// now add or update the local cert store

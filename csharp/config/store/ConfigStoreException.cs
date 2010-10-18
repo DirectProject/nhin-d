@@ -69,6 +69,57 @@ namespace NHINDirect.Config.Store
         {
             return new ConfigStoreFault(this.Error);
         }
+
+        public static ConfigStoreError ToError(Exception ex)
+        {
+            ConfigStoreException ce = ex as ConfigStoreException;
+            if (ce != null)
+            {
+                return ce.Error;
+            }
+
+            ChangeConflictException conflict = ex as ChangeConflictException;
+            if (conflict != null)
+            {
+                return ConfigStoreError.Conflict;
+            }
+
+            SqlException sqlex = ex as SqlException;
+            if (sqlex != null)
+            {
+                ConfigStoreError errorCode = ConfigStoreError.DatabaseError;
+                switch (sqlex.Number)
+                {
+                    default:
+                        break;
+
+                    case (int)SqlErrorCodes.DuplicatePrimaryKey:
+                    case (int)SqlErrorCodes.UniqueConstraintViolation:
+                        errorCode = ConfigStoreError.UniqueConstraint;
+                        break;
+
+                    case (int)SqlErrorCodes.ForeignKeyViolation:
+                        errorCode = ConfigStoreError.ForeignKeyConstraint;
+                        break;
+                }
+
+                return errorCode;
+            }
+
+            DbException dbex = ex as DbException;
+            if (dbex != null)
+            {
+                return ConfigStoreError.DatabaseError;
+            }
+
+            return ConfigStoreError.Unknown;
+        }
+        
+        public static bool IsPrimaryKeyViolation(Exception ex)
+        {
+            ConfigStoreError error = ConfigStoreException.ToError(ex);
+            return (error == ConfigStoreError.UniqueConstraint || error == ConfigStoreError.Conflict);
+        }
     }
     
     /// <summary>
@@ -167,7 +218,7 @@ namespace NHINDirect.Config.Store
             
             return new ConfigStoreFault(ConfigStoreError.Unknown, ex.Message);
         }
-
+        
         public override string ToString()
         {
             if (string.IsNullOrEmpty(m_message))

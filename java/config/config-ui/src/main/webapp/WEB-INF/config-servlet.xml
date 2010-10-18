@@ -10,9 +10,11 @@
 		http://www.springframework.org/schema/mvc 
 		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
+
 	<mvc:annotation-driven/>
 	<context:annotation-config />
 	   <!-- Scans the classpath of this application for @Components to deploy as beans -->
+	   
     <context:component-scan base-package="org.nhindirect.config.ui" />
 
 	<bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
@@ -49,4 +51,8 @@
 		<property name="serviceName"      value="ConfigurationServiceImplService"/>
 		<property name="portName"         value="ConfigurationServiceImplPort"/>
 	</bean>
+	<!-- Configure the multipart resolver -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">      
+    </bean>
+		
 </beans>
