@@ -125,39 +125,39 @@ public class DomainController {
 					if (!anchorForm.getFileData().isEmpty()) {
 						byte[] bytes = anchorForm.getFileData().getBytes();
 						// store the bytes somewhere
+						Anchor ank = new Anchor();
+						ank.setData(bytes);
+						Calendar cal7 = Calendar.getInstance();
+						cal7.setTime(new java.util.Date());
+						ank.setCreateTime(cal7);
+						ank.setIncoming(true);
+						ank.setOutgoing(false);
+						ank.setOwner(owner);
+						ank.setStatus(EntityStatus.NEW);
+						// extract values from certificate for  values below 
+						ank.setThumbprint("Hitcher");
+						Calendar cal9 = Calendar.getInstance();
+						cal9.setTime(new java.util.Date());
+						ank.setValidStartDate(cal9);
+						Calendar cal8 = Calendar.getInstance();
+						cal8.setTime(new java.util.Date());
+						ank.setValidEndDate(cal8);
+
+						ArrayList<Anchor> anchorlist = new ArrayList<Anchor>();
+						anchorlist.add(ank);
+						
+						anchorService.addAnchors(anchorlist);
 						if (log.isDebugEnabled()) log.debug("store the anchor certificate into database");
 					} else {
 						if (log.isDebugEnabled()) log.debug("DO NOT store the anchor certificate into database BECAUSE THERE IS NO FILE");
 					}
-					Anchor ank = new Anchor();
-					ank.setId(1L);
-					Calendar cal7 = Calendar.getInstance();
-					cal7.setTime(new java.util.Date());
-					ank.setCreateTime(cal7);
-					ank.setIncoming(true);
-					ank.setOutgoing(false);
-					ank.setOwner(owner);
-					ank.setStatus(EntityStatus.NEW);
-					// extract values from certificate for  values below 
-					ank.setThumbprint("Hitcher");
-					Calendar cal9 = Calendar.getInstance();
-					cal9.setTime(new java.util.Date());
-					ank.setValidStartDate(cal9);
-					Calendar cal8 = Calendar.getInstance();
-					cal8.setTime(new java.util.Date());
-					ank.setValidEndDate(cal8);
 
-					ArrayList<Anchor> anchorlist = new ArrayList<Anchor>();
-					anchorlist.add(ank);
-					
-					// TODO: use the anchorService to add certificate
-//					anchorService.addAnchors(anchorlist);
-
-//				} catch (ConfigurationServiceException ed) {
-//					if (log.isDebugEnabled())
-//						log.error(ed);
+				} catch (ConfigurationServiceException ed) {
+					if (log.isDebugEnabled())
+						log.error(ed);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
+					if (log.isDebugEnabled()) log.error(e.getMessage());
 					e.printStackTrace();
 				}
 				// certificate and anchor forms and results
@@ -266,7 +266,7 @@ public class DomainController {
 					}
 					// with the collection of anchor ids now remove them from the anchorService
 					if (log.isDebugEnabled()) log.debug(" Trying to remove anchors from database");
-//					TODO: anchorService.removeAnchors(certtoberemovedlist);
+					anchorService.removeAnchors(certtoberemovedlist);
 		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed anchors");
 					AddressForm addrform = new AddressForm();
 					addrform.setId(dom.getId());
@@ -367,7 +367,6 @@ public class DomainController {
 						// TODO: use the certificateService to add certificate
 						Certificate cert = new Certificate();
 						cert.setData(bytes);
-						cert.setId(Long.parseLong(strid));
 						cert.setOwner(owner);
 						cert.setStatus(EntityStatus.DISABLED);
 						// extract values from certificate for  values below						
@@ -383,18 +382,18 @@ public class DomainController {
 
 						ArrayList<Certificate> certlist = new ArrayList<Certificate>();
 						certlist.add(cert);
-//						certService.addCertificates(certlist);
+						certService.addCertificates(certlist);
 						// store the bytes somewhere
 						if (log.isDebugEnabled()) log.debug("store the certificate into database");
 					} else {
 						if (log.isDebugEnabled()) log.debug("DO NOT store the certificate into database BECAUSE THERE IS NO FILE");
 					}
 
-//				} catch (ConfigurationServiceException ed) {
-//					if (log.isDebugEnabled())
-//						log.error(ed);
+				} catch (ConfigurationServiceException ed) {
+					if (log.isDebugEnabled())
+						log.error(ed);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					if (log.isDebugEnabled()) log.error(e);
 					e.printStackTrace();
 				}
 				// certificate and anchor forms and results
@@ -503,7 +502,7 @@ public class DomainController {
 					}
 					// with the collection of anchor ids now remove them from the anchorService
 					if (log.isDebugEnabled()) log.debug(" Trying to remove certificates from database");
-//					TODO: certService.removeCertificates(certtoberemovedlist);
+					certService.removeCertificates(certtoberemovedlist);
 		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed certificates");
 					AddressForm addrform = new AddressForm();
 					addrform.setId(dom.getId());
@@ -715,7 +714,8 @@ public class DomainController {
 						}			
 					}
 					if (log.isDebugEnabled()) log.debug(" Trying to update the domain with removed addresses");
-					//TODO: GET THIS TO ACTUALLY WORK REMOVING DATA FROM DATABASE 
+					//TODO: GET THIS TO ACTUALLY WORK REMOVING DATA FROM DATABASE
+					dom = dService.getDomain(Long.parseLong(strid));
 //					dService.updateDomain(dom);
 		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed addresses");
 					AddressForm addrform = new AddressForm();
