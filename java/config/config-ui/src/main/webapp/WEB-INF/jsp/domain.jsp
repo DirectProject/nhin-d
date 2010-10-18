@@ -406,6 +406,22 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 			</th>
 		</tr>
 		<tr>
+			<th><form:label path="incoming">Incoming:
+					            <form:errors path="incoming" cssClass="error" />
+			</form:label></th>
+			<th>
+			<form:input type="checkbox" path="incoming" />
+			</th>
+		</tr>
+		<tr>
+			<th><form:label path="outgoing">Outgoing:
+					            <form:errors path="outgoing" cssClass="error" />
+			</form:label></th>
+			<th>
+			<form:input type="checkbox" path="outgoing" />
+			</th>
+		</tr>
+		<tr>
 			<th><form:label path="status">Status: 
 									                <form:errors path="status" cssClass="error" />
 			</form:label></th>
