@@ -17,6 +17,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data;
+using System.Data.Common;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Security.Cryptography.X509Certificates;
@@ -30,6 +32,7 @@ namespace NHINDirect.Config.Store
         Table<Anchor> m_anchors;
         Table<Domain> m_domains;
         Table<Address> m_addresses;
+        DbTransaction m_transaction;
                           
         public ConfigDatabase(string connectString)
             : base(connectString)
@@ -86,6 +89,51 @@ namespace NHINDirect.Config.Store
                 
                 return m_anchors;
             }
+        }
+
+        public void BeginTransaction()
+        {
+            if (this.Connection == null || this.Connection.State == ConnectionState.Closed)
+            {
+                this.Connection.Open();
+            }
+
+            m_transaction = this.Connection.BeginTransaction();
+            this.Transaction = m_transaction;
+        }
+        
+        public void Commit()
+        {
+            if (m_transaction != null)
+            {
+                m_transaction.Commit();
+                m_transaction = null;
+                this.Transaction = null;
+            }
+        }
+        
+        public void Rollback()
+        {
+            this.Rollback(false);
+        }
+        
+        public void Rollback(bool disposing)
+        {
+            if (m_transaction != null)
+            {
+                m_transaction.Rollback();
+                m_transaction = null;
+                if (!disposing)
+                {
+                    this.Transaction = null;
+                }
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            this.Rollback(disposing);            
+            base.Dispose(disposing);
         }
     }
 }

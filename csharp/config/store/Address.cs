@@ -154,6 +154,14 @@ namespace NHINDirect.Config.Store
             }            
         }
         
+        public bool HasDisplayName
+        {
+            get
+            {
+                return (!string.IsNullOrEmpty(this.DisplayName));
+            }
+        }
+        
         public bool IsValidMailAddress()
         {
             try
@@ -169,6 +177,11 @@ namespace NHINDirect.Config.Store
         
         public MailAddress ToMailAddress()
         {
+            if (this.HasDisplayName)
+            {
+                return new MailAddress(this.EmailAddress, this.DisplayName);
+            }
+            
             return new MailAddress(this.EmailAddress);
         }
                 

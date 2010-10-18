@@ -33,7 +33,7 @@ namespace NHINDirect.Config.Store
         const string Sql_EnumDomainAddressNext = "SELECT TOP ({0}) * from Addresses where DomainID = {1} and EmailAddress > {2} order by EmailAddress asc";
         const string Sql_EnumAddressFirst = "SELECT TOP ({0}) * from Addresses order by EmailAddress asc";
         const string Sql_EnumAddressNext = "SELECT TOP ({0}) * from Addresses where EmailAddress > {1} order by EmailAddress asc";
-
+        
         static readonly Func<ConfigDatabase, string, IQueryable<Address>> Addresses = CompiledQuery.Compile(
             (ConfigDatabase db, string emailAddress) =>
                 from address in db.Addresses
@@ -56,7 +56,14 @@ namespace NHINDirect.Config.Store
                  orderby address.ID
                  select address).Take(maxResults)
         );
-
+        
+        static readonly Func<ConfigDatabase, long, IQueryable<Address>> IDToAddress = CompiledQuery.Compile(
+            (ConfigDatabase db, long addressID) =>
+                from address in db.Addresses
+                where address.ID == addressID
+                select address
+        );
+        
         public static ConfigDatabase GetDB(this Table<Address> table)
         {
             return (ConfigDatabase)table.Context;
@@ -131,7 +138,12 @@ namespace NHINDirect.Config.Store
                    where ids.Contains(address.ID) && address.Status == status
                    select address;
         }
-
+        
+        public static Address Get(this Table<Address> table, long addressID)
+        {
+            return IDToAddress(table.GetDB(), addressID).FirstOrDefault();
+        }
+        
         public static void ExecDelete(this Table<Address> table, string emailAddress)
         {
             table.Context.ExecuteCommand(Sql_DeleteAddress, emailAddress);
