@@ -23,6 +23,8 @@ package org.nhindirect.config.service.impl;
 
 import java.util.Collection;
 
+import javax.jws.WebService;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.service.AddressService;
@@ -35,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Service class for methods related to an Address object.
  */
+@WebService(endpointInterface = "org.nhindirect.config.service.AddressService")
 public class AddressServiceImpl implements AddressService {
 
     private static final Log log = LogFactory.getLog(AddressServiceImpl.class);
@@ -95,8 +98,10 @@ public class AddressServiceImpl implements AddressService {
      * @see org.nhindirect.config.service.AddressService#removeAddress(java.lang.String)
      */
     public void removeAddress(String addressName) throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-
+        if(addressName == null)
+        	return;
+        
+        dao.delete(addressName);
     }
 
     /*
