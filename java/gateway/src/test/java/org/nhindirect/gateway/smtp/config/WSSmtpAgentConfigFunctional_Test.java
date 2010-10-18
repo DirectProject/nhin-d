@@ -3,7 +3,6 @@ package org.nhindirect.gateway.smtp.config;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -14,7 +13,6 @@ import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -22,7 +20,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.mail.internet.InternetAddress;
-import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
@@ -34,10 +31,6 @@ import org.apache.directory.server.core.configuration.MutablePartitionConfigurat
 import org.apache.directory.server.core.schema.bootstrap.AbstractBootstrapSchema;
 import org.apache.directory.server.unit.AbstractServerTest;
 import org.apache.directory.shared.ldap.ldif.Entry;
-import org.apache.mina.util.AvailablePortFinder;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
 import org.nhind.config.Anchor;
 import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
@@ -63,10 +56,8 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
 {
 	private static final String certBasePath = "src/test/resources/certs/";
 	
-	private Server server;
 	private ConfigurationServiceProxy proxy;	
-	private int HTTPPort;
-	private String configServiceURL;
+
 	
 	static
 	{
@@ -130,30 +121,10 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
 		
 		importLdif(stream);
 		
-		/*
-		 * Setup the configuration service server
-		 */
-		server = new Server();
-		SocketConnector connector = new SocketConnector();
+		// create the web service and proxy
+		ConfigServiceRunner.startConfigService();
 		
-		HTTPPort = AvailablePortFinder.getNextAvailable( 1024 );
-		connector.setPort(HTTPPort);
-		
-		WebAppContext context = new WebAppContext();
-	    
-    	context.setContextPath("/config");	 
-    	context.setServer(server);
-    	context.setWar("war/config-service.war");
-    	    	
-    	server.setSendServerVersion(false);
-    	server.addConnector(connector);
-    	server.addHandler(context);
-    	
-    	server.start();
-    	
-    	configServiceURL = "http://localhost:" + HTTPPort + "/config/ConfigurationService";
-    	
-    	proxy = new ConfigurationServiceProxy(configServiceURL);		
+		proxy = new ConfigurationServiceProxy(ConfigServiceRunner.getConfigServiceURL());
 	}
 	
     /**
@@ -163,8 +134,6 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
     {
         super.tearDown();  // will automatically take down the LDAP server
         
-		if (server != null)
-			server.stop();
     }
     
 	abstract class TestPlan extends BaseTestPlan 
@@ -286,7 +255,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
         
         protected SmtpAgentConfig createSmtpAgentConfig() throws Exception
         {        	
-        	SmtpAgentConfig config = new WSSmtpAgentConfig(new URL(configServiceURL), null);
+        	SmtpAgentConfig config = new WSSmtpAgentConfig(new URL(ConfigServiceRunner.getConfigServiceURL()), null);
             return config;
         }
         
@@ -466,7 +435,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             }
         }.perform();
     }	
-	/*
+	
 	public void testConfigurationPrivateLDAPStore() throws Exception 
     {
         new MultiDomainTestPlan() 
@@ -615,7 +584,6 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             }
         }.perform();
     }	
-	*/
 	
 	protected byte[] getCertificateFileData(String file) throws Exception
 	{
