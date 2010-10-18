@@ -19,6 +19,7 @@ using System.Text;
 using NHINDirect.Agent;
 using NHINDirect.Certificates;
 using NHINDirect.Diagnostics;
+using NHINDirect.Extensions;
 
 namespace NHINDirect.SmtpAgent
 {

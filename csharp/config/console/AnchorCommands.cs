@@ -15,17 +15,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Security.Cryptography.X509Certificates;
-using System.IO;
 using System.Net.Mail;
 using System.ServiceModel;
+
 using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
-using NHINDirect.Config.Client;
 using NHINDirect.Config.Client.CertificateService;
+using NHINDirect.Extensions;
 
 namespace NHINDirect.Config.Command
 {
@@ -165,7 +163,7 @@ namespace NHINDirect.Config.Command
             CertificateGetOptions options = CertificateCommands.GetOptions(args, 1);
 
             Anchor[] anchors = ConfigConsole.Current.AnchorClient.GetAnchorsForOwner(owner.Address, options);
-            if (anchors.IsNullOrEmpty())
+            if (ArrayExtensions.IsNullOrEmpty(anchors))
             {
                 anchors = ConfigConsole.Current.AnchorClient.GetAnchorsForOwner(owner.Host, options);
             }

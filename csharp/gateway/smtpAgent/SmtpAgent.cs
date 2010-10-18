@@ -23,6 +23,7 @@ using NHINDirect.Container;
 using NHINDirect.Diagnostics;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client.DomainManager;
+using NHINDirect.Extensions;
 
 namespace NHINDirect.SmtpAgent
 {    
