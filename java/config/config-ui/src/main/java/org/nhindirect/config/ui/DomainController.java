@@ -769,6 +769,37 @@ public class DomainController {
 			}
 			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
+			String action = "Update";
+			model.addAttribute("action", action);			
+			DomainForm form = (DomainForm) session.getAttribute("domainForm");
+			if (form == null) {
+				form = new DomainForm();
+				form.populate(dom);
+			}
+			model.addAttribute("domainForm", form);
+			mav.setViewName("domain");
+			String owner = dom.getDomainName();
+			// certificate and anchor forms and results
+			try {
+				Collection<Certificate> certs = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+				model.addAttribute("certificatesResults", certs);
+				 
+				Collection<Anchor> anchors = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+				model.addAttribute("anchorsResults", anchors);
+				
+				CertificateForm cform = new CertificateForm();
+				cform.setId(dom.getId());
+				model.addAttribute("certificateForm",cform);
+				
+				AnchorForm aform = new AnchorForm();
+				aform.setId(dom.getId());
+				model.addAttribute("anchorForm",aform);
+				
+			} catch (ConfigurationServiceException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 		}else{
 			model.addAttribute(new LoginForm());
 			mav.setViewName("login");
@@ -777,7 +808,7 @@ public class DomainController {
 		model.addAttribute("simpleForm",simpleForm);
 		String strid = ""+simpleForm.getId();
 		if (log.isDebugEnabled()) log.debug(" the value of id of simpleform is: "+strid);
-		
+		 
 		return mav;
 	}		
 	
