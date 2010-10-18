@@ -127,21 +127,10 @@ public class DomainController {
 						// store the bytes somewhere
 						Anchor ank = new Anchor();
 						ank.setData(bytes);
-						Calendar cal7 = Calendar.getInstance();
-						cal7.setTime(new java.util.Date());
-						ank.setCreateTime(cal7);
-						ank.setIncoming(true);
-						ank.setOutgoing(false);
+						ank.setIncoming(anchorForm.isIncoming());
+						ank.setOutgoing(anchorForm.isOutgoing());
 						ank.setOwner(owner);
-						ank.setStatus(EntityStatus.NEW);
-						// extract values from certificate for  values below 
-						ank.setThumbprint("Hitcher");
-						Calendar cal9 = Calendar.getInstance();
-						cal9.setTime(new java.util.Date());
-						ank.setValidStartDate(cal9);
-						Calendar cal8 = Calendar.getInstance();
-						cal8.setTime(new java.util.Date());
-						ank.setValidEndDate(cal8);
+						ank.setStatus(anchorForm.getStatus());
 
 						ArrayList<Anchor> anchorlist = new ArrayList<Anchor>();
 						anchorlist.add(ank);
@@ -364,21 +353,10 @@ public class DomainController {
 				try{
 					if (!certificateForm.getFileData().isEmpty()) {
 						byte[] bytes = certificateForm.getFileData().getBytes();
-						// TODO: use the certificateService to add certificate
 						Certificate cert = new Certificate();
 						cert.setData(bytes);
 						cert.setOwner(owner);
-						cert.setStatus(EntityStatus.DISABLED);
-						// extract values from certificate for  values below						
-						Calendar cal = Calendar.getInstance();
-						cal.setTime(new java.util.Date());
-						cert.setCreateTime(cal);
-						Calendar cal4 = Calendar.getInstance();
-						cal4.setTime(new java.util.Date());
-						cert.setValidStartDate(cal4);
-						Calendar cal3 = Calendar.getInstance();
-						cal3.setTime(new java.util.Date());
-						cert.setValidEndDate(cal3);
+						cert.setStatus(certificateForm.getStatus());
 
 						ArrayList<Certificate> certlist = new ArrayList<Certificate>();
 						certlist.add(cert);
@@ -581,7 +559,7 @@ public class DomainController {
 
 		ModelAndView mav = new ModelAndView(); 
 		String strid = "";
-		if (log.isDebugEnabled()) log.debug("Enter domain/removeaddresses");
+		if (log.isDebugEnabled()) log.debug("Enter domain/addaddress");
 		if (isLoggedIn(session)) {
 			if(actionPath.equalsIgnoreCase("newaddress")){
 				strid = ""+addressForm.getId();
@@ -715,8 +693,8 @@ public class DomainController {
 					}
 					if (log.isDebugEnabled()) log.debug(" Trying to update the domain with removed addresses");
 					//TODO: GET THIS TO ACTUALLY WORK REMOVING DATA FROM DATABASE
+					dService.updateDomain(dom);
 					dom = dService.getDomain(Long.parseLong(strid));
-//					dService.updateDomain(dom);
 		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed addresses");
 					AddressForm addrform = new AddressForm();
 					addrform.setId(dom.getId());
@@ -725,7 +703,7 @@ public class DomainController {
 					String owner = "";
 					owner = dom.getDomainName();
 					model.addAttribute("addressesResults", dom.getAddresses());
-					// TODO: once certificates and anchors are available change code accordingly
+
 					Collection<Certificate> certlist = null;
 					try {
 						certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
@@ -832,7 +810,7 @@ public class DomainController {
 						Domain dom = dService.getDomain(Long.parseLong(strid));
 						String domname = dom.getDomainName();
 						if (log.isDebugEnabled()) log.debug("removing domain with name: " + domname);
-						dService.removeDomain(strid);
+						dService.removeDomain(domname);
 					} catch (ConfigurationServiceException e) {
 						if (log.isDebugEnabled())
 							log.error(e);
