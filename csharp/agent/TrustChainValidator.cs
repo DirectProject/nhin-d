@@ -16,11 +16,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Security.Cryptography.X509Certificates;
+
 using NHINDirect.Certificates;
+using NHINDirect.Extensions;
 
 namespace NHINDirect.Agent
 {
@@ -206,7 +206,7 @@ namespace NHINDirect.Agent
             }
 
             // if there are no anchors we should always fail
-            if (anchors.IsNullOrEmpty())
+            if (CollectionExtensions.IsNullOrEmpty(anchors))
             {
                 return false;
             }
@@ -229,7 +229,7 @@ namespace NHINDirect.Agent
                 X509ChainElementCollection chainElements = chainBuilder.ChainElements;
 
                 // If we don't have a trust chain, then we obviously have a problem...
-                if (chainElements.IsNullOrEmpty())
+                if (CollectionExtensions.IsNullOrEmpty(chainElements))
                 {
                     return false;
                 }
@@ -336,7 +336,7 @@ namespace NHINDirect.Agent
             // Retrieve the issuer's certificate
             //
             X509Certificate2Collection issuerCertificates = m_certResolver.SafeGetCertificates(issuerName);
-            if (issuerCertificates.IsNullOrEmpty())
+            if (CollectionExtensions.IsNullOrEmpty(issuerCertificates))
             {
                 return;
             }

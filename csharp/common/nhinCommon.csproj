@@ -87,8 +87,8 @@
     <Compile Include="Diagnostics\MethodTracer.cs" />
     <Compile Include="Diagnostics\NullAuditor.cs" />
     <Compile Include="Dns\DnsClientWithCache.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="Container\IDependencyResolver.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Mail\Notifications\Disposition.cs" />
     <Compile Include="Mail\Notifications\Extensions.cs" />
     <Compile Include="Mail\Notifications\MdnGateway.cs" />
