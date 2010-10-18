@@ -559,7 +559,7 @@ public class DomainController {
 
 		ModelAndView mav = new ModelAndView(); 
 		String strid = "";
-		if (log.isDebugEnabled()) log.debug("Enter domain/removeaddresses");
+		if (log.isDebugEnabled()) log.debug("Enter domain/addaddress");
 		if (isLoggedIn(session)) {
 			if(actionPath.equalsIgnoreCase("newaddress")){
 				strid = ""+addressForm.getId();
@@ -681,7 +681,7 @@ public class DomainController {
 					    		dom.getAddresses().remove(t);
 					    		if(aService != null){
 					    			if (log.isDebugEnabled()) log.debug("Address Service is not null. Now trying to remove address: "+t.getEmailAddress());
-					    			aService.removeAddress(t.getEmailAddress());
+					    			aService.removeAddress(t.getDisplayName());
 					    		}
 						    	if (log.isDebugEnabled()){
 						    		log.debug(" REMOVED ");
@@ -693,8 +693,8 @@ public class DomainController {
 					}
 					if (log.isDebugEnabled()) log.debug(" Trying to update the domain with removed addresses");
 					//TODO: GET THIS TO ACTUALLY WORK REMOVING DATA FROM DATABASE
+					dService.updateDomain(dom);
 					dom = dService.getDomain(Long.parseLong(strid));
-//					dService.updateDomain(dom);
 		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed addresses");
 					AddressForm addrform = new AddressForm();
 					addrform.setId(dom.getId());
@@ -703,7 +703,7 @@ public class DomainController {
 					String owner = "";
 					owner = dom.getDomainName();
 					model.addAttribute("addressesResults", dom.getAddresses());
-					// TODO: once certificates and anchors are available change code accordingly
+
 					Collection<Certificate> certlist = null;
 					try {
 						certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
@@ -810,7 +810,7 @@ public class DomainController {
 						Domain dom = dService.getDomain(Long.parseLong(strid));
 						String domname = dom.getDomainName();
 						if (log.isDebugEnabled()) log.debug("removing domain with name: " + domname);
-						dService.removeDomain(strid);
+						dService.removeDomain(domname);
 					} catch (ConfigurationServiceException e) {
 						if (log.isDebugEnabled())
 							log.error(e);
