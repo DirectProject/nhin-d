@@ -681,7 +681,7 @@ public class DomainController {
 					    		dom.getAddresses().remove(t);
 					    		if(aService != null){
 					    			if (log.isDebugEnabled()) log.debug("Address Service is not null. Now trying to remove address: "+t.getEmailAddress());
-					    			aService.removeAddress(t.getDisplayName());
+					    			aService.removeAddress(t.getEmailAddress());
 					    		}
 						    	if (log.isDebugEnabled()){
 						    		log.debug(" REMOVED ");
