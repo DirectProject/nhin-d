@@ -34,11 +34,8 @@ namespace NHINDirect.Config.Command
     /// <summary>
     /// Commands to manage certificates
     /// </summary>
-    public class CertificateCommands
+    public class CertificateCommands : CommandsBase
     {        
-        public CertificateCommands()
-        {
-        }
         //---------------------------------------
         //
         // Commands
@@ -116,7 +113,7 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Set the status for ALL certificates for an OWNER.");
             Console.WriteLine("     owner status");
             Console.WriteLine("\t owner: Certificate owner");
-            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString);
+            Console.WriteLine("\t status: {0}", EntityStatusString);
         }
         
         /// <summary>

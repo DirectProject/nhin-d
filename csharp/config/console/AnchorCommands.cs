@@ -30,12 +30,8 @@ namespace NHINDirect.Config.Command
     /// <summary>
     /// Commands to manage Anchors
     /// </summary>
-    public class AnchorCommands
+    public class AnchorCommands : CommandsBase
     {
-        public AnchorCommands()
-        {
-        }
-        
         //---------------------------------------
         //
         // Commands
@@ -136,7 +132,7 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Set the status for ALL anchors for an owner.");
             Console.WriteLine("    owner");
             Console.WriteLine("\t owner: Anchor owner");
-            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString);
+            Console.WriteLine("\t status: {0}", EntityStatusString);
         }
         
         /// <summary>
