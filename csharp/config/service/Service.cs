@@ -42,7 +42,7 @@ namespace NHINDirect.Config.Service
             m_settings = new ServiceSettings();
             logger.Info("Starting Service");
 
-            m_store = new ConfigStore(m_settings.StoreConnectString);
+            m_store = new ConfigStore(m_settings.StoreConnectString, m_settings.QueryTimeout);
             logger.Info("Service Started Successfully");
         }
 

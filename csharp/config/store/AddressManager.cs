@@ -22,6 +22,9 @@ using NHINDirect;
 
 namespace NHINDirect.Config.Store
 {
+    /// <summary>
+    /// Used to manage configured addresses
+    /// </summary>
     public class AddressManager : IEnumerable<Address>
     {
         ConfigStore m_store;
@@ -38,12 +41,86 @@ namespace NHINDirect.Config.Store
                 return m_store;
             }
         }
-        
-        public void Add(long domainID, string emailAddress)
+
+        /// <summary>
+        /// Add a new email address
+        /// </summary>
+        /// <remarks>
+        ///  - Gets the domain of the address and ensures that it exists
+        ///  - Then tries to create an entry in the Address table
+        ///  - The address is created with EntityStatus.New
+        ///  - To use the address, you must enable it
+        /// </remarks>
+        /// <param name="mailAddress">Mail address object</param>
+        public void Add(MailAddress mailAddress)
         {
-            this.Add(new Address(domainID, emailAddress));
+            this.Add(mailAddress, EntityStatus.New, "SMTP");
         }
         
+        /// <summary>
+        /// Add a new email address
+        /// </summary>
+        /// <remarks>
+        ///  - Gets the domain of the address and ensures that it exists
+        ///  - Then tries to create an entry in the Address table
+        ///  - The address is created in the given state
+        /// </remarks>
+        /// <param name="mailAddress">Mail address object</param>
+        /// <param name="status">entity status</param>
+        public void Add(MailAddress mailAddress, EntityStatus status, string addressType)
+        {
+            if (mailAddress == null)
+            {
+                throw new ArgumentNullException("mailAddress");
+            }
+            
+            using(ConfigDatabase db = this.Store.CreateContext())
+            {
+                this.Add(db, mailAddress, status, addressType);
+                db.SubmitChanges();
+            }
+        }
+
+        /// <summary>
+        /// Add a new email address within the given database context
+        /// The operation is performed within any transactions in the context
+        /// </summary>
+        /// <remarks>
+        ///  - Gets the domain of the address and ensures that it exists
+        ///  - Then tries to create an entry in the Address table
+        ///  - The address is created in the given state
+        /// </remarks>
+        /// <param name="db">db context</param>
+        /// <param name="mailAddress">Mail address object</param>
+        /// <param name="status">entity status</param>
+        public void Add(ConfigDatabase db, MailAddress mailAddress, EntityStatus status, string addressType)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            if (mailAddress == null)
+            {
+                throw new ArgumentNullException("mailAddress");
+            }
+
+            Domain domain = this.Store.Domains.Get(db, mailAddress.Host);
+            if (domain == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
+            }
+
+            Address address = new Address(domain.ID, mailAddress);
+            address.Type = addressType;
+            address.Status = status;
+
+            this.Add(db, address);
+        }
+        
+        /// <summary>
+        /// Add an address to the store
+        /// </summary>
+        /// <param name="address">address object</param>        
         public void Add(Address address)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
@@ -53,6 +130,10 @@ namespace NHINDirect.Config.Store
             }
         }
         
+        /// <summary>
+        /// Add a set of addresses to the store in a single transaction
+        /// </summary>
+        /// <param name="addresses">address set</param>
         public void Add(IEnumerable<Address> addresses)
         {
             if (addresses == null)
@@ -71,6 +152,12 @@ namespace NHINDirect.Config.Store
             }            
         }
         
+        /// <summary>
+        /// Add an address to the database using the given database context
+        /// The address will be added within the context's currently active transaction 
+        /// </summary>
+        /// <param name="db">database context to use</param>
+        /// <param name="address">address object</param>
         public void Add(ConfigDatabase db, Address address)
         {
             if (db == null)
@@ -266,6 +353,24 @@ namespace NHINDirect.Config.Store
             }
             
             return db.Addresses.Get(addressIDs, status.Value);
+        }
+        
+        public Address Get(long addressID)
+        {
+            using(ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, addressID);
+            }
+        }
+        
+        public Address Get(ConfigDatabase db, long addressID)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            
+            return db.Addresses.Get(addressID);
         }
                 
         public void Remove(string emailAddress)
