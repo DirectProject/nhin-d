@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.mail.MessagingException;
 
 import org.apache.mailet.MailetConfig;
+import org.nhindirect.gateway.smtp.config.ConfigServiceRunner;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 
@@ -16,7 +17,7 @@ public class NHINDSecurityAndTrustMailet_initialization_Test extends TestCase
 	abstract class TestPlan extends BaseTestPlan 
 	{		
 		
-		protected MailetConfig getMailetConfig()
+		protected MailetConfig getMailetConfig() throws Exception
 		{
 			String configfile = TestUtils.getTestConfigFile(getConfigFileName());
 			Map<String,String> params = new HashMap<String, String>();
@@ -50,7 +51,7 @@ public class NHINDSecurityAndTrustMailet_initialization_Test extends TestCase
 		
 	}
 	
-	public void testValidMailetConfiguration_AssertProperInitialization() throws Exception 
+	public void testValidMailetConfiguration_AssertProperXMLFileInitialization() throws Exception 
 	{
 		new TestPlan() 
 		{
@@ -64,6 +65,35 @@ public class NHINDSecurityAndTrustMailet_initialization_Test extends TestCase
 			}				
 		}.perform();
 	}
+	
+	public void testValidMailetConfiguration_AssertProperWSInitialization() throws Exception 
+	{
+		new TestPlan() 
+		{
+			@Override
+			protected MailetConfig getMailetConfig() throws Exception
+			{
+				ConfigServiceRunner.startConfigService();
+				
+				String configfile = TestUtils.getTestConfigFile(getConfigFileName());
+				Map<String,String> params = new HashMap<String, String>();
+				
+				params.put("ConfigURL", ConfigServiceRunner.getConfigServiceURL());
+				
+				
+				return new MockMailetConfig(params, "NHINDSecurityAndTrustMailet");	
+			}
+			
+			@Override
+			protected void doAssertions(NHINDSecurityAndTrustMailet agent) throws Exception
+			{
+				assertNotNull(agent);
+				assertNotNull(agent.getInitParameter("ConfigURL"));
+				assertEquals(ConfigServiceRunner.getConfigServiceURL(), agent.getInitParameter("ConfigURL"));
+				
+			}				
+		}.perform();
+	}	
 	
 	public void testNullConfigURL_AssertMessagingException() throws Exception 
 	{
