@@ -99,7 +99,13 @@
 					<artifactId>activation</artifactId>
 				</exclusion>
 			</exclusions>			
-		</dependency>		
+		</dependency>	
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-core</artifactId>
+			<version>1.0.2</version>
+			<scope>test</scope>
+		</dependency>			
 	</dependencies>
 	<build>
 		<pluginManagement>

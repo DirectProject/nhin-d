@@ -3,48 +3,30 @@ package org.nhind.config.client;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
+
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.Domain;
 
 
 public class ClientProxyEndToEndTest
 {
-	private Server server;
-	private ConfigurationServiceProxy proxy;
+	private static ConfigurationServiceProxy proxy;
 	
-	@Before
-	public void setup() throws Exception
+	@BeforeClass
+	public static void setupClass() throws Exception
 	{
-		server = new Server();
-		SocketConnector connector = new SocketConnector();
-		connector.setPort(8090);
-		
-		WebAppContext context = new WebAppContext();
-	    
-    	context.setContextPath("/config");	 
-    	context.setServer(server);
-    	context.setWar("war/config-service.war");
-    	    	
-    	server.setSendServerVersion(false);
-    	server.addConnector(connector);
-    	server.addHandler(context);
-    	
-    	server.start();
-    	
-    	proxy = new ConfigurationServiceProxy("http://localhost:8090/config/ConfigurationService");
+		ConfigServiceRunner.startConfigService();    	
+    	proxy = new ConfigurationServiceProxy(ConfigServiceRunner.getConfigServiceURL());
 	}
 	
-	@After
-	public void tearDown() throws Exception
+	@AfterClass
+	public static void tearDownClass() throws Exception
 	{
-		if (server != null)
-			server.stop();
+		
+		ConfigServiceRunner.shutDownConfigService();
 	}
 	
 	private void cleanDomains() throws Exception
