@@ -55,6 +55,12 @@ public abstract class RoutingResolver
      * @return
      */
     public abstract boolean isSmtpEndpoint(String address);
+    
+    /**
+     * @param address
+     * @return
+     */
+    public abstract boolean isLocalEndpoint(String address);
 
     /**
      * @param addresses
