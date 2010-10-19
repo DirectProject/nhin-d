@@ -46,7 +46,9 @@
 	<bean id="configWebService"
 		class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
 		<property name="serviceInterface" value="org.nhindirect.config.service.ConfigurationService"/>
-		<property name="wsdlDocumentUrl"  value="http://localhost:8080/config-service/ConfigurationService?wsdl"/>
+		<!--  AT DEPLOYMENT TIME, THE URL WILL NEED TO BE UPDATED.  THIS IS DEFAULT ADDRESS FOR RUNNING AGAINST
+		THE DEFAULT JETTY:RUN DEPLOYMENT OF THE CONFIGURATION SERVICE -->
+		<property name="wsdlDocumentUrl"  value="http://localhost:8081/config-service/ConfigurationService?wsdl"/>
 		<property name="namespaceUri"     value="http://impl.service.config.nhindirect.org/"/>
 		<property name="serviceName"      value="ConfigurationServiceImplService"/>
 		<property name="portName"         value="ConfigurationServiceImplPort"/>
