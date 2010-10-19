@@ -28,7 +28,7 @@ namespace NHINDirect.Mime
         /// <summary>
         /// The default serializer.
         /// </summary>
-        public static MimeSerializer s_default = new DefaultSerializer();
+        static MimeSerializer s_default = new DefaultSerializer();
 
         /// <summary>
         /// Gets and sets the default serializer to use.
