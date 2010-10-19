@@ -107,6 +107,12 @@
     	<version>1.0-SNAPSHOT</version>
     	<type>jar</type>
     	<scope>compile</scope>
+    	<exclusions>
+	   		<exclusion>
+	   			<artifactId>geronimo-ws-metadata_2.0_spec</artifactId>
+	   			<groupId>org.apache.geronimo.specs</groupId>
+	   		</exclusion>
+	   	</exclusions>    	
     </dependency>
     
     <!-- Logging -->
@@ -192,7 +198,34 @@
           <source>1.6</source>
           <target>1.6</target>
         </configuration>
-      </plugin>
+	      </plugin>
+			    <plugin>
+				    <!-- JETTY 6 PLUGIN FOR IN PLACE TESTING WITH MAVEN
+				         Execute the mvn clean jetty:run 
+				         in a browser use http://localhost:8080/config-ui/ to test the connection 
+				         and web app-->
+		            <groupId>org.mortbay.jetty</groupId>
+				    <artifactId>maven-jetty-plugin</artifactId>
+				    <version>6.1.14</version>
+				    <configuration>
+				        <scanIntervalSeconds>10</scanIntervalSeconds>
+				        <contextPath>/config-ui</contextPath>
+				        <connectors>           
+			           	    <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+								<port>8080</port> 
+								<maxIdleTime>60000</maxIdleTime>                
+							</connector> 
+				        </connectors>
+				        <webApp>${basedir}/target/config-ui</webApp>
+				        <requestLog implementation="org.mortbay.jetty.NCSARequestLog">
+				            <filename>target/yyyy_mm_dd.request.log</filename>
+				            <retainDays>90</retainDays>
+				            <append>true</append>
+				            <extended>true</extended>
+				            <logTimeZone>GMT</logTimeZone>
+				        </requestLog>
+				    </configuration>
+			    </plugin>	      
     </plugins>
     <finalName>config-ui</finalName>
   </build>
@@ -273,7 +306,7 @@
                         <tag>@deprecated</tag>
                     </tags>
                 </configuration>
-            </plugin>
+            </plugin>            
         </plugins>
     </reporting>
 </project>
