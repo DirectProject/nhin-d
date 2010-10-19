@@ -14,17 +14,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections;
 using System.Text;
-using System.Security.Cryptography.X509Certificates;
 
-namespace NHINDirect
+namespace NHINDirect.Extensions
 {
     /// <summary>
-    /// Extensions to core/common .NET objects. 
+    /// Extensions <see cref="string"/>
     /// </summary>
-    public static class Extensions
+    public static class StringExtensions
     {
         /// <summary>
         /// Tests if the second string is contained by the first string with the supplied <paramref name="comparison"/> operator
@@ -38,7 +36,13 @@ namespace NHINDirect
         {
             return (x.IndexOf(y, comparison) >= 0);
         }
+    }
 
+    /// <summary>
+    /// Extensions <see cref="Array"/>
+    /// </summary>
+    public static class ArrayExtensions
+    {
         /// <summary>
         /// Tests if this array is <c>null</c> or has 0 entries.
         /// </summary>
@@ -48,23 +52,29 @@ namespace NHINDirect
         {
             return (array == null || array.Length == 0);
         }
+    }
 
+    /// <summary>
+    /// Extensions for <see cref="ICollection"/>
+    /// </summary>
+    public static class CollectionExtensions
+    {
         /// <summary>
         /// Tests if this collection is <c>null</c> or has 0 entries.
         /// </summary>
         /// <param name="collection">The collection to test.</param>
         /// <returns><c>true</c> if the collection is <c>null</c> or has 0 entries</returns>
-        public static bool IsNullOrEmpty(this System.Collections.ICollection collection)
+        public static bool IsNullOrEmpty(this ICollection collection)
         {
             return (collection == null || collection.Count == 0);
         }
+    }
 
-        //---------------------------------------
-        //
-        // StringBuilder
-        //
-        //---------------------------------------
-                
+    /// <summary>
+    /// Extensions for <see cref="StringBuilder"/>
+    /// </summary>
+    public static class StringBuilderExtensions
+    {
         /// <summary>
         /// Appends the string version (ToString) of the value with a newline.
         /// </summary>
@@ -99,7 +109,6 @@ namespace NHINDirect
             builder.AppendFormat(format, args);
             builder.AppendLine();
         }
-
 
         /// <summary>
         /// Appends the string version (ToString) of the value
