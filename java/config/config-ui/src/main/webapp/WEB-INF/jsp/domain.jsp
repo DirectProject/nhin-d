@@ -6,7 +6,7 @@
 <%@ include file="/WEB-INF/jsp/include.jsp"%>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title><fmt:message key="domain.title" /></title>
-<!-- TODO: change this tabs code to be like the main.jsp.  I got this from http://www.sohtanaka.com/web-design/simple-tabs-w-css-jquery/ -->
+<!-- I got this from http://www.sohtanaka.com/web-design/simple-tabs-w-css-jquery/ -->
 <style type="text/css">
 ul.tabs {
 	margin: 0;
