@@ -60,6 +60,7 @@
     <Compile Include="Certificates\SystemX509Store.cs" />
     <Compile Include="Certificates\TrustAnchorResolver.cs" />
     <Compile Include="Certificates\UniformCertificateStore.cs" />
+    <Compile Include="Container\SimpleContainerSection.cs" />
     <Compile Include="Container\IoC.cs" />
     <Compile Include="Container\SimpleDependencyResolver.cs" />
     <Compile Include="Cryptography\CryptographicException.cs" />

@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnsResolver", "..\dns\dnsRe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "agentTests", "..\unittests\agent\agentTests.csproj", "{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "diagnostics", "..\diagnostics\diagnostics.csproj", "{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "diagnostics.nlog", "..\diagnostics\diagnostics.nlog.csproj", "{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "commonTests", "..\unittests\common\commonTests.csproj", "{7E1FA376-3372-4DF4-8AED-4DEE68A20152}"
 EndProject
