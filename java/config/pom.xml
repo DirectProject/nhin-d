@@ -12,6 +12,8 @@
 	<properties>
 		<spring-version>3.0.4.RELEASE</spring-version>
 	</properties>
+    <name>NHIN Direct java configuration service parent.</name>
+    <description>NHIN Direct parent project for java configuration services.</description>	
 	<modules>
 	    <module>config-store</module>
 		<module>config-service-jar</module>
