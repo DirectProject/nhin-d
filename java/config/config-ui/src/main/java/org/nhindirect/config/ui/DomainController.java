@@ -81,7 +81,6 @@ import org.springframework.validation.BindingResult;
 @RequestMapping("/domain")
 public class DomainController {
 	private final Log log = LogFactory.getLog(getClass());
-	private static final String certBasePath = "c:/";	
 	@Inject
 	private DomainService dService;
 
@@ -1085,13 +1084,6 @@ public class DomainController {
 
 	public void setdService(DomainService service) {
 		this.dService = service;
-	}
-	
-	private static byte[] loadCertificateData(String certFileName) throws Exception
-	{
-		File fl = new File(certBasePath + certFileName);
-        
-		return FileUtils.readFileToByteArray(fl);
 	}
 	
 }

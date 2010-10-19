@@ -30,12 +30,16 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.config.service.ConfigurationServiceException;
 import org.nhindirect.config.service.DomainService;
+import org.nhindirect.config.service.SettingService;
 import org.nhindirect.config.store.Domain;
+import org.nhindirect.config.store.Setting;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.ui.form.AddressForm;
 import org.nhindirect.config.ui.form.AnchorForm;
 import org.nhindirect.config.ui.form.CertificateForm;
+import org.nhindirect.config.ui.form.SettingsForm;
 import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.form.LoginForm;
 import org.nhindirect.config.ui.form.DomainForm;
@@ -65,6 +69,8 @@ public class MainController {
 	@Inject
 	private DomainService dService;
 	
+	@Inject
+	private SettingService settingsService;
 	
 	public MainController() {
 		if (log.isDebugEnabled()) log.debug("MainController initialized");
@@ -85,6 +91,32 @@ public class MainController {
 		String message = "Search complete";
 		ModelAndView mav = new ModelAndView();
 		// check to see if new domain requested
+		if(isLoggedIn(session) && actionPath.equalsIgnoreCase("gotosettings")){
+			if (log.isDebugEnabled()) log.debug("trying to go to the settings page");
+			String action = "add";
+			model.addAttribute("action", action);
+			
+			mav.setViewName("settings");
+			mav.addObject("actionPath", actionPath);
+			SettingsForm form = (SettingsForm) session.getAttribute("settingsForm");
+			if (form == null) {
+				form = new SettingsForm();
+			}
+			model.addAttribute("settingsForm", form);
+			// retrieve list of settings for settingsResults
+			List<Setting> results = null;
+			if (settingsService != null) {
+				try {
+					results = new ArrayList<Setting>(settingsService.getAllSettings());
+				} catch (ConfigurationServiceException e) {
+					e.printStackTrace();
+				}
+			}
+			model.addAttribute("simpleForm",new SimpleForm());
+			model.addAttribute("settingsResults", results);
+			// display settings.jsp
+			return mav;
+		}
 		if(isLoggedIn(session) && actionPath.equalsIgnoreCase("newdomain")){
 			if (log.isDebugEnabled()) log.debug("trying to go to the new domain page");
 			HashMap<String, String> msgs = new HashMap<String, String>();
