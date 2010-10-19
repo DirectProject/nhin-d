@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-using Health.Net.Direct.Diagnostics.NLog;
+using Health.Direct.Diagnostics.NLog;
 
 using NHINDirect.Container;
 using NHINDirect.Diagnostics;

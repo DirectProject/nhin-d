@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Diagnostics;
 
-using Health.Net.Direct.Diagnostics.NLog;
+using Health.Direct.Diagnostics.NLog;
 
 using NHINDirect.Config.Store;
 using NHINDirect.Container;
