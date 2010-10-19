@@ -16,28 +16,26 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 using System.ServiceModel;
+
 using DnsResolver;
+
 using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
-using NHINDirect.Config.Client;
 using NHINDirect.Config.Client.CertificateService;
+using NHINDirect.Extensions;
 
 namespace NHINDirect.Config.Command
 {
     /// <summary>
     /// Commands to manage certificates
     /// </summary>
-    public class CertificateCommands
+    public class CertificateCommands : CommandsBase
     {        
-        public CertificateCommands()
-        {
-        }
         //---------------------------------------
         //
         // Commands
@@ -115,7 +113,7 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Set the status for ALL certificates for an OWNER.");
             Console.WriteLine("     owner status");
             Console.WriteLine("\t owner: Certificate owner");
-            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString);
+            Console.WriteLine("\t status: {0}", EntityStatusString);
         }
         
         /// <summary>
@@ -142,7 +140,7 @@ namespace NHINDirect.Config.Command
             CertificateGetOptions options = GetOptions(args, 1);
 
             Certificate[] certs = ConfigConsole.Current.CertificateClient.GetCertificatesForOwner(owner.Address, options);
-            if (certs.IsNullOrEmpty())
+            if (ArrayExtensions.IsNullOrEmpty(certs))
             {
                 certs = ConfigConsole.Current.CertificateClient.GetCertificatesForOwner(owner.Host, options);
             }
@@ -166,7 +164,7 @@ namespace NHINDirect.Config.Command
             
             CertificateGetOptions options = new CertificateGetOptions() { IncludeData = true, IncludePrivateKey = false};
             Certificate[] certs = ConfigConsole.Current.CertificateClient.GetCertificatesForOwner(owner, options);
-            if (certs.IsNullOrEmpty())
+            if (ArrayExtensions.IsNullOrEmpty(certs))
             {
                 Console.WriteLine("No certificates found");
                 return;
@@ -406,7 +404,7 @@ namespace NHINDirect.Config.Command
                 
         internal static void Print(X509Certificate2Collection certs)
         {
-            if (certs.IsNullOrEmpty())
+            if (CollectionExtensions.IsNullOrEmpty(certs))
             {
                 Console.WriteLine("No certificates found");
                 return;

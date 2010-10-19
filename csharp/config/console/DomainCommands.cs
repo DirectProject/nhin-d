@@ -15,12 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Mail;
-using System.ServiceModel;
+
 using NHINDirect.Tools.Command;
-using NHINDirect.Config.Client;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client.DomainManager;
 
@@ -29,7 +25,7 @@ namespace NHINDirect.Config.Command
     /// <summary>
     /// Commands to manage domains
     /// </summary>
-    public class DomainCommands
+    public class DomainCommands : CommandsBase
     {
         const int DefaultChunkSize = 25;
         
@@ -66,7 +62,7 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Add a new domain.");
             Console.WriteLine("    domainName [status]");
             Console.WriteLine("\t domainName: New domain name");
-            Console.WriteLine("\t status {0}", Extensions.EntityStatusString);
+            Console.WriteLine("\t status {0}", EntityStatusString);
         }
         
         /// <summary>
@@ -112,7 +108,7 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Change a domain's status");
             Console.WriteLine("    domainName status");
             Console.WriteLine("\t domainName: Set status for this domain");
-            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString); 
+            Console.WriteLine("\t status: {0}", EntityStatusString); 
         }
         
         /// <summary>
@@ -131,7 +127,7 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Set the status of all addresses in this domain");
             Console.WriteLine("    domainName status");
             Console.WriteLine("\t domainName: Set status for this domain");
-            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString);
+            Console.WriteLine("\t status: {0}", EntityStatusString);
         }
         
         // We think this is no longer needed. Remove when confirmed

@@ -9,6 +9,8 @@
     <RootNamespace>NHINDirect.Config.Service</RootNamespace>
     <AssemblyName>nhinConfigService</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ProjectGuid>{83C99331-F451-4175-943D-12FCF17B636E}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -91,9 +93,9 @@
       <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
       <Name>nhinCommon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\diagnostics\diagnostics.csproj">
+    <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj">
       <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
-      <Name>diagnostics</Name>
+      <Name>diagnostics.nlog</Name>
     </ProjectReference>
     <ProjectReference Include="..\store\configStore.csproj">
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>

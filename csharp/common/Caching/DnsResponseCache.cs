@@ -18,6 +18,8 @@ using System.Linq;
 
 using DnsResolver;
 
+using NHINDirect.Extensions;
+
 namespace NHINDirect.Caching
 {
     /// <summary>

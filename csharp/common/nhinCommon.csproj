@@ -60,6 +60,7 @@
     <Compile Include="Certificates\SystemX509Store.cs" />
     <Compile Include="Certificates\TrustAnchorResolver.cs" />
     <Compile Include="Certificates\UniformCertificateStore.cs" />
+    <Compile Include="Container\SimpleContainerSection.cs" />
     <Compile Include="Container\IoC.cs" />
     <Compile Include="Container\SimpleDependencyResolver.cs" />
     <Compile Include="Cryptography\CryptographicException.cs" />
@@ -87,8 +88,8 @@
     <Compile Include="Diagnostics\MethodTracer.cs" />
     <Compile Include="Diagnostics\NullAuditor.cs" />
     <Compile Include="Dns\DnsClientWithCache.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="Container\IDependencyResolver.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Mail\Notifications\Disposition.cs" />
     <Compile Include="Mail\Notifications\Extensions.cs" />
     <Compile Include="Mail\Notifications\MdnGateway.cs" />

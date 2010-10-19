@@ -290,7 +290,7 @@ namespace NHINDirect.Tests.Mime
 		[InlineData(3, "0,1,2")]
 		public void Split(int expectedCount, string value)
 		{
-			Assert.Equal(expectedCount, StringSegment.Split(value, ',').Count());
+		    Assert.Equal(expectedCount, StringSegment.Split(value, ',').Count());
 		}
 	}
 }

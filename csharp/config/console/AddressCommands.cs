@@ -15,9 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mail;
+
 using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
 using NHINDirect.Config.Client.DomainManager;
@@ -27,14 +26,10 @@ namespace NHINDirect.Config.Command
     /// <summary>
     /// Commands to manage Addresses
     /// </summary>
-    public class AddressCommands
+    public class AddressCommands : CommandsBase
     {
         const int DefaultChunkSize = 25;
                 
-        public AddressCommands()
-        {            
-        }
-
         //---------------------------------------
         //
         // Commands
@@ -189,7 +184,7 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Set the status of an address");
             Console.WriteLine("    emailAddress status");
             Console.WriteLine("\t emailAddress: set the status of this address");
-            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString);
+            Console.WriteLine("\t status: {0}", EntityStatusString);
         }
         
         /// <summary>
