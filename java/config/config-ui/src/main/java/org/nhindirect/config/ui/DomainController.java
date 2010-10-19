@@ -114,9 +114,9 @@ public class DomainController {
 			if(actionPath.equalsIgnoreCase("newanchor")){
 				strid = ""+anchorForm.getId();
 				Domain dom = dService.getDomain(Long.parseLong(strid));
-				String owner = "Hero";
+				String owner = "";
 				if(dom != null){
-					owner = dom.getDomainName();
+					owner = dom.getPostMasterEmail();
 				}
 				// insert the new address into the Domain list of Addresses
 				EntityStatus estatus = anchorForm.getStatus();
@@ -125,6 +125,7 @@ public class DomainController {
 					if (!anchorForm.getFileData().isEmpty()) {
 						byte[] bytes = anchorForm.getFileData().getBytes();
 						// store the bytes somewhere
+						owner = anchorForm.getOwner();
 						Anchor ank = new Anchor();
 						ank.setData(bytes);
 						ank.setIncoming(anchorForm.isIncoming());
@@ -145,7 +146,6 @@ public class DomainController {
 					if (log.isDebugEnabled())
 						log.error(ed);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					if (log.isDebugEnabled()) log.error(e.getMessage());
 					e.printStackTrace();
 				}
@@ -166,7 +166,6 @@ public class DomainController {
 					model.addAttribute("anchorForm",aform);
 					
 				} catch (ConfigurationServiceException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
@@ -225,7 +224,7 @@ public class DomainController {
 			String owner = "";
 			String domname = "";
 			if( dom != null){
-				domname = dom.getDomainName();
+				domname = dom.getPostMasterEmail();
 				owner = domname;
 			}
 			if (dService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deleteanchors") && simpleForm.getRemove() != null) {
@@ -292,12 +291,10 @@ public class DomainController {
 	
 			// SETTING THE ADDRESSES OBJECT
 			model.addAttribute("addressesResults", form.getAddresses());
-			// TODO: once certificates and anchors are available change code accordingly
 			Collection<Certificate> certlist = null;
 			try {
 				certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 			} catch (ConfigurationServiceException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -305,7 +302,6 @@ public class DomainController {
 			try {
 				anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 			} catch (ConfigurationServiceException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -343,9 +339,9 @@ public class DomainController {
 			if(actionPath.equalsIgnoreCase("newcertificate")){
 				strid = ""+certificateForm.getId();
 				Domain dom = dService.getDomain(Long.parseLong(strid));
-				String owner = "Hero";
+				String owner = "";
 				if(dom != null){
-					owner = dom.getDomainName();
+					owner = dom.getPostMasterEmail();
 				}
 				// insert the new address into the Domain list of Addresses
 				EntityStatus estatus = certificateForm.getStatus();
@@ -353,6 +349,7 @@ public class DomainController {
 				try{
 					if (!certificateForm.getFileData().isEmpty()) {
 						byte[] bytes = certificateForm.getFileData().getBytes();
+						owner = certificateForm.getOwner();
 						Certificate cert = new Certificate();
 						cert.setData(bytes);
 						cert.setOwner(owner);
@@ -391,7 +388,6 @@ public class DomainController {
 					model.addAttribute("anchorForm",aform);
 					
 				} catch (ConfigurationServiceException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
@@ -450,7 +446,7 @@ public class DomainController {
 			String owner = "";
 			String domname = "";
 			if( dom != null){
-				domname = dom.getDomainName();
+				domname = dom.getPostMasterEmail();
 				owner = domname;
 			}
 			if (dService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deletecertificate") && simpleForm.getRemove() != null) {
@@ -517,12 +513,10 @@ public class DomainController {
 	
 			// SETTING THE ADDRESSES OBJECT
 			model.addAttribute("addressesResults", form.getAddresses());
-			// TODO: once certificates and anchors are available change code accordingly
 			Collection<Certificate> certlist = null;
 			try {
 				certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 			} catch (ConfigurationServiceException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -530,7 +524,6 @@ public class DomainController {
 			try {
 				anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 			} catch (ConfigurationServiceException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -564,7 +557,7 @@ public class DomainController {
 			if(actionPath.equalsIgnoreCase("newaddress")){
 				strid = ""+addressForm.getId();
 				Domain dom = dService.getDomain(Long.parseLong(strid));
-				String owner = dom.getDomainName();
+				String owner = dom.getPostMasterEmail();
 				// insert the new address into the Domain list of Addresses
 				String anEmail = addressForm.getEmailAddress();
 				String displayname = addressForm.getDisplayName();
@@ -604,7 +597,6 @@ public class DomainController {
 					model.addAttribute("anchorForm",aform);
 					
 				} catch (ConfigurationServiceException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
@@ -692,7 +684,6 @@ public class DomainController {
 						}			
 					}
 					if (log.isDebugEnabled()) log.debug(" Trying to update the domain with removed addresses");
-					//TODO: GET THIS TO ACTUALLY WORK REMOVING DATA FROM DATABASE
 					dService.updateDomain(dom);
 					dom = dService.getDomain(Long.parseLong(strid));
 		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed addresses");
@@ -701,14 +692,13 @@ public class DomainController {
 					model.addAttribute("addressForm",addrform);
 					// BEGIN: temporary code for mocking purposes
 					String owner = "";
-					owner = dom.getDomainName();
+					owner = dom.getPostMasterEmail();
 					model.addAttribute("addressesResults", dom.getAddresses());
 
 					Collection<Certificate> certlist = null;
 					try {
 						certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 					} catch (ConfigurationServiceException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					
@@ -716,7 +706,6 @@ public class DomainController {
 					try {
 						anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 					} catch (ConfigurationServiceException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					
@@ -756,7 +745,7 @@ public class DomainController {
 			}
 			model.addAttribute("domainForm", form);
 			mav.setViewName("domain");
-			String owner = dom.getDomainName();
+			String owner = dom.getPostMasterEmail();
 			// certificate and anchor forms and results
 			try {
 				Collection<Certificate> certs = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
@@ -774,7 +763,6 @@ public class DomainController {
 				model.addAttribute("anchorForm",aform);
 				
 			} catch (ConfigurationServiceException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			
@@ -880,7 +868,7 @@ public class DomainController {
 				AddressForm addrform = new AddressForm();
 				addrform.setId(dId);
 				model.addAttribute("addressForm",addrform);
-				// TODO: once certificates and anchors are available change code accordingly
+
 				CertificateForm cform = new CertificateForm();
 				cform.setId(dId);
 				AnchorForm aform = new AnchorForm();
@@ -897,18 +885,15 @@ public class DomainController {
 						model.addAttribute("action", action);
 						// SETTING THE ADDRESSES OBJECT
 						model.addAttribute("addressesResults", results.getAddresses());
-						// TODO: once certificates and anchors are available change code accordingly
 						
 						// BEGIN: temporary code for mocking purposes
 						String owner = "";
-						owner = results.getDomainName();
+						owner = results.getPostMasterEmail();
 						model.addAttribute("addressesResults", results.getAddresses());
-						// TODO: once certificates and anchors are available change code accordingly
 						Collection<Certificate> certlist = null;
 						try {
 							certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 						} catch (ConfigurationServiceException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						
@@ -916,7 +901,6 @@ public class DomainController {
 						try {
 							anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 						} catch (ConfigurationServiceException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						
@@ -1010,7 +994,7 @@ public class DomainController {
 							}
 							msgs.put("msg", "domain.update.success");
 						}
-						// TODO: once certificates and anchors are available change code accordingly
+
 						AddressForm addrform = new AddressForm();
 						addrform.setId(form.getDomainFromForm().getId());
 						model.addAttribute("domainForm",form);
@@ -1027,17 +1011,15 @@ public class DomainController {
 						simple.setId(form.getDomainFromForm().getId());
 						model.addAttribute("simpleForm",simple);
 						
-						// TODO: once certificates and anchors are available change code accordingly
-						//  begin: add these dummy records too
-						String owner = form.getDomainFromForm().getDomainName();
+						// once certificates and anchors are available change code accordingly
+						// begin: add these dummy records too
+						String owner = form.getDomainFromForm().getPostMasterEmail();
 
 						// BEGIN: temporary code for mocking purposes
-						// TODO: once certificates and anchors are available change code accordingly
 						Collection<Certificate> certlist = null;
 						try {
 							certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 						} catch (ConfigurationServiceException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						
@@ -1045,7 +1027,6 @@ public class DomainController {
 						try {
 							anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 						} catch (ConfigurationServiceException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						
@@ -1099,7 +1080,6 @@ public class DomainController {
 	 */
 	@ExceptionHandler(IOException.class) 
 	public String handleIOException(IOException ex, HttpServletRequest request) {
-		//TODO Actually do something useful
 		return ClassUtils.getShortName(ex.getClass() + ":" + ex.getMessage());
 	}
 

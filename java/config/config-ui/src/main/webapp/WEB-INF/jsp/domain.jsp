@@ -300,6 +300,14 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 			<table cellpadding="1px" cellspacing="1px" id="certificateTable">
 				<tr>
 					<th>
+						<form:label for="owner" path="owner">Owner:</form:label>
+					</th>
+					<th>
+						<form:input path="owner"/>
+					</th>
+				</tr>
+				<tr>
+					<th>
 						<form:label for="fileData" path="fileData">Certificate:</form:label>
 					</th>
 					<th>
@@ -397,6 +405,14 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 	cssClass="cleanform" method="POST" enctype="multipart/form-data">
 	<form:hidden path="id" />
 	<table cellpadding="1px" cellspacing="1px" id="anchorTable">
+		<tr>
+			<th><form:label path="owner">Owner:
+					            <form:errors path="owner" cssClass="error" />
+			</form:label></th>
+			<th>
+			<form:input path="owner"/>
+			</th>
+		</tr>
 		<tr>
 			<th>
 				<form:label for="fileData" path="fileData">Certificate:</form:label>
