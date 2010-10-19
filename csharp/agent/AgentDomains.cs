@@ -32,8 +32,12 @@ namespace NHINDirect.Agent
         // In the future, we may maintain additional state for each domain
         //
         Dictionary<string, string> m_managedDomains;
-                
-        internal AgentDomains(string[] domains)
+        
+        /// <summary>
+        /// Create a new AgentDomains object
+        /// </summary>
+        /// <param name="domains">set of domains to manage</param>        
+        public AgentDomains(string[] domains)
         {
             this.SetDomains(domains);
         }

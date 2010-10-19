@@ -28,6 +28,16 @@ namespace NHINDirect.SmtpAgent
 {    
     public class SmtpAgent
     {
+        /// <summary>
+        /// Headers used to pass down what was in the envelope 
+        /// See documentation on MSDN
+        /// </summary>
+        public class XHeaders
+        {
+            public const string Receivers = "X-Receiver";
+            public const string Sender = "X-Sender";
+        }
+        
         IAuditor m_auditor;
     	ILogger m_logger;
 
@@ -309,6 +319,10 @@ namespace NHINDirect.SmtpAgent
                 {
                     throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
                 }
+                //
+                // Capture envelope sender/receiver in the message
+                //
+                this.UpdateXHeaders(envelope);
                 //
                 // Replace the contents of the original message with what the agent gave us
                 //
@@ -604,6 +618,16 @@ namespace NHINDirect.SmtpAgent
         //  Message Manipulation
         //
         //---------------------------------------------------
+        protected virtual void UpdateXHeaders(MessageEnvelope envelope)
+        {
+            NHINDirect.Mail.Message message = envelope.Message;
+            //
+            // Inject the domain recipients & verified sender from the envelope into the message using an x-receiver + x-sender headers
+            // These will be useful after the message is serialized and then deserialized for further processing
+            //
+            message.Headers.SetValue(XHeaders.Receivers, envelope.DomainRecipients.ToString());
+            message.Headers.SetValue(XHeaders.Sender, envelope.Sender.ToString());
+        }
         
         protected virtual void UpdateMessageText(ISmtpMessage message, MessageEnvelope envelope)
         {
