@@ -53,7 +53,7 @@ namespace NHINDirect.Config.Store
         AccountNameLength,
     }
         
-    public class ConfigStoreException : NHINDException<ConfigStoreError>
+    public class ConfigStoreException : DirectException<ConfigStoreError>
     {
         public ConfigStoreException()
             : base(ConfigStoreError.Unknown)

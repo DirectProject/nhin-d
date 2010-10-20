@@ -28,7 +28,7 @@ namespace NHINDirect.SmtpAgent
         NoRecipientsInEnvelope
     }
     
-    public class SmtpAgentException : NHINDException<SmtpAgentError>
+    public class SmtpAgentException : DirectException<SmtpAgentError>
     {
         public SmtpAgentException(SmtpAgentError error)
             : base(error)
