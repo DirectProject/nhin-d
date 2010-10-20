@@ -72,8 +72,10 @@ public abstract class RoutingResolver
 
         for (String address : addresses)
         {
+
             if (isSmtpEndpoint(address))
             {
+              
                 smtpEndpoints.add(address);
             }
         }
