@@ -13,7 +13,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smtpEventHandlerPS", "..\ga
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpAgent", "..\gateway\smtpAgent\smtpAgent.csproj", "{A9B11AAD-3461-4DDB-A447-91779BD41A78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpagent.tests", "..\unittests\smtpAgent\smtpagent.tests.csproj", "{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpAgent.tests", "..\unittests\smtpAgent\smtpAgent.tests.csproj", "{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A9B11AAD-3461-4DDB-A447-91779BD41A78} = {A9B11AAD-3461-4DDB-A447-91779BD41A78}
 	EndProjectSection
@@ -45,7 +45,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnsResponder.tests", "..\un
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xd", "..\xd\xd.csproj", "{34C79F52-0820-4365-B7E8-9660163E7A21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xdTests", "..\unittests\xdtests\xdTests.csproj", "{C6AF9782-1F93-4B72-9281-754456D053A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xd.tests", "..\unittests\xdtests\xd.tests.csproj", "{C6AF9782-1F93-4B72-9281-754456D053A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "..\common\common.csproj", "{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}"
 EndProject

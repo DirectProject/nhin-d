@@ -13,18 +13,14 @@ Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Xml.Linq;
 
 using NHINDirect.Xd;
+
 using Xunit;
-using Xunit.Extensions;
 
 
-namespace NHINDirect.Tests.xdTests
+namespace Health.Direct.Xd.Tests
 {
     public class MultiSlotClassificationTests
     {
@@ -67,7 +63,7 @@ namespace NHINDirect.Tests.xdTests
         public void MultiSlottedMultiSlotClassificationHasMultipleSlots()
         {
             MultiSlotClassification c = new MultiSlotClassification("abc", "123", "doc",
-                new Slot[] { new Slot("a", "1"), new Slot("b", "2") });
+                                                                    new Slot[] { new Slot("a", "1"), new Slot("b", "2") });
             Assert.Equal(2, c.Slots().Count());
             Assert.Equal("1", c.SlotValue("a"));
             Assert.Equal("2", c.SlotValue("b"));

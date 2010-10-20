@@ -16,20 +16,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
 using NHINDirect.Xd;
 using NHINDirect.Metadata;
 using Xunit;
-using Xunit.Extensions;
 
-namespace NHINDirect.Tests.xdTests
+namespace Health.Direct.Xd.Tests
 {
     public class XdMetadataGeneratorTests
     {
-
-
         [Fact]
         public void NoDocumentMetadata()
         {
@@ -71,7 +67,7 @@ namespace NHINDirect.Tests.xdTests
         {
             XElement node = TestDocXElement.Classifications(XDMetadataStandard.UUIDs.DocumentClass).First();
             string code = node.Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value;
-            Assert.Equal(C80ClassCodeUtils.Decode(Metadata.C80ClassCode.TransferOfCareReferralNote).Key, code);
+            Assert.Equal(C80ClassCodeUtils.Decode(NHINDirect.Metadata.C80ClassCode.TransferOfCareReferralNote).Key, code);
         }
 
         [Fact]
@@ -139,7 +135,7 @@ namespace NHINDirect.Tests.xdTests
         public void DocumentFacilityCodeHasCorrectValue()
         {
             Assert.Equal(C80FacilityCodeUtils.Decode(C80FacilityCodes.PrivatePhysiciansGroupOffice).Key,
-                TestDocXElement.Classification(XDMetadataStandard.UUIDs.FacilityCode).Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value);
+                         TestDocXElement.Classification(XDMetadataStandard.UUIDs.FacilityCode).Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value);
         }
 
         [Fact]
@@ -196,7 +192,7 @@ namespace NHINDirect.Tests.xdTests
         public void PracticeSettingCodeHasCorrectValue()
         {
             Assert.Equal(C80SpecialtyCodeUtils.Decode(C80ClinicalSpecialties.FamilyPractice).Key,
-                TestDocXElement.Classification(XDMetadataStandard.UUIDs.PracticeSetting).Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value);
+                         TestDocXElement.Classification(XDMetadataStandard.UUIDs.PracticeSetting).Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value);
         }
 
         [Fact]
@@ -383,8 +379,8 @@ namespace NHINDirect.Tests.xdTests
             Assert.NotNull(elt.Attribute("id").Value);
             string id = elt.Attribute("id").Value;
             IEnumerable<XElement> classifications = from el in elt.DescendantsAnyNs(XDMetadataStandard.Elts.Classification)
-                                       where (string) el.Attribute("classificationNode") == XDMetadataStandard.UUIDs.SubmissionSetClassification
-                                       select el;
+                                                    where (string) el.Attribute("classificationNode") == XDMetadataStandard.UUIDs.SubmissionSetClassification
+                                                    select el;
             Assert.NotEmpty(classifications);
             Assert.Equal(id, classifications.First().Attribute("classifiedObject").Value);
         }
