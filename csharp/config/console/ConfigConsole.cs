@@ -69,23 +69,26 @@ namespace NHINDirect.Config.Command
             AnchorClient = Settings.AnchorManager.CreateAnchorStoreClient();
         }
         
-        internal void Run(string[] args)
+        internal bool Run(string[] args)
         {
             if (args != null && args.Length > 0)
             {
-                m_commands.Run(args);
+                return m_commands.Run(args);
             }
-            else
-            {
-                m_commands.RunInteractive();
-            }
+            
+            m_commands.RunInteractive();
+            return true;
         }
         
         static void Main(string[] args)
         {
             ConfigConsole.Settings = ConsoleSettings.Load();
             ConfigConsole.Current = new ConfigConsole();
-            ConfigConsole.Current.Run(args);
+            bool result = ConfigConsole.Current.Run(args);
+            if (!result && Environment.ExitCode == 0)
+            {
+                Environment.ExitCode = -1;
+            }
         }
         
         void PrintError(Exception ex)

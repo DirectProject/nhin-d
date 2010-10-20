@@ -16,11 +16,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.IO;
 using System.Net.Mime;
-
+using System.Net.Mail;
+using System.Linq;
 using NHINDirect.Mail;
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
-
 using Xunit;
 
 namespace SmtpAgentTests
@@ -104,13 +104,13 @@ Yo. Wassup?";
         internal void VerifyIncomingMessage(CDO.Message message)
         {
             ContentType contentType = new ContentType(message.GetContentType());
-            Assert.False(NHINDirect.Cryptography.SMIMEStandard.IsContentEncrypted(contentType));
+            Assert.False(NHINDirect.Cryptography.SMIMEStandard.IsContentEncrypted(contentType));            
         }
 
         internal void ProcessEndToEnd(SmtpAgent agent, Message msg, out OutgoingMessage outgoing, out IncomingMessage incoming)
         {
             outgoing = agent.SecurityAgent.ProcessOutgoing(new MessageEnvelope(msg));
-            incoming = agent.SecurityAgent.ProcessIncoming(new MessageEnvelope(outgoing.SerializeMessage()));
+            incoming = agent.SecurityAgent.ProcessIncoming(new MessageEnvelope(outgoing.SerializeMessage()));            
         }
         
         protected string GetSettingsPath(string fileName)

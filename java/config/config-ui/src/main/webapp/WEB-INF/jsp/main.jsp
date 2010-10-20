@@ -40,7 +40,7 @@ $(document).ready(function()
 		<p>
 		<button name="submitType" id="submitType" type="submit" value="search">Search</button>		
         <button name="submitType" id="submitType" type="submit" value="newdomain">New Domain</button>
-		
+		<button name="submitType" id="submitType" type="submit" value="gotosettings">Go To Settings</button>
 		</p>
 	</form:form>
 	</fieldset>
