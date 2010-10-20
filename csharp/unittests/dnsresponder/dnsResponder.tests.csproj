@@ -8,8 +8,8 @@
     <ProjectGuid>{032D3352-7B6C-48D1-866C-986AED4E5E69}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DnsResponderTest</RootNamespace>
-    <AssemblyName>dnsResponderXUnitTests</AssemblyName>
+    <RootNamespace>Health.Direct.DnsResponder.Tests</RootNamespace>
+    <AssemblyName>Health.Direct.DnsResponder.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
