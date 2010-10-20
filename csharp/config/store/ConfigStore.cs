@@ -27,6 +27,7 @@ namespace NHINDirect.Config.Store
         TimeSpan m_timeout;
         DomainManager m_domains;
         AddressManager m_addresses;
+        MXManager m_mxs;
         CertificateManager m_certificates;
         AnchorManager m_anchors;
         
@@ -52,6 +53,7 @@ namespace NHINDirect.Config.Store
             m_addresses = new AddressManager(this);
             m_certificates = new CertificateManager(this);
             m_anchors = new AnchorManager(this);
+            m_mxs = new MXManager(this);
         }
 
         public TimeSpan Timeout
@@ -107,6 +109,14 @@ namespace NHINDirect.Config.Store
             get
             {
                 return m_anchors;
+            }
+        }
+
+        public MXManager MXs
+        {
+            get
+            {
+                return m_mxs;
             }
         }
                 

@@ -1,7 +1,6 @@
-﻿/****** Object:  Database [NHINDConfig]    Script Date: 08/26/2010 09:14:10 ******/
-USE [NHINDConfig]
+﻿USE [NHINDConfig]
 GO
-/****** Object:  Table [dbo].[Domains]    Script Date: 08/26/2010 09:14:11 ******/
+/****** Object:  Table [dbo].[Domains]    Script Date: 10/20/2010 08:12:09 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -28,7 +27,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Domains_DomainID] ON [dbo].[Domains]
 	[DomainID] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Certificates]    Script Date: 08/26/2010 09:14:11 ******/
+/****** Object:  Table [dbo].[Certificates]    Script Date: 10/20/2010 08:12:09 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -58,7 +57,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Certificates_CertificateID] ON [dbo].[Certi
 	[CertificateID] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Anchors]    Script Date: 08/26/2010 09:14:11 ******/
+/****** Object:  Table [dbo].[Anchors]    Script Date: 10/20/2010 08:12:09 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -85,7 +84,29 @@ CREATE TABLE [dbo].[Anchors](
 GO
 SET ANSI_PADDING OFF
 GO
-/****** Object:  Table [dbo].[Addresses]    Script Date: 08/26/2010 09:14:11 ******/
+/****** Object:  Table [dbo].[MXs]    Script Date: 10/20/2010 08:12:09 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[MXs](
+	[SMTPDomainName] [varchar](255) NOT NULL,
+	[MXID] [bigint] IDENTITY(1,1) NOT NULL,
+	[DomainID] [bigint] NOT NULL,
+	[Preference] [int] NOT NULL,
+	[CreateDate] [datetime] NOT NULL,
+	[UpdateDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_MXs] PRIMARY KEY CLUSTERED 
+(
+	[SMTPDomainName] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Addresses]    Script Date: 10/20/2010 08:12:09 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -114,30 +135,42 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Addresses_AddressID] ON [dbo].[Addresses]
 	[AddressID] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 GO
-/****** Object:  Default [DF_Domains_Status]    Script Date: 08/26/2010 09:14:11 ******/
-ALTER TABLE [dbo].[Domains] ADD  CONSTRAINT [DF_Domains_Status]  DEFAULT ((0)) FOR [Status]
-GO
-/****** Object:  Default [DF_Certificates_CreateDate]    Script Date: 08/26/2010 09:14:11 ******/
-ALTER TABLE [dbo].[Certificates] ADD  CONSTRAINT [DF_Certificates_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
-GO
-/****** Object:  Default [DF_Certificates_Status]    Script Date: 08/26/2010 09:14:11 ******/
-ALTER TABLE [dbo].[Certificates] ADD  CONSTRAINT [DF_Certificates_Status]  DEFAULT ((0)) FOR [Status]
-GO
-/****** Object:  Default [DF_Anchors_ForIncoming]    Script Date: 08/26/2010 09:14:11 ******/
-ALTER TABLE [dbo].[Anchors] ADD  CONSTRAINT [DF_Anchors_ForIncoming]  DEFAULT ((1)) FOR [ForIncoming]
-GO
-/****** Object:  Default [DF_Anchors_ForOutgoing]    Script Date: 08/26/2010 09:14:11 ******/
-ALTER TABLE [dbo].[Anchors] ADD  CONSTRAINT [DF_Anchors_ForOutgoing]  DEFAULT ((1)) FOR [ForOutgoing]
-GO
-/****** Object:  Default [DF_Anchors_Status]    Script Date: 08/26/2010 09:14:11 ******/
-ALTER TABLE [dbo].[Anchors] ADD  CONSTRAINT [DF_Anchors_Status]  DEFAULT ((0)) FOR [Status]
-GO
-/****** Object:  Default [DF_Addresses_Status]    Script Date: 08/26/2010 09:14:11 ******/
+/****** Object:  Default [DF_Addresses_Status]    Script Date: 10/20/2010 08:12:09 ******/
 ALTER TABLE [dbo].[Addresses] ADD  CONSTRAINT [DF_Addresses_Status]  DEFAULT ((0)) FOR [Status]
 GO
-/****** Object:  ForeignKey [FK_Addresses_DomainID]    Script Date: 08/26/2010 09:14:11 ******/
+/****** Object:  Default [DF_Anchors_ForIncoming]    Script Date: 10/20/2010 08:12:09 ******/
+ALTER TABLE [dbo].[Anchors] ADD  CONSTRAINT [DF_Anchors_ForIncoming]  DEFAULT ((1)) FOR [ForIncoming]
+GO
+/****** Object:  Default [DF_Anchors_ForOutgoing]    Script Date: 10/20/2010 08:12:09 ******/
+ALTER TABLE [dbo].[Anchors] ADD  CONSTRAINT [DF_Anchors_ForOutgoing]  DEFAULT ((1)) FOR [ForOutgoing]
+GO
+/****** Object:  Default [DF_Anchors_Status]    Script Date: 10/20/2010 08:12:09 ******/
+ALTER TABLE [dbo].[Anchors] ADD  CONSTRAINT [DF_Anchors_Status]  DEFAULT ((0)) FOR [Status]
+GO
+/****** Object:  Default [DF_Certificates_CreateDate]    Script Date: 10/20/2010 08:12:09 ******/
+ALTER TABLE [dbo].[Certificates] ADD  CONSTRAINT [DF_Certificates_CreateDate]  DEFAULT (getdate()) FOR [CreateDate]
+GO
+/****** Object:  Default [DF_Certificates_Status]    Script Date: 10/20/2010 08:12:09 ******/
+ALTER TABLE [dbo].[Certificates] ADD  CONSTRAINT [DF_Certificates_Status]  DEFAULT ((0)) FOR [Status]
+GO
+/****** Object:  Default [DF_Domains_Status]    Script Date: 10/20/2010 08:12:09 ******/
+ALTER TABLE [dbo].[Domains] ADD  CONSTRAINT [DF_Domains_Status]  DEFAULT ((0)) FOR [Status]
+GO
+/****** Object:  Default [DF_MXs_SMTPDomainName]    Script Date: 10/20/2010 08:12:09 ******/
+ALTER TABLE [dbo].[MXs] ADD  CONSTRAINT [DF_MXs_SMTPDomainName]  DEFAULT ('') FOR [SMTPDomainName]
+GO
+/****** Object:  Default [DF_MXs_Preference]    Script Date: 10/20/2010 08:12:09 ******/
+ALTER TABLE [dbo].[MXs] ADD  CONSTRAINT [DF_MXs_Preference]  DEFAULT ((0)) FOR [Preference]
+GO
+/****** Object:  ForeignKey [FK_Addresses_DomainID]    Script Date: 10/20/2010 08:12:09 ******/
 ALTER TABLE [dbo].[Addresses]  WITH CHECK ADD  CONSTRAINT [FK_Addresses_DomainID] FOREIGN KEY([DomainID])
 REFERENCES [dbo].[Domains] ([DomainID])
 GO
 ALTER TABLE [dbo].[Addresses] CHECK CONSTRAINT [FK_Addresses_DomainID]
+GO
+/****** Object:  ForeignKey [FK_MXs_DomainID]    Script Date: 10/20/2010 08:12:09 ******/
+ALTER TABLE [dbo].[MXs]  WITH CHECK ADD  CONSTRAINT [FK_MXs_DomainID] FOREIGN KEY([DomainID])
+REFERENCES [dbo].[Domains] ([DomainID])
+GO
+ALTER TABLE [dbo].[MXs] CHECK CONSTRAINT [FK_MXs_DomainID]
 GO

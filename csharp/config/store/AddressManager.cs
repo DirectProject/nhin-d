@@ -415,24 +415,6 @@ namespace NHINDirect.Config.Store
             db.Addresses.ExecDeleteDomain(domainID);
         }
         
-        public void SetStatus(string[] emailAddresses, EntityStatus status)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.SetStatus(db, emailAddresses, status);
-            }
-        }
-        
-        public void SetStatus(ConfigDatabase db, string[] emailAddresses, EntityStatus status)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            
-            this.VerifyEmailAddresses(emailAddresses);
-            db.Addresses.ExecSetStatus(emailAddresses, status);
-        }
 
         public void SetStatus(long domainID, EntityStatus status)
         {

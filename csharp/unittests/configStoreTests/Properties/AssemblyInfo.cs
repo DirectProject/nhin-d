@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("configSystem")]
+[assembly: AssemblyTitle("configStoreTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("NHIN Direct Project")]
-[assembly: AssemblyProduct("configSystem")]
-[assembly: AssemblyCopyright("Copyright © NHIN Direct Project")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("configStoreTests")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("596c0748-f8ac-406d-ba74-c9cbd10f7f9b")]
+[assembly: Guid("189dad6d-9916-46b2-a6dd-c8854bfe7a32")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -34,6 +34,3 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DeleteMeUnitTests")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("configStoreTests")]
