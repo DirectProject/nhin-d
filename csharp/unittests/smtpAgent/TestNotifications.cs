@@ -25,11 +25,11 @@ using NHINDirect.Mail.Notifications;
 
 using Xunit;
 
-namespace SmtpAgentTests
+namespace Health.Direct.SmtpAgent.Tests
 {
     public class TestNotifications : SmtpAgentTester
     {
-        readonly SmtpAgent m_agent;
+        readonly NHINDirect.SmtpAgent.SmtpAgent m_agent;
         readonly NotificationProducer m_producer;
 
         static TestNotifications()
@@ -107,7 +107,7 @@ namespace SmtpAgentTests
                         
         int CountNotifications(IncomingMessage incoming)
         {
-        	return m_producer.Produce(incoming).Count();
+            return m_producer.Produce(incoming).Count();
         }
     }
 }

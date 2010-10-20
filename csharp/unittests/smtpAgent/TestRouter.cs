@@ -25,11 +25,11 @@ using NHINDirect.Config.Store;
 
 using Xunit;
 
-namespace SmtpAgentTests
+namespace Health.Direct.SmtpAgent.Tests
 {
     public class TestRouter : SmtpAgentTester
     {
-        readonly SmtpAgent m_agent;
+        readonly NHINDirect.SmtpAgent.SmtpAgent m_agent;
         readonly Dictionary<string, int> m_routeCounts;
 
         static TestRouter()

@@ -20,7 +20,7 @@ using NHINDirect.SmtpAgent;
 
 using Xunit.Extensions;
 
-namespace SmtpAgentTests
+namespace Health.Direct.SmtpAgent.Tests
 {
     /// <summary>
     /// Test various agent initializations

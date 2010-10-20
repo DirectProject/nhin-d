@@ -16,19 +16,19 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.IO;
 using System.Net.Mime;
-using System.Net.Mail;
-using System.Linq;
+
 using NHINDirect.Mail;
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
+
 using Xunit;
 
-namespace SmtpAgentTests
+namespace Health.Direct.SmtpAgent.Tests
 {
     public class SmtpAgentTester
     {
         public const string TestMessage =
-@"From: <toby@redmond.hsgincubator.com>
+            @"From: <toby@redmond.hsgincubator.com>
 To: <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>
 Subject: Simple Text Message
 Date: Mon, 10 May 2010 14:53:27 -0700
@@ -38,7 +38,7 @@ Content-Type: text/plain
 Yo. Wassup?";
 
         public const string CrossDomainMessage =
-@"From: <toby@redmond.hsgincubator.com>
+            @"From: <toby@redmond.hsgincubator.com>
 To: <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>, <gm2552@securehealthemail.com>
 Subject: Simple Text Message
 Date: Mon, 10 May 2010 14:53:27 -0700
@@ -48,7 +48,7 @@ Content-Type: text/plain
 Yo. Wassup?";
 
         public const string BadMessage =
-@"From: <toby@redmond.hsgincubator.com>
+            @"From: <toby@redmond.hsgincubator.com>
 To: <xyz@untrusted.com>
 Subject: Bad Text Message
 Date: Mon, 10 May 2010 14:53:27 -0700
@@ -58,7 +58,7 @@ Content-Type: text/plain
 Bad message?";
 
         public const string UnknownUsersMessage =
-@"From: <toby@redmond.hsgincubator.com>
+            @"From: <toby@redmond.hsgincubator.com>
 To: <frank@nhind.hsgincubator.com>, <joe@nhind.hsgincubator.com>
 Subject: Unknown Users Text Message
 Date: Mon, 10 May 2010 14:53:27 -0700
@@ -68,7 +68,7 @@ Content-Type: text/plain
 Yo. Wassup?";
 
         public const string MultiToMessage =
-@"From: <toby@redmond.hsgincubator.com>
+            @"From: <toby@redmond.hsgincubator.com>
 To: <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>, <gm2552@securehealthemail.com>, <nimbu@redmond.hsgincubator.com>, <pongo@redmond.hsgincubator.com>, <ryan@securehealthemail.com>, <frank@nhind.hsgincubator.com>
 Subject: Simple Text Message
 Date: Mon, 10 May 2010 14:53:27 -0700
@@ -107,7 +107,7 @@ Yo. Wassup?";
             Assert.False(NHINDirect.Cryptography.SMIMEStandard.IsContentEncrypted(contentType));            
         }
 
-        internal void ProcessEndToEnd(SmtpAgent agent, Message msg, out OutgoingMessage outgoing, out IncomingMessage incoming)
+        internal void ProcessEndToEnd(NHINDirect.SmtpAgent.SmtpAgent agent, Message msg, out OutgoingMessage outgoing, out IncomingMessage incoming)
         {
             outgoing = agent.SecurityAgent.ProcessOutgoing(new MessageEnvelope(msg));
             incoming = agent.SecurityAgent.ProcessIncoming(new MessageEnvelope(outgoing.SerializeMessage()));            
@@ -120,7 +120,7 @@ Yo. Wassup?";
             return relativePath;
         }
     }
-    
+
     public class DummySmtpMessage : ISmtpMessage
     {
         public bool HasEnvelope

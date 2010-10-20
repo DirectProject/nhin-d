@@ -13,28 +13,19 @@ Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 
 using Health.Direct.Agent.Tests;
 
-using NHINDirect;
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
-using NHINDirect.Mail;
-using NHINDirect.Mail.Notifications;
 
 using Xunit;
-using Xunit.Extensions;
 
-namespace SmtpAgentTests
-{    
+namespace Health.Direct.SmtpAgent.Tests
+{
     public class TestSmtpAgent : SmtpAgentTester
     {
-        SmtpAgent m_agent;
+        NHINDirect.SmtpAgent.SmtpAgent m_agent;
         
         static TestSmtpAgent()
         {
@@ -114,15 +105,15 @@ namespace SmtpAgentTests
             // This should be accepted because the envelope is what we look at
             //
             MessageEnvelope envelope = new MessageEnvelope(BadMessage, 
-                                                        NHINDAddressCollection.ParseSmtpServerEnvelope("biff@nhind.hsgincubator.com"),
-                                                        new NHINDAddress("toby@redmond.hsgincubator.com")
-                                                        );
+                                                           NHINDAddressCollection.ParseSmtpServerEnvelope("biff@nhind.hsgincubator.com"),
+                                                           new NHINDAddress("toby@redmond.hsgincubator.com")
+                );
            
             Assert.DoesNotThrow(() => m_agent.SecurityAgent.ProcessOutgoing(envelope));  
 
             envelope = new MessageEnvelope(TestMessage,
-                                    NHINDAddressCollection.ParseSmtpServerEnvelope("xyz@untrusted.com"),
-                                    new NHINDAddress("toby@redmond.hsgincubator.com"));
+                                           NHINDAddressCollection.ParseSmtpServerEnvelope("xyz@untrusted.com"),
+                                           new NHINDAddress("toby@redmond.hsgincubator.com"));
 
             //
             // This SHOULD throw an exception
