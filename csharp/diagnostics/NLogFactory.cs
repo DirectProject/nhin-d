@@ -24,7 +24,7 @@ using NLog.Config;
 using NLog.Targets;
 using NLog.Win32.Targets;
 
-namespace Health.Net.Direct.Diagnostics.NLog
+namespace Health.Direct.Diagnostics.NLog
 {
     public class NLogFactory : ILogFactory
     {

@@ -16,6 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Linq;
 using System.IO;
 
+using Health.Direct.Agent.Tests;
+
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
 using NHINDirect.Mail;
@@ -32,7 +34,7 @@ namespace SmtpAgentTests
 
         static TestNotifications()
         {
-            AgentTests.AgentTester.EnsureStandardMachineStores();
+            AgentTester.EnsureStandardMachineStores();
         }
         
         public TestNotifications()

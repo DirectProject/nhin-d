@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xunit>
   <assemblies>
-    <assembly filename="..\bin\Debug\agentXUnitTests.dll" shadow-copy="true" />
-    <assembly filename="..\bin\Debug\dnsResolverXUnitTests.dll" shadow-copy="true" />
+    <assembly filename="..\bin\Debug\Health.Direct.Agent.Tests.dll" shadow-copy="true" />
     <assembly filename="..\bin\Debug\commonXUnitTests.dll" shadow-copy="true" />
     <assembly filename="..\bin\Debug\xdXUnitTests.dll" shadow-copy="true" />
   </assemblies>

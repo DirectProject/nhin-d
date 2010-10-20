@@ -16,15 +16,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Net.Mail;
-using NHINDirect.Agent;
-using NHINDirect.Certificates;
 using System.Security.Cryptography.X509Certificates;
 
-namespace AgentTests
+using NHINDirect.Agent;
+using NHINDirect.Certificates;
+
+namespace Health.Direct.Agent.Tests
 {
     /// <summary>
     /// Helper Class that does Chores needed by actual tests...
@@ -178,8 +177,8 @@ namespace AgentTests
             MemoryX509Store privateCerts = LoadPrivateCerts(certsBasePath);
             MemoryX509Store publicCerts = LoadPublicCerts(certsBasePath);
             TrustAnchorResolver anchors = new TrustAnchorResolver(
-                                                (IX509CertificateStore) LoadIncomingAnchors(certsBasePath),
-                                                (IX509CertificateStore) LoadOutgoingAnchors(certsBasePath));
+                (IX509CertificateStore) LoadIncomingAnchors(certsBasePath),
+                (IX509CertificateStore) LoadOutgoingAnchors(certsBasePath));
 
             return new NHINDAgent(domain, privateCerts.CreateResolver(), publicCerts.CreateResolver(), anchors);
         }
@@ -291,7 +290,7 @@ namespace AgentTests
             }
         }
     }
-    
+
     /// <summary>
     /// Introduces some simple confusion into cert resolution, to force decryption failures
     /// </summary>

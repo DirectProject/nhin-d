@@ -32,7 +32,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nhinAgent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="nhinCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -98,9 +97,9 @@
       <Project>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</Project>
       <Name>nhinAgent</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\common\nhinCommon.csproj">
-      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
-      <Name>nhinCommon</Name>
+    <ProjectReference Include="..\..\common\common.csproj">
+      <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
+      <Name>common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\config\client\configClient.csproj">
       <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
@@ -114,9 +113,9 @@
       <Project>{A9B11AAD-3461-4DDB-A447-91779BD41A78}</Project>
       <Name>smtpAgent</Name>
     </ProjectReference>
-    <ProjectReference Include="..\agent\agentTests.csproj">
-      <Project>{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}</Project>
-      <Name>agentTests</Name>
+    <ProjectReference Include="..\agent\agent.tests.csproj">
+      <Project>{6454E90E-984D-4D09-BD6D-566C9565E028}</Project>
+      <Name>agent.tests</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

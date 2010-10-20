@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configClient", "..\config\c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configStore", "..\config\store\configStore.csproj", "{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nhinCommon", "..\common\nhinCommon.csproj", "{6A48C90B-0BD0-4F19-BBAE-B973AD504902}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "..\common\common.csproj", "{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "diagnostics", "..\diagnostics\diagnostics.csproj", "{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "diagnostics.nlog", "..\diagnostics\diagnostics.nlog.csproj", "{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6A48C90B-0BD0-4F19-BBAE-B973AD504902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A48C90B-0BD0-4F19-BBAE-B973AD504902}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A48C90B-0BD0-4F19-BBAE-B973AD504902}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A48C90B-0BD0-4F19-BBAE-B973AD504902}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}.Release|Any CPU.ActiveCfg = Release|Any CPU

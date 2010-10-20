@@ -15,14 +15,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
+using Health.Direct.Agent.Tests;
+
 using NHINDirect.Agent;
 using NHINDirect.Mail;
 using NHINDirect.SmtpAgent;
 using NHINDirect.Config.Store;
+
 using Xunit;
-using Xunit.Extensions;
 
 namespace SmtpAgentTests
 {
@@ -33,7 +34,7 @@ namespace SmtpAgentTests
 
         static TestRouter()
         {
-            AgentTests.AgentTester.EnsureStandardMachineStores();        
+            AgentTester.EnsureStandardMachineStores();        
         }
         
         public TestRouter()

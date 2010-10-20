@@ -8,8 +8,8 @@
     <ProjectGuid>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Health.Net.Direct.Diagnostics.NLog</RootNamespace>
-    <AssemblyName>Health.Net.Direct.Diagnostics.NLog</AssemblyName>
+    <RootNamespace>Health.Direct.Diagnostics.NLog</RootNamespace>
+    <AssemblyName>Health.Direct.Diagnostics.NLog</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -54,9 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\common\nhinCommon.csproj">
-      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
-      <Name>nhinCommon</Name>
+    <ProjectReference Include="..\common\common.csproj">
+      <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
+      <Name>common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

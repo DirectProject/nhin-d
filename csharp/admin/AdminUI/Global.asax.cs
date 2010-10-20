@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web;
 
-using Health.Net.Diagnostics.NLog;
+using Health.Direct.Diagnostics.NLog;
 
 using NHINDirect.Container;
 using NHINDirect.Diagnostics;
@@ -21,7 +21,7 @@ namespace AdminUI
                             DirectoryPath = HttpContext.Current.Server.MapPath(@"~\Log"),
                             Level = LoggingLevel.Debug,
                             EventLogLevel = LoggingLevel.Fatal,
-                            EventLogSource = "nhin AdminUI",
+                            EventLogSource = "AdminUI",
                             Ext = ".log",
                             FileChangeFrequency = 24,
                             NamePrefix = "adminui"

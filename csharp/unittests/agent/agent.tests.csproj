@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}</ProjectGuid>
+    <ProjectGuid>{6454E90E-984D-4D09-BD6D-566C9565E028}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AgentTests</RootNamespace>
-    <AssemblyName>agentXUnitTests</AssemblyName>
+    <RootNamespace>Health.Direct.Agent.Tests</RootNamespace>
+    <AssemblyName>Health.Direct.Agent.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -176,9 +176,9 @@
       <Project>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</Project>
       <Name>nhinAgent</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\common\nhinCommon.csproj">
-      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
-      <Name>nhinCommon</Name>
+    <ProjectReference Include="..\..\common\common.csproj">
+      <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
+      <Name>common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -21,6 +21,7 @@ using System.Xml.Serialization;
 using NHINDirect.Agent.Config;
 using NHINDirect.Diagnostics;
 using NHINDirect.Config.Client;
+using NHINDirect.Extensions;
 
 namespace NHINDirect.SmtpAgent
 {
