@@ -18,7 +18,8 @@ using System.Collections.Generic;
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
 using NHINDirect.Mime;
-
+using NHINDirect.Mail;
+using System.Net.Mail;
 using Xunit;
 using Xunit.Extensions;
 
@@ -77,8 +78,15 @@ namespace SmtpAgentTests
             
             message = this.LoadMessage(message); // re-load the message            
             base.VerifyIncomingMessage(message);
+            
             Assert.True(message.Subject.Equals(originalSubject));
             Assert.True(MimeStandard.Equals(message.GetContentType(), originalContentType));             
+
+            Message mailMessage = MailParser.ParseMessage(message.GetMessageText());
+            string header = mailMessage.Headers.GetValue(SmtpAgent.XHeaders.Receivers);
+            Assert.DoesNotThrow(() => MailParser.ParseAddressCollection(header));
+            MailAddressCollection addresses = MailParser.ParseAddressCollection(header);
+            Assert.True(addresses.Count > 0);
         }
     }
 }
