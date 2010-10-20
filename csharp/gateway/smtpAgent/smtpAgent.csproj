@@ -136,10 +136,6 @@
       <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
       <Name>diagnostics.nlog</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\dns\dnsResolver.csproj">
-      <Project>{AE250214-0E85-4C28-90C9-A006440BCE97}</Project>
-      <Name>dnsResolver</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

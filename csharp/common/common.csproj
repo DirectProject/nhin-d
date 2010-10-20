@@ -87,6 +87,31 @@
     <Compile Include="Diagnostics\LoggingLevel.cs" />
     <Compile Include="Diagnostics\MethodTracer.cs" />
     <Compile Include="Diagnostics\NullAuditor.cs" />
+    <Compile Include="dnsResolver\AddressRecord.cs" />
+    <Compile Include="dnsResolver\CertRecord.cs" />
+    <Compile Include="dnsResolver\CNameRecord.cs" />
+    <Compile Include="dnsResolver\Dns.cs" />
+    <Compile Include="dnsResolver\DnsBuffer.cs" />
+    <Compile Include="dnsResolver\DnsBufferReader.cs" />
+    <Compile Include="dnsResolver\DnsCert.cs" />
+    <Compile Include="dnsResolver\DnsClient.cs" />
+    <Compile Include="dnsResolver\DnsException.cs" />
+    <Compile Include="dnsResolver\DnsHeader.cs" />
+    <Compile Include="dnsResolver\DnsMessage.cs" />
+    <Compile Include="dnsResolver\DnsProtocolException.cs" />
+    <Compile Include="dnsResolver\DnsQuestion.cs" />
+    <Compile Include="dnsResolver\DnsRecordPrinter.cs" />
+    <Compile Include="dnsResolver\DnsRequest.cs" />
+    <Compile Include="dnsResolver\DnsResourceRecord.cs" />
+    <Compile Include="dnsResolver\DnsResourceRecordCollection.cs" />
+    <Compile Include="dnsResolver\DnsResponse.cs" />
+    <Compile Include="dnsResolver\Extensions.cs" />
+    <Compile Include="dnsResolver\MXRecord.cs" />
+    <Compile Include="dnsResolver\NSRecord.cs" />
+    <Compile Include="dnsResolver\PtrRecord.cs" />
+    <Compile Include="dnsResolver\RawRecord.cs" />
+    <Compile Include="dnsResolver\SOARecord.cs" />
+    <Compile Include="dnsResolver\TextRecord.cs" />
     <Compile Include="Dns\DnsClientWithCache.cs" />
     <Compile Include="Container\IDependencyResolver.cs" />
     <Compile Include="Extensions\Extensions.cs" />
@@ -139,12 +164,6 @@
     <Compile Include="Mime\StringSegment.cs" />
     <Compile Include="NHINDException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\dns\dnsResolver.csproj">
-      <Project>{AE250214-0E85-4C28-90C9-A006440BCE97}</Project>
-      <Name>dnsResolver</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
