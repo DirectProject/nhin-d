@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</ProjectGuid>
+    <ProjectGuid>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NHINDirect</RootNamespace>
