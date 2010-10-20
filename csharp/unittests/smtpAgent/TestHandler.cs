@@ -26,7 +26,7 @@ using NHINDirect.Mail;
 using Xunit;
 using Xunit.Extensions;
 
-namespace SmtpAgentTests
+namespace Health.Direct.SmtpAgent.Tests
 {
     public class TestHandler : SmtpAgentTester
     {
@@ -86,7 +86,7 @@ namespace SmtpAgentTests
             Assert.True(MimeStandard.Equals(message.GetContentType(), originalContentType));             
 
             Message mailMessage = MailParser.ParseMessage(message.GetMessageText());
-            string header = mailMessage.Headers.GetValue(SmtpAgent.XHeaders.Receivers);
+            string header = mailMessage.Headers.GetValue(NHINDirect.SmtpAgent.SmtpAgent.XHeaders.Receivers);
             Assert.DoesNotThrow(() => MailParser.ParseAddressCollection(header));
             MailAddressCollection addresses = MailParser.ParseAddressCollection(header);
             Assert.True(addresses.Count > 0);

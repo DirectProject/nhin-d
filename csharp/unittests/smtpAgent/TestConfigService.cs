@@ -22,7 +22,7 @@ using NHINDirect.Config.Client;
 
 using Xunit;
 
-namespace SmtpAgentTests
+namespace Health.Direct.SmtpAgent.Tests
 {
     /// <summary>
     /// This is really an integration test and will eventually be moved out of here. Incrementally placed here for now. 
@@ -31,23 +31,18 @@ namespace SmtpAgentTests
     /// </summary>
     public class TestConfigService
     {
-        public TestConfigService()
-        {
-        
-        }
-        
         [Fact(Skip="Requires Config Service to be installed")]
         //[Fact]
         public void TestResolver()
         {
             ConfigCertificateResolver resolver = new ConfigCertificateResolver(
-                            new ClientSettings() {
-                                    Url = "http://localhost/ConfigService/CertificateService.svc/Certificates"
-                                },
-                            new ClientSettings() {
-                                    Url = "http://localhost/ConfigService/DomainManagerService.svc/Addresses"
-                                }
-                            );
+                new ClientSettings() {
+                                         Url = "http://localhost/ConfigService/CertificateService.svc/Certificates"
+                                     },
+                new ClientSettings() {
+                                         Url = "http://localhost/ConfigService/DomainManagerService.svc/Addresses"
+                                     }
+                );
             
             X509CertificateCollection matches = resolver.GetCertificates(new MailAddress("toby@redmond.hsgincubator.com"));
             Assert.True(!matches.IsNullOrEmpty());

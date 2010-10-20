@@ -8,8 +8,8 @@
     <ProjectGuid>{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmtpAgentTests</RootNamespace>
-    <AssemblyName>smtpAgentXUnitTests</AssemblyName>
+    <RootNamespace>Health.Direct.SmtpAgent.Tests</RootNamespace>
+    <AssemblyName>Health.Direct.SmtpAgent.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
