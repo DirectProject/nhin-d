@@ -30,6 +30,7 @@ package org.nhindirect.config.service;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.UUID;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -1053,6 +1054,180 @@ public class ConfigurationServiceTest extends MockObjectTestCase
         try
         {
             service.listAnchors(lastAnchorId, maxResults, options);
+        }
+        catch (Exception e)
+        {
+            fail("Exception thrown");
+        }
+    }
+    
+    /**
+     * Test the addSetting method.
+     */
+    public void testAddSetting() throws Exception
+    {
+        final SettingService settingService = context.mock(SettingService.class);
+
+        final String name = UUID.randomUUID().toString();
+        final String value = UUID.randomUUID().toString();
+
+        context.checking(new Expectations()
+        {
+            {
+                oneOf(settingService).addSetting(name, value);
+            }
+        });
+
+        ConfigurationServiceImpl service = new ConfigurationServiceImpl();
+        service.setSettingSvc(settingService);
+
+        try
+        {
+            service.addSetting(name, value);
+        }
+        catch (Exception e)
+        {
+            fail("Exception thrown");
+        }
+    }
+    
+    /**
+     * Test the getAllSettings method.
+     */
+    public void testGetAllSettings() throws Exception
+    {
+        final SettingService settingService = context.mock(SettingService.class);
+
+        context.checking(new Expectations()
+        {
+            {
+                oneOf(settingService).getAllSettings();
+            }
+        });
+
+        ConfigurationServiceImpl service = new ConfigurationServiceImpl();
+        service.setSettingSvc(settingService);
+
+        try
+        {
+            service.getAllSettings();
+        }
+        catch (Exception e)
+        {
+            fail("Exception thrown");
+        }
+    }
+    
+    /**
+     * Test the getSettingByName method.
+     */
+    public void testGetSettingByName() throws Exception
+    {
+        final SettingService settingService = context.mock(SettingService.class);
+
+        final String name = UUID.randomUUID().toString();
+
+        context.checking(new Expectations()
+        {
+            {
+                oneOf(settingService).getSettingByName(name);
+            }
+        });
+
+        ConfigurationServiceImpl service = new ConfigurationServiceImpl();
+        service.setSettingSvc(settingService);
+
+        try
+        {
+            service.getSettingByName(name);
+        }
+        catch (Exception e)
+        {
+            fail("Exception thrown");
+        }
+    }
+    
+    /**
+     * Test the getSettingsByNames method.
+     */
+    public void testGetSettingsByNames() throws Exception
+    {
+        final SettingService settingService = context.mock(SettingService.class);
+
+        final Collection<String> names = Arrays.asList(UUID.randomUUID().toString());
+
+        context.checking(new Expectations()
+        {
+            {
+                oneOf(settingService).getSettingsByNames(names);
+            }
+        });
+
+        ConfigurationServiceImpl service = new ConfigurationServiceImpl();
+        service.setSettingSvc(settingService);
+
+        try
+        {
+            service.getSettingsByNames(names);
+        }
+        catch (Exception e)
+        {
+            fail("Exception thrown");
+        }
+    }
+    
+    /**
+     * Test the updateSetting method.
+     */
+    public void testUpdateSetting() throws Exception
+    {
+        final SettingService settingService = context.mock(SettingService.class);
+
+        final String name = UUID.randomUUID().toString();
+        final String value = UUID.randomUUID().toString();
+
+        context.checking(new Expectations()
+        {
+            {
+                oneOf(settingService).updateSetting(name, value);
+            }
+        });
+
+        ConfigurationServiceImpl service = new ConfigurationServiceImpl();
+        service.setSettingSvc(settingService);
+
+        try
+        {
+            service.updateSetting(name, value);
+        }
+        catch (Exception e)
+        {
+            fail("Exception thrown");
+        }
+    }
+    
+    /**
+     * Test the deleteSetting method.
+     */
+    public void testDeleteSetting() throws Exception
+    {
+        final SettingService settingService = context.mock(SettingService.class);
+
+        final Collection<String> names = Arrays.asList(UUID.randomUUID().toString());
+
+        context.checking(new Expectations()
+        {
+            {
+                oneOf(settingService).deleteSetting(names);
+            }
+        });
+
+        ConfigurationServiceImpl service = new ConfigurationServiceImpl();
+        service.setSettingSvc(settingService);
+
+        try
+        {
+            service.deleteSetting(names);
         }
         catch (Exception e)
         {

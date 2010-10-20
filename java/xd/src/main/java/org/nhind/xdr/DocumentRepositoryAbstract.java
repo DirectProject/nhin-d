@@ -25,9 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.nhind.xdr;
 
+import com.gsihealth.auditclient.AuditMessageGenerator;
 import ihe.iti.xds_b._2007.DocumentRepositoryPortType;
 import ihe.iti.xds_b._2007.DocumentRepositoryService;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
@@ -43,10 +43,14 @@ import java.util.logging.Logger;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.annotation.Resource;
+
 import javax.mail.util.ByteArrayDataSource;
 import javax.naming.InitialContext;
+import javax.servlet.ServletContext;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
 
@@ -58,7 +62,7 @@ import org.nhind.xdm.impl.SmtpMailClient;
 import org.nhindirect.xd.common.DirectDocument;
 import org.nhindirect.xd.common.DirectMessage;
 import org.nhindirect.xd.routing.RoutingResolver;
-import org.nhindirect.xd.routing.impl.RoutingResolverImpl;
+import org.nhindirect.xd.routing.impl.XDRoutingResolverImpl;
 
 /**
  * Base class for handling incoming XDR requests.
@@ -67,23 +71,20 @@ import org.nhindirect.xd.routing.impl.RoutingResolverImpl;
  */
 public abstract class DocumentRepositoryAbstract {
 
-    protected WebServiceContext mywscontext;
-    
+    @Resource
+    protected WebServiceContext context;
     protected String endpoint = null;
     protected String messageId = null;
     protected String relatesTo = null;
     protected String action = null;
     protected String to = null;
-    
     private String thisHost = null;
     private String remoteHost = null;
     private String pid = null;
     private String from = null;
     private String suffix = null;
     private String replyEmail = null;
-    
-    private RoutingResolver resolver = new RoutingResolverImpl();
-
+    private RoutingResolver resolver = new XDRoutingResolverImpl();
     private static final Logger LOGGER = Logger.getLogger(DocumentRepositoryAbstract.class.getPackage().getName());
 
     /**
@@ -96,7 +97,7 @@ public abstract class DocumentRepositoryAbstract {
      * @return a RegistryResponseType object
      */
     public abstract RegistryResponseType documentRepositoryProvideAndRegisterDocumentSetB(ProvideAndRegisterDocumentSetRequestType body);
-    
+
     /**
      * Handle an incoming XDR request with a RetrieveDocumentSetRequestType
      * object
@@ -107,7 +108,7 @@ public abstract class DocumentRepositoryAbstract {
      * @return a RetrieveDocumentSetRequestType object
      */
     public abstract RetrieveDocumentSetResponseType documentRepositoryRetrieveDocumentSet(RetrieveDocumentSetRequestType body);
-    
+
     /**
      * Handle an incoming ProvideAndRegisterDocumentSetRequestType object and
      * transform to XDM or relay to another XDR endponit.
@@ -121,7 +122,6 @@ public abstract class DocumentRepositoryAbstract {
         RegistryResponseType resp = null;
         try {
             getHeaderData();
-            
             @SuppressWarnings("unused")
             InitialContext ctx = new InitialContext();
 
@@ -131,17 +131,35 @@ public abstract class DocumentRepositoryAbstract {
 
             // Get endpoints
             List<String> forwards = new ArrayList<String>();
-            for (String recipient : metadata.getSs_intendedRecipient())
-            {
+            for (String recipient : metadata.getSs_intendedRecipient()) {
                 String address = StringUtils.remove(recipient, "|");
                 forwards.add(StringUtils.splitPreserveAllTokens(address, "^")[0]);
             }
-            
+
             messageId = UUID.randomUUID().toString();
+            ServletContext servletContext = (ServletContext) context.getMessageContext().get(MessageContext.SERVLET_CONTEXT);
+            String fileName = "C:\\auditlog.txt";
+            String mailHost = servletContext.getInitParameter("mailHost");
+            fileName = servletContext.getInitParameter("auditFile");
+            String auditMethod = servletContext.getInitParameter("auditMethod");
+            String auditHost = servletContext.getInitParameter("auditHost");
+            String auditPort = servletContext.getInitParameter("auditPort");
+
+            String query = null;
+            AuditMessageGenerator amg = null;
+            if(auditMethod.equals("syslog")){
+                amg = new AuditMessageGenerator(auditHost,auditPort);
+            }else{
+                amg = new AuditMessageGenerator(fileName);
+            }
+
+            //TODO patID and subsetId
+            String patId = "PATID TBD";
+            String subsetId = "SUBSETID";
+            amg.provideAndRegisterAudit( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
 
             // Send to SMTP endpoints
-            if (resolver.hasSmtpEndpoints(forwards))
-            {
+            if (resolver.hasSmtpEndpoints(forwards)) {
                 // Get a reply address
                 replyEmail = metadata.getAuthorPerson();
                 replyEmail = StringUtils.splitPreserveAllTokens(replyEmail, "^")[0];
@@ -149,35 +167,34 @@ public abstract class DocumentRepositoryAbstract {
 
                 // Get a suffix
                 suffix = StringUtils.contains(metadata.getMimeType(), "pdf") ? "pdf" : "xml"; // FIXME
-                
+
                 // Get document
                 byte[] docs = getDocs(prdst);
 
-                LOGGER
-                        .info("SENDING EMAIL TO " + resolver.getSmtpEndpoints(forwards) + " with message id "
-                                + messageId);
+                LOGGER.info("SENDING EMAIL TO " + resolver.getSmtpEndpoints(forwards) + " with message id "
+                        + messageId);
 
                 // Construct message wrapper
                 DirectMessage message = new DirectMessage(replyEmail, resolver.getSmtpEndpoints(forwards));
                 message.setSubject("data");
                 message.setBody("data attached");
-                
+
                 // Construct document wrapper
                 DirectDocument document = new DirectDocument();
                 document.setData(new String(docs));
                 document.getMetadata().setValues(prdst.getSubmitObjectsRequest());
-                
+
                 // Add document to message
                 message.addDocument(document);
-                
+
+
                 // Send mail
-                MailClient mailClient = new SmtpMailClient();
+                MailClient mailClient = new SmtpMailClient(mailHost);
                 mailClient.mail(message, messageId, suffix);
             }
 
             // Send to XD endpoints
-            for (String reqEndpoint : resolver.getXdEndpoints(forwards))
-            {
+            for (String reqEndpoint : resolver.getXdEndpoints(forwards)) {
                 String to = StringUtils.remove(reqEndpoint, "?wsdl");
 
                 Long threadId = new Long(Thread.currentThread().getId());
@@ -219,14 +236,15 @@ public abstract class DocumentRepositoryAbstract {
                 if (test.indexOf("Failure") >= 0) {
                     throw new Exception("Failure Returned from XDR forward");
                 }
+                amg.provideAndRegisterAuditSource( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
             }
-            
+
             resp = getRepositoryProvideResponse(messageId);
 
             relatesTo = messageId;
             action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
             to = endpoint;
-            
+
             setHeaderData();
         } catch (Exception e) {
             e.printStackTrace();
@@ -299,7 +317,7 @@ public abstract class DocumentRepositoryAbstract {
     protected void getHeaderData() {
         Long threadId = new Long(Thread.currentThread().getId());
         LOGGER.info("DTHREAD ID " + threadId);
-        
+
         ThreadData threadData = new ThreadData(threadId);
         this.endpoint = threadData.getReplyAddress();
         this.messageId = threadData.getMessageId();
@@ -309,7 +327,7 @@ public abstract class DocumentRepositoryAbstract {
         this.pid = threadData.getPid();
         this.action = threadData.getAction();
         this.from = threadData.getFrom();
-        
+
         LOGGER.info(threadData.toString());
     }
 
@@ -319,7 +337,7 @@ public abstract class DocumentRepositoryAbstract {
     protected void setHeaderData() {
         Long threadId = new Long(Thread.currentThread().getId());
         LOGGER.info("THREAD ID " + threadId);
-        
+
         ThreadData threadData = new ThreadData(threadId);
         threadData.setTo(this.to);
         threadData.setMessageId(this.messageId);
@@ -329,7 +347,7 @@ public abstract class DocumentRepositoryAbstract {
         threadData.setRemoteHost(this.remoteHost);
         threadData.setPid(this.pid);
         threadData.setFrom(this.from);
-        
+
         LOGGER.info(threadData.toString());
     }
 }

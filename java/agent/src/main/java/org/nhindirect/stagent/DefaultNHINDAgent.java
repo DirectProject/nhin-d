@@ -177,6 +177,12 @@ public class DefaultNHINDAgent implements NHINDAgent
         this.trustAnchors = anchors;
         this.trustModel = trustModel;
         this.minTrustRequirement = TrustEnforcementStatus.Success_Offline;
+        
+        if (this.trustModel.getCertChainValidator() != null && 
+        		!this.trustModel.getCertChainValidator().isCertificateResolver())
+        {
+        	this.trustModel.getCertChainValidator().setCertificateResolver(this.publicCertResolver);
+        }
     }    
     
     /**
