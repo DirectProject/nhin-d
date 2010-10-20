@@ -6,7 +6,7 @@
 <%@ include file="/WEB-INF/jsp/include.jsp"%>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title><fmt:message key="domain.title" /></title>
-<!-- TODO: change this tabs code to be like the main.jsp.  I got this from http://www.sohtanaka.com/web-design/simple-tabs-w-css-jquery/ -->
+<!-- I got this from http://www.sohtanaka.com/web-design/simple-tabs-w-css-jquery/ -->
 <style type="text/css">
 ul.tabs {
 	margin: 0;
@@ -300,6 +300,14 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 			<table cellpadding="1px" cellspacing="1px" id="certificateTable">
 				<tr>
 					<th>
+						<form:label for="owner" path="owner">Owner:</form:label>
+					</th>
+					<th>
+						<form:input path="owner"/>
+					</th>
+				</tr>
+				<tr>
+					<th>
 						<form:label for="fileData" path="fileData">Certificate:</form:label>
 					</th>
 					<th>
@@ -397,6 +405,14 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 	cssClass="cleanform" method="POST" enctype="multipart/form-data">
 	<form:hidden path="id" />
 	<table cellpadding="1px" cellspacing="1px" id="anchorTable">
+		<tr>
+			<th><form:label path="owner">Owner:
+					            <form:errors path="owner" cssClass="error" />
+			</form:label></th>
+			<th>
+			<form:input path="owner"/>
+			</th>
+		</tr>
 		<tr>
 			<th>
 				<form:label for="fileData" path="fileData">Certificate:</form:label>

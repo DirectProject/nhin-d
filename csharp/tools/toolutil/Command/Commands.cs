@@ -158,30 +158,33 @@ namespace NHINDirect.Tools.Command
             }
         }
         
-        public void Run(string commandLine)
+        public bool Run(string commandLine)
         {
-            if (string.IsNullOrEmpty(commandLine))
+            if (!string.IsNullOrEmpty(commandLine))
             {
-                return;
+                string[] args = commandLine.ParseAsCommandLine().ToArray();
+                if (!args.IsNullOrEmpty())
+                {
+                    return this.Run(args);
+                }
             }
-
-            string[] args = commandLine.ParseAsCommandLine().ToArray();
-            if (!args.IsNullOrEmpty())
-            {
-                this.Run(args);
-            }
+                        
+            return false;
         }
         
-        public void Run(string[] args)
+        public bool Run(string[] args)
         {
             try
             {
                 this.Eval(args);
+                return true;
             }
             catch (Exception ex)
             {
                 this.HandleError(ex);
             }
+            
+            return false;
         }   
            
         public void Eval(params string[] input)
@@ -219,7 +222,7 @@ namespace NHINDirect.Tools.Command
             }
             
             CommandUI.PrintSectionBreak();
-            cmd.Usage();            
+            cmd.ShowUsage();            
         }
         
         public void ShowUsage(string cmdName)

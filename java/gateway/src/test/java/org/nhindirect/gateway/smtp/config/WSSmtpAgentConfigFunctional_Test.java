@@ -46,6 +46,7 @@ import org.nhindirect.ldap.PrivkeySchema;
 import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.impl.DNSCertificateStore;
+import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
 import org.nhindirect.stagent.cert.impl.TrustAnchorCertificateStore;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
@@ -584,6 +585,139 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             }
         }.perform();
     }	
+	
+	public void testConfigurationPrivateKeyStoreFile() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+
+            protected void addSettings() throws Exception
+            {
+            	proxy.addSetting("PrivateStoreType", "keystore");
+            	proxy.addSetting("PrivateStoreFile", "src/test/resources/keystores/internalKeystore");
+            	proxy.addSetting("PrivateStoreFilePass", "h3||0 wor|d");
+            	proxy.addSetting("PrivateStorePrivKeyPass", "pKpa$$wd");
+            }
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+            	// already in the keystore file
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+            	DefaultNHINDAgent nAgent = ((DefaultNHINDAgent)agent.getAgent());
+            	CertificateResolver privResl = nAgent.getPrivateCertResolver();
+            	assertNotNull(privResl);
+            	Collection<X509Certificate> certs = privResl.getCertificates(new InternetAddress("ryan@messaging.cernerdemos.com"));
+            	assertNotNull(certs);
+            	assertEquals(1, certs.size());
+            	assertTrue(privResl instanceof KeyStoreCertificateStore);
+            	
+            }
+        }.perform();
+    }
+	
+	public void testConfigurationPublicKeyStoreFile() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+
+            protected void addSettings() throws Exception
+            {
+            	proxy.addSetting("PublicStoreType", "keystore");
+            	proxy.addSetting("PublicStoreFile", "src/test/resources/keystores/internalKeystore");
+            	proxy.addSetting("PublicStoreFilePass", "h3||0 wor|d");
+            	proxy.addSetting("PublicStorePrivKeyPass", "pKpa$$wd");
+            }
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+            	// already in the keystore file
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+            	DefaultNHINDAgent nAgent = ((DefaultNHINDAgent)agent.getAgent());
+            	CertificateResolver pubResl = nAgent.getPublicCertResolver();
+            	assertNotNull(pubResl);
+            	Collection<X509Certificate> certs = pubResl.getCertificates(new InternetAddress("ryan@messaging.cernerdemos.com"));
+            	assertNotNull(certs);
+            	assertEquals(1, certs.size());
+            	assertTrue(pubResl instanceof KeyStoreCertificateStore);
+            	
+            }
+        }.perform();
+    }	
+	
+	public void testConfigurationAnchorKeyStoreFile() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+
+            protected void addSettings() throws Exception
+            {
+            	proxy.addSetting("AnchorStoreType", "keystore");
+            	proxy.addSetting("AnchorResolverType", "multidomain");
+            	proxy.addSetting("AnchorKeyStoreFile", "src/test/resources/keystores/internalKeystore");
+            	proxy.addSetting("AnchorKeyStoreFilePass", "h3||0 wor|d");
+            	proxy.addSetting("AnchorKeyStorePrivKeyPass", "pKpa$$wd");
+            	
+            	proxy.addSetting("cerner.comIncomingAnchorAliases", "cacert");
+            	proxy.addSetting("securehealthemail.comIncomingAnchorAliases", "secureHealthEmailCACert");
+            	
+            	proxy.addSetting("cerner.comOutgoingAnchorAliases", "cacert");
+            	proxy.addSetting("securehealthemail.comOutgoingAnchorAliases", "secureHealthEmailCACert");            	
+            }
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+            	// doesn't matter
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+            	DefaultNHINDAgent nAgent = ((DefaultNHINDAgent)agent.getAgent());
+
+            	
+            	
+            	CertificateResolver trustResl = nAgent.getTrustAnchors().getIncomingAnchors();
+            	assertTrue(trustResl instanceof TrustAnchorCertificateStore);
+            	
+            	// get the incoming trust anchor for cerner.com
+            	Collection<X509Certificate> anchors = trustResl.getCertificates(new InternetAddress("test@cerner.com"));
+            	assertNotNull(anchors);
+            	assertEquals(1, anchors.size());
+            	
+            	// get the incoming trust anchor for securehealthemail.com
+            	anchors = trustResl.getCertificates(new InternetAddress("test@securehealthemail.com"));
+            	assertNotNull(anchors);
+            	assertEquals(1, anchors.size());       
+            	
+            	
+            	
+            	trustResl = nAgent.getTrustAnchors().getOutgoingAnchors();
+            	assertTrue(trustResl instanceof TrustAnchorCertificateStore);
+            	
+            	// get the outgoing trust anchor for cerner.com
+            	anchors = trustResl.getCertificates(new InternetAddress("test@cerner.com"));
+            	assertNotNull(anchors);
+            	assertEquals(1, anchors.size());
+            	
+            	// get the outgoing trust anchor for securehealthemail.com
+            	anchors = trustResl.getCertificates(new InternetAddress("test@securehealthemail.com"));
+            	assertNotNull(anchors);
+            	assertEquals(1, anchors.size());    
+            	
+            }
+        }.perform();
+    }		
 	
 	protected byte[] getCertificateFileData(String file) throws Exception
 	{
