@@ -8,18 +8,48 @@
         <!-- For Metro, use this listener-class instead:
               com.sun.xml.ws.transport.http.servlet.WSServletContextListener -->
         <listener-class>
-             org.springframework.web.context.ContextLoaderListener
+            org.springframework.web.context.ContextLoaderListener
         </listener-class>
     </listener>
     <!-- Remove below context-param element if using Metro -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-	      classpath:META-INF/cxf/cxf.xml
-	      classpath:META-INF/cxf/cxf-extension-soap.xml
-	      classpath:META-INF/cxf/cxf-servlet.xml
+            classpath:META-INF/cxf/cxf.xml
+            classpath:META-INF/cxf/cxf-extension-soap.xml
+            classpath:META-INF/cxf/cxf-servlet.xml
         </param-value>
     </context-param>
+
+    <context-param>
+        <param-name>mailHost</param-name>
+        <param-value>localhost</param-value>
+    </context-param>
+    <context-param>
+        <param-name>mailPort</param-name>
+        <param-value>25</param-value>
+    </context-param>
+
+    <context-param>
+        <!-- either file or syslog -->
+        <param-name>auditMethod</param-name>
+          <!-- either file or syslog -->
+        <param-value>file</param-value>
+    </context-param>
+    <context-param>
+        <param-name>auditFile</param-name>
+        <param-value>C:\\testfiles\auditlog.txt</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>auditHost</param-name>
+        <param-value>localhost</param-value>
+    </context-param>
+    <context-param>
+        <param-name>auditPort</param-name>
+        <param-value>514</param-value>
+    </context-param>
+
     <servlet>
         <servlet-name>WebServicePort</servlet-name>
         <!-- For Metro, use this servlet-class instead:
