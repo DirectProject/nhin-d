@@ -33,6 +33,7 @@ namespace NHINDirect.Config.Store
         const string Sql_EnumDomainAddressNext = "SELECT TOP ({0}) * from Addresses where DomainID = {1} and EmailAddress > {2} order by EmailAddress asc";
         const string Sql_EnumAddressFirst = "SELECT TOP ({0}) * from Addresses order by EmailAddress asc";
         const string Sql_EnumAddressNext = "SELECT TOP ({0}) * from Addresses where EmailAddress > {1} order by EmailAddress asc";
+        const string Sql_TruncateAddresses = "truncate table Addresses";
         
         static readonly Func<ConfigDatabase, string, IQueryable<Address>> Addresses = CompiledQuery.Compile(
             (ConfigDatabase db, string emailAddress) =>
@@ -153,10 +154,16 @@ namespace NHINDirect.Config.Store
         {
             table.Context.ExecuteCommand(Sql_DeleteAddressByDomain, domainID);
         }
+
+        public static void ExecTruncate(this Table<Address> table)
+        {
+            table.Context.ExecuteCommand(Sql_TruncateAddresses);
+        }
         
         public static void ExecSetStatus(this Table<Address> table, string[] emailAddresses, EntityStatus status)
         {
-            table.Context.ExecuteCommand(Sql_SetStatus, status, DateTime.Now, emailAddresses.ToIn());
+            string addressesIn = emailAddresses.ToIn();
+            table.Context.ExecuteCommand(Sql_SetStatus, status, DateTime.Now, addressesIn);
         }
 
         public static void ExecSetStatus(this Table<Address> table, long domainID, EntityStatus status)

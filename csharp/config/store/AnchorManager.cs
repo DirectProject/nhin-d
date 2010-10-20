@@ -320,5 +320,19 @@ namespace NHINDirect.Config.Store
 
             db.Anchors.ExecDelete(ownerName);
         }
+
+
+        public void RemoveAll(ConfigDatabase db)
+        {
+            db.Anchors.ExecTruncate();
+        }
+
+        public void RemoveAll()
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                RemoveAll(db);
+            }
+        }
     }
  }

@@ -51,6 +51,10 @@ namespace NHINDirect.Config.Store
         InvalidThumbprint,
         InvalidAnchor,
         AccountNameLength,
+        InvalidMXSMTPName,
+        MXSMTPNameLength,
+        InvalidMX
+
     }
         
     public class ConfigStoreException : NHINDException<ConfigStoreError>

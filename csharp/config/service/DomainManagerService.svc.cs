@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Chris Lomonico  chris.lomonico@surescripts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -14,15 +15,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.ServiceModel.Activation;
 
 using NHINDirect.Config.Store;
 
 namespace NHINDirect.Config.Service
 {
     // NOTE: If you change the class name "DomainManagerService" here, you must also update the reference to "DomainManagerService" in Web.config.
-    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
-    public class DomainManagerService : ConfigServiceBase, IDomainManager, IAddressManager
+    public class DomainManagerService : ConfigServiceBase, IDomainManager, IAddressManager, IMXManager
     {
         #region IDomainManager Members
 
@@ -61,7 +60,7 @@ namespace NHINDirect.Config.Service
                 throw CreateFault("GetDomainCount", ex);
             }
         }
-        
+
         public Domain[] GetDomains(string[] domainNames, EntityStatus? status)
         {
             try
@@ -113,7 +112,7 @@ namespace NHINDirect.Config.Service
                 throw CreateFault("AddAddresses", ex);
             }
         }
-        
+
         public void UpdateAddresses(Address[] addresses)
         {
             try
@@ -143,7 +142,7 @@ namespace NHINDirect.Config.Service
                 throw CreateFault("GetAddressCount", ex);
             }
         }
-        
+
         public Address[] GetAddresses(string[] emailAddresses, EntityStatus? status)
         {
             try
@@ -191,7 +190,7 @@ namespace NHINDirect.Config.Service
                 throw CreateFault("RemoveDomainAddresses", ex);
             }
         }
-        
+
         public void SetDomainAddressesStatus(long domainID, EntityStatus status)
         {
             try
@@ -203,7 +202,7 @@ namespace NHINDirect.Config.Service
                 throw CreateFault("SetDomainAddressesStatus", ex);
             }
         }
-        
+
         public Address[] EnumerateDomainAddresses(string domainName, string lastAddress, int maxResults)
         {
             try
@@ -213,7 +212,7 @@ namespace NHINDirect.Config.Service
                 {
                     return null;
                 }
-                
+
                 return Store.Addresses.Get(domain.ID, lastAddress, maxResults);
             }
             catch (Exception ex)
@@ -231,6 +230,83 @@ namespace NHINDirect.Config.Service
             catch (Exception ex)
             {
                 throw CreateFault("EnumerateAddresses", ex);
+            }
+        }
+
+        #endregion
+
+        #region IMXManager Members
+
+        public void AddMX(MX mx)
+        {
+            try
+            {
+                Store.MXs.Add(mx);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddMX", ex);
+            }
+        }
+
+        public int GetMXCount(long domainID)
+        {
+            try
+            {
+                return Store.MXs.Count(domainID);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetMXCount", ex);
+            }
+        }
+
+        public void UpdateMX(MX mx)
+        {
+            try
+            {
+                Store.MXs.Update(mx);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("UpdateMX", ex);
+            }
+        }
+
+
+        public MX[] GetMXs(string[] mxNames, Int16? preference)
+        {
+            try
+            {
+                return Store.MXs.Get(mxNames, preference);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetMXs", ex);
+            }
+        }
+
+        public void RemoveMX(string name)
+        {
+            try
+            {
+                Store.MXs.Remove(name);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("RemoveMX", ex);
+            }
+        }
+
+        public MX[] EnumerateMXs(string lastMXName, int maxResults)
+        {
+            try
+            {
+                return Store.MXs.Get(lastMXName, maxResults);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("EnumerateMXs", ex);
             }
         }
 

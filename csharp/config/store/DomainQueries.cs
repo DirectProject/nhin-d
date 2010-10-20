@@ -26,6 +26,7 @@ namespace NHINDirect.Config.Store
     public static class DomainQueries
     {
         const string Sql_DeleteDomain = "DELETE from Domains where DomainName = {0}";
+        const string Sql_DeleteAllDomain = "Begin tran delete from Addresses Delete from MXs delete from [Domains] DBCC CHECKIDENT([Domains],RESEED,0) DBCC CHECKIDENT(MXs,RESEED,0) DBCC CHECKIDENT(Addresses,RESEED,0) commit tran ";
 
         static readonly Func<ConfigDatabase, string, IQueryable<Domain>> Domain = CompiledQuery.Compile(
             (ConfigDatabase db, string owner) =>
@@ -109,6 +110,12 @@ namespace NHINDirect.Config.Store
         public static void ExecDelete(this Table<Domain> table, string domainName)
         {
             table.Context.ExecuteCommand(Sql_DeleteDomain, domainName);
+        }
+
+
+        public static void ExecDeleteAll(this Table<Domain> table)
+        {
+            table.Context.ExecuteCommand(Sql_DeleteAllDomain);
         }
     }
 }

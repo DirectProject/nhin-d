@@ -34,6 +34,7 @@ namespace NHINDirect.Config.Store
         const string Sql_UpdateStatus = "UPDATE Certificates Set Status = {0} where CertificateID = {1}";
         const string Sql_UpdateStatusByOwner = "UPDATE Certificates Set Status = {0} where Owner = {1}";
         
+        const string Sql_TruncateCerts =  "truncate table Certificates";
         //const string Sql_AllCertsByID = "SELECT * from Certificates where CertificateID in ({0})";
         
         static readonly Func<ConfigDatabase, long, IQueryable<Certificate>> CertByID = CompiledQuery.Compile(
@@ -119,7 +120,12 @@ namespace NHINDirect.Config.Store
         {
             table.Context.ExecuteCommand(Sql_DeleteCert, certificateID);
         }
-        
+
+        public static void ExecTruncate(this Table<Certificate> table)
+        {
+            table.Context.ExecuteCommand(Sql_TruncateCerts);
+        }
+
         public static void ExecUpdateStatus(this Table<Certificate> table, long certificateID, EntityStatus status)
         {
             table.Context.ExecuteCommand(Sql_UpdateStatus, status, certificateID);

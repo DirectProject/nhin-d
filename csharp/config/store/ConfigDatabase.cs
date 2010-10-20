@@ -31,6 +31,7 @@ namespace NHINDirect.Config.Store
         Table<Certificate> m_certs;
         Table<Anchor> m_anchors;
         Table<Domain> m_domains;
+        Table<MX> m_mxs;
         Table<Address> m_addresses;
         DbTransaction m_transaction;
                           
@@ -49,6 +50,19 @@ namespace NHINDirect.Config.Store
                 }
 
                 return m_domains;
+            }
+        }
+
+        public Table<MX> MXs
+        {
+            get
+            {
+                if (m_mxs == null)
+                {
+                    m_mxs = this.GetTable<MX>();
+                }
+
+                return m_mxs;
             }
         }
 

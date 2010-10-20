@@ -321,6 +321,19 @@ namespace NHINDirect.Config.Store
             
             db.Certificates.ExecDelete(ownerName);
         }
+
+        public void RemoveAll(ConfigDatabase db)
+        {
+            db.Certificates.ExecTruncate();
+        }
+
+        public void RemoveAll()
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                RemoveAll(db);
+            }
+        }
         
         X509Certificate2Collection Collect(IEnumerable<Certificate> source)
         {

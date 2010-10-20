@@ -11,6 +11,7 @@
     <RootNamespace>NHINDirect.Config.Service</RootNamespace>
     <AssemblyName>nhinConfigService</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ProjectGuid>{83C99331-F451-4175-943D-12FCF17B636E}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -75,6 +76,7 @@
     </Compile>
     <Compile Include="IAddressManager.cs" />
     <Compile Include="IDomainManager.cs" />
+    <Compile Include="IMXManager.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="IAnchorStore.cs" />
     <Compile Include="ICertificateStore.cs" />
@@ -117,10 +119,11 @@
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
-          <AutoAssignPort>False</AutoAssignPort>
-          <DevelopmentServerPort>6692</DevelopmentServerPort>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>2614</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost/configService</IISUrl>
+          <IISUrl>
+          </IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

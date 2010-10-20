@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Chris Lomonico  chris.lomonico@surescripts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -20,11 +21,11 @@ using System.Text;
 
 namespace NHINDirect.Config.Store
 {
-    public class DomainManager : IEnumerable<Domain>
+    public class MXManager : IEnumerable<MX>
     {
         ConfigStore m_store;
 
-        internal DomainManager(ConfigStore store)
+        internal MXManager(ConfigStore store)
         {
             m_store = store;
         }
@@ -36,194 +37,258 @@ namespace NHINDirect.Config.Store
                 return m_store;
             }
         }
-        
-        public void Add(string name)
+
+        public void Add(long domainID
+            , string SMTPName)
         {
             using(ConfigDatabase db = this.Store.CreateContext())
             {
-                this.Add(db, name);
+                this.Add(db
+                    , domainID
+                    , SMTPName
+                    , 0);
                 db.SubmitChanges();
             }
         }
-        
-        public void Add(ConfigDatabase db, string name)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            
-            db.Domains.InsertOnSubmit(new Domain(name));
-        }
 
-        public void Add(Domain domain)
+
+        public void Add(long domainID
+            , string SMTPName
+            , int preference)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
-                this.Add(db, domain);
+                this.Add(db
+                    , domainID
+                    , SMTPName
+                    , preference);
                 db.SubmitChanges();
             }
         }
-
-        public void Add(ConfigDatabase db, Domain domain)
+        
+        public void Add(ConfigDatabase db
+            , long domainID
+            , string SMTPName
+            , int preferece)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
-            if (domain == null)
+
+            db.MXs.InsertOnSubmit(new MX(domainID
+                , SMTPName
+                , preferece));
+        }
+
+        public void Add(MX mx)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
-                throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
+                this.Add(db, mx);
+                db.SubmitChanges();
+            }
+        }
+
+        public void Add(ConfigDatabase db, MX mx)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            if (mx == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidMX);
             }
             
-            if (!domain.IsValidEmailDomain())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
-            }
-            
-            db.Domains.InsertOnSubmit(domain);
+           
+            db.MXs.InsertOnSubmit(mx);
         }
         
-        public int Count()
+        public int Count(long domainID)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                return db.Domains.GetCount();
+                return db.MXs.GetCount(domainID);
             }            
         }
                 
-        public Domain Get(string name)
+        public MX Get(string smtpName)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                return this.Get(db, name);
+                return this.Get(db, smtpName);
             }
         }
 
-        public Domain Get(ConfigDatabase db, string name)
+        public MX Get(ConfigDatabase db
+            , string smtpName)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(smtpName))
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
             }
-            
-            return db.Domains.Get(name);
+
+            return db.MXs.Get(smtpName);
         }
-        
-        public Domain[] Get(string[] names)
+
+        public MX[] Get(string[] smtpNames)
         {
-            return this.Get(names, null);
+            return this.Get(smtpNames, null);
         }
                 
-        public IEnumerable<Domain> Get(ConfigDatabase db, string[] names)
+        public IEnumerable<MX> Get(ConfigDatabase db
+            , string[] smtpNames)
         {
-            return this.Get(db, names, null);
+            return this.Get(db, smtpNames, null);
         }
 
-        public Domain[] Get(string[] names, EntityStatus? status)
+        public MX[] Get(string[] smtpNames, int? preference)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                return this.Get(db, names, status).ToArray();
+                return this.Get(db, smtpNames, preference).ToArray();
             }
         }
-        
-        public IEnumerable<Domain> Get(ConfigDatabase db, string[] names, EntityStatus? status)
+
+        public IEnumerable<MX> Get(ConfigDatabase db, string[] smtpNames, int? preference)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
-            if (names.IsNullOrEmpty())
+            if (smtpNames.IsNullOrEmpty())
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
             }
-            
-            if (status == null)
+
+            if (preference == null)
             {
-                return db.Domains.Get(names);
+                return db.MXs.Get(smtpNames);
             }
-            
-            return db.Domains.Get(names, status.Value);
+
+            return db.MXs.Get(smtpNames, preference.Value);
         }
 
-        public Domain[] Get(string lastDomain, int maxResults)
+        public MX[] Get(string lastDomain
+            , int maxResults)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                return this.Get(db, lastDomain, maxResults).ToArray();
+                return this.Get(db
+                    , lastDomain
+                    , maxResults).ToArray();
             }
         }
 
-        public IEnumerable<Domain> Get(ConfigDatabase db, string lastDomain, int maxResults)
+        public IEnumerable<MX> Get(ConfigDatabase db
+            , string lastDomain
+            , int maxResults)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
 
-            return db.Domains.ExecGet(lastDomain, maxResults);
+            return db.MXs.ExecGet(lastDomain, maxResults);
         }
 
-        public  void Update(Domain domain)
+        public void Update(MX mx)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
-                this.Update(db, domain);
+                this.Update(db, mx);
                 db.SubmitChanges();
             }
         }
 
-        protected void Update(ConfigDatabase db, Domain domain)
+        public void Update(IEnumerable<MX> mxs)
+        {
+            if (mxs == null)
+            {
+                throw new ArgumentNullException("mxs");
+            }
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                foreach (MX mx in mxs)
+                {
+                    this.Update(db, mx);
+                }
+                db.SubmitChanges();
+            }
+        }
+
+        void Update(ConfigDatabase db, MX mx)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
-            if (domain == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
-            }
-            
-            Domain update = new Domain();
-            update.CopyFixed(domain);
 
-            db.Domains.Attach(update);
-            update.ApplyChanges(domain);
-           
+            if (mx == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
+            }
+            if (!mx.IsValidEmailDomain())
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
+            }
+
+            MX update = new MX();
+            update.CopyFixed(mx);
+
+            db.MXs.Attach(update);
+            update.ApplyChanges(mx);
         }
-                
-        public void Remove(string name)
+
+        public void Remove(string smtpName)
         {
             using(ConfigDatabase db = this.Store.CreateContext())
             {
-                this.Remove(db, name);
+                this.Remove(db, smtpName);
             }
         }
 
-        public void Remove(ConfigDatabase db, string name)
+        public void Remove(ConfigDatabase db, string smtpName)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
-            
-            if (string.IsNullOrEmpty(name))
+
+            if (string.IsNullOrEmpty(smtpName))
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
             }
-            
-            db.Domains.ExecDelete(name);
+
+            db.MXs.ExecDelete(smtpName);
         }
 
 
+        public void RemoveDomain(long domainID)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                this.RemoveDomain(db, domainID);
+            }
+        }
+
+        public void RemoveDomain(ConfigDatabase db, long domainID)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            db.MXs.ExecDeleteDomain(domainID);
+        }
+
         public void RemoveAll(ConfigDatabase db)
         {
-            db.Domains.ExecDeleteAll();
+            db.MXs.ExecTruncate();
 
         }
 
@@ -235,13 +300,13 @@ namespace NHINDirect.Config.Store
             }
         }
 
-        public IEnumerator<Domain> GetEnumerator()
+        public IEnumerator<MX> GetEnumerator()
         {
            using(ConfigDatabase db = this.Store.CreateContext())
            {
-                foreach(Domain domain in db.Domains)
+                foreach(MX mx in db.MXs)
                 {
-                    yield return domain;
+                    yield return mx;
                 }       
            }
         }
@@ -254,5 +319,6 @@ namespace NHINDirect.Config.Store
         }
 
         #endregion
+    
     }
 }
