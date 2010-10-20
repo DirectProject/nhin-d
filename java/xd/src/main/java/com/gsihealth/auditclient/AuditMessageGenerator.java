@@ -5,43 +5,81 @@
 package com.gsihealth.auditclient;
 
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
-import java.util.Properties;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
+
 import org.xml.xml.schema._7f0d86bd.healthcare_security_audit.ActiveParticipantType;
 import org.xml.xml.schema._7f0d86bd.healthcare_security_audit.AuditMessage;
 import org.xml.xml.schema._7f0d86bd.healthcare_security_audit.CodedValueType;
 import org.xml.xml.schema._7f0d86bd.healthcare_security_audit.EventIdentificationType;
 import org.xml.xml.schema._7f0d86bd.healthcare_security_audit.ParticipantObjectIdentificationType;
 
+import com.gsihealth.auditclient.type.AuditMethodEnum;
+
 /**
- *
+ * This class logs audit messages.
+ * 
  * @author vlewis
  */
 public class AuditMessageGenerator {
 
-    Short VAL1 = Short.parseShort("1");
-    Short VAL2 = Short.parseShort("2");
-    Short VAL20 = Short.parseShort("20");
-    String auditMethod = "file";
-    String auditFile = "C:\\testfiles\\audit.log";
-    String auditHost=null;
-    String auditPort = null;
+    private Short VAL1 = Short.parseShort("1");
+    private Short VAL2 = Short.parseShort("2");
+    private Short VAL20 = Short.parseShort("20");
 
-    public AuditMessageGenerator( String auditFile){
-        auditMethod = "file";
+    private AuditMethodEnum auditMethod = null;
+    
+    private String auditFile = null;
+    
+    private String auditHost = null;
+    private String auditPort = null;
+
+    /**
+     * Construct an AuditMessageGenerator for use with a file.
+     * 
+     * @param auditFile
+     *            The file path.
+     */
+    public AuditMessageGenerator(String auditFile)
+    {
+        auditMethod = AuditMethodEnum.FILE;
+        
         this.auditFile=auditFile;
     }
-    public AuditMessageGenerator( String auditHost, String auditPort){
-         auditMethod = "syslog";
+    
+    /**
+     * Construct an AuditMessageGenerator for user with a syslog.
+     * 
+     * @param auditHost
+     *            The syslog host.
+     * @param auditPort
+     *            The syslog port.
+     */
+    public AuditMessageGenerator( String auditHost, String auditPort)
+    {
+         auditMethod = AuditMethodEnum.SYSLOG;
+         
          this.auditHost= auditHost;
          this.auditPort= auditPort;
     }
 
+    /**
+     * Audit a provideAndRegister event.
+     * 
+     * @param sourceMessageId
+     * @param sourceName
+     * @param replyTo
+     * @param to
+     * @param thisName
+     * @param patientId
+     * @param subsetId
+     * @param pid
+     * @throws Exception
+     */
     public void provideAndRegisterAudit(String sourceMessageId, String sourceName, String replyTo, String to, String thisName, String patientId, String subsetId, String pid) throws Exception {
         try {
 
@@ -133,6 +171,19 @@ public class AuditMessageGenerator {
 
     }
 
+    /**
+     * Audit a provideAndRegister event.
+     * 
+     * @param sourceMessageId
+     * @param sourceName
+     * @param replyTo
+     * @param to
+     * @param thisName
+     * @param patientId
+     * @param subsetId
+     * @param pid
+     * @throws Exception
+     */
     public void provideAndRegisterAuditSource(String sourceMessageId, String sourceName, String replyTo, String to, String thisName, String patientId, String subsetId, String pid) throws Exception {
         try {
 
@@ -224,27 +275,32 @@ public class AuditMessageGenerator {
 
     }
 
-    private  void outputMessage(String message) throws Exception {
-
-       
+    /**
+     * Write a audit message.
+     * 
+     * @param message
+     *            The audit message.
+     * @throws Exception
+     */
+    private void outputMessage(String message) throws Exception 
+    {
         String newLine = "\r\n";
-       
      
-        if (auditMethod.equals("syslog")) {
+        if (auditMethod.equals(AuditMethodEnum.SYSLOG)) 
+        {
             SyslogClient sc = new SyslogClient(auditHost,auditPort);
             sc.sendMessage(message);
-        } else if (auditMethod.equals("file")) {
-
-           
-            if (auditFile == null) {
+        } 
+        else if (auditMethod.equals(AuditMethodEnum.FILE)) 
+        {
+            if (auditFile == null) 
                 throw new Exception("No Filename Foud for audit log");
-            }
+            
             FileOutputStream fos = new FileOutputStream(auditFile, true);
             fos.write(message.getBytes());
             fos.write(newLine.getBytes());
             fos.close();
         }
-
     }
 
     private static String marshal(QName altName, Object jaxb, Class<?> factory) {
@@ -266,9 +322,4 @@ public class AuditMessageGenerator {
         return ret;
     }
 
-    public static void main(String[] args) throws Exception {
-
-        AuditMessageGenerator amg = new AuditMessageGenerator("C:\\testfiles\\auditlog.txt");
-        amg.provideAndRegisterAudit("1", "2", "3", "4", "5", "6", "7", "8");
-    }
 }
