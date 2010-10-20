@@ -20,32 +20,32 @@ namespace NHINDirect
     /// <summary>
     /// Represents Direct specific errors that occur during application execution.
     /// </summary>
-    public class NHINDException : Exception
+    public class DirectException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of an <see cref="NHINDException"/>.
+        /// Initializes a new instance of an <see cref="DirectException"/>.
         /// </summary>
-        public NHINDException()
+        public DirectException()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of an <see cref="NHINDException"/> with a specified error message
+        /// Initializes a new instance of an <see cref="DirectException"/> with a specified error message
         /// </summary>
         /// <param name="message">The message that describes the error. </param>
-        public NHINDException(string message)
+        public DirectException(string message)
             : base(message)
         {
         
         }
 
         /// <summary>
-        /// Initializes a new instance of an <see cref="NHINDException"/> with a reference 
+        /// Initializes a new instance of an <see cref="DirectException"/> with a reference 
         /// to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The message that describes the error. </param>
         /// <param name="innerException">The inner exception reference.</param>
-        public NHINDException(string message, Exception innerException)
+        public DirectException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
@@ -59,49 +59,49 @@ namespace NHINDirect
     /// that provides the subtype of error.
     /// </remarks>
     /// <typeparam name="T">The type of error this exception type is specialized to, generally an enumeration</typeparam>
-    public class NHINDException<T> : NHINDException
+    public class DirectException<T> : DirectException
     {
         T m_error;
 
         /// <summary>
-        /// Initializes a new specialized instance of an <see cref="NHINDException"/>
+        /// Initializes a new specialized instance of an <see cref="DirectException"/>
         /// </summary>
         /// <param name="error">The error type for this instance.</param>
-        public NHINDException(T error)
+        public DirectException(T error)
             : base(FormatMessage(error, ""))
         {
             m_error = error;
         }
 
         /// <summary>
-        /// Initializes a new specialized instance of an <see cref="NHINDException"/>
+        /// Initializes a new specialized instance of an <see cref="DirectException"/>
         /// </summary>
         /// <param name="error">The error type for this instance.</param>
         /// <param name="message">The message that describes the error. </param>
-        public NHINDException(T error, string message)
+        public DirectException(T error, string message)
             : base(FormatMessage(error, message))
         {
             m_error = error;
         }
 
         /// <summary>
-        /// Initializes a new specialized instance of an <see cref="NHINDException"/>
+        /// Initializes a new specialized instance of an <see cref="DirectException"/>
         /// </summary>
         /// <param name="error">The error type for this instance.</param>
         /// <param name="innerException">The inner exception reference.</param>
-        public NHINDException(T error, Exception innerException)
+        public DirectException(T error, Exception innerException)
             : this(error, string.Empty, innerException)
         {
             m_error = error;
         }
 
         /// <summary>
-        /// Initializes a new specialized instance of an <see cref="NHINDException"/>
+        /// Initializes a new specialized instance of an <see cref="DirectException"/>
         /// </summary>
         /// <param name="error">The error type for this instance.</param>
         /// <param name="message">The message that describes the error. </param>
         /// <param name="innerException">The inner exception reference.</param>
-        public NHINDException(T error, string message, Exception innerException)
+        public DirectException(T error, string message, Exception innerException)
             : base(FormatMessage(error, message), innerException)
         {
             m_error = error;

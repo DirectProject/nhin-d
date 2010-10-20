@@ -82,7 +82,7 @@ namespace NHINDirect.Agent.Config
     /// <summary>
     /// Exception for agent configurations
     /// </summary>
-    public class AgentConfigException : NHINDException<AgentConfigError>
+    public class AgentConfigException : DirectException<AgentConfigError>
     {
         /// <summary>
         /// Creates an exception for agent configuration errors.

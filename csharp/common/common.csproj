@@ -162,7 +162,7 @@
     <Compile Include="Collections\ObjectCollection.cs" />
     <Compile Include="Mime\MimeException.cs" />
     <Compile Include="Mime\StringSegment.cs" />
-    <Compile Include="NHINDException.cs" />
+    <Compile Include="DirectException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

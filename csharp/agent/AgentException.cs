@@ -24,7 +24,7 @@ namespace NHINDirect.Agent
     /// <summary>
     /// Represents agent exceptions.
     /// </summary>
-    public class AgentException : NHINDException<AgentError>
+    public class AgentException : DirectException<AgentError>
     {
         /// <summary>
         /// Creates an exception with an associated agent error status.
