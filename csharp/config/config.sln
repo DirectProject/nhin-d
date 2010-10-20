@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configService", "service\co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configClient", "client\configClient.csproj", "{2EA3D265-4E39-4631-85F3-1DC6B5103C71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nhinCommon", "..\common\nhinCommon.csproj", "{6A48C90B-0BD0-4F19-BBAE-B973AD504902}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "..\common\common.csproj", "{6A48C90B-0BD0-4F19-BBAE-B973AD504902}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

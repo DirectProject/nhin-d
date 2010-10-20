@@ -120,9 +120,9 @@
       <Project>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</Project>
       <Name>nhinAgent</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\common\nhinCommon.csproj">
-      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
-      <Name>nhinCommon</Name>
+    <ProjectReference Include="..\..\common\common.csproj">
+      <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
+      <Name>common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\config\client\configClient.csproj">
       <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
