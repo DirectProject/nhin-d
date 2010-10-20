@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7E1FA376-3372-4DF4-8AED-4DEE68A20152}</ProjectGuid>
+    <ProjectGuid>{6F82A7A0-FB38-418F-A33F-BF289C39797A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NHINDirect.Tests</RootNamespace>
@@ -56,13 +56,15 @@
     <Compile Include="Caching\DnsClientWithCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseToBinExample.cs" />
+    <Compile Include="DnsResolver\BasicResolverTests.cs" />
+    <Compile Include="DnsResolver\TestSerialization.cs" />
     <Compile Include="Mail\RoundTripFacts.cs" />
     <Compile Include="Mail\TestMDN.cs" />
-    <Compile Include="metadata\AuthorFacts.cs" />
-    <Compile Include="metadata\HL7UtilFacts.cs" />
-    <Compile Include="metadata\PatientIDFacts.cs" />
-    <Compile Include="metadata\PersonFacts.cs" />
-    <Compile Include="metadata\RecipientFacts.cs" />
+    <Compile Include="Metadata\AuthorFacts.cs" />
+    <Compile Include="Metadata\HL7UtilFacts.cs" />
+    <Compile Include="Metadata\PatientIDFacts.cs" />
+    <Compile Include="Metadata\PersonFacts.cs" />
+    <Compile Include="Metadata\RecipientFacts.cs" />
     <Compile Include="Mime\BodyFacts.cs" />
     <Compile Include="Mime\CharReaderFacts.cs" />
     <Compile Include="Mime\MimeEntityCollectionFacts.cs" />
@@ -82,57 +84,55 @@
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\dns\dnsResolver.csproj">
-      <Project>{AE250214-0E85-4C28-90C9-A006440BCE97}</Project>
-      <Name>dnsResolver</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="metadata\dns responses\dns.hsgincubator.com.bin">
+    <Content Include="Metadata\dns responses\dns.hsgincubator.com.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="metadata\dns responses\hvnhind.hsgincubator.com.bin">
+    <Content Include="Metadata\dns responses\hvnhind.hsgincubator.com.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="metadata\dns responses\nhind.hsgincubator.com.bin">
+    <Content Include="Metadata\dns responses\nhind.hsgincubator.com.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="metadata\dns responses\www.apple.com.bin">
+    <Content Include="Metadata\dns responses\www.apple.com.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="metadata\dns responses\www.google.com.bin">
+    <Content Include="Metadata\dns responses\www.google.com.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="metadata\dns responses\www.microsoft.com.bin">
+    <Content Include="Metadata\dns responses\www.microsoft.com.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="metadata\dns responses\www.yahoo.com.bin">
+    <Content Include="Metadata\dns responses\www.yahoo.com.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="metadata\dns responses\a.hvnhind.hsgincubator.com.bin" />
-    <None Include="metadata\dns responses\a.nhind.hsgincubator.com.bin" />
-    <None Include="metadata\dns responses\a.www.apple.com.bin" />
-    <None Include="metadata\dns responses\a.www.bing.com.bin" />
-    <None Include="metadata\dns responses\a.www.cerner.com.bin" />
-    <None Include="metadata\dns responses\a.www.epic.com.bin" />
-    <None Include="metadata\dns responses\a.www.google.com.bin" />
-    <None Include="metadata\dns responses\a.www.ibm.com.bin" />
-    <None Include="metadata\dns responses\a.www.microsoft.com.bin" />
-    <None Include="metadata\dns responses\a.www.nhindirect.org.bin" />
-    <None Include="metadata\dns responses\a.www.yahoo.com.bin" />
-    <None Include="metadata\dns responses\mx.hvnhind.hsgincubator.com.bin" />
-    <None Include="metadata\dns responses\mx.nhind.hsgincubator.com.bin" />
-    <None Include="metadata\dns responses\mx.www.apple.com.bin" />
-    <None Include="metadata\dns responses\mx.www.bing.com.bin" />
-    <None Include="metadata\dns responses\mx.www.cerner.com.bin" />
-    <None Include="metadata\dns responses\mx.www.epic.com.bin" />
-    <None Include="metadata\dns responses\mx.www.google.com.bin" />
-    <None Include="metadata\dns responses\mx.www.ibm.com.bin" />
-    <None Include="metadata\dns responses\mx.www.microsoft.com.bin" />
-    <None Include="metadata\dns responses\mx.www.nhindirect.org.bin" />
-    <None Include="metadata\dns responses\mx.www.yahoo.com.bin" />
+    <None Include="DnsResolver\DnsTestCerts\redmond.cer" />
+    <None Include="DnsResolver\DnsTestCerts\umesh.cer" />
+    <None Include="Metadata\dns responses\a.hvnhind.hsgincubator.com.bin" />
+    <None Include="Metadata\dns responses\a.nhind.hsgincubator.com.bin" />
+    <None Include="Metadata\dns responses\a.www.apple.com.bin" />
+    <None Include="Metadata\dns responses\a.www.bing.com.bin" />
+    <None Include="Metadata\dns responses\a.www.cerner.com.bin" />
+    <None Include="Metadata\dns responses\a.www.epic.com.bin" />
+    <None Include="Metadata\dns responses\a.www.google.com.bin" />
+    <None Include="Metadata\dns responses\a.www.ibm.com.bin" />
+    <None Include="Metadata\dns responses\a.www.microsoft.com.bin" />
+    <None Include="Metadata\dns responses\a.www.nhindirect.org.bin" />
+    <None Include="Metadata\dns responses\a.www.yahoo.com.bin" />
+    <None Include="Metadata\dns responses\mx.hvnhind.hsgincubator.com.bin" />
+    <None Include="Metadata\dns responses\mx.nhind.hsgincubator.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.apple.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.bing.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.cerner.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.epic.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.google.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.ibm.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.microsoft.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.nhindirect.org.bin" />
+    <None Include="Metadata\dns responses\mx.www.yahoo.com.bin" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Diagnostics\" />

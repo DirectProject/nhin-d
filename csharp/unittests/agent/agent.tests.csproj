@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{86240CF2-AC3E-4CF1-9E3C-2E9DE82AD23F}</ProjectGuid>
+    <ProjectGuid>{6454E90E-984D-4D09-BD6D-566C9565E028}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Health.Direct.Agent.Tests</RootNamespace>
