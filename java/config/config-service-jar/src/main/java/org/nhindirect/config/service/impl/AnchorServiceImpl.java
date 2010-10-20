@@ -43,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @WebService(endpointInterface = "org.nhindirect.config.service.AnchorService")
 public class AnchorServiceImpl implements AnchorService {
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(AnchorServiceImpl.class);
 
     private AnchorDao dao;

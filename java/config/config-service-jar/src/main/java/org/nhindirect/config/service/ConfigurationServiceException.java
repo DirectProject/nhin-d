@@ -26,6 +26,9 @@ package org.nhindirect.config.service;
  */
 public class ConfigurationServiceException extends Exception {
 
+    private static final long serialVersionUID = -1005166340298814306L;
+    
+    @SuppressWarnings("unused")
     private ConfigurationFault fault = new ConfigurationFault();
 
     /**
