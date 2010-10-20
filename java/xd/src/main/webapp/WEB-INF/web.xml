@@ -29,18 +29,28 @@
         <param-name>mailPort</param-name>
         <param-value>25</param-value>
     </context-param>
-
     <context-param>
-        <!-- either file or syslog -->
-        <param-name>auditMethod</param-name>
-          <!-- either file or syslog -->
-        <param-value>file</param-value>
+        <param-name>mailUser</param-name>
+        <param-value>direct</param-value>
     </context-param>
+    <context-param>
+        <param-name>mailPass</param-name>
+        <param-value>direct</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>auditMethod</param-name>
+        <param-value>file</param-value> <!-- valid options are 'file' and 'syslog' -->
+    </context-param>
+    
+    <!-- Uncomment if using 'file' audit method -->
     <context-param>
         <param-name>auditFile</param-name>
         <param-value>C:\\testfiles\auditlog.txt</param-value>
     </context-param>
 
+    <!-- Uncomment if using 'syslog' audit method -->
+    <!--     
     <context-param>
         <param-name>auditHost</param-name>
         <param-value>localhost</param-value>
@@ -49,6 +59,7 @@
         <param-name>auditPort</param-name>
         <param-value>514</param-value>
     </context-param>
+    -->
 
     <servlet>
         <servlet-name>WebServicePort</servlet-name>

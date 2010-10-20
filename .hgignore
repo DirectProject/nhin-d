@@ -23,11 +23,22 @@ NHINKeyStore
 java/gateway/IncomingMsgFolder/
 java/gateway/OutgoingMsgFolder/
 java/gateway/RawMsgFolder/
+java/xd-common/war
+java/gateway/war
+nhindconfig/service.properties
+config-service-client/war/config-service.war
 
 # Ignore Eclipse files
 .classpath
 .project
 .settings/
+
+# Ignore derby files
+db.lck
+log.ctrl
+log1.dat
+logmirror.ctrl
+seg0/*
 
 # Ignore Visual Studio 2008 files
 *.obj
