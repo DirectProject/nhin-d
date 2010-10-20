@@ -25,9 +25,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.nhind.xdr;
 
-import com.gsihealth.auditclient.AuditMessageGenerator;
 import ihe.iti.xds_b._2007.DocumentRepositoryPortType;
 import ihe.iti.xds_b._2007.DocumentRepositoryService;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
@@ -44,7 +44,6 @@ import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.annotation.Resource;
-
 import javax.mail.util.ByteArrayDataSource;
 import javax.naming.InitialContext;
 import javax.servlet.ServletContext;
@@ -62,29 +61,48 @@ import org.nhind.xdm.impl.SmtpMailClient;
 import org.nhindirect.xd.common.DirectDocument;
 import org.nhindirect.xd.common.DirectMessage;
 import org.nhindirect.xd.routing.RoutingResolver;
-import org.nhindirect.xd.routing.impl.XDRoutingResolverImpl;
+import org.nhindirect.xd.routing.impl.RoutingResolverImpl;
+
+import com.gsihealth.auditclient.AuditMessageGenerator;
+import com.gsihealth.auditclient.type.AuditMethodEnum;
 
 /**
  * Base class for handling incoming XDR requests.
  * 
  * @author Vince
  */
-public abstract class DocumentRepositoryAbstract {
-
+public abstract class DocumentRepositoryAbstract 
+{
     @Resource
     protected WebServiceContext context;
+    
     protected String endpoint = null;
     protected String messageId = null;
     protected String relatesTo = null;
     protected String action = null;
     protected String to = null;
+    
     private String thisHost = null;
     private String remoteHost = null;
     private String pid = null;
     private String from = null;
     private String suffix = null;
     private String replyEmail = null;
-    private RoutingResolver resolver = new XDRoutingResolverImpl();
+
+    private static final String PARAM_MAIL_HOST = "mailHost";
+    private static final String PARAM_MAIL_USER = "mailUser";
+    private static final String PARAM_MAIL_PASS = "mailPass";
+    private static final String PARAM_AUDIT_METHOD = "auditMethod";
+    private static final String PARAM_AUDIT_HOST = "auditHost";
+    private static final String PARAM_AUDIT_PORT = "auditPort";
+    private static final String PARAM_AUDIT_FILE = "auditFile";
+    
+    private RoutingResolver resolver = new RoutingResolverImpl();
+    
+    private AuditMessageGenerator auditMessageGenerator = null;
+    
+    private MailClient mailClient = null;
+
     private static final Logger LOGGER = Logger.getLogger(DocumentRepositoryAbstract.class.getPackage().getName());
 
     /**
@@ -118,9 +136,12 @@ public abstract class DocumentRepositoryAbstract {
      * @return a RegistryResponseType object
      * @throws Exception
      */
-    protected RegistryResponseType provideAndRegisterDocumentSet(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception {
+    protected RegistryResponseType provideAndRegisterDocumentSet(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception 
+    {
         RegistryResponseType resp = null;
-        try {
+        
+        try 
+        {
             getHeaderData();
             @SuppressWarnings("unused")
             InitialContext ctx = new InitialContext();
@@ -131,35 +152,22 @@ public abstract class DocumentRepositoryAbstract {
 
             // Get endpoints
             List<String> forwards = new ArrayList<String>();
-            for (String recipient : metadata.getSs_intendedRecipient()) {
+            for (String recipient : metadata.getSs_intendedRecipient()) 
+            {
                 String address = StringUtils.remove(recipient, "|");
                 forwards.add(StringUtils.splitPreserveAllTokens(address, "^")[0]);
             }
 
             messageId = UUID.randomUUID().toString();
-            ServletContext servletContext = (ServletContext) context.getMessageContext().get(MessageContext.SERVLET_CONTEXT);
-            String fileName = "C:\\auditlog.txt";
-            String mailHost = servletContext.getInitParameter("mailHost");
-            fileName = servletContext.getInitParameter("auditFile");
-            String auditMethod = servletContext.getInitParameter("auditMethod");
-            String auditHost = servletContext.getInitParameter("auditHost");
-            String auditPort = servletContext.getInitParameter("auditPort");
-
-            String query = null;
-            AuditMessageGenerator amg = null;
-            if(auditMethod.equals("syslog")){
-                amg = new AuditMessageGenerator(auditHost,auditPort);
-            }else{
-                amg = new AuditMessageGenerator(fileName);
-            }
-
-            //TODO patID and subsetId
+            
+            // TODO patID and subsetId
             String patId = "PATID TBD";
             String subsetId = "SUBSETID";
-            amg.provideAndRegisterAudit( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
+            getAuditMessageGenerator().provideAndRegisterAudit( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
 
             // Send to SMTP endpoints
-            if (resolver.hasSmtpEndpoints(forwards)) {
+            if (resolver.hasSmtpEndpoints(forwards)) 
+            {
                 // Get a reply address
                 replyEmail = metadata.getAuthorPerson();
                 replyEmail = StringUtils.splitPreserveAllTokens(replyEmail, "^")[0];
@@ -187,14 +195,14 @@ public abstract class DocumentRepositoryAbstract {
                 // Add document to message
                 message.addDocument(document);
 
-
                 // Send mail
-                MailClient mailClient = new SmtpMailClient(mailHost);
+                MailClient mailClient = getMailClient();
                 mailClient.mail(message, messageId, suffix);
             }
 
             // Send to XD endpoints
-            for (String reqEndpoint : resolver.getXdEndpoints(forwards)) {
+            for (String reqEndpoint : resolver.getXdEndpoints(forwards)) 
+            {
                 String to = StringUtils.remove(reqEndpoint, "?wsdl");
 
                 Long threadId = new Long(Thread.currentThread().getId());
@@ -233,10 +241,12 @@ public abstract class DocumentRepositoryAbstract {
 
                 RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(prdst);
                 String test = rrt.getStatus();
-                if (test.indexOf("Failure") >= 0) {
+                if (test.indexOf("Failure") >= 0) 
+                {
                     throw new Exception("Failure Returned from XDR forward");
                 }
-                amg.provideAndRegisterAuditSource( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
+                
+                getAuditMessageGenerator().provideAndRegisterAuditSource( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
             }
 
             resp = getRepositoryProvideResponse(messageId);
@@ -246,7 +256,9 @@ public abstract class DocumentRepositoryAbstract {
             to = endpoint;
 
             setHeaderData();
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             e.printStackTrace();
             throw (e);
         }
@@ -309,6 +321,75 @@ public abstract class DocumentRepositoryAbstract {
             x.printStackTrace();
         }
         return ret;
+    }
+
+    private ServletContext getServletContext()
+    {
+        return (ServletContext) context.getMessageContext().get(MessageContext.SERVLET_CONTEXT);
+    }
+
+    private AuditMessageGenerator getAuditMessageGenerator()
+    {
+        if (auditMessageGenerator == null)
+        {
+            String auditMethod = getServletContext().getInitParameter(PARAM_AUDIT_METHOD);
+
+            if (StringUtils.equals(auditMethod, AuditMethodEnum.SYSLOG.getMethod()))
+            {
+                String auditHost = getServletContext().getInitParameter(PARAM_AUDIT_HOST);
+                String auditPort = getServletContext().getInitParameter(PARAM_AUDIT_PORT);
+
+                auditMessageGenerator = new AuditMessageGenerator(auditHost, auditPort);
+            }
+            else if (StringUtils.equals(auditMethod, AuditMethodEnum.FILE.getMethod()))
+            {
+                String fileName = getServletContext().getInitParameter(PARAM_AUDIT_FILE);
+
+                auditMessageGenerator = new AuditMessageGenerator(fileName);
+            }
+            else
+            {
+                throw new IllegalArgumentException("Unknown audit method.");
+            }
+        }
+        
+        return auditMessageGenerator;
+    }
+    
+    private MailClient getMailClient()
+    {
+        if (mailClient == null)
+        {
+            String hostname = getServletContext().getInitParameter(PARAM_MAIL_HOST);
+            String username = getServletContext().getInitParameter(PARAM_MAIL_USER);
+            String password = getServletContext().getInitParameter(PARAM_MAIL_PASS);
+
+            mailClient = new SmtpMailClient(hostname, username, password);
+        }
+
+        return mailClient;
+    }
+    
+    /**
+     * Set the value of mailClient.
+     * 
+     * @param mailClient
+     *            the value of mailClient.
+     */
+    public void setMailClient(MailClient mailClient)
+    {
+        this.mailClient = mailClient; 
+    }
+    
+    /**
+     * Set the value of auditMessageGenerator.
+     * 
+     * @param auditMessageGenerator
+     *            the value of auditMessageGenerator.
+     */
+    public void setAuditMessageGenerator(AuditMessageGenerator auditMessageGenerator)
+    {
+        this.auditMessageGenerator = auditMessageGenerator;
     }
 
     /**
