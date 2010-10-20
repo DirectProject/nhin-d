@@ -32,24 +32,30 @@ import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 
+import java.io.File;
 import java.io.InputStream;
-import java.net.ConnectException;
+import java.util.UUID;
+import java.util.logging.Logger;
 
-import javax.mail.MessagingException;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
+import org.nhind.xdm.impl.SmtpMailClient;
 import org.nhindirect.xd.transform.util.XmlUtils;
+
+import com.gsihealth.auditclient.AuditMessageGenerator;
 
 /**
  *
  * @author vlewis
  */
-public class XDRTest extends TestCase {
-
+public class XDRTest extends TestCase 
+{
+    private static final Logger LOGGER = Logger.getLogger(XDRTest.class.getPackage().getName());
+    
     /**
      * Constructor
      * 
@@ -82,7 +88,7 @@ public class XDRTest extends TestCase {
     /**
      * Test of documentRepositoryProvideAndRegisterDocumentSetB method, of class XDR.
      */
-    public void testDocumentRepositoryProvideAndRegisterDocumentSetB() {
+    public void testDocumentRepositoryProvideAndRegisterDocumentSetB() throws Exception {
         System.out.println("documentRepositoryProvideAndRegisterDocumentSetB");
         QName qname = new QName("urn:ihe:iti:xds-b:2007", "ProvideAndRegisterDocumentSetRequestType");
         ProvideAndRegisterDocumentSetRequestType body = null;
@@ -94,7 +100,12 @@ public class XDRTest extends TestCase {
             x.printStackTrace();
             fail("Failed unmarshalling request");
         }
-        XDR instance = new XDR();
+        
+        DocumentRepositoryAbstract instance = new XDR();
+        
+        // Set test objects
+        instance.setAuditMessageGenerator(new AuditMessageGenerator(getLogfile()));
+        instance.setMailClient(new SmtpMailClient("gmail-smtp.l.google.com", "lewistower1@gmail.com", "hadron106"));
 
         RegistryResponseType result = instance.documentRepositoryProvideAndRegisterDocumentSetB(body);
 
@@ -124,9 +135,13 @@ public class XDRTest extends TestCase {
     /**
      * Test the documentRepositoryRetrieveDocumentSet method.
      */
-    public void testDocumentRepositoryRetrieveDocumentSet() {
+    public void testDocumentRepositoryRetrieveDocumentSet() throws Exception {
         try {
-            XDR instance = new XDR();
+            DocumentRepositoryAbstract instance = new XDR();
+
+            // Set test objects
+            instance.setAuditMessageGenerator(new AuditMessageGenerator(getLogfile()));
+            instance.setMailClient(new SmtpMailClient("gmail-smtp.l.google.com", "lewistower1@gmail.com", "hadron106"));
             
             @SuppressWarnings("unused")
             RetrieveDocumentSetResponseType response = null;
@@ -151,5 +166,14 @@ public class XDRTest extends TestCase {
         is.read(theBytes);
         return new String(theBytes);
 
+    }
+    
+    private String getLogfile() throws Exception
+    {
+        String file = File.createTempFile("xdaudit." + UUID.randomUUID().toString(), ".log").getAbsolutePath();
+        
+        LOGGER.info("Logging to file : " + file);
+        
+        return file;
     }
 }

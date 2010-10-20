@@ -28,19 +28,9 @@
 
 package org.nhind.xdm.impl;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.util.Collection;
 import java.util.Properties;
-import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.activation.DataHandler;
 import javax.mail.Authenticator;
@@ -69,29 +59,27 @@ import org.nhindirect.xd.transform.impl.DocumentXdmTransformerImpl;
  */
 public class SmtpMailClient implements MailClient
 {
-
+    final static int BUFFER = 2048;
+    
     private MimeMessage mmessage;
     private Multipart mailBody;
     private MimeBodyPart mainBody;
     private MimeBodyPart mimeAttach;
-    static final int BUFFER = 2048;
-    private String hostName = null;
-    private static final String SMTP_HOST_NAME = "gmail-smtp.l.google.com";
-    private static final String SMTP_AUTH_USER = "lewistower1@gmail.com";
-    private static final String SMTP_AUTH_PWD = "hadron106";
+   
+    private String hostname = null;
+    private String username = null;
+    private String password = null;
 
     private DocumentXdmTransformer transformer = new DocumentXdmTransformerImpl();
     
-    private static final Logger LOGGER = Logger.getLogger(SmtpMailClient.class.getPackage().getName());
-    
-    public SmtpMailClient()
+    public SmtpMailClient(String hostname, String username, String password)
     {
-        hostName = SMTP_HOST_NAME;
-    }
-
-    public SmtpMailClient(String hostName)
-    {
-        this.hostName = hostName;
+        if (StringUtils.isBlank(hostname) || StringUtils.isBlank(username) || StringUtils.isBlank(password))
+            throw new IllegalArgumentException("Hostname, username, and password must be provided.");
+        
+        this.hostname = hostname;
+        this.username = username;
+        this.password = password;
     }
 
     /*
@@ -108,7 +96,7 @@ public class SmtpMailClient implements MailClient
         Properties props = new Properties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", hostName);
+        props.put("mail.smtp.host", hostname);
         props.put("mail.smtp.auth", "true");
 
         Authenticator auth = new SMTPAuthenticator();
@@ -152,7 +140,7 @@ public class SmtpMailClient implements MailClient
         {
             x.printStackTrace();
         }
-        // mimeAttach.setFileName(fds.getName());
+
         mailBody.addBodyPart(mimeAttach);
 
         mmessage.setContent(mailBody);
@@ -174,8 +162,6 @@ public class SmtpMailClient implements MailClient
         @Override
         public PasswordAuthentication getPasswordAuthentication()
         {
-            String username = SMTP_AUTH_USER;
-            String password = SMTP_AUTH_PWD;
             return new PasswordAuthentication(username, password);
         }
     }
