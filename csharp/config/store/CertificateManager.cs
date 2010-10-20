@@ -16,15 +16,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Data;
-using System.Data.Sql;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Net.Mail;
-using System.Data.Linq;
-using System.Data.Linq.Mapping;
+
 using NHINDirect.Certificates;
+using NHINDirect.Extensions;
 
 namespace NHINDirect.Config.Store
 {

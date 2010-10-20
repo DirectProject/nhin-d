@@ -61,13 +61,13 @@
     <Compile Include="SubmissionDocument.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\common\nhinCommon.csproj">
+    <ProjectReference Include="..\..\common\common.csproj">
       <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
-      <Name>nhinCommon</Name>
+      <Name>common</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{8284EBE6-AE5C-4920-9738-8169A75DE618}</Project>
-      <Name>Common</Name>
+      <Name>xds.common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

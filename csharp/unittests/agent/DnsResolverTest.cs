@@ -25,7 +25,7 @@ using NHINDirect.Certificates;
 using Xunit;
 using Xunit.Extensions;
 
-namespace AgentTests
+namespace Health.Direct.Agent.Tests
 {
     public class DnsResolverTest
     {
@@ -33,24 +33,24 @@ namespace AgentTests
         
         public static IEnumerable<object[]> GoodAddresses
         {
-			get
-			{
-				yield return new[] {"bob@nhind.hsgincubator.com"};
-				yield return new[] {"biff@nhind.hsgincubator.com"};
-				yield return new[] {"gatewaytest@hotmail.com"};
-			}
+            get
+            {
+                yield return new[] {"bob@nhind.hsgincubator.com"};
+                yield return new[] {"biff@nhind.hsgincubator.com"};
+                yield return new[] {"gatewaytest@hotmail.com"};
+            }
         }
         
         [Theory(Skip = "Requires Bind Server to be running on the local server")]
-		[PropertyData("GoodAddresses")]
+        [PropertyData("GoodAddresses")]
         public void GetCertificateWithGoodAddress(string address)
         {
-        	var resolver = new DnsCertResolver(IPAddress.Parse(ServerIP)
-                , TimeSpan.FromSeconds(5)
-                , "hsgincubator.com"
-                , false);
-        	X509Certificate2Collection certs = resolver.GetCertificates(new MailAddress(address));
-        	Assert.True(certs.Count > 0);
+            var resolver = new DnsCertResolver(IPAddress.Parse(ServerIP)
+                                               , TimeSpan.FromSeconds(5)
+                                               , "hsgincubator.com"
+                                               , false);
+            X509Certificate2Collection certs = resolver.GetCertificates(new MailAddress(address));
+            Assert.True(certs.Count > 0);
         }
     }
 }

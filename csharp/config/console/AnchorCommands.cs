@@ -15,29 +15,23 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Security.Cryptography.X509Certificates;
-using System.IO;
 using System.Net.Mail;
 using System.ServiceModel;
+
 using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
-using NHINDirect.Config.Client;
 using NHINDirect.Config.Client.CertificateService;
+using NHINDirect.Extensions;
 
 namespace NHINDirect.Config.Command
 {
     /// <summary>
     /// Commands to manage Anchors
     /// </summary>
-    public class AnchorCommands
+    public class AnchorCommands : CommandsBase
     {
-        public AnchorCommands()
-        {
-        }
-        
         //---------------------------------------
         //
         // Commands
@@ -138,7 +132,7 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Set the status for ALL anchors for an owner.");
             Console.WriteLine("    owner");
             Console.WriteLine("\t owner: Anchor owner");
-            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString);
+            Console.WriteLine("\t status: {0}", EntityStatusString);
         }
         
         /// <summary>
@@ -165,7 +159,7 @@ namespace NHINDirect.Config.Command
             CertificateGetOptions options = CertificateCommands.GetOptions(args, 1);
 
             Anchor[] anchors = ConfigConsole.Current.AnchorClient.GetAnchorsForOwner(owner.Address, options);
-            if (anchors.IsNullOrEmpty())
+            if (ArrayExtensions.IsNullOrEmpty(anchors))
             {
                 anchors = ConfigConsole.Current.AnchorClient.GetAnchorsForOwner(owner.Host, options);
             }

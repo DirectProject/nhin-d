@@ -24,7 +24,7 @@ namespace NHINDirect.Mime
     /// <summary>
     /// Exception for mime parsing errors.
     /// </summary>
-    public class MimeException : NHINDException<MimeError>
+    public class MimeException : DirectException<MimeError>
     {
         /// <summary>
         /// Creates an exception with the specified error

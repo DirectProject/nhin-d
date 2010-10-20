@@ -19,7 +19,7 @@ using NHINDirect.Diagnostics;
 
 using NLog;
 
-namespace Health.Net.Direct.Diagnostics.NLog
+namespace Health.Direct.Diagnostics.NLog
 {
     class NLogLogger : ILogger
     {

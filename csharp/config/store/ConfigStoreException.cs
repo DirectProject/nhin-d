@@ -57,7 +57,7 @@ namespace NHINDirect.Config.Store
 
     }
         
-    public class ConfigStoreException : NHINDException<ConfigStoreError>
+    public class ConfigStoreException : DirectException<ConfigStoreError>
     {
         public ConfigStoreException()
             : base(ConfigStoreError.Unknown)

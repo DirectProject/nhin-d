@@ -13,18 +13,17 @@ Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
-using Xunit;
-using Xunit.Extensions;
 
 using NHINDirect.Agent;
 
-namespace AgentTests
+using Xunit;
+using Xunit.Extensions;
+
+namespace Health.Direct.Agent.Tests
 {
     public class AddressTest
     {
@@ -173,9 +172,9 @@ namespace AgentTests
         NHINDAddressCollection BasicCollection()
         {
             string[] addrStrings = new string[] {
-                "eleanor@roosevelt.com",
-                "\"Franklin Roosevelt\" <frank@roosevelt.com>",
-                "sean+o'nolan@tinymollitude.net"};
+                                                    "eleanor@roosevelt.com",
+                                                    "\"Franklin Roosevelt\" <frank@roosevelt.com>",
+                                                    "sean+o'nolan@tinymollitude.net"};
             IEnumerable<NHINDAddress> addrs =  addrStrings.Select(a => new NHINDAddress(a));
             NHINDAddressCollection coll = new NHINDAddressCollection();
             coll.Add(addrs);

@@ -22,6 +22,8 @@ using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Net.Mail;
 
+using NHINDirect.Extensions;
+
 namespace NHINDirect.Config.Store
 {
     public static class MXQueries

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("nhinCoreTests")]
+[assembly: AssemblyTitle("health.direct.agent.tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("NHIN Direct Project")]
-[assembly: AssemblyProduct("nhinCoreTests")]
-[assembly: AssemblyCopyright("Copyright © NHIN Direct Project 2010")]
+[assembly: AssemblyCompany("Direct Project")]
+[assembly: AssemblyProduct("Direct Agent Tests")]
+[assembly: AssemblyCopyright("Copyright © Direct Project 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
