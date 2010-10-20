@@ -14,17 +14,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Xml.Linq;
 
 using NHINDirect.Xd;
 using NHINDirect.Metadata;
 using Xunit;
-using Xunit.Extensions;
 
-namespace NHINDirect.Tests.xdTests
+namespace Health.Direct.Xd.Tests
 {
     public class ExtensionTests
     {

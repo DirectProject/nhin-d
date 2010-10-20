@@ -16,8 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Xml;
 using System.Xml.Linq;
 
 using Xunit;
@@ -26,12 +24,10 @@ using Xunit.Extensions;
 using NHINDirect.Metadata;
 using NHINDirect.Xd;
 
-namespace NHINDirect.Tests.xdTests
+namespace Health.Direct.Xd.Tests
 {
     public class XdMetadataConsumerTests
     {
-
-
         public static IEnumerable<object[]> TestData(object[] data)
         {
             yield return new object[] { Examples.RoundTripDocument, data[0] };
@@ -564,7 +560,7 @@ namespace NHINDirect.Tests.xdTests
 
 
         [Theory]
-       [PropertyData("PackageSourceId")]
+        [PropertyData("PackageSourceId")]
         public void ConsumerConsumesPackageSourceId(XElement xl, string expected)
         {
             DocumentPackage package = XDMetadataConsumer.Consume(xl);
@@ -645,7 +641,7 @@ namespace NHINDirect.Tests.xdTests
         {
             DocumentPackage package = XDMetadataConsumer.Consume(xl);
             Assert.Equal(package.IntendedRecipients.Aggregate("", (a, s) => a + " " + s),
-                expected.Aggregate("", (a, s) => a + " " + s));
+                         expected.Aggregate("", (a, s) => a + " " + s));
             Assert.Equal(package.IntendedRecipients.Count, expected.Count);
             foreach (Recipient r in package.IntendedRecipients)
                 Assert.Contains(r, expected);
