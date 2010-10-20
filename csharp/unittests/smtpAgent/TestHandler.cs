@@ -14,12 +14,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System.Collections.Generic;
+using System.Net.Mail;
+
+using Health.Direct.Agent.Tests;
 
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
 using NHINDirect.Mime;
 using NHINDirect.Mail;
-using System.Net.Mail;
+
 using Xunit;
 using Xunit.Extensions;
 
@@ -31,7 +34,7 @@ namespace SmtpAgentTests
         
         static TestHandler()
         {
-            AgentTests.AgentTester.EnsureStandardMachineStores();
+            AgentTester.EnsureStandardMachineStores();
         }
         
         public TestHandler()

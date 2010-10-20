@@ -18,12 +18,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+
+using Health.Direct.Agent.Tests;
+
 using NHINDirect;
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
 using NHINDirect.Mail;
 using NHINDirect.Mail.Notifications;
-using AgentTests;
+
 using Xunit;
 using Xunit.Extensions;
 
@@ -35,7 +38,7 @@ namespace SmtpAgentTests
         
         static TestSmtpAgent()
         {
-            AgentTests.AgentTester.EnsureStandardMachineStores();        
+            AgentTester.EnsureStandardMachineStores();        
         }
         
         public TestSmtpAgent()
