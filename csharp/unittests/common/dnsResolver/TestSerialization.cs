@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net;
 using DnsResolver;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
+
 using Xunit;
 using Xunit.Extensions;
 
@@ -82,7 +80,7 @@ namespace DnsResolverTests
                         
         DnsX509Cert LoadCert(string name)
         {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("DnsTestCerts", name));
+            string path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("DnsResolver", Path.Combine("DnsTestCerts", name)));
             return new DnsX509Cert(File.ReadAllBytes(path));
         }
     }

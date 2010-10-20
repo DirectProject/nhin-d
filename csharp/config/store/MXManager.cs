@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using NHINDirect.Extensions;
+
 namespace NHINDirect.Config.Store
 {
     public class MXManager : IEnumerable<MX>

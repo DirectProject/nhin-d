@@ -109,8 +109,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DnsResolver\DnsTestCerts\redmond.cer" />
-    <None Include="DnsResolver\DnsTestCerts\umesh.cer" />
+    <None Include="DnsResolver\DnsTestCerts\redmond.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="DnsResolver\DnsTestCerts\umesh.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Metadata\dns responses\a.hvnhind.hsgincubator.com.bin" />
     <None Include="Metadata\dns responses\a.nhind.hsgincubator.com.bin" />
     <None Include="Metadata\dns responses\a.www.apple.com.bin" />
