@@ -3,6 +3,6 @@
   <assemblies>
     <assembly filename="..\bin\Debug\Health.Direct.Agent.Tests.dll" shadow-copy="true" />
     <assembly filename="..\bin\Debug\commonXUnitTests.dll" shadow-copy="true" />
-    <assembly filename="..\bin\Debug\xdXUnitTests.dll" shadow-copy="true" />
+    <assembly filename="..\bin\Debug\Health.Direct.Xd.Tests.dll" shadow-copy="true" />
   </assemblies>
 </xunit>
