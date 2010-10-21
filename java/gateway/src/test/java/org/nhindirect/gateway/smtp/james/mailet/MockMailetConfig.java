@@ -29,7 +29,7 @@ public class MockMailetConfig implements MailetConfig
 
 	public MailetContext getMailetContext() 
 	{
-		return null;
+		return new MockMailetContext();
 	}
 
 	public String getMailetName() 

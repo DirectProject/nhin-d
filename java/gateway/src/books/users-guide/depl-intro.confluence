@@ -8,6 +8,8 @@ Agent configuration consists of setting the runtime parameters for both the prot
 
 * [SMTP XML configuration|./smtp-depl-xmlconfig.html]
 
+* [SMTP WebService configuration|./smtp-depl-wsconfig.html]
+
 h2. Protocol Implementation Deployment
 
 Protocol implementation deployments are dependent are the specific implementation.  A specific implementation deployment may even have several deployment options.  In almost all cases, the deployment consists of installing and configuring a protocol bridge specific to the implementation.
