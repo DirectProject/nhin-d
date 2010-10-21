@@ -18,7 +18,7 @@ using System.Text;
 
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Store
+namespace Health.Direct.Config.Store
 {
     public static class Queries
     {

@@ -18,8 +18,8 @@ using System.Collections.Generic;
 using System.Net.Mail;
 
 using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Store;
 
-using NHINDirect.Config.Store;
 using NHINDirect.Extensions;
 
 namespace Health.Direct.Config.Client

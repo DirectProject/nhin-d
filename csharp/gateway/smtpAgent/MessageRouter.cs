@@ -17,8 +17,9 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
+using Health.Direct.Config.Store;
+
 using NHINDirect.Agent;
-using NHINDirect.Config.Store;
 
 namespace Health.Direct.SmtpAgent
 {

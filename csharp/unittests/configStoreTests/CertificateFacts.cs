@@ -20,8 +20,6 @@ using System.Security.Cryptography.X509Certificates;
 using Xunit;
 using Xunit.Extensions;
 
-using NHINDirect.Config.Store;
-
 namespace Health.Direct.Config.Store.Tests
 {
     class CertificateFacts : ConfigStoreTestBase

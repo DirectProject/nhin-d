@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://www.nhindirect.org/config/store/082010" elementFormDefault="qualified" targetNamespace="http://www.nhindirect.org/config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" />
+  <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
   <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
   <xs:element name="AddAddresses">
     <xs:complexType>
@@ -22,7 +22,7 @@
       <xs:element name="DomainID" type="xs:long" />
       <xs:element name="EmailAddress" nillable="true" type="xs:string" />
       <xs:element name="ID" type="xs:long" />
-      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" name="Status" type="q1:EntityStatus" />
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q1:EntityStatus" />
       <xs:element minOccurs="0" name="Type" nillable="true" type="xs:string" />
       <xs:element name="UpdateDate" type="xs:dateTime" />
     </xs:sequence>
@@ -35,7 +35,7 @@
   </xs:element>
   <xs:complexType name="ConfigStoreFault">
     <xs:sequence>
-      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="Error" type="q2:ConfigStoreError" />
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="Error" type="q2:ConfigStoreError" />
       <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
@@ -56,7 +56,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="emailAddresses" nillable="true" type="q3:ArrayOfstring" />
-        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="status" nillable="true" type="q4:EntityStatus" />
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" nillable="true" type="q4:EntityStatus" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -71,7 +71,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element xmlns:q5="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="addressIDs" nillable="true" type="q5:ArrayOflong" />
-        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="status" nillable="true" type="q6:EntityStatus" />
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" nillable="true" type="q6:EntityStatus" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -110,7 +110,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="domainID" type="xs:long" />
-        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="status" type="q8:EntityStatus" />
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q8:EntityStatus" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -177,7 +177,7 @@
       <xs:element name="ID" type="xs:long" />
       <xs:element name="Name" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="PostmasterID" nillable="true" type="xs:long" />
-      <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" name="Status" type="q9:EntityStatus" />
+      <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q9:EntityStatus" />
       <xs:element name="UpdateDate" type="xs:dateTime" />
     </xs:sequence>
   </xs:complexType>
@@ -215,7 +215,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element xmlns:q10="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="domainNames" nillable="true" type="q10:ArrayOfstring" />
-        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="status" nillable="true" type="q11:EntityStatus" />
+        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" nillable="true" type="q11:EntityStatus" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

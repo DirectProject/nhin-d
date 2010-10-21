@@ -14,16 +14,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Security.Cryptography.X509Certificates;
-using System.Data.Linq;
-using System.Data.Linq.Mapping;
 using System.Net.Mail;
+
 using NHINDirect.Certificates;
 
-namespace NHINDirect.Config.Store
+namespace Health.Direct.Config.Store
 {
     public class AnchorResolver : ITrustAnchorResolver
     {

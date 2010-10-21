@@ -16,12 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data.Linq;
-using System.Data.Linq.Mapping;
-using System.Net.Mail;
 
-namespace NHINDirect.Config.Store
+namespace Health.Direct.Config.Store
 {
     /// <summary>
     /// Queries that hit the Certificates table
@@ -39,39 +36,39 @@ namespace NHINDirect.Config.Store
         
         static readonly Func<ConfigDatabase, long, IQueryable<Certificate>> CertByID = CompiledQuery.Compile(
             (ConfigDatabase db, long id) =>
-                from cert in db.Certificates
-                where cert.ID == id
-                select cert
-        );
+            from cert in db.Certificates
+            where cert.ID == id
+            select cert
+            );
         
         static readonly Func<ConfigDatabase, string, IQueryable<Certificate>> AllCertsByOwner = CompiledQuery.Compile(
             (ConfigDatabase db, string owner) =>
-                from cert in db.Certificates
-                where cert.Owner == owner
-                select cert
-        );
+            from cert in db.Certificates
+            where cert.Owner == owner
+            select cert
+            );
 
         static readonly Func<ConfigDatabase, string, EntityStatus, IQueryable<Certificate>> CertsByOwner = CompiledQuery.Compile(
             (ConfigDatabase db, string owner, EntityStatus status) =>
-                from cert in db.Certificates
-                where cert.Owner == owner && cert.Status == status
-                select cert
-        );
+            from cert in db.Certificates
+            where cert.Owner == owner && cert.Status == status
+            select cert
+            );
 
         static readonly Func<ConfigDatabase, long, int, IQueryable<Certificate>> AllCerts = CompiledQuery.Compile(
             (ConfigDatabase db, long lastCertID, int maxResults) =>
-                (from cert in db.Certificates
-                 where cert.ID > lastCertID
-                 orderby cert.ID
-                 select cert).Take(maxResults)
-        );
+            (from cert in db.Certificates
+             where cert.ID > lastCertID
+             orderby cert.ID
+             select cert).Take(maxResults)
+            );
 
         static readonly Func<ConfigDatabase, string, string, IQueryable<Certificate>> CertsByThumbprint = CompiledQuery.Compile(
             (ConfigDatabase db, string owner, string thumbprint) =>
-                from cert in db.Certificates
-                where cert.Owner == owner && cert.Thumbprint == thumbprint
-                select cert
-        );
+            from cert in db.Certificates
+            where cert.Owner == owner && cert.Thumbprint == thumbprint
+            select cert
+            );
 
         public static ConfigDatabase GetDB(this Table<Certificate> table)
         {
@@ -87,8 +84,8 @@ namespace NHINDirect.Config.Store
         {
             //return table.GetDB().ExecuteQuery<Certificate>(Sql_AllCertsByID, certIDs.ToIn());
             return from cert in table.GetDB().Certificates
-                where certIDs.Contains(cert.ID)
-                select cert;
+                   where certIDs.Contains(cert.ID)
+                   select cert;
         }
 
         public static IQueryable<Certificate> Get(this Table<Certificate> table, long lastCertID, int maxResults)

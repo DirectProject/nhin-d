@@ -17,10 +17,10 @@ using System;
 using System.Collections.Generic;
 
 using Health.Direct.Agent.Tests;
+using Health.Direct.Config.Store;
 
 using NHINDirect.Agent;
 using NHINDirect.Mail;
-using NHINDirect.Config.Store;
 
 using Xunit;
 

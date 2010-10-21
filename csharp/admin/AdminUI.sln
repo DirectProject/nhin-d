@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminUI", "AdminUI\AdminUI.csproj", "{6DE9938D-2E38-4965-8B14-9FDB3E171B3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configClient", "..\config\client\configClient.csproj", "{2EA3D265-4E39-4631-85F3-1DC6B5103C71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config.client", "..\config\client\config.client.csproj", "{2EA3D265-4E39-4631-85F3-1DC6B5103C71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configStore", "..\config\store\configStore.csproj", "{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config.store", "..\config\store\config.store.csproj", "{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "..\common\common.csproj", "{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}"
 EndProject

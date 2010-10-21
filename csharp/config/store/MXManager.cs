@@ -17,11 +17,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
+using NHINDirect.Config.Store;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Store
+namespace Health.Direct.Config.Store
 {
     public class MXManager : IEnumerable<MX>
     {
@@ -41,37 +41,37 @@ namespace NHINDirect.Config.Store
         }
 
         public void Add(long domainID
-            , string SMTPName)
+                        , string SMTPName)
         {
             using(ConfigDatabase db = this.Store.CreateContext())
             {
                 this.Add(db
-                    , domainID
-                    , SMTPName
-                    , 0);
+                         , domainID
+                         , SMTPName
+                         , 0);
                 db.SubmitChanges();
             }
         }
 
 
         public void Add(long domainID
-            , string SMTPName
-            , int preference)
+                        , string SMTPName
+                        , int preference)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
                 this.Add(db
-                    , domainID
-                    , SMTPName
-                    , preference);
+                         , domainID
+                         , SMTPName
+                         , preference);
                 db.SubmitChanges();
             }
         }
         
         public void Add(ConfigDatabase db
-            , long domainID
-            , string SMTPName
-            , int preferece)
+                        , long domainID
+                        , string SMTPName
+                        , int preferece)
         {
             if (db == null)
             {
@@ -79,8 +79,8 @@ namespace NHINDirect.Config.Store
             }
 
             db.MXs.InsertOnSubmit(new MX(domainID
-                , SMTPName
-                , preferece));
+                                         , SMTPName
+                                         , preferece));
         }
 
         public void Add(MX mx)
@@ -124,7 +124,7 @@ namespace NHINDirect.Config.Store
         }
 
         public MX Get(ConfigDatabase db
-            , string smtpName)
+                      , string smtpName)
         {
             if (db == null)
             {
@@ -144,7 +144,7 @@ namespace NHINDirect.Config.Store
         }
                 
         public IEnumerable<MX> Get(ConfigDatabase db
-            , string[] smtpNames)
+                                   , string[] smtpNames)
         {
             return this.Get(db, smtpNames, null);
         }
@@ -177,19 +177,19 @@ namespace NHINDirect.Config.Store
         }
 
         public MX[] Get(string lastDomain
-            , int maxResults)
+                        , int maxResults)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
                 return this.Get(db
-                    , lastDomain
-                    , maxResults).ToArray();
+                                , lastDomain
+                                , maxResults).ToArray();
             }
         }
 
         public IEnumerable<MX> Get(ConfigDatabase db
-            , string lastDomain
-            , int maxResults)
+                                   , string lastDomain
+                                   , int maxResults)
         {
             if (db == null)
             {
@@ -304,13 +304,13 @@ namespace NHINDirect.Config.Store
 
         public IEnumerator<MX> GetEnumerator()
         {
-           using(ConfigDatabase db = this.Store.CreateContext())
-           {
+            using(ConfigDatabase db = this.Store.CreateContext())
+            {
                 foreach(MX mx in db.MXs)
                 {
                     yield return mx;
                 }       
-           }
+            }
         }
 
         #region IEnumerable Members

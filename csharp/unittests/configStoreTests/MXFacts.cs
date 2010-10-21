@@ -17,8 +17,6 @@ using System;
 
 using Xunit;
 
-using NHINDirect.Config.Store;
-
 namespace Health.Direct.Config.Store.Tests
 {
     public class MXFacts

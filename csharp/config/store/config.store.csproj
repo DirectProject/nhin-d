@@ -8,8 +8,8 @@
     <ProjectGuid>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect.Config.Store</RootNamespace>
-    <AssemblyName>nhinConfigStore</AssemblyName>
+    <RootNamespace>Health.Direct.Config.Store</RootNamespace>
+    <AssemblyName>Health.Direct.Config.Store</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -20,7 +20,7 @@ using System.Data.Linq;
 
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Store
+namespace Health.Direct.Config.Store
 {
     public static class DomainQueries
     {
@@ -29,17 +29,17 @@ namespace NHINDirect.Config.Store
 
         static readonly Func<ConfigDatabase, string, IQueryable<Domain>> Domain = CompiledQuery.Compile(
             (ConfigDatabase db, string owner) =>
-                from domain in db.Domains
-                where domain.Name == owner
-                select domain
-        );
+            from domain in db.Domains
+            where domain.Name == owner
+            select domain
+            );
         static readonly Func<ConfigDatabase, long, int, IQueryable<Domain>> EnumDomainsByID = CompiledQuery.Compile(
             (ConfigDatabase db, long lastDomainID, int maxResults) =>
-                (from domain in db.Domains
-                 where domain.ID > lastDomainID
-                 orderby domain.ID ascending
-                 select domain).Take(maxResults)
-        );
+            (from domain in db.Domains
+             where domain.ID > lastDomainID
+             orderby domain.ID ascending
+             select domain).Take(maxResults)
+            );
         
         //
         // Linq to Sql doesn't do this efficiently
@@ -55,7 +55,7 @@ namespace NHINDirect.Config.Store
         public static int GetCount(this Table<Domain> table)
         {
             return (from domain in table.GetDB().Domains
-                select domain.ID).Count();
+                    select domain.ID).Count();
         }
         
         public static Domain Get(this Table<Domain> table, string domainName)

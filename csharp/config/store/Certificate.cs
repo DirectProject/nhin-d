@@ -18,10 +18,11 @@ using System.Data.Linq.Mapping;
 using System.Security.Cryptography.X509Certificates;
 using System.Runtime.Serialization;
 
+using NHINDirect.Config.Store;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Store
-{    
+namespace Health.Direct.Config.Store
+{
     [Table(Name="Certificates")]
     [DataContract(Namespace = ConfigStore.Namespace)]
     public class Certificate

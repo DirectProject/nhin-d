@@ -16,12 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data.Linq;
-using System.Data.Linq.Mapping;
-using System.Net.Mail;
 
-namespace NHINDirect.Config.Store
+namespace Health.Direct.Config.Store
 {
     public static class AnchorQueries
     {
@@ -33,71 +30,71 @@ namespace NHINDirect.Config.Store
 
         static readonly Func<ConfigDatabase, long, IQueryable<Anchor>> AnchorByID = CompiledQuery.Compile(
             (ConfigDatabase db, long id) =>
-                from anchor in db.Anchors
-                where anchor.ID == id
-                select anchor
-        );
+            from anchor in db.Anchors
+            where anchor.ID == id
+            select anchor
+            );
 
         static readonly Func<ConfigDatabase, string, IQueryable<Anchor>> AnchorsByOwner = CompiledQuery.Compile(
             (ConfigDatabase db, string owner) =>
-                from anchor in db.Anchors
-                where anchor.Owner == owner
-                select anchor
-        );
+            from anchor in db.Anchors
+            where anchor.Owner == owner
+            select anchor
+            );
         
         static readonly Func<ConfigDatabase, long, int, IQueryable<Anchor>> AllAnchors = CompiledQuery.Compile(
             (ConfigDatabase db, long lastCertID, int maxResults) =>
-                (from anchor in db.Anchors
-                 where anchor.ID > lastCertID
-                 orderby anchor.ID
-                 select anchor).Take(maxResults)
-        );
+            (from anchor in db.Anchors
+             where anchor.ID > lastCertID
+             orderby anchor.ID
+             select anchor).Take(maxResults)
+            );
 
         static readonly Func<ConfigDatabase, string, string, IQueryable<Anchor>> AnchorsByThumbprint = CompiledQuery.Compile(
             (ConfigDatabase db, string owner, string thumbprint) =>
-                from anchor in db.Anchors
-                where anchor.Owner == owner && anchor.Thumbprint == thumbprint
-                select anchor
-        );
+            from anchor in db.Anchors
+            where anchor.Owner == owner && anchor.Thumbprint == thumbprint
+            select anchor
+            );
 
         static readonly Func<ConfigDatabase, string, IQueryable<Anchor>> AllIncomingAnchorsForOwner = CompiledQuery.Compile(
             (ConfigDatabase db, string owner) =>
-                from anchor in db.Anchors
-                where anchor.Owner == owner && anchor.ForIncoming == true
-                select anchor
-        );
+            from anchor in db.Anchors
+            where anchor.Owner == owner && anchor.ForIncoming == true
+            select anchor
+            );
         static readonly Func<ConfigDatabase, string, IQueryable<Anchor>> AllOutgoingAnchorsForOwner = CompiledQuery.Compile(
             (ConfigDatabase db, string owner) =>
-                from anchor in db.Anchors
-                where anchor.Owner == owner && anchor.ForOutgoing == true
-                select anchor
-        );
+            from anchor in db.Anchors
+            where anchor.Owner == owner && anchor.ForOutgoing == true
+            select anchor
+            );
 
         static readonly Func<ConfigDatabase, string, EntityStatus, IQueryable<Anchor>> IncomingAnchorsForOwner = CompiledQuery.Compile(
             (ConfigDatabase db, string owner, EntityStatus status) =>
-                from anchor in db.Anchors
-                where anchor.Owner == owner && anchor.ForIncoming == true && anchor.Status == status
-                select anchor
-        );
+            from anchor in db.Anchors
+            where anchor.Owner == owner && anchor.ForIncoming == true && anchor.Status == status
+            select anchor
+            );
         static readonly Func<ConfigDatabase, string, EntityStatus, IQueryable<Anchor>> OutgoingAnchorsForOwner = CompiledQuery.Compile(
             (ConfigDatabase db, string owner, EntityStatus status) =>
-                from anchor in db.Anchors
-                where anchor.Owner == owner && anchor.ForOutgoing == true && anchor.Status == status
-                select anchor
-        );
+            from anchor in db.Anchors
+            where anchor.Owner == owner && anchor.ForOutgoing == true && anchor.Status == status
+            select anchor
+            );
         
         static readonly Func<ConfigDatabase, IQueryable<Anchor>> AllIncomingAnchors = CompiledQuery.Compile(
             (ConfigDatabase db) =>
-                from anchor in db.Anchors
-                where anchor.ForIncoming == true
-                select anchor
-        );
+            from anchor in db.Anchors
+            where anchor.ForIncoming == true
+            select anchor
+            );
         static readonly Func<ConfigDatabase, IQueryable<Anchor>> AllOutgoingAnchors = CompiledQuery.Compile(
             (ConfigDatabase db) =>
-                from anchor in db.Anchors
-                where anchor.ForOutgoing == true
-                select anchor
-        );
+            from anchor in db.Anchors
+            where anchor.ForOutgoing == true
+            select anchor
+            );
 
         public static ConfigDatabase GetDB(this Table<Anchor> table)
         {
@@ -112,8 +109,8 @@ namespace NHINDirect.Config.Store
         public static IEnumerable<Anchor> Get(this Table<Anchor> table, long[] certIDs)
         {
             return from anchor in table.GetDB().Anchors
-                where certIDs.Contains(anchor.ID)
-                select anchor;
+                   where certIDs.Contains(anchor.ID)
+                   select anchor;
         }
         
         public static IQueryable<Anchor> Get(this Table<Anchor> table, long lastCertID, int maxResults)

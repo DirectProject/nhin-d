@@ -19,9 +19,10 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
 using NHINDirect.Certificates;
+using NHINDirect.Config.Store;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Store
+namespace Health.Direct.Config.Store
 {
     public class CertificateManager : IX509CertificateIndex
     {

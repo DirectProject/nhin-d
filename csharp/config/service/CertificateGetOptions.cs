@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System.Runtime.Serialization;
 
-using NHINDirect.Config.Store;
+using Health.Direct.Config.Store;
 
 namespace Health.Direct.Config.Service
 {

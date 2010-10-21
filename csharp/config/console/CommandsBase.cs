@@ -1,6 +1,6 @@
 using System;
 
-using NHINDirect.Config.Store;
+using Health.Direct.Config.Store;
 
 namespace NHINDirect.Config.Command
 {

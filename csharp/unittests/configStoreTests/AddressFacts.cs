@@ -18,8 +18,6 @@ using System.Net.Mail;
 
 using Xunit;
 
-using NHINDirect.Config.Store;
-
 namespace Health.Direct.Config.Store.Tests
 {
     class AddressFacts : ConfigStoreTestBase 

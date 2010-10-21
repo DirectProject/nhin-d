@@ -18,8 +18,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
 using Health.Direct.Config.Client.CertificateService;
-
-using NHINDirect.Config.Store;
+using Health.Direct.Config.Store;
 
 namespace Health.Direct.Config.Client
 {

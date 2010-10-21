@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://www.nhindirect.org/config/store/082010" elementFormDefault="qualified" targetNamespace="http://www.nhindirect.org/config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="http://localhost:6692/CertificateService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" />
+  <xs:import schemaLocation="http://localhost:6692/CertificateService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
   <xs:import schemaLocation="http://localhost:6692/CertificateService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
   <xs:element name="AddCertificates">
     <xs:complexType>
@@ -21,7 +21,7 @@
       <xs:element name="Data" nillable="true" type="xs:base64Binary" />
       <xs:element name="ID" type="xs:long" />
       <xs:element name="Owner" nillable="true" type="xs:string" />
-      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" name="Status" type="q1:EntityStatus" />
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q1:EntityStatus" />
       <xs:element name="Thumbprint" nillable="true" type="xs:string" />
       <xs:element name="ValidEndDate" type="xs:dateTime" />
       <xs:element name="ValidStartDate" type="xs:dateTime" />
@@ -35,7 +35,7 @@
   </xs:element>
   <xs:complexType name="ConfigStoreFault">
     <xs:sequence>
-      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="Error" type="q2:ConfigStoreError" />
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="Error" type="q2:ConfigStoreError" />
       <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
@@ -53,7 +53,7 @@
     <xs:sequence>
       <xs:element minOccurs="0" name="IncludeData" type="xs:boolean" />
       <xs:element minOccurs="0" name="IncludePrivateKey" type="xs:boolean" />
-      <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="Status" nillable="true" type="q3:EntityStatus" />
+      <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="Status" nillable="true" type="q3:EntityStatus" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="CertificateGetOptions" nillable="true" type="tns:CertificateGetOptions" />
@@ -98,7 +98,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element xmlns:q5="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="certificateIDs" nillable="true" type="q5:ArrayOflong" />
-        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="status" type="q6:EntityStatus" />
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q6:EntityStatus" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -111,7 +111,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
-        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="status" type="q7:EntityStatus" />
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q7:EntityStatus" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -181,7 +181,7 @@
       <xs:element name="ForOutgoing" type="xs:boolean" />
       <xs:element name="ID" type="xs:long" />
       <xs:element name="Owner" nillable="true" type="xs:string" />
-      <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" name="Status" type="q9:EntityStatus" />
+      <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q9:EntityStatus" />
       <xs:element name="Thumbprint" nillable="true" type="xs:string" />
       <xs:element name="ValidEndDate" type="xs:dateTime" />
       <xs:element name="ValidStartDate" type="xs:dateTime" />
@@ -273,7 +273,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
-        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" minOccurs="0" name="status" type="q11:EntityStatus" />
+        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q11:EntityStatus" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
