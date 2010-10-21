@@ -38,7 +38,7 @@ goto :Done
 
 @rem -------------------------------
 :GetConfigFile
-set configDestPath="%~dp1\%2"
+set configDestPath="%~dp1%2"
 goto :EOF
 
 @rem -------------------------------
