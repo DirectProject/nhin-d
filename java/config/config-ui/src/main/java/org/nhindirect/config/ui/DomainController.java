@@ -795,9 +795,28 @@ public class DomainController {
 					try {
 						String strid = simpleForm.getRemove().remove(x);
 						Domain dom = dService.getDomain(Long.parseLong(strid));
+						String owner = dom.getDomainName();
 						String domname = dom.getDomainName();
 						if (log.isDebugEnabled()) log.debug("removing domain with name: " + domname);
 						dService.removeDomain(domname);
+						// now delete anchors
+						try{
+							// get list of certificates for this domain
+							Collection<Anchor> certs = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+							ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
+							// now iterate over each one and remove the appropriate ones
+							for (Iterator iter = certs.iterator(); iter.hasNext();) {
+								Anchor t = (Anchor) iter.next();
+						    	certtoberemovedlist.add(t.getId());
+							}			
+							// with the collection of anchor ids now remove them from the anchorService
+							if (log.isDebugEnabled()) log.debug(" Trying to remove anchors from database");
+							anchorService.removeAnchors(certtoberemovedlist);
+				    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to remove anchors");
+						} catch (ConfigurationServiceException e) {
+							if (log.isDebugEnabled())
+								log.error(e);
+						}
 					} catch (ConfigurationServiceException e) {
 						if (log.isDebugEnabled())
 							log.error(e);
