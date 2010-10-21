@@ -23,14 +23,6 @@
 			<table cellpadding="1px" cellspacing="1px" id="certificateTable">
 				<tr>
 					<th>
-						<form:label for="owner" path="owner">Owner:</form:label>
-					</th>
-					<th>
-						<form:input path="owner"/>
-					</th>
-				</tr>
-				<tr>
-					<th>
 						<form:label for="fileData" path="fileData">Certificate:</form:label>
 					</th>
 					<th>

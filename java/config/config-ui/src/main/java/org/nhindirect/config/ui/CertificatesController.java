@@ -112,7 +112,7 @@ public class CertificatesController {
 				try{
 					if (!certificateForm.getFileData().isEmpty()) {
 						byte[] bytes = certificateForm.getFileData().getBytes();
-						String owner = certificateForm.getOwner();
+						String owner = "";
 						Certificate cert = new Certificate();
 						cert.setData(bytes);
 						cert.setOwner(owner);
