@@ -18,9 +18,9 @@ using System.Diagnostics;
 
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Store;
 
 using NHINDirect.Agent;
-using NHINDirect.Config.Store;
 
 namespace Health.Direct.SmtpAgent
 {

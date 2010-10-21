@@ -15,16 +15,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data.SqlTypes;
-using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Runtime.Serialization;
 using System.Net.Mail;
 
-namespace NHINDirect.Config.Store
+using NHINDirect.Config.Store;
+
+namespace Health.Direct.Config.Store
 {
     [Table(Name = "MXs")]
     [DataContract(Namespace = ConfigStore.Namespace)]
@@ -39,14 +36,14 @@ namespace NHINDirect.Config.Store
         }
 
         public MX(long domainID
-            , string SMTPDomainName)
+                  , string SMTPDomainName)
             : this(domainID, SMTPDomainName, 0)
         {
         }
 
         public MX(long domainID
-            , string SMTPDomainName
-            , int preference)
+                  , string SMTPDomainName
+                  , int preference)
         {
             this.DomainID = domainID;
             this.SMTPDomainName = SMTPDomainName;

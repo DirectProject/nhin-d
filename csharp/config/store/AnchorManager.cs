@@ -17,9 +17,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using NHINDirect.Config.Store;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Store
+namespace Health.Direct.Config.Store
 {
     public class AnchorManager
     {
@@ -328,4 +329,4 @@ namespace NHINDirect.Config.Store
             }
         }
     }
- }
+}

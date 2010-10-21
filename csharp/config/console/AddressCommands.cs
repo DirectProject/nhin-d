@@ -19,9 +19,9 @@ using System.Net.Mail;
 
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Store;
 
 using NHINDirect.Tools.Command;
-using NHINDirect.Config.Store;
 
 namespace NHINDirect.Config.Command
 {

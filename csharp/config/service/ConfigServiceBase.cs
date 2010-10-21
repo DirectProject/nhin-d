@@ -2,6 +2,8 @@ using System;
 using System.Diagnostics;
 using System.ServiceModel;
 
+using Health.Direct.Config.Store;
+
 using NHINDirect.Config.Store;
 using NHINDirect.Diagnostics;
 

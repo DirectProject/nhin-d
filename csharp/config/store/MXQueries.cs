@@ -17,14 +17,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Data.Linq;
-using System.Data.Linq.Mapping;
-using System.Net.Mail;
 
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Store
+namespace Health.Direct.Config.Store
 {
     public static class MXQueries
     {
@@ -40,26 +37,26 @@ namespace NHINDirect.Config.Store
 
         static readonly Func<ConfigDatabase, string, IQueryable<MX>> MXs = CompiledQuery.Compile(
             (ConfigDatabase db, string SMTPDomainName) =>
-                from mx in db.MXs
-                where mx.SMTPDomainName == SMTPDomainName
-                select mx
-        );
+            from mx in db.MXs
+            where mx.SMTPDomainName == SMTPDomainName
+            select mx
+            );
 
         static readonly Func<ConfigDatabase, long, long, int, IQueryable<MX>> DomainMXs = CompiledQuery.Compile(
             (ConfigDatabase db, long domainID, long lastmxID, int maxResults) =>
-                (from mx in db.MXs
-                 where mx.DomainID == domainID && mx.ID > lastmxID
-                 orderby mx.ID
-                 select mx).Take(maxResults)
-        );
+            (from mx in db.MXs
+             where mx.DomainID == domainID && mx.ID > lastmxID
+             orderby mx.ID
+             select mx).Take(maxResults)
+            );
 
         static readonly Func<ConfigDatabase, long, int, IQueryable<MX>> AllMXs = CompiledQuery.Compile(
             (ConfigDatabase db, long lastmxID, int maxResults) =>
-                (from mx in db.MXs
-                 where mx.ID > lastmxID
-                 orderby mx.ID
-                 select mx).Take(maxResults)
-        );
+            (from mx in db.MXs
+             where mx.ID > lastmxID
+             orderby mx.ID
+             select mx).Take(maxResults)
+            );
 
         public static ConfigDatabase GetDB(this Table<MX> table)
         {

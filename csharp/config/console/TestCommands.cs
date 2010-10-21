@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Config.Store;
+using Health.Direct.Config.Store;
+
 using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
 using NHINDirect.Extensions;

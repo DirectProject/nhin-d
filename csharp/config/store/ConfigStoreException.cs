@@ -14,16 +14,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 using System.Data.Common;
 using System.Data.Linq;
 using System.Data.SqlClient;
-using NHINDirect;
 
-namespace NHINDirect.Config.Store
+using NHINDirect;
+using NHINDirect.Config.Store;
+
+namespace Health.Direct.Config.Store
 {
     public enum ConfigStoreError
     {
@@ -56,7 +55,7 @@ namespace NHINDirect.Config.Store
         InvalidMX
 
     }
-        
+
     public class ConfigStoreException : DirectException<ConfigStoreError>
     {
         public ConfigStoreException()
@@ -125,7 +124,7 @@ namespace NHINDirect.Config.Store
             return (error == ConfigStoreError.UniqueConstraint || error == ConfigStoreError.Conflict);
         }
     }
-    
+
     /// <summary>
     /// Serializable - used for web services
     /// </summary>
@@ -233,7 +232,7 @@ namespace NHINDirect.Config.Store
             return string.Format("ERROR={0};{1}", this.Error, m_message);
         }
     }
-    
+
     /// <summary>
     /// Can't believe we have to do this...
     /// </summary>

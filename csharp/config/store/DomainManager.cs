@@ -17,9 +17,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using NHINDirect.Config.Store;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Store
+namespace Health.Direct.Config.Store
 {
     public class DomainManager : IEnumerable<Domain>
     {
@@ -238,13 +239,13 @@ namespace NHINDirect.Config.Store
 
         public IEnumerator<Domain> GetEnumerator()
         {
-           using(ConfigDatabase db = this.Store.CreateContext())
-           {
+            using(ConfigDatabase db = this.Store.CreateContext())
+            {
                 foreach(Domain domain in db.Domains)
                 {
                     yield return domain;
                 }       
-           }
+            }
         }
 
         #region IEnumerable Members

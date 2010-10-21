@@ -15,6 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
+using Health.Direct.Config.Store;
+
 namespace NHINDirect.Config.Store
 {
     public class ConfigStore

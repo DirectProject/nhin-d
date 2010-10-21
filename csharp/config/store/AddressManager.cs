@@ -18,9 +18,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 
+using NHINDirect.Config.Store;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Store
+namespace Health.Direct.Config.Store
 {
     /// <summary>
     /// Used to manage configured addresses

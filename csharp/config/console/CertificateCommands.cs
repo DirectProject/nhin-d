@@ -25,10 +25,10 @@ using DnsResolver;
 
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.CertificateService;
+using Health.Direct.Config.Store;
 
 using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
-using NHINDirect.Config.Store;
 using NHINDirect.Extensions;
 
 namespace NHINDirect.Config.Command

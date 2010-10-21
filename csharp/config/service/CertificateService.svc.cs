@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Activation;
 
-using NHINDirect.Config.Store;
+using Health.Direct.Config.Store;
 
 namespace Health.Direct.Config.Service
 {

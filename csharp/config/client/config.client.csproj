@@ -77,12 +77,12 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\DataSources\NHINDirect.Config.Store.Anchor.datasource" />
-    <None Include="Properties\DataSources\NHINDirect.Config.Store.Certificate.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Anchor.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Certificate.datasource" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\DataSources\NHINDirect.Config.Store.Address.datasource" />
-    <None Include="Properties\DataSources\NHINDirect.Config.Store.Domain.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Address.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Domain.datasource" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\common.csproj">
@@ -93,7 +93,7 @@
       <Project>{83C99331-F451-4175-943D-12FCF17B636E}</Project>
       <Name>configService</Name>
     </ProjectReference>
-    <ProjectReference Include="..\store\configStore.csproj">
+    <ProjectReference Include="..\store\config.store.csproj">
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>configStore</Name>
     </ProjectReference>
