@@ -620,13 +620,16 @@ namespace NHINDirect.SmtpAgent
         //---------------------------------------------------
         protected virtual void UpdateXHeaders(MessageEnvelope envelope)
         {
-            NHINDirect.Mail.Message message = envelope.Message;
-            //
-            // Inject the domain recipients & verified sender from the envelope into the message using an x-receiver + x-sender headers
-            // These will be useful after the message is serialized and then deserialized for further processing
-            //
-            message.Headers.SetValue(XHeaders.Receivers, envelope.DomainRecipients.ToString());
-            message.Headers.SetValue(XHeaders.Sender, envelope.Sender.ToString());
+            if (envelope is IncomingMessage && envelope.HasDomainRecipients)
+            {
+                NHINDirect.Mail.Message message = envelope.Message;
+                //
+                // Inject the domain recipients & verified sender from the envelope into the message using an x-receiver + x-sender headers
+                // These will be useful after the message is serialized and then deserialized for further processing
+                //
+                message.Headers.SetValue(XHeaders.Receivers, envelope.DomainRecipients.ToString());
+                message.Headers.SetValue(XHeaders.Sender, envelope.Sender.ToString());
+            }
         }
         
         protected virtual void UpdateMessageText(ISmtpMessage message, MessageEnvelope envelope)

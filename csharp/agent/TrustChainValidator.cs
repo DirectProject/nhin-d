@@ -213,7 +213,6 @@ namespace NHINDirect.Agent
 
             X509Chain chainBuilder = new X509Chain();
             chainBuilder.ChainPolicy = m_policy.Clone();
-            chainBuilder.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
             
             chainBuilder.ChainPolicy.ExtraStore.Add(anchors);
             if (this.HasCertificateResolver)
