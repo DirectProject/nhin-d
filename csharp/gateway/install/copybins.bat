@@ -1,5 +1,5 @@
 @rem ----------------------------------------------------
-@rem Batch File for Deploying New NHIND Gateway Binaries
+@rem Batch File for Deploying New Gateway Binaries
 @rem ----------------------------------------------------
 @echo off
 
