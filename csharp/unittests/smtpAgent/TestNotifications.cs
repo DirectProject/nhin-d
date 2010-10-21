@@ -59,7 +59,7 @@ namespace Health.Direct.SmtpAgent.Tests
             int i = 0;            
             foreach(NotificationMessage notification in m_producer.Produce(incoming))
             {
-                NHINDAddress sender = incoming.DomainRecipients[i++];
+                DirectAddress sender = incoming.DomainRecipients[i++];
                 Assert.Equal(sender.Address, notification.FromValue, MailStandard.Comparer);
             }            
             

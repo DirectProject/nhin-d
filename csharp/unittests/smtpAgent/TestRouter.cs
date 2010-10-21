@@ -58,7 +58,7 @@ namespace Health.Direct.SmtpAgent.Tests
             //   3. Verify that at the end, the DomainRecipients has 1 recipient
             //
             Address address;
-            foreach (NHINDAddress recipient in envelope.DomainRecipients)
+            foreach (DirectAddress recipient in envelope.DomainRecipients)
             {
                 address = null;
                 switch(recipient.Host.ToLower())

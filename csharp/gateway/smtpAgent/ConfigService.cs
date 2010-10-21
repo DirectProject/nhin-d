@@ -47,7 +47,7 @@ namespace NHINDirect.SmtpAgent
             }
         }
         
-        internal Address GetAddress(NHINDAddress address)
+        internal Address GetAddress(DirectAddress address)
         {
             Debug.Assert(m_settings.HasAddressManager);
             

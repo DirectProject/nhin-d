@@ -45,8 +45,8 @@ namespace NHINDirect.Agent
         /// </summary>
         /// <param name="message"><see cref="Message"/> instance representing the message to be prepped for send.</param>
         /// <param name="recipients">An <see cref="NHINDAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
-        /// <param name="sender">Sender <see cref="NHINDAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
-        public OutgoingMessage(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
+        /// <param name="sender">Sender <see cref="DirectAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
+        public OutgoingMessage(Message message, NHINDAddressCollection recipients, DirectAddress sender)
             : base(message, recipients, sender)
         {
         }
@@ -56,8 +56,8 @@ namespace NHINDirect.Agent
         /// </summary>
         /// <param name="messageText">RFC 5322 message string to be prepped for send.</param>
         /// <param name="recipients">An <see cref="NHINDAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
-        /// <param name="sender">Sender <see cref="NHINDAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
-        public OutgoingMessage(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
+        /// <param name="sender">Sender <see cref="DirectAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
+        public OutgoingMessage(string messageText, NHINDAddressCollection recipients, DirectAddress sender)
             : base(messageText, recipients, sender)
         {
         }
@@ -67,7 +67,7 @@ namespace NHINDirect.Agent
         {
         }
 
-        internal OutgoingMessage(Message message, string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
+        internal OutgoingMessage(Message message, string messageText, NHINDAddressCollection recipients, DirectAddress sender)
             : base(message, recipients, sender)
         {
         }

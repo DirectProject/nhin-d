@@ -135,7 +135,7 @@ namespace NHINDirect.Agent
             return m_signatureValid.Value;
         }
         
-        internal bool CheckThumbprint(NHINDAddress messageSender)
+        internal bool CheckThumbprint(DirectAddress messageSender)
         {
             if (m_thumbprintVerified == null)
             {

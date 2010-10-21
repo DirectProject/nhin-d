@@ -138,7 +138,7 @@ namespace NHINDirect.SmtpAgent
         MessageEnvelope CreateEnvelope(CDO.Message message)
         {
             NHINDAddressCollection recipientAddresses = null;
-            NHINDAddress senderAddress = null;
+            DirectAddress senderAddress = null;
             MessageEnvelope envelope;
 
             string messageText = message.GetMessageText();
@@ -160,7 +160,7 @@ namespace NHINDirect.SmtpAgent
         // The one created by SMTP has envelope information
         // Returns false if no envelope info is available. We have to look within message headers in that case
         //
-        bool ExtractEnvelopeFields(CDO.Message message, ref NHINDAddressCollection recipientAddresses, ref NHINDAddress senderAddress)
+        bool ExtractEnvelopeFields(CDO.Message message, ref NHINDAddressCollection recipientAddresses, ref DirectAddress senderAddress)
         {
             if (!this.HasEnvelope)
             {
@@ -193,7 +193,7 @@ namespace NHINDirect.SmtpAgent
             }
 
             recipientAddresses = NHINDAddressCollection.ParseSmtpServerEnvelope(recipients);
-            senderAddress = new NHINDAddress(sender);
+            senderAddress = new DirectAddress(sender);
 
             return true;
         }

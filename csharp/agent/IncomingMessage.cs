@@ -56,8 +56,8 @@ namespace NHINDirect.Agent
         /// </summary>
         /// <param name="message"><see cref="Message"/> instance, signed and encrypted.</param>
         /// <param name="recipients">An <see cref="NHINDAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
-        /// <param name="sender">Sender <see cref="NHINDAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
-        public IncomingMessage(Message message, NHINDAddressCollection recipients, NHINDAddress sender)
+        /// <param name="sender">Sender <see cref="DirectAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
+        public IncomingMessage(Message message, NHINDAddressCollection recipients, DirectAddress sender)
             : base(message, recipients, sender)
         {
         }
@@ -67,8 +67,8 @@ namespace NHINDirect.Agent
         /// </summary>
         /// <param name="messageText">RFC 5322 message string, signed and encrypted.</param>
         /// <param name="recipients">An <see cref="NHINDAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
-        /// <param name="sender">Sender <see cref="NHINDAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
-        public IncomingMessage(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
+        /// <param name="sender">Sender <see cref="DirectAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
+        public IncomingMessage(string messageText, NHINDAddressCollection recipients, DirectAddress sender)
             : base(messageText, recipients, sender)
         {
         }        

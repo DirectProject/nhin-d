@@ -23,7 +23,7 @@ namespace NHINDirect.Agent
     /// <summary>
     /// Represents a Direct address (a <see cref="MailAddress"/> with an associated set of certificates.
     /// </summary>
-    public class NHINDAddress : MailAddress
+    public class DirectAddress : MailAddress
     {
         X509Certificate2Collection m_certificates;
         TrustEnforcementStatus m_trustStatus;
@@ -34,7 +34,7 @@ namespace NHINDirect.Agent
         /// and trust anchors must be later set from, e.g., an external store or source).
         /// </summary>
         /// <param name="address">The <c>string</c> representation of the address.</param>
-        public NHINDAddress(string address)
+        public DirectAddress(string address)
             : this(address, null)
         {
         }
@@ -44,7 +44,7 @@ namespace NHINDirect.Agent
         /// and trust anchors must be later set from, e.g., an external store or source).
         /// </summary>
         /// <param name="address">The <see cref="MailAddress"/> representation of the address.</param>
-        public NHINDAddress(MailAddress address)
+        public DirectAddress(MailAddress address)
             : this(address.ToString())
         {
         }
@@ -54,7 +54,7 @@ namespace NHINDirect.Agent
         /// </summary>
         /// <param name="address">The <c>string</c> representation of the address.</param>
         /// <param name="certificates">The certificates to associate with the address.</param>
-        public NHINDAddress(string address, X509Certificate2Collection certificates)
+        public DirectAddress(string address, X509Certificate2Collection certificates)
             : base(address)
         {            
             this.m_certificates = certificates;
