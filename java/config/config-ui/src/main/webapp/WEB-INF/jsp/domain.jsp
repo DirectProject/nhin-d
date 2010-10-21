@@ -233,6 +233,7 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 		modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}"
 		cssClass="cleanform" method="POST">
 		<form:hidden path="id" />
+		<div id="tablelist" style="width:100%;overflow:auto;">
 		<table cellpadding="1px" cellspacing="1px" id="addressTable"
 			class="tablesorter">
 			<thead>
@@ -276,6 +277,7 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 				</tr>
 			</tfoot>
 		</table>
+		</div>
 		<!-- Wire this up to jQuery to add an input row to the table.  
 					                 Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit" value="delete">Remove
