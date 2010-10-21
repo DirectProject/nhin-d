@@ -28,7 +28,7 @@
 			<th><form:input path="value" /></th>
 		</tr>
 	</table>
-	<button name="submitType" id="submitType" type="submit" value="newsetting">Add Address</button>
+	<button name="submitType" id="submitType" type="submit" value="newsetting">Add Setting</button>
 	<button name="submitType" id="submitType" type="submit" value="cancel">Cancel</button>
 </form:form></fieldset>
 <c:if test="${not empty settingsResults}">

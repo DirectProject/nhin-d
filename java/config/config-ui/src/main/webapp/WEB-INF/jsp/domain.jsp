@@ -406,14 +406,6 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 	<form:hidden path="id" />
 	<table cellpadding="1px" cellspacing="1px" id="anchorTable">
 		<tr>
-			<th><form:label path="owner">Owner:
-					            <form:errors path="owner" cssClass="error" />
-			</form:label></th>
-			<th>
-			<form:input path="owner"/>
-			</th>
-		</tr>
-		<tr>
 			<th>
 				<form:label for="fileData" path="fileData">Certificate:</form:label>
 			</th>
@@ -426,7 +418,7 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 					            <form:errors path="incoming" cssClass="error" />
 			</form:label></th>
 			<th>
-			<form:input type="checkbox" path="incoming" />
+			<form:checkbox path="incoming" />
 			</th>
 		</tr>
 		<tr>
@@ -434,7 +426,7 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 					            <form:errors path="outgoing" cssClass="error" />
 			</form:label></th>
 			<th>
-			<form:input type="checkbox" path="outgoing" />
+			<form:checkbox path="outgoing" />
 			</th>
 		</tr>
 		<tr>

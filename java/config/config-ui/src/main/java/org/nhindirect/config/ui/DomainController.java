@@ -115,7 +115,7 @@ public class DomainController {
 				Domain dom = dService.getDomain(Long.parseLong(strid));
 				String owner = "";
 				if(dom != null){
-					owner = dom.getPostMasterEmail();
+					owner = dom.getDomainName();
 				}
 				// insert the new address into the Domain list of Addresses
 				EntityStatus estatus = anchorForm.getStatus();
@@ -124,9 +124,9 @@ public class DomainController {
 					if (!anchorForm.getFileData().isEmpty()) {
 						byte[] bytes = anchorForm.getFileData().getBytes();
 						// store the bytes somewhere
-						owner = anchorForm.getOwner();
 						Anchor ank = new Anchor();
 						ank.setData(bytes);
+						if (log.isDebugEnabled()) log.debug("incoming is: "+anchorForm.isIncoming()+" and outgoing is: "+anchorForm.isOutgoing());
 						ank.setIncoming(anchorForm.isIncoming());
 						ank.setOutgoing(anchorForm.isOutgoing());
 						ank.setOwner(owner);
@@ -223,7 +223,7 @@ public class DomainController {
 			String owner = "";
 			String domname = "";
 			if( dom != null){
-				domname = dom.getPostMasterEmail();
+				domname = dom.getDomainName();
 				owner = domname;
 			}
 			if (dService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deleteanchors") && simpleForm.getRemove() != null) {
@@ -887,7 +887,7 @@ public class DomainController {
 						
 						// BEGIN: temporary code for mocking purposes
 						String owner = "";
-						owner = results.getPostMasterEmail();
+						owner = results.getDomainName();
 						model.addAttribute("addressesResults", results.getAddresses());
 						Collection<Certificate> certlist = null;
 						try {
