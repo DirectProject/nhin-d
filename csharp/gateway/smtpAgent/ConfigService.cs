@@ -16,9 +16,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Linq;
 using System.Diagnostics;
 
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.DomainManager;
+
 using NHINDirect.Agent;
 using NHINDirect.Config.Store;
-using NHINDirect.Config.Client.DomainManager;
 
 namespace Health.Direct.SmtpAgent
 {

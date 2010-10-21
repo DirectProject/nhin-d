@@ -14,15 +14,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using System.ServiceModel;
-using NHINDirect.Config.Client.CertificateService;
-using NHINDirect.Config.Client.DomainManager;
 
-namespace NHINDirect.Config.Client
+using Health.Direct.Config.Client.CertificateService;
+using Health.Direct.Config.Client.DomainManager;
+
+namespace Health.Direct.Config.Client
 {
     /// <summary>
     /// I can't believe we have to write this manually. 
@@ -39,15 +37,11 @@ namespace NHINDirect.Config.Client
     {
         int m_maxReceivedMessageSize = int.MaxValue;   // No limits by default
         string m_url;
-        bool m_secure = false;
+        bool m_secure;
         int m_receiveTimeout = -1;
         int m_sendTimeout = -1;
         EndpointAddress m_endpoint;
         BasicHttpBinding m_binding;
-        
-        public ClientSettings()
-        {
-        }
         
         /// <summary>
         /// The Service Url

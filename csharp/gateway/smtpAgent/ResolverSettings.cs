@@ -1,8 +1,9 @@
 ﻿using System.Xml.Serialization;
 
+using Health.Direct.Config.Client;
+
 using NHINDirect.Certificates;
 using NHINDirect.Agent.Config;
-using NHINDirect.Config.Client;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -33,10 +34,6 @@ namespace Health.Direct.SmtpAgent
 
     public class AnchorServiceResolverSettings : TrustAnchorResolverSettings
     {
-        public AnchorServiceResolverSettings()
-        {
-        }
-        
         [XmlElement]
         public ClientSettings ClientSettings
         {

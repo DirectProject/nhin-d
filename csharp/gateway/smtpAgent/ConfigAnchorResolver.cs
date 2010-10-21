@@ -16,10 +16,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Security.Cryptography.X509Certificates;
 
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.CertificateService;
+
 using NHINDirect.Config.Store;
 using NHINDirect.Certificates;
-using NHINDirect.Config.Client;
-using NHINDirect.Config.Client.CertificateService;
 
 namespace Health.Direct.SmtpAgent
 {

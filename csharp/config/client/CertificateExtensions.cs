@@ -17,25 +17,27 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
+using Health.Direct.Config.Client.CertificateService;
+
 using NHINDirect.Certificates;
 using NHINDirect.Config.Store;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Client.CertificateService
+namespace Health.Direct.Config.Client
 {
     public static class CertificateExtensions
     {
         internal static CertificateGetOptions FullCertData = new CertificateGetOptions
-        {
-            IncludeData = true,
-            IncludePrivateKey = true
-        };
+                                                                 {
+                                                                     IncludeData = true,
+                                                                     IncludePrivateKey = true
+                                                                 };
 
         internal static CertificateGetOptions CertInfo = new CertificateGetOptions
-        {
-            IncludeData = false,
-            IncludePrivateKey = false
-        };
+                                                             {
+                                                                 IncludeData = false,
+                                                                 IncludePrivateKey = false
+                                                             };
         
         public static void AddCertificate(this CertificateStoreClient client, Certificate cert)
         {
@@ -157,10 +159,10 @@ namespace NHINDirect.Config.Client.CertificateService
         public static CertificateGetOptions Clone(this CertificateGetOptions options)
         {
             return new CertificateGetOptions {
-                IncludeData = options.IncludeData,
-                IncludePrivateKey = options.IncludePrivateKey,
-                Status = options.Status
-            };
+                                                 IncludeData = options.IncludeData,
+                                                 IncludePrivateKey = options.IncludePrivateKey,
+                                                 Status = options.Status
+                                             };
         }
     }
 }

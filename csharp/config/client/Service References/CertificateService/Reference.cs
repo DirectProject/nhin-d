@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NHINDirect.Config.Client.CertificateService {
+namespace Health.Direct.Config.Client.CertificateService {
     using System.Runtime.Serialization;
     using System;
     
@@ -104,20 +104,20 @@ namespace NHINDirect.Config.Client.CertificateService {
             "ponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificateCon" +
             "figStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Certificate GetCertificate(string owner, string thumbprint, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        NHINDirect.Config.Store.Certificate GetCertificate(string owner, string thumbprint, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificates", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificatesRe" +
             "sponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificatesCo" +
             "nfigStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Certificate[] GetCertificates(long[] certificateIDs, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        NHINDirect.Config.Store.Certificate[] GetCertificates(long[] certificateIDs, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificatesFo" +
             "rOwner", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificatesFo" +
             "rOwnerResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificatesFo" +
             "rOwnerConfigStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Certificate[] GetCertificatesForOwner(string owner, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        NHINDirect.Config.Store.Certificate[] GetCertificatesForOwner(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/SetCertificateSta" +
             "tus", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/SetCertificateSta" +
@@ -152,16 +152,16 @@ namespace NHINDirect.Config.Client.CertificateService {
             "atesResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/EnumerateCertific" +
             "atesConfigStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Certificate[] EnumerateCertificates(long lastCertificateID, int maxResults, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        NHINDirect.Config.Store.Certificate[] EnumerateCertificates(long lastCertificateID, int maxResults, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public interface ICertificateStoreChannel : NHINDirect.Config.Client.CertificateService.ICertificateStore, System.ServiceModel.IClientChannel {
+    public interface ICertificateStoreChannel : Health.Direct.Config.Client.CertificateService.ICertificateStore, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public partial class CertificateStoreClient : System.ServiceModel.ClientBase<NHINDirect.Config.Client.CertificateService.ICertificateStore>, NHINDirect.Config.Client.CertificateService.ICertificateStore {
+    public partial class CertificateStoreClient : System.ServiceModel.ClientBase<Health.Direct.Config.Client.CertificateService.ICertificateStore>, Health.Direct.Config.Client.CertificateService.ICertificateStore {
         
         public CertificateStoreClient() {
         }
@@ -186,15 +186,15 @@ namespace NHINDirect.Config.Client.CertificateService {
             base.Channel.AddCertificates(certificates);
         }
         
-        public NHINDirect.Config.Store.Certificate GetCertificate(string owner, string thumbprint, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
+        public NHINDirect.Config.Store.Certificate GetCertificate(string owner, string thumbprint, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.GetCertificate(owner, thumbprint, options);
         }
         
-        public NHINDirect.Config.Store.Certificate[] GetCertificates(long[] certificateIDs, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
+        public NHINDirect.Config.Store.Certificate[] GetCertificates(long[] certificateIDs, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.GetCertificates(certificateIDs, options);
         }
         
-        public NHINDirect.Config.Store.Certificate[] GetCertificatesForOwner(string owner, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
+        public NHINDirect.Config.Store.Certificate[] GetCertificatesForOwner(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.GetCertificatesForOwner(owner, options);
         }
         
@@ -214,7 +214,7 @@ namespace NHINDirect.Config.Client.CertificateService {
             base.Channel.RemoveCertificatesForOwner(owner);
         }
         
-        public NHINDirect.Config.Store.Certificate[] EnumerateCertificates(long lastCertificateID, int maxResults, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
+        public NHINDirect.Config.Store.Certificate[] EnumerateCertificates(long lastCertificateID, int maxResults, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.EnumerateCertificates(lastCertificateID, maxResults, options);
         }
     }
@@ -231,30 +231,30 @@ namespace NHINDirect.Config.Client.CertificateService {
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchor", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorConfigStoreFa" +
             "ultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Anchor GetAnchor(string owner, string thumbprint, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        NHINDirect.Config.Store.Anchor GetAnchor(string owner, string thumbprint, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsConfigStoreF" +
             "aultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Anchor[] GetAnchors(long[] anchorIDs, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        NHINDirect.Config.Store.Anchor[] GetAnchors(long[] anchorIDs, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsForOwner", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsForOwnerResp" +
             "onse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsForOwnerConf" +
             "igStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Anchor[] GetAnchorsForOwner(string owner, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        NHINDirect.Config.Store.Anchor[] GetAnchorsForOwner(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetIncomingAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetIncomingAnchorsResp" +
             "onse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetIncomingAnchorsConf" +
             "igStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Anchor[] GetIncomingAnchors(string owner, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        NHINDirect.Config.Store.Anchor[] GetIncomingAnchors(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetOutgoingAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetOutgoingAnchorsResp" +
             "onse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetOutgoingAnchorsConf" +
             "igStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Anchor[] GetOutgoingAnchors(string owner, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        NHINDirect.Config.Store.Anchor[] GetOutgoingAnchors(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwne" +
             "r", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwne" +
@@ -267,7 +267,7 @@ namespace NHINDirect.Config.Client.CertificateService {
             "se")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/EnumerateAnchorsConfig" +
             "StoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Anchor[] EnumerateAnchors(long lastAnchorID, int maxResults, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options);
+        NHINDirect.Config.Store.Anchor[] EnumerateAnchors(long lastAnchorID, int maxResults, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/RemoveAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/RemoveAnchorsResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/RemoveAnchorsConfigSto" +
@@ -282,12 +282,12 @@ namespace NHINDirect.Config.Client.CertificateService {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public interface IAnchorStoreChannel : NHINDirect.Config.Client.CertificateService.IAnchorStore, System.ServiceModel.IClientChannel {
+    public interface IAnchorStoreChannel : Health.Direct.Config.Client.CertificateService.IAnchorStore, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public partial class AnchorStoreClient : System.ServiceModel.ClientBase<NHINDirect.Config.Client.CertificateService.IAnchorStore>, NHINDirect.Config.Client.CertificateService.IAnchorStore {
+    public partial class AnchorStoreClient : System.ServiceModel.ClientBase<Health.Direct.Config.Client.CertificateService.IAnchorStore>, Health.Direct.Config.Client.CertificateService.IAnchorStore {
         
         public AnchorStoreClient() {
         }
@@ -312,23 +312,23 @@ namespace NHINDirect.Config.Client.CertificateService {
             base.Channel.AddAnchors(anchors);
         }
         
-        public NHINDirect.Config.Store.Anchor GetAnchor(string owner, string thumbprint, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
+        public NHINDirect.Config.Store.Anchor GetAnchor(string owner, string thumbprint, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.GetAnchor(owner, thumbprint, options);
         }
         
-        public NHINDirect.Config.Store.Anchor[] GetAnchors(long[] anchorIDs, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
+        public NHINDirect.Config.Store.Anchor[] GetAnchors(long[] anchorIDs, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.GetAnchors(anchorIDs, options);
         }
         
-        public NHINDirect.Config.Store.Anchor[] GetAnchorsForOwner(string owner, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
+        public NHINDirect.Config.Store.Anchor[] GetAnchorsForOwner(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.GetAnchorsForOwner(owner, options);
         }
         
-        public NHINDirect.Config.Store.Anchor[] GetIncomingAnchors(string owner, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
+        public NHINDirect.Config.Store.Anchor[] GetIncomingAnchors(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.GetIncomingAnchors(owner, options);
         }
         
-        public NHINDirect.Config.Store.Anchor[] GetOutgoingAnchors(string owner, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
+        public NHINDirect.Config.Store.Anchor[] GetOutgoingAnchors(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.GetOutgoingAnchors(owner, options);
         }
         
@@ -336,7 +336,7 @@ namespace NHINDirect.Config.Client.CertificateService {
             base.Channel.SetAnchorStatusForOwner(owner, status);
         }
         
-        public NHINDirect.Config.Store.Anchor[] EnumerateAnchors(long lastAnchorID, int maxResults, NHINDirect.Config.Client.CertificateService.CertificateGetOptions options) {
+        public NHINDirect.Config.Store.Anchor[] EnumerateAnchors(long lastAnchorID, int maxResults, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.EnumerateAnchors(lastAnchorID, maxResults, options);
         }
         

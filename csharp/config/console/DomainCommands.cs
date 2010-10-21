@@ -16,9 +16,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.DomainManager;
+
 using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
-using NHINDirect.Config.Client.DomainManager;
 
 namespace NHINDirect.Config.Command
 {
@@ -29,10 +31,6 @@ namespace NHINDirect.Config.Command
     {
         const int DefaultChunkSize = 25;
         
-        public DomainCommands()
-        {
-        }
-
         //---------------------------------------
         //
         // Commands

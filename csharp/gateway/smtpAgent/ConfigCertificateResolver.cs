@@ -17,11 +17,12 @@ using System;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.CertificateService;
+using Health.Direct.Config.Client.DomainManager;
+
 using NHINDirect.Config.Store;
 using NHINDirect.Certificates;
-using NHINDirect.Config.Client;
-using NHINDirect.Config.Client.DomainManager;
-using NHINDirect.Config.Client.CertificateService;
 
 namespace Health.Direct.SmtpAgent
 {

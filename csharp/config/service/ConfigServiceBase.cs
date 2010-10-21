@@ -5,7 +5,7 @@ using System.ServiceModel;
 using NHINDirect.Config.Store;
 using NHINDirect.Diagnostics;
 
-namespace NHINDirect.Config.Service
+namespace Health.Direct.Config.Service
 {
     public class ConfigServiceBase
     {

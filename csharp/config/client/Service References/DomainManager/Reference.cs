@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NHINDirect.Config.Client.DomainManager {
+namespace Health.Direct.Config.Client.DomainManager {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
@@ -80,12 +80,12 @@ namespace NHINDirect.Config.Client.DomainManager {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public interface IAddressManagerChannel : NHINDirect.Config.Client.DomainManager.IAddressManager, System.ServiceModel.IClientChannel {
+    public interface IAddressManagerChannel : Health.Direct.Config.Client.DomainManager.IAddressManager, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public partial class AddressManagerClient : System.ServiceModel.ClientBase<NHINDirect.Config.Client.DomainManager.IAddressManager>, NHINDirect.Config.Client.DomainManager.IAddressManager {
+    public partial class AddressManagerClient : System.ServiceModel.ClientBase<Health.Direct.Config.Client.DomainManager.IAddressManager>, Health.Direct.Config.Client.DomainManager.IAddressManager {
         
         public AddressManagerClient() {
         }
@@ -187,12 +187,12 @@ namespace NHINDirect.Config.Client.DomainManager {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public interface IDomainManagerChannel : NHINDirect.Config.Client.DomainManager.IDomainManager, System.ServiceModel.IClientChannel {
+    public interface IDomainManagerChannel : Health.Direct.Config.Client.DomainManager.IDomainManager, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public partial class DomainManagerClient : System.ServiceModel.ClientBase<NHINDirect.Config.Client.DomainManager.IDomainManager>, NHINDirect.Config.Client.DomainManager.IDomainManager {
+    public partial class DomainManagerClient : System.ServiceModel.ClientBase<Health.Direct.Config.Client.DomainManager.IDomainManager>, Health.Direct.Config.Client.DomainManager.IDomainManager {
         
         public DomainManagerClient() {
         }

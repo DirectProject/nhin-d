@@ -8,8 +8,8 @@
     <ProjectGuid>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect.Config.Client</RootNamespace>
-    <AssemblyName>nhinConfigClient</AssemblyName>
+    <RootNamespace>Health.Direct.Config.Client</RootNamespace>
+    <AssemblyName>Health.Direct.Config.Client</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -89,7 +89,7 @@
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\service\configService.csproj">
+    <ProjectReference Include="..\service\config.service.csproj">
       <Project>{83C99331-F451-4175-943D-12FCF17B636E}</Project>
       <Name>configService</Name>
     </ProjectReference>
