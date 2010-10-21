@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xd.tests", "..\unittests\xd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "..\common\common.csproj", "{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configStoreTests", "..\unittests\configStoreTests\configStoreTests.csproj", "{DCFE1AA0-6302-4B5C-AC22-235E869EAAAC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configStoreTests", "..\unittests\configStoreTests\config.store.tests.csproj", "{DCFE1AA0-6302-4B5C-AC22-235E869EAAAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -16,15 +16,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
 
 using Xunit;
-using Xunit.Extensions;
 
 using NHINDirect.Config.Store;
 
-namespace configStoreTests
+namespace Health.Direct.Config.Store.Tests
 {
     class MXManagerFacts : ConfigStoreTestBase
     {
@@ -577,8 +574,8 @@ namespace configStoreTests
             int preferece = 1;
 
             mgr.Add(domainId
-                , SMTPName
-                , preferece);
+                    , SMTPName
+                    , preferece);
             Assert.Equal(1, mgr.Count());
             MX mx = mgr.Get(SMTPName);
             Assert.Equal(domainId, mx.DomainID);
@@ -605,7 +602,7 @@ namespace configStoreTests
             string SMTPName = BuildSMTPDomainName(1, 1);
 
             mgr.Add(domainId
-                , SMTPName);
+                    , SMTPName);
             Assert.Equal(1, mgr.Count());
             MX mx = mgr.Get(SMTPName);
             Assert.Equal(domainId, mx.DomainID);
@@ -636,8 +633,8 @@ namespace configStoreTests
             using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
             {
                 mgr.Add(db,domainId
-                    , SMTPName
-                    , preferece);
+                        , SMTPName
+                        , preferece);
                 db.SubmitChanges();
                 Assert.Equal(1, mgr.Count());
                
@@ -668,8 +665,8 @@ namespace configStoreTests
             string SMTPName = BuildSMTPDomainName(1, 1);
             int preference = 10;
             MX mx = new MX(domainId
-                , SMTPName
-                , preference);
+                           , SMTPName
+                           , preference);
 
             mgr.Add(mx);
             Assert.Equal(1, mgr.Count());

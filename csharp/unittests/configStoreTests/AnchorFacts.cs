@@ -15,17 +15,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography;
 
 using Xunit;
 using Xunit.Extensions;
 
 using NHINDirect.Config.Store;
-namespace configStoreTests
+
+namespace Health.Direct.Config.Store.Tests
 {
     class AnchorFacts : ConfigStoreTestBase
     {

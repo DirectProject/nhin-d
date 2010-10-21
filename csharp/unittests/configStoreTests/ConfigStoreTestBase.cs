@@ -16,15 +16,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 
 using Xunit;
-using Xunit.Extensions;
 
 using NHINDirect.Config.Store;
 
-namespace configStoreTests
+namespace Health.Direct.Config.Store.Tests
 {
     public class ConfigStoreTestBase 
     {
@@ -269,7 +267,7 @@ namespace configStoreTests
                         //----------------------------------------------------------------------------------------------------
                         //---use i as the domain id, t as preference
                         yield return new KeyValuePair<long, KeyValuePair<int,string>>(i
-                            , new KeyValuePair<int,string>(t, BuildSMTPDomainName(i,t)));
+                                                                                      , new KeyValuePair<int,string>(t, BuildSMTPDomainName(i,t)));
                     }
                 }
                 
@@ -290,7 +288,7 @@ namespace configStoreTests
                         //----------------------------------------------------------------------------------------------------
                         //---use i as the domain id, t as preference
                         yield return new KeyValuePair<long, KeyValuePair<int,string>>(i
-                            , new KeyValuePair<int,string>(t, BuildEmailAddress(i,t)));
+                                                                                      , new KeyValuePair<int,string>(t, BuildEmailAddress(i,t)));
                     }
                 }
                 
@@ -320,7 +318,7 @@ namespace configStoreTests
         protected void InitDomainRecords()
         {
             this.InitDomainRecords(new DomainManager(new ConfigStore(CONNSTR))
-                , new ConfigDatabase(CONNSTR));
+                                   , new ConfigDatabase(CONNSTR));
         }
 
         /// <summary>
@@ -334,7 +332,7 @@ namespace configStoreTests
         /// number of items using the consts above
         /// </remarks>
         protected void InitDomainRecords(DomainManager mgr
-            , ConfigDatabase db)
+                                         , ConfigDatabase db)
         {
             //----------------------------------------------------------------------------------------------------
             //---clean all existing records
@@ -360,7 +358,7 @@ namespace configStoreTests
         protected void InitMXRecords()
         {
             this.InitMXRecords(new MXManager(new ConfigStore(CONNSTR))
-                , new ConfigDatabase(CONNSTR));
+                               , new ConfigDatabase(CONNSTR));
         }
 
         /// <summary>
@@ -374,7 +372,7 @@ namespace configStoreTests
         /// number of items using the consts above
         /// </remarks>
         protected void InitMXRecords(MXManager mxmgr
-            , ConfigDatabase db)
+                                     , ConfigDatabase db)
         {
             
             //----------------------------------------------------------------------------------------------------
@@ -401,7 +399,7 @@ namespace configStoreTests
         protected void InitCertRecords()
         {
             this.InitCertRecords(new CertificateManager(new ConfigStore(CONNSTR))
-            , new ConfigDatabase(CONNSTR));
+                                 , new ConfigDatabase(CONNSTR));
         }
 
         /// <summary>
@@ -416,7 +414,7 @@ namespace configStoreTests
         /// number of items using the consts above
         /// </remarks>
         protected void InitCertRecords(CertificateManager mgr
-            , ConfigDatabase db)
+                                       , ConfigDatabase db)
         {
             mgr.RemoveAll(db);
             for (int i = 1; i <= MAXDOMAINCOUNT; i++)
@@ -438,7 +436,7 @@ namespace configStoreTests
         protected void InitAnchorRecords()
         {
             this.InitAnchorRecords(new AnchorManager(new ConfigStore(CONNSTR))
-            , new ConfigDatabase(CONNSTR));
+                                   , new ConfigDatabase(CONNSTR));
         }
 
         /// <summary>
@@ -453,7 +451,7 @@ namespace configStoreTests
         /// number of items using the consts above
         /// </remarks>
         protected void InitAnchorRecords(AnchorManager mgr
-            , ConfigDatabase db)
+                                         , ConfigDatabase db)
         {
             mgr.RemoveAll(db);
             for (int i = 1; i <= MAXDOMAINCOUNT; i++)
@@ -480,7 +478,7 @@ namespace configStoreTests
         protected void InitAddressRecords()
         {
             this.InitAddressRecords(new AddressManager(new ConfigStore(CONNSTR))
-                , new ConfigDatabase(CONNSTR));
+                                    , new ConfigDatabase(CONNSTR));
         }
 
         /// <summary>
@@ -494,7 +492,7 @@ namespace configStoreTests
         /// number of items using the consts above
         /// </remarks>
         protected void InitAddressRecords(AddressManager mgr
-            , ConfigDatabase db)
+                                          , ConfigDatabase db)
         {
             //----------------------------------------------------------------------------------------------------
             //---init domain records as well we want them fresh too
@@ -579,8 +577,8 @@ namespace configStoreTests
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 cert = new Anchor(string.Format("CN=domain{0}.test.com", domainID)
-                , new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length)
-                , String.Empty);
+                                  , new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length)
+                                  , String.Empty);
                 //cert.Owner = string.Format("domain{0}.test.com", domainID);
                 //cert.Data = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
             }
@@ -607,8 +605,8 @@ namespace configStoreTests
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 cert = new Certificate(string.Format("CN=domain{0}.test.com", domainID)
-                , new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length)
-                , String.Empty);
+                                       , new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length)
+                                       , String.Empty);
                 //cert.Owner = string.Format("domain{0}.test.com", domainID);
                 //cert.Data = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
             }
