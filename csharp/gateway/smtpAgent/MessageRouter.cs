@@ -147,7 +147,7 @@ namespace NHINDirect.SmtpAgent
             int i = 0;
             while (i < recipients.Count)
             {
-                NHINDAddress recipient = recipients[i];
+                DirectAddress recipient = recipients[i];
                 Address address = recipient.Tag as Address;
                 if (address != null)
                 {

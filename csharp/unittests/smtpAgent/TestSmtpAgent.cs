@@ -106,14 +106,14 @@ namespace Health.Direct.SmtpAgent.Tests
             //
             MessageEnvelope envelope = new MessageEnvelope(BadMessage, 
                                                            NHINDAddressCollection.ParseSmtpServerEnvelope("biff@nhind.hsgincubator.com"),
-                                                           new NHINDAddress("toby@redmond.hsgincubator.com")
+                                                           new DirectAddress("toby@redmond.hsgincubator.com")
                 );
            
             Assert.DoesNotThrow(() => m_agent.SecurityAgent.ProcessOutgoing(envelope));  
 
             envelope = new MessageEnvelope(TestMessage,
                                            NHINDAddressCollection.ParseSmtpServerEnvelope("xyz@untrusted.com"),
-                                           new NHINDAddress("toby@redmond.hsgincubator.com"));
+                                           new DirectAddress("toby@redmond.hsgincubator.com"));
 
             //
             // This SHOULD throw an exception

@@ -538,7 +538,7 @@ namespace NHINDirect.SmtpAgent
             int i = 0;
             while (i < recipients.Count)
             {
-                NHINDAddress recipient = recipients[i];
+                DirectAddress recipient = recipients[i];
                 int iAddress = Array.FindIndex<Address>(resolved, x => x.Match(recipient));
                 if (iAddress >= 0)
                 {

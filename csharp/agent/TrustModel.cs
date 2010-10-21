@@ -91,7 +91,7 @@ namespace NHINDirect.Agent
 
         /// <summary>
         /// Enforces the trust model on an incoming message by marking
-        /// the <c>Status</c> property of <see cref="NHINDAddress"/> instances for the receivers
+        /// the <c>Status</c> property of <see cref="DirectAddress"/> instances for the receivers
         /// </summary>
         /// <param name="message">The <see cref="IncomingMessage"/> to validate trust for.</param>
         /// <exception cref="AgentException">If this message has no signatures</exception>
@@ -117,9 +117,9 @@ namespace NHINDirect.Agent
             // 
             // For each recipient, find at least one valid sender signature that the recipient trusts
             //
-            NHINDAddress sender = message.Sender;
+            DirectAddress sender = message.Sender;
             NHINDAddressCollection recipients = message.DomainRecipients;
-            foreach (NHINDAddress recipient in recipients)
+            foreach (DirectAddress recipient in recipients)
             {
                 recipient.Status = TrustEnforcementStatus.Failed;
                 //
@@ -138,7 +138,7 @@ namespace NHINDirect.Agent
 
         /// <summary>
         /// Enforces the trust model on an outgoing message by marking
-        /// the <c>Status</c> property of <see cref="NHINDAddress"/> instances for the receivers
+        /// the <c>Status</c> property of <see cref="DirectAddress"/> instances for the receivers
         /// </summary>
         /// <param name="message">The <see cref="OutgoingMessage"/> to validate trust for.</param>
         public void Enforce(OutgoingMessage message)
@@ -148,9 +148,9 @@ namespace NHINDirect.Agent
                 throw new ArgumentNullException("message");
             }
             
-            NHINDAddress sender = message.Sender;
+            DirectAddress sender = message.Sender;
 
-            foreach (NHINDAddress recipient in message.Recipients)
+            foreach (DirectAddress recipient in message.Recipients)
             {
                 recipient.Status = TrustEnforcementStatus.Failed;    
 
@@ -177,7 +177,7 @@ namespace NHINDirect.Agent
         {
             message.SenderSignatures = null;
             
-            NHINDAddress sender = message.Sender;
+            DirectAddress sender = message.Sender;
             SignerInfoCollection allSigners = message.Signatures.SignerInfos;
             MessageSignatureCollection senderSignatures = null;
             bool match;
@@ -205,7 +205,7 @@ namespace NHINDirect.Agent
 
         MessageSignature FindTrustedSignature(IncomingMessage message, X509Certificate2Collection anchors)
         {                        
-            NHINDAddress sender = message.Sender;
+            DirectAddress sender = message.Sender;
             MessageSignatureCollection signatures = message.SenderSignatures;
             MessageSignature lastTrustedSignature = null;
             

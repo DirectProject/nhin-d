@@ -122,7 +122,7 @@ namespace NHINDirect.SmtpAgent
             }
             
             StringBuilder builder = new StringBuilder();
-            foreach(NHINDAddress recipient in recipients)
+            foreach(DirectAddress recipient in recipients)
             {
                 if (!recipient.HasCertificates)
                 {

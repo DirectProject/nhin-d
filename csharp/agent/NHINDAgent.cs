@@ -447,12 +447,12 @@ namespace NHINDirect.Agent
         /// A <see cref="NHINDAddressCollection"/> instance representing recipient addresses. 
         /// </param> 
         /// <param name="sender"> 
-        /// An <see cref="NHINDAddress"/> instance representing the sender address 
+        /// An <see cref="DirectAddress"/> instance representing the sender address 
         /// </param> 
         /// <returns> 
         /// An <see cref="IncomingMessage"/> instance with the trust verified decrypted and verified message. 
         /// </returns> 
-        public IncomingMessage ProcessIncoming(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
+        public IncomingMessage ProcessIncoming(string messageText, NHINDAddressCollection recipients, DirectAddress sender)
         {
             IncomingMessage message = new IncomingMessage(messageText, recipients, sender);
             return this.ProcessIncoming(message);                    
@@ -568,7 +568,7 @@ namespace NHINDirect.Agent
             NHINDAddressCollection recipients = message.DomainRecipients;
             for (int i = 0, count = recipients.Count; i < count; ++i)
             {
-                NHINDAddress recipient = recipients[i];
+                DirectAddress recipient = recipients[i];
                 recipient.Certificates = this.ResolvePrivateCerts(recipient, false);
                 recipient.TrustAnchors = m_trustAnchors.IncomingAnchors.GetCertificates(recipient);
             }
@@ -704,12 +704,12 @@ namespace NHINDirect.Agent
 		/// An <see cref="NHINDAddressCollection"/> instance specifying message recipients.
 		/// </param>
 		/// <param name="sender">
-		/// An <see cref="NHINDAddress"/> instance specifying message sender
+		/// An <see cref="DirectAddress"/> instance specifying message sender
 		/// </param>
 		/// <returns>
 		/// An <see cref="OutgoingMessage"/> instance containing the encrypted and trust verified message.
 		/// </returns>
-        public OutgoingMessage ProcessOutgoing(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
+        public OutgoingMessage ProcessOutgoing(string messageText, NHINDAddressCollection recipients, DirectAddress sender)
         {
             OutgoingMessage message = new OutgoingMessage(this.WrapMessage(messageText), recipients, sender);            
             return this.ProcessOutgoing(message);            
@@ -839,7 +839,7 @@ namespace NHINDirect.Agent
             NHINDAddressCollection recipients = message.Recipients;
             for (int i = 0, count = recipients.Count; i < count; ++i)
             {
-                NHINDAddress recipient = recipients[i];
+                DirectAddress recipient = recipients[i];
                 recipient.Certificates = this.ResolvePublicCerts(recipient, false);
             }
         }

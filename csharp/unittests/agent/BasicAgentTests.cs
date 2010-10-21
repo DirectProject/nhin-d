@@ -173,14 +173,14 @@ namespace Health.Direct.Agent.Tests
         //    }
         //}
 
-        static void VerifyTrusted(NHINDAddress address, TrustEnforcementStatus minStatus)
+        static void VerifyTrusted(DirectAddress address, TrustEnforcementStatus minStatus)
         {
             Assert.True(address.IsTrusted(minStatus));
         }
 
-        static void VerifyTrusted(IEnumerable<NHINDAddress> addresses, TrustEnforcementStatus minStatus)
+        static void VerifyTrusted(IEnumerable<DirectAddress> addresses, TrustEnforcementStatus minStatus)
         {
-            foreach (NHINDAddress address in addresses)
+            foreach (DirectAddress address in addresses)
             {
                 VerifyTrusted(address, minStatus);
             }

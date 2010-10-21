@@ -31,7 +31,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestBasicAddressCreate()
         {
-            NHINDAddress addr = new NHINDAddress("eleanor@roosevelt.com");
+            DirectAddress addr = new DirectAddress("eleanor@roosevelt.com");
             Assert.Null(addr.Certificates);
             Assert.False(addr.HasCertificates);
             Assert.Null(addr.TrustAnchors);
@@ -45,7 +45,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestAddressCertificates()
         {
-            NHINDAddress addr = new NHINDAddress(new MailAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>"));
+            DirectAddress addr = new DirectAddress(new MailAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>"));
             addr.Certificates = new X509Certificate2Collection(new X509Certificate2());
             Assert.True(addr.HasCertificates);
         }
@@ -53,7 +53,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestAddressTrustAnchors()
         {
-            NHINDAddress addr = new NHINDAddress(new MailAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>"));
+            DirectAddress addr = new DirectAddress(new MailAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>"));
             addr.TrustAnchors = new X509Certificate2Collection(new X509Certificate2());
             Assert.True(addr.HasTrustAnchors);
         }
@@ -61,7 +61,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestAddressTrustStatusSuccess()
         {
-            NHINDAddress addr = new NHINDAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>");
+            DirectAddress addr = new DirectAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>");
             addr.Status = TrustEnforcementStatus.Success;
             Assert.True(addr.IsTrusted(TrustEnforcementStatus.Success));
         }
@@ -69,7 +69,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestAddressTrustStatusFailure()
         {
-            NHINDAddress addr = new NHINDAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>");
+            DirectAddress addr = new DirectAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>");
             addr.Status = TrustEnforcementStatus.Failed;
             Assert.False(addr.IsTrusted(TrustEnforcementStatus.Success));
             Assert.False(addr.IsTrusted(TrustEnforcementStatus.Unknown));
@@ -112,7 +112,7 @@ namespace Health.Direct.Agent.Tests
         public void TestAddressCollectionIsTrustedAllTrusted()
         {
             NHINDAddressCollection coll = BasicCollection();
-            foreach(NHINDAddress addr in coll) { addr.Status = TrustEnforcementStatus.Success; }
+            foreach(DirectAddress addr in coll) { addr.Status = TrustEnforcementStatus.Success; }
             //All trusted addresses should be trusted
             Assert.True(coll.IsTrusted());
         }
@@ -130,7 +130,7 @@ namespace Health.Direct.Agent.Tests
         public void TestAddressCollectionGetTrusted()
         {
             NHINDAddressCollection coll = BasicCollection();
-            IEnumerable<NHINDAddress> trusted = coll.GetTrusted();
+            IEnumerable<DirectAddress> trusted = coll.GetTrusted();
             Assert.Equal(1, trusted.Count());
             Assert.Equal("tinymollitude.net", trusted.First().Host);
             Assert.Equal("sean+o'nolan", trusted.First().User);
@@ -175,7 +175,7 @@ namespace Health.Direct.Agent.Tests
                                                     "eleanor@roosevelt.com",
                                                     "\"Franklin Roosevelt\" <frank@roosevelt.com>",
                                                     "sean+o'nolan@tinymollitude.net"};
-            IEnumerable<NHINDAddress> addrs =  addrStrings.Select(a => new NHINDAddress(a));
+            IEnumerable<DirectAddress> addrs =  addrStrings.Select(a => new DirectAddress(a));
             NHINDAddressCollection coll = new NHINDAddressCollection();
             coll.Add(addrs);
             coll[0].Status = TrustEnforcementStatus.Failed;
