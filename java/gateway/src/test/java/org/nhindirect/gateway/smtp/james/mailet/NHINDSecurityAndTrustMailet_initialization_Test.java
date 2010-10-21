@@ -1,11 +1,19 @@
 package org.nhindirect.gateway.smtp.james.mailet;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.mailet.MailetConfig;
+import org.nhind.config.Anchor;
+import org.nhind.config.Certificate;
+import org.nhind.config.ConfigurationServiceProxy;
+import org.nhind.config.Domain;
+import org.nhind.config.Setting;
 import org.nhindirect.gateway.smtp.config.ConfigServiceRunner;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
@@ -68,21 +76,91 @@ public class NHINDSecurityAndTrustMailet_initialization_Test extends TestCase
 	
 	public void testValidMailetConfiguration_AssertProperWSInitialization() throws Exception 
 	{
+		
+		
 		new TestPlan() 
 		{
+			private ConfigurationServiceProxy proxy;	
+			
 			@Override
 			protected MailetConfig getMailetConfig() throws Exception
 			{
 				ConfigServiceRunner.startConfigService();
+				cleanConfig();
+				addDomains();	
+				addTrustAnchors();
 				
-				String configfile = TestUtils.getTestConfigFile(getConfigFileName());
 				Map<String,String> params = new HashMap<String, String>();
 				
-				params.put("ConfigURL", ConfigServiceRunner.getConfigServiceURL());
+				params.put("ConfigURL", ConfigServiceRunner.getConfigServiceURL());						
 				
 				
 				return new MockMailetConfig(params, "NHINDSecurityAndTrustMailet");	
 			}
+			
+	        protected void addDomains() throws Exception
+	        {
+	        	Domain dom = new Domain();
+	        	dom.setDomainName("cerner.com");
+	        	dom.setPostMasterEmail("postmaster@cerner.com");
+	        	proxy.addDomain(dom);
+	        	
+	        	dom = new Domain();
+	        	dom.setDomainName("securehealthemail.com");
+	        	dom.setPostMasterEmail("postmaster@securehealthemail.com");
+	        	proxy.addDomain(dom);
+	        }
+			
+	        protected void addTrustAnchors() throws Exception
+	        {
+	        	Vector<Anchor> vec = new Vector<Anchor>();
+	        	
+	        	Anchor anchor = new Anchor();
+	        	anchor.setData(getCertificateFileData("cacert.der"));
+	        	anchor.setOwner("cerner.com");
+	        	anchor.setIncoming(true);
+	        	anchor.setOutgoing(true);
+	        	vec.add(anchor);
+	        	
+	        	anchor = new Anchor();
+	        	anchor.setData(getCertificateFileData("cacert.der"));
+	        	anchor.setOwner("securehealthemail.com");
+	        	anchor.setIncoming(true);
+	        	anchor.setOutgoing(true);
+	        	vec.add(anchor);
+	        	
+	        	proxy.addAnchor(vec.toArray(new Anchor[vec.size()]));
+	        }	        
+	        
+	        protected void cleanConfig() throws Exception
+	        {
+	        	
+	        	proxy = new ConfigurationServiceProxy(ConfigServiceRunner.getConfigServiceURL());
+	     	        	
+	        	// clean domains
+	        	int domainCount = proxy.getDomainCount();
+	        	Domain[] doms = proxy.listDomains(null, domainCount);
+	        	if (doms != null)
+	        		for (Domain dom : doms)
+	        		{
+	                	// clean anchors
+	                	proxy.removeAnchorsForOwner(dom.getDomainName());
+	 
+	        			proxy.removeDomain(dom.getDomainName());
+	        		}        
+	        	
+	        	// clean certificates
+	        	Certificate[] certs = proxy.listCertificates(0, 0x8FFFF, null);
+	        	if (certs != null)
+	        		for (Certificate cert : certs)
+	        			proxy.removeCertificatesForOwner(cert.getOwner());
+	        	
+	        	// clean settings
+	        	Setting[] settings = proxy.getAllSettings();
+	        	if (settings != null)
+	        		for (Setting setting : settings)
+	        			proxy.deleteSetting(new String[] {setting.getName()});
+	        }			
 			
 			@Override
 			protected void doAssertions(NHINDSecurityAndTrustMailet agent) throws Exception
@@ -200,4 +278,11 @@ public class NHINDSecurityAndTrustMailet_initialization_Test extends TestCase
 			}		
 		}.perform();
 	}		
+	
+	protected byte[] getCertificateFileData(String file) throws Exception
+	{
+		File fl = new File("src/test/resources/certs/" + file);
+		
+		return FileUtils.readFileToByteArray(fl);
+	}	
 }
