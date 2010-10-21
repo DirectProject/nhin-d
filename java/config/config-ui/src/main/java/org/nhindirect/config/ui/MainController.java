@@ -40,6 +40,8 @@ import org.nhindirect.config.ui.form.AddressForm;
 import org.nhindirect.config.ui.form.AnchorForm;
 import org.nhindirect.config.ui.form.CertificateForm;
 import org.nhindirect.config.ui.form.SettingsForm;
+import org.nhindirect.config.service.CertificateService;
+import org.nhindirect.config.service.impl.CertificateGetOptions;
 import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.form.LoginForm;
 import org.nhindirect.config.ui.form.DomainForm;
@@ -59,6 +61,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+import org.nhindirect.config.store.Certificate;
 
 @Controller
 @RequestMapping("/main")
@@ -71,6 +74,9 @@ public class MainController {
 	
 	@Inject
 	private SettingService settingsService;
+	
+	@Inject
+	private CertificateService certificatesService;
 	
 	public MainController() {
 		if (log.isDebugEnabled()) log.debug("MainController initialized");
@@ -117,6 +123,33 @@ public class MainController {
 			// display settings.jsp
 			return mav;
 		}
+		if(isLoggedIn(session) && actionPath.equalsIgnoreCase("gotocertificates")){
+			if (log.isDebugEnabled()) log.debug("trying to go to the certificates page");
+			String action = "Update";
+			model.addAttribute("action", action);
+			
+			mav.setViewName("certificates");
+			mav.addObject("actionPath", actionPath);
+			CertificateForm form = (CertificateForm) session.getAttribute("certificateForm");
+			if (form == null) {
+				form = new CertificateForm();
+			}
+			model.addAttribute("certificateForm", form);
+			// retrieve list of settings for settingsResults
+			List<Certificate> results = null;
+			if (certificatesService != null) {
+				try {
+					results = new ArrayList<Certificate>(certificatesService.listCertificates(1, 1000, CertificateGetOptions.DEFAULT));
+				} catch (ConfigurationServiceException e) {
+					e.printStackTrace();
+				}
+			}
+			model.addAttribute("simpleForm",new SimpleForm());
+			model.addAttribute("certificatesResults", results);
+			// display settings.jsp
+			return mav;
+		}
+		
 		if(isLoggedIn(session) && actionPath.equalsIgnoreCase("newdomain")){
 			if (log.isDebugEnabled()) log.debug("trying to go to the new domain page");
 			HashMap<String, String> msgs = new HashMap<String, String>();
