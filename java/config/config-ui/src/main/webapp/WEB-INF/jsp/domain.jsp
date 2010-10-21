@@ -112,7 +112,6 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 	$(document).ready(function() 
 		    { 
 		        $("#addressTable").tablesorter();
-		        $("#certificatesTable").tablesorter();
 		        $("#anchorsTable").tablesorter(); 
 		    } 
 	); 
@@ -182,8 +181,7 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 	<c:otherwise>
 		<ul class="tabs">
 			<li><a href="#tab1">Addresses</a></li>
-			<li><a href="#tab2">Certificates</a></li>
-			<li><a href="#tab3">Anchors</a></li>
+			<li><a href="#tab2">Anchors</a></li>
 		</ul>
 		<div class="container">
 		<div class="tab_container">
@@ -286,120 +284,14 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 </c:if>
 </fieldset>
 </div>
-<div id="tab2" class="tab_content"><c:choose>
+ <div id="tab2" class="tab_content">
+ <c:choose>
 	<c:when test='${empty action || action == "Add" }'>
 	</c:when>
 	<c:otherwise>
-		<fieldset style="width: 90%;" title="certificategroup"><legend>Certificates:</legend>
-		<fieldset style="width: 90%;" title="certificate"><spring:url
-			value="/config/domain/addcertificate" var="formUrladdcertificate" />
-		<form:form modelAttribute="certificateForm"
-			action="${fn:escapeXml(formUrladdcertificate)}" cssClass="cleanform"
-			method="POST" enctype="multipart/form-data">
-			<form:hidden path="id" />
-			<table cellpadding="1px" cellspacing="1px" id="certificateTable">
-				<tr>
-					<th>
-						<form:label for="owner" path="owner">Owner:</form:label>
-					</th>
-					<th>
-						<form:input path="owner"/>
-					</th>
-				</tr>
-				<tr>
-					<th>
-						<form:label for="fileData" path="fileData">Certificate:</form:label>
-					</th>
-					<th>
-						<form:input path="fileData" id="certificatefile" type="file"/>
-					</th>
-				</tr>
-				<tr>
-					<th><form:label path="status">Status: 
-											                <form:errors path="status" cssClass="error" />
-					</form:label></th>
-					<th><form:select path="status">
-						<form:options items="${statusList}" />
-					</form:select></th>
-				</tr>
-			</table>
-			<button name="submitType" id="submitType" type="submit"
-				value="newcertificate">Add Certificate</button>
-		</form:form></fieldset>
-	</c:otherwise>
-</c:choose> <c:if test="${not empty certificatesResults}">
-	<fieldset style="width: 90%;" title="certificates"><spring:url
-		value="/config/domain/removecertifcates" var="formUrlcertificates" />
-	<form:form modelAttribute="certificateForm"
-		action="${fn:escapeXml(formUrlcertificates)}" cssClass="cleanform"
-		method="POST">
-		<form:hidden path="id" />
-		<table cellpadding="1px" cellspacing="1px" id="certificatesTable"
-			class="tablesorter">
-			<thead>
-				<tr>
-					<th width="30%">Owner</th>
-					<th width="15%">Thumb</th>
-					<th width="15%">create Time</th>
-					<th width="15%">Start Date</th>
-					<th width="15%">End Date</th>
-					<th width="7%">Stat</th>
-					<th width="3%">Sel</th>
-				</tr>
-			</thead>
-			<tbody>
-				<!--  Put the data from the searchResults attribute here -->
-				<c:forEach var="certificates" items="${certificatesResults}"
-					varStatus="rowCounter">
-					<c:choose>
-						<c:when test="${rowCounter.count % 2 == 0}">
-							<tr class="evenRow">
-						</c:when>
-						<c:otherwise>
-							<tr class="oddRow">
-						</c:otherwise>
-					</c:choose>
-					<td width="30%"><a
-						href='../certificate?id=<c:out value="${certificates.id}"/>'>'${certificates.owner}'</a></td>
-					<td width="15%"><c:out value="${certificates.thumbprint}" /></td>
-					<td width="15%"><fmt:formatDate
-						value="${certificates.createTime.time}"
-						pattern="MM/dd/yyyy, hh:mm" /></td>
-					<td width="15%"><fmt:formatDate
-						value="${certificates.validStartDate.time}"
-						pattern="MM/dd/yyyy, hh:mm" /></td>
-					<td width="15%"><fmt:formatDate
-						value="${certificates.validEndDate.time}"
-						pattern="MM/dd/yyyy, hh:mm" /></td>
-					<td width="7%"><c:out value="${certificates.status}" /></td>
-					<td width="3%"><form:checkbox path="remove"
-						value="${certificates.id}" /></td>
-					</tr>
-				</c:forEach>
-			</tbody>
-			<tfoot>
-				<tr>
-					<th width="30%"></th>
-					<th width="15%"></th>
-					<th width="15%"></th>
-					<th width="15%"></th>
-					<th width="15%"></th>
-					<th width="7%"></th>
-					<th width="3%"></th>
-				</tr>
-			</tfoot>
-		</table>
-		<!-- Wire this up to jQuery to add an input row to the table.  
-					                 Don't submit it all until the final submit is done -->
-		<button name="submitType" id="submitType" type="submit"
-			value="deletecertificate">Remove Selected</button>
-	</form:form></fieldset>
-</c:if>
-</fieldset>
-</div>
-<div id="tab3" class="tab_content">
-<fieldset style="width: 90%;" title="anchorgroup"><legend>Anchors:</legend>
-<fieldset style="width: 90%;" title="anchor"><spring:url
+ 
+<fieldset style="width: 99%;" title="anchorgroup"><legend>Anchors:</legend>
+<fieldset style="width: 95%;" title="anchor"><spring:url
 	value="/config/domain/addanchor" var="formUrladdanchor" /> <form:form
 	modelAttribute="anchorForm" action="${fn:escapeXml(formUrladdanchor)}"
 	cssClass="cleanform" method="POST" enctype="multipart/form-data">
@@ -445,22 +337,25 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 	<button name="submitType" id="submitType" type="submit"
 		value="newanchor">Add anchor</button>
 </form:form></fieldset>
+	</c:otherwise>
+</c:choose>
 <c:if test="${not empty anchorsResults}">
-	<fieldset style="width: 90%;" title="anchors"><spring:url
+	<fieldset style="width: 95%;" title="anchors"><spring:url
 		value="/config/domain/removeanchors" var="formUrlremoveanchor" /> <form:form
 		modelAttribute="anchorForm"
 		action="${fn:escapeXml(formUrlremoveanchor)}" cssClass="cleanform"
 		method="POST" enctype="multipart/form-data">
 		<form:hidden path="id" />
+		<div id="tablelist" style="width:100%;overflow:auto;">
 		<table cellpadding="1px" cellspacing="1px" id="anchorsTable"
 			class="tablesorter">
 			<thead>
 				<tr>
 					<th width="24%">Owner</th>
 					<th width="15%">Thumb</th>
-					<th width="15%">create Time</th>
-					<th width="15%">Start Date</th>
-					<th width="15%">End Date</th>
+					<th width="15%">Create</th>
+					<th width="15%">Start</th>
+					<th width="15%">End</th>
 					<th width="7%">Stat</th>
 					<th width="3%">In</th>
 					<th width="3%">Out</th>
@@ -510,6 +405,7 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 				</tr>
 			</tfoot>
 		</table>
+		</div>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
 			value="deleteanchors">Remove Selected</button>
