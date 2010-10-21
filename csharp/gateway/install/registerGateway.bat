@@ -46,7 +46,7 @@ goto :EOF
 call :PrintHeading Installing
 
 call :PrintBold Registering Dlls
-call regasm.bat nhinSmtpAgent.dll
+call regasm.bat Health.Direct.SmtpAgent.dll
 if %ERRORLEVEL% NEQ 0 goto :EOF
 
 call :PrintBold Registering smtpEventHandler COM Dll

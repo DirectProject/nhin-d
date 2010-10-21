@@ -15,16 +15,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Net.Mail;
-using NHINDirect;
-using NHINDirect.Mail;
+
 using NHINDirect.Agent;
 using NHINDirect.Mail.Notifications;
 
-namespace NHINDirect.SmtpAgent
+namespace Health.Direct.SmtpAgent
 {
     public class NotificationProducer
     {

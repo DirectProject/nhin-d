@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
+
 using NHINDirect.Certificates;
 using NHINDirect.Agent.Config;
 using NHINDirect.Config.Client;
 
-namespace NHINDirect.SmtpAgent
+namespace Health.Direct.SmtpAgent
 {
     [XmlType("ServiceResolver")]
     public class CertServiceResolverSettings : CertResolverSettings
     {
-        public CertServiceResolverSettings()
-        {
-        }
-        
         [XmlElement]        
         public ClientSettings ClientSettings
         {
@@ -37,7 +30,7 @@ namespace NHINDirect.SmtpAgent
             this.ClientSettings.Validate();
         }
     }
-    
+
     public class AnchorServiceResolverSettings : TrustAnchorResolverSettings
     {
         public AnchorServiceResolverSettings()
@@ -64,5 +57,5 @@ namespace NHINDirect.SmtpAgent
             }
             this.ClientSettings.Validate();
         }
-    }    
+    }
 }

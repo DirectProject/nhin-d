@@ -25,8 +25,8 @@ using NHINDirect.Config.Store;
 using NHINDirect.Config.Client.DomainManager;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.SmtpAgent
-{    
+namespace Health.Direct.SmtpAgent
+{
     public class SmtpAgent
     {
         /// <summary>
@@ -40,7 +40,7 @@ namespace NHINDirect.SmtpAgent
         }
         
         IAuditor m_auditor;
-    	ILogger m_logger;
+        ILogger m_logger;
 
         SmtpAgentSettings m_settings;
         NHINDAgent m_agent;
@@ -69,12 +69,12 @@ namespace NHINDirect.SmtpAgent
         }
 
         private ILogger Logger
-		{
-			get
-			{
-				return m_logger;
-			}
-		}
+        {
+            get
+            {
+                return m_logger;
+            }
+        }
 
         private IAuditor Auditor
         {
@@ -128,7 +128,7 @@ namespace NHINDirect.SmtpAgent
             m_settings.Validate();
 
             m_auditor = IoC.Resolve<IAuditor>();
-        	m_logger = Log.For(this);
+            m_logger = Log.For(this);
 
             m_diagnostics = new AgentDiagnostics();
             m_configService = new ConfigService(m_settings);
@@ -190,7 +190,7 @@ namespace NHINDirect.SmtpAgent
                 {
                     Logger.Error("Returned configured domains did not match those listed in the settings file");
                     Logger.Error("from service={0} from settings={1}", 
-                        configuredDomains.Length, m_settings.Domains.Length);
+                                 configuredDomains.Length, m_settings.Domains.Length);
                     throw new SmtpAgentException(SmtpAgentError.ConfiguredDomainsMismatch);
                 }
 

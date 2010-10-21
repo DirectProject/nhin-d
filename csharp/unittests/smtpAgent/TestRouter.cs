@@ -20,7 +20,6 @@ using Health.Direct.Agent.Tests;
 
 using NHINDirect.Agent;
 using NHINDirect.Mail;
-using NHINDirect.SmtpAgent;
 using NHINDirect.Config.Store;
 
 using Xunit;
@@ -29,7 +28,7 @@ namespace Health.Direct.SmtpAgent.Tests
 {
     public class TestRouter : SmtpAgentTester
     {
-        readonly NHINDirect.SmtpAgent.SmtpAgent m_agent;
+        readonly SmtpAgent m_agent;
         readonly Dictionary<string, int> m_routeCounts;
 
         static TestRouter()

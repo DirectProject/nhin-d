@@ -15,13 +15,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mail;
-using NHINDirect.Mail;
-using NHINDirect.Agent;
 
-namespace NHINDirect.SmtpAgent
+using NHINDirect.Mail;
+
+namespace Health.Direct.SmtpAgent
 {
     internal class DomainPostmasters : IEnumerable<MailAddress>
     {

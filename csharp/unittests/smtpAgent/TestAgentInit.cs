@@ -16,8 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Collections.Generic;
 using System.IO;
 
-using NHINDirect.SmtpAgent;
-
 using Xunit.Extensions;
 
 namespace Health.Direct.SmtpAgent.Tests

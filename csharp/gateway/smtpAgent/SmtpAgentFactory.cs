@@ -6,7 +6,7 @@ using Health.Direct.Diagnostics.NLog;
 using NHINDirect.Container;
 using NHINDirect.Diagnostics;
 
-namespace NHINDirect.SmtpAgent
+namespace Health.Direct.SmtpAgent
 {
     public static class SmtpAgentFactory
     {
