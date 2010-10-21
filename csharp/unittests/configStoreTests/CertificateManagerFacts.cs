@@ -16,25 +16,17 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.IO;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography;
 
 using Xunit;
 using Xunit.Extensions;
 
 using NHINDirect.Config.Store;
-namespace configStoreTests
+
+namespace Health.Direct.Config.Store.Tests
 {
-
-
     class CertificateManagerFacts : ConfigStoreTestBase
     {
-        public CertificateManagerFacts()
-        {
-        }
-
         /// <summary>
         /// property to expose enumerable testing Certificate instances
         /// </summary>
@@ -106,8 +98,8 @@ namespace configStoreTests
                 CertificateManager target = new CertificateManager(new ConfigStore(CONNSTR));
                 X509Certificate2Collection actual = target[subject];
                 Dump(string.Format("ItemTest Subject[{0}] which has [{1}] related certs."
-                    , subject
-                    , actual==null?-1:actual.Count));
+                                   , subject
+                                   , actual==null?-1:actual.Count));
                 Assert.NotNull(actual);
             }
 
@@ -127,8 +119,8 @@ namespace configStoreTests
                 CertificateManager target = new CertificateManager(new ConfigStore(CONNSTR));
                 Certificate[] actual = target.Get(subject);
                 Dump(string.Format("SetStatusTest4 Subject[{0}] which has [{1}] related certs."
-                    , subject
-                    , actual == null ? -1 : actual.Length));
+                                   , subject
+                                   , actual == null ? -1 : actual.Length));
                 Assert.NotNull(actual);
                 Assert.Equal(MAXCERTPEROWNER, actual.Length);
                 foreach (Certificate cert in actual)
@@ -178,8 +170,8 @@ namespace configStoreTests
                     CertificateManager target = new CertificateManager(new ConfigStore(CONNSTR));
                     Certificate[] actual = target.Get(subject);
                     Dump(string.Format("SetStatusTest3 Subject[{0}] which has [{1}] related certs."
-                        , subject
-                        , actual == null ? -1 : actual.Length));
+                                       , subject
+                                       , actual == null ? -1 : actual.Length));
                     Assert.NotNull(actual);
                     Assert.Equal(MAXCERTPEROWNER, actual.Length);
                     foreach (Certificate cert in actual)
@@ -215,8 +207,8 @@ namespace configStoreTests
                 CertificateManager target = new CertificateManager(new ConfigStore(CONNSTR));
                 Certificate cert = target.Get(i);
                 Dump(string.Format("SetStatusTest1 Subject[{0}] Status:[{1}]"
-                    , cert == null ? "null cert" : cert.Owner
-                    , cert == null ? "null cert" : cert.Status.ToString()));
+                                   , cert == null ? "null cert" : cert.Owner
+                                   , cert == null ? "null cert" : cert.Status.ToString()));
                 Assert.Equal(EntityStatus.New, cert.Status);
                 target.SetStatus(i, EntityStatus.Enabled);
                 cert = target.Get(i);
@@ -239,8 +231,8 @@ namespace configStoreTests
                     CertificateManager target = new CertificateManager(new ConfigStore(CONNSTR));
                     Certificate cert = target.Get(i);
                     Dump(string.Format("SetStatusTest1 Subject[{0}] Status:[{1}]"
-                        , cert == null ? "null cert" : cert.Owner
-                        , cert == null ? "null cert" : cert.Status.ToString()));
+                                       , cert == null ? "null cert" : cert.Owner
+                                       , cert == null ? "null cert" : cert.Status.ToString()));
                     Assert.Equal(EntityStatus.New, cert.Status);
                     target.SetStatus(db, i, EntityStatus.Enabled);
                     cert = target.Get(i);
@@ -275,16 +267,16 @@ namespace configStoreTests
                 foreach (Certificate cert in certs)
                 {
                     Dump(string.Format("\t - Subject[{0}] Status:[{1}] ID:[{2}]"
-                    , cert == null ? "null cert" : cert.Owner
-                    , cert == null ? "null cert" : cert.Status.ToString()
-                    , cert == null ? -1:cert.ID));
+                                       , cert == null ? "null cert" : cert.Owner
+                                       , cert == null ? "null cert" : cert.Status.ToString()
+                                       , cert == null ? -1:cert.ID));
                     Assert.Equal(EntityStatus.New,cert.Status);
                 }
                 target.SetStatus(ids.ToArray(), EntityStatus.Enabled);
                 certs = target.Get(ids.ToArray());
                 foreach (Certificate cert in certs)
                 {
-                   Assert.Equal(EntityStatus.Enabled,cert.Status);
+                    Assert.Equal(EntityStatus.Enabled,cert.Status);
                 }
         
             }

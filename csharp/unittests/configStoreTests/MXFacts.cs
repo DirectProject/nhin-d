@@ -14,17 +14,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 
 using Xunit;
-using Xunit.Extensions;
 
 using NHINDirect.Config.Store;
 
-namespace configStoreTests
+namespace Health.Direct.Config.Store.Tests
 {
     public class MXFacts
     {
@@ -150,7 +145,7 @@ namespace configStoreTests
         public void MXConstructorTest2()
         {
             MX target = new MX();
-               Assert.Equal(String.Empty, target.SMTPDomainName);
+            Assert.Equal(String.Empty, target.SMTPDomainName);
             Assert.Equal(0, target.Preference);
             Assert.Equal(target.CreateDate, target.UpdateDate);
         }

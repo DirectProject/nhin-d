@@ -8,8 +8,8 @@
     <ProjectGuid>{DCFE1AA0-6302-4B5C-AC22-235E869EAAAC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>configStoreTests</RootNamespace>
-    <AssemblyName>configStoreTests</AssemblyName>
+    <RootNamespace>Health.Direct.Config.Store.Tests</RootNamespace>
+    <AssemblyName>Health.Direct.Config.Store.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

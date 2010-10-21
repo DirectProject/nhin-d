@@ -16,14 +16,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.IO;
 
 using Xunit;
-using Xunit.Extensions;
 
 using NHINDirect.Config.Store;
-namespace configStoreTests
+
+namespace Health.Direct.Config.Store.Tests
 {
     class DomainManagerFacts : ConfigStoreTestBase
     {
@@ -108,7 +106,7 @@ namespace configStoreTests
             InitDomainRecords();
             IEnumerable<Domain> mgr = new DomainManager(new ConfigStore(CONNSTR));
             Assert.Equal(MAXDOMAINCOUNT, mgr.Count());
-         }
+        }
 
         /// <summary>
         ///A test for Get
