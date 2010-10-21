@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, NHIN Direct Project
+ Copyright (c) 2010, Direct Project
  All rights reserved.
 
  Authors:
@@ -9,12 +9,14 @@ Redistribution and use in source and binary forms, with or without modification,
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+Neither the name of the The Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 using System.Linq;
 using System.IO;
+
+using Health.Direct.Agent.Tests;
 
 using NHINDirect.Agent;
 using NHINDirect.SmtpAgent;
@@ -23,16 +25,16 @@ using NHINDirect.Mail.Notifications;
 
 using Xunit;
 
-namespace SmtpAgentTests
+namespace Health.Direct.SmtpAgent.Tests
 {
     public class TestNotifications : SmtpAgentTester
     {
-        readonly SmtpAgent m_agent;
+        readonly NHINDirect.SmtpAgent.SmtpAgent m_agent;
         readonly NotificationProducer m_producer;
 
         static TestNotifications()
         {
-            AgentTests.AgentTester.EnsureStandardMachineStores();
+            AgentTester.EnsureStandardMachineStores();
         }
         
         public TestNotifications()
@@ -57,7 +59,7 @@ namespace SmtpAgentTests
             int i = 0;            
             foreach(NotificationMessage notification in m_producer.Produce(incoming))
             {
-                NHINDAddress sender = incoming.DomainRecipients[i++];
+                DirectAddress sender = incoming.DomainRecipients[i++];
                 Assert.Equal(sender.Address, notification.FromValue, MailStandard.Comparer);
             }            
             
@@ -105,7 +107,7 @@ namespace SmtpAgentTests
                         
         int CountNotifications(IncomingMessage incoming)
         {
-        	return m_producer.Produce(incoming).Count();
+            return m_producer.Produce(incoming).Count();
         }
     }
 }

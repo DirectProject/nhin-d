@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("configConsole")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("NHIN Direct Project")]
+[assembly: AssemblyCompany("Direct Project")]
 [assembly: AssemblyProduct("console")]
-[assembly: AssemblyCopyright("Copyright © NHIN Direct Project")]
+[assembly: AssemblyCopyright("Copyright © Direct Project")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

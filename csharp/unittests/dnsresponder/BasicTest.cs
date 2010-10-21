@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
+
 using DnsResolver;
+
 using Xunit;
 using Xunit.Extensions;
 
-namespace DnsResponderTest
+namespace Health.Direct.DnsResponder.Tests
 {
     public class BasicTest : Tester
     {        
@@ -116,5 +114,5 @@ namespace DnsResponderTest
 
             Assert.True(Tester.Equals<AddressRecord>(matches, expectedMatches));
         }
-    }    
+    }
 }

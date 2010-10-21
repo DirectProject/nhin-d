@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Diagnostics;
-using System.IO;
-using DnsResolver;
-using DnsResponder;
 
-namespace DnsResponderTest
+using DnsResolver;
+
+namespace Health.Direct.DnsResponder.Tests
 {
     public class Tester
     {
@@ -55,7 +52,7 @@ namespace DnsResponderTest
             return true;
         }
     }
-    
+
     public class TestThread
     {
         TestServer m_server;

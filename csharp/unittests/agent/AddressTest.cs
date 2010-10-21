@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, NHIN Direct Project
+ Copyright (c) 2010, Direct Project
  All rights reserved.
 
  Authors:
@@ -9,22 +9,21 @@ Redistribution and use in source and binary forms, with or without modification,
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+Neither the name of the The Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
-using Xunit;
-using Xunit.Extensions;
 
 using NHINDirect.Agent;
 
-namespace AgentTests
+using Xunit;
+using Xunit.Extensions;
+
+namespace Health.Direct.Agent.Tests
 {
     public class AddressTest
     {
@@ -32,7 +31,7 @@ namespace AgentTests
         [Fact]
         public void TestBasicAddressCreate()
         {
-            NHINDAddress addr = new NHINDAddress("eleanor@roosevelt.com");
+            DirectAddress addr = new DirectAddress("eleanor@roosevelt.com");
             Assert.Null(addr.Certificates);
             Assert.False(addr.HasCertificates);
             Assert.Null(addr.TrustAnchors);
@@ -46,7 +45,7 @@ namespace AgentTests
         [Fact]
         public void TestAddressCertificates()
         {
-            NHINDAddress addr = new NHINDAddress(new MailAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>"));
+            DirectAddress addr = new DirectAddress(new MailAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>"));
             addr.Certificates = new X509Certificate2Collection(new X509Certificate2());
             Assert.True(addr.HasCertificates);
         }
@@ -54,7 +53,7 @@ namespace AgentTests
         [Fact]
         public void TestAddressTrustAnchors()
         {
-            NHINDAddress addr = new NHINDAddress(new MailAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>"));
+            DirectAddress addr = new DirectAddress(new MailAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>"));
             addr.TrustAnchors = new X509Certificate2Collection(new X509Certificate2());
             Assert.True(addr.HasTrustAnchors);
         }
@@ -62,7 +61,7 @@ namespace AgentTests
         [Fact]
         public void TestAddressTrustStatusSuccess()
         {
-            NHINDAddress addr = new NHINDAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>");
+            DirectAddress addr = new DirectAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>");
             addr.Status = TrustEnforcementStatus.Success;
             Assert.True(addr.IsTrusted(TrustEnforcementStatus.Success));
         }
@@ -70,7 +69,7 @@ namespace AgentTests
         [Fact]
         public void TestAddressTrustStatusFailure()
         {
-            NHINDAddress addr = new NHINDAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>");
+            DirectAddress addr = new DirectAddress("\"Eleanor Roosevelt\" <eleanor@roosevelt.org>");
             addr.Status = TrustEnforcementStatus.Failed;
             Assert.False(addr.IsTrusted(TrustEnforcementStatus.Success));
             Assert.False(addr.IsTrusted(TrustEnforcementStatus.Unknown));
@@ -113,7 +112,7 @@ namespace AgentTests
         public void TestAddressCollectionIsTrustedAllTrusted()
         {
             NHINDAddressCollection coll = BasicCollection();
-            foreach(NHINDAddress addr in coll) { addr.Status = TrustEnforcementStatus.Success; }
+            foreach(DirectAddress addr in coll) { addr.Status = TrustEnforcementStatus.Success; }
             //All trusted addresses should be trusted
             Assert.True(coll.IsTrusted());
         }
@@ -131,7 +130,7 @@ namespace AgentTests
         public void TestAddressCollectionGetTrusted()
         {
             NHINDAddressCollection coll = BasicCollection();
-            IEnumerable<NHINDAddress> trusted = coll.GetTrusted();
+            IEnumerable<DirectAddress> trusted = coll.GetTrusted();
             Assert.Equal(1, trusted.Count());
             Assert.Equal("tinymollitude.net", trusted.First().Host);
             Assert.Equal("sean+o'nolan", trusted.First().User);
@@ -173,10 +172,10 @@ namespace AgentTests
         NHINDAddressCollection BasicCollection()
         {
             string[] addrStrings = new string[] {
-                "eleanor@roosevelt.com",
-                "\"Franklin Roosevelt\" <frank@roosevelt.com>",
-                "sean+o'nolan@tinymollitude.net"};
-            IEnumerable<NHINDAddress> addrs =  addrStrings.Select(a => new NHINDAddress(a));
+                                                    "eleanor@roosevelt.com",
+                                                    "\"Franklin Roosevelt\" <frank@roosevelt.com>",
+                                                    "sean+o'nolan@tinymollitude.net"};
+            IEnumerable<DirectAddress> addrs =  addrStrings.Select(a => new DirectAddress(a));
             NHINDAddressCollection coll = new NHINDAddressCollection();
             coll.Add(addrs);
             coll[0].Status = TrustEnforcementStatus.Failed;

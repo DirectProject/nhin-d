@@ -27,8 +27,7 @@
                     CommandName="Remove">Remove</asp:LinkButton>
                 &nbsp;|
                 <asp:LinkButton ID="NHINDCardButton" runat="server" CommandArgument="<%# Container.DataItemIndex %>"
-                    CommandName="Card">NHIND 
-                            Card</asp:LinkButton>
+                    CommandName="Card">Direct Card</asp:LinkButton>
             </ItemTemplate>
         </asp:TemplateField>
     </Columns>
