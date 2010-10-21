@@ -1,5 +1,5 @@
 @rem ----------------------------------------------------
-@rem Batch File for Deploying New NHIND Config Service Binaries
+@rem Batch File for Deploying New Config Service Binaries
 @rem ----------------------------------------------------
 @echo off
 

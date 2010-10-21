@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("nhinToolUtil")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("NHIN Direct Project")]
+[assembly: AssemblyCompany("Direct Project")]
 [assembly: AssemblyProduct("nhinToolUtil")]
-[assembly: AssemblyCopyright("Copyright © NHIN Direct Project")]
+[assembly: AssemblyCopyright("Copyright © Direct Project")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
