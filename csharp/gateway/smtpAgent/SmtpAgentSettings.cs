@@ -23,7 +23,7 @@ using NHINDirect.Diagnostics;
 using NHINDirect.Config.Client;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.SmtpAgent
+namespace Health.Direct.SmtpAgent
 {
     [XmlType("SmtpAgentConfig")]
     public class SmtpAgentSettings : AgentSettings

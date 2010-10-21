@@ -19,7 +19,6 @@ using System.Net.Mail;
 using Health.Direct.Agent.Tests;
 
 using NHINDirect.Agent;
-using NHINDirect.SmtpAgent;
 using NHINDirect.Mime;
 using NHINDirect.Mail;
 
@@ -86,7 +85,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.True(MimeStandard.Equals(message.GetContentType(), originalContentType));             
 
             Message mailMessage = MailParser.ParseMessage(message.GetMessageText());
-            string header = mailMessage.Headers.GetValue(NHINDirect.SmtpAgent.SmtpAgent.XHeaders.Receivers);
+            string header = mailMessage.Headers.GetValue(SmtpAgent.XHeaders.Receivers);
             Assert.DoesNotThrow(() => MailParser.ParseAddressCollection(header));
             MailAddressCollection addresses = MailParser.ParseAddressCollection(header);
             Assert.True(addresses.Count > 0);

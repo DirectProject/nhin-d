@@ -14,21 +14,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Net.Mail;
-using NHINDirect.Agent;
+
 using NHINDirect.Mail;
 using CDO;
 using ADODB;
 
-namespace NHINDirect.SmtpAgent
+namespace Health.Direct.SmtpAgent
 {
-    //
-    // Extensions on CDO & ADODB + SmtpServer
-    //
     public static class Extensions
     {
         public static CDO.Message LoadCDOMessage(string messageFile)

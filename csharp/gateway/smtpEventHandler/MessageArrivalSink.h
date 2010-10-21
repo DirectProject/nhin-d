@@ -21,7 +21,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "smtpEventHandler_i.h"
 #include <cdosyserr.h>
 #include <cdosysstr.h>
-#import <nhinSmtpAgent.tlb> no_namespace raw_interfaces_only
+#import <Health.Direct.SmtpAgent.tlb> no_namespace raw_interfaces_only
 
 #include "EventLog.h"
 

@@ -21,24 +21,24 @@ using NHINDirect.Certificates;
 using NHINDirect.Diagnostics;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.SmtpAgent
+namespace Health.Direct.SmtpAgent
 {
     internal class AgentDiagnostics
     {
-    	private readonly ILogger m_logger;
+        private readonly ILogger m_logger;
         
         internal AgentDiagnostics()
         {
-        	m_logger = Log.For(this);
+            m_logger = Log.For(this);
         }
 
-		private ILogger Logger
-		{
-			get
-			{
-				return m_logger;
-			}
-		}
+        private ILogger Logger
+        {
+            get
+            {
+                return m_logger;
+            }
+        }
 
         internal void OnOutgoingError(OutgoingMessage message, Exception error)
         {

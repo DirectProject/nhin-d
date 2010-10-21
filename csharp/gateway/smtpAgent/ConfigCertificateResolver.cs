@@ -14,18 +14,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
+
 using NHINDirect.Config.Store;
 using NHINDirect.Certificates;
 using NHINDirect.Config.Client;
 using NHINDirect.Config.Client.DomainManager;
 using NHINDirect.Config.Client.CertificateService;
 
-namespace NHINDirect.SmtpAgent
+namespace Health.Direct.SmtpAgent
 {
     /// <summary>
     /// Resolve Certificates from the Configuration Service. 
@@ -112,4 +110,3 @@ namespace NHINDirect.SmtpAgent
         }
     }
 }
-    

@@ -17,7 +17,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 
 using NHINDirect.Extensions;
-using NHINDirect.SmtpAgent;
 using NHINDirect.Config.Client;
 
 using Xunit;

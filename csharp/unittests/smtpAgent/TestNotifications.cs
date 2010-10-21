@@ -19,7 +19,6 @@ using System.IO;
 using Health.Direct.Agent.Tests;
 
 using NHINDirect.Agent;
-using NHINDirect.SmtpAgent;
 using NHINDirect.Mail;
 using NHINDirect.Mail.Notifications;
 
@@ -29,7 +28,7 @@ namespace Health.Direct.SmtpAgent.Tests
 {
     public class TestNotifications : SmtpAgentTester
     {
-        readonly NHINDirect.SmtpAgent.SmtpAgent m_agent;
+        readonly SmtpAgent m_agent;
         readonly NotificationProducer m_producer;
 
         static TestNotifications()

@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 
 using NHINDirect.Diagnostics;
 
-namespace NHINDirect.SmtpAgent
+namespace Health.Direct.SmtpAgent
 {
     [ComVisible(true)]
     [Guid("D12E2532-7AD6-4fb2-9AD3-D2169C0BF5A7")]
@@ -29,7 +29,7 @@ namespace NHINDirect.SmtpAgent
         void InitFromConfigFile(string configFilePath);
         void ProcessCDOMessage(CDO.Message message);
     }
-    
+
     /// <summary>
     /// Event Handlers for the SMTP Service are written in C++
     /// Those event handlers can talk to the agent using this COM Interop object
@@ -50,13 +50,13 @@ namespace NHINDirect.SmtpAgent
         // It is possible that this COM object will get created for every request - and is therefore meant to be very lightweight. 
         // Therefore, internally, we maintain a singleton of the actual agent and just proxy calls. 
         //
-        private static readonly Dictionary<string, SmtpAgent> s_agents = new Dictionary<string,SmtpAgent>(StringComparer.OrdinalIgnoreCase);
+        private static readonly Dictionary<string, Health.Direct.SmtpAgent.SmtpAgent> s_agents = new Dictionary<string,Health.Direct.SmtpAgent.SmtpAgent>(StringComparer.OrdinalIgnoreCase);
 
         // it's bad practice to lock on the object you're controlling access to.
         private static readonly object s_agentsSync = new object();
 
 
-        SmtpAgent m_agent;
+        Health.Direct.SmtpAgent.SmtpAgent m_agent;
         private ILogger m_logger;
 
         private ILogger Logger
@@ -71,7 +71,7 @@ namespace NHINDirect.SmtpAgent
             }
         }
 
-        internal SmtpAgent Agent
+        internal Health.Direct.SmtpAgent.SmtpAgent Agent
         {
             get
             {
@@ -86,15 +86,15 @@ namespace NHINDirect.SmtpAgent
         
         public void InitFromConfigFile(string configFilePath)
         {
-            SmtpAgent agent = this.EnsureAgent(configFilePath);
-            System.Threading.Interlocked.Exchange<SmtpAgent>(ref m_agent, agent);
+            Health.Direct.SmtpAgent.SmtpAgent agent = this.EnsureAgent(configFilePath);
+            System.Threading.Interlocked.Exchange<Health.Direct.SmtpAgent.SmtpAgent>(ref m_agent, agent);
         }
 
-        SmtpAgent EnsureAgent(string configFilePath)
+        Health.Direct.SmtpAgent.SmtpAgent EnsureAgent(string configFilePath)
         {
             lock (s_agentsSync)
             {
-                SmtpAgent agent = null;
+                Health.Direct.SmtpAgent.SmtpAgent agent = null;
 
                 if (!s_agents.TryGetValue(configFilePath, out agent))
                 {

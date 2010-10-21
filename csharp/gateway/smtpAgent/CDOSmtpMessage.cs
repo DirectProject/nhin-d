@@ -14,26 +14,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
-using System.Net.Mail;
-using System.IO;
+
 using NHINDirect.Agent;
-using NHINDirect.Agent.Config;
-using NHINDirect.Certificates;
-using NHINDirect.Diagnostics;
-using NHINDirect.Mail;
-using NHINDirect.Mime;
-using NHINDirect.Config.Store;
-using NHINDirect.Config.Client.DomainManager;
-using System.Diagnostics;
+
 using CDO;
 using ADODB;
 
-namespace NHINDirect.SmtpAgent
-{    
+namespace Health.Direct.SmtpAgent
+{
     public class CDOSmtpMessage : ISmtpMessage
     {
         CDO.Message m_message;
@@ -182,7 +170,7 @@ namespace NHINDirect.SmtpAgent
             // In SMTP Server, the MAIL TO (sender) in the envelope can be empty if the message is from the server postmaster 
             // The actual postmaster address is found in the message itself
             //
-            if (Extensions.IsSenderLocalPostmaster(sender))
+            if (Health.Direct.SmtpAgent.Extensions.IsSenderLocalPostmaster(sender))
             {
                 return false;
             }

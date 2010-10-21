@@ -15,21 +15,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Xml.Serialization;
+
 using NHINDirect.Agent;
 using NHINDirect.Config.Store;
 
-namespace NHINDirect.SmtpAgent
-{    
+namespace Health.Direct.SmtpAgent
+{
     public class MessageRoute : MessageProcessingSettings
     {
-        public MessageRoute()
-        {
-        }
-        
         [XmlElement]
         public string AddressType
         {

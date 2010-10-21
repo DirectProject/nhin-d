@@ -19,7 +19,6 @@ using System.Net.Mime;
 
 using NHINDirect.Mail;
 using NHINDirect.Agent;
-using NHINDirect.SmtpAgent;
 
 using Xunit;
 
@@ -85,7 +84,7 @@ Yo. Wassup?";
         
         internal CDO.Message LoadMessage(string text)
         {
-            return NHINDirect.SmtpAgent.Extensions.LoadCDOMessageFromText(text);
+            return Extensions.LoadCDOMessageFromText(text);
         }
         
         internal CDO.Message LoadMessage(CDO.Message source)
@@ -107,7 +106,7 @@ Yo. Wassup?";
             Assert.False(NHINDirect.Cryptography.SMIMEStandard.IsContentEncrypted(contentType));            
         }
 
-        internal void ProcessEndToEnd(NHINDirect.SmtpAgent.SmtpAgent agent, Message msg, out OutgoingMessage outgoing, out IncomingMessage incoming)
+        internal void ProcessEndToEnd(SmtpAgent agent, Message msg, out OutgoingMessage outgoing, out IncomingMessage incoming)
         {
             outgoing = agent.SecurityAgent.ProcessOutgoing(new MessageEnvelope(msg));
             incoming = agent.SecurityAgent.ProcessIncoming(new MessageEnvelope(outgoing.SerializeMessage()));            

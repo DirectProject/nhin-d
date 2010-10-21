@@ -14,20 +14,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 
-namespace NHINDirect.SmtpAgent
+namespace Health.Direct.SmtpAgent
 {
     public class MessageProcessingSettings
     {
-        public MessageProcessingSettings()
-        {
-        }
-
         /// <summary>
         /// For debugging/diagnostics etc - vital especially as we develop and try to debug
         // If a CopyFolder is defined, a copy of the message is saved in the folder
@@ -55,7 +48,7 @@ namespace NHINDirect.SmtpAgent
                 throw new InvalidOperationException();
             }
             
-            string uniqueFileName = Extensions.CreateUniqueFileName();
+            string uniqueFileName = Health.Direct.SmtpAgent.Extensions.CreateUniqueFileName();
             return Path.Combine(this.CopyFolder, uniqueFileName);
         }
         
@@ -159,5 +152,5 @@ namespace NHINDirect.SmtpAgent
             : base()
         {
         }
-    }  
+    }
 }

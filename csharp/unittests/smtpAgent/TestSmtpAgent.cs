@@ -17,7 +17,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using Health.Direct.Agent.Tests;
 
 using NHINDirect.Agent;
-using NHINDirect.SmtpAgent;
 
 using Xunit;
 
@@ -25,7 +24,7 @@ namespace Health.Direct.SmtpAgent.Tests
 {
     public class TestSmtpAgent : SmtpAgentTester
     {
-        NHINDirect.SmtpAgent.SmtpAgent m_agent;
+        SmtpAgent m_agent;
         
         static TestSmtpAgent()
         {

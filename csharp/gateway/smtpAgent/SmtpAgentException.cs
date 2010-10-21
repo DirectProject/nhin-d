@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NHINDirect.Collections;
-using NHINDirect.Agent;
+﻿using NHINDirect;
 
-namespace NHINDirect.SmtpAgent
+namespace Health.Direct.SmtpAgent
 {
     public enum SmtpAgentError
     {
@@ -27,7 +22,7 @@ namespace NHINDirect.SmtpAgent
         NoSenderInEnvelope,
         NoRecipientsInEnvelope
     }
-    
+
     public class SmtpAgentException : DirectException<SmtpAgentError>
     {
         public SmtpAgentException(SmtpAgentError error)
