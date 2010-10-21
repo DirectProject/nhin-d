@@ -36,7 +36,7 @@ public class NHINDSecurityAndTrustMailet_functionalTest extends TestCase
 			MailetConfig mailetConfig = new MockMailetConfig(params, "NHINDSecurityAndTrustMailet");
 			
 			retVal.init(mailetConfig);
-		
+			
 			return retVal;
 		}
 			
