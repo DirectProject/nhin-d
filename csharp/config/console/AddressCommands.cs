@@ -17,9 +17,11 @@ using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.DomainManager;
+
 using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
-using NHINDirect.Config.Client.DomainManager;
 
 namespace NHINDirect.Config.Command
 {

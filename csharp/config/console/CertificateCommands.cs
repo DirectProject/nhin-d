@@ -23,10 +23,12 @@ using System.ServiceModel;
 
 using DnsResolver;
 
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.CertificateService;
+
 using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
-using NHINDirect.Config.Client.CertificateService;
 using NHINDirect.Extensions;
 
 namespace NHINDirect.Config.Command

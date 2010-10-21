@@ -20,11 +20,8 @@ using System.ServiceModel.Activation;
 
 using NHINDirect.Config.Store;
 
-namespace NHINDirect.Config.Service
+namespace Health.Direct.Config.Service
 {
-    // AspNetCompatibilityRequirements added so that the LogFileSection can dig into the HttpContent.Current
-    // to use MapPath();
-    // NOTE: If you change the class name "CertificateStore" here, you must also update the reference to "CertificateStore" in Web.config.
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class CertificateService : ConfigServiceBase, ICertificateStore, IAnchorStore
     {        
@@ -281,11 +278,11 @@ namespace NHINDirect.Config.Service
             }
             
             return (from cert in (from cert in certs
-                                where cert != null
-                                select ApplyGetOptions(cert, options)
-                                )
-                   where cert != null
-                   select cert).ToArray();
+                                  where cert != null
+                                  select ApplyGetOptions(cert, options)
+                                 )
+                    where cert != null
+                    select cert).ToArray();
         }
         
         Certificate ApplyGetOptions(Certificate cert, CertificateGetOptions options)
@@ -308,7 +305,7 @@ namespace NHINDirect.Config.Service
             return (from anchor in
                         (from anchor in anchors
                          select ApplyGetOptions(anchor, options)
-                         )
+                        )
                     where anchor != null
                     select anchor).ToArray();
         }

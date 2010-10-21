@@ -14,17 +14,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ServiceModel;
-using System.Configuration;
-using System.Xml.Serialization;
+
+using Health.Direct.Config.Client.CertificateService;
+using Health.Direct.Config.Client.DomainManager;
+
 using NHINDirect.Tools.Command;
 using NHINDirect.Config.Store;
-using NHINDirect.Config.Client;
-using NHINDirect.Config.Client.DomainManager;
-using NHINDirect.Config.Client.CertificateService;
 
 namespace NHINDirect.Config.Command
 {

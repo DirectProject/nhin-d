@@ -15,14 +15,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Security.Cryptography.X509Certificates;
-using NHINDirect.Certificates;
-using NHINDirect.Config.Store;
-using NHINDirect.Config.Client.CertificateService;
 
-namespace NHINDirect.Config.Client.CertificateService
+using Health.Direct.Config.Client.CertificateService;
+
+using NHINDirect.Config.Store;
+
+namespace Health.Direct.Config.Client
 {
     public static class AnchorExtensions
     {        

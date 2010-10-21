@@ -17,10 +17,12 @@ using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 
+using Health.Direct.Config.Client.DomainManager;
+
 using NHINDirect.Config.Store;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Client.DomainManager
+namespace Health.Direct.Config.Client
 {
     public static class AddressManagerExtensions
     {

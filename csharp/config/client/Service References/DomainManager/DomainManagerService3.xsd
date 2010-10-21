@@ -39,6 +39,9 @@
       <xs:enumeration value="InvalidThumbprint" />
       <xs:enumeration value="InvalidAnchor" />
       <xs:enumeration value="AccountNameLength" />
+      <xs:enumeration value="InvalidMXSMTPName" />
+      <xs:enumeration value="MXSMTPNameLength" />
+      <xs:enumeration value="InvalidMX" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />

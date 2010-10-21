@@ -18,9 +18,8 @@ using System;
 
 using NHINDirect.Config.Store;
 
-namespace NHINDirect.Config.Service
+namespace Health.Direct.Config.Service
 {
-    // NOTE: If you change the class name "DomainManagerService" here, you must also update the reference to "DomainManagerService" in Web.config.
     public class DomainManagerService : ConfigServiceBase, IDomainManager, IAddressManager, IMXManager
     {
         #region IDomainManager Members

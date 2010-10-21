@@ -17,12 +17,14 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.DomainManager;
+
 using NHINDirect.Agent;
 using NHINDirect.Certificates;
 using NHINDirect.Container;
 using NHINDirect.Diagnostics;
 using NHINDirect.Config.Store;
-using NHINDirect.Config.Client.DomainManager;
 using NHINDirect.Extensions;
 
 namespace Health.Direct.SmtpAgent

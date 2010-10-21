@@ -18,7 +18,7 @@ using System.Configuration;
 
 using NHINDirect.Config.Store;
 
-namespace NHINDirect.Config.Service
+namespace Health.Direct.Config.Service
 {
     public class ServiceSettings
     {
@@ -82,13 +82,13 @@ namespace NHINDirect.Config.Service
         {
             m_connectString = ConfigurationManager.ConnectionStrings[ConfigConnectStringKey].ConnectionString;
 
-        	TimeSpan timeout;
-        	if (!TimeSpan.TryParse(GetSetting(QueryTimeoutKey), out timeout))
-        	{
-        		timeout = ConfigStore.DefaultTimeout;
-        	}
+            TimeSpan timeout;
+            if (!TimeSpan.TryParse(GetSetting(QueryTimeoutKey), out timeout))
+            {
+                timeout = ConfigStore.DefaultTimeout;
+            }
 
-        	m_dbTimeout = timeout;
+            m_dbTimeout = timeout;
             if (m_dbTimeout.Ticks <= 0)
             {
                 throw new ArgumentException("Invalid query timeout in config");

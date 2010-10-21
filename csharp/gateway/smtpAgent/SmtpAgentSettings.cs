@@ -18,9 +18,10 @@ using System.IO;
 using System.Text;
 using System.Xml.Serialization;
 
+using Health.Direct.Config.Client;
+
 using NHINDirect.Agent.Config;
 using NHINDirect.Diagnostics;
-using NHINDirect.Config.Client;
 using NHINDirect.Extensions;
 
 namespace Health.Direct.SmtpAgent

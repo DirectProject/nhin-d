@@ -16,8 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 
+using Health.Direct.Config.Client;
+
 using NHINDirect.Extensions;
-using NHINDirect.Config.Client;
 
 using Xunit;
 
