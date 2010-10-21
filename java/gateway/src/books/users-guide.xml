@@ -45,7 +45,10 @@
         </section>   
         <section>
           <id>smtp-depl-xmlconfig</id>     
-        </section>     
+        </section>
+        <section>
+          <id>smtp-depl-wsconfig</id>     
+        </section>                  
         <section>
           <id>depl-smtp</id>     
         </section>   
