@@ -20,8 +20,6 @@ The following is a list of minimum dependencies to run the security and trust ag
 
 All of these will be in your Maven cache from building source (~/.m2 or equivalent on Windows).
 
-Writing an Ant script to pull these into the appropriate configuration would be highly appreciated.
-
 * activation-1.1.jar [http://java.sun.com/products/archive/javabeans/jaf11.html]
 * aopalliance-1.0.jar [http://sourceforge.net/projects/aopalliance/files/]
 * apache-mailet-2.4.jar [http://james.apache.org/download.cgi] 
@@ -39,7 +37,19 @@ In addition, the following files that were created during the Direct build proce
 * nhinAgent-1.0-SNAPSHOT.jar
 * nhin-d-gateways-1.0-SNAPSHOT.jar
 
-Additional dependencies may be required if you are using more sophisticated Cert stores such as LDAP and DNS.
+If you are using the LDAP, DNS, or WebService certificate storage, you will need to add the JCS libraries and its transient dependencies.
+
+* jcs-1.3.jar [http://repo1.maven.org/maven2/org/apache/jcs/jcs/1.3/]
+* concurrent-1.0.jar [http://repo1.maven.org/maven2/concurrent/concurrent/1.0/]
+
+If you are using the configuration service to retrieve the SMTP agent settings, you will need the config-service-client library and its transient dependencies.
+
+* config-service-client-1.0-SNAPSHOT.jar [created during the build process]
+* axis-1.4.jar [http://repo1.maven.org/maven2/org/apache/axis/axis/1.4/]
+* commons-discovery-0.4.jar [http://repo1.maven.org/maven2/commons-discovery/commons-discovery/0.4/]
+* jaxrpc-api-1.1.jar [http://repo1.maven.org/maven2/javax/xml/jaxrpc-api/1.1/]
+* saaj-api-1.3.jar [http://repo1.maven.org/maven2/javax/xml/soap/saaj-api/1.3/]
+* wsdl4j-1.6.2.jar [http://repo1.maven.org/maven2/wsdl4j/wsdl4j/1.6.2/]
 
 h3. Mailet Configuration
 
@@ -108,6 +118,18 @@ Example:
 {code}
 
 When James reaches this mailet, the matcher determines if the message is incoming from an external domain or an outgoing message.  If the message is incoming, all recipients are sent to the mailet.  If the message is outgoing, all external recipients are processed by the agent while all local recipients are not processed and remain unencrypted for local delivery.  *NOTE*  When deploying James in multi domain environment, unless all domains within a HISP mutually trust each other, all messages and recipients should be processed by the agent.
+
+h4. Configuration URL
+
+The configuration URL can either reference an XML file that contains configuration that adheres the XML SMTP Agent configuration [specification|smtp-depl-xmlconfig.html] or and http(s) address that reference the configuration [service|smtp-depl-wsconfig.html].
+
+Examples:
+* File: file:///home/ubuntu/james-agent-v2/james-2.3.2/apps/james/SAR-INF/STConfig.xml
+* HTTP: http://configServer/config/ConfigurationService
+
+When using the HTTP based configuration service, it is assumed the service has been deployed and settings such as domains, anchors, and certificates have been configured.  
+
+When running in an development environment, you can launch the configuration service and configuration UI directly from the command line using maven.  From the nhind build directory, open two command or terminal windows and run the _mvn jetty:run_ command from the config-service directory first, then the config-ui service.  The services use an embedded database called _Derby_ to persist all settings.  The configuration ui can be accessed from a browser at http://localhost:8080/config-ui using nhind as the username as password.  The configuration service URL for the mailet configuration will be at http://localhost:8081/config/ConfigurationService.
 
 h2. Deployment Configuration Scenarios
 
