@@ -37,7 +37,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common.tests", "..\unittest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nhinToolLib", "..\tools\toolutil\nhinToolLib.csproj", "{D46A743B-E82F-45F7-87CB-29DBBFF9B9A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "configConsole", "..\config\console\configConsole.csproj", "{0211EBED-C527-42A9-B89B-E1D32A776837}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config.console", "..\config\console\config.console.csproj", "{0211EBED-C527-42A9-B89B-E1D32A776837}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnsResponder", "..\dnsResponder\DnsResponder.csproj", "{A0C03E4C-549D-4868-8B03-DF2C467C1A47}"
 EndProject

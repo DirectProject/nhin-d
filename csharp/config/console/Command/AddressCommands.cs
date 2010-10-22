@@ -23,7 +23,7 @@ using Health.Direct.Config.Store;
 
 using NHINDirect.Tools.Command;
 
-namespace NHINDirect.Config.Command
+namespace Health.Direct.Config.Console.Command
 {
     /// <summary>
     /// Commands to manage Addresses
@@ -52,7 +52,7 @@ namespace NHINDirect.Config.Command
             
             if (ConfigConsole.Current.AddressClient.AddressExists(address))
             {
-                Console.WriteLine("Exists {0}", address);
+                System.Console.WriteLine("Exists {0}", address);
             }
             else
             {
@@ -61,16 +61,16 @@ namespace NHINDirect.Config.Command
                 newAddress.Type = addressType;
                 
                 ConfigConsole.Current.AddressClient.AddAddress(newAddress);
-                Console.WriteLine("Added {0}", address);
+                System.Console.WriteLine("Added {0}", address);
             }
         }                
         public void Usage_Address_Add()
         {
-            Console.WriteLine("Add a new email address. The address domain must already exist.");
-            Console.WriteLine("    emailAddress [addressType] [displayName]");
-            Console.WriteLine("\t emailAddress: valid email address. Verifies that the domain already exists.");
-            Console.WriteLine("\t addressType: (optional) such as XDR. Used for routing. default:SMTP");
-            Console.WriteLine("\t displayName: (optional)");
+            System.Console.WriteLine("Add a new email address. The address domain must already exist.");
+            System.Console.WriteLine("    emailAddress [addressType] [displayName]");
+            System.Console.WriteLine("\t emailAddress: valid email address. Verifies that the domain already exists.");
+            System.Console.WriteLine("\t addressType: (optional) such as XDR. Used for routing. default:SMTP");
+            System.Console.WriteLine("\t displayName: (optional)");
         }
         
         /// <summary>
@@ -93,10 +93,10 @@ namespace NHINDirect.Config.Command
         }        
         public void Usage_Address_DisplayName_Set()
         {
-            Console.WriteLine("Set the display name for the given address");
-            Console.WriteLine("    emailAddress displayname");
-            Console.WriteLine("\t emailAddress: existing email address.");
-            Console.WriteLine("\t displayname: new display name.");
+            System.Console.WriteLine("Set the display name for the given address");
+            System.Console.WriteLine("    emailAddress displayname");
+            System.Console.WriteLine("\t emailAddress: existing email address.");
+            System.Console.WriteLine("\t displayname: new display name.");
         }
         
         /// <summary>
@@ -111,8 +111,8 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Address_Get()
         {
-            Console.WriteLine("Retrieve an existing address.");
-            Console.WriteLine("    emailAddress");
+            System.Console.WriteLine("Retrieve an existing address.");
+            System.Console.WriteLine("    emailAddress");
         }
         
         /// <summary>
@@ -125,8 +125,8 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Address_Remove()
         {
-            Console.WriteLine("Remove an existing address.");
-            Console.WriteLine("    emailAddress");
+            System.Console.WriteLine("Remove an existing address.");
+            System.Console.WriteLine("    emailAddress");
         }
         
         /// <summary>
@@ -141,10 +141,10 @@ namespace NHINDirect.Config.Command
         }        
         public void Usage_Address_List()
         {
-            Console.WriteLine("List addresses for a domain.");
-            Console.WriteLine("   domainName [chunkSize]");
-            Console.WriteLine("\t domainName: list addresses for this domain");
-            Console.WriteLine("\tchunkSize: (optional) Number of addresses to download from service at a time. Default is {0}", DefaultChunkSize);
+            System.Console.WriteLine("List addresses for a domain.");
+            System.Console.WriteLine("   domainName [chunkSize]");
+            System.Console.WriteLine("\t domainName: list addresses for this domain");
+            System.Console.WriteLine("\tchunkSize: (optional) Number of addresses to download from service at a time. Default is {0}", DefaultChunkSize);
         }
         
         /// <summary>
@@ -158,9 +158,9 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Address_ListAll()
         {
-            Console.WriteLine("List all addresses.");
-            Console.WriteLine("    [chunkSize]");
-            Console.WriteLine("\tchunkSize: Number of addresses to download from service at a time.");
+            System.Console.WriteLine("List all addresses.");
+            System.Console.WriteLine("    [chunkSize]");
+            System.Console.WriteLine("\tchunkSize: Number of addresses to download from service at a time.");
         }
         
         /// <summary>
@@ -183,10 +183,10 @@ namespace NHINDirect.Config.Command
         }        
         public void Usage_Address_Status_Set()
         {
-            Console.WriteLine("Set the status of an address");
-            Console.WriteLine("    emailAddress status");
-            Console.WriteLine("\t emailAddress: set the status of this address");
-            Console.WriteLine("\t status: {0}", EntityStatusString);
+            System.Console.WriteLine("Set the status of an address");
+            System.Console.WriteLine("    emailAddress status");
+            System.Console.WriteLine("\t emailAddress: set the status of this address");
+            System.Console.WriteLine("\t status: {0}", EntityStatusString);
         }
         
         /// <summary>
@@ -195,12 +195,12 @@ namespace NHINDirect.Config.Command
         public void Command_Address_Count(string[] args)
         {
             string domainName = args.GetRequiredValue(0);
-            Console.WriteLine("{0} addresses", ConfigConsole.Current.AddressClient.GetAddressCount(domainName));
+            System.Console.WriteLine("{0} addresses", ConfigConsole.Current.AddressClient.GetAddressCount(domainName));
         }
         public void Usage_Address_Count()
         {
-            Console.WriteLine("Retrieve # of addresses in given domain.");
-            Console.WriteLine("  domainName");
+            System.Console.WriteLine("Retrieve # of addresses in given domain.");
+            System.Console.WriteLine("  domainName");
         }
 
         //---------------------------------------

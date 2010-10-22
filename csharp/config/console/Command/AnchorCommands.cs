@@ -13,7 +13,6 @@ Neither the name of the The Direct Project (nhindirect.org). nor the names of it
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
@@ -27,7 +26,7 @@ using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Command
+namespace Health.Direct.Config.Console.Command
 {
     /// <summary>
     /// Commands to manage Anchors
@@ -53,12 +52,12 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Anchor_Add()
         {
-            Console.WriteLine("Import an anchor certificate from a file and push it into the store.");
-            Console.WriteLine("The anchor is used for both incoming & outgoing trust.");
-            Console.WriteLine("    owner filepath [password]");
-            Console.WriteLine("\t owner: Anchor owner");
-            Console.WriteLine("\t filePath: path fo the certificate file. Can be .DER, .CER or .PFX");
-            Console.WriteLine("\t password: (optional) file password");
+            System.Console.WriteLine("Import an anchor certificate from a file and push it into the store.");
+            System.Console.WriteLine("The anchor is used for both incoming & outgoing trust.");
+            System.Console.WriteLine("    owner filepath [password]");
+            System.Console.WriteLine("\t owner: Anchor owner");
+            System.Console.WriteLine("\t filePath: path fo the certificate file. Can be .DER, .CER or .PFX");
+            System.Console.WriteLine("\t password: (optional) file password");
         }
         
         /// <summary>
@@ -74,8 +73,8 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Anchor_ByID_Get()
         {
-            Console.WriteLine("Get an anchor by its id.");
-            Console.WriteLine("    anchorID [options]");
+            System.Console.WriteLine("Get an anchor by its id.");
+            System.Console.WriteLine("    anchorID [options]");
             CertificateCommands.PrintOptionsUsage();
         }
         
@@ -92,9 +91,9 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Anchors_Get()
         {
-            Console.WriteLine("Get all anchors for an owner.");
-            Console.WriteLine("  owner [options]");
-            Console.WriteLine("\t owner: Anchor owner");
+            System.Console.WriteLine("Get all anchors for an owner.");
+            System.Console.WriteLine("  owner [options]");
+            System.Console.WriteLine("\t owner: Anchor owner");
             CertificateCommands.PrintOptionsUsage();
         }
         
@@ -115,7 +114,7 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Anchors_List()
         {
-            Console.WriteLine("List all anchors");
+            System.Console.WriteLine("List all anchors");
             CertificateCommands.PrintOptionsUsage();
         }
         
@@ -131,10 +130,10 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Anchor_Status_Set()
         {
-            Console.WriteLine("Set the status for ALL anchors for an owner.");
-            Console.WriteLine("    owner");
-            Console.WriteLine("\t owner: Anchor owner");
-            Console.WriteLine("\t status: {0}", EntityStatusString);
+            System.Console.WriteLine("Set the status for ALL anchors for an owner.");
+            System.Console.WriteLine("    owner");
+            System.Console.WriteLine("\t owner: Anchor owner");
+            System.Console.WriteLine("\t status: {0}", EntityStatusString);
         }
         
         /// <summary>
@@ -148,8 +147,8 @@ namespace NHINDirect.Config.Command
         
         public void Usage_Anchor_Remove()
         {
-            Console.WriteLine("Remove anchors with given ID");
-            Console.WriteLine("    anchorID");
+            System.Console.WriteLine("Remove anchors with given ID");
+            System.Console.WriteLine("    anchorID");
         }
         
         /// <summary>
@@ -169,9 +168,9 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Anchor_Resolve()
         {
-            Console.WriteLine("Resolves anchors for an owner - like the Smtp Gateway would.");
-            Console.WriteLine("    owner [options]");
-            Console.WriteLine("\t owner: Anchor owner");
+            System.Console.WriteLine("Resolves anchors for an owner - like the Smtp Gateway would.");
+            System.Console.WriteLine("    owner [options]");
+            System.Console.WriteLine("\t owner: Anchor owner");
             CertificateCommands.PrintOptionsUsage();
         }
 
@@ -190,18 +189,18 @@ namespace NHINDirect.Config.Command
                     if (!checkForDupes || !client.Contains(owner, cert))
                     {
                         client.AddAnchor(new Anchor(owner, cert, true, true));
-                        Console.WriteLine("Added {0}", cert.Subject);
+                        System.Console.WriteLine("Added {0}", cert.Subject);
                     }
                     else
                     {
-                        Console.WriteLine("Exists {0}", cert.ExtractEmailNameOrName());
+                        System.Console.WriteLine("Exists {0}", cert.ExtractEmailNameOrName());
                     }
                 }
                 catch(FaultException<ConfigStoreFault> ex)
                 {
                     if (ex.Detail.Error == ConfigStoreError.UniqueConstraint)
                     {
-                        Console.WriteLine("Exists {0}", cert.Subject);
+                        System.Console.WriteLine("Exists {0}", cert.Subject);
                     }
                     else
                     {
@@ -221,7 +220,7 @@ namespace NHINDirect.Config.Command
         {
             if (anchors == null || anchors.Length == 0)
             {
-                Console.WriteLine("No certificates found");
+                System.Console.WriteLine("No certificates found");
                 return;
             }
             foreach (Anchor cert in anchors)

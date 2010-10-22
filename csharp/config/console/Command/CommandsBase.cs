@@ -2,7 +2,7 @@ using System;
 
 using Health.Direct.Config.Store;
 
-namespace NHINDirect.Config.Command
+namespace Health.Direct.Config.Console.Command
 {
     public class CommandsBase
     {

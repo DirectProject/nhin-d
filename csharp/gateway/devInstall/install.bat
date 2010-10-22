@@ -25,7 +25,7 @@ if NOT "%configFile%" == "" xcopy /y "%configFile%" %configDestPath%
 pushd %destbin%
 
 call :PrintHeading "Installing Test Certificates"
-call nhinConfigConsole.exe Test_Certs_Install
+call ConfigConsole.exe Test_Certs_Install
 if %ERRORLEVEL% NEQ 0 goto :Done
 Echo Succeeded
 

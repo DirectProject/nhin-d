@@ -14,32 +14,23 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using NHINDirect.Tools.Command;
 
-namespace NHINDirect.Config.Command
+namespace Health.Direct.Config.Console.Command
 {
-    //
-    // Commands to configure Console settings
-    //
     public class SettingsCommands
     {
-        public SettingsCommands()
-        {
-        }
-
         public void Command_Settings_Host_Get(string[] args)
         {
-            Console.WriteLine("DomainManager {0}", GetHost(ConfigConsole.Settings.DomainManager.Url));
-            Console.WriteLine("AddressManager {0}", GetHost(ConfigConsole.Settings.AddressManager.Url));
-            Console.WriteLine("CertificateManager {0}", GetHost(ConfigConsole.Settings.CertificateManager.Url));
-            Console.WriteLine("AnchorManager {0}", GetHost(ConfigConsole.Settings.AnchorManager.Url));
+            System.Console.WriteLine("DomainManager {0}", GetHost(ConfigConsole.Settings.DomainManager.Url));
+            System.Console.WriteLine("AddressManager {0}", GetHost(ConfigConsole.Settings.AddressManager.Url));
+            System.Console.WriteLine("CertificateManager {0}", GetHost(ConfigConsole.Settings.CertificateManager.Url));
+            System.Console.WriteLine("AnchorManager {0}", GetHost(ConfigConsole.Settings.AnchorManager.Url));
         }        
         public void Usage_Settings_Host_Get()
         {
-            Console.WriteLine("Get hosts used by config service clients");
+            System.Console.WriteLine("Get hosts used by config service clients");
         }
         
         public void Command_Settings_Host_Set(string[] args)
@@ -48,13 +39,13 @@ namespace NHINDirect.Config.Command
             int port = args.GetOptionalValue<int>(1, -1);            
             ConfigConsole.Current.SetHost(host, port);
             
-            Console.WriteLine("Host set to {0}", host);
+            System.Console.WriteLine("Host set to {0}", host);
         }        
         public void Usage_Settings_Host_Set()
         {
-            Console.WriteLine("Specify the host name and (optionally) the port on which the config service is running");
-            Console.WriteLine("    host [port]");
-            Console.WriteLine("E.g. foomachine OR foomachine 83");
+            System.Console.WriteLine("Specify the host name and (optionally) the port on which the config service is running");
+            System.Console.WriteLine("    host [port]");
+            System.Console.WriteLine("E.g. foomachine OR foomachine 83");
         }
                 
         string GetHost(string url)

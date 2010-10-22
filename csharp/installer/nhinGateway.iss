@@ -61,7 +61,7 @@ Source: "createconfigsvc.bat"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "configconsole.bat"; DestDir: "{app}"; Flags: ignoreversion;
 
 [Icons]
-Name: "{group}\NHIN Config Console"; Filename: "{app}\nhinConfigConsole.exe"; WorkingDir: "{app}";
+Name: "{group}\NHIN Config Console"; Filename: "{app}\ConfigConsole.exe"; WorkingDir: "{app}";
 Name: "{group}\Test Database"; Filename: "http://localhost/ConfigService/TestService.aspx";
 Name: "{group}\{cm:UninstallProgram,NHIN .NET Gateway}"; Filename: "{uninstallexe}";
 

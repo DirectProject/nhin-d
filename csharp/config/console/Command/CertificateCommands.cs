@@ -13,7 +13,6 @@ Neither the name of the The Direct Project (nhindirect.org). nor the names of it
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -31,7 +30,7 @@ using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Command
+namespace Health.Direct.Config.Console.Command
 {
     /// <summary>
     /// Commands to manage certificates
@@ -57,10 +56,10 @@ namespace NHINDirect.Config.Command
         }        
         public void Usage_Certificate_Add()
         {
-            Console.WriteLine("Import a certificate from a file and push it into the store.");
-            Console.WriteLine("    filepath [password]");
-            Console.WriteLine("\t filePath: path fo the certificate file. Can be .DER, .CER or .PFX");
-            Console.WriteLine("\t password: (optional) file password");
+            System.Console.WriteLine("Import a certificate from a file and push it into the store.");
+            System.Console.WriteLine("    filepath [password]");
+            System.Console.WriteLine("\t filePath: path fo the certificate file. Can be .DER, .CER or .PFX");
+            System.Console.WriteLine("\t password: (optional) file password");
         }
 
         /// <summary>
@@ -75,9 +74,9 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Certificate_ByID_Get()
         {
-            Console.WriteLine("Retrieve a certificate by its id.");
-            Console.WriteLine("    certificateID [options]");
-            Console.WriteLine("\t certificateID: ");
+            System.Console.WriteLine("Retrieve a certificate by its id.");
+            System.Console.WriteLine("    certificateID [options]");
+            System.Console.WriteLine("\t certificateID: ");
             PrintOptionsUsage();
         }
         
@@ -94,9 +93,9 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Certificate_Get()
         {
-            Console.WriteLine("Retrieve all certificates for an owner.");
-            Console.WriteLine("    owner [options]");
-            Console.WriteLine("\t owner: Certificate owner");
+            System.Console.WriteLine("Retrieve all certificates for an owner.");
+            System.Console.WriteLine("    owner [options]");
+            System.Console.WriteLine("\t owner: Certificate owner");
             PrintOptionsUsage();
         }
         
@@ -112,10 +111,10 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Certificate_Status_Set()
         {
-            Console.WriteLine("Set the status for ALL certificates for an OWNER.");
-            Console.WriteLine("     owner status");
-            Console.WriteLine("\t owner: Certificate owner");
-            Console.WriteLine("\t status: {0}", EntityStatusString);
+            System.Console.WriteLine("Set the status for ALL certificates for an OWNER.");
+            System.Console.WriteLine("     owner status");
+            System.Console.WriteLine("\t owner: Certificate owner");
+            System.Console.WriteLine("\t status: {0}", EntityStatusString);
         }
         
         /// <summary>
@@ -129,8 +128,8 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Certificate_Remove()
         {
-            Console.WriteLine("Remove certificate with given ID");
-            Console.WriteLine("    certificateID");
+            System.Console.WriteLine("Remove certificate with given ID");
+            System.Console.WriteLine("    certificateID");
         }
         
         /// <summary>
@@ -150,9 +149,9 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Certificate_Resolve()
         {
-            Console.WriteLine("Resolves certificates for an owner - like the Smtp Gateway would.");
-            Console.WriteLine("    owner [options]");
-            Console.WriteLine("\t owner: Certificate owner");
+            System.Console.WriteLine("Resolves certificates for an owner - like the Smtp Gateway would.");
+            System.Console.WriteLine("    owner [options]");
+            System.Console.WriteLine("\t owner: Certificate owner");
             PrintOptionsUsage();
         }
         
@@ -168,17 +167,17 @@ namespace NHINDirect.Config.Command
             Certificate[] certs = ConfigConsole.Current.CertificateClient.GetCertificatesForOwner(owner, options);
             if (ArrayExtensions.IsNullOrEmpty(certs))
             {
-                Console.WriteLine("No certificates found");
+                System.Console.WriteLine("No certificates found");
                 return;
             }            
             ExportCerts(certs, outputFile);
         }        
         public void Usage_Certificate_Export()
         {
-            Console.WriteLine("Export certificates for an owner in zone file format");
-            Console.WriteLine("    owner [outputFile]");
-            Console.WriteLine("\t owner: certificate owner");
-            Console.WriteLine("\t outputFile: (Optional) Export to file. Else write to Console");
+            System.Console.WriteLine("Export certificates for an owner in zone file format");
+            System.Console.WriteLine("    owner [outputFile]");
+            System.Console.WriteLine("\t owner: certificate owner");
+            System.Console.WriteLine("\t outputFile: (Optional) Export to file. Else write to Console");
         }
 
         /// <summary>
@@ -196,11 +195,11 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Certificate_Export_All()
         {
-            Console.WriteLine("Export all enabled public certificates in zone file FORMAT");
-            Console.WriteLine("You can place this output directly into your zone file");
-            Console.WriteLine("     [outputFile] [chunkSize]");
-            Console.WriteLine("\t outputFile: (Optional) Export to file. Else write to Console");
-            Console.WriteLine("\t chunkSize: (Optional) Enumeration size. Default is 25");
+            System.Console.WriteLine("Export all enabled public certificates in zone file FORMAT");
+            System.Console.WriteLine("You can place this output directly into your zone file");
+            System.Console.WriteLine("     [outputFile] [chunkSize]");
+            System.Console.WriteLine("\t outputFile: (Optional) Export to file. Else write to Console");
+            System.Console.WriteLine("\t chunkSize: (Optional) Enumeration size. Default is 25");
         }
         
         /// <summary>
@@ -211,17 +210,17 @@ namespace NHINDirect.Config.Command
         {
             string storeName = args.GetOptionalValue(0, "NHINDPrivate");
             string outputFile = args.GetOptionalValue(1, null);
-            using (SystemX509Store store = new SystemX509Store(Certificates.Extensions.OpenStoreRead(storeName, StoreLocation.LocalMachine), null))
+            using (SystemX509Store store = new SystemX509Store(NHINDirect.Certificates.Extensions.OpenStoreRead(storeName, StoreLocation.LocalMachine), null))
             {
                 ExportCerts(store, outputFile);
             }
         }
         public void Usage_Certificate_Export_Machine()
         {
-            Console.WriteLine("Exports public certificates for all certs in the given store");
-            Console.WriteLine("    [storeName] [outputFile]");
-            Console.WriteLine("\t storeName: (optional) Default is NHINDPrivate.");
-            Console.WriteLine("\t outputFile: (optional) Export to file. Else write to Console");
+            System.Console.WriteLine("Exports public certificates for all certs in the given store");
+            System.Console.WriteLine("    [storeName] [outputFile]");
+            System.Console.WriteLine("\t storeName: (optional) Default is NHINDPrivate.");
+            System.Console.WriteLine("\t outputFile: (optional) Export to file. Else write to Console");
         }
         
         //---------------------------------------
@@ -234,7 +233,7 @@ namespace NHINDirect.Config.Command
         {
             if (string.IsNullOrEmpty(filePath))
             {
-                ExportCerts(certs, Console.Out, false);
+                ExportCerts(certs, System.Console.Out, false);
                 return;
             }
                         
@@ -254,7 +253,7 @@ namespace NHINDirect.Config.Command
                 
                 if (isOutputFile)
                 {
-                    Console.WriteLine("{0}, {1}, {2}, {3}", cert.Owner, dnsCert.Name, cert.ValidStartDate, cert.ValidEndDate);
+                    System.Console.WriteLine("{0}, {1}, {2}, {3}", cert.Owner, dnsCert.Name, cert.ValidStartDate, cert.ValidEndDate);
                 }
             }
         }
@@ -263,7 +262,7 @@ namespace NHINDirect.Config.Command
         {
             if (string.IsNullOrEmpty(filePath))
             {
-                ExportCerts(certs, Console.Out, false);
+                ExportCerts(certs, System.Console.Out, false);
                 return;
             }
 
@@ -283,7 +282,7 @@ namespace NHINDirect.Config.Command
 
                 if (isOutputFile)
                 {
-                    Console.WriteLine(dnsCert.Name);
+                    System.Console.WriteLine(dnsCert.Name);
                 }
             }
         }
@@ -299,18 +298,18 @@ namespace NHINDirect.Config.Command
                     if (!checkForDupes || !client.Contains(cert))
                     {
                         client.AddCertificate(new Certificate(owner, cert));                    
-                        Console.WriteLine("Added {0}", cert.Subject);
+                        System.Console.WriteLine("Added {0}", cert.Subject);
                     }
                     else
                     {
-                        Console.WriteLine("Exists {0}", cert.Subject);
+                        System.Console.WriteLine("Exists {0}", cert.Subject);
                     }
                 }
                 catch (FaultException<ConfigStoreFault> ex)
                 {
                     if (ex.Detail.Error == ConfigStoreError.UniqueConstraint)
                     {
-                        Console.WriteLine("Exists {0}", cert.Subject);
+                        System.Console.WriteLine("Exists {0}", cert.Subject);
                     }
                 }
             }
@@ -366,17 +365,17 @@ namespace NHINDirect.Config.Command
 
         internal static void PrintOptionsUsage()
         {
-            Console.WriteLine("\t options:");
-            Console.WriteLine("\t [certData] [privatekey]");
-            Console.WriteLine("\t certData: (True/False) Fetch certificate data");
-            Console.WriteLine("\t privateKey: (True/False) Include private key");
+            System.Console.WriteLine("\t options:");
+            System.Console.WriteLine("\t [certData] [privatekey]");
+            System.Console.WriteLine("\t certData: (True/False) Fetch certificate data");
+            System.Console.WriteLine("\t privateKey: (True/False) Include private key");
         }
                 
         void Print(Certificate[] certs)
         {
             if (certs == null || certs.Length == 0)
             {
-                Console.WriteLine("No certificates found");
+                System.Console.WriteLine("No certificates found");
                 return;
             }
 
@@ -408,7 +407,7 @@ namespace NHINDirect.Config.Command
         {
             if (CollectionExtensions.IsNullOrEmpty(certs))
             {
-                Console.WriteLine("No certificates found");
+                System.Console.WriteLine("No certificates found");
                 return;
             }
             

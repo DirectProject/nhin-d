@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 using Health.Direct.Config.Client;
 
-namespace NHINDirect.Config.Command
+namespace Health.Direct.Config.Console
 {
     [XmlRoot("ConsoleSettings")]
     public class ConsoleSettings

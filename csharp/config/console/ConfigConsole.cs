@@ -18,11 +18,12 @@ using System.ServiceModel;
 
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Console.Command;
 using Health.Direct.Config.Store;
 
 using NHINDirect.Tools.Command;
 
-namespace NHINDirect.Config.Command
+namespace Health.Direct.Config.Console
 {
     internal class ConfigConsole
     {
@@ -93,13 +94,13 @@ namespace NHINDirect.Config.Command
             if (fault != null)
             {
                 CommandUI.PrintBold("CONFIGSTOREERROR={0}", fault.Detail.Error);
-                Console.WriteLine(fault.Detail.Message);
+                System.Console.WriteLine(fault.Detail.Message);
                 CommandUI.PrintSectionBreak();
-                Console.WriteLine(fault.ToString());
+                System.Console.WriteLine(fault.ToString());
             }
             else
             {
-                Console.WriteLine(ex.Message);
+                System.Console.WriteLine(ex.Message);
             }
         }        
     }
