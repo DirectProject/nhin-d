@@ -57,13 +57,13 @@
     <Compile Include="XDSHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\common\nhinCommon.csproj">
-      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
-      <Name>nhinCommon</Name>
+    <ProjectReference Include="..\..\common\common.csproj">
+      <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
+      <Name>common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\Common.csproj">
+    <ProjectReference Include="..\Common\XdsCommon.csproj">
       <Project>{8284EBE6-AE5C-4920-9738-8169A75DE618}</Project>
-      <Name>Common</Name>
+      <Name>XdsCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6F82A7A0-FB38-418F-A33F-BF289C39797A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NHINDirect.Tests</RootNamespace>
+    <AssemblyName>commonXUnitTests</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="xunit, Version=1.6.1.1521, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\xunit\xunit.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.extensions, Version=1.6.1.1521, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\xunit\xunit.extensions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Caching\DnsClientWithCacheFacts.cs" />
+    <Compile Include="Caching\DnsResponseCacheFacts.cs" />
+    <Compile Include="Caching\DnsResponseToBinExample.cs" />
+    <Compile Include="DnsResolver\BasicResolverTests.cs" />
+    <Compile Include="DnsResolver\TestSerialization.cs" />
+    <Compile Include="Mail\RoundTripFacts.cs" />
+    <Compile Include="Mail\TestMDN.cs" />
+    <Compile Include="Metadata\AuthorFacts.cs" />
+    <Compile Include="Metadata\HL7UtilFacts.cs" />
+    <Compile Include="Metadata\PatientIDFacts.cs" />
+    <Compile Include="Metadata\PersonFacts.cs" />
+    <Compile Include="Metadata\RecipientFacts.cs" />
+    <Compile Include="Mime\BodyFacts.cs" />
+    <Compile Include="Mime\CharReaderFacts.cs" />
+    <Compile Include="Mime\MimeEntityCollectionFacts.cs" />
+    <Compile Include="Mime\DefaultSerializerFacts.cs" />
+    <Compile Include="Mime\EntityPartFacts.cs" />
+    <Compile Include="Mime\HeaderCollectionFacts.cs" />
+    <Compile Include="Mime\HeaderFacts.cs" />
+    <Compile Include="Mime\MimeEntityFacts.cs" />
+    <Compile Include="Mime\MimeSerializerFacts.cs" />
+    <Compile Include="Mime\MimeWriterFacts.cs" />
+    <Compile Include="Mime\StringSegmentFacts.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestingBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\common.csproj">
+      <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
+      <Name>common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Metadata\dns responses\dns.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Metadata\dns responses\hvnhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Metadata\dns responses\nhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Metadata\dns responses\www.apple.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Metadata\dns responses\www.google.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Metadata\dns responses\www.microsoft.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Metadata\dns responses\www.yahoo.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DnsResolver\DnsTestCerts\redmond.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="DnsResolver\DnsTestCerts\umesh.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\a.hvnhind.hsgincubator.com.bin" />
+    <None Include="Metadata\dns responses\a.nhind.hsgincubator.com.bin" />
+    <None Include="Metadata\dns responses\a.www.apple.com.bin" />
+    <None Include="Metadata\dns responses\a.www.bing.com.bin" />
+    <None Include="Metadata\dns responses\a.www.cerner.com.bin" />
+    <None Include="Metadata\dns responses\a.www.epic.com.bin" />
+    <None Include="Metadata\dns responses\a.www.google.com.bin" />
+    <None Include="Metadata\dns responses\a.www.ibm.com.bin" />
+    <None Include="Metadata\dns responses\a.www.microsoft.com.bin" />
+    <None Include="Metadata\dns responses\a.www.nhindirect.org.bin" />
+    <None Include="Metadata\dns responses\a.www.yahoo.com.bin" />
+    <None Include="Metadata\dns responses\mx.hvnhind.hsgincubator.com.bin" />
+    <None Include="Metadata\dns responses\mx.nhind.hsgincubator.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.apple.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.bing.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.cerner.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.epic.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.google.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.ibm.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.microsoft.com.bin" />
+    <None Include="Metadata\dns responses\mx.www.nhindirect.org.bin" />
+    <None Include="Metadata\dns responses\mx.www.yahoo.com.bin" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Diagnostics\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

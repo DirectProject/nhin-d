@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NHINDirect.Config.Service {
+namespace Health.Direct.Config.Service {
     
     
     public partial class TestService {

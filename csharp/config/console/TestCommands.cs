@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
-using NHINDirect;
-using NHINDirect.Config.Store;
+
+using Health.Direct.Config.Store;
+
 using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
+using NHINDirect.Extensions;
 
 namespace NHINDirect.Config.Command
 {
@@ -94,7 +94,7 @@ namespace NHINDirect.Config.Command
 
             MemoryX509Store certStore = new MemoryX509Store();
             string[] files = Directory.GetFiles(folderPath);
-            if (files.IsNullOrEmpty())
+            if (ArrayExtensions.IsNullOrEmpty(files))
             {
                 throw new ArgumentException("Empty directory");
             }

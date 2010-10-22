@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NHINDirect.Config.Client.DomainManager {
+namespace Health.Direct.Config.Client.DomainManager {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
@@ -17,75 +17,75 @@ namespace NHINDirect.Config.Client.DomainManager {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressesRespons" +
             "e")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressesConfigS" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressesConfigS" +
             "toreFaultFault", Name="ConfigStoreFault")]
-        void AddAddresses(NHINDirect.Config.Store.Address[] addresses);
+        void AddAddresses(Health.Direct.Config.Store.Address[] addresses);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/UpdateAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/UpdateAddressesResp" +
             "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/UpdateAddressesConf" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/UpdateAddressesConf" +
             "igStoreFaultFault", Name="ConfigStoreFault")]
-        void UpdateAddresses(NHINDirect.Config.Store.Address[] address);
+        void UpdateAddresses(Health.Direct.Config.Store.Address[] address);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesRespons" +
             "e")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesConfigS" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesConfigS" +
             "toreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Address[] GetAddresses(string[] emailAddresses, System.Nullable<NHINDirect.Config.Store.EntityStatus> status);
+        Health.Direct.Config.Store.Address[] GetAddresses(string[] emailAddresses, System.Nullable<Health.Direct.Config.Store.EntityStatus> status);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByID", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByIDRes" +
             "ponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByIDCon" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByIDCon" +
             "figStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Address[] GetAddressesByID(long[] addressIDs, System.Nullable<NHINDirect.Config.Store.EntityStatus> status);
+        Health.Direct.Config.Store.Address[] GetAddressesByID(long[] addressIDs, System.Nullable<Health.Direct.Config.Store.EntityStatus> status);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddressesResp" +
             "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddressesConf" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddressesConf" +
             "igStoreFaultFault", Name="ConfigStoreFault")]
         void RemoveAddresses(string[] emailAddresses);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveDomainAddress" +
             "es", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveDomainAddress" +
             "esResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveDomainAddress" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveDomainAddress" +
             "esConfigStoreFaultFault", Name="ConfigStoreFault")]
         void RemoveDomainAddresses(long domainID);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesS" +
             "tatus", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesS" +
             "tatusResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesS" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesS" +
             "tatusConfigStoreFaultFault", Name="ConfigStoreFault")]
-        void SetDomainAddressesStatus(long domainID, NHINDirect.Config.Store.EntityStatus status);
+        void SetDomainAddressesStatus(long domainID, Health.Direct.Config.Store.EntityStatus status);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressCount", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressCountResp" +
             "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressCountConf" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressCountConf" +
             "igStoreFaultFault", Name="ConfigStoreFault")]
         int GetAddressCount(string domainName);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddr" +
             "esses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddr" +
             "essesResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddr" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddr" +
             "essesConfigStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Address[] EnumerateDomainAddresses(string domainName, string lastAddress, int maxResults);
+        Health.Direct.Config.Store.Address[] EnumerateDomainAddresses(string domainName, string lastAddress, int maxResults);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateAddressesR" +
             "esponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateAddressesC" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateAddressesC" +
             "onfigStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Address[] EnumerateAddresses(string lastAddress, int maxResults);
+        Health.Direct.Config.Store.Address[] EnumerateAddresses(string lastAddress, int maxResults);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public interface IAddressManagerChannel : NHINDirect.Config.Client.DomainManager.IAddressManager, System.ServiceModel.IClientChannel {
+    public interface IAddressManagerChannel : Health.Direct.Config.Client.DomainManager.IAddressManager, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public partial class AddressManagerClient : System.ServiceModel.ClientBase<NHINDirect.Config.Client.DomainManager.IAddressManager>, NHINDirect.Config.Client.DomainManager.IAddressManager {
+    public partial class AddressManagerClient : System.ServiceModel.ClientBase<Health.Direct.Config.Client.DomainManager.IAddressManager>, Health.Direct.Config.Client.DomainManager.IAddressManager {
         
         public AddressManagerClient() {
         }
@@ -106,19 +106,19 @@ namespace NHINDirect.Config.Client.DomainManager {
                 base(binding, remoteAddress) {
         }
         
-        public void AddAddresses(NHINDirect.Config.Store.Address[] addresses) {
+        public void AddAddresses(Health.Direct.Config.Store.Address[] addresses) {
             base.Channel.AddAddresses(addresses);
         }
         
-        public void UpdateAddresses(NHINDirect.Config.Store.Address[] address) {
+        public void UpdateAddresses(Health.Direct.Config.Store.Address[] address) {
             base.Channel.UpdateAddresses(address);
         }
         
-        public NHINDirect.Config.Store.Address[] GetAddresses(string[] emailAddresses, System.Nullable<NHINDirect.Config.Store.EntityStatus> status) {
+        public Health.Direct.Config.Store.Address[] GetAddresses(string[] emailAddresses, System.Nullable<Health.Direct.Config.Store.EntityStatus> status) {
             return base.Channel.GetAddresses(emailAddresses, status);
         }
         
-        public NHINDirect.Config.Store.Address[] GetAddressesByID(long[] addressIDs, System.Nullable<NHINDirect.Config.Store.EntityStatus> status) {
+        public Health.Direct.Config.Store.Address[] GetAddressesByID(long[] addressIDs, System.Nullable<Health.Direct.Config.Store.EntityStatus> status) {
             return base.Channel.GetAddressesByID(addressIDs, status);
         }
         
@@ -130,7 +130,7 @@ namespace NHINDirect.Config.Client.DomainManager {
             base.Channel.RemoveDomainAddresses(domainID);
         }
         
-        public void SetDomainAddressesStatus(long domainID, NHINDirect.Config.Store.EntityStatus status) {
+        public void SetDomainAddressesStatus(long domainID, Health.Direct.Config.Store.EntityStatus status) {
             base.Channel.SetDomainAddressesStatus(domainID, status);
         }
         
@@ -138,11 +138,11 @@ namespace NHINDirect.Config.Client.DomainManager {
             return base.Channel.GetAddressCount(domainName);
         }
         
-        public NHINDirect.Config.Store.Address[] EnumerateDomainAddresses(string domainName, string lastAddress, int maxResults) {
+        public Health.Direct.Config.Store.Address[] EnumerateDomainAddresses(string domainName, string lastAddress, int maxResults) {
             return base.Channel.EnumerateDomainAddresses(domainName, lastAddress, maxResults);
         }
         
-        public NHINDirect.Config.Store.Address[] EnumerateAddresses(string lastAddress, int maxResults) {
+        public Health.Direct.Config.Store.Address[] EnumerateAddresses(string lastAddress, int maxResults) {
             return base.Channel.EnumerateAddresses(lastAddress, maxResults);
         }
     }
@@ -152,47 +152,47 @@ namespace NHINDirect.Config.Client.DomainManager {
     public interface IDomainManager {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/AddDomain", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/AddDomainResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/AddDomainConfigStore" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/AddDomainConfigStore" +
             "FaultFault", Name="ConfigStoreFault")]
-        void AddDomain(NHINDirect.Config.Store.Domain domain);
+        void AddDomain(Health.Direct.Config.Store.Domain domain);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomain", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomainResponse" +
             "")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomainConfigSt" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomainConfigSt" +
             "oreFaultFault", Name="ConfigStoreFault")]
-        void UpdateDomain(NHINDirect.Config.Store.Domain domain);
+        void UpdateDomain(Health.Direct.Config.Store.Domain domain);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCount", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCountRespon" +
             "se")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCountConfig" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCountConfig" +
             "StoreFaultFault", Name="ConfigStoreFault")]
         int GetDomainCount();
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomains", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainsResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainsConfigStor" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainsConfigStor" +
             "eFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Domain[] GetDomains(string[] domainNames, System.Nullable<NHINDirect.Config.Store.EntityStatus> status);
+        Health.Direct.Config.Store.Domain[] GetDomains(string[] domainNames, System.Nullable<Health.Direct.Config.Store.EntityStatus> status);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/RemoveDomain", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/RemoveDomainResponse" +
             "")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/RemoveDomainConfigSt" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/RemoveDomainConfigSt" +
             "oreFaultFault", Name="ConfigStoreFault")]
         void RemoveDomain(string domainName);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/EnumerateDomains", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/EnumerateDomainsResp" +
             "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(NHINDirect.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/EnumerateDomainsConf" +
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/EnumerateDomainsConf" +
             "igStoreFaultFault", Name="ConfigStoreFault")]
-        NHINDirect.Config.Store.Domain[] EnumerateDomains(string lastDomainName, int maxResults);
+        Health.Direct.Config.Store.Domain[] EnumerateDomains(string lastDomainName, int maxResults);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public interface IDomainManagerChannel : NHINDirect.Config.Client.DomainManager.IDomainManager, System.ServiceModel.IClientChannel {
+    public interface IDomainManagerChannel : Health.Direct.Config.Client.DomainManager.IDomainManager, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public partial class DomainManagerClient : System.ServiceModel.ClientBase<NHINDirect.Config.Client.DomainManager.IDomainManager>, NHINDirect.Config.Client.DomainManager.IDomainManager {
+    public partial class DomainManagerClient : System.ServiceModel.ClientBase<Health.Direct.Config.Client.DomainManager.IDomainManager>, Health.Direct.Config.Client.DomainManager.IDomainManager {
         
         public DomainManagerClient() {
         }
@@ -213,11 +213,11 @@ namespace NHINDirect.Config.Client.DomainManager {
                 base(binding, remoteAddress) {
         }
         
-        public void AddDomain(NHINDirect.Config.Store.Domain domain) {
+        public void AddDomain(Health.Direct.Config.Store.Domain domain) {
             base.Channel.AddDomain(domain);
         }
         
-        public void UpdateDomain(NHINDirect.Config.Store.Domain domain) {
+        public void UpdateDomain(Health.Direct.Config.Store.Domain domain) {
             base.Channel.UpdateDomain(domain);
         }
         
@@ -225,7 +225,7 @@ namespace NHINDirect.Config.Client.DomainManager {
             return base.Channel.GetDomainCount();
         }
         
-        public NHINDirect.Config.Store.Domain[] GetDomains(string[] domainNames, System.Nullable<NHINDirect.Config.Store.EntityStatus> status) {
+        public Health.Direct.Config.Store.Domain[] GetDomains(string[] domainNames, System.Nullable<Health.Direct.Config.Store.EntityStatus> status) {
             return base.Channel.GetDomains(domainNames, status);
         }
         
@@ -233,7 +233,7 @@ namespace NHINDirect.Config.Client.DomainManager {
             base.Channel.RemoveDomain(domainName);
         }
         
-        public NHINDirect.Config.Store.Domain[] EnumerateDomains(string lastDomainName, int maxResults) {
+        public Health.Direct.Config.Store.Domain[] EnumerateDomains(string lastDomainName, int maxResults) {
             return base.Channel.EnumerateDomains(lastDomainName, maxResults);
         }
     }

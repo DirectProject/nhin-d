@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Security.Cryptography.X509Certificates;
-using System.Net.Sockets;
-using System.Threading;
+
 using DnsResolver;
 using DnsResponder;
-using System.Diagnostics;
 
-namespace DnsResponderTest
+namespace Health.Direct.DnsResponder.Tests
 {
     public class TestServer
     {

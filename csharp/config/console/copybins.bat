@@ -1,5 +1,5 @@
 @rem ----------------------------------------------------
-@rem Batch File for Deploying New NHIND Config Service Binaries
+@rem Batch File for Deploying New Config Service Binaries
 @rem ----------------------------------------------------
 @echo off
 
@@ -29,7 +29,7 @@ goto :EOF
 @rem -------------------------------
 :CopyBins
 call :PrintHeading Copying BINS to "%dest%"
-call :CopyFiles nhinConfigConsole.exe nhinConfigClient.dll nhinConfigStore.dll nhinCommon.dll nhinToolLib.dll ConfigConsoleSettings.xml nhinConfigConsole.exe.config
+call :CopyFiles nhinConfigConsole.exe Health.Direct.Config.Client.dll Health.Direct.Config.Store.dll nhinCommon.dll nhinToolLib.dll ConfigConsoleSettings.xml nhinConfigConsole.exe.config
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------

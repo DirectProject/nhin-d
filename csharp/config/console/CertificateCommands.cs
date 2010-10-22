@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, NHIN Direct Project
+ Copyright (c) 2010, Direct Project
  All rights reserved.
 
  Authors:
@@ -9,35 +9,35 @@ Redistribution and use in source and binary forms, with or without modification,
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+Neither the name of the The Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 using System.ServiceModel;
+
 using DnsResolver;
+
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.CertificateService;
+using Health.Direct.Config.Store;
+
 using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
-using NHINDirect.Config.Store;
-using NHINDirect.Config.Client;
-using NHINDirect.Config.Client.CertificateService;
+using NHINDirect.Extensions;
 
 namespace NHINDirect.Config.Command
 {
     /// <summary>
     /// Commands to manage certificates
     /// </summary>
-    public class CertificateCommands
+    public class CertificateCommands : CommandsBase
     {        
-        public CertificateCommands()
-        {
-        }
         //---------------------------------------
         //
         // Commands
@@ -115,7 +115,7 @@ namespace NHINDirect.Config.Command
             Console.WriteLine("Set the status for ALL certificates for an OWNER.");
             Console.WriteLine("     owner status");
             Console.WriteLine("\t owner: Certificate owner");
-            Console.WriteLine("\t status: {0}", Extensions.EntityStatusString);
+            Console.WriteLine("\t status: {0}", EntityStatusString);
         }
         
         /// <summary>
@@ -142,7 +142,7 @@ namespace NHINDirect.Config.Command
             CertificateGetOptions options = GetOptions(args, 1);
 
             Certificate[] certs = ConfigConsole.Current.CertificateClient.GetCertificatesForOwner(owner.Address, options);
-            if (certs.IsNullOrEmpty())
+            if (ArrayExtensions.IsNullOrEmpty(certs))
             {
                 certs = ConfigConsole.Current.CertificateClient.GetCertificatesForOwner(owner.Host, options);
             }
@@ -166,7 +166,7 @@ namespace NHINDirect.Config.Command
             
             CertificateGetOptions options = new CertificateGetOptions() { IncludeData = true, IncludePrivateKey = false};
             Certificate[] certs = ConfigConsole.Current.CertificateClient.GetCertificatesForOwner(owner, options);
-            if (certs.IsNullOrEmpty())
+            if (ArrayExtensions.IsNullOrEmpty(certs))
             {
                 Console.WriteLine("No certificates found");
                 return;
@@ -406,7 +406,7 @@ namespace NHINDirect.Config.Command
                 
         internal static void Print(X509Certificate2Collection certs)
         {
-            if (certs.IsNullOrEmpty())
+            if (CollectionExtensions.IsNullOrEmpty(certs))
             {
                 Console.WriteLine("No certificates found");
                 return;

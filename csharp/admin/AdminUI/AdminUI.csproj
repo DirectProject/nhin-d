@@ -189,19 +189,19 @@
     <Content Include="Domains.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\common\nhinCommon.csproj">
-      <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
-      <Name>nhinCommon</Name>
+    <ProjectReference Include="..\..\common\common.csproj">
+      <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
+      <Name>common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\config\client\configClient.csproj">
+    <ProjectReference Include="..\..\config\client\config.client.csproj">
       <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
       <Name>configClient</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\config\store\configStore.csproj">
+    <ProjectReference Include="..\..\config\store\config.store.csproj">
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>configStore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\diagnostics\diagnostics.csproj">
+    <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj">
       <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
       <Name>diagnostics</Name>
     </ProjectReference>
