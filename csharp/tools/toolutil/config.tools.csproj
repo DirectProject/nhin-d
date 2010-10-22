@@ -8,8 +8,8 @@
     <ProjectGuid>{D46A743B-E82F-45F7-87CB-29DBBFF9B9A0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Health.Direct.Config.ToolLib</RootNamespace>
-    <AssemblyName>Health.Direct.Config.ToolLib</AssemblyName>
+    <RootNamespace>Health.Direct.Config.Tools</RootNamespace>
+    <AssemblyName>Health.Direct.Config.Tools</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

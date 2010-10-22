@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Health.Direct.Config.ToolLib.Command
+namespace Health.Direct.Config.Tools.Command
 {
     /// <summary>
     /// A Dictionary of name value pairs, where value is optional 

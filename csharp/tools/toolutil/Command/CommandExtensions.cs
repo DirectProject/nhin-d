@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Health.Direct.Config.ToolLib.Command
+namespace Health.Direct.Config.Tools.Command
 {
     /// <summary>
     /// Useful extensions that help with making simple & useful command line Console apps. 
