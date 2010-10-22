@@ -16,7 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Text;
 
-using NHINDirect.Agent;
+using Health.Direct.Agent;
+
 using NHINDirect.Certificates;
 using NHINDirect.Diagnostics;
 using NHINDirect.Extensions;
@@ -114,7 +115,7 @@ namespace Health.Direct.SmtpAgent
             }
         }
         
-        string CollectNoCertInformation(NHINDAddressCollection recipients)
+        string CollectNoCertInformation(DirectAddressCollection recipients)
         {
             if (recipients.IsNullOrEmpty())
             {

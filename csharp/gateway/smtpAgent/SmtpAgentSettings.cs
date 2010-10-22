@@ -18,9 +18,9 @@ using System.IO;
 using System.Text;
 using System.Xml.Serialization;
 
+using Health.Direct.Agent.Config;
 using Health.Direct.Config.Client;
 
-using NHINDirect.Agent.Config;
 using NHINDirect.Diagnostics;
 using NHINDirect.Extensions;
 

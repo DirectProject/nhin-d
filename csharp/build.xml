@@ -35,7 +35,7 @@
 	</Target>
 
 	<Target Name="build-agent-help" DependsOnTargets="build-agent">
-		<Exec Command="build\sc_help.bat bin\debug\nhinAgent.dll" />
+		<Exec Command="build\sc_help.bat bin\debug\Health.Direct.Agent.dll" />
 	</Target>
 
 	<Target Name="build-gateway">

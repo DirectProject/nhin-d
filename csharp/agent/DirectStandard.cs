@@ -15,27 +15,28 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using NHINDirect.Mail;
 
-namespace NHINDirect.Agent
+namespace Health.Direct.Agent
 {
     /// <summary>
     /// Represents standard elements of a Direct RFC 5322 message
     /// </summary>
-    public class NHINDStandard : MailStandard
+    public class DirectStandard : MailStandard
     {
         /// <summary>
         /// The required mail headers for a Direct RFC 5322 message
         /// </summary>
-        public readonly static string[] MailHeadersUsed = new[]
-        {
-            VersionHeader,
-            Headers.From,
-            Headers.To,
-            Headers.Cc,
-            Headers.Bcc,
-            Headers.OrigDate,
-            Headers.MessageID,
-            Headers.InReplyTo,
-            Headers.References
-        };
+        public static readonly string[] MailHeadersUsed
+            = new[]
+                  {
+                      VersionHeader,
+                      Headers.From,
+                      Headers.To,
+                      Headers.Cc,
+                      Headers.Bcc,
+                      Headers.OrigDate,
+                      Headers.MessageID,
+                      Headers.InReplyTo,
+                      Headers.References
+                  };
     }
 }

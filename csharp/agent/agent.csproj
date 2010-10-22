@@ -8,8 +8,8 @@
     <ProjectGuid>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect.Agent</RootNamespace>
-    <AssemblyName>nhinAgent</AssemblyName>
+    <RootNamespace>Health.Direct.Agent</RootNamespace>
+    <AssemblyName>Health.Direct.Agent</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\Release\nhinAgent.xml</DocumentationFile>
+    <DocumentationFile>..\bin\Release\Health.Direct.Agent.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,7 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\Release\nhinAgent.xml</DocumentationFile>
+    <DocumentationFile>..\bin\Release\Health.Direct.Agent.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -59,9 +59,9 @@
     <Compile Include="MessageSignature.cs" />
     <Compile Include="MessageSignatureCollection.cs" />
     <Compile Include="DirectAddress.cs" />
-    <Compile Include="NHINDAddressCollection.cs" />
-    <Compile Include="NHINDAgent.cs" />
-    <Compile Include="NHINDStandard.cs" />
+    <Compile Include="DirectAddressCollection.cs" />
+    <Compile Include="DirectAgent.cs" />
+    <Compile Include="DirectStandard.cs" />
     <Compile Include="OutgoingMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AgentError.cs" />

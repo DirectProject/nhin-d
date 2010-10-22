@@ -18,7 +18,7 @@ using System.Security.Cryptography.X509Certificates;
 
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Agent
+namespace Health.Direct.Agent
 {
     /// <summary>
     /// Represents a Direct address (a <see cref="MailAddress"/> with an associated set of certificates.
@@ -141,7 +141,7 @@ namespace NHINDirect.Agent
             set;
         }
         
-	/// <summary>
+        /// <summary>
         /// Returns <c>true</c> if the trust status for this address meets minimal trust, <c>false</c> if not.
         /// </summary>
         /// <param name="minTrustStatus">The <see cref="TrustEnforcementStatus"/> treated as minimally trustworthy</param>
@@ -150,5 +150,5 @@ namespace NHINDirect.Agent
         {
             return (this.m_trustStatus >= minTrustStatus);
         }        
-    }    
+    }
 }

@@ -22,7 +22,7 @@ using System.Security.Cryptography.X509Certificates;
 using NHINDirect.Certificates;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Agent
+namespace Health.Direct.Agent
 {
     /// <summary>
     /// Validates trust chains for certificates.
@@ -45,12 +45,12 @@ namespace NHINDirect.Agent
         /// Chain validations status treated as failing trust validation with the certificate.
         /// </summary>
         public static readonly X509ChainStatusFlags DefaultProblemFlags =
-                X509ChainStatusFlags.NotTimeValid |
-                X509ChainStatusFlags.Revoked |
-                X509ChainStatusFlags.NotSignatureValid |
-                X509ChainStatusFlags.InvalidBasicConstraints |
-                X509ChainStatusFlags.CtlNotTimeValid |
-                X509ChainStatusFlags.CtlNotSignatureValid;
+            X509ChainStatusFlags.NotTimeValid |
+            X509ChainStatusFlags.Revoked |
+            X509ChainStatusFlags.NotSignatureValid |
+            X509ChainStatusFlags.InvalidBasicConstraints |
+            X509ChainStatusFlags.CtlNotTimeValid |
+            X509ChainStatusFlags.CtlNotSignatureValid;
                 
         X509ChainPolicy m_policy;
         X509ChainStatusFlags m_problemFlags;

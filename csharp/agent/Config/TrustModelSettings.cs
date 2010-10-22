@@ -14,13 +14,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using System.Security.Cryptography.X509Certificates;
 
-namespace NHINDirect.Agent.Config
+namespace Health.Direct.Agent.Config
 {
     /// <summary>
     /// Configuration for TrustModel enforcement
@@ -40,7 +37,7 @@ namespace NHINDirect.Agent.Config
         /// When attempting to resolve intermediate cert issuers, follow the issuance chain to this depth
         /// <remarks>
         /// This is used to prevent DOS - accidental or otherwise. 
-        /// <seealso cref="NHINDirect.Agent.TrustChainValidator"/>
+        /// <seealso cref="TrustChainValidator"/>
         /// </remarks>
         /// </summary>
         [XmlElement]

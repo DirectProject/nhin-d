@@ -14,15 +14,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
-using NHINDirect.Certificates;
-using NHINDirect.Cryptography;
 
-namespace NHINDirect.Agent
+using NHINDirect.Certificates;
+
+namespace Health.Direct.Agent
 {
     /// <summary>
     /// Represents a single S/MIME signature on a message.
@@ -151,5 +148,5 @@ namespace NHINDirect.Agent
             
             return m_thumbprintVerified.Value;
         }        
-    }    
+    }
 }

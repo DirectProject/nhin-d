@@ -14,15 +14,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
-using System.Security.Cryptography.X509Certificates;
-using NHINDirect.Certificates;
 using System.Net;
+using System.Xml.Serialization;
 
-namespace NHINDirect.Agent.Config
+using NHINDirect.Certificates;
+
+namespace Health.Direct.Agent.Config
 {
     /// <summary>
     /// Settings for a DNS-based certificate resolver.
@@ -126,9 +123,9 @@ namespace NHINDirect.Agent.Config
             //---add property to toggle cache awareness; if true pass in cache instance
 
             return new DnsCertResolver(IPAddress.Parse(this.ServerIP), 
-				TimeSpan.FromMilliseconds(this.TimeoutMilliseconds)
-                , this.FallbackDomain
-                , m_cache);
+                                       TimeSpan.FromMilliseconds(this.TimeoutMilliseconds)
+                                       , this.FallbackDomain
+                                       , m_cache);
         }
     }
 }

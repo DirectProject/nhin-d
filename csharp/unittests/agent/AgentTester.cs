@@ -20,7 +20,6 @@ using System.IO;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Agent;
 using NHINDirect.Certificates;
 
 namespace Health.Direct.Agent.Tests
@@ -33,11 +32,11 @@ namespace Health.Direct.Agent.Tests
         public const string DefaultDomainA = "redmond.hsgincubator.com";
         public const string DefaultDomainB = "nhind.hsgincubator.com";
         
-        NHINDAgent m_agentA;
-        NHINDAgent m_agentB;
+        DirectAgent m_agentA;
+        DirectAgent m_agentB;
         string m_messageFolder;
         
-        public AgentTester(NHINDAgent agentA, NHINDAgent agentB)
+        public AgentTester(DirectAgent agentA, DirectAgent agentB)
         {
             if (agentA == null)
             {
@@ -54,7 +53,7 @@ namespace Health.Direct.Agent.Tests
             m_messageFolder = Path.Combine(Directory.GetCurrentDirectory(), "TestMessages");
         }
         
-        public NHINDAgent AgentA
+        public DirectAgent AgentA
         {
             get
             {
@@ -66,7 +65,7 @@ namespace Health.Direct.Agent.Tests
             }
         }
         
-        public NHINDAgent AgentB
+        public DirectAgent AgentB
         {
             get
             {
@@ -154,8 +153,8 @@ namespace Health.Direct.Agent.Tests
         
         public static AgentTester CreateDefault()
         {
-            NHINDAgent agentA = new NHINDAgent(AgentTester.DefaultDomainA);
-            NHINDAgent agentB = new NHINDAgent(AgentTester.DefaultDomainB);
+            DirectAgent agentA = new DirectAgent(AgentTester.DefaultDomainA);
+            DirectAgent agentB = new DirectAgent(AgentTester.DefaultDomainB);
             
             return new AgentTester(agentA, agentB);
         }
@@ -167,12 +166,12 @@ namespace Health.Direct.Agent.Tests
         
         public static AgentTester CreateTest(string basePath)
         {
-            NHINDAgent agentA = CreateAgent(AgentTester.DefaultDomainA, MakeCertificatesPath(basePath, "redmond"));
-            NHINDAgent agentB = CreateAgent(AgentTester.DefaultDomainB, MakeCertificatesPath(basePath, "nhind"));
+            DirectAgent agentA = CreateAgent(AgentTester.DefaultDomainA, MakeCertificatesPath(basePath, "redmond"));
+            DirectAgent agentB = CreateAgent(AgentTester.DefaultDomainB, MakeCertificatesPath(basePath, "nhind"));
             return new AgentTester(agentA, agentB);
         }
         
-        public static NHINDAgent CreateAgent(string domain, string certsBasePath)
+        public static DirectAgent CreateAgent(string domain, string certsBasePath)
         {
             MemoryX509Store privateCerts = LoadPrivateCerts(certsBasePath);
             MemoryX509Store publicCerts = LoadPublicCerts(certsBasePath);
@@ -180,7 +179,7 @@ namespace Health.Direct.Agent.Tests
                 (IX509CertificateStore) LoadIncomingAnchors(certsBasePath),
                 (IX509CertificateStore) LoadOutgoingAnchors(certsBasePath));
 
-            return new NHINDAgent(domain, privateCerts.CreateResolver(), publicCerts.CreateResolver(), anchors);
+            return new DirectAgent(domain, privateCerts.CreateResolver(), publicCerts.CreateResolver(), anchors);
         }
         
         static string MakeCertificatesPath(string basePath, string agentFolder)

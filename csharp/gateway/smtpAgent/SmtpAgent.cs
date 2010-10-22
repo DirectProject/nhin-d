@@ -17,11 +17,11 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
+using Health.Direct.Agent;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
 
-using NHINDirect.Agent;
 using NHINDirect.Certificates;
 using NHINDirect.Container;
 using NHINDirect.Diagnostics;
@@ -45,7 +45,7 @@ namespace Health.Direct.SmtpAgent
         ILogger m_logger;
 
         SmtpAgentSettings m_settings;
-        NHINDAgent m_agent;
+        DirectAgent m_agent;
         DomainPostmasters m_postmasters;
         AgentDiagnostics m_diagnostics;
         MessageRouter m_router;
@@ -86,7 +86,7 @@ namespace Health.Direct.SmtpAgent
             }
         }
                 
-        public NHINDAgent SecurityAgent
+        public DirectAgent SecurityAgent
         {
             get
             {
@@ -528,7 +528,7 @@ namespace Health.Direct.SmtpAgent
             
             message.EnsureRecipientsCategorizedByDomain(this.SecurityAgent.Domains);
 
-            NHINDAddressCollection recipients = message.DomainRecipients;
+            DirectAddressCollection recipients = message.DomainRecipients;
             Address[] resolved = m_configService.GetAddresses(recipients);
             if (resolved.IsNullOrEmpty())
             {

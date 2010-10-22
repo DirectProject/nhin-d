@@ -17,9 +17,8 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
+using Health.Direct.Agent;
 using Health.Direct.Config.Store;
-
-using NHINDirect.Agent;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -136,7 +135,7 @@ namespace Health.Direct.SmtpAgent
             }
         }
 
-        void Route(ISmtpMessage message, NHINDAddressCollection recipients, Action<ISmtpMessage, MessageRoute> action)
+        void Route(ISmtpMessage message, DirectAddressCollection recipients, Action<ISmtpMessage, MessageRoute> action)
         {
             Dictionary<string, MessageRoute> matches = new Dictionary<string, MessageRoute>(StringComparer.OrdinalIgnoreCase);
             int i = 0;

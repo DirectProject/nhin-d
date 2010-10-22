@@ -13,24 +13,22 @@ Neither the name of the The Direct Project (nhindirect.org). nor the names of it
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
+
 using NHINDirect.Collections;
 using NHINDirect.Certificates;
-using NHINDirect.Cryptography;
 using NHINDirect.Mime;
 using NHINDirect.Mail;
 
-namespace NHINDirect.Agent
+namespace Health.Direct.Agent
 {
     /// <summary>
     /// Represents a collection of <see cref="DirectAddress"/> instances.
     /// </summary>
-    public class NHINDAddressCollection : ObjectCollection<DirectAddress>
+    public class DirectAddressCollection : ObjectCollection<DirectAddress>
     {
         /// <summary>
         /// The minimum trust enforcement status treated as indicated successful trust.
@@ -40,7 +38,7 @@ namespace NHINDirect.Agent
         /// <summary>
         /// Creates an empty collection.
         /// </summary>
-        public NHINDAddressCollection()
+        public DirectAddressCollection()
         {
         }
 
@@ -80,7 +78,7 @@ namespace NHINDirect.Agent
         /// </summary>
         public IEnumerable<DirectAddress> GetTrusted()
         {
-            return this.GetTrusted(NHINDAddressCollection.DefaultMinTrustStatus);
+            return this.GetTrusted(DirectAddressCollection.DefaultMinTrustStatus);
         }
 
         /// <summary>
@@ -101,7 +99,7 @@ namespace NHINDirect.Agent
         /// <returns>An enumeration of untrusted <see cref="DirectAddress"/> instances</returns>
         public IEnumerable<DirectAddress> GetUntrusted()
         {
-            return this.GetUntrusted(NHINDAddressCollection.DefaultMinTrustStatus);
+            return this.GetUntrusted(DirectAddressCollection.DefaultMinTrustStatus);
         }
 
         /// <summary>
@@ -122,7 +120,7 @@ namespace NHINDirect.Agent
         /// <returns><c>true</c> if all the addresses are trusted, <c>false</c> if at least one is untrusted</returns>        
         public bool IsTrusted()
         {
-            return this.IsTrusted(NHINDAddressCollection.DefaultMinTrustStatus);
+            return this.IsTrusted(DirectAddressCollection.DefaultMinTrustStatus);
         }
 
         /// <summary>
@@ -140,7 +138,7 @@ namespace NHINDirect.Agent
         /// </summary>
         public void RemoveUntrusted()
         {
-            this.RemoveUntrusted(NHINDAddressCollection.DefaultMinTrustStatus);
+            this.RemoveUntrusted(DirectAddressCollection.DefaultMinTrustStatus);
         }
 
         /// <summary>
@@ -206,14 +204,14 @@ namespace NHINDirect.Agent
             return this.ToMailAddressCollection().ToString();
         }
         
-        internal static NHINDAddressCollection Create(IEnumerable<DirectAddress> source)
+        internal static DirectAddressCollection Create(IEnumerable<DirectAddress> source)
         {
-            NHINDAddressCollection addresses = null;
+            DirectAddressCollection addresses = null;
             foreach(DirectAddress address in source)
             {
                 if (addresses == null)
                 {
-                    addresses = new NHINDAddressCollection();
+                    addresses = new DirectAddressCollection();
                 }
                 addresses.Add(address);
             }
@@ -221,13 +219,13 @@ namespace NHINDirect.Agent
             return addresses;
         }
 
-        internal static NHINDAddressCollection Parse(Header addresses)
+        internal static DirectAddressCollection Parse(Header addresses)
         {
             if (addresses == null)
             {
                 return null;
             }
-            return NHINDAddressCollection.Parse(addresses.Value);
+            return DirectAddressCollection.Parse(addresses.Value);
         }
         
         /// <summary>
@@ -235,9 +233,9 @@ namespace NHINDirect.Agent
         /// </summary>
         /// <param name="addresses">The string representation, as in a <c>To:</c> header</param>
         /// <returns>The collection corresponding to the address list.</returns>
-        public static NHINDAddressCollection Parse(string addresses)
+        public static DirectAddressCollection Parse(string addresses)
         {
-            return MailParser.ParseAddressCollection<DirectAddress, NHINDAddressCollection>(addresses, x => new DirectAddress(x));
+            return MailParser.ParseAddressCollection<DirectAddress, DirectAddressCollection>(addresses, x => new DirectAddress(x));
         }
 
         /// <summary>
@@ -245,9 +243,9 @@ namespace NHINDirect.Agent
         /// </summary>
         /// <param name="addresses">The string representation of an SMTP <c>RCPT TO</c> command</param>
         /// <returns>The collection corresponding to the address list.</returns>
-        public static NHINDAddressCollection ParseSmtpServerEnvelope(string addresses)
+        public static DirectAddressCollection ParseSmtpServerEnvelope(string addresses)
         {
-            return MailParser.ParseSMTPServerEnvelopeAddresses<DirectAddress, NHINDAddressCollection>(addresses, x => new DirectAddress(x));
+            return MailParser.ParseSMTPServerEnvelopeAddresses<DirectAddress, DirectAddressCollection>(addresses, x => new DirectAddress(x));
         }
     }
 }

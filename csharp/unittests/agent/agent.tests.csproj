@@ -172,9 +172,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\agent\nhinAgent.csproj">
+    <ProjectReference Include="..\..\agent\agent.csproj">
       <Project>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</Project>
-      <Name>nhinAgent</Name>
+      <Name>agent</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\common\common.csproj">
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
