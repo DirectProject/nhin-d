@@ -21,8 +21,6 @@ using System.Data.SqlClient;
 
 using Health.Direct.Common;
 
-using NHINDirect.Config.Store;
-
 namespace Health.Direct.Config.Store
 {
     public enum ConfigStoreError

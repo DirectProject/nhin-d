@@ -15,7 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Text;
@@ -23,13 +22,14 @@ using System.Xml;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+
+using Health.Direct.Xds.Common;
+
 using WCF = System.ServiceModel.Channels;
 
-using NHINDirect.Diagnostics;
-using NHINDirect.XDS.Common;
 using System.IO;
 
-namespace NHINDirect.XDS
+namespace Health.Direct.XDS
 {
     public class ExportDocumentSet: IExportDocumentSet
     {

@@ -19,8 +19,6 @@ using System.Linq;
 
 using Health.Direct.Common.Extensions;
 
-using NHINDirect.Config.Store;
-
 namespace Health.Direct.Config.Store
 {
     public class AnchorManager

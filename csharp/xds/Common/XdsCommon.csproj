@@ -8,8 +8,8 @@
     <ProjectGuid>{8284EBE6-AE5C-4920-9738-8169A75DE618}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Common</RootNamespace>
-    <AssemblyName>Common</AssemblyName>
+    <RootNamespace>Health.Direct.Xds.Common</RootNamespace>
+    <AssemblyName>Health.Direct.Xds.Common</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

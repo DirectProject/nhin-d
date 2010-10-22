@@ -1,25 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
-using System.Net.Mail;
-using NHINDirect.Agent;
-using NHINDirect.Agent.Config;
-using NHINDirect.Certificates;
-using NHINDirect.Diagnostics;
-using System.Diagnostics;
-using CDO;
+
 using ADODB;
 
-namespace NHINDirect.ScriptAgent
-{    
+using Health.Direct.Agent;
+using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Diagnostics;
+
+namespace Health.Direct.Sample.ScriptAgent
+{
     public class SmtpServiceAgent
     {
         string m_name;
         string m_configFilePath; 
-        NHINDAgent m_agent;
-        LogFile m_log;
+        DirectAgent m_agent;
+        ILogger m_logger;
         
         public SmtpServiceAgent(string serviceName, string configFilePath)
         {
@@ -42,7 +36,7 @@ namespace NHINDirect.ScriptAgent
             }
         }
         
-        public NHINDAgent Agent
+        public DirectAgent Agent
         {
             get
             {
@@ -51,11 +45,11 @@ namespace NHINDirect.ScriptAgent
             }
         }
         
-        public LogFile Log
+        public ILogger Logger
         {
             get
             {
-                return m_log;
+                return m_logger;
             }
         }
         
@@ -70,22 +64,22 @@ namespace NHINDirect.ScriptAgent
         void Init(string configFilePath)
         {
             SmtpAgentSettings settings = SmtpAgentSettings.LoadFile(configFilePath);
-            m_log = new LogFile(settings.LogSettings.CreateWriter());
+            m_logger = Log.For(this);
             
-            m_log.WriteLine("Init_Begin");
+            m_logger.Info("Init_Begin");
             try
             {
-                m_log.WriteLine("Creating Agent");
+                m_logger.Info("Creating Agent");
                 m_agent = settings.CreateAgent();
-                m_log.WriteLine("Agent Creation Complete");
+                m_logger.Info("Agent Creation Complete");
                 this.SubscribeToResolvers();
                 
-                m_log.WriteLine("Init_Complete");
+                m_logger.Info("Init_Complete");
             }
             catch (Exception error)
             {
-                m_log.WriteLine("Init_Failed");
-                m_log.WriteError(error);
+                m_logger.Error("Init_Failed");
+                m_logger.Error(error);
                 throw;
             }
         }
@@ -102,8 +96,8 @@ namespace NHINDirect.ScriptAgent
         {
             try
             {
-                NHINDAddressCollection recipientAddresses = null;
-                NHINDAddress senderAddress = null;
+                DirectAddressCollection recipientAddresses = null;
+                DirectAddress senderAddress = null;
 
                 string messageText = message.GetMessageText();
 
@@ -121,7 +115,7 @@ namespace NHINDirect.ScriptAgent
             }
             catch (Exception ex)
             {
-                m_log.WriteError(ex);
+                m_logger.Error(ex);
             }
 
             return false;
@@ -136,24 +130,24 @@ namespace NHINDirect.ScriptAgent
 
             isIncoming = false;
 
-            NHINDAddressCollection recipientAddresses = NHINDAddressCollection.ParseSmtpServerEnvelope(rcpto);
-            NHINDAddress senderAddress = new NHINDAddress(mailFrom);
+            DirectAddressCollection recipientAddresses = DirectAddressCollection.ParseSmtpServerEnvelope(rcpto);
+            DirectAddress senderAddress = new DirectAddress(mailFrom);
 
             MessageEnvelope processed = m_agent.Process(messageText, recipientAddresses, senderAddress, ref isIncoming);
-            m_log.WriteLine(isIncoming ? "ProcessedIncoming" : "ProcessedOutgoing");
+            m_logger.Info(isIncoming ? "ProcessedIncoming" : "ProcessedOutgoing");
             //
             // TODO: Generate Bounces for rejected recipients
             //
             return processed.SerializeMessage();
         }
 
-        public string ProcessMessage(string messageText, NHINDAddressCollection recipients, NHINDAddress sender, ref bool isIncoming)
+        public string ProcessMessage(string messageText, DirectAddressCollection recipients, DirectAddress sender, ref bool isIncoming)
         {
             this.VerifyInitialized();
 
             isIncoming = false;
             MessageEnvelope processed = m_agent.Process(messageText, recipients, sender, ref isIncoming);
-            m_log.WriteLine(isIncoming ? "ProcessedIncoming" : "ProcessedOutgoing");
+            m_logger.Info(isIncoming ? "ProcessedIncoming" : "ProcessedOutgoing");
             //
             // TODO: Generate Bounces for rejected recipients
             //
@@ -166,7 +160,7 @@ namespace NHINDirect.ScriptAgent
 
             isIncoming = false;
             MessageEnvelope processed = m_agent.Process(messageText, ref isIncoming);
-            m_log.WriteLine(isIncoming ? "ProcessedIncoming" : "ProcessedOutgoing");
+            m_logger.Info(isIncoming ? "ProcessedIncoming" : "ProcessedOutgoing");
             //
             // TODO: Generate Bounces for rejected recipients
             //
@@ -176,7 +170,7 @@ namespace NHINDirect.ScriptAgent
         public const string EnvelopeField_Recipients = @"http://schemas.microsoft.com/cdo/smtpenvelope/recipientlist";
         public const string EnvelopeField_Sender = @"http://schemas.microsoft.com/cdo/smtpenvelope/senderemailaddress";
                 
-        bool ExtractEnvelopeFields(CDO.Message message, ref NHINDAddressCollection recipientAddresses, ref NHINDAddress senderAddress)
+        bool ExtractEnvelopeFields(CDO.Message message, ref DirectAddressCollection recipientAddresses, ref DirectAddress senderAddress)
         {
             recipientAddresses = null;
             senderAddress = null;
@@ -206,8 +200,8 @@ namespace NHINDirect.ScriptAgent
                 throw new NotSupportedException("Sender required");
             }
 
-            recipientAddresses = NHINDAddressCollection.ParseSmtpServerEnvelope(recipients);
-            senderAddress = new NHINDAddress(sender);
+            recipientAddresses = DirectAddressCollection.ParseSmtpServerEnvelope(recipients);
+            senderAddress = new DirectAddress(sender);
             
             return true;
         }
@@ -221,9 +215,9 @@ namespace NHINDirect.ScriptAgent
             }
         }
         
-        void WriteDnsError(DnsCertResolver service, Exception error)
+        void WriteDnsError(ICertificateResolver resolver, Exception error)
         {
-            m_log.WriteError(error);
+            m_logger.Error(error);
         }
     }
 }

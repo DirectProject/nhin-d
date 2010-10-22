@@ -26,9 +26,10 @@ using Xunit;
 namespace Health.Direct.Common.Tests.Mail
 {
     /// <summary>
-    /// NOTE: Some of the functionality in NHINDirect.Mail.Notifications is exercised from Tests in smtpAgentTests
+    /// NOTE: Some of the functionality in <see cref="Health.Direct.Common.Mail.Notifications"/> 
+    /// is exercised from Tests in smtpAgentTests
     /// Specifically, extension methods such as CreateNotification...
-    /// At some point, we'll move the tests around
+    /// At some point, we'll move the tests around.
     /// </summary>
     public class TestMDN
     {

@@ -7,11 +7,11 @@ using System.Text;
 using System.Xml;
 
 using Health.Direct.Common.Diagnostics;
-using NHINDirect.XDS.Common;
+using Health.Direct.Xds.Common;
 
-namespace NHINDirect.XDS
+namespace Health.Direct.XDS
 {
-	public class ReceiveDocumentSet : IReceiveDocumentSet
+    public class ReceiveDocumentSet : IReceiveDocumentSet
     {
         Message IReceiveDocumentSet.ReceiveDocumentSet(Message msgRequest)
         {
@@ -21,7 +21,7 @@ namespace NHINDirect.XDS
             XDSHelper xdsHelper = null;
             StringDictionary stringDictionary = null;
 
-        	ILogger logger = Log.For(this);
+            ILogger logger = Log.For(this);
 
             try
             {
@@ -224,7 +224,7 @@ namespace NHINDirect.XDS
                         }
                         // CP-ITI-419
 
- //                       lstDocumentEntry.Add(objDocumentEntry);
+                        //                       lstDocumentEntry.Add(objDocumentEntry);
 
                     }
 
@@ -261,4 +261,3 @@ namespace NHINDirect.XDS
         }
     }
 }
-

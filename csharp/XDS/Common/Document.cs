@@ -17,49 +17,42 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-
 using System.Xml;
 using System.Xml.Serialization;
 
-using NHINDirect.XDS.Common;
-
-namespace NHINDirect.XDS
+namespace Health.Direct.Xds.Common
 {
-	[XmlType(Namespace = GlobalValues.IHEXDSbNamespace)]
-	public class Document
-	{
-		private string _id;
-		private XmlNode _clinicalDocument; //internal field, containing a CDA document
-		private byte[] _documentBytes;
+    [XmlType(Namespace = GlobalValues.IHEXDSbNamespace)]
+    public class Document
+    {
+        private string _id;
+        private XmlNode _clinicalDocument; //internal field, containing a CDA document
+        private byte[] _documentBytes;
 
-		public Document(string id, byte[] documentBytes, XmlNode clinicalDocument)
-		{
-			_id = id;
-			_documentBytes = documentBytes;
-			_clinicalDocument = clinicalDocument;
-		}
+        public Document(string id, byte[] documentBytes, XmlNode clinicalDocument)
+        {
+            _id = id;
+            _documentBytes = documentBytes;
+            _clinicalDocument = clinicalDocument;
+        }
 
-		public Document()
-		{
-			// for XML serialization
-		}
+        public Document()
+        {
+            // for XML serialization
+        }
 
-		[XmlAttribute("id")]
-		public string Id
-		{
-			get { return _id; }
-			set { _id = value; }
-		}
+        [XmlAttribute("id")]
+        public string Id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
 
-		[XmlText(DataType = "base64Binary")]
-		public byte[] DocumentBytes
-		{
-			get { return _documentBytes; }
-			set { _documentBytes = value; }
-		}
-	}
+        [XmlText(DataType = "base64Binary")]
+        public byte[] DocumentBytes
+        {
+            get { return _documentBytes; }
+            set { _documentBytes = value; }
+        }
+    }
 }

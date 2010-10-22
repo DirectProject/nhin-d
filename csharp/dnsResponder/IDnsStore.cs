@@ -14,7 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using Health.Direct.Common.Resolver;
+using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.DnsResponder
 {

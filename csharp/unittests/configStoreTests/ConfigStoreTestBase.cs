@@ -20,8 +20,6 @@ using System.IO;
 
 using Xunit;
 
-using NHINDirect.Config.Store;
-
 namespace Health.Direct.Config.Store.Tests
 {
     public class ConfigStoreTestBase 

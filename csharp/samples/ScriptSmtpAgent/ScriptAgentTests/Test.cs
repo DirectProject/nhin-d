@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Health.Direct.Sample.ScriptAgent;
+
 using NUnit.Framework;
-using NHINDirect.ScriptAgent;
+
 using System.IO;
 
 namespace ScriptAgentTests

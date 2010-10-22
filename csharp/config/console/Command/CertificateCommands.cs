@@ -21,8 +21,8 @@ using System.Net.Mail;
 using System.ServiceModel;
 
 using Health.Direct.Common.Certificates;
+using Health.Direct.Common.DnsResolver;
 using Health.Direct.Common.Extensions;
-using Health.Direct.Common.Resolver;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;

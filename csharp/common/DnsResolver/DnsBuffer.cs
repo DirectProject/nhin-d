@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-namespace Health.Direct.Common.Resolver
+namespace Health.Direct.Common.DnsResolver
 {
     /// <summary>
     /// A raw data buffer with utilities facilitating reading and writing of DNS wire format data.

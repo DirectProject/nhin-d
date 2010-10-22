@@ -17,7 +17,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 
-using Health.Direct.Common.Resolver;
+using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.DnsResponder
 {

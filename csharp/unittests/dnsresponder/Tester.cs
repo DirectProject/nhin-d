@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
 
-using Health.Direct.Common.Resolver;
+using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.DnsResponder.Tests
 {

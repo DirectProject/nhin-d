@@ -2,7 +2,7 @@
 using System.Net;
 using System.IO;
 
-using Health.Direct.Common.Resolver;
+using Health.Direct.Common.DnsResolver;
 
 using Xunit;
 using Xunit.Extensions;

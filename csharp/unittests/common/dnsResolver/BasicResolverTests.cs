@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Health.Direct.Common.Resolver;
+using Health.Direct.Common.DnsResolver;
 
 using Xunit;
 using Xunit.Extensions;

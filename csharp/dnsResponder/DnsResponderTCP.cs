@@ -15,14 +15,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-using Health.Direct.Common.Resolver;
+using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.DnsResponder
 {
     /// <summary>
     /// Simple DNS TCP Responder
     /// </summary>
-    public class DnsResponderTCP : global::Health.Direct.DnsResponder.DnsResponder, IHandler<DnsTcpContext>
+    public class DnsResponderTCP : DnsResponder, IHandler<DnsTcpContext>
     {
         TcpServer<DnsTcpContext> m_tcpServer;
         

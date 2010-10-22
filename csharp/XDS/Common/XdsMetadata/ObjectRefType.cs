@@ -17,35 +17,34 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
 using System.Xml.Serialization;
 
-namespace NHINDirect.XDS.Common.Metadata
+namespace Health.Direct.Xds.Common.XdsMetadata
 {
     [XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
     [XmlRoot("ObjectRef", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
-	public class ObjectRefType
-	{
-		private string _id;
+    public class ObjectRefType
+    {
+        private string _id;
 
-		public ObjectRefType()
-		{
-		}
+        public ObjectRefType()
+        {
+        }
 
-		public ObjectRefType(string id)
-		{
-			_id = id;
-		}
+        public ObjectRefType(string id)
+        {
+            _id = id;
+        }
 
-		#region Properties
+        #region Properties
 
-		[XmlAttribute("id", DataType = "ID")]
-		public string Id
-		{
-			get { return _id; }
-			set { _id = value; }
-		}
+        [XmlAttribute("id", DataType = "ID")]
+        public string Id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
 
-		#endregion Properties
-	}
+        #endregion Properties
+    }
 }

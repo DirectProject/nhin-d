@@ -17,78 +17,77 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
 using System.Xml.Serialization;
 
-namespace NHINDirect.XDS.Common.Metadata
+namespace Health.Direct.Xds.Common.XdsMetadata
 {
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
-    [System.Xml.Serialization.XmlRootAttribute("RegistryPackage", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+    [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlRoot("RegistryPackage", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
     public class RegistryPackageType : RegistryEntryType
     {
-		#region fields
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private RegistryObjectListType _registryObjectList;
-		#endregion
+        #region fields
+        [System.Xml.Serialization.XmlIgnore()]
+        private RegistryObjectListType _registryObjectList;
+        #endregion
 
         public RegistryPackageType()
         {
         }
 
-		public RegistryPackageType(string id, string name, string[] eiScheme, string[] eiValue, string[] eiId,
-			string[] eiRegistryObject, string[] eiName, SlotType[] slots, ClassificationType[] classifications,
-			string status)
-		{
-			this.Id = id;
+        public RegistryPackageType(string id, string name, string[] eiScheme, string[] eiValue, string[] eiId,
+                                   string[] eiRegistryObject, string[] eiName, SlotType[] slots, ClassificationType[] classifications,
+                                   string status)
+        {
+            this.Id = id;
 
-			this.Name = new InternationalStringType();
-			this.Name.LocalizedString = new LocalizedStringType[1];
-			this.Name.LocalizedString[0] = new LocalizedStringType();
-			this.Name.LocalizedString[0].Value = name;
+            this.Name = new InternationalStringType();
+            this.Name.LocalizedString = new LocalizedStringType[1];
+            this.Name.LocalizedString[0] = new LocalizedStringType();
+            this.Name.LocalizedString[0].Value = name;
 
-			this.Status = status;
+            this.Status = status;
 
-			ExternalIdentifierType ei = null;
-			this.ExternalIdentifier = new ExternalIdentifierType[eiScheme.Length];
-			for (int i = 0; i < eiScheme.Length; i++)
-			{
-				ei = new ExternalIdentifierType(eiScheme[i], eiValue[i], eiId[i], eiRegistryObject[i], eiName[i]);
-				this.ExternalIdentifier[i] = ei;
-			}
+            ExternalIdentifierType ei = null;
+            this.ExternalIdentifier = new ExternalIdentifierType[eiScheme.Length];
+            for (int i = 0; i < eiScheme.Length; i++)
+            {
+                ei = new ExternalIdentifierType(eiScheme[i], eiValue[i], eiId[i], eiRegistryObject[i], eiName[i]);
+                this.ExternalIdentifier[i] = ei;
+            }
 
-			if (slots != null)
-			{
-				this.Slot = slots;
-			}
+            if (slots != null)
+            {
+                this.Slot = slots;
+            }
 
-			if (classifications != null)
-			{
-				this.Classification = classifications;
-			}
-		}
+            if (classifications != null)
+            {
+                this.Classification = classifications;
+            }
+        }
 
-		#region Properties
+        #region Properties
 
-		[XmlElement("RegistryObjectList")]
-		public RegistryObjectListType RegistryObjectList
-		{
-			get { return _registryObjectList; }
-			set { _registryObjectList = value; }
-		}
+        [XmlElement("RegistryObjectList")]
+        public RegistryObjectListType RegistryObjectList
+        {
+            get { return _registryObjectList; }
+            set { _registryObjectList = value; }
+        }
 		
-		#endregion Properties
+        #endregion Properties
 
 		
-		#region Methods
+        #region Methods
 
-		public static RegistryPackageType CreateRegistryPackage(string id, string name, string[] eiScheme,
-			string[] eiValue, string[] eiName, SlotType[] slots, ClassificationType[] classifications, string status)
-		{
-			RegistryPackageType rp = new RegistryPackageType(id, name, eiScheme, eiValue, null, null,
-				eiName, slots, classifications, status);
-			return rp;
-		}
+        public static RegistryPackageType CreateRegistryPackage(string id, string name, string[] eiScheme,
+                                                                string[] eiValue, string[] eiName, SlotType[] slots, ClassificationType[] classifications, string status)
+        {
+            RegistryPackageType rp = new RegistryPackageType(id, name, eiScheme, eiValue, null, null,
+                                                             eiName, slots, classifications, status);
+            return rp;
+        }
 
-		#endregion Methods
-	}
+        #endregion Methods
+    }
 }

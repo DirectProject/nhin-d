@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Security.Cryptography.X509Certificates;
 using System.Runtime.InteropServices;
-using System.Net.Mail;
-using NHINDirect.Agent;
-using NHINDirect.Mail;
-using CDO;
-using ADODB;
 
-namespace NHINDirect.ScriptAgent
+using Health.Direct.Common.Diagnostics;
+
+namespace Health.Direct.Sample.ScriptAgent
 {
     /// <summary>
     /// Event Handlers for the SMTP Service can be written in VBScript/JScript
@@ -35,10 +29,11 @@ namespace NHINDirect.ScriptAgent
         static Dictionary<string, SmtpServiceAgent> s_agents = new Dictionary<string,SmtpServiceAgent>(StringComparer.OrdinalIgnoreCase);
         
         SmtpServiceAgent m_agent;
+        private ILogger m_logger;
 
         public SmtpAgentEventHandler()
         {
-               
+            m_logger = Log.For(this);
         }
         
         internal SmtpServiceAgent Agent
@@ -116,7 +111,7 @@ namespace NHINDirect.ScriptAgent
             }
             catch(Exception error)
             {
-                this.Agent.Log.WriteError(error);
+                m_logger.Error(error);
             }
 
             return string.Empty;
@@ -148,22 +143,12 @@ namespace NHINDirect.ScriptAgent
             return string.Empty;
         }
 
-        public void WriteLog(string message)
-        {
-            this.Agent.Log.WriteLine(message);
-        }
-        
-        public void WriteError(string message)
-        {
-            this.Agent.Log.WriteError(message);
-        }
-        
         bool IsAgentInitialized(SmtpServiceAgent agent, string name, string configFilePath)
         {            
             return (    agent != null 
-                    &&  agent.Name.Equals(name, StringComparison.OrdinalIgnoreCase)
-                    &&  agent.ConfigFilePath.Equals(configFilePath, StringComparison.OrdinalIgnoreCase)
-                    );
+                        &&  agent.Name.Equals(name, StringComparison.OrdinalIgnoreCase)
+                        &&  agent.ConfigFilePath.Equals(configFilePath, StringComparison.OrdinalIgnoreCase)
+                   );
         }
-    }    
+    }
 }

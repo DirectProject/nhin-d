@@ -138,9 +138,6 @@
     <None Include="Metadata\dns responses\mx.www.nhindirect.org.bin" />
     <None Include="Metadata\dns responses\mx.www.yahoo.com.bin" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Diagnostics\" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

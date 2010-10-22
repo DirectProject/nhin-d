@@ -19,8 +19,6 @@ using System.Linq;
 using Xunit;
 using Xunit.Extensions;
 
-using NHINDirect.Config.Store;
-
 namespace Health.Direct.Config.Store.Tests
 {
     class AnchorManagerFacts : ConfigStoreTestBase

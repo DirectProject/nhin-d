@@ -15,15 +15,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-using Health.Direct.Config.Store;
-
-namespace NHINDirect.Config.Store
+namespace Health.Direct.Config.Store
 {
     public class ConfigStore
     {
         public const string Namespace = "http://www.nhindirect.org/config/store/082010";
 
-    	public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
+        public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
         
         string m_connectString;
         TimeSpan m_timeout;

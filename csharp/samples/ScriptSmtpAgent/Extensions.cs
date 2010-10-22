@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CDO;
-using ADODB;
+﻿using ADODB;
 
-namespace NHINDirect.ScriptAgent
+namespace Health.Direct.Sample.ScriptAgent
 {
-    //
-    // Extensions on CDO & ADODB
-    //
     public static class Extensions
     {
         public static CDO.Message LoadCDOMessage(string messageFile)

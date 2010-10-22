@@ -16,44 +16,29 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Xml.Serialization;
-
-
-namespace NHINDirect.XDS.Common.Metadata
+namespace Health.Direct.Xds.Common.XdsMetadata
 {
-	//[System.Xml.Serialization.XmlTypeAttribute(Namespace = Epic.Edi.IHE.XDSb.Transactions.Transaction.IHERIMNamespace)]
-	//public enum AssociationKind
-	//{
-	//    HasMember,
-	//    RPLC,
-	//    APND,
-	//    XFRM,
-	//    XFRM_RPLC,
-	//    signs
-	//}
+    [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    static public class AssociationKind
+    {
+        public const string HasMember = "urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember";
+        public const string RPLC = "urn:oasis:names:tc:ebxml-regrep:AssociationType:RPLC";
+        public const string APND = "urn:oasis:names:tc:ebxml-regrep:AssociationType:APND";
+        public const string XFRM = "urn:oasis:names:tc:ebxml-regrep:AssociationType:XFRM";
+        public const string XFRM_RPLC = "urn:oasis:names:tc:ebxml-regrep:AssociationType:XFRM_RPLC";
+        public const string signs = "urn:oasis:names:tc:ebxml-regrep:AssociationType:signs";
+    }
 
-	[System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
-	static public class AssociationKind
-	{
-		public const string HasMember = "urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember";
-		public const string RPLC = "urn:oasis:names:tc:ebxml-regrep:AssociationType:RPLC";
-		public const string APND = "urn:oasis:names:tc:ebxml-regrep:AssociationType:APND";
-		public const string XFRM = "urn:oasis:names:tc:ebxml-regrep:AssociationType:XFRM";
-		public const string XFRM_RPLC = "urn:oasis:names:tc:ebxml-regrep:AssociationType:XFRM_RPLC";
-		public const string signs = "urn:oasis:names:tc:ebxml-regrep:AssociationType:signs";
-	}
-
-	[System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
-	[System.Xml.Serialization.XmlRootAttribute("Association", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+    [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlRoot("Association", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
     public class AssociationType : RegistryObjectType
     {
         #region fields
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
+        [System.Xml.Serialization.XmlIgnore()]
         private string _associationType;
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [System.Xml.Serialization.XmlIgnore()]
         private string _sourceObject;
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [System.Xml.Serialization.XmlIgnore()]
         private string _targetObject;
         #endregion
 
@@ -61,31 +46,31 @@ namespace NHINDirect.XDS.Common.Metadata
         {
         }
 
-		public AssociationType(string type, string source, string target, string id, SlotType[] slots)
-		{
-			this.Type = type;
-			this.SourceObject = source;
-			this.TargetObject = target;
-			this.Id = id;
-			if (slots != null) this.Slot = slots;
-		}
+        public AssociationType(string type, string source, string target, string id, SlotType[] slots)
+        {
+            this.Type = type;
+            this.SourceObject = source;
+            this.TargetObject = target;
+            this.Id = id;
+            if (slots != null) this.Slot = slots;
+        }
 
         #region properties
-        [System.Xml.Serialization.XmlAttributeAttribute("associationType")]
-		public string Type
+        [System.Xml.Serialization.XmlAttribute("associationType")]
+        public string Type
         {
             get { return _associationType; }
             set { _associationType = value; }
         }
 
-        [System.Xml.Serialization.XmlAttributeAttribute("sourceObject",DataType="IDREF")]
+        [System.Xml.Serialization.XmlAttribute("sourceObject",DataType="IDREF")]
         public string SourceObject
         {
             get { return _sourceObject; }
             set { _sourceObject = value; }
         }
 
-        [System.Xml.Serialization.XmlAttributeAttribute("targetObject",DataType="IDREF")]
+        [System.Xml.Serialization.XmlAttribute("targetObject",DataType="IDREF")]
         public string TargetObject
         {
             get { return _targetObject; }
@@ -94,15 +79,15 @@ namespace NHINDirect.XDS.Common.Metadata
         #endregion
 
 
-		#region Methods
+        #region Methods
 
-		static public AssociationType CreateAssociation(string type, string source, string target,
-			string id, SlotType[] slots)
-		{
-			AssociationType assoc = new AssociationType(type, source, target, id, slots);
-			return assoc;
-		}
+        static public AssociationType CreateAssociation(string type, string source, string target,
+                                                        string id, SlotType[] slots)
+        {
+            AssociationType assoc = new AssociationType(type, source, target, id, slots);
+            return assoc;
+        }
 
-		#endregion Methods
-	}
+        #endregion Methods
+    }
 }
