@@ -1,5 +1,5 @@
 //
-// Commands issued to nhinConfigConsole.exe to set up default Test domains
+// Commands issued to ConfigConsole.exe to set up default Test domains
 // Run in a batch by the exe
 //
 

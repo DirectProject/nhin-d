@@ -9,7 +9,7 @@ using NHINDirect.Certificates;
 using NHINDirect.Tools.Command;
 using NHINDirect.Extensions;
 
-namespace NHINDirect.Config.Command
+namespace Health.Direct.Config.Console.Command
 {
     /// <summary>
     /// Commands to install unit test certificates. 
@@ -17,10 +17,6 @@ namespace NHINDirect.Config.Command
     /// </summary>
     public class TestCommands
     {
-        public TestCommands()
-        {
-        }
-        
         public void Command_Test_Certs_Install(string[] args)
         {
             string path = args.GetOptionalValue(0, Directory.GetCurrentDirectory());
@@ -28,7 +24,7 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Test_Certs_Install()
         {
-            Console.WriteLine("Install test certs into machine stores");
+            System.Console.WriteLine("Install test certs into machine stores");
         }
 
         public void Command_Test_Certs_InstallInService(string[] args)
@@ -38,7 +34,7 @@ namespace NHINDirect.Config.Command
         }
         public void Usage_Test_Certs_InstallInService()
         {
-            Console.WriteLine("Install test certs into config service");
+            System.Console.WriteLine("Install test certs into config service");
         }
         
         static string MakeCertificatesPath(string basePath, string agentFolder)
@@ -55,21 +51,21 @@ namespace NHINDirect.Config.Command
             string nhindCertsPath = MakeCertificatesPath(basePath, "nhind");
 
             SystemX509Store store;
-            Console.WriteLine("Installing Private Certs");
+            System.Console.WriteLine("Installing Private Certs");
             using (store = SystemX509Store.OpenPrivateEdit())
             {
                 InstallCerts(store, LoadCerts(redmondCertsPath, "Private"));
                 InstallCerts(store, LoadCerts(nhindCertsPath, "Private"));
             }
 
-            Console.WriteLine("Installing Public Certs");
+            System.Console.WriteLine("Installing Public Certs");
             using (store = SystemX509Store.OpenExternalEdit())
             {
                 InstallCerts(store, LoadCerts(redmondCertsPath, "Public"));
                 InstallCerts(store, LoadCerts(nhindCertsPath, "Public"));
             }
 
-            Console.WriteLine("Installing Anchors Certs");
+            System.Console.WriteLine("Installing Anchors Certs");
             using (store = SystemX509Store.OpenAnchorEdit())
             {
                 InstallCerts(store, LoadCerts(redmondCertsPath, "IncomingAnchors"));
@@ -111,7 +107,7 @@ namespace NHINDirect.Config.Command
             {
                 if (!store.Contains(cert))
                 {
-                    Console.WriteLine("Installing {0} HasPrivateKey={1}", cert.ExtractEmailNameOrName(), cert.HasPrivateKey);
+                    System.Console.WriteLine("Installing {0} HasPrivateKey={1}", cert.ExtractEmailNameOrName(), cert.HasPrivateKey);
                     store.Add(cert);
                 }
             }
@@ -119,7 +115,7 @@ namespace NHINDirect.Config.Command
         
         internal static void EnsureStandardCertsInService(string basePath)
         {
-            Console.WriteLine("Installing Private Certs in config service");
+            System.Console.WriteLine("Installing Private Certs in config service");
 
             string redmondCertsPath = MakeCertificatesPath(basePath, "redmond");
             string nhindCertsPath = MakeCertificatesPath(basePath, "nhind");
@@ -127,7 +123,7 @@ namespace NHINDirect.Config.Command
             CertificateCommands.PushCerts(LoadCerts(redmondCertsPath, "Private"), true, EntityStatus.Enabled);
             CertificateCommands.PushCerts(LoadCerts(nhindCertsPath, "Private"), true, EntityStatus.Enabled);
             
-            Console.WriteLine("Installing Anchors in config service");
+            System.Console.WriteLine("Installing Anchors in config service");
 
             AnchorCommands.PushCerts("redmond.hsgincubator.com", LoadCerts(redmondCertsPath, "IncomingAnchors"), true, EntityStatus.Enabled);
             AnchorCommands.PushCerts("redmond.hsgincubator.com", LoadCerts(redmondCertsPath, "OutgoingAnchors"), true, EntityStatus.Enabled);

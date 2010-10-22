@@ -8,8 +8,8 @@
     <ProjectGuid>{0211EBED-C527-42A9-B89B-E1D32A776837}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect.Config.Command</RootNamespace>
-    <AssemblyName>nhinConfigConsole</AssemblyName>
+    <RootNamespace>Health.Direct.Config.Console</RootNamespace>
+    <AssemblyName>ConfigConsole</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -49,16 +49,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddressCommands.cs" />
-    <Compile Include="AnchorCommands.cs" />
-    <Compile Include="CertificateCommands.cs" />
-    <Compile Include="CommandsBase.cs" />
+    <Compile Include="Command\AddressCommands.cs" />
+    <Compile Include="Command\AnchorCommands.cs" />
+    <Compile Include="Command\CertificateCommands.cs" />
+    <Compile Include="Command\CommandsBase.cs" />
+    <Compile Include="Command\DomainCommands.cs" />
+    <Compile Include="Command\SettingsCommands.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Command\TestCommands.cs" />
     <Compile Include="ConsoleSettings.cs" />
-    <Compile Include="DomainCommands.cs" />
     <Compile Include="ConfigConsole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SettingsCommands.cs" />
-    <Compile Include="TestCommands.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -77,13 +79,13 @@
       <Project>{D46A743B-E82F-45F7-87CB-29DBBFF9B9A0}</Project>
       <Name>nhinToolLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\store\config.store.csproj">
-      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
-      <Name>configStore</Name>
-    </ProjectReference>
     <ProjectReference Include="..\client\config.client.csproj">
       <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
-      <Name>configClient</Name>
+      <Name>config.client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\store\config.store.csproj">
+      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
+      <Name>config.store</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
