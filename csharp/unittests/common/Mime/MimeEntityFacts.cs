@@ -14,24 +14,17 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using NHINDirect.Mime;
 
 using Xunit;
 using Xunit.Extensions;
 
-
-namespace NHINDirect.Tests.Mime
+namespace Health.Direct.Common.Tests.Mime
 {
     public class MimeEntityFacts
     {
-
-
-
         [Fact]
         public void DefaultConstructorShouldCreateEmptyEntity()
         {
@@ -143,7 +136,7 @@ namespace NHINDirect.Tests.Mime
         public void MultipartEntityShouldHavePartContent(int index, string content, bool expected)
         {
             Assert.True(BasicMultipartEntity.GetParts()
-                .ElementAt(index).Body.Text.Equals(content) == expected);
+                            .ElementAt(index).Body.Text.Equals(content) == expected);
         }
 
         [Theory]
@@ -154,7 +147,7 @@ namespace NHINDirect.Tests.Mime
         public void MultipartEntityShouldHavePartContentTypes(int index, string content, bool expected)
         {
             Assert.True(BasicMultipartEntity.GetParts()
-                .ElementAt(index).ContentType.Equals(content) == expected);
+                            .ElementAt(index).ContentType.Equals(content) == expected);
         }
 
     }

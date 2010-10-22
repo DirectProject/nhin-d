@@ -21,113 +21,113 @@ using NHINDirect.Mime;
 
 using Xunit;
 
-namespace NHINDirect.Tests.Mime
+namespace Health.Direct.Common.Tests.Mime
 {
-	public class DefaultSerializerFacts
-	{
-		private readonly DefaultSerializer m_serializer;
+    public class DefaultSerializerFacts
+    {
+        private readonly DefaultSerializer m_serializer;
 
-		public DefaultSerializerFacts()
-		{
-			m_serializer = new DefaultSerializer();
-		}
+        public DefaultSerializerFacts()
+        {
+            m_serializer = new DefaultSerializer();
+        }
 
-		[Fact]
-		public void JoinHeaderWithNullKeyThrowsArgumentException()
-		{
-			var nvp = new KeyValuePair<string, string>(null, "value");
-			Assert.Throws<ArgumentException>(() => m_serializer.JoinHeader(nvp));
-		}
+        [Fact]
+        public void JoinHeaderWithNullKeyThrowsArgumentException()
+        {
+            var nvp = new KeyValuePair<string, string>(null, "value");
+            Assert.Throws<ArgumentException>(() => m_serializer.JoinHeader(nvp));
+        }
 
-		[Fact]
-		public void JoinHeaderWithNullValueThrowsArgumentException()
-		{
-			var nvp = new KeyValuePair<string, string>("name", null);
-			Assert.Throws<ArgumentException>(() => m_serializer.JoinHeader(nvp));
-		}
+        [Fact]
+        public void JoinHeaderWithNullValueThrowsArgumentException()
+        {
+            var nvp = new KeyValuePair<string, string>("name", null);
+            Assert.Throws<ArgumentException>(() => m_serializer.JoinHeader(nvp));
+        }
 
-		[Fact]
-		public void SerializeWithNullEntitiesThrowsArgumentNullException()
-		{
-			var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Serialize(null, "123", StreamWriter.Null));
-			Assert.Equal("entities", ex.ParamName);
-		}
+        [Fact]
+        public void SerializeWithNullEntitiesThrowsArgumentNullException()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Serialize(null, "123", StreamWriter.Null));
+            Assert.Equal("entities", ex.ParamName);
+        }
 
-		[Fact]
-		public void SerializeWithNullEntityThrowsArgumentNullException()
-		{
-			var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Serialize(null, StreamWriter.Null));
-			Assert.Equal("entity", ex.ParamName);
-		}
+        [Fact]
+        public void SerializeWithNullEntityThrowsArgumentNullException()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Serialize(null, StreamWriter.Null));
+            Assert.Equal("entity", ex.ParamName);
+        }
 
-		[Fact]
-		public void SerializeWithNullEntityThrowsArgumentNullException2()
-		{
-			var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Serialize(null, new MimeWriter(StreamWriter.Null)));
-			Assert.Equal("entity", ex.ParamName);
-		}
+        [Fact]
+        public void SerializeWithNullEntityThrowsArgumentNullException2()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Serialize(null, new MimeWriter(StreamWriter.Null)));
+            Assert.Equal("entity", ex.ParamName);
+        }
 
-		[Fact]
-		public void SerializeWithNullMimeWriterThrowsArgumentNullException()
-		{
-			var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Serialize(new MimeEntity(), null));
-			Assert.Equal("entityWriter", ex.ParamName);
-		}
+        [Fact]
+        public void SerializeWithNullMimeWriterThrowsArgumentNullException()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Serialize(new MimeEntity(), null));
+            Assert.Equal("entityWriter", ex.ParamName);
+        }
 
-		[Fact]
-		public void SerializeWithNonMessageMimeEntityPassedToMimeSerializer()
-		{
-			Assert.Equal("", m_serializer.Serialize(new MimeEntity()));
-		}
+        [Fact]
+        public void SerializeWithNonMessageMimeEntityPassedToMimeSerializer()
+        {
+            Assert.Equal("", m_serializer.Serialize(new MimeEntity()));
+        }
 
-		[Fact]
-		public void SerializeToFilePath()
-		{
-			var path = Path.GetTempFileName();
-			try
-			{
-				m_serializer.Serialize(new MimeEntity(), path);
-				Assert.Equal("", File.ReadAllText(path));
-			}
-			finally
-			{
-				File.Delete(path);
-			}
-		}
+        [Fact]
+        public void SerializeToFilePath()
+        {
+            var path = Path.GetTempFileName();
+            try
+            {
+                m_serializer.Serialize(new MimeEntity(), path);
+                Assert.Equal("", File.ReadAllText(path));
+            }
+            finally
+            {
+                File.Delete(path);
+            }
+        }
 
-		[Fact]
-		public void DeserializeThrowsArgumentNullException()
-		{
-			var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Deserialize<MimeEntity>((byte[]) null));
-			Assert.Equal("messageBytes", ex.ParamName);
-		}
+        [Fact]
+        public void DeserializeThrowsArgumentNullException()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Deserialize<MimeEntity>((byte[]) null));
+            Assert.Equal("messageBytes", ex.ParamName);
+        }
 
-		[Fact]
-		public void DeserializeThrowsArgumentException()
-		{
-			var ex = Assert.Throws<ArgumentException>(() => m_serializer.Deserialize<MimeEntity>(new byte[0]));
-			Assert.Equal("messageBytes", ex.ParamName);
-		}
+        [Fact]
+        public void DeserializeThrowsArgumentException()
+        {
+            var ex = Assert.Throws<ArgumentException>(() => m_serializer.Deserialize<MimeEntity>(new byte[0]));
+            Assert.Equal("messageBytes", ex.ParamName);
+        }
 
-		[Fact]
-		public void DeserializeThrowsArgumentNullException2()
-		{
-			var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Deserialize<MimeEntity>((Stream) null));
-			Assert.Equal("stream", ex.ParamName);
-		}
+        [Fact]
+        public void DeserializeThrowsArgumentNullException2()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Deserialize<MimeEntity>((Stream) null));
+            Assert.Equal("stream", ex.ParamName);
+        }
 
-		[Fact]
-		public void DeserializeThrowsArgumentNullException3()
-		{
-			var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Deserialize<MimeEntity>((string) null));
-			Assert.Equal("messageText", ex.ParamName);
-		}
+        [Fact]
+        public void DeserializeThrowsArgumentNullException3()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Deserialize<MimeEntity>((string) null));
+            Assert.Equal("messageText", ex.ParamName);
+        }
 
-		[Fact]
-		public void DeserializeThrowsArgumentNullException4()
-		{
-			var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Deserialize<MimeEntity>((TextReader) null));
-			Assert.Equal("reader", ex.ParamName);
-		}
-	}
+        [Fact]
+        public void DeserializeThrowsArgumentNullException4()
+        {
+            var ex = Assert.Throws<ArgumentNullException>(() => m_serializer.Deserialize<MimeEntity>((TextReader) null));
+            Assert.Equal("reader", ex.ParamName);
+        }
+    }
 }

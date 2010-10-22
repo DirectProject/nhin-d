@@ -14,17 +14,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using NHINDirect.Mail;
 using NHINDirect.Mime;
 
 using Xunit;
 
-namespace NHINDirect.Tests.Mail
+namespace Health.Direct.Common.Tests.Mail
 {
     /// <summary>
     /// Basic tests of round-trip serialization/deserialization.
@@ -92,7 +89,7 @@ namespace NHINDirect.Tests.Mail
         {
             Message m = RoundTripMultipartMessage;
             Assert.Equal(2,
-                m.GetParts().Count());
+                         m.GetParts().Count());
         }
 
         [Fact]
@@ -100,9 +97,9 @@ namespace NHINDirect.Tests.Mail
         {
             Message m = RoundTripMultipartMessage;
             Assert.Equal("text/plain",
-                m.GetParts()
-                    .ElementAt(0)
-                    .ContentType);
+                         m.GetParts()
+                             .ElementAt(0)
+                             .ContentType);
         }
 
         [Fact]
@@ -110,9 +107,9 @@ namespace NHINDirect.Tests.Mail
         {
             Message m = RoundTripMultipartMessage;
             Assert.Equal("<html><body><p>Hello, World!</p></body></html>",
-                m.GetParts()
-                    .ElementAt(1)
-                    .Body.Text);
+                         m.GetParts()
+                             .ElementAt(1)
+                             .Body.Text);
         }
     }
 }

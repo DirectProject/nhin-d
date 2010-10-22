@@ -14,15 +14,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 
 using NHINDirect.Metadata;
+
 using Xunit;
 
-namespace NHINDirect.Tests.metadata
+namespace Health.Direct.Common.Tests.Metadata
 {
     public class RecipientFacts
     {

@@ -21,9 +21,8 @@ using NHINDirect.Caching;
 
 using Xunit;
 
-namespace NHINDirect.Tests.Caching
+namespace Health.Direct.Common.Tests.Caching
 {
-
     public class DnsResponseCacheFacts : TestingBase
     {
         // set this to true if dump statements are needed for debugging purposes
@@ -220,7 +219,7 @@ namespace NHINDirect.Tests.Caching
                 //---cache should have 1 less item now
                 Dump(string.Format("By Dns Response - checking to make sure that cache count is [{0}]", m_responses.Count() - 1));
                 Assert.Equal(m_drrc.CacheCount
-                    , m_responses.Count() - 1);
+                             , m_responses.Count() - 1);
 
                 //----------------------------------------------------------------------------------------------------
                 //---make sure that the item is not in there by the dns response
@@ -244,7 +243,7 @@ namespace NHINDirect.Tests.Caching
                 //---cache should have 1 less item now
                 Dump(string.Format("By Question - checking to make sure that cache count is [{0}]", m_responses.Count() - 1));
                 Assert.Equal(m_drrc.CacheCount
-                    , m_responses.Count() - 1);
+                             , m_responses.Count() - 1);
 
                 //----------------------------------------------------------------------------------------------------
                 //---make sure that the item is not in there by the dns response
@@ -295,10 +294,10 @@ namespace NHINDirect.Tests.Caching
                 //---cache should have 1 less item now
                 Dump(string.Format("[{0}] records in cache after updating with dup record", m_drrc.CacheCount));
 
-               //----------------------------------------------------------------------------------------------------
-               //---make sure that there are only the X number of items in the cache
+                //----------------------------------------------------------------------------------------------------
+                //---make sure that there are only the X number of items in the cache
                 Assert.Equal(m_responses.Count
-                    , m_drrc.CacheCount);
+                             , m_drrc.CacheCount);
 
 
             }
@@ -384,5 +383,5 @@ namespace NHINDirect.Tests.Caching
 
         }
         */
-	}
+    }
 }

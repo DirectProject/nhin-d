@@ -21,28 +21,28 @@ using NHINDirect.Mime;
 using Xunit;
 using Xunit.Extensions;
 
-namespace NHINDirect.Tests.Mime
+namespace Health.Direct.Common.Tests.Mime
 {
-	public class CharReaderFacts
-	{
-		private const string TestContent = "the quick brown fox";
+    public class CharReaderFacts
+    {
+        private const string TestContent = "the quick brown fox";
 
-		[Fact]
-		public void CharReaderFromSegment()
-		{
-			var segment = new StringSegment(TestContent);
-			var reader = new CharReader(segment);
-			Assert.False(reader.IsDone);
-			Assert.Equal(-1, reader.Position);
-		}
+        [Fact]
+        public void CharReaderFromSegment()
+        {
+            var segment = new StringSegment(TestContent);
+            var reader = new CharReader(segment);
+            Assert.False(reader.IsDone);
+            Assert.Equal(-1, reader.Position);
+        }
 
-		[Theory]
-		[InlineData(null)]
-		[InlineData("")]
-		public void CharReaderNullOrEmptySource(string source)
-		{
-			Assert.Throws<ArgumentException>(() => new CharReader(source));
-		}
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void CharReaderNullOrEmptySource(string source)
+        {
+            Assert.Throws<ArgumentException>(() => new CharReader(source));
+        }
 
         [Fact]
         public void CharReaderShouldReadCharacters()
@@ -115,5 +115,5 @@ namespace NHINDirect.Tests.Mime
             Assert.Equal("abc", reader.GetSegment(0, 2).ToString());
             Assert.Equal("123", reader.GetSegment(4, 6).ToString());
         }
-	}
+    }
 }

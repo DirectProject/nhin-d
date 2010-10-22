@@ -19,22 +19,22 @@ using NHINDirect.Mime;
 
 using Xunit;
 
-namespace NHINDirect.Tests.Mime
+namespace Health.Direct.Common.Tests.Mime
 {
-	public class MimeSerializerFacts
-	{
-		[Fact]
-		public void SetDefaultToNullThrowsArgumentNullException()
-		{
-			Assert.Throws<ArgumentNullException>(() => MimeSerializer.Default = null);
-		}
+    public class MimeSerializerFacts
+    {
+        [Fact]
+        public void SetDefaultToNullThrowsArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => MimeSerializer.Default = null);
+        }
 
-		[Fact]
-		public void SetDefault()
-		{
-			var serializer = new DefaultSerializer();
-			MimeSerializer.Default = serializer;
-			Assert.Same(serializer, MimeSerializer.Default);
-		}
-	}
+        [Fact]
+        public void SetDefault()
+        {
+            var serializer = new DefaultSerializer();
+            MimeSerializer.Default = serializer;
+            Assert.Same(serializer, MimeSerializer.Default);
+        }
+    }
 }
