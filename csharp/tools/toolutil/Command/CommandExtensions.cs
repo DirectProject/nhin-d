@@ -16,10 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Reflection;
 
-namespace NHINDirect.Tools.Command
+namespace Health.Direct.Config.ToolLib.Command
 {
     /// <summary>
     /// Useful extensions that help with making simple & useful command line Console apps. 

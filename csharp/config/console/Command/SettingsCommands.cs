@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-using NHINDirect.Tools.Command;
+using Health.Direct.Config.ToolLib.Command;
 
 namespace Health.Direct.Config.Console.Command
 {
