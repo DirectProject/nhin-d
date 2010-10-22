@@ -17,8 +17,9 @@ using System;
 using System.IO;
 using System.Net.Mime;
 
+using Health.Direct.Agent;
+
 using NHINDirect.Mail;
-using NHINDirect.Agent;
 
 using Xunit;
 
@@ -142,7 +143,7 @@ Yo. Wassup?";
             throw new NotImplementedException();
         }
 
-        public void SetRcptTo(NHINDAddressCollection recipients)
+        public void SetRcptTo(DirectAddressCollection recipients)
         {
             throw new NotImplementedException();
         }

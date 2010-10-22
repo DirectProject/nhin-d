@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-using NHINDirect.Agent;
+using Health.Direct.Agent;
 
 using CDO;
 using ADODB;
@@ -75,7 +75,7 @@ namespace Health.Direct.SmtpAgent
             return this.CreateEnvelope(m_message);
         }
         
-        public void SetRcptTo(NHINDAddressCollection recipients)
+        public void SetRcptTo(DirectAddressCollection recipients)
         {
             if (recipients == null)
             {
@@ -125,7 +125,7 @@ namespace Health.Direct.SmtpAgent
         
         MessageEnvelope CreateEnvelope(CDO.Message message)
         {
-            NHINDAddressCollection recipientAddresses = null;
+            DirectAddressCollection recipientAddresses = null;
             DirectAddress senderAddress = null;
             MessageEnvelope envelope;
 
@@ -148,7 +148,7 @@ namespace Health.Direct.SmtpAgent
         // The one created by SMTP has envelope information
         // Returns false if no envelope info is available. We have to look within message headers in that case
         //
-        bool ExtractEnvelopeFields(CDO.Message message, ref NHINDAddressCollection recipientAddresses, ref DirectAddress senderAddress)
+        bool ExtractEnvelopeFields(CDO.Message message, ref DirectAddressCollection recipientAddresses, ref DirectAddress senderAddress)
         {
             if (!this.HasEnvelope)
             {
@@ -180,7 +180,7 @@ namespace Health.Direct.SmtpAgent
                 throw new SmtpAgentException(SmtpAgentError.NoRecipientsInEnvelope);
             }
 
-            recipientAddresses = NHINDAddressCollection.ParseSmtpServerEnvelope(recipients);
+            recipientAddresses = DirectAddressCollection.ParseSmtpServerEnvelope(recipients);
             senderAddress = new DirectAddress(sender);
 
             return true;

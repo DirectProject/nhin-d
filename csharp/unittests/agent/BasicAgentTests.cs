@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using NHINDirect.Agent;
 using NHINDirect.Cryptography;
 using NHINDirect.Mail;
 using NHINDirect.Mime;
@@ -142,8 +141,8 @@ namespace Health.Direct.Agent.Tests
             //
             // Return the wrong certificate, forcing decryption to fail
             //
-            NHINDAgent baseAgent = m_tester.AgentB;
-            NHINDAgent badAgent = new NHINDAgent(baseAgent.Domains.Domains.ToArray(), 
+            DirectAgent baseAgent = m_tester.AgentB;
+            DirectAgent badAgent = new DirectAgent(baseAgent.Domains.Domains.ToArray(), 
                                                  new BadCertResolver(m_tester.AgentA.PrivateCertResolver, baseAgent.PrivateCertResolver, false),  // returns the wrong private certs
                                                  baseAgent.PublicCertResolver, 
                                                  baseAgent.TrustAnchors);
@@ -152,7 +151,7 @@ namespace Health.Direct.Agent.Tests
             //
             // Now, it returns BOTH wrong and right certs, so decryption should eventually succeed
             //
-            badAgent = new NHINDAgent(baseAgent.Domains.Domains.ToArray(),
+            badAgent = new DirectAgent(baseAgent.Domains.Domains.ToArray(),
                                       new BadCertResolver(m_tester.AgentA.PrivateCertResolver, baseAgent.PrivateCertResolver, true),  // returns both wrong and right certs
                                       baseAgent.PublicCertResolver,
                                       baseAgent.TrustAnchors);

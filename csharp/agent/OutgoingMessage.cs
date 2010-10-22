@@ -13,17 +13,9 @@ Neither the name of the The Direct Project (nhindirect.org). nor the names of it
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Mail;
-using System.Security.Cryptography.Pkcs;
-using System.Security.Cryptography.X509Certificates;
 using NHINDirect.Mail;
-using NHINDirect.Mime;
 
-namespace NHINDirect.Agent
+namespace Health.Direct.Agent
 {
     /// <summary>
     /// Represents a message to be prepped for sending (generally an unencrypted message
@@ -44,9 +36,9 @@ namespace NHINDirect.Agent
         /// Creates an instance from a <see cref="Message"/> instance, specifying recipients and sender.
         /// </summary>
         /// <param name="message"><see cref="Message"/> instance representing the message to be prepped for send.</param>
-        /// <param name="recipients">An <see cref="NHINDAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
+        /// <param name="recipients">An <see cref="DirectAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
         /// <param name="sender">Sender <see cref="DirectAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
-        public OutgoingMessage(Message message, NHINDAddressCollection recipients, DirectAddress sender)
+        public OutgoingMessage(Message message, DirectAddressCollection recipients, DirectAddress sender)
             : base(message, recipients, sender)
         {
         }
@@ -55,9 +47,9 @@ namespace NHINDirect.Agent
         /// Creates an instance from an RFC 5322 string, specifying recipients and sender.
         /// </summary>
         /// <param name="messageText">RFC 5322 message string to be prepped for send.</param>
-        /// <param name="recipients">An <see cref="NHINDAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
+        /// <param name="recipients">An <see cref="DirectAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
         /// <param name="sender">Sender <see cref="DirectAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
-        public OutgoingMessage(string messageText, NHINDAddressCollection recipients, DirectAddress sender)
+        public OutgoingMessage(string messageText, DirectAddressCollection recipients, DirectAddress sender)
             : base(messageText, recipients, sender)
         {
         }
@@ -67,7 +59,7 @@ namespace NHINDirect.Agent
         {
         }
 
-        internal OutgoingMessage(Message message, string messageText, NHINDAddressCollection recipients, DirectAddress sender)
+        internal OutgoingMessage(Message message, string messageText, DirectAddressCollection recipients, DirectAddress sender)
             : base(message, recipients, sender)
         {
         }

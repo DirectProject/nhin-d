@@ -18,8 +18,6 @@ using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Agent;
-
 using Xunit;
 using Xunit.Extensions;
 
@@ -78,7 +76,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestBasicAdddressCollectionCreate()
         {
-            NHINDAddressCollection coll = new NHINDAddressCollection();
+            DirectAddressCollection coll = new DirectAddressCollection();
             Assert.False(coll.IsTrusted());
             Assert.Equal<string>("", coll.ToString());
             Assert.False(coll.IsTrusted(TrustEnforcementStatus.Failed));
@@ -96,7 +94,7 @@ namespace Health.Direct.Agent.Tests
         [InlineData("eleanor@roosevelt.com, \"Franklin Roosevelt\" <frank@roosevelt.com>, sean+o'nolan@tinymollitude.net", 3)]
         public void TestParseAddressCollection(string addressList, int expectedCount)
         {
-            NHINDAddressCollection coll = NHINDAddressCollection.Parse(addressList);
+            DirectAddressCollection coll = DirectAddressCollection.Parse(addressList);
             Assert.Equal<int>(expectedCount, coll.Count);
         }
 
@@ -104,14 +102,14 @@ namespace Health.Direct.Agent.Tests
         public void TestAddressCollectionIsTrustedMixedStatus()
         {
             //Mixed trusted and untrusted should be untrusted
-            NHINDAddressCollection coll = BasicCollection();
+            DirectAddressCollection coll = BasicCollection();
             Assert.False(coll.IsTrusted());
         }
 
         [Fact]
         public void TestAddressCollectionIsTrustedAllTrusted()
         {
-            NHINDAddressCollection coll = BasicCollection();
+            DirectAddressCollection coll = BasicCollection();
             foreach(DirectAddress addr in coll) { addr.Status = TrustEnforcementStatus.Success; }
             //All trusted addresses should be trusted
             Assert.True(coll.IsTrusted());
@@ -120,7 +118,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestAddressCollectionIsTrustedExplicitStatus()
         {
-            NHINDAddressCollection coll = BasicCollection();
+            DirectAddressCollection coll = BasicCollection();
             // should be able to define a custom floor for trust
             Assert.True(coll.IsTrusted(TrustEnforcementStatus.Failed));
         }
@@ -129,7 +127,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestAddressCollectionGetTrusted()
         {
-            NHINDAddressCollection coll = BasicCollection();
+            DirectAddressCollection coll = BasicCollection();
             IEnumerable<DirectAddress> trusted = coll.GetTrusted();
             Assert.Equal(1, trusted.Count());
             Assert.Equal("tinymollitude.net", trusted.First().Host);
@@ -139,7 +137,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestAddressCollectionGetUntrusted()
         {
-            NHINDAddressCollection coll = BasicCollection();
+            DirectAddressCollection coll = BasicCollection();
             Assert.Equal(2, coll.GetUntrusted().Count());
             Assert.Equal(2, coll.GetTrusted(TrustEnforcementStatus.Unknown).Count());
         }
@@ -147,7 +145,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestAddressCollectionRemoveUntrusted()
         {
-            NHINDAddressCollection coll = BasicCollection();
+            DirectAddressCollection coll = BasicCollection();
             coll.RemoveUntrusted();
             Assert.Equal(1, coll.Count);
         }
@@ -155,7 +153,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestAddressCollectionsCertificates()
         {
-            NHINDAddressCollection coll = BasicCollection();
+            DirectAddressCollection coll = BasicCollection();
             X509Certificate2 certa = new X509Certificate2();
             X509Certificate2 certb = new X509Certificate2();
             X509Certificate2 certc = new X509Certificate2();
@@ -169,14 +167,14 @@ namespace Health.Direct.Agent.Tests
             Assert.Contains<X509Certificate2>(certc, certs);
         }
 
-        NHINDAddressCollection BasicCollection()
+        DirectAddressCollection BasicCollection()
         {
             string[] addrStrings = new string[] {
                                                     "eleanor@roosevelt.com",
                                                     "\"Franklin Roosevelt\" <frank@roosevelt.com>",
                                                     "sean+o'nolan@tinymollitude.net"};
             IEnumerable<DirectAddress> addrs =  addrStrings.Select(a => new DirectAddress(a));
-            NHINDAddressCollection coll = new NHINDAddressCollection();
+            DirectAddressCollection coll = new DirectAddressCollection();
             coll.Add(addrs);
             coll[0].Status = TrustEnforcementStatus.Failed;
             coll[1].Status = TrustEnforcementStatus.Unknown;

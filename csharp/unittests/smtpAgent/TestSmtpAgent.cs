@@ -14,9 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using Health.Direct.Agent;
 using Health.Direct.Agent.Tests;
-
-using NHINDirect.Agent;
 
 using Xunit;
 
@@ -104,14 +103,14 @@ namespace Health.Direct.SmtpAgent.Tests
             // This should be accepted because the envelope is what we look at
             //
             MessageEnvelope envelope = new MessageEnvelope(BadMessage, 
-                                                           NHINDAddressCollection.ParseSmtpServerEnvelope("biff@nhind.hsgincubator.com"),
+                                                           DirectAddressCollection.ParseSmtpServerEnvelope("biff@nhind.hsgincubator.com"),
                                                            new DirectAddress("toby@redmond.hsgincubator.com")
                 );
            
             Assert.DoesNotThrow(() => m_agent.SecurityAgent.ProcessOutgoing(envelope));  
 
             envelope = new MessageEnvelope(TestMessage,
-                                           NHINDAddressCollection.ParseSmtpServerEnvelope("xyz@untrusted.com"),
+                                           DirectAddressCollection.ParseSmtpServerEnvelope("xyz@untrusted.com"),
                                            new DirectAddress("toby@redmond.hsgincubator.com"));
 
             //

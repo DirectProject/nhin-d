@@ -16,11 +16,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Linq;
 using System.Diagnostics;
 
+using Health.Direct.Agent;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
-
-using NHINDirect.Agent;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -57,7 +56,7 @@ namespace Health.Direct.SmtpAgent
             }                
         }
         
-        internal Address[] GetAddresses(NHINDAddressCollection addresses)
+        internal Address[] GetAddresses(DirectAddressCollection addresses)
         {
             Debug.Assert(m_settings.HasAddressManager);
 

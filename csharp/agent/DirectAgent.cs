@@ -14,18 +14,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mail;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
+
 using NHINDirect.Mail;
 using NHINDirect.Mime;
 using NHINDirect.Certificates;
 using NHINDirect.Cryptography;
 
-namespace NHINDirect.Agent
+namespace Health.Direct.Agent
 {
     /// <summary> 
     /// Master client for mail encryption/decryption and signature management. 
@@ -40,7 +38,7 @@ namespace NHINDirect.Agent
     /// var trustanchors = TrustAnchorResolver.CreateDefault(); 
     /// var ougoingmsg = File.ReadAllText("outgoing.eml"); // plaintext RFC 5322 email message 
     /// var incomingmsg = File.ReadAllText("incoming.eml"); // signed and encrypted S/MIME message 
-    /// var agent = NHINDAgent("hie.example.com", localcerts, dnsresolver, trustanchors); 
+    /// var agent = DirectAgent("hie.example.com", localcerts, dnsresolver, trustanchors); 
     ///  
     /// IncomingMessage incoming = agent.ProcessIncoming(incomingmsg); 
     /// if (incoming.HasRejectedRecipients) 
@@ -61,7 +59,7 @@ namespace NHINDirect.Agent
     /// </code> 
     /// </example> 
     ///  
-    public class NHINDAgent
+    public class DirectAgent
     {
         SMIMECryptographer m_cryptographer;
         ICertificateResolver m_privateCertResolver;
@@ -78,43 +76,43 @@ namespace NHINDirect.Agent
         bool m_allowNonWrappedIncoming = true;
 
         /// <summary> 
-        /// Creates an NHINDAgent instance using local certificate stores and the standard trust and cryptography models. 
+        /// Creates a DirectAgent instance using local certificate stores and the standard trust and cryptography models. 
         /// </summary> 
         /// <param name="domain"> 
         /// The local domain name managed by this agent. 
         /// </param> 
-        public NHINDAgent(string domain)
+        public DirectAgent(string domain)
             : this(domain, SystemX509Store.OpenPrivate().CreateResolver(), 
-                           SystemX509Store.OpenExternal().CreateResolver(),
-                           TrustAnchorResolver.CreateDefault())
+                   SystemX509Store.OpenExternal().CreateResolver(),
+                   TrustAnchorResolver.CreateDefault())
         {
         }
 		
-		/// <summary>
-		/// Creates an NHINDAgent instance, specifying private, external and trust anchor certificate stores, and
-		/// and defaulting to the standard trust and cryptography models.
-		/// </summary>
-		/// <param name="domain">
-		/// The local domain name managed by this agent.
-		/// </param>
-		/// <param name="privateCerts">
-		/// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
-		/// for senders of outgoing messages and receivers of incoming messages.
-		/// </param>
-		/// <param name="publicCerts">
-		/// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
-		/// for receivers of outgoing messages and senders of incoming messages. 
-		/// </param>
-		/// <param name="anchors">
-		/// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
-		/// </param>
-        public NHINDAgent(string domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
+        /// <summary>
+        /// Creates a DirectAgent instance, specifying private, external and trust anchor certificate stores, and
+        /// and defaulting to the standard trust and cryptography models.
+        /// </summary>
+        /// <param name="domain">
+        /// The local domain name managed by this agent.
+        /// </param>
+        /// <param name="privateCerts">
+        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
+        /// for senders of outgoing messages and receivers of incoming messages.
+        /// </param>
+        /// <param name="publicCerts">
+        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
+        /// for receivers of outgoing messages and senders of incoming messages. 
+        /// </param>
+        /// <param name="anchors">
+        /// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
+        /// </param>
+        public DirectAgent(string domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
             : this(new string[] {domain}, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default)
         {
         }
 
         /// <summary>
-        /// Creates an NHINDAgent instance, specifying private, external and trust anchor certificate stores, and
+        /// Creates a DirectAgent instance, specifying private, external and trust anchor certificate stores, and
         /// and defaulting to the standard trust and cryptography models.
         /// </summary>
         /// <param name="domains">
@@ -131,43 +129,43 @@ namespace NHINDirect.Agent
         /// <param name="anchors">
         /// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
         /// </param>
-        public NHINDAgent(string[] domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
+        public DirectAgent(string[] domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
             : this(domains, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default)
         {
         }
 
-		/// <summary>
-		/// Creates an NHINDAgent instance, specifying private, external and trust anchor certificate stores, and 
-		/// trust and cryptography models.
-		/// </summary>
-		/// <param name="domain">
-		/// The local domain name managed by this agent.
-		/// </param>
-		/// <param name="privateCerts">
-		/// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
-		/// for senders of outgoing messages and receivers of incoming messages.
-		/// </param>
-		/// <param name="publicCerts">
-		/// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
-		/// for receivers of outgoing messages and senders of incoming messages. 
-		/// </param>
-		/// <param name="anchors">
-		/// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
-		/// </param>
-		/// <param name="trustModel">
-		/// An instance or subclass of <see cref="NHINDirect.Agent.TrustModel"/> providing a custom trust model.
-		/// </param>
-		/// <param name="cryptographer">
-		/// An instance or subclass of <see cref="NHINDirect.Cryptography.SMIMECryptographer"/> providing a custom cryptography model.
-		/// </param>
-        public NHINDAgent(string domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
+        /// <summary>
+        /// Creates a DirectAgent instance, specifying private, external and trust anchor certificate stores, and 
+        /// trust and cryptography models.
+        /// </summary>
+        /// <param name="domain">
+        /// The local domain name managed by this agent.
+        /// </param>
+        /// <param name="privateCerts">
+        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
+        /// for senders of outgoing messages and receivers of incoming messages.
+        /// </param>
+        /// <param name="publicCerts">
+        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
+        /// for receivers of outgoing messages and senders of incoming messages. 
+        /// </param>
+        /// <param name="anchors">
+        /// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
+        /// </param>
+        /// <param name="trustModel">
+        /// An instance or subclass of <see cref="Health.Direct.Agent.TrustModel"/> providing a custom trust model.
+        /// </param>
+        /// <param name="cryptographer">
+        /// An instance or subclass of <see cref="NHINDirect.Cryptography.SMIMECryptographer"/> providing a custom cryptography model.
+        /// </param>
+        public DirectAgent(string domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
             : this(new string[] {domain}, privateCerts, publicCerts, anchors, trustModel, cryptographer)
         {
         }
 
 
         /// <summary>
-        /// Creates an NHINDAgent instance, specifying private, external and trust anchor certificate stores, and 
+        /// Creates a DirectAgent instance, specifying private, external and trust anchor certificate stores, and 
         /// trust and cryptography models.
         /// </summary>
         /// <param name="domains">
@@ -185,12 +183,12 @@ namespace NHINDirect.Agent
         /// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
         /// </param>
         /// <param name="trustModel">
-        /// An instance or subclass of <see cref="NHINDirect.Agent.TrustModel"/> providing a custom trust model.
+        /// An instance or subclass of <see cref="SMIMECryptographer"/> providing a custom trust model.
         /// </param>
         /// <param name="cryptographer">
-        /// An instance or subclass of <see cref="NHINDirect.Cryptography.SMIMECryptographer"/> providing a custom cryptography model.
+        /// An instance or subclass of <see cref="Health.Direct.Agent"/> providing a custom cryptography model.
         /// </param>
-        public NHINDAgent(string[] domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
+        public DirectAgent(string[] domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
         {
             m_managedDomains = new AgentDomains(domains);
 
@@ -228,10 +226,10 @@ namespace NHINDirect.Agent
             m_minTrustRequirement = TrustEnforcementStatus.Success;
         }
         
-		/// <summary>
-		/// The domainS this agent is managing.
-		/// </summary>
-		/// <value>An enumeration of string values, each providing a fully qualified domain name.</value>
+        /// <summary>
+        /// The domainS this agent is managing.
+        /// </summary>
+        /// <value>An enumeration of string values, each providing a fully qualified domain name.</value>
         public AgentDomains Domains
         {
             get
@@ -240,10 +238,10 @@ namespace NHINDirect.Agent
             }
         }
 
-		/// <summary>
-		/// Gets the cryptographic model used by this agent.
-		/// </summary>
-		/// <value>The cryptographic model used by this agent.</value>
+        /// <summary>
+        /// Gets the cryptographic model used by this agent.
+        /// </summary>
+        /// <value>The cryptographic model used by this agent.</value>
         public SMIMECryptographer Cryptographer
         {
             get
@@ -252,10 +250,10 @@ namespace NHINDirect.Agent
             }
         }
 
-		/// <summary>
-		/// Gets or sets whether this agent uses message encryption.
-		/// </summary>
-		/// <value><c>true</c> (default) if the agent encrypts, <c>false</c> if the agent does not.</value>
+        /// <summary>
+        /// Gets or sets whether this agent uses message encryption.
+        /// </summary>
+        /// <value><c>true</c> (default) if the agent encrypts, <c>false</c> if the agent does not.</value>
         public bool EncryptMessages
         {
             get
@@ -268,11 +266,11 @@ namespace NHINDirect.Agent
             }
         }
         
-		/// <summary>
-		/// Gets or sets whether this agent wraps the entire message or just the content package. 
-		/// </summary>
-		/// <value><c>true</c> if the agent wraps the entire message (including headers) prior to encryption; 
-		/// <c>false</c> if the agent just signs and encrypts the content package.</value>
+        /// <summary>
+        /// Gets or sets whether this agent wraps the entire message or just the content package. 
+        /// </summary>
+        /// <value><c>true</c> if the agent wraps the entire message (including headers) prior to encryption; 
+        /// <c>false</c> if the agent just signs and encrypts the content package.</value>
         public bool WrapMessages
         {
             get
@@ -381,7 +379,7 @@ namespace NHINDirect.Agent
         /// <summary> 
         /// Subscribe to this event for notification when the Agent raises an exception.  
         /// </summary> 
-        public event Action<NHINDAgent, Exception> Error;
+        public event Action<DirectAgent, Exception> Error;
         /// <summary> 
         /// Subscribe to this event for pre-processing of the <see cref="IncomingMessage"/>, including adding or modifying headers. 
         /// Throwing an exception pre-process will abort message processing. 
@@ -444,7 +442,7 @@ namespace NHINDirect.Agent
         /// An RFC 5322 formatted message string. 
         /// </param> 
         /// <param name="recipients"> 
-        /// A <see cref="NHINDAddressCollection"/> instance representing recipient addresses. 
+        /// A <see cref="DirectAddressCollection"/> instance representing recipient addresses. 
         /// </param> 
         /// <param name="sender"> 
         /// An <see cref="DirectAddress"/> instance representing the sender address 
@@ -452,21 +450,21 @@ namespace NHINDirect.Agent
         /// <returns> 
         /// An <see cref="IncomingMessage"/> instance with the trust verified decrypted and verified message. 
         /// </returns> 
-        public IncomingMessage ProcessIncoming(string messageText, NHINDAddressCollection recipients, DirectAddress sender)
+        public IncomingMessage ProcessIncoming(string messageText, DirectAddressCollection recipients, DirectAddress sender)
         {
             IncomingMessage message = new IncomingMessage(messageText, recipients, sender);
             return this.ProcessIncoming(message);                    
         }
 
-		/// <summary>
-		/// Decrypts and verifies trust in a MessageEnvelope instance with signed and encrypted message content.
-		/// </summary>
-		/// <param name="envelope">
-		/// A <see cref="MessageEnvelope"/> instance with signed and encrypted content for decryption and trust verification.
-		/// </param>
-		/// <returns>
+        /// <summary>
+        /// Decrypts and verifies trust in a MessageEnvelope instance with signed and encrypted message content.
+        /// </summary>
+        /// <param name="envelope">
+        /// A <see cref="MessageEnvelope"/> instance with signed and encrypted content for decryption and trust verification.
+        /// </param>
+        /// <returns>
         /// An <see cref="IncomingMessage"/> instance with the trust verified decrypted and verified message. 
-		/// </returns>
+        /// </returns>
         public IncomingMessage ProcessIncoming(MessageEnvelope envelope)
         {
             if (envelope == null)
@@ -477,15 +475,15 @@ namespace NHINDirect.Agent
             return this.ProcessIncoming(new IncomingMessage(envelope));
         }
         
-		/// <summary>
-		/// Decrypts and verifies trust in an IncomingMessage instance with signed and encrypted message content.
-		/// </summary>
-		/// <param name="message">
-		/// A <see cref="IncomingMessage"/> instance with signed and encrypted content for decryption and trust verification.
-		/// </param>
-		/// <returns>
+        /// <summary>
+        /// Decrypts and verifies trust in an IncomingMessage instance with signed and encrypted message content.
+        /// </summary>
+        /// <param name="message">
+        /// A <see cref="IncomingMessage"/> instance with signed and encrypted content for decryption and trust verification.
+        /// </param>
+        /// <returns>
         /// An <see cref="IncomingMessage"/> instance with the trust verified decrypted and verified message. 
-		/// </returns>
+        /// </returns>
         public IncomingMessage ProcessIncoming(IncomingMessage message)
         {
             if (message == null)
@@ -565,7 +563,7 @@ namespace NHINDirect.Agent
             //
             // Bind each recpient's certs and trust settings
             //
-            NHINDAddressCollection recipients = message.DomainRecipients;
+            DirectAddressCollection recipients = message.DomainRecipients;
             for (int i = 0, count = recipients.Count; i < count; ++i)
             {
                 DirectAddress recipient = recipients[i];
@@ -672,7 +670,7 @@ namespace NHINDirect.Agent
         //
         //------------------------------------------------------------------- 
 		
-		/// <summary> 
+        /// <summary> 
         /// Encrypts, verifies recipient trust, and signs an RFC 5322 formatted message 
         /// </summary> 
         /// <param name="messageText"> 
@@ -693,37 +691,37 @@ namespace NHINDirect.Agent
             return this.ProcessOutgoing(message);
         }
         
-		/// <summary>
+        /// <summary>
         /// Encrypts, verifies recipient trust, and signs an RFC 5322 formatted message 
         /// The provided sender and recipient addresses will be used instead of the header information in the <c>messageText</c>. 
-		/// </summary>
-		/// <param name="messageText">
+        /// </summary>
+        /// <param name="messageText">
         /// An RFC 5322 formatted message string 
-		/// </param>
-		/// <param name="recipients">
-		/// An <see cref="NHINDAddressCollection"/> instance specifying message recipients.
-		/// </param>
-		/// <param name="sender">
-		/// An <see cref="DirectAddress"/> instance specifying message sender
-		/// </param>
-		/// <returns>
-		/// An <see cref="OutgoingMessage"/> instance containing the encrypted and trust verified message.
-		/// </returns>
-        public OutgoingMessage ProcessOutgoing(string messageText, NHINDAddressCollection recipients, DirectAddress sender)
+        /// </param>
+        /// <param name="recipients">
+        /// An <see cref="DirectAddressCollection"/> instance specifying message recipients.
+        /// </param>
+        /// <param name="sender">
+        /// An <see cref="DirectAddress"/> instance specifying message sender
+        /// </param>
+        /// <returns>
+        /// An <see cref="OutgoingMessage"/> instance containing the encrypted and trust verified message.
+        /// </returns>
+        public OutgoingMessage ProcessOutgoing(string messageText, DirectAddressCollection recipients, DirectAddress sender)
         {
             OutgoingMessage message = new OutgoingMessage(this.WrapMessage(messageText), recipients, sender);            
             return this.ProcessOutgoing(message);            
         }
 
-		/// <summary>
+        /// <summary>
         /// Encrypts, verifies recipient trust, and signs a MessageEnvelope containing a message to prepare for send.
-		/// </summary>
-		/// <param name="envelope">
+        /// </summary>
+        /// <param name="envelope">
         /// A <see cref="MessageEnvelope"/> instance containing the message to prepare for send.
-		/// </param>
-		/// <returns>
-		/// An <see cref="OutgoingMessage"/> instance containing the encrypted and trust verified message.
-		/// </returns>
+        /// </param>
+        /// <returns>
+        /// An <see cref="OutgoingMessage"/> instance containing the encrypted and trust verified message.
+        /// </returns>
         public OutgoingMessage ProcessOutgoing(MessageEnvelope envelope)
         {
             if (envelope == null)
@@ -735,15 +733,15 @@ namespace NHINDirect.Agent
             return this.ProcessOutgoing(message);
         }
         
-		/// <summary>
+        /// <summary>
         /// Encrypts, verifies recipient trust, and signs an OutgoingMessage containing a message to prepare for send.
-		/// </summary>
-		/// <param name="message">
+        /// </summary>
+        /// <param name="message">
         /// An <see cref="OutgoingMessage"/> instance containing the message to prepare for send.
-		/// </param>
-		/// <returns>
-		/// An <see cref="OutgoingMessage"/> instance containing the encrypted and trust verified message.
-		/// </returns>
+        /// </param>
+        /// <returns>
+        /// An <see cref="OutgoingMessage"/> instance containing the encrypted and trust verified message.
+        /// </returns>
         public OutgoingMessage ProcessOutgoing(OutgoingMessage message)
         {
             if (message == null)
@@ -836,7 +834,7 @@ namespace NHINDirect.Agent
             //
             // Bind each recipient's certs
             //
-            NHINDAddressCollection recipients = message.Recipients;
+            DirectAddressCollection recipients = message.Recipients;
             for (int i = 0, count = recipients.Count; i < count; ++i)
             {
                 DirectAddress recipient = recipients[i];
@@ -851,7 +849,7 @@ namespace NHINDirect.Agent
                 return MimeSerializer.Default.Deserialize<Message>(messageText);
             }
             
-            return WrappedMessage.Create(messageText, NHINDStandard.MailHeadersUsed);            
+            return WrappedMessage.Create(messageText, DirectStandard.MailHeadersUsed);            
         }
 
         Message WrapMessage(Message message)
@@ -866,7 +864,7 @@ namespace NHINDirect.Agent
                 return message;
             }
             
-            return WrappedMessage.Create(message, NHINDStandard.MailHeadersUsed);
+            return WrappedMessage.Create(message, DirectStandard.MailHeadersUsed);
         }
         
         Message UnwrapMessage(Message message)

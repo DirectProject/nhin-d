@@ -31,7 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nhinAgent, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -93,9 +92,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\agent\nhinAgent.csproj">
+    <ProjectReference Include="..\..\agent\agent.csproj">
       <Project>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</Project>
-      <Name>nhinAgent</Name>
+      <Name>agent</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\common\common.csproj">
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
@@ -103,11 +102,11 @@
     </ProjectReference>
     <ProjectReference Include="..\..\config\client\config.client.csproj">
       <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
-      <Name>configClient</Name>
+      <Name>config.client</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\config\store\config.store.csproj">
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
-      <Name>configStore</Name>
+      <Name>config.store</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\gateway\smtpAgent\smtpAgent.csproj">
       <Project>{A9B11AAD-3461-4DDB-A447-91779BD41A78}</Project>

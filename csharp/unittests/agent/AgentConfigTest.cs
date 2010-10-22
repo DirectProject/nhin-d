@@ -15,8 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using NHINDirect.Agent;
-using NHINDirect.Agent.Config;
+using Health.Direct.Agent.Config;
 
 using Xunit;
 
@@ -69,7 +68,7 @@ namespace Health.Direct.Agent.Tests
         public void TestConfig()
         {
             AgentSettings settings = AgentSettings.Load(TestXml);   
-            NHINDAgent agent = settings.CreateAgent();
+            DirectAgent agent = settings.CreateAgent();
         }
     }
 }

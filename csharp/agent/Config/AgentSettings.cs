@@ -13,16 +13,13 @@ Neither the name of the The Direct Project (nhindirect.org). nor the names of it
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
 using System.IO;
+using System.Xml.Serialization;
+
 using NHINDirect.Certificates;
 using NHINDirect.Cryptography;
 
-namespace NHINDirect.Agent.Config
+namespace Health.Direct.Agent.Config
 {
     /// <summary>
     /// An XML-serializable representation of agent configuration settings.
@@ -31,7 +28,7 @@ namespace NHINDirect.Agent.Config
     /// <code>
     /// AgentSettings settings = AgentSettings.LoadFile("config.xml");
     /// settings.Validate()
-    /// NHINDAgent agent = settings.CreateAgent();
+    /// DirectAgent agent = settings.CreateAgent();
     /// </code>
     /// </example>
     [XmlType("AgentSettings")]
@@ -191,7 +188,7 @@ namespace NHINDirect.Agent.Config
         /// Creates a agent from settings.
         /// </summary>
         /// <returns>The configured agent instance.</returns>
-        public NHINDAgent CreateAgent()
+        public DirectAgent CreateAgent()
         {
             this.Validate();
             
@@ -201,7 +198,7 @@ namespace NHINDirect.Agent.Config
             TrustModel trustModel = (this.Trust != null) ? this.Trust.CreateTrustModel() : TrustModel.Default;
             SMIMECryptographer cryptographer = this.Cryptographer.Create();
             
-            NHINDAgent agent = new NHINDAgent(this.Domains, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer);
+            DirectAgent agent = new DirectAgent(this.Domains, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer);
             agent.AllowNonWrappedIncoming = m_allowNonWrappedIncoming;
             agent.WrapMessages = m_wrapOutgoing;
                         

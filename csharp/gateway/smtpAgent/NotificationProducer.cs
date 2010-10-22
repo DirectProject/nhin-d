@@ -18,7 +18,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Mail;
 
-using NHINDirect.Agent;
+using Health.Direct.Agent;
+
 using NHINDirect.Mail.Notifications;
 
 namespace Health.Direct.SmtpAgent

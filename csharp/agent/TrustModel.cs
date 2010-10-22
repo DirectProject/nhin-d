@@ -15,15 +15,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Mail;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
+
 using NHINDirect.Certificates;
 
-namespace NHINDirect.Agent
+namespace Health.Direct.Agent
 {
     /// <summary>
     /// Status of trust checking
@@ -43,7 +40,7 @@ namespace NHINDirect.Agent
         /// </summary>
         Success= 1,                     // Signature valid, siging cert trusted, and certs match perfectly
     }
-        
+
     /// <summary>
     /// Encapsulates enforcement of a Direct trust model, including certificate and trust anchor validation.
     /// </summary>
@@ -118,7 +115,7 @@ namespace NHINDirect.Agent
             // For each recipient, find at least one valid sender signature that the recipient trusts
             //
             DirectAddress sender = message.Sender;
-            NHINDAddressCollection recipients = message.DomainRecipients;
+            DirectAddressCollection recipients = message.DomainRecipients;
             foreach (DirectAddress recipient in recipients)
             {
                 recipient.Status = TrustEnforcementStatus.Failed;
@@ -234,5 +231,5 @@ namespace NHINDirect.Agent
             
             return lastTrustedSignature;
         }
-    }        
+    }
 }
