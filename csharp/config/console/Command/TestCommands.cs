@@ -4,7 +4,7 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
 using Health.Direct.Config.Store;
-using Health.Direct.Config.ToolLib.Command;
+using Health.Direct.Config.Tools.Command;
 
 using NHINDirect.Certificates;
 using NHINDirect.Extensions;

@@ -75,9 +75,9 @@
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\tools\toolutil\config.ToolLib.csproj">
+    <ProjectReference Include="..\..\tools\toolutil\config.tools.csproj">
       <Project>{D46A743B-E82F-45F7-87CB-29DBBFF9B9A0}</Project>
-      <Name>config.ToolLib</Name>
+      <Name>config.tools</Name>
     </ProjectReference>
     <ProjectReference Include="..\client\config.client.csproj">
       <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>

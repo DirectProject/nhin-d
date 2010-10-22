@@ -29,7 +29,7 @@ goto :EOF
 @rem -------------------------------
 :CopyBins
 call :PrintHeading Copying BINS to "%dest%"
-call :CopyFiles ConfigConsole.exe Health.Direct.Config.Client.dll Health.Direct.Config.Store.dll nhinCommon.dll Health.Direct.Config.ToolLib.dll ConfigConsoleSettings.xml ConfigConsole.exe.config
+call :CopyFiles ConfigConsole.exe Health.Direct.Config.Client.dll Health.Direct.Config.Store.dll nhinCommon.dll Health.Direct.Config.Tools.dll ConfigConsoleSettings.xml ConfigConsole.exe.config
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------
