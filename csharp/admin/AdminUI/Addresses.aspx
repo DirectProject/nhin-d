@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeBehind="Addresses.aspx.cs"
-    Inherits="AdminUI.Addresses" Title="Untitled Page" %>
+    Inherits="Health.Direct.AdminUI.Addresses" Title="Untitled Page" %>
 
 <%@ Register src="Logic/Views/AddressListControl.ascx" tagname="AddressListControl" tagprefix="uc1" %>
 

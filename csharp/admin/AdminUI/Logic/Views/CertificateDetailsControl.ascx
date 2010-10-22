@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="CertificateDetailsControl.ascx.cs"
-    Inherits="AdminUI.Logic.Views.CertificateDetailsControl" %>
+    Inherits="Health.Direct.AdminUI.Logic.Views.CertificateDetailsControl" %>
    <h3>
    Certificate for  
 <asp:Label ID="OwnerTitleLabel" runat="server"></asp:Label>

@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="NewDomainControl.ascx.cs" Inherits="AdminUI.Logic.Views.NewDomainControl" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="NewDomainControl.ascx.cs" Inherits="Health.Direct.AdminUI.Logic.Views.NewDomainControl" %>
 <div class="DetailsPanel">
     <fieldset style="overflow: auto; width: 561px;">
         <legend>New Domain

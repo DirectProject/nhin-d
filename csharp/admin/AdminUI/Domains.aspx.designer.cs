@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AdminUI {
+namespace Health.Direct.AdminUI {
     
     
     public partial class DomainsPage {
@@ -38,7 +38,7 @@ namespace AdminUI {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::AdminUI.Logic.Views.DomainListControl DomainListControl1;
+        protected global::Health.Direct.AdminUI.Logic.Views.DomainListControl DomainListControl1;
         
         /// <summary>
         /// NewDomainControl1 control.
@@ -47,7 +47,7 @@ namespace AdminUI {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::AdminUI.Logic.Views.NewDomainControl NewDomainControl1;
+        protected global::Health.Direct.AdminUI.Logic.Views.NewDomainControl NewDomainControl1;
         
         /// <summary>
         /// DetailsView control.
@@ -65,6 +65,6 @@ namespace AdminUI {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::AdminUI.Logic.Views.DomainDetailsControl DomainDetailsControl1;
+        protected global::Health.Direct.AdminUI.Logic.Views.DomainDetailsControl DomainDetailsControl1;
     }
 }

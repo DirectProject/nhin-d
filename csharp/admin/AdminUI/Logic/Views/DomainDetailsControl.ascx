@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="DomainDetailsControl.ascx.cs"
-    Inherits="AdminUI.Logic.Views.DomainDetailsControl" %>
+    Inherits="Health.Direct.AdminUI.Logic.Views.DomainDetailsControl" %>
 <style type="text/css">
     .Hint
     {

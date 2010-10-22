@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="CertificateListControl.ascx.cs"
-    Inherits="AdminUI.Logic.Views.CertificateListControl" %>
+    Inherits="Health.Direct.AdminUI.Logic.Views.CertificateListControl" %>
 <%@ Register src="CertificateUploadControl.ascx" tagname="CertificateUploadControl" tagprefix="uc1" %>
 
         <div class="FilterTitleContainer" id="OwnerTitleContainer" runat="server" visible="false">

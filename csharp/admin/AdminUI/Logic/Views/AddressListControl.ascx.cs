@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.Web.UI.WebControls;
-using NHINDirect.Config.Client.DomainManager;
 
-using NHINDirect.Config.Store;
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Store;
 
-namespace AdminUI.Logic.Views
+namespace Health.Direct.AdminUI.Logic.Views
 {
     public partial class AddressListControl : System.Web.UI.UserControl
     {
-        private NHINDirect.Config.Client.DomainManager.AddressManagerClient _addressManagerClient =
+        private AddressManagerClient _addressManagerClient =
             new AddressManagerClient();
 
-        private IEnumerable<NHINDirect.Config.Store.Address> _model;
+        private IEnumerable<Address> _model;
         public const int MAXRESULTSPERPAGE = 20;
         public event EventHandler<AddressListControlEventArgs> Command;
         public string Owner

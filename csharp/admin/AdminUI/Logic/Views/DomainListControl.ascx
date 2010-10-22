@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="DomainListControl.ascx.cs"
-    Inherits="AdminUI.Logic.Views.DomainListControl" %>
+    Inherits="Health.Direct.AdminUI.Logic.Views.DomainListControl" %>
 <div class="GridContainer">
 <asp:GridView ID="DomainGridView" runat="server" AutoGenerateColumns="False" CellPadding="4"
     ForeColor="#333333" GridLines="None" DataKeyNames="Id,Name" 

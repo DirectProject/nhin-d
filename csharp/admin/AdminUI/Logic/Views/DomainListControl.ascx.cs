@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Web.UI;
-using System.Web.UI.WebControls;
-using NHINDirect.Config.Client.DomainManager;
-using NHINDirect.Config.Store;
 
-namespace AdminUI.Logic.Views
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Store;
+
+namespace Health.Direct.AdminUI.Logic.Views
 {
     public partial class DomainListControl : UserControl
     {
@@ -15,9 +15,9 @@ namespace AdminUI.Logic.Views
         
         
         public const int MAXRESULTSPERPAGE = 20;
-       /// <summary>
-       /// Subscribe to this event 
-       /// </summary>
+        /// <summary>
+        /// Subscribe to this event 
+        /// </summary>
         public event EventHandler<DomainListEventArgs> Command;
 
         protected override void OnLoad(System.EventArgs e)

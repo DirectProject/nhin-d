@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="AddressDetailsControl.ascx.cs"
-    Inherits="AdminUI.Logic.Views.AddressDetailsControl" %>
+    Inherits="Health.Direct.AdminUI.Logic.Views.AddressDetailsControl" %>
 <%@ Register src="CertificateListControl.ascx" tagname="CertificateListControl" tagprefix="uc1" %>
 <style type="text/css">
     .style1

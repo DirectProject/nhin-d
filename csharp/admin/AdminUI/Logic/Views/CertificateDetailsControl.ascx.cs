@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
-using NHINDirect.Config.Client.CertificateService;
-using NHINDirect.Config.Store;
 
-namespace AdminUI.Logic.Views
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.CertificateService;
+using Health.Direct.Config.Store;
+
+namespace Health.Direct.AdminUI.Logic.Views
 {
     public partial class CertificateDetailsControl : System.Web.UI.UserControl
     {
@@ -88,7 +79,7 @@ namespace AdminUI.Logic.Views
                     _model = _certificateStoreClient.GetCertificate(CertificateId, options);
                     DataBindControls();
                 }
-                catch(System.ServiceModel.FaultException<NHINDirect.Config.Store.ConfigStoreFault> faultException)
+                catch(System.ServiceModel.FaultException<Health.Direct.Config.Store.ConfigStoreFault> faultException)
                 {
                     ErrorLiteral.Text = "An error occurred while trying to retrieve the certificate.";
                 }
@@ -110,7 +101,5 @@ namespace AdminUI.Logic.Views
 
 
         }
-
-
     }
 }

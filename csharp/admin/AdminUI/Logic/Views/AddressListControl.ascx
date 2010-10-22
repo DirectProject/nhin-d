@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="AddressListControl.ascx.cs"
-    Inherits="AdminUI.Logic.Views.AddressListControl" %>
+    Inherits="Health.Direct.AdminUI.Logic.Views.AddressListControl" %>
 <div class="FilterTitleContainer" id="OwnerTitleContainer" runat="server" visible="false">
     <h3>
         For:<asp:Label ID="OwnerTitleLabel" runat="server"></asp:Label></h3>

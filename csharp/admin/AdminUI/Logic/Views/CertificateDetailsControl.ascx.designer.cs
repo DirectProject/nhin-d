@@ -8,9 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AdminUI.Logic.Views {
-    
-    
+namespace Health.Direct.AdminUI.Logic.Views
+{
     public partial class CertificateDetailsControl {
         
         /// <summary>

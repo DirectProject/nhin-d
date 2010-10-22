@@ -8,9 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AdminUI {
-    
-    
+namespace Health.Direct.AdminUI
+{
     public partial class Anchors {
         
         /// <summary>

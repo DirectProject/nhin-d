@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using NHINDirect.Config.Client.CertificateService;
-using NHINDirect.Config.Store;
 
-namespace AdminUI.Logic.Views
+using AdminUI.Logic.Views;
+
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.CertificateService;
+using Health.Direct.Config.Store;
+
+namespace Health.Direct.AdminUI.Logic.Views
 {
     public partial class CertificateListControl : System.Web.UI.UserControl
     {
@@ -96,7 +100,7 @@ namespace AdminUI.Logic.Views
             {
                 ErrorLiteral.Text = ex.Message;
             }
-            catch(System.ServiceModel.FaultException<NHINDirect.Config.Store.ConfigStoreFault> ex )
+            catch(System.ServiceModel.FaultException<Health.Direct.Config.Store.ConfigStoreFault> ex )
             {
                 ErrorLiteral.Text = ex.Message;
             }
@@ -131,9 +135,9 @@ namespace AdminUI.Logic.Views
                         UpdateModel();
                         DataBindControls();
                     }
-                    catch(System.ServiceModel.FaultException<NHINDirect.Config.Store.ConfigStoreFault> faultException)
+                    catch(System.ServiceModel.FaultException<Health.Direct.Config.Store.ConfigStoreFault> faultException)
                     {
-                     //TODO: More testing to figure out what are the possible failures
+                        //TODO: More testing to figure out what are the possible failures
                         ErrorLiteral.Text = "an error has occurred.";
                     }
                     break;
