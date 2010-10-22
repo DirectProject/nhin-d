@@ -16,8 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.Linq;
 
-using NHINDirect.Mail;
-using NHINDirect.Mime;
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mime;
 
 using Xunit;
 

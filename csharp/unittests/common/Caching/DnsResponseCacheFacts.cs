@@ -16,8 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using DnsResolver;
-using NHINDirect.Caching;
+
+using Health.Direct.Common.Caching;
+using Health.Direct.Common.Resolver;
 
 using Xunit;
 

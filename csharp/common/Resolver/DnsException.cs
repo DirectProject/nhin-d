@@ -15,67 +15,68 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace DnsResolver
+namespace Health.Direct.Common.Resolver
 {
     /// <summary>
-    /// Represents a CNAME DNS RDATA
+    /// Represents program excecution errors relating to DNS requests or responses.
+    /// </summary>
+    public class DnsException : Exception
+    {
+        /// <summary>
+        /// Initializes a default instance.
+        /// </summary>
+        public DnsException()
+        {
+        }
+
+        /// <summary>
+        /// Initializes an instance that was triggered by the provided original exception.
+        /// </summary>
+        /// <param name="inner">The underlying exception that triggered this exception.</param>
+        public DnsException(Exception inner)
+            : base(null, inner)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Represents program excecution errors relating to DNS failures on request occuring at the DNS server
     /// </summary>
     /// <remarks>
-    /// See RFC 1035, Section 3.3.1
-    /// 
-    /// Data layout:
-    /// <code>
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// /                     CNAME                     /
-    /// /                                               /
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// </code>
+    /// See remarks for <see cref="ResponseCode"/> for more details.
     /// </remarks>
-    public class CNameRecord : DnsResourceRecord
+    public class DnsServerException : DnsException
     {
-        string m_name;
+        DnsStandard.ResponseCode m_responseCode;
         
-        internal CNameRecord()
+        /// <summary>
+        /// Initializes an instace with the specified <paramref name="responseCode"/>
+        /// </summary>
+        /// <param name="responseCode">The server response code that triggered this exception.</param>
+        public DnsServerException(DnsStandard.ResponseCode responseCode)
         {
+            m_responseCode = responseCode;
         }
         
         /// <summary>
-        /// Gets and sets the CName as a string (a dotted domain name)
+        /// The response code that triggered this exception.
         /// </summary>
-        public string CName
+        public DnsStandard.ResponseCode ResponseCode
         {
             get
             {
-                return m_name;
+                return m_responseCode;
             }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new DnsProtocolException(DnsProtocolError.InvalidCNameRecord);
-                }
-                
-                m_name = value;
-            }
+            
         }
+
         /// <summary>
-        /// Serialize the CName record
+        /// A string representation of this exception.
         /// </summary>
-        /// <param name="buffer"></param>
-        protected override void SerializeRecordData(DnsBuffer buffer)
+        public override string ToString()
         {
-            buffer.AddDomainName(m_name);
-        }
-        /// <summary>
-        /// Creates an instance from the DNS message from a DNS reader.
-        /// </summary>
-        /// <param name="reader">The DNS reader</param>
-        protected override void DeserializeRecordData(ref DnsBufferReader reader)
-        {
-            m_name = reader.ReadDomainName();
+            return string.Format("ERROR={0}\r\n{1}", m_responseCode, base.ToString());
         }
     }
 }

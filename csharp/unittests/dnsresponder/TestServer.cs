@@ -1,7 +1,6 @@
 ﻿using System;
 
-using DnsResolver;
-using DnsResponder;
+using Health.Direct.Common.Resolver;
 
 namespace Health.Direct.DnsResponder.Tests
 {

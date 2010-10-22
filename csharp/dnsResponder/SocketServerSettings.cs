@@ -14,14 +14,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
 using System.Net.Sockets;
 using System.Xml.Serialization;
 
-namespace DnsResponder
+namespace Health.Direct.DnsResponder
 {
     public class SocketServerSettings
     {

@@ -17,7 +17,7 @@ using System;
 using System.Collections;
 using System.Text;
 
-namespace NHINDirect.Extensions
+namespace Health.Direct.Common.Extensions
 {
     /// <summary>
     /// Extensions <see cref="string"/>

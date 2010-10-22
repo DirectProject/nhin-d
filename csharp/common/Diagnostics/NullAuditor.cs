@@ -1,4 +1,4 @@
-namespace NHINDirect.Diagnostics
+namespace Health.Direct.Common.Diagnostics
 {
     ///<summary>
     /// A Null version of the <see cref="IAuditor"/> interface.

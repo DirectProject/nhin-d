@@ -6,7 +6,7 @@ using System.ServiceModel.Channels;
 using System.Text;
 using System.Xml;
 
-using NHINDirect.Diagnostics;
+using Health.Direct.Common.Diagnostics;
 using NHINDirect.XDS.Common;
 
 namespace NHINDirect.XDS

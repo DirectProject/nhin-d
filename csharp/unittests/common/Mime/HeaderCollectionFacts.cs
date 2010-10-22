@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 
-using NHINDirect.Mime;
+using Health.Direct.Common.Mime;
 
 using Xunit;
 

@@ -14,13 +14,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
-using DnsResolver;
 
-namespace DnsResponder
+using Health.Direct.Common.Resolver;
+
+namespace Health.Direct.DnsResponder
 {
     /// <summary>
     /// Trivial dns store - relays all calls to another Dns server

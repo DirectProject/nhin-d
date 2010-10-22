@@ -14,72 +14,65 @@ Neither the name of the The Direct Project (nhindirect.org). nor the names of it
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace DnsResolver
+namespace Health.Direct.Common.Resolver
 {
     /// <summary>
-    /// Represents program excecution errors relating to DNS requests or responses.
-    /// </summary>
-    public class DnsException : Exception
-    {
-        /// <summary>
-        /// Initializes a default instance.
-        /// </summary>
-        public DnsException()
-        {
-        }
-
-        /// <summary>
-        /// Initializes an instance that was triggered by the provided original exception.
-        /// </summary>
-        /// <param name="inner">The underlying exception that triggered this exception.</param>
-        public DnsException(Exception inner)
-            : base(null, inner)
-        {
-        }
-    }
-        
-    /// <summary>
-    /// Represents program excecution errors relating to DNS failures on request occuring at the DNS server
+    /// Represents a CNAME DNS RDATA
     /// </summary>
     /// <remarks>
-    /// See remarks for <see cref="ResponseCode"/> for more details.
+    /// See RFC 1035, Section 3.3.1
+    /// 
+    /// Data layout:
+    /// <code>
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// /                     CNAME                     /
+    /// /                                               /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
     /// </remarks>
-    public class DnsServerException : DnsException
+    public class CNameRecord : DnsResourceRecord
     {
-        DnsStandard.ResponseCode m_responseCode;
+        string m_name;
         
-        /// <summary>
-        /// Initializes an instace with the specified <paramref name="responseCode"/>
-        /// </summary>
-        /// <param name="responseCode">The server response code that triggered this exception.</param>
-        public DnsServerException(DnsStandard.ResponseCode responseCode)
+        internal CNameRecord()
         {
-            m_responseCode = responseCode;
         }
         
         /// <summary>
-        /// The response code that triggered this exception.
+        /// Gets and sets the CName as a string (a dotted domain name)
         /// </summary>
-        public DnsStandard.ResponseCode ResponseCode
+        public string CName
         {
             get
             {
-                return m_responseCode;
+                return m_name;
             }
-            
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new DnsProtocolException(DnsProtocolError.InvalidCNameRecord);
+                }
+                
+                m_name = value;
+            }
         }
-
         /// <summary>
-        /// A string representation of this exception.
+        /// Serialize the CName record
         /// </summary>
-        public override string ToString()
+        /// <param name="buffer"></param>
+        protected override void SerializeRecordData(DnsBuffer buffer)
         {
-            return string.Format("ERROR={0}\r\n{1}", m_responseCode, base.ToString());
+            buffer.AddDomainName(m_name);
+        }
+        /// <summary>
+        /// Creates an instance from the DNS message from a DNS reader.
+        /// </summary>
+        /// <param name="reader">The DNS reader</param>
+        protected override void DeserializeRecordData(ref DnsBufferReader reader)
+        {
+            m_name = reader.ReadDomainName();
         }
     }
 }

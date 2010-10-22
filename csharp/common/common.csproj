@@ -8,8 +8,8 @@
     <ProjectGuid>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect</RootNamespace>
-    <AssemblyName>nhinCommon</AssemblyName>
+    <RootNamespace>Health.Direct.Common</RootNamespace>
+    <AssemblyName>Health.Direct.Common</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -32,7 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DocumentationFile>..\bin\Release\nhinCommon.xml</DocumentationFile>
+    <DocumentationFile>..\bin\Release\Health.Direct.Common.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -87,31 +87,31 @@
     <Compile Include="Diagnostics\LoggingLevel.cs" />
     <Compile Include="Diagnostics\MethodTracer.cs" />
     <Compile Include="Diagnostics\NullAuditor.cs" />
-    <Compile Include="dnsResolver\AddressRecord.cs" />
-    <Compile Include="dnsResolver\CertRecord.cs" />
-    <Compile Include="dnsResolver\CNameRecord.cs" />
-    <Compile Include="dnsResolver\Dns.cs" />
-    <Compile Include="dnsResolver\DnsBuffer.cs" />
-    <Compile Include="dnsResolver\DnsBufferReader.cs" />
-    <Compile Include="dnsResolver\DnsCert.cs" />
-    <Compile Include="dnsResolver\DnsClient.cs" />
-    <Compile Include="dnsResolver\DnsException.cs" />
-    <Compile Include="dnsResolver\DnsHeader.cs" />
-    <Compile Include="dnsResolver\DnsMessage.cs" />
-    <Compile Include="dnsResolver\DnsProtocolException.cs" />
-    <Compile Include="dnsResolver\DnsQuestion.cs" />
-    <Compile Include="dnsResolver\DnsRecordPrinter.cs" />
-    <Compile Include="dnsResolver\DnsRequest.cs" />
-    <Compile Include="dnsResolver\DnsResourceRecord.cs" />
-    <Compile Include="dnsResolver\DnsResourceRecordCollection.cs" />
-    <Compile Include="dnsResolver\DnsResponse.cs" />
-    <Compile Include="dnsResolver\Extensions.cs" />
-    <Compile Include="dnsResolver\MXRecord.cs" />
-    <Compile Include="dnsResolver\NSRecord.cs" />
-    <Compile Include="dnsResolver\PtrRecord.cs" />
-    <Compile Include="dnsResolver\RawRecord.cs" />
-    <Compile Include="dnsResolver\SOARecord.cs" />
-    <Compile Include="dnsResolver\TextRecord.cs" />
+    <Compile Include="Resolver\AddressRecord.cs" />
+    <Compile Include="Resolver\CertRecord.cs" />
+    <Compile Include="Resolver\CNameRecord.cs" />
+    <Compile Include="Resolver\Dns.cs" />
+    <Compile Include="Resolver\DnsBuffer.cs" />
+    <Compile Include="Resolver\DnsBufferReader.cs" />
+    <Compile Include="Resolver\DnsCert.cs" />
+    <Compile Include="Resolver\DnsClient.cs" />
+    <Compile Include="Resolver\DnsException.cs" />
+    <Compile Include="Resolver\DnsHeader.cs" />
+    <Compile Include="Resolver\DnsMessage.cs" />
+    <Compile Include="Resolver\DnsProtocolException.cs" />
+    <Compile Include="Resolver\DnsQuestion.cs" />
+    <Compile Include="Resolver\DnsRecordPrinter.cs" />
+    <Compile Include="Resolver\DnsRequest.cs" />
+    <Compile Include="Resolver\DnsResourceRecord.cs" />
+    <Compile Include="Resolver\DnsResourceRecordCollection.cs" />
+    <Compile Include="Resolver\DnsResponse.cs" />
+    <Compile Include="Resolver\Extensions.cs" />
+    <Compile Include="Resolver\MXRecord.cs" />
+    <Compile Include="Resolver\NSRecord.cs" />
+    <Compile Include="Resolver\PtrRecord.cs" />
+    <Compile Include="Resolver\RawRecord.cs" />
+    <Compile Include="Resolver\SOARecord.cs" />
+    <Compile Include="Resolver\TextRecord.cs" />
     <Compile Include="Dns\DnsClientWithCache.cs" />
     <Compile Include="Container\IDependencyResolver.cs" />
     <Compile Include="Extensions\Extensions.cs" />

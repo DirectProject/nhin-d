@@ -16,13 +16,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Net.Mail;
 using System.Net.Mime;
-using NHINDirect.Mime;
 
-namespace NHINDirect.Mail
+using Health.Direct.Common.Mime;
+
+namespace Health.Direct.Common.Mail
 {
     /// <summary>
     /// Parses e-mail (RFC 5322) messages

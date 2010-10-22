@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 
-using NHINDirect.Mail;
+using Health.Direct.Common.Mail;
 
 namespace Health.Direct.Agent
 {

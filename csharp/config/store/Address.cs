@@ -18,8 +18,9 @@ using System.Data.Linq.Mapping;
 using System.Runtime.Serialization;
 using System.Net.Mail;
 
+using Health.Direct.Common.Mail;
+
 using NHINDirect.Config.Store;
-using NHINDirect.Mail;
 
 namespace Health.Direct.Config.Store
 {

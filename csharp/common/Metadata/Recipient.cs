@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using System.Net.Mail;
 
-namespace NHINDirect.Metadata
+namespace Health.Direct.Common.Metadata
 {
     /// <summary>
     /// Represents a document package recipient
@@ -40,8 +36,8 @@ namespace NHINDirect.Metadata
         public string ToXONXCN()
         {
             return String.Format("{0}|{1}",
-                Institution == null ? "" : Institution.Value.ToXON(), 
-                Person == null ? "" : Person.ToXCN());
+                                 Institution == null ? "" : Institution.Value.ToXON(), 
+                                 Person == null ? "" : Person.ToXCN());
         }
 
         /// <summary>

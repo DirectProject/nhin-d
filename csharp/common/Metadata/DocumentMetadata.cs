@@ -15,10 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace NHINDirect.Metadata
+namespace Health.Direct.Common.Metadata
 {
     /// <summary>
     /// Represents metadata for a document

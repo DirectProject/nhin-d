@@ -80,7 +80,22 @@ goto :EOF
 @rem -------------------------------
 :CopyBins
 call :PrintHeading Copying BINS to "%dest%"
-call :CopyFiles dnsResolver.dll nhinCommon.dll Health.Direct.Agent.dll Health.Direct.SmtpAgent.dll Interop.ADODB.dll Interop.CDO.dll %platform_dir%\smtpEventHandler.dll Health.Direct.Config.Client.dll Health.Direct.Config.Store.dll Health.Direct.Config.Tools.dll ConfigConsole.exe ConfigConsoleSettings.xml Nlog.dll Health.Direct.Diagnostics.NLog.dll
+
+call :CopyFiles Health.Direct.DnsResolver.dll ^
+  Health.Direct.Common.dll ^
+  Health.Direct.Agent.dll ^
+  Health.Direct.SmtpAgent.dll ^
+  Interop.ADODB.dll ^
+  Interop.CDO.dll ^
+  %platform_dir%\smtpEventHandler.dll ^
+  Health.Direct.Config.Client.dll ^
+  Health.Direct.Config.Store.dll ^
+  Health.Direct.Config.Tools.dll ^
+  ConfigConsole.exe ^
+  ConfigConsoleSettings.xml ^
+  Nlog.dll ^
+  Health.Direct.Diagnostics.NLog.dll
+	
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------

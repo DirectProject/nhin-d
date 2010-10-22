@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace NHINDirect.Diagnostics
+namespace Health.Direct.Common.Diagnostics
 {
     ///<summary>
     /// A Null version of the <see cref="IAuditor"/> interface.
@@ -32,7 +32,7 @@ namespace NHINDirect.Diagnostics
             }
             catch (Exception ex)
             {
-                Diagnostics.Log.For(this).Warn("While auditing", ex);
+                Health.Direct.Common.Diagnostics.Log.For(this).Warn("While auditing", ex);
             }
         }
     }

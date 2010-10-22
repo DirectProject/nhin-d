@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace NHINDirect.Diagnostics
+namespace Health.Direct.Common.Diagnostics
 {
     /// <summary>
     /// Defines settings for logging.

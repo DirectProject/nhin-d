@@ -1,4 +1,4 @@
-namespace NHINDirect.Diagnostics
+namespace Health.Direct.Common.Diagnostics
 {
     ///<summary>
     /// AuditNames is a convience class containing the category names used with

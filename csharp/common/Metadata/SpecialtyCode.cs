@@ -13,12 +13,9 @@ Neither the name of the The Direct Project (nhindirect.org). nor the names of it
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace NHINDirect.Metadata
+namespace Health.Direct.Common.Metadata
 {
     /// <summary>
     /// This is the code representing the clinical specialty of the clinician or provider who interacted with, treated, or
@@ -503,124 +500,428 @@ namespace NHINDirect.Metadata
             return new CodedValue(pair.Key, pair.Value, "HITSP C80 clincial sceciality codes");
         }
 
-        private static Dictionary<C80ClinicalSpecialties, KeyValuePair<string, string>> m_C80ClinicalSpecialties = new Dictionary<C80ClinicalSpecialties, KeyValuePair<string, string>>()
-        {
-            { C80ClinicalSpecialties.Nephrology, new KeyValuePair<string, string>("394589003", "Nephrology") },
-            { C80ClinicalSpecialties.SurgeryDentalSurgicalProsthodontics, new KeyValuePair<string, string>("394606000", "Surgery-Dental-surgical-Prosthodontics") },
-            { C80ClinicalSpecialties.Histopathology, new KeyValuePair<string, string>("394597005", "Histopathology") },
-            { C80ClinicalSpecialties.Gynecology, new KeyValuePair<string, string>("394586005", "Gynecology") },
-            { C80ClinicalSpecialties.InfectiousDiseases, new KeyValuePair<string, string>("394807007", "Infectious diseases") },
-            { C80ClinicalSpecialties.BurnsCare, new KeyValuePair<string, string>("408462000", "Burns care") },
-            { C80ClinicalSpecialties.PediatricGastroenterology, new KeyValuePair<string, string>("418058008", "Pediatric gastroenterology") },
-            { C80ClinicalSpecialties.LearningDisability, new KeyValuePair<string, string>("408468001", "Learning disability") },
-            { C80ClinicalSpecialties.ClinicalGenetics, new KeyValuePair<string, string>("394580004", "Clinical genetics") },
-            { C80ClinicalSpecialties.OccupationalMedicine, new KeyValuePair<string, string>("394821009", "Occupational medicine") },
-            { C80ClinicalSpecialties.Neurology, new KeyValuePair<string, string>("394591006", "Neurology") },
-            { C80ClinicalSpecialties.AudiologicalMedicine, new KeyValuePair<string, string>("394578005", "Audiological medicine") },
-            { C80ClinicalSpecialties.SurgeryVascular, new KeyValuePair<string, string>("394611003", "Surgery-Vascular") },
-            { C80ClinicalSpecialties.SurgeryTraumaAndOrthopedics, new KeyValuePair<string, string>("408463005", "Surgery-Trauma and orthopedics") },
-            { C80ClinicalSpecialties.ObstetricsAndGynecology, new KeyValuePair<string, string>("394585009", "Obstetrics and gynecology") },
-            { C80ClinicalSpecialties.SurgeryGeneral, new KeyValuePair<string, string>("408474001", "Surgery-general") },
-            { C80ClinicalSpecialties.MedicalSpecialtyOther, new KeyValuePair<string, string>("394733009", "Medical specialty-Other") },
-            { C80ClinicalSpecialties.SurgeryDermatologicSurgery, new KeyValuePair<string, string>("394604002", "Surgery-Dermatologic surgery") },
-            { C80ClinicalSpecialties.PediatricRheumatology, new KeyValuePair<string, string>("419472004", "Pediatric rheumatology") },
-            { C80ClinicalSpecialties.MedicalOphthalmology, new KeyValuePair<string, string>("394813003", "Medical ophthalmology") },
-            { C80ClinicalSpecialties.Urology, new KeyValuePair<string, string>("394612005", "Urology") },
-            { C80ClinicalSpecialties.Obstetrics, new KeyValuePair<string, string>("408470005", "Obstetrics") },
-            { C80ClinicalSpecialties.ClinicalPharmacology, new KeyValuePair<string, string>("394600006", "Clinical pharmacology") },
-            { C80ClinicalSpecialties.Gastroenterology, new KeyValuePair<string, string>("394584008", "Gastroenterology") },
-            { C80ClinicalSpecialties.PediatricOncology, new KeyValuePair<string, string>("418002000", "Pediatric oncology") },
-            { C80ClinicalSpecialties.PediatricSurgeryBoneMarrowTransplantation, new KeyValuePair<string, string>("420112009", "Pediatric surgery-bone marrow transplantation") },
-            { C80ClinicalSpecialties.PalliativeMedicine, new KeyValuePair<string, string>("394806003", "Palliative medicine") },
-            { C80ClinicalSpecialties.SurgeryDentistryRestorativeDentistry, new KeyValuePair<string, string>("408449004", "Surgery-Dentistry-Restorative dentistry") },
-            { C80ClinicalSpecialties.BloodBankingAndTransfusionMedicine, new KeyValuePair<string, string>("421661004", "Blood banking and transfusion medicine") },
-            { C80ClinicalSpecialties.SurgicalSpecialtyOther, new KeyValuePair<string, string>("394732004", "Surgical specialty-Other") },
-            { C80ClinicalSpecialties.Anesthetics, new KeyValuePair<string, string>("394577000", "Anesthetics") },
-            { C80ClinicalSpecialties.RadiationOncology, new KeyValuePair<string, string>("419815003", "Radiation oncology") },
-            { C80ClinicalSpecialties.OsteopathicManipulativeMedicine, new KeyValuePair<string, string>("416304004", "Osteopathic manipulative medicine") },
-            { C80ClinicalSpecialties.SurgicalOncology, new KeyValuePair<string, string>("419321007", "Surgical oncology") },
-            { C80ClinicalSpecialties.PreventiveMedicine, new KeyValuePair<string, string>("409968004", "Preventive medicine") },
-            { C80ClinicalSpecialties.SurgeryHepatobiliaryAndPancreaticSurgery, new KeyValuePair<string, string>("394610002", "Surgery-Hepatobiliary and pancreatic surgery") },
-            { C80ClinicalSpecialties.SurgeryDentalOralAndMaxillofacialSurgery, new KeyValuePair<string, string>("408466002", "Surgery-Dental-Oral and maxillofacial surgery") },
-            { C80ClinicalSpecialties.Endocrinology, new KeyValuePair<string, string>("394583002", "Endocrinology") },
-            { C80ClinicalSpecialties.ThoracicMedicine, new KeyValuePair<string, string>("394590007", "Thoracic medicine") },
-            { C80ClinicalSpecialties.Hematopathology, new KeyValuePair<string, string>("394916005", "Hematopathology") },
-            { C80ClinicalSpecialties.SleepStudies, new KeyValuePair<string, string>("408450004", "Sleep studies") },
-            { C80ClinicalSpecialties.Hepatology, new KeyValuePair<string, string>("408472002", "Hepatology") },
-            { C80ClinicalSpecialties.PediatricNephrology, new KeyValuePair<string, string>("419365004", "Pediatric nephrology") },
-            { C80ClinicalSpecialties.CriticalCareMedicine, new KeyValuePair<string, string>("408478003", "Critical care medicine") },
-            { C80ClinicalSpecialties.PediatricChildAndAdolescentPsychiatry, new KeyValuePair<string, string>("394588006", "Pediatric (Child and adolescent) psychiatry") },
-            { C80ClinicalSpecialties.DentalMedicineSpecialties, new KeyValuePair<string, string>("394812008", "Dental medicine specialties") },
-            { C80ClinicalSpecialties.GeneralMedicalPractice, new KeyValuePair<string, string>("408443003", "General medical practice") },
-            { C80ClinicalSpecialties.RadiologyInterventionalRadiology, new KeyValuePair<string, string>("408455009", "Radiology-Interventional radiology") },
-            { C80ClinicalSpecialties.SurgeryTransplantationSurgery, new KeyValuePair<string, string>("394801008", "Surgery-Transplantation surgery") },
-            { C80ClinicalSpecialties.GeneralPathology, new KeyValuePair<string, string>("394915009", "General pathology") },
-            { C80ClinicalSpecialties.TropicalMedicine, new KeyValuePair<string, string>("408448007", "Tropical medicine") },
-            { C80ClinicalSpecialties.NuclearMedicine, new KeyValuePair<string, string>("394649004", "Nuclear medicine") },
-            { C80ClinicalSpecialties.PediatricInfectiousDiseases, new KeyValuePair<string, string>("418862001", "Pediatric infectious diseases") },
-            { C80ClinicalSpecialties.UrologicalOncology, new KeyValuePair<string, string>("419043006", "Urological oncology") },
-            { C80ClinicalSpecialties.SurgeryDentistrySurgical, new KeyValuePair<string, string>("394608004", "Surgery-Dentistry-surgical") },
-            { C80ClinicalSpecialties.PediatricCardiology, new KeyValuePair<string, string>("408459003", "Pediatric cardiology") },
-            { C80ClinicalSpecialties.DentalGeneralDentalPractice, new KeyValuePair<string, string>("408444009", "Dental-General dental practice") },
-            { C80ClinicalSpecialties.Rheumatology, new KeyValuePair<string, string>("394810000", "Rheumatology") },
-            { C80ClinicalSpecialties.PediatricOphthalmology, new KeyValuePair<string, string>("419983000", "Pediatric ophthalmology") },
-            { C80ClinicalSpecialties.SurgeryDentalEndodontics, new KeyValuePair<string, string>("408465003", "Surgery-Dental-Endodontics") },
-            { C80ClinicalSpecialties.Immunopathology, new KeyValuePair<string, string>("394598000", "Immunopathology") },
-            { C80ClinicalSpecialties.PulmonaryMedicine, new KeyValuePair<string, string>("418112009", "Pulmonary medicine") },
-            { C80ClinicalSpecialties.AdultMentalIllness, new KeyValuePair<string, string>("408467006", "Adult mental illness") },
-            { C80ClinicalSpecialties.Ophthalmology, new KeyValuePair<string, string>("394594003", "Ophthalmology") },
-            { C80ClinicalSpecialties.ClinicalImmunology, new KeyValuePair<string, string>("408480009", "Clinical immunology") },
-            { C80ClinicalSpecialties.PediatricPulmonology, new KeyValuePair<string, string>("419170002", "Pediatric pulmonology") },
-            { C80ClinicalSpecialties.SurgeryNeurosurgery, new KeyValuePair<string, string>("394609007", "Surgery-Neurosurgery") },
-            { C80ClinicalSpecialties.CommunityMedicine, new KeyValuePair<string, string>("394581000", "Community medicine") },
-            { C80ClinicalSpecialties.Toxicology, new KeyValuePair<string, string>("409967009", "Toxicology") },
-            { C80ClinicalSpecialties.GeriatricMedicine, new KeyValuePair<string, string>("394811001", "Geriatric medicine") },
-            { C80ClinicalSpecialties.Psychiatry, new KeyValuePair<string, string>("394587001", "Psychiatry") },
-            { C80ClinicalSpecialties.Neuropathology, new KeyValuePair<string, string>("394599008", "Neuropathology") },
-            { C80ClinicalSpecialties.SurgeryDentalOrthodontics, new KeyValuePair<string, string>("408461007", "Surgery-Dental-Orthodontics") },
-            { C80ClinicalSpecialties.SurgeryDentistrySurgicalOrthodontics, new KeyValuePair<string, string>("418018006", "Surgery-Dentistry-surgical-Orthodontics") },
-            { C80ClinicalSpecialties.Dermatology, new KeyValuePair<string, string>("394582007", "Dermatology") },
-            { C80ClinicalSpecialties.ClinicalCytogeneticsAndMolecularGenetics, new KeyValuePair<string, string>("394804000", "Clinical cytogenetics and molecular genetics") },
-            { C80ClinicalSpecialties.PediatricGenetics, new KeyValuePair<string, string>("420208008", "Pediatric genetics") },
-            { C80ClinicalSpecialties.RespiteCare, new KeyValuePair<string, string>("408447002", "Respite care") },
-            { C80ClinicalSpecialties.SurgicalAccidentEmergency, new KeyValuePair<string, string>("394576009", "Surgical-Accident & emergency") },
-            { C80ClinicalSpecialties.ClinicalOncology, new KeyValuePair<string, string>("394592004", "Clinical oncology") },
-            { C80ClinicalSpecialties.SurgeryColorectalSurgery, new KeyValuePair<string, string>("408441001", "Surgery-Colorectal surgery") },
-            { C80ClinicalSpecialties.OphthalmicSurgery, new KeyValuePair<string, string>("422191005", "Ophthalmic surgery") },
-            { C80ClinicalSpecialties.ClinicalNeuroPhysiology, new KeyValuePair<string, string>("394809005", "Clinical neuro-physiology") },
-            { C80ClinicalSpecialties.SurgeryPlasticSurgery, new KeyValuePair<string, string>("408477008", "Surgery-Plastic surgery") },
-            { C80ClinicalSpecialties.SurgeryBoneAndMarrowTransplantation, new KeyValuePair<string, string>("408476004", "Surgery-Bone and marrow transplantation") },
-            { C80ClinicalSpecialties.ClinicalMicrobiology, new KeyValuePair<string, string>("408454008", "Clinical microbiology") },
-            { C80ClinicalSpecialties.InternalMedicine, new KeyValuePair<string, string>("419192003", "Internal medicine") },
-            { C80ClinicalSpecialties.DiveMedicine, new KeyValuePair<string, string>("410005002", "Dive medicine") },
-            { C80ClinicalSpecialties.Radiology, new KeyValuePair<string, string>("394914008", "Radiology") },
-            { C80ClinicalSpecialties.Otolaryngology, new KeyValuePair<string, string>("418960008", "Otolaryngology") },
-            { C80ClinicalSpecialties.PainManagement, new KeyValuePair<string, string>("394882004", "Pain management") },
-            { C80ClinicalSpecialties.ClinicalHematology, new KeyValuePair<string, string>("394803006", "Clinical hematology") },
-            { C80ClinicalSpecialties.SurgeryDentalProstheticDentistryProsthodontics, new KeyValuePair<string, string>("408460008", "Surgery-Dental-Prosthetic dentistry (Prosthodontics)") },
-            { C80ClinicalSpecialties.MilitaryMedicine, new KeyValuePair<string, string>("410001006", "Military medicine") },
-            { C80ClinicalSpecialties.Rehabilitation, new KeyValuePair<string, string>("394602003", "Rehabilitation") },
-            { C80ClinicalSpecialties.ClinicalPhysiology, new KeyValuePair<string, string>("394601005", "Clinical physiology") },
-            { C80ClinicalSpecialties.PediatricSurgery, new KeyValuePair<string, string>("394539006", "Pediatric surgery") },
-            { C80ClinicalSpecialties.MedicalOncology, new KeyValuePair<string, string>("394593009", "Medical oncology") },
-            { C80ClinicalSpecialties.PediatricImmunology, new KeyValuePair<string, string>("418535003", "Pediatric immunology") },
-            { C80ClinicalSpecialties.Cardiology, new KeyValuePair<string, string>("394579002", "Cardiology") },
-            { C80ClinicalSpecialties.PediatricEndocrinology, new KeyValuePair<string, string>("419610006", "Pediatric endocrinology") },
-            { C80ClinicalSpecialties.PediatricDentistry, new KeyValuePair<string, string>("394607009", "Pediatric dentistry") },
-            { C80ClinicalSpecialties.Psychotherapy, new KeyValuePair<string, string>("394913002", "Psychotherapy") },
-            { C80ClinicalSpecialties.PediatricHematology, new KeyValuePair<string, string>("418652005", "Pediatric hematology") },
-            { C80ClinicalSpecialties.SurgeryCardiothoracicTransplantation, new KeyValuePair<string, string>("408464004", "Surgery-Cardiothoracic transplantation") },
-            { C80ClinicalSpecialties.GynecologicalOncology, new KeyValuePair<string, string>("408446006", "Gynecological oncology") },
-            { C80ClinicalSpecialties.DiabeticMedicine, new KeyValuePair<string, string>("408475000", "Diabetic medicine") },
-            { C80ClinicalSpecialties.SurgeryCardiacSurgery, new KeyValuePair<string, string>("408471009", "Surgery-Cardiac surgery") },
-            { C80ClinicalSpecialties.PublicHealthMedicine, new KeyValuePair<string, string>("408440000", "Public health medicine") },
-            { C80ClinicalSpecialties.GenitoUrinaryMedicine, new KeyValuePair<string, string>("394808002", "Genito-urinary medicine") },
-            { C80ClinicalSpecialties.SurgeryBreastSurgery, new KeyValuePair<string, string>("408469009", "Surgery-Breast surgery") },
-            { C80ClinicalSpecialties.FamilyPractice, new KeyValuePair<string, string>("419772000", "Family practice") },
-            { C80ClinicalSpecialties.GeneralPractice, new KeyValuePair<string, string>("394814009", "General practice") },
-            { C80ClinicalSpecialties.GeneralMedicine, new KeyValuePair<string, string>("394802001", "General medicine") },
-            { C80ClinicalSpecialties.SurgeryEar, new KeyValuePair<string, string>("394605001", "Surgery-Ear") }
-        };
+        private static Dictionary<C80ClinicalSpecialties, KeyValuePair<string, string>> m_C80ClinicalSpecialties
+            = new Dictionary<C80ClinicalSpecialties, KeyValuePair<string, string>>()
+                  {
+                      {C80ClinicalSpecialties.Nephrology, new KeyValuePair<string, string>("394589003", "Nephrology")},
+                      {
+                          C80ClinicalSpecialties.SurgeryDentalSurgicalProsthodontics,
+                          new KeyValuePair<string, string>("394606000", "Surgery-Dental-surgical-Prosthodontics")
+                          },
+                      {
+                          C80ClinicalSpecialties.Histopathology,
+                          new KeyValuePair<string, string>("394597005", "Histopathology")
+                          },
+                      {C80ClinicalSpecialties.Gynecology, new KeyValuePair<string, string>("394586005", "Gynecology")},
+                      {
+                          C80ClinicalSpecialties.InfectiousDiseases,
+                          new KeyValuePair<string, string>("394807007", "Infectious diseases")
+                          },
+                      {C80ClinicalSpecialties.BurnsCare, new KeyValuePair<string, string>("408462000", "Burns care")},
+                      {
+                          C80ClinicalSpecialties.PediatricGastroenterology,
+                          new KeyValuePair<string, string>("418058008", "Pediatric gastroenterology")
+                          },
+                      {
+                          C80ClinicalSpecialties.LearningDisability,
+                          new KeyValuePair<string, string>("408468001", "Learning disability")
+                          },
+                      {
+                          C80ClinicalSpecialties.ClinicalGenetics,
+                          new KeyValuePair<string, string>("394580004", "Clinical genetics")
+                          },
+                      {
+                          C80ClinicalSpecialties.OccupationalMedicine,
+                          new KeyValuePair<string, string>("394821009", "Occupational medicine")
+                          },
+                      {C80ClinicalSpecialties.Neurology, new KeyValuePair<string, string>("394591006", "Neurology")},
+                      {
+                          C80ClinicalSpecialties.AudiologicalMedicine,
+                          new KeyValuePair<string, string>("394578005", "Audiological medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryVascular,
+                          new KeyValuePair<string, string>("394611003", "Surgery-Vascular")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryTraumaAndOrthopedics,
+                          new KeyValuePair<string, string>("408463005", "Surgery-Trauma and orthopedics")
+                          },
+                      {
+                          C80ClinicalSpecialties.ObstetricsAndGynecology,
+                          new KeyValuePair<string, string>("394585009", "Obstetrics and gynecology")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryGeneral,
+                          new KeyValuePair<string, string>("408474001", "Surgery-general")
+                          },
+                      {
+                          C80ClinicalSpecialties.MedicalSpecialtyOther,
+                          new KeyValuePair<string, string>("394733009", "Medical specialty-Other")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryDermatologicSurgery,
+                          new KeyValuePair<string, string>("394604002", "Surgery-Dermatologic surgery")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricRheumatology,
+                          new KeyValuePair<string, string>("419472004", "Pediatric rheumatology")
+                          },
+                      {
+                          C80ClinicalSpecialties.MedicalOphthalmology,
+                          new KeyValuePair<string, string>("394813003", "Medical ophthalmology")
+                          },
+                      {C80ClinicalSpecialties.Urology, new KeyValuePair<string, string>("394612005", "Urology")},
+                      {C80ClinicalSpecialties.Obstetrics, new KeyValuePair<string, string>("408470005", "Obstetrics")},
+                      {
+                          C80ClinicalSpecialties.ClinicalPharmacology,
+                          new KeyValuePair<string, string>("394600006", "Clinical pharmacology")
+                          },
+                      {
+                          C80ClinicalSpecialties.Gastroenterology,
+                          new KeyValuePair<string, string>("394584008", "Gastroenterology")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricOncology,
+                          new KeyValuePair<string, string>("418002000", "Pediatric oncology")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricSurgeryBoneMarrowTransplantation,
+                          new KeyValuePair<string, string>("420112009", "Pediatric surgery-bone marrow transplantation")
+                          },
+                      {
+                          C80ClinicalSpecialties.PalliativeMedicine,
+                          new KeyValuePair<string, string>("394806003", "Palliative medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryDentistryRestorativeDentistry,
+                          new KeyValuePair<string, string>("408449004", "Surgery-Dentistry-Restorative dentistry")
+                          },
+                      {
+                          C80ClinicalSpecialties.BloodBankingAndTransfusionMedicine,
+                          new KeyValuePair<string, string>("421661004", "Blood banking and transfusion medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgicalSpecialtyOther,
+                          new KeyValuePair<string, string>("394732004", "Surgical specialty-Other")
+                          },
+                      {C80ClinicalSpecialties.Anesthetics, new KeyValuePair<string, string>("394577000", "Anesthetics")},
+                      {
+                          C80ClinicalSpecialties.RadiationOncology,
+                          new KeyValuePair<string, string>("419815003", "Radiation oncology")
+                          },
+                      {
+                          C80ClinicalSpecialties.OsteopathicManipulativeMedicine,
+                          new KeyValuePair<string, string>("416304004", "Osteopathic manipulative medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgicalOncology,
+                          new KeyValuePair<string, string>("419321007", "Surgical oncology")
+                          },
+                      {
+                          C80ClinicalSpecialties.PreventiveMedicine,
+                          new KeyValuePair<string, string>("409968004", "Preventive medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryHepatobiliaryAndPancreaticSurgery,
+                          new KeyValuePair<string, string>("394610002", "Surgery-Hepatobiliary and pancreatic surgery")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryDentalOralAndMaxillofacialSurgery,
+                          new KeyValuePair<string, string>("408466002", "Surgery-Dental-Oral and maxillofacial surgery")
+                          },
+                      {
+                          C80ClinicalSpecialties.Endocrinology,
+                          new KeyValuePair<string, string>("394583002", "Endocrinology")
+                          },
+                      {
+                          C80ClinicalSpecialties.ThoracicMedicine,
+                          new KeyValuePair<string, string>("394590007", "Thoracic medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.Hematopathology,
+                          new KeyValuePair<string, string>("394916005", "Hematopathology")
+                          },
+                      {
+                          C80ClinicalSpecialties.SleepStudies,
+                          new KeyValuePair<string, string>("408450004", "Sleep studies")
+                          },
+                      {C80ClinicalSpecialties.Hepatology, new KeyValuePair<string, string>("408472002", "Hepatology")},
+                      {
+                          C80ClinicalSpecialties.PediatricNephrology,
+                          new KeyValuePair<string, string>("419365004", "Pediatric nephrology")
+                          },
+                      {
+                          C80ClinicalSpecialties.CriticalCareMedicine,
+                          new KeyValuePair<string, string>("408478003", "Critical care medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricChildAndAdolescentPsychiatry,
+                          new KeyValuePair<string, string>("394588006", "Pediatric (Child and adolescent) psychiatry")
+                          },
+                      {
+                          C80ClinicalSpecialties.DentalMedicineSpecialties,
+                          new KeyValuePair<string, string>("394812008", "Dental medicine specialties")
+                          },
+                      {
+                          C80ClinicalSpecialties.GeneralMedicalPractice,
+                          new KeyValuePair<string, string>("408443003", "General medical practice")
+                          },
+                      {
+                          C80ClinicalSpecialties.RadiologyInterventionalRadiology,
+                          new KeyValuePair<string, string>("408455009", "Radiology-Interventional radiology")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryTransplantationSurgery,
+                          new KeyValuePair<string, string>("394801008", "Surgery-Transplantation surgery")
+                          },
+                      {
+                          C80ClinicalSpecialties.GeneralPathology,
+                          new KeyValuePair<string, string>("394915009", "General pathology")
+                          },
+                      {
+                          C80ClinicalSpecialties.TropicalMedicine,
+                          new KeyValuePair<string, string>("408448007", "Tropical medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.NuclearMedicine,
+                          new KeyValuePair<string, string>("394649004", "Nuclear medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricInfectiousDiseases,
+                          new KeyValuePair<string, string>("418862001", "Pediatric infectious diseases")
+                          },
+                      {
+                          C80ClinicalSpecialties.UrologicalOncology,
+                          new KeyValuePair<string, string>("419043006", "Urological oncology")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryDentistrySurgical,
+                          new KeyValuePair<string, string>("394608004", "Surgery-Dentistry-surgical")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricCardiology,
+                          new KeyValuePair<string, string>("408459003", "Pediatric cardiology")
+                          },
+                      {
+                          C80ClinicalSpecialties.DentalGeneralDentalPractice,
+                          new KeyValuePair<string, string>("408444009", "Dental-General dental practice")
+                          },
+                      {
+                          C80ClinicalSpecialties.Rheumatology,
+                          new KeyValuePair<string, string>("394810000", "Rheumatology")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricOphthalmology,
+                          new KeyValuePair<string, string>("419983000", "Pediatric ophthalmology")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryDentalEndodontics,
+                          new KeyValuePair<string, string>("408465003", "Surgery-Dental-Endodontics")
+                          },
+                      {
+                          C80ClinicalSpecialties.Immunopathology,
+                          new KeyValuePair<string, string>("394598000", "Immunopathology")
+                          },
+                      {
+                          C80ClinicalSpecialties.PulmonaryMedicine,
+                          new KeyValuePair<string, string>("418112009", "Pulmonary medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.AdultMentalIllness,
+                          new KeyValuePair<string, string>("408467006", "Adult mental illness")
+                          },
+                      {
+                          C80ClinicalSpecialties.Ophthalmology,
+                          new KeyValuePair<string, string>("394594003", "Ophthalmology")
+                          },
+                      {
+                          C80ClinicalSpecialties.ClinicalImmunology,
+                          new KeyValuePair<string, string>("408480009", "Clinical immunology")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricPulmonology,
+                          new KeyValuePair<string, string>("419170002", "Pediatric pulmonology")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryNeurosurgery,
+                          new KeyValuePair<string, string>("394609007", "Surgery-Neurosurgery")
+                          },
+                      {
+                          C80ClinicalSpecialties.CommunityMedicine,
+                          new KeyValuePair<string, string>("394581000", "Community medicine")
+                          },
+                      {C80ClinicalSpecialties.Toxicology, new KeyValuePair<string, string>("409967009", "Toxicology")},
+                      {
+                          C80ClinicalSpecialties.GeriatricMedicine,
+                          new KeyValuePair<string, string>("394811001", "Geriatric medicine")
+                          },
+                      {C80ClinicalSpecialties.Psychiatry, new KeyValuePair<string, string>("394587001", "Psychiatry")},
+                      {
+                          C80ClinicalSpecialties.Neuropathology,
+                          new KeyValuePair<string, string>("394599008", "Neuropathology")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryDentalOrthodontics,
+                          new KeyValuePair<string, string>("408461007", "Surgery-Dental-Orthodontics")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryDentistrySurgicalOrthodontics,
+                          new KeyValuePair<string, string>("418018006", "Surgery-Dentistry-surgical-Orthodontics")
+                          },
+                      {C80ClinicalSpecialties.Dermatology, new KeyValuePair<string, string>("394582007", "Dermatology")},
+                      {
+                          C80ClinicalSpecialties.ClinicalCytogeneticsAndMolecularGenetics,
+                          new KeyValuePair<string, string>("394804000", "Clinical cytogenetics and molecular genetics")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricGenetics,
+                          new KeyValuePair<string, string>("420208008", "Pediatric genetics")
+                          },
+                      {
+                          C80ClinicalSpecialties.RespiteCare, new KeyValuePair<string, string>("408447002", "Respite care")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgicalAccidentEmergency,
+                          new KeyValuePair<string, string>("394576009", "Surgical-Accident & emergency")
+                          },
+                      {
+                          C80ClinicalSpecialties.ClinicalOncology,
+                          new KeyValuePair<string, string>("394592004", "Clinical oncology")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryColorectalSurgery,
+                          new KeyValuePair<string, string>("408441001", "Surgery-Colorectal surgery")
+                          },
+                      {
+                          C80ClinicalSpecialties.OphthalmicSurgery,
+                          new KeyValuePair<string, string>("422191005", "Ophthalmic surgery")
+                          },
+                      {
+                          C80ClinicalSpecialties.ClinicalNeuroPhysiology,
+                          new KeyValuePair<string, string>("394809005", "Clinical neuro-physiology")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryPlasticSurgery,
+                          new KeyValuePair<string, string>("408477008", "Surgery-Plastic surgery")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryBoneAndMarrowTransplantation,
+                          new KeyValuePair<string, string>("408476004", "Surgery-Bone and marrow transplantation")
+                          },
+                      {
+                          C80ClinicalSpecialties.ClinicalMicrobiology,
+                          new KeyValuePair<string, string>("408454008", "Clinical microbiology")
+                          },
+                      {
+                          C80ClinicalSpecialties.InternalMedicine,
+                          new KeyValuePair<string, string>("419192003", "Internal medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.DiveMedicine,
+                          new KeyValuePair<string, string>("410005002", "Dive medicine")
+                          },
+                      {C80ClinicalSpecialties.Radiology, new KeyValuePair<string, string>("394914008", "Radiology")},
+                      {
+                          C80ClinicalSpecialties.Otolaryngology,
+                          new KeyValuePair<string, string>("418960008", "Otolaryngology")
+                          },
+                      {
+                          C80ClinicalSpecialties.PainManagement,
+                          new KeyValuePair<string, string>("394882004", "Pain management")
+                          },
+                      {
+                          C80ClinicalSpecialties.ClinicalHematology,
+                          new KeyValuePair<string, string>("394803006", "Clinical hematology")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryDentalProstheticDentistryProsthodontics,
+                          new KeyValuePair<string, string>("408460008",
+                                                           "Surgery-Dental-Prosthetic dentistry (Prosthodontics)")
+                          },
+                      {
+                          C80ClinicalSpecialties.MilitaryMedicine,
+                          new KeyValuePair<string, string>("410001006", "Military medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.Rehabilitation,
+                          new KeyValuePair<string, string>("394602003", "Rehabilitation")
+                          },
+                      {
+                          C80ClinicalSpecialties.ClinicalPhysiology,
+                          new KeyValuePair<string, string>("394601005", "Clinical physiology")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricSurgery,
+                          new KeyValuePair<string, string>("394539006", "Pediatric surgery")
+                          },
+                      {
+                          C80ClinicalSpecialties.MedicalOncology,
+                          new KeyValuePair<string, string>("394593009", "Medical oncology")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricImmunology,
+                          new KeyValuePair<string, string>("418535003", "Pediatric immunology")
+                          },
+                      {C80ClinicalSpecialties.Cardiology, new KeyValuePair<string, string>("394579002", "Cardiology")},
+                      {
+                          C80ClinicalSpecialties.PediatricEndocrinology,
+                          new KeyValuePair<string, string>("419610006", "Pediatric endocrinology")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricDentistry,
+                          new KeyValuePair<string, string>("394607009", "Pediatric dentistry")
+                          },
+                      {
+                          C80ClinicalSpecialties.Psychotherapy,
+                          new KeyValuePair<string, string>("394913002", "Psychotherapy")
+                          },
+                      {
+                          C80ClinicalSpecialties.PediatricHematology,
+                          new KeyValuePair<string, string>("418652005", "Pediatric hematology")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryCardiothoracicTransplantation,
+                          new KeyValuePair<string, string>("408464004", "Surgery-Cardiothoracic transplantation")
+                          },
+                      {
+                          C80ClinicalSpecialties.GynecologicalOncology,
+                          new KeyValuePair<string, string>("408446006", "Gynecological oncology")
+                          },
+                      {
+                          C80ClinicalSpecialties.DiabeticMedicine,
+                          new KeyValuePair<string, string>("408475000", "Diabetic medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryCardiacSurgery,
+                          new KeyValuePair<string, string>("408471009", "Surgery-Cardiac surgery")
+                          },
+                      {
+                          C80ClinicalSpecialties.PublicHealthMedicine,
+                          new KeyValuePair<string, string>("408440000", "Public health medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.GenitoUrinaryMedicine,
+                          new KeyValuePair<string, string>("394808002", "Genito-urinary medicine")
+                          },
+                      {
+                          C80ClinicalSpecialties.SurgeryBreastSurgery,
+                          new KeyValuePair<string, string>("408469009", "Surgery-Breast surgery")
+                          },
+                      {
+                          C80ClinicalSpecialties.FamilyPractice,
+                          new KeyValuePair<string, string>("419772000", "Family practice")
+                          },
+                      {
+                          C80ClinicalSpecialties.GeneralPractice,
+                          new KeyValuePair<string, string>("394814009", "General practice")
+                          },
+                      {
+                          C80ClinicalSpecialties.GeneralMedicine,
+                          new KeyValuePair<string, string>("394802001", "General medicine")
+                          },
+                      {C80ClinicalSpecialties.SurgeryEar, new KeyValuePair<string, string>("394605001", "Surgery-Ear")}
+                  };
 
         /// <summary>
         /// Decodes a code enumeration to the associated code/label pairl

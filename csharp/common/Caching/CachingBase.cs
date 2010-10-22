@@ -19,9 +19,8 @@ using System.Threading;
 using System.Web;
 using System.Web.Caching;
 
-namespace NHINDirect.Caching
+namespace Health.Direct.Common.Caching
 {
-
     /// <summary>
     /// Delegate used for simple event signature
     /// </summary>
@@ -110,7 +109,7 @@ namespace NHINDirect.Caching
         /// <param name="key">string containing the unqiue key of the item</param>
         /// <param name="value">value to be stored in the cache</param>
         protected virtual void Put(string key
-            , T value)
+                                   , T value)
         {
             Put(key, value, TimeToLive);
         }
@@ -126,8 +125,8 @@ namespace NHINDirect.Caching
         /// <param name="value">Instance of the type <typeparamref name="T"/> to be added to the cache</param>
         /// <param name="ttl">Timepsan used to denote the duration of an items existence in the cache</param>
         protected virtual void Put(string key
-            , T value
-            , TimeSpan ttl)
+                                   , T value
+                                   , TimeSpan ttl)
         {
             if (key == null)
             {
@@ -145,12 +144,12 @@ namespace NHINDirect.Caching
             {
                 // make use of insert to replace an existing item matching the key in the cache
                 HttpRuntime.Cache.Insert(key
-                    , value
-                    , null
-                    , DateTime.Now.Add(ttl)
-                    , Cache.NoSlidingExpiration
-                    , CacheItemPriority.High
-                    , new CacheItemRemovedCallback(CachedItemRemovedCallBack))
+                                         , value
+                                         , null
+                                         , DateTime.Now.Add(ttl)
+                                         , Cache.NoSlidingExpiration
+                                         , CacheItemPriority.High
+                                         , new CacheItemRemovedCallback(CachedItemRemovedCallBack))
                     ;
 
                 // check to see if the item exists already in the list of keys, if not add it in
@@ -185,8 +184,8 @@ namespace NHINDirect.Caching
         /// <param name="value">Object that was removed from the cache</param>
         /// <param name="reason">Reason as to why object was invalidated in the cache</param>
         protected void CachedItemRemovedCallBack(string key
-            , object value
-            , CacheItemRemovedReason reason)
+                                                 , object value
+                                                 , CacheItemRemovedReason reason)
         {
             if (key == null)
             {

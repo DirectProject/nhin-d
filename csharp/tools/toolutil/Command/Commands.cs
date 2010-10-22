@@ -16,14 +16,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Reflection;
 
-using Health.Direct.Config.Tools.Command;
-
-namespace NHINDirect.Tools.Command
+namespace Health.Direct.Config.Tools.Command
 {
     /// <summary>
     /// For the EASY implementation of command line apps. Can't always do Powershell, or may not want to.
@@ -497,5 +494,5 @@ namespace NHINDirect.Tools.Command
         {
             Console.WriteLine("Echo the args to the console");
         }
-    }    
+    }
 }

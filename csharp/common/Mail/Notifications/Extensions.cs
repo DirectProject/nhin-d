@@ -15,11 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mail;
 
-namespace NHINDirect.Mail.Notifications
+namespace Health.Direct.Common.Mail.Notifications
 {
     /// <summary>
     /// Extension methods relating to MDN

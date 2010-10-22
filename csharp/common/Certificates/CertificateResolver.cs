@@ -17,7 +17,7 @@ using System;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 
-namespace NHINDirect.Certificates
+namespace Health.Direct.Common.Certificates
 {
     /// <summary>
     /// Supports resolution of certificates by address.

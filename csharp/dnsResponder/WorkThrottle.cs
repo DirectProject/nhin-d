@@ -14,19 +14,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
-namespace DnsResponder
+namespace Health.Direct.DnsResponder
 {
     public interface IWorkLoadThrottle
     {
         void Wait();
         void Completed();
     }
-    
+
     public class NullThrottle : IWorkLoadThrottle
     {
         public void Wait()
@@ -37,7 +34,7 @@ namespace DnsResponder
         {
         }
     }
-    
+
     public class WorkThrottle : IWorkLoadThrottle
     {
         Semaphore m_semaphore;

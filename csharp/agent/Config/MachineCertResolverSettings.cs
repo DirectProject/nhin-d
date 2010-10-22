@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Xml.Serialization;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Certificates;
+using Health.Direct.Common.Certificates;
 
 namespace Health.Direct.Agent.Config
 {
@@ -85,7 +85,7 @@ namespace Health.Direct.Agent.Config
         /// <returns>The configured store.</returns>
         public SystemX509Store OpenStore()
         {
-            return new SystemX509Store(NHINDirect.Certificates.Extensions.OpenStoreRead(this.Name, this.Location), null);
+            return new SystemX509Store(Extensions.OpenStoreRead(this.Name, this.Location), null);
         }
     }
 }

@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System.Xml.Serialization;
 
-using NHINDirect.Cryptography;
+using Health.Direct.Common.Cryptography;
 
 namespace Health.Direct.Agent.Config
 {

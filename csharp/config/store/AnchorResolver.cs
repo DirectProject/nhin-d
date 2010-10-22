@@ -17,7 +17,7 @@ using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 
-using NHINDirect.Certificates;
+using Health.Direct.Common.Certificates;
 
 namespace Health.Direct.Config.Store
 {

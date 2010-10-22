@@ -15,12 +15,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Mail;
-using NHINDirect.Mime;
 
-namespace NHINDirect.Mail.Notifications
+using Health.Direct.Common.Mime;
+
+namespace Health.Direct.Common.Mail.Notifications
 {
     /// <summary>
     /// Represents notification (MDN) content

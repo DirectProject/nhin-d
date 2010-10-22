@@ -15,14 +15,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 
-using DnsResolver;
-using NHINDirect.Caching;
+using Health.Direct.Common.Caching;
+using Health.Direct.Common.Resolver;
 
-namespace NHINDirect.Dns
+namespace Health.Direct.Common.Dns
 {
     /// <summary>
     /// This class extends the DnsClient providing additional functionality to the client for
@@ -117,8 +115,8 @@ namespace NHINDirect.Dns
         /// Maximum buffer size.
         /// </param>
         public DnsClientWithCache(IPEndPoint server
-            , TimeSpan timeout
-            , int maxBufferSize)
+                                  , TimeSpan timeout
+                                  , int maxBufferSize)
             : base(server, timeout, maxBufferSize)
         {
             Initialize();
@@ -135,7 +133,7 @@ namespace NHINDirect.Dns
         /// <param name="cache">DnsResponseCache instance to be used for caching</param>
         /// <example><c>var client = new DnsClientWithCache("8.8.8.8");</c></example>
         public DnsClientWithCache(string server
-            , DnsResponseCache cache) : this(server)
+                                  , DnsResponseCache cache) : this(server)
         {
             m_cache = cache;
         }
@@ -152,8 +150,8 @@ namespace NHINDirect.Dns
         /// <param name="cache">DnsResponseCache instance to be used for caching</param>
         /// <example><c>var client = new DnsClientWithCache("8.8.8.8", 8888);</c></example>
         public DnsClientWithCache(string server
-            , int port
-            , DnsResponseCache cache) : this(server, port)
+                                  , int port
+                                  , DnsResponseCache cache) : this(server, port)
         {
             m_cache = cache;
         }
@@ -166,7 +164,7 @@ namespace NHINDirect.Dns
         /// </param>
         /// <param name="cache">DnsResponseCache instance to be used for caching</param>
         public DnsClientWithCache(IPAddress server
-            , DnsResponseCache cache) : this(server)
+                                  , DnsResponseCache cache) : this(server)
         {
             m_cache = cache;
         }
@@ -179,7 +177,7 @@ namespace NHINDirect.Dns
         /// </param>
         /// <param name="cache">DnsResponseCache instance to be used for caching</param>
         public DnsClientWithCache(IPEndPoint server
-            , DnsResponseCache cache) : this(server)
+                                  , DnsResponseCache cache) : this(server)
         {
             m_cache = cache;
         }
@@ -199,9 +197,9 @@ namespace NHINDirect.Dns
         /// </param>
         /// <param name="cache">DnsResponseCache instance to be used for caching</param>
         public DnsClientWithCache(IPEndPoint server
-            , TimeSpan timeout
-            , int maxBufferSize
-            , DnsResponseCache cache) : this(server, timeout, maxBufferSize)
+                                  , TimeSpan timeout
+                                  , int maxBufferSize
+                                  , DnsResponseCache cache) : this(server, timeout, maxBufferSize)
         {
             m_cache = cache;
         }

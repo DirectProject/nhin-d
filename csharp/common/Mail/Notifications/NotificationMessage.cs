@@ -14,14 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Mail;
-using NHINDirect.Mime;
-using NHINDirect.Mail;
 
-namespace NHINDirect.Mail.Notifications
+namespace Health.Direct.Common.Mail.Notifications
 {
     /// <summary>
     /// Represents a message disposition notification (MDN) sent to a message sender, as per RFC 3798

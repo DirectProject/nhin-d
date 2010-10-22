@@ -19,8 +19,7 @@ using System.IO;
 using System.Net.Mail;
 
 using Health.Direct.Agent;
-
-using NHINDirect.Mail.Notifications;
+using Health.Direct.Common.Mail.Notifications;
 
 namespace Health.Direct.SmtpAgent
 {

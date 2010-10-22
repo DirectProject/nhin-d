@@ -18,8 +18,9 @@ using System.Data.Linq.Mapping;
 using System.Security.Cryptography.X509Certificates;
 using System.Runtime.Serialization;
 
+using Health.Direct.Common.Extensions;
+
 using NHINDirect.Config.Store;
-using NHINDirect.Extensions;
 
 namespace Health.Direct.Config.Store
 {

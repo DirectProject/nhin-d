@@ -15,10 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace NHINDirect.Metadata
+namespace Health.Direct.Common.Metadata
 {
     /// <summary>
     /// Represents a US Postal address
@@ -55,10 +53,10 @@ namespace NHINDirect.Metadata
         public string ToHL7Ad()
         {
             return string.Format("{0}^^{1}^{2}^{3}^USA",
-                Street ?? "",
-                City ?? "",
-                State ?? "",
-                Zip ?? "");
+                                 Street ?? "",
+                                 City ?? "",
+                                 State ?? "",
+                                 Zip ?? "");
 
         }
 

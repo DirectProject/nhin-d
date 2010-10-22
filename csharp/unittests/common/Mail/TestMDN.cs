@@ -17,9 +17,9 @@ using System;
 using System.Linq;
 using System.Net.Mail;
 
-using NHINDirect.Mime;
-using NHINDirect.Mail;
-using NHINDirect.Mail.Notifications;
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mail.Notifications;
+using Health.Direct.Common.Mime;
 
 using Xunit;
 

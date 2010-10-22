@@ -15,12 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Sockets;
 
-namespace DnsResolver
+namespace Health.Direct.Common.Resolver
 {
     /// <summary>
     /// A raw data buffer with utilities facilitating reading and writing of DNS wire format data.
@@ -326,8 +322,8 @@ namespace DnsResolver
             
             if (labelStart < labelEnd)
             {
-               this.AddLabel(path, labelStart, labelEnd - labelStart);
-               ++labelCount;
+                this.AddLabel(path, labelStart, labelEnd - labelStart);
+                ++labelCount;
             }
             
             if (labelCount == 0)
@@ -402,5 +398,5 @@ namespace DnsResolver
             System.Buffer.BlockCopy(m_buffer, 0, newBuffer, 0, m_buffer.Length);
             m_buffer = newBuffer;
         }
-    }    
+    }
 }

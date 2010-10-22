@@ -1,4 +1,4 @@
-namespace NHINDirect.Diagnostics
+namespace Health.Direct.Common.Diagnostics
 {
     ///<summary>
     /// Defines available log levels.

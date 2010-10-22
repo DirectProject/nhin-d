@@ -18,14 +18,15 @@ using System.Diagnostics;
 using System.IO;
 
 using Health.Direct.Agent;
+using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Container;
+using Health.Direct.Common.Cryptography;
+using Health.Direct.Common.Diagnostics;
+using Health.Direct.Common.Extensions;
+using Health.Direct.Common.Mail;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
-
-using NHINDirect.Certificates;
-using NHINDirect.Container;
-using NHINDirect.Diagnostics;
-using NHINDirect.Extensions;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -370,7 +371,7 @@ namespace Health.Direct.SmtpAgent
             if (isSenderInDomain)
             {
                 isOutgoing = true;
-                if (m_settings.AllowInternalRelay && NHINDirect.Cryptography.SMIMEStandard.IsEncrypted(envelope.Message))
+                if (m_settings.AllowInternalRelay && SMIMEStandard.IsEncrypted(envelope.Message))
                 {
                     isOutgoing = false;
                 }
@@ -625,7 +626,7 @@ namespace Health.Direct.SmtpAgent
         {
             if (envelope is IncomingMessage && envelope.HasDomainRecipients)
             {
-                NHINDirect.Mail.Message message = envelope.Message;
+                Message message = envelope.Message;
                 //
                 // Inject the domain recipients & verified sender from the envelope into the message using an x-receiver + x-sender headers
                 // These will be useful after the message is serialized and then deserialized for further processing

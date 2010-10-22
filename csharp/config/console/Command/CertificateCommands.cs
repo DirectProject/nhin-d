@@ -20,15 +20,15 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 using System.ServiceModel;
 
-using DnsResolver;
-
+using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Extensions;
+using Health.Direct.Common.Resolver;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;
 using Health.Direct.Config.Tools.Command;
 
-using NHINDirect.Certificates;
-using NHINDirect.Extensions;
+using Extensions=Health.Direct.Common.Certificates.Extensions;
 
 namespace Health.Direct.Config.Console.Command
 {
@@ -210,7 +210,7 @@ namespace Health.Direct.Config.Console.Command
         {
             string storeName = args.GetOptionalValue(0, "NHINDPrivate");
             string outputFile = args.GetOptionalValue(1, null);
-            using (SystemX509Store store = new SystemX509Store(NHINDirect.Certificates.Extensions.OpenStoreRead(storeName, StoreLocation.LocalMachine), null))
+            using (SystemX509Store store = new SystemX509Store(Extensions.OpenStoreRead(storeName, StoreLocation.LocalMachine), null))
             {
                 ExportCerts(store, outputFile);
             }

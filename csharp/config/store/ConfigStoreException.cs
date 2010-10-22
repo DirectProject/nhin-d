@@ -19,7 +19,8 @@ using System.Data.Common;
 using System.Data.Linq;
 using System.Data.SqlClient;
 
-using NHINDirect;
+using Health.Direct.Common;
+
 using NHINDirect.Config.Store;
 
 namespace Health.Direct.Config.Store

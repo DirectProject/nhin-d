@@ -18,9 +18,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using NHINDirect.Cryptography;
-using NHINDirect.Mail;
-using NHINDirect.Mime;
+using Health.Direct.Common.Cryptography;
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mime;
 
 using Xunit;
 using Xunit.Extensions;

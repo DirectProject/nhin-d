@@ -16,12 +16,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Net.Mime;
 
-using NHINDirect.Mail;
-using NHINDirect.Mime;
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mime;
 
-namespace NHINDirect.Cryptography
+namespace Health.Direct.Common.Cryptography
 {
-
     /// <summary>
     /// Utility methods testing conformance to RFC 5751 and 1847.
     /// </summary>
@@ -120,7 +119,7 @@ namespace NHINDirect.Cryptography
             }
 
             return (   contentType.IsMediaType(CmsEnvelopeMediaType) 
-                    || contentType.IsMediaType(CmsEnvelopeMediaTypeAlt));
+                       || contentType.IsMediaType(CmsEnvelopeMediaTypeAlt));
         }
 
         /// <summary>
@@ -178,7 +177,7 @@ namespace NHINDirect.Cryptography
         public static bool IsContentDetachedSignature(ContentType contentType)
         {
             return (    contentType.IsMediaType(SignatureContentMediaType) 
-                    ||  contentType.IsMediaType(SignatureContentMediaTypeAlternative));
+                        ||  contentType.IsMediaType(SignatureContentMediaTypeAlternative));
         }
         
         /// <summary>

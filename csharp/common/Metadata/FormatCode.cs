@@ -13,12 +13,9 @@ Neither the name of the The Direct Project (nhindirect.org). nor the names of it
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace NHINDirect.Metadata
+namespace Health.Direct.Common.Metadata
 {
     /// <summary>
     /// C80 format codes
@@ -110,26 +107,87 @@ namespace NHINDirect.Metadata
             return new CodedValue(pair.Key, pair.Value, "HITSP C80 Format");
         }
 
-        private static Dictionary<C80FormatCode, KeyValuePair<string, string>> m_C80FormatCode_mappings = new Dictionary<C80FormatCode, KeyValuePair<string, string>>()
-        {
-            { C80FormatCode.EmergencyDepartmentEncounterSummary, new KeyValuePair<string, string>("urn:ihe:pcc:edes:2007", "Emergency Department Encounter Summary (EDES)") },
-            { C80FormatCode.TextEmbeddedInCDA, new KeyValuePair<string, string>("urn:ihe:iti:xds-sd:text:2008", "Text embedded in CDA per XDS-SD profile") },
-            { C80FormatCode.XDSMedicalSummaries, new KeyValuePair<string, string>("urn:ihe:pcc:xds-ms:2007", "XDS Medical Summaries") },
-            { C80FormatCode.ImmunizationRegistryContent, new KeyValuePair<string, string>("urn:ihe:pcc: irc:2008", "Immunization Registry Content (IRC)") },
-            { C80FormatCode.PDFEmbeddedInCDA, new KeyValuePair<string, string>("urn:ihe:iti:xds-sd:pdf:2008", "PDF embedded in CDA per XDS-SD profile") },
-            { C80FormatCode.PersonalHealthRecords, new KeyValuePair<string, string>("urn:ihe:pcc:xphr:2007", "Personal Health Records") },
-            { C80FormatCode.CareManagement, new KeyValuePair<string, string>("urn:ihe:pcc:cm:2008", "Care Management (CM)") },
-            { C80FormatCode.IHEAntepartumSummary, new KeyValuePair<string, string>("urn:ihe:pcc:aps:2007", "IHE Antepartum Summary") },
-            { C80FormatCode.BasicPatientPrivacyConsentsWithScannedDocument, new KeyValuePair<string, string>("urn:ihe:iti:bppc-sd:2007", "Basic Patient Privacy Consents with Scanned Document") },
-            { C80FormatCode.AntepartumRecordEducation, new KeyValuePair<string, string>("urn:ihe:pcc:apr:edu:2008", "Antepartum Record (APR) - Education") },
-            { C80FormatCode.AntepartumRecordLaboratory, new KeyValuePair<string, string>("urn:ihe:pcc:apr:lab:2008", "Antepartum Record (APR) - Laboratory") },
-            { C80FormatCode.EmergencyDepartmentReferral, new KeyValuePair<string, string>("urn:ihe:pcc:edr:2007", "Emergency Department Referral (EDR)") },
-            { C80FormatCode.AccessConsentPolicyDocumentXACML, new KeyValuePair<string, string>("urn:nhin:names:acp:XACML", "Access Consent Policy document formatted as XACML") },
-            { C80FormatCode.BasicPatientPrivacyConsents, new KeyValuePair<string, string>("urn:ihe:iti:bppc:2007", "Basic Patient Privacy Consents") },
-            { C80FormatCode.AntepartumRecordHistoryAndPhysical, new KeyValuePair<string, string>("urn:ihe:pcc:apr:handp:2008", "Antepartum Record (APR) - History and Physical") },
-            { C80FormatCode.CDALaboratoryReport, new KeyValuePair<string, string>("urn:ihe:lab:xd-lab:2008", "CDA Laboratory Report") },
-            { C80FormatCode.CancerRegistryContent, new KeyValuePair<string, string>("urn:ihe:pcc:crc:2008", "Cancer Registry Content (CRC)") }
-        };
+        private static Dictionary<C80FormatCode, KeyValuePair<string, string>> m_C80FormatCode_mappings
+            = new Dictionary<C80FormatCode, KeyValuePair<string, string>>()
+                  {
+                      {
+                          C80FormatCode.EmergencyDepartmentEncounterSummary,
+                          new KeyValuePair<string, string>("urn:ihe:pcc:edes:2007",
+                                                           "Emergency Department Encounter Summary (EDES)")
+                          },
+                      {
+                          C80FormatCode.TextEmbeddedInCDA,
+                          new KeyValuePair<string, string>("urn:ihe:iti:xds-sd:text:2008",
+                                                           "Text embedded in CDA per XDS-SD profile")
+                          },
+                      {
+                          C80FormatCode.XDSMedicalSummaries,
+                          new KeyValuePair<string, string>("urn:ihe:pcc:xds-ms:2007", "XDS Medical Summaries")
+                          },
+                      {
+                          C80FormatCode.ImmunizationRegistryContent,
+                          new KeyValuePair<string, string>("urn:ihe:pcc: irc:2008",
+                                                           "Immunization Registry Content (IRC)")
+                          },
+                      {
+                          C80FormatCode.PDFEmbeddedInCDA,
+                          new KeyValuePair<string, string>("urn:ihe:iti:xds-sd:pdf:2008",
+                                                           "PDF embedded in CDA per XDS-SD profile")
+                          },
+                      {
+                          C80FormatCode.PersonalHealthRecords,
+                          new KeyValuePair<string, string>("urn:ihe:pcc:xphr:2007", "Personal Health Records")
+                          },
+                      {
+                          C80FormatCode.CareManagement,
+                          new KeyValuePair<string, string>("urn:ihe:pcc:cm:2008", "Care Management (CM)")
+                          },
+                      {
+                          C80FormatCode.IHEAntepartumSummary,
+                          new KeyValuePair<string, string>("urn:ihe:pcc:aps:2007", "IHE Antepartum Summary")
+                          },
+                      {
+                          C80FormatCode.BasicPatientPrivacyConsentsWithScannedDocument,
+                          new KeyValuePair<string, string>("urn:ihe:iti:bppc-sd:2007",
+                                                           "Basic Patient Privacy Consents with Scanned Document")
+                          },
+                      {
+                          C80FormatCode.AntepartumRecordEducation,
+                          new KeyValuePair<string, string>("urn:ihe:pcc:apr:edu:2008",
+                                                           "Antepartum Record (APR) - Education")
+                          },
+                      {
+                          C80FormatCode.AntepartumRecordLaboratory,
+                          new KeyValuePair<string, string>("urn:ihe:pcc:apr:lab:2008",
+                                                           "Antepartum Record (APR) - Laboratory")
+                          },
+                      {
+                          C80FormatCode.EmergencyDepartmentReferral,
+                          new KeyValuePair<string, string>("urn:ihe:pcc:edr:2007", "Emergency Department Referral (EDR)")
+                          },
+                      {
+                          C80FormatCode.AccessConsentPolicyDocumentXACML,
+                          new KeyValuePair<string, string>("urn:nhin:names:acp:XACML",
+                                                           "Access Consent Policy document formatted as XACML")
+                          },
+                      {
+                          C80FormatCode.BasicPatientPrivacyConsents,
+                          new KeyValuePair<string, string>("urn:ihe:iti:bppc:2007", "Basic Patient Privacy Consents")
+                          },
+                      {
+                          C80FormatCode.AntepartumRecordHistoryAndPhysical,
+                          new KeyValuePair<string, string>("urn:ihe:pcc:apr:handp:2008",
+                                                           "Antepartum Record (APR) - History and Physical")
+                          },
+                      {
+                          C80FormatCode.CDALaboratoryReport,
+                          new KeyValuePair<string, string>("urn:ihe:lab:xd-lab:2008", "CDA Laboratory Report")
+                          },
+                      {
+                          C80FormatCode.CancerRegistryContent,
+                          new KeyValuePair<string, string>("urn:ihe:pcc:crc:2008", "Cancer Registry Content (CRC)")
+                          }
+                  };
 
         /// <summary>
         /// Returns the code/label pair for the provided enumeration code

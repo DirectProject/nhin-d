@@ -17,7 +17,7 @@ using System;
 using System.Net;
 using System.Xml.Serialization;
 
-using NHINDirect.Certificates;
+using Health.Direct.Common.Certificates;
 
 namespace Health.Direct.Agent.Config
 {

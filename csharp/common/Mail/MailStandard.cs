@@ -13,9 +13,9 @@ Neither the name of the The Direct Project (nhindirect.org). nor the names of it
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using NHINDirect.Mime;
+using Health.Direct.Common.Mime;
 
-namespace NHINDirect.Mail
+namespace Health.Direct.Common.Mail
 {
     /// <summary>
     /// Defines constants and functions relating to RFC 5322.
@@ -77,21 +77,21 @@ namespace NHINDirect.Mail
         /// The set of headers that signal the destinations of a message
         /// </summary>
         public static readonly string[] DestinationHeaders = new[]
-        {
-            Headers.To, 
-            Headers.From,
-            Headers.Cc,
-            Headers.Bcc
-        };
+                                                                 {
+                                                                     Headers.To, 
+                                                                     Headers.From,
+                                                                     Headers.Cc,
+                                                                     Headers.Bcc
+                                                                 };
 
         /// <summary>
         /// The set of headers that signal the origination of a message
         /// </summary>
         public static readonly string[] OriginHeaders = new[]
-        {
-            Headers.From, 
-            Headers.Sender,
-        };
+                                                            {
+                                                                Headers.From, 
+                                                                Headers.Sender,
+                                                            };
 
         /// <summary>
         /// The separator character for mail address headers
@@ -103,12 +103,12 @@ namespace NHINDirect.Mail
         /// <summary>
         /// Extension to MediaType for wrapped messages.
         /// </summary>
-		public new class MediaType : MimeStandard.MediaType
-		{
+        public new class MediaType : MimeStandard.MediaType
+        {
             /// <summary>
             /// The <c>Content-Type</c> for fully wrapped messages
             /// </summary>
-			public const string WrappedMessage = "message/rfc822";
-		}
+            public const string WrappedMessage = "message/rfc822";
+        }
     }
 }

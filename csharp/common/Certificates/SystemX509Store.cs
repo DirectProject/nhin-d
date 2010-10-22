@@ -15,13 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Mail;
-using System.Threading;
 using System.Security.Cryptography.X509Certificates;
 
-namespace NHINDirect.Certificates
+namespace Health.Direct.Common.Certificates
 {
     /// <summary>
     /// Represents a local machine store for certificates.
@@ -186,7 +182,7 @@ namespace NHINDirect.Certificates
         public static SystemX509Store OpenPrivate()
         {
             return new SystemX509Store(Extensions.OpenStoreRead(PrivateCertsStoreName, StoreLocation.LocalMachine),
-                                        x => x.HasPrivateKey);
+                                       x => x.HasPrivateKey);
         }
 
         /// <summary>
@@ -196,7 +192,7 @@ namespace NHINDirect.Certificates
         public static SystemX509Store OpenPrivateEdit()
         {
             return new SystemX509Store(Extensions.OpenStoreReadWrite(PrivateCertsStoreName, StoreLocation.LocalMachine),
-                                        x => x.HasPrivateKey);
+                                       x => x.HasPrivateKey);
         }
 
         /// <summary>

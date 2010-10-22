@@ -1,10 +1,9 @@
 using System;
 using System.Diagnostics;
 
+using Health.Direct.Common.Container;
+using Health.Direct.Common.Diagnostics;
 using Health.Direct.Diagnostics.NLog;
-
-using NHINDirect.Container;
-using NHINDirect.Diagnostics;
 
 namespace Health.Direct.SmtpAgent
 {

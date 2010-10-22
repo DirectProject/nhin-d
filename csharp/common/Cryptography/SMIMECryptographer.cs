@@ -19,10 +19,10 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Mail;
-using NHINDirect.Mime;
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mime;
 
-namespace NHINDirect.Cryptography
+namespace Health.Direct.Common.Cryptography
 {
     /// <summary>
     /// Encapsulates use of S/MIME PKCS7 (CMS) cryptography
@@ -192,15 +192,15 @@ namespace NHINDirect.Cryptography
 
             byte[] encryptedBytes = Encrypt(messageBytes, encryptingCertificates);
 
-        	MimeEntity encryptedEntity = new MimeEntity
-        	                      	{
-        	                      		ContentType = SMIMEStandard.EncryptedEnvelopeContentTypeHeaderValue,
-        	                      		ContentTransferEncoding = TransferEncoding.Base64.AsString(),
-        	                      		Body = new Body(Convert.ToBase64String(encryptedBytes,
-        	                      		                                       Base64FormattingOptions.InsertLineBreaks))
-        	                      	};
+            MimeEntity encryptedEntity = new MimeEntity
+                                             {
+                                                 ContentType = SMIMEStandard.EncryptedEnvelopeContentTypeHeaderValue,
+                                                 ContentTransferEncoding = TransferEncoding.Base64.AsString(),
+                                                 Body = new Body(Convert.ToBase64String(encryptedBytes,
+                                                                                        Base64FormattingOptions.InsertLineBreaks))
+                                             };
 
-        	return encryptedEntity;
+            return encryptedEntity;
         }
 
         /// <summary>
@@ -300,7 +300,7 @@ namespace NHINDirect.Cryptography
             byte[] encryptedBytes = Convert.FromBase64String(encryptedEntity.Body.Text);
             byte[] decryptedBytes = Decrypt(encryptedBytes, decryptingCertificate);
 
-			//
+            //
             // And turn the encrypted bytes back into an entity
             //
             return DefaultSerializer.Default.Deserialize<MimeEntity>(decryptedBytes);
@@ -371,7 +371,7 @@ namespace NHINDirect.Cryptography
 
         internal bool IsDataContainer(ContentInfo contentInfo)
         {
-			return (contentInfo.ContentType.Value == CryptoOids.ContentType_Data.Value);
+            return (contentInfo.ContentType.Value == CryptoOids.ContentType_Data.Value);
         }
 
         //-----------------------------------------------------
@@ -501,14 +501,14 @@ namespace NHINDirect.Cryptography
             //
             // We create an entity to hold a detached signature
             //
-        	MimeEntity signature = new MimeEntity
-        	                	{
-        	                		ContentType = SMIMEStandard.SignatureContentTypeHeaderValue,
-        	                		ContentTransferEncoding = TransferEncoding.Base64.AsString(),
-        	                		Body = new Body(Convert.ToBase64String(signatureBytes))
-        	                	};
+            MimeEntity signature = new MimeEntity
+                                       {
+                                           ContentType = SMIMEStandard.SignatureContentTypeHeaderValue,
+                                           ContentTransferEncoding = TransferEncoding.Base64.AsString(),
+                                           Body = new Body(Convert.ToBase64String(signatureBytes))
+                                       };
 
-        	return signature;
+            return signature;
         }
 
         /// <summary>
@@ -686,10 +686,10 @@ namespace NHINDirect.Cryptography
         CmsSigner CreateSigner(X509Certificate2 cert)
         {
             CmsSigner signer = new CmsSigner(cert)
-                         	{
-                         		IncludeOption = m_certChainInclude,
-                         		DigestAlgorithm = ToDigestAlgorithmOid(m_digestAlgorithm)
-                         	};
+                                   {
+                                       IncludeOption = m_certChainInclude,
+                                       DigestAlgorithm = ToDigestAlgorithmOid(m_digestAlgorithm)
+                                   };
 
             Pkcs9SigningTime signingTime = new Pkcs9SigningTime();
             signer.SignedAttributes.Add(signingTime);
@@ -705,32 +705,32 @@ namespace NHINDirect.Cryptography
         /// <summary>
         /// OIDs for known cryptographic digest and encryption algorithms.
         /// </summary>
-		public static class CryptoOids
-		{
+        public static class CryptoOids
+        {
             // documentation for these is silly.
 #pragma warning disable 1591
-			public static readonly Oid SHA1 = new Oid("1.3.14.3.2.26");
-			public static readonly Oid SHA256 = new Oid("2.16.840.1.101.3.4.2.1");
-			public static readonly Oid SHA384 = new Oid("2.16.840.1.101.3.4.2.2");
-			public static readonly Oid SHA512 = new Oid("2.16.840.1.101.3.4.2.3");
-			//
-			// Encryption
-			//
-			public static readonly Oid RSA_ThreeDES = new Oid("1.2.840.113549.3.7");
-			public static readonly Oid AES128_ECB = new Oid("2.16.840.1.101.3.4.1.1");
-			public static readonly Oid AES128_CBC = new Oid("2.16.840.1.101.3.4.1.2");
-			public static readonly Oid AES128_OFB = new Oid("2.16.840.1.101.3.4.1.3");
-			public static readonly Oid AES128_CFB = new Oid("2.16.840.1.101.3.4.1.4");
-			public static readonly Oid AES192_ECB = new Oid("2.16.840.1.101.3.4.1.21");
-			static public readonly Oid AES192_CBC = new Oid("2.16.840.1.101.3.4.1.22");
-			public static readonly Oid AES192_OFB = new Oid("2.16.840.1.101.3.4.1.23");
-			public static readonly Oid AES192_CFB = new Oid("2.16.840.1.101.3.4.1.24");
-			public static readonly Oid AES256_ECB = new Oid("2.16.840.1.101.3.4.1.41");
-			public static readonly Oid AES256_CBC = new Oid("2.16.840.1.101.3.4.1.42");
-			public static readonly Oid AES256_OFB = new Oid("2.16.840.1.101.3.4.1.43");
-			public static readonly Oid AES256_CFB = new Oid("2.16.840.1.101.3.4.1.44");
+            public static readonly Oid SHA1 = new Oid("1.3.14.3.2.26");
+            public static readonly Oid SHA256 = new Oid("2.16.840.1.101.3.4.2.1");
+            public static readonly Oid SHA384 = new Oid("2.16.840.1.101.3.4.2.2");
+            public static readonly Oid SHA512 = new Oid("2.16.840.1.101.3.4.2.3");
+            //
+            // Encryption
+            //
+            public static readonly Oid RSA_ThreeDES = new Oid("1.2.840.113549.3.7");
+            public static readonly Oid AES128_ECB = new Oid("2.16.840.1.101.3.4.1.1");
+            public static readonly Oid AES128_CBC = new Oid("2.16.840.1.101.3.4.1.2");
+            public static readonly Oid AES128_OFB = new Oid("2.16.840.1.101.3.4.1.3");
+            public static readonly Oid AES128_CFB = new Oid("2.16.840.1.101.3.4.1.4");
+            public static readonly Oid AES192_ECB = new Oid("2.16.840.1.101.3.4.1.21");
+            static public readonly Oid AES192_CBC = new Oid("2.16.840.1.101.3.4.1.22");
+            public static readonly Oid AES192_OFB = new Oid("2.16.840.1.101.3.4.1.23");
+            public static readonly Oid AES192_CFB = new Oid("2.16.840.1.101.3.4.1.24");
+            public static readonly Oid AES256_ECB = new Oid("2.16.840.1.101.3.4.1.41");
+            public static readonly Oid AES256_CBC = new Oid("2.16.840.1.101.3.4.1.42");
+            public static readonly Oid AES256_OFB = new Oid("2.16.840.1.101.3.4.1.43");
+            public static readonly Oid AES256_CFB = new Oid("2.16.840.1.101.3.4.1.44");
 
-			public static readonly Oid ContentType_Data = new Oid("1.2.840.113549.1.7.1");
+            public static readonly Oid ContentType_Data = new Oid("1.2.840.113549.1.7.1");
 #pragma warning restore 1591
         }
 
@@ -739,7 +739,7 @@ namespace NHINDirect.Cryptography
         /// </summary>
         /// <param name="type">The <see cref="DigestAlgorithm"/> to map to an OID</param>
         /// <returns>The OID corresponding to the digest algorithm.</returns>
-    	static Oid ToDigestAlgorithmOid(DigestAlgorithm type)
+        static Oid ToDigestAlgorithmOid(DigestAlgorithm type)
         {
             switch (type)
             {
@@ -750,13 +750,13 @@ namespace NHINDirect.Cryptography
                     return CryptoOids.SHA1;
 
                 case DigestAlgorithm.SHA256:
-					return CryptoOids.SHA256;
+                    return CryptoOids.SHA256;
 
                 case DigestAlgorithm.SHA384:
-					return CryptoOids.SHA384;
+                    return CryptoOids.SHA384;
 
                 case DigestAlgorithm.SHA512:
-					return CryptoOids.SHA512;
+                    return CryptoOids.SHA512;
             }
         }
 
@@ -765,7 +765,7 @@ namespace NHINDirect.Cryptography
         /// </summary>
         /// <param name="type">The encryption algorithm to map</param>
         /// <returns>The corresponding <see cref="AlgorithmIdentifier"/></returns>
-    	public static AlgorithmIdentifier ToAlgorithmID(EncryptionAlgorithm type)
+        public static AlgorithmIdentifier ToAlgorithmID(EncryptionAlgorithm type)
         {
             switch (type)
             {
@@ -773,16 +773,16 @@ namespace NHINDirect.Cryptography
                     throw new NotSupportedException();
 
                 case EncryptionAlgorithm.RSA_3DES:
-					return new AlgorithmIdentifier(CryptoOids.RSA_ThreeDES);
+                    return new AlgorithmIdentifier(CryptoOids.RSA_ThreeDES);
 
                 case EncryptionAlgorithm.AES128:
-					return new AlgorithmIdentifier(CryptoOids.AES128_CBC);
+                    return new AlgorithmIdentifier(CryptoOids.AES128_CBC);
 
                 case EncryptionAlgorithm.AES192:
-					return new AlgorithmIdentifier(CryptoOids.AES192_CBC);
+                    return new AlgorithmIdentifier(CryptoOids.AES192_CBC);
 
                 case EncryptionAlgorithm.AES256:
-					return new AlgorithmIdentifier(CryptoOids.AES256_CBC);
+                    return new AlgorithmIdentifier(CryptoOids.AES256_CBC);
             }
         }
     }

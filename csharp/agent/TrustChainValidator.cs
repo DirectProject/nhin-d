@@ -19,8 +19,8 @@ using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Certificates;
-using NHINDirect.Extensions;
+using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Agent
 {

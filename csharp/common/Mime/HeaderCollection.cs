@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using NHINDirect.Collections;
+using Health.Direct.Common.Collections;
 
-namespace NHINDirect.Mime
+namespace Health.Direct.Common.Mime
 {
     /// <summary>
     /// Represents a collection of MIME and RFC 5322 headers
@@ -104,8 +104,8 @@ namespace NHINDirect.Mime
             get
             {
                 return from header in this
-                                where ( MimeStandard.StartsWith(header.Name, MimeStandard.HeaderPrefix))
-                                select header;                
+                       where ( MimeStandard.StartsWith(header.Name, MimeStandard.HeaderPrefix))
+                       select header;                
             }
         }
         
@@ -357,7 +357,7 @@ namespace NHINDirect.Mime
         public HeaderCollection DeepClone()
         {
             var copy = new HeaderCollection();
-			foreach (var header in this)
+            foreach (var header in this)
             {
                 copy.Add(header.Clone());
             }
@@ -390,7 +390,7 @@ namespace NHINDirect.Mime
         /// </summary>
         /// <param name="name">The header name to verify</param>
         /// <param name="header">The <see cref="Header"/> to verify against.</param>
-    	static void VerifyName(string name, Header header)
+        static void VerifyName(string name, Header header)
         {
             if (!MimeStandard.Equals(name, header.Name))
             {

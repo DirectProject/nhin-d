@@ -14,11 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace NHINDirect.Mail.Notifications
+namespace Health.Direct.Common.Mail.Notifications
 {
     /// <summary>
     /// Represents a Reporting-UA as specified by RFC 3798

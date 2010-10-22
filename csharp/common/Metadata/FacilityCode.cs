@@ -13,12 +13,9 @@ Neither the name of the The Direct Project (nhindirect.org). nor the names of it
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace NHINDirect.Metadata
+namespace Health.Direct.Common.Metadata
 {
     /// <summary>
     /// This is the code representing the type of organizational setting where the clinical encounter, service,
@@ -359,88 +356,318 @@ namespace NHINDirect.Metadata
         }
 
 
-        private static Dictionary<C80FacilityCodes, KeyValuePair<string, string>> m_C80FacilityCodes = new Dictionary<C80FacilityCodes, KeyValuePair<string, string>>()
-        {
-            { C80FacilityCodes.HospitalShip, new KeyValuePair<string, string>("2081004", "Hospital ship") },
-            { C80FacilityCodes.WalkInClinic, new KeyValuePair<string, string>("81234003", "Walk-in clinic") },
-            { C80FacilityCodes.FreeStandingMentalHealthCenter, new KeyValuePair<string, string>("51563005", "Free-standing mental health center") },
-            { C80FacilityCodes.HospitalChildrens, new KeyValuePair<string, string>("82242000", "Hospital-children's") },
-            { C80FacilityCodes.HospitalOutpatientOrthopedicsClinic, new KeyValuePair<string, string>("78001009", "Hospital outpatient orthopedics clinic") },
-            { C80FacilityCodes.FreeStandingAmbulatorySurgeryFacility, new KeyValuePair<string, string>("10531005", "Free-standing ambulatory surgery facility") },
-            { C80FacilityCodes.HospitalOutpatientEndocrinologyClinic, new KeyValuePair<string, string>("73644007", "Hospital outpatient endocrinology clinic") },
-            { C80FacilityCodes.HospitalOutpatientGeneralSurgeryClinic, new KeyValuePair<string, string>("90484001", "Hospital outpatient general surgery clinic") },
-            { C80FacilityCodes.HospitalBirthingCenter, new KeyValuePair<string, string>("52668009", "Hospital birthing center") },
-            { C80FacilityCodes.OtherHospitalBasedOutpatientClinicOrDepartment, new KeyValuePair<string, string>("33022008", "Other Hospital-based outpatient clinic or department") },
-            { C80FacilityCodes.HospitalOutpatientAllergyClinic, new KeyValuePair<string, string>("360957003", "Hospital outpatient allergy clinic") },
-            { C80FacilityCodes.HospitalPrison, new KeyValuePair<string, string>("224687002", "Hospital-prison") },
-            { C80FacilityCodes.HospitalOutpatientMentalHealthCenter, new KeyValuePair<string, string>("14866005", "Hospital outpatient mental health center") },
-            { C80FacilityCodes.SexuallyTransmittedDiseaseHealthCenter, new KeyValuePair<string, string>("25681007", "Sexually transmitted disease health center") },
-            { C80FacilityCodes.PrivateResidentialHome, new KeyValuePair<string, string>("310205006", "Private residential home") },
-            { C80FacilityCodes.HospitalOutpatientHematologyClinic, new KeyValuePair<string, string>("56293002", "Hospital outpatient hematology clinic") },
-            { C80FacilityCodes.ResidentialSchoolInfirmary, new KeyValuePair<string, string>("39913001", "Residential school infirmary") },
-            { C80FacilityCodes.RuralHealthCenter, new KeyValuePair<string, string>("77931003", "Rural health center") },
-            { C80FacilityCodes.LocalCommunityHealthCenter, new KeyValuePair<string, string>("6827000", "Local community health center") },
-            { C80FacilityCodes.OtherIndependentAmbulatoryCareProviderSite, new KeyValuePair<string, string>("394759007", "Other Independent ambulatory care provider site") },
-            { C80FacilityCodes.HospitalGovernment, new KeyValuePair<string, string>("79993009", "Hospital-government") },
-            { C80FacilityCodes.VaccinationClinic, new KeyValuePair<string, string>("46224007", "Vaccination clinic") },
-            { C80FacilityCodes.SkilledNursingFacility, new KeyValuePair<string, string>("45618002", "Skilled nursing facility") },
-            { C80FacilityCodes.HospitalOutpatientImmunologyClinic, new KeyValuePair<string, string>("360966004", "Hospital outpatient immunology clinic") },
-            { C80FacilityCodes.ResidentialInstitution, new KeyValuePair<string, string>("419955002", "Residential institution") },
-            { C80FacilityCodes.ChildDayCareCenter, new KeyValuePair<string, string>("413817003", "Child day care center") },
-            { C80FacilityCodes.HospitalOutpatientInfectiousDiseaseClinic, new KeyValuePair<string, string>("2849009", "Hospital outpatient infectious disease clinic") },
-            { C80FacilityCodes.HospitalOutpatientNeurologyClinic, new KeyValuePair<string, string>("38238005", "Hospital outpatient neurology clinic") },
-            { C80FacilityCodes.AmbulatorySurgeryCenter, new KeyValuePair<string, string>("405607001", "Ambulatory surgery center") },
-            { C80FacilityCodes.HospitalOutpatientFamilyMedicineClinic, new KeyValuePair<string, string>("31628002", "Hospital outpatient family medicine clinic") },
-            { C80FacilityCodes.OtherAmbulatoryCareSite, new KeyValuePair<string, string>("35971002", "Other Ambulatory care site") },
-            { C80FacilityCodes.HospiceFacility, new KeyValuePair<string, string>("284546000", "Hospice facility") },
-            { C80FacilityCodes.HospitalOutpatientPainClinic, new KeyValuePair<string, string>("36293008", "Hospital outpatient pain clinic") },
-            { C80FacilityCodes.HospitalOutpatientRehabilitationClinic, new KeyValuePair<string, string>("37546005", "Hospital outpatient rehabilitation clinic") },
-            { C80FacilityCodes.EmergencyDepartment_hospital, new KeyValuePair<string, string>("73770003", "Emergency department--hospital") },
-            { C80FacilityCodes.HospitalOutpatientOphthalmologyClinic, new KeyValuePair<string, string>("78088001", "Hospital outpatient ophthalmology clinic") },
-            { C80FacilityCodes.HospitalOutpatientGastroenterologyClinic, new KeyValuePair<string, string>("58482006", "Hospital outpatient gastroenterology clinic") },
-            { C80FacilityCodes.FreeStandingBirthingCenter, new KeyValuePair<string, string>("91154008", "Free-standing birthing center") },
-            { C80FacilityCodes.ContainedCasualtySetting, new KeyValuePair<string, string>("409519008", "Contained casualty setting") },
-            { C80FacilityCodes.DialysisUnit_hospital, new KeyValuePair<string, string>("418518002", "Dialysis unit--hospital") },
-            { C80FacilityCodes.HospitalOutpatientDentalClinic, new KeyValuePair<string, string>("10206005", "Hospital outpatient dental clinic") },
-            { C80FacilityCodes.FreeStandingGeriatricHealthCenter, new KeyValuePair<string, string>("41844007", "Free-standing geriatric health center") },
-            { C80FacilityCodes.HospitalOutpatientPeripheralVascularClinic, new KeyValuePair<string, string>("5584006", "Hospital outpatient peripheral vascular clinic") },
-            { C80FacilityCodes.HospitalCommunity, new KeyValuePair<string, string>("225732001", "Hospital-community") },
-            { C80FacilityCodes.HospitalOutpatientUrologyClinic, new KeyValuePair<string, string>("50569004", "Hospital outpatient urology clinic") },
-            { C80FacilityCodes.HospitalOutpatientRespiratoryDiseaseClinic, new KeyValuePair<string, string>("57159002", "Hospital outpatient respiratory disease clinic") },
-            { C80FacilityCodes.FreeStandingRadiologyFacility, new KeyValuePair<string, string>("1773006", "Free-standing radiology facility") },
-            { C80FacilityCodes.HospitalOutpatientObstetricalClinic, new KeyValuePair<string, string>("56189001", "Hospital outpatient obstetrical clinic") },
-            { C80FacilityCodes.CareOfTheElderlyDayHospital, new KeyValuePair<string, string>("309900005", "Care of the elderly day hospital") },
-            { C80FacilityCodes.HospitalOutpatientGynecologyClinic, new KeyValuePair<string, string>("22549003", "Hospital outpatient gynecology clinic") },
-            { C80FacilityCodes.HealthMaintenanceOrganization, new KeyValuePair<string, string>("72311000", "Health maintenance organization") },
-            { C80FacilityCodes.SubstanceAbuseTreatmentCenter, new KeyValuePair<string, string>("20078004", "Substance abuse treatment center") },
-            { C80FacilityCodes.HospitalVeteransAdministration, new KeyValuePair<string, string>("48311003", "Hospital-Veterans' Administration") },
-            { C80FacilityCodes.HospitalLongTermCare, new KeyValuePair<string, string>("32074000", "Hospital-long term care") },
-            { C80FacilityCodes.HospitalTraumaCenter, new KeyValuePair<string, string>("36125001", "Hospital-trauma center") },
-            { C80FacilityCodes.SoloPracticePrivateOffice, new KeyValuePair<string, string>("83891005", "Solo practice private office") },
-            { C80FacilityCodes.HelicopterBasedCare, new KeyValuePair<string, string>("901005", "Helicopter-based care") },
-            { C80FacilityCodes.HospitalMilitaryField, new KeyValuePair<string, string>("4322002", "Hospital-military field") },
-            { C80FacilityCodes.HospitalOutpatientGeriatricHealthCenter, new KeyValuePair<string, string>("1814000", "Hospital outpatient geriatric health center") },
-            { C80FacilityCodes.HospitalOutpatientPediatricClinic, new KeyValuePair<string, string>("3729002", "Hospital outpatient pediatric clinic") },
-            { C80FacilityCodes.PrivatePhysiciansGroupOffice, new KeyValuePair<string, string>("39350007", "Private physicians' group office") },
-            { C80FacilityCodes.SportsFacility, new KeyValuePair<string, string>("272501009", "Sports facility") },
-            { C80FacilityCodes.AdultDayCareCenter, new KeyValuePair<string, string>("413456002", "Adult day care center") },
-            { C80FacilityCodes.TravelersAidClinic, new KeyValuePair<string, string>("59374000", "Traveler's aid clinic") },
-            { C80FacilityCodes.FeeForServicePrivatePhysiciansGroupOffice, new KeyValuePair<string, string>("19602009", "Fee-for-service private physicians' group office") },
-            { C80FacilityCodes.HospitalOutpatientDermatologyClinic, new KeyValuePair<string, string>("37550003", "Hospital outpatient dermatology clinic") },
-            { C80FacilityCodes.ElderlyAssessmentClinic, new KeyValuePair<string, string>("275576008", "Elderly assessment clinic") },
-            { C80FacilityCodes.HospitalOutpatientRheumatologyClinic, new KeyValuePair<string, string>("331006", "Hospital outpatient rheumatology clinic") },
-            { C80FacilityCodes.HospitalRadiologyFacility, new KeyValuePair<string, string>("79491001", "Hospital radiology facility") },
-            { C80FacilityCodes.FreeStandingLaboratoryFacility, new KeyValuePair<string, string>("45899008", "Free-standing laboratory facility") },
-            { C80FacilityCodes.OtherHealthEncounterSite, new KeyValuePair<string, string>("394777002", "Other Health encounter site") },
-            { C80FacilityCodes.AmbulanceBasedCare, new KeyValuePair<string, string>("11424001", "Ambulance-based care") },
-            { C80FacilityCodes.HospitalOutpatientOncologyClinic, new KeyValuePair<string, string>("89972002", "Hospital outpatient oncology clinic") },
-            { C80FacilityCodes.HospitalPsychiatric, new KeyValuePair<string, string>("62480006", "Hospital-psychiatric") },
-            { C80FacilityCodes.HospitalAmbulatorySurgeryFacility, new KeyValuePair<string, string>("69362002", "Hospital ambulatory surgery facility") },
-            { C80FacilityCodes.HospitalRehabilitation, new KeyValuePair<string, string>("80522000", "Hospital-rehabilitation") },
-            { C80FacilityCodes.HospitalOutpatientOtorhinolaryngologyClinic, new KeyValuePair<string, string>("23392004", "Hospital outpatient otorhinolaryngology clinic") },
-            { C80FacilityCodes.PsychogeriatricDayHospital, new KeyValuePair<string, string>("309898008", "Psychogeriatric day hospital") },
-            { C80FacilityCodes.NursingHome, new KeyValuePair<string, string>("42665001", "Nursing home") }
-        };
+        private static Dictionary<C80FacilityCodes, KeyValuePair<string, string>> m_C80FacilityCodes
+            = new Dictionary<C80FacilityCodes, KeyValuePair<string, string>>()
+                  {
+                      {C80FacilityCodes.HospitalShip, new KeyValuePair<string, string>("2081004", "Hospital ship")},
+                      {C80FacilityCodes.WalkInClinic, new KeyValuePair<string, string>("81234003", "Walk-in clinic")},
+                      {
+                          C80FacilityCodes.FreeStandingMentalHealthCenter,
+                          new KeyValuePair<string, string>("51563005", "Free-standing mental health center")
+                          },
+                      {
+                          C80FacilityCodes.HospitalChildrens,
+                          new KeyValuePair<string, string>("82242000", "Hospital-children's")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientOrthopedicsClinic,
+                          new KeyValuePair<string, string>("78001009", "Hospital outpatient orthopedics clinic")
+                          },
+                      {
+                          C80FacilityCodes.FreeStandingAmbulatorySurgeryFacility,
+                          new KeyValuePair<string, string>("10531005", "Free-standing ambulatory surgery facility")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientEndocrinologyClinic,
+                          new KeyValuePair<string, string>("73644007", "Hospital outpatient endocrinology clinic")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientGeneralSurgeryClinic,
+                          new KeyValuePair<string, string>("90484001", "Hospital outpatient general surgery clinic")
+                          },
+                      {
+                          C80FacilityCodes.HospitalBirthingCenter,
+                          new KeyValuePair<string, string>("52668009", "Hospital birthing center")
+                          },
+                      {
+                          C80FacilityCodes.OtherHospitalBasedOutpatientClinicOrDepartment,
+                          new KeyValuePair<string, string>("33022008",
+                                                           "Other Hospital-based outpatient clinic or department")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientAllergyClinic,
+                          new KeyValuePair<string, string>("360957003", "Hospital outpatient allergy clinic")
+                          },
+                      {
+                          C80FacilityCodes.HospitalPrison, new KeyValuePair<string, string>("224687002", "Hospital-prison")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientMentalHealthCenter,
+                          new KeyValuePair<string, string>("14866005", "Hospital outpatient mental health center")
+                          },
+                      {
+                          C80FacilityCodes.SexuallyTransmittedDiseaseHealthCenter,
+                          new KeyValuePair<string, string>("25681007", "Sexually transmitted disease health center")
+                          },
+                      {
+                          C80FacilityCodes.PrivateResidentialHome,
+                          new KeyValuePair<string, string>("310205006", "Private residential home")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientHematologyClinic,
+                          new KeyValuePair<string, string>("56293002", "Hospital outpatient hematology clinic")
+                          },
+                      {
+                          C80FacilityCodes.ResidentialSchoolInfirmary,
+                          new KeyValuePair<string, string>("39913001", "Residential school infirmary")
+                          },
+                      {
+                          C80FacilityCodes.RuralHealthCenter,
+                          new KeyValuePair<string, string>("77931003", "Rural health center")
+                          },
+                      {
+                          C80FacilityCodes.LocalCommunityHealthCenter,
+                          new KeyValuePair<string, string>("6827000", "Local community health center")
+                          },
+                      {
+                          C80FacilityCodes.OtherIndependentAmbulatoryCareProviderSite,
+                          new KeyValuePair<string, string>("394759007",
+                                                           "Other Independent ambulatory care provider site")
+                          },
+                      {
+                          C80FacilityCodes.HospitalGovernment,
+                          new KeyValuePair<string, string>("79993009", "Hospital-government")
+                          },
+                      {
+                          C80FacilityCodes.VaccinationClinic,
+                          new KeyValuePair<string, string>("46224007", "Vaccination clinic")
+                          },
+                      {
+                          C80FacilityCodes.SkilledNursingFacility,
+                          new KeyValuePair<string, string>("45618002", "Skilled nursing facility")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientImmunologyClinic,
+                          new KeyValuePair<string, string>("360966004", "Hospital outpatient immunology clinic")
+                          },
+                      {
+                          C80FacilityCodes.ResidentialInstitution,
+                          new KeyValuePair<string, string>("419955002", "Residential institution")
+                          },
+                      {
+                          C80FacilityCodes.ChildDayCareCenter,
+                          new KeyValuePair<string, string>("413817003", "Child day care center")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientInfectiousDiseaseClinic,
+                          new KeyValuePair<string, string>("2849009", "Hospital outpatient infectious disease clinic")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientNeurologyClinic,
+                          new KeyValuePair<string, string>("38238005", "Hospital outpatient neurology clinic")
+                          },
+                      {
+                          C80FacilityCodes.AmbulatorySurgeryCenter,
+                          new KeyValuePair<string, string>("405607001", "Ambulatory surgery center")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientFamilyMedicineClinic,
+                          new KeyValuePair<string, string>("31628002", "Hospital outpatient family medicine clinic")
+                          },
+                      {
+                          C80FacilityCodes.OtherAmbulatoryCareSite,
+                          new KeyValuePair<string, string>("35971002", "Other Ambulatory care site")
+                          },
+                      {
+                          C80FacilityCodes.HospiceFacility,
+                          new KeyValuePair<string, string>("284546000", "Hospice facility")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientPainClinic,
+                          new KeyValuePair<string, string>("36293008", "Hospital outpatient pain clinic")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientRehabilitationClinic,
+                          new KeyValuePair<string, string>("37546005", "Hospital outpatient rehabilitation clinic")
+                          },
+                      {
+                          C80FacilityCodes.EmergencyDepartment_hospital,
+                          new KeyValuePair<string, string>("73770003", "Emergency department--hospital")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientOphthalmologyClinic,
+                          new KeyValuePair<string, string>("78088001", "Hospital outpatient ophthalmology clinic")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientGastroenterologyClinic,
+                          new KeyValuePair<string, string>("58482006", "Hospital outpatient gastroenterology clinic")
+                          },
+                      {
+                          C80FacilityCodes.FreeStandingBirthingCenter,
+                          new KeyValuePair<string, string>("91154008", "Free-standing birthing center")
+                          },
+                      {
+                          C80FacilityCodes.ContainedCasualtySetting,
+                          new KeyValuePair<string, string>("409519008", "Contained casualty setting")
+                          },
+                      {
+                          C80FacilityCodes.DialysisUnit_hospital,
+                          new KeyValuePair<string, string>("418518002", "Dialysis unit--hospital")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientDentalClinic,
+                          new KeyValuePair<string, string>("10206005", "Hospital outpatient dental clinic")
+                          },
+                      {
+                          C80FacilityCodes.FreeStandingGeriatricHealthCenter,
+                          new KeyValuePair<string, string>("41844007", "Free-standing geriatric health center")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientPeripheralVascularClinic,
+                          new KeyValuePair<string, string>("5584006", "Hospital outpatient peripheral vascular clinic")
+                          },
+                      {
+                          C80FacilityCodes.HospitalCommunity,
+                          new KeyValuePair<string, string>("225732001", "Hospital-community")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientUrologyClinic,
+                          new KeyValuePair<string, string>("50569004", "Hospital outpatient urology clinic")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientRespiratoryDiseaseClinic,
+                          new KeyValuePair<string, string>("57159002", "Hospital outpatient respiratory disease clinic")
+                          },
+                      {
+                          C80FacilityCodes.FreeStandingRadiologyFacility,
+                          new KeyValuePair<string, string>("1773006", "Free-standing radiology facility")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientObstetricalClinic,
+                          new KeyValuePair<string, string>("56189001", "Hospital outpatient obstetrical clinic")
+                          },
+                      {
+                          C80FacilityCodes.CareOfTheElderlyDayHospital,
+                          new KeyValuePair<string, string>("309900005", "Care of the elderly day hospital")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientGynecologyClinic,
+                          new KeyValuePair<string, string>("22549003", "Hospital outpatient gynecology clinic")
+                          },
+                      {
+                          C80FacilityCodes.HealthMaintenanceOrganization,
+                          new KeyValuePair<string, string>("72311000", "Health maintenance organization")
+                          },
+                      {
+                          C80FacilityCodes.SubstanceAbuseTreatmentCenter,
+                          new KeyValuePair<string, string>("20078004", "Substance abuse treatment center")
+                          },
+                      {
+                          C80FacilityCodes.HospitalVeteransAdministration,
+                          new KeyValuePair<string, string>("48311003", "Hospital-Veterans' Administration")
+                          },
+                      {
+                          C80FacilityCodes.HospitalLongTermCare,
+                          new KeyValuePair<string, string>("32074000", "Hospital-long term care")
+                          },
+                      {
+                          C80FacilityCodes.HospitalTraumaCenter,
+                          new KeyValuePair<string, string>("36125001", "Hospital-trauma center")
+                          },
+                      {
+                          C80FacilityCodes.SoloPracticePrivateOffice,
+                          new KeyValuePair<string, string>("83891005", "Solo practice private office")
+                          },
+                      {
+                          C80FacilityCodes.HelicopterBasedCare,
+                          new KeyValuePair<string, string>("901005", "Helicopter-based care")
+                          },
+                      {
+                          C80FacilityCodes.HospitalMilitaryField,
+                          new KeyValuePair<string, string>("4322002", "Hospital-military field")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientGeriatricHealthCenter,
+                          new KeyValuePair<string, string>("1814000", "Hospital outpatient geriatric health center")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientPediatricClinic,
+                          new KeyValuePair<string, string>("3729002", "Hospital outpatient pediatric clinic")
+                          },
+                      {
+                          C80FacilityCodes.PrivatePhysiciansGroupOffice,
+                          new KeyValuePair<string, string>("39350007", "Private physicians' group office")
+                          },
+                      {
+                          C80FacilityCodes.SportsFacility, new KeyValuePair<string, string>("272501009", "Sports facility")
+                          },
+                      {
+                          C80FacilityCodes.AdultDayCareCenter,
+                          new KeyValuePair<string, string>("413456002", "Adult day care center")
+                          },
+                      {
+                          C80FacilityCodes.TravelersAidClinic,
+                          new KeyValuePair<string, string>("59374000", "Traveler's aid clinic")
+                          },
+                      {
+                          C80FacilityCodes.FeeForServicePrivatePhysiciansGroupOffice,
+                          new KeyValuePair<string, string>("19602009",
+                                                           "Fee-for-service private physicians' group office")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientDermatologyClinic,
+                          new KeyValuePair<string, string>("37550003", "Hospital outpatient dermatology clinic")
+                          },
+                      {
+                          C80FacilityCodes.ElderlyAssessmentClinic,
+                          new KeyValuePair<string, string>("275576008", "Elderly assessment clinic")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientRheumatologyClinic,
+                          new KeyValuePair<string, string>("331006", "Hospital outpatient rheumatology clinic")
+                          },
+                      {
+                          C80FacilityCodes.HospitalRadiologyFacility,
+                          new KeyValuePair<string, string>("79491001", "Hospital radiology facility")
+                          },
+                      {
+                          C80FacilityCodes.FreeStandingLaboratoryFacility,
+                          new KeyValuePair<string, string>("45899008", "Free-standing laboratory facility")
+                          },
+                      {
+                          C80FacilityCodes.OtherHealthEncounterSite,
+                          new KeyValuePair<string, string>("394777002", "Other Health encounter site")
+                          },
+                      {
+                          C80FacilityCodes.AmbulanceBasedCare,
+                          new KeyValuePair<string, string>("11424001", "Ambulance-based care")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientOncologyClinic,
+                          new KeyValuePair<string, string>("89972002", "Hospital outpatient oncology clinic")
+                          },
+                      {
+                          C80FacilityCodes.HospitalPsychiatric,
+                          new KeyValuePair<string, string>("62480006", "Hospital-psychiatric")
+                          },
+                      {
+                          C80FacilityCodes.HospitalAmbulatorySurgeryFacility,
+                          new KeyValuePair<string, string>("69362002", "Hospital ambulatory surgery facility")
+                          },
+                      {
+                          C80FacilityCodes.HospitalRehabilitation,
+                          new KeyValuePair<string, string>("80522000", "Hospital-rehabilitation")
+                          },
+                      {
+                          C80FacilityCodes.HospitalOutpatientOtorhinolaryngologyClinic,
+                          new KeyValuePair<string, string>("23392004", "Hospital outpatient otorhinolaryngology clinic")
+                          },
+                      {
+                          C80FacilityCodes.PsychogeriatricDayHospital,
+                          new KeyValuePair<string, string>("309898008", "Psychogeriatric day hospital")
+                          },
+                      {C80FacilityCodes.NursingHome, new KeyValuePair<string, string>("42665001", "Nursing home")}
+                  };
 
         /// <summary>
         /// Returns the code/label pair for the provided enumeration code

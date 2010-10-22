@@ -18,8 +18,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace NHINDirect.Mime
-{    
+namespace Health.Direct.Common.Mime
+{
     /// <summary>
     /// Implements serialization/deserialization for MIME and RFC 5322 entities
     /// </summary>
@@ -33,7 +33,7 @@ namespace NHINDirect.Mime
         /// <summary>
         /// Gets and sets the default serializer to use.
         /// </summary>
-    	public static MimeSerializer Default
+        public static MimeSerializer Default
         {
             get
             {
@@ -229,10 +229,10 @@ namespace NHINDirect.Mime
             {
                 throw new ArgumentNullException("messageBytes");
             }
-			if (messageBytes.Length == 0)
-			{
-				throw new ArgumentException("messageBytes contained was empty", "messageBytes");
-			}
+            if (messageBytes.Length == 0)
+            {
+                throw new ArgumentException("messageBytes contained was empty", "messageBytes");
+            }
             
             using (MemoryStream stream = new MemoryStream(messageBytes))
             {
@@ -247,7 +247,7 @@ namespace NHINDirect.Mime
         /// <param name="messageText">The <see cref="StringSegment"/> representing the source text</param>
         /// <returns>The deserialized and parsed entity</returns>
         public abstract T Deserialize<T>(StringSegment messageText)
-                    where T : MimeEntity, new();
+            where T : MimeEntity, new();
 
 
         /// <summary>

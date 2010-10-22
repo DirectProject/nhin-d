@@ -1,8 +1,8 @@
 using System;
 
-using NHINDirect.Container;
+using Health.Direct.Common.Container;
 
-namespace NHINDirect.Diagnostics
+namespace Health.Direct.Common.Diagnostics
 {
     ///<summary>
     /// A static gateway to ease access to the LogFactory.

@@ -15,9 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Net.Mime;
-using NHINDirect.Cryptography;
 
-namespace NHINDirect.Mime
+namespace Health.Direct.Common.Mime
 {
     /// <summary>
     /// Implements constants and utility functions for the MIME standard (RFC TODO).
@@ -109,26 +108,26 @@ namespace NHINDirect.Mime
         /// <summary>
         /// Default <c>Content-Type</c> media type values as per the IANA registry.
         /// </summary>
-		public class MediaType
-		{
+        public class MediaType
+        {
             /// <summary>
             /// The <c>text/plain media type</c>
             /// </summary>
-			public const string TextPlain = "text/plain";
+            public const string TextPlain = "text/plain";
             /// <summary>
             /// The default media type to assume if the actual media type can not be understood.
             /// </summary>
-			public const string Default = TextPlain;
+            public const string Default = TextPlain;
             /// <summary>
             /// The prefix for <c>multipart</c> content.
             /// </summary>
-			public const string Multipart = "multipart";
+            public const string Multipart = "multipart";
             /// <summary>
             /// The <c>multipart/mixed</c> media type.
             /// </summary>
             public const string MultipartMixed = "multipart/mixed";
 
-		}
+        }
         //
         // Used to implement Parsing Operations
         //

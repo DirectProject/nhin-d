@@ -14,14 +14,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
 
-namespace DnsResponder
+namespace Health.Direct.DnsResponder
 {
     /// <summary>
     /// A *SIMPLE* (emphasis) socket server that lets you build a perfectly adequate MULTI-THREADED Request/Response server 

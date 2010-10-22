@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config.tools", "..\tools\to
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config.console", "..\config\console\config.console.csproj", "{0211EBED-C527-42A9-B89B-E1D32A776837}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnsResponder", "..\dnsResponder\DnsResponder.csproj", "{A0C03E4C-549D-4868-8B03-DF2C467C1A47}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "responder", "..\dnsResponder\responder.csproj", "{A0C03E4C-549D-4868-8B03-DF2C467C1A47}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnsResponder.tests", "..\unittests\dnsresponder\dnsResponder.tests.csproj", "{032D3352-7B6C-48D1-866C-986AED4E5E69}"
 EndProject

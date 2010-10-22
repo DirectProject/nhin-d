@@ -16,9 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Collections.Generic;
 using System.Net.Mail;
 
-using NHINDirect.Extensions;
-using NHINDirect.Mime;
-using NHINDirect.Mail;
+using Health.Direct.Common.Extensions;
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mime;
 
 namespace Health.Direct.Agent
 {

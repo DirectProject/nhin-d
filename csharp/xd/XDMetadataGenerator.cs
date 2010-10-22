@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-using NHINDirect.Metadata;
+using Health.Direct.Common.Metadata;
 
 namespace Health.Direct.Xd
 {

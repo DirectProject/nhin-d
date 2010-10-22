@@ -18,13 +18,12 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 using System.ServiceModel;
 
+using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;
 using Health.Direct.Config.Tools.Command;
-
-using NHINDirect.Certificates;
-using NHINDirect.Extensions;
 
 namespace Health.Direct.Config.Console.Command
 {

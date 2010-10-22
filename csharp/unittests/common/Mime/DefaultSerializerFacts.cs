@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using NHINDirect.Mime;
+using Health.Direct.Common.Mime;
 
 using Xunit;
 
