@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeBehind="Certificates.aspx.cs"
-    Inherits="AdminUI.Certificates" Title="Untitled Page" %>
+    Inherits="Health.Direct.AdminUI.Certificates" Title="Untitled Page" %>
 
 <%@ Register src="Logic/Views/CertificateListControl.ascx" tagname="CertificateListControl" tagprefix="uc1" %>
 

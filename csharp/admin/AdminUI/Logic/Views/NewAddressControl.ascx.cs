@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
-using NHINDirect.Config.Client.DomainManager;
-using NHINDirect.Config.Store;
+
+using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Store;
 
 namespace AdminUI.Logic.Views
 {
@@ -50,7 +40,7 @@ namespace AdminUI.Logic.Views
         }
         #endregion
 
-        private NHINDirect.Config.Client.DomainManager.AddressManagerClient _addressManagerClient;
+        private Health.Direct.Config.Client.DomainManager.AddressManagerClient _addressManagerClient;
         protected void Page_Load(object sender, EventArgs e)
         {
          
@@ -94,7 +84,7 @@ namespace AdminUI.Logic.Views
                             }
                     );
                     }
-                catch (System.ServiceModel.FaultException<NHINDirect.Config.Store.ConfigStoreFault> ex)
+                catch (System.ServiceModel.FaultException<Health.Direct.Config.Store.ConfigStoreFault> ex)
                 {
                     ErrorLiteral.Text = "The address already exists.";
                 }

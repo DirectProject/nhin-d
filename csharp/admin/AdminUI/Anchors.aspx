@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeBehind="Anchors.aspx.cs" Inherits="AdminUI.Anchors" Title="Untitled Page" %>
+﻿<%@ Page Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeBehind="Anchors.aspx.cs" Inherits="Health.Direct.AdminUI.Anchors" Title="Untitled Page" %>
 
 <%@ Register src="Logic/Views/CertificateUploadControl.ascx" tagname="CertificateUploadControl" tagprefix="uc1" %>
 

@@ -1,7 +1,5 @@
 ﻿
-using System;
-
-namespace AdminUI
+namespace Health.Direct.AdminUI
 {
     public partial class DomainsPage : WebFormsMvp.Web.MvpPage
     {

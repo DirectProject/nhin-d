@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
-using NHINDirect.Config.Client.DomainManager;
-using NHINDirect.Config.Store;
 
-namespace AdminUI.Logic.Views
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Store;
+
+namespace Health.Direct.AdminUI.Logic.Views
 {
     public partial class DomainDetailsControl : System.Web.UI.UserControl
     {

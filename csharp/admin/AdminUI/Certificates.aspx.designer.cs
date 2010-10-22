@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AdminUI {
+namespace Health.Direct.AdminUI {
     
     
     public partial class Certificates {
@@ -47,7 +47,7 @@ namespace AdminUI {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::AdminUI.Logic.Views.CertificateListControl CertificateListControl1;
+        protected global::Health.Direct.AdminUI.Logic.Views.CertificateListControl CertificateListControl1;
         
         /// <summary>
         /// DetailsView control.
@@ -65,7 +65,7 @@ namespace AdminUI {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::AdminUI.Logic.Views.CertificateDetailsControl CertificateDetailsControl1;
+        protected global::Health.Direct.AdminUI.Logic.Views.CertificateDetailsControl CertificateDetailsControl1;
         
         /// <summary>
         /// ErrorLiteral control.

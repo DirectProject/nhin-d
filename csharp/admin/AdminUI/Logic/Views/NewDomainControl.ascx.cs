@@ -1,8 +1,10 @@
 ﻿using System;
-using NHINDirect.Config.Client.DomainManager;
-using NHINDirect.Config.Store;
 
-namespace AdminUI.Logic.Views
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Store;
+
+namespace Health.Direct.AdminUI.Logic.Views
 {
     public partial class NewDomainControl : System.Web.UI.UserControl
     {

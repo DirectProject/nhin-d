@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Web;
 
+using Health.Direct.Common.Container;
+using Health.Direct.Common.Diagnostics;
 using Health.Direct.Diagnostics.NLog;
 
-using NHINDirect.Container;
-using NHINDirect.Diagnostics;
-
-namespace AdminUI
+namespace Health.Direct.AdminUI
 {
     public class Global : System.Web.HttpApplication
     {

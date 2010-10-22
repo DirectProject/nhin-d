@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeBehind="Domains.aspx.cs" Inherits="AdminUI.DomainsPage" Title="Domain Administration" %>
+﻿<%@ Page Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeBehind="Domains.aspx.cs" Inherits="Health.Direct.AdminUI.DomainsPage" Title="Domain Administration" %>
 <%@ Register src="~/Logic/Views/DomainListControl.ascx" tagname="DomainListControl" tagprefix="uc1" %>
 <%@ Register src="Logic/Views/DomainDetailsControl.ascx" tagname="DomainDetailsControl" tagprefix="uc2" %>
 <%@ Register src="Logic/Views/NewDomainControl.ascx" tagname="NewDomainControl" tagprefix="uc3" %>

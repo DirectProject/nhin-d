@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AdminUI {
+namespace Health.Direct.AdminUI {
     
     
     public partial class Addresses {
@@ -47,7 +47,7 @@ namespace AdminUI {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::AdminUI.Logic.Views.AddressListControl AddressListControl1;
+        protected global::Health.Direct.AdminUI.Logic.Views.AddressListControl AddressListControl1;
         
         /// <summary>
         /// NewAddressControl1 control.
@@ -74,7 +74,7 @@ namespace AdminUI {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::AdminUI.Logic.Views.AddressDetailsControl AddressDetailsControl1;
+        protected global::Health.Direct.AdminUI.Logic.Views.AddressDetailsControl AddressDetailsControl1;
         
         /// <summary>
         /// CardView control.

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AdminUI.Logic.Views {
+namespace Health.Direct.AdminUI.Logic.Views {
     
     
     public partial class AddressDetailsControl {
@@ -101,6 +101,6 @@ namespace AdminUI.Logic.Views {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::AdminUI.Logic.Views.CertificateListControl CertificateListControl1;
+        protected global::Health.Direct.AdminUI.Logic.Views.CertificateListControl CertificateListControl1;
     }
 }
