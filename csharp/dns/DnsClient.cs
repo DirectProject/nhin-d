@@ -850,6 +850,7 @@ namespace DnsResolver
                 
                 DnsBufferReader reader = m_lengthBuffer.CreateReader();
                 ushort responseSize = reader.ReadUShort();
+                m_responseBuffer.ReserveCapacity(responseSize);
                 //
                 // Now receive the real response
                 //
