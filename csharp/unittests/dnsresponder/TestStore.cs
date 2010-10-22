@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+
 using DnsResolver;
 using DnsResponder;
 
-namespace DnsResponderTest
+namespace Health.Direct.DnsResponder.Tests
 {
     public class TestStore
     {
@@ -61,10 +60,10 @@ namespace DnsResponderTest
             get
             {
                 return (
-                    from record in this.Records
-                    where record.Type == DnsStandard.RecordType.ANAME
-                    select (AddressRecord) record
-                );
+                           from record in this.Records
+                           where record.Type == DnsStandard.RecordType.ANAME
+                           select (AddressRecord) record
+                       );
             }
         }
         
@@ -73,10 +72,10 @@ namespace DnsResponderTest
             get
             {
                 return (
-                    from record in this.Records
-                    where record.Type == DnsStandard.RecordType.NS
-                    select (NSRecord) record
-                );
+                           from record in this.Records
+                           where record.Type == DnsStandard.RecordType.NS
+                           select (NSRecord) record
+                       );
             }
         }
     

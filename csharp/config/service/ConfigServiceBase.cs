@@ -2,10 +2,12 @@ using System;
 using System.Diagnostics;
 using System.ServiceModel;
 
+using Health.Direct.Config.Store;
+
 using NHINDirect.Config.Store;
 using NHINDirect.Diagnostics;
 
-namespace NHINDirect.Config.Service
+namespace Health.Direct.Config.Service
 {
     public class ConfigServiceBase
     {

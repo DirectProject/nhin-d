@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using NHINDirect.Mime;
+﻿using NHINDirect.Mime;
 
 using Xunit;
 
-namespace NHINDirect.Tests.Mime
+namespace Health.Direct.Common.Tests.Mime
 {
     public class MimeEntityCollectionFacts
     {
@@ -29,7 +24,6 @@ namespace NHINDirect.Tests.Mime
                 return m_basicCollection;
             }
         }
-
 
         [Fact]
         public void DefaultConstructorShouldCreateEmptyEntities()
@@ -57,17 +51,14 @@ namespace NHINDirect.Tests.Mime
         public void BasicCollectionSecondPartBodyTextShouldMatch()
         {
             Assert.Equal("<html><body><p>Hello, World!</p></body></html>",
-                BasicCollection.Entities[1].Body.Text);
+                         BasicCollection.Entities[1].Body.Text);
         }
 
         [Fact]
         public void BasicCollectionSecondPartBodySourceTextShouldMatch()
         {
             Assert.Equal("<html><body><p>Hello, World!</p></body></html>",
-                BasicCollection.Entities[1].Body.SourceText.ToString());
+                         BasicCollection.Entities[1].Body.SourceText.ToString());
         }
-
-
-
     }
 }

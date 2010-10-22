@@ -4,7 +4,7 @@
     <xsd:schema targetNamespace="http://www.nhindirect.org/config/store/082010/Imports">
       <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd0" namespace="http://www.nhindirect.org/config/store/082010" />
       <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-      <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/NHINDirect.Config.Store" />
+      <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
       <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
     </xsd:schema>
   </wsdl:types>

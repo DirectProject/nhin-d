@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace NHINDirect.Config.Store
+﻿namespace Health.Direct.Config.Store
 {
     public enum EntityStatus : byte
     {
