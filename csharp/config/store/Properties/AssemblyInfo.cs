@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("configSystem")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("NHIN Direct Project")]
+[assembly: AssemblyCompany("Direct Project")]
 [assembly: AssemblyProduct("configSystem")]
-[assembly: AssemblyCopyright("Copyright © NHIN Direct Project")]
+[assembly: AssemblyCopyright("Copyright © Direct Project")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -36,4 +36,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DeleteMeUnitTests")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("configStoreTests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Health.Direct.Config.Store.Tests")]

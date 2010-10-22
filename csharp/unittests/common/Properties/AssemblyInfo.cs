@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("commonTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("NHIN Direct Project")]
+[assembly: AssemblyCompany("Direct Project")]
 [assembly: AssemblyProduct("commonTests")]
-[assembly: AssemblyCopyright("Copyright © NHIN Direct Project 2010")]
+[assembly: AssemblyCopyright("Copyright © Direct Project 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

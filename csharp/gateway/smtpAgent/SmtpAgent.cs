@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, NHIN Direct Project
+ Copyright (c) 2010, Direct Project
  All rights reserved.
 
  Authors:
@@ -9,7 +9,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+Neither the name of the The Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
@@ -17,15 +17,18 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Store;
+
 using NHINDirect.Agent;
 using NHINDirect.Certificates;
 using NHINDirect.Container;
 using NHINDirect.Diagnostics;
-using NHINDirect.Config.Store;
-using NHINDirect.Config.Client.DomainManager;
+using NHINDirect.Extensions;
 
-namespace NHINDirect.SmtpAgent
-{    
+namespace Health.Direct.SmtpAgent
+{
     public class SmtpAgent
     {
         /// <summary>
@@ -39,7 +42,7 @@ namespace NHINDirect.SmtpAgent
         }
         
         IAuditor m_auditor;
-    	ILogger m_logger;
+        ILogger m_logger;
 
         SmtpAgentSettings m_settings;
         NHINDAgent m_agent;
@@ -68,12 +71,12 @@ namespace NHINDirect.SmtpAgent
         }
 
         private ILogger Logger
-		{
-			get
-			{
-				return m_logger;
-			}
-		}
+        {
+            get
+            {
+                return m_logger;
+            }
+        }
 
         private IAuditor Auditor
         {
@@ -127,7 +130,7 @@ namespace NHINDirect.SmtpAgent
             m_settings.Validate();
 
             m_auditor = IoC.Resolve<IAuditor>();
-        	m_logger = Log.For(this);
+            m_logger = Log.For(this);
 
             m_diagnostics = new AgentDiagnostics();
             m_configService = new ConfigService(m_settings);
@@ -189,7 +192,7 @@ namespace NHINDirect.SmtpAgent
                 {
                     Logger.Error("Returned configured domains did not match those listed in the settings file");
                     Logger.Error("from service={0} from settings={1}", 
-                        configuredDomains.Length, m_settings.Domains.Length);
+                                 configuredDomains.Length, m_settings.Domains.Length);
                     throw new SmtpAgentException(SmtpAgentError.ConfiguredDomainsMismatch);
                 }
 
@@ -537,7 +540,7 @@ namespace NHINDirect.SmtpAgent
             int i = 0;
             while (i < recipients.Count)
             {
-                NHINDAddress recipient = recipients[i];
+                DirectAddress recipient = recipients[i];
                 int iAddress = Array.FindIndex<Address>(resolved, x => x.Match(recipient));
                 if (iAddress >= 0)
                 {

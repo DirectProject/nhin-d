@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Xml.Serialization;
-using NHINDirect.Config.Client;
+
+using Health.Direct.Config.Client;
 
 namespace NHINDirect.Config.Command
 {
     [XmlRoot("ConsoleSettings")]
     public class ConsoleSettings
     {
-        public ConsoleSettings()
-        {
-        }
-        
         [XmlElement]
         public ClientSettings DomainManager
         {
