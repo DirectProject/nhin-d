@@ -15,8 +15,7 @@
     <ReferencedAssemblies>
       <ReferencedAssembly AssemblyName="mscorlib" />
       <ReferencedAssembly AssemblyName="nhinCommon" />
-      <ReferencedAssembly AssemblyName="nhinConfigStore" />
-      <ReferencedAssembly AssemblyName="nhinConfigStore" />
+      <ReferencedAssembly AssemblyName="Health.Direct.Config.Store" />
       <ReferencedAssembly AssemblyName="System" />
       <ReferencedAssembly AssemblyName="System.Core" />
       <ReferencedAssembly AssemblyName="System.Data" />
