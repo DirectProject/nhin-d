@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-namespace Health.Direct.Common.Resolver
+namespace Health.Direct.Common.DnsResolver
 {
     /// <summary>
     /// Enumeration of errors for <see cref="DnsProtocolException"/>

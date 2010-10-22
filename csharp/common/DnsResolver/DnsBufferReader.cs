@@ -17,7 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Text;
 
-namespace Health.Direct.Common.Resolver
+namespace Health.Direct.Common.DnsResolver
 {
     /// <summary>
     /// Reader specialized to perform reads of DNS responses from a buffer.

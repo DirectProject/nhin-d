@@ -17,108 +17,105 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Xml.Serialization;
-
-namespace NHINDirect.XDS.Common.Metadata
+namespace Health.Direct.Xds.Common.XdsMetadata
 {
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
-	[System.Xml.Serialization.XmlIncludeAttribute(typeof(InternationalStringType))]
-	[System.Xml.Serialization.XmlIncludeAttribute(typeof(SlotType))]
-	[System.Xml.Serialization.XmlIncludeAttribute(typeof(ExternalIdentifierType))]
-	[System.Xml.Serialization.XmlIncludeAttribute(typeof(ClassificationType))]
-    [System.Xml.Serialization.XmlRootAttribute("RegistryObject", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+    [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlInclude(typeof(InternationalStringType))]
+    [System.Xml.Serialization.XmlInclude(typeof(SlotType))]
+    [System.Xml.Serialization.XmlInclude(typeof(ExternalIdentifierType))]
+    [System.Xml.Serialization.XmlInclude(typeof(ClassificationType))]
+    [System.Xml.Serialization.XmlRoot("RegistryObject", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
     public class RegistryObjectType
-	{
-		#region fields
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private InternationalStringType _name;
+    {
+        #region fields
+        [System.Xml.Serialization.XmlIgnore()]
+        private InternationalStringType _name;
     
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private InternationalStringType _description;
+        [System.Xml.Serialization.XmlIgnore()]
+        private InternationalStringType _description;
     
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private SlotType[] _slot;
+        [System.Xml.Serialization.XmlIgnore()]
+        private SlotType[] _slot;
     
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private ClassificationType[] _classification;
+        [System.Xml.Serialization.XmlIgnore()]
+        private ClassificationType[] _classification;
     
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private ExternalIdentifierType[] _externalIdentifier;
+        [System.Xml.Serialization.XmlIgnore()]
+        private ExternalIdentifierType[] _externalIdentifier;
     
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private string _accessControlPolicy;
+        [System.Xml.Serialization.XmlIgnore()]
+        private string _accessControlPolicy;
     
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private string _id;
+        [System.Xml.Serialization.XmlIgnore()]
+        private string _id;
     
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private string _objectType;
-		#endregion
+        [System.Xml.Serialization.XmlIgnore()]
+        private string _objectType;
+        #endregion
 
         public RegistryObjectType()
         {
         }
 
-		#region properties
+        #region properties
 
-		[System.Xml.Serialization.XmlElementAttribute("Slot")]
-		public SlotType[] Slot
-		{
-			get { return _slot; }
-			set { _slot = value; }
-		}
+        [System.Xml.Serialization.XmlElement("Slot")]
+        public SlotType[] Slot
+        {
+            get { return _slot; }
+            set { _slot = value; }
+        }
 
-		[System.Xml.Serialization.XmlElementAttribute("Name")]
-		public InternationalStringType Name
-		{
-			get { return _name; }
-			set { _name = value; }
-		}
+        [System.Xml.Serialization.XmlElement("Name")]
+        public InternationalStringType Name
+        {
+            get { return _name; }
+            set { _name = value; }
+        }
 
-		[System.Xml.Serialization.XmlElementAttribute("Description")]
-		public InternationalStringType Description
-		{
-			get { return _description; }
-			set { _description = value; }
-		}
+        [System.Xml.Serialization.XmlElement("Description")]
+        public InternationalStringType Description
+        {
+            get { return _description; }
+            set { _description = value; }
+        }
 
-		[System.Xml.Serialization.XmlElementAttribute("Classification")]
-		public ClassificationType[] Classification
-		{
-			get { return _classification; }
-			set { _classification = value; }
-		}
+        [System.Xml.Serialization.XmlElement("Classification")]
+        public ClassificationType[] Classification
+        {
+            get { return _classification; }
+            set { _classification = value; }
+        }
 
-		[System.Xml.Serialization.XmlElementAttribute("ExternalIdentifier")]
-		public ExternalIdentifierType[] ExternalIdentifier
-		{
-			get { return _externalIdentifier; }
-			set { _externalIdentifier = value; }
-		}
+        [System.Xml.Serialization.XmlElement("ExternalIdentifier")]
+        public ExternalIdentifierType[] ExternalIdentifier
+        {
+            get { return _externalIdentifier; }
+            set { _externalIdentifier = value; }
+        }
 
-		[System.Xml.Serialization.XmlAttributeAttribute("accessControlPolicy",DataType="IDREF")]
-		public string AccessControlPolicy
-		{
-			get { return _accessControlPolicy; }
-			set { _accessControlPolicy = value; }
-		}
+        [System.Xml.Serialization.XmlAttribute("accessControlPolicy",DataType="IDREF")]
+        public string AccessControlPolicy
+        {
+            get { return _accessControlPolicy; }
+            set { _accessControlPolicy = value; }
+        }
 
-		[System.Xml.Serialization.XmlAttributeAttribute("id",DataType="ID")]
-		public string Id
-		{
-			get { return _id; }
-			set { _id = value; }
-		}
+        [System.Xml.Serialization.XmlAttribute("id",DataType="ID")]
+        public string Id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
 
-		[System.Xml.Serialization.XmlAttributeAttribute("objectType")]
-		public string ObjectType
-		{
-			get { return _objectType; }
-			set { _objectType = value; }
-		}
+        [System.Xml.Serialization.XmlAttribute("objectType")]
+        public string ObjectType
+        {
+            get { return _objectType; }
+            set { _objectType = value; }
+        }
 
-		#endregion
+        #endregion
 
     }
 }

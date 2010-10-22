@@ -20,8 +20,6 @@ using System.Net.Mail;
 
 using Health.Direct.Common.Mail;
 
-using NHINDirect.Config.Store;
-
 namespace Health.Direct.Config.Store
 {
     [Table(Name = "Addresses")]

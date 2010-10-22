@@ -17,7 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.IO;
 
-namespace Health.Direct.Common.Resolver
+namespace Health.Direct.Common.DnsResolver
 {
     /// <summary>
     /// Prints a textual representation of DNS transactions (request, response, records, etc.)

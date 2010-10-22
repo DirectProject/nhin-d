@@ -16,19 +16,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Xml.Serialization;
-
-namespace NHINDirect.XDS.Common.Metadata
+namespace Health.Direct.Xds.Common.XdsMetadata
 {
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
-    [System.Xml.Serialization.XmlRootAttribute("ExtrinsicObject", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+    [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlRoot("ExtrinsicObject", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
     public class ExtrinsicObjectType : RegistryEntryType
     {
         #region fields
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [System.Xml.Serialization.XmlIgnore()]
         private string _mimeType;
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [System.Xml.Serialization.XmlIgnore()]
         private bool _isOpaque;
         #endregion
 
@@ -37,14 +34,14 @@ namespace NHINDirect.XDS.Common.Metadata
         }
 
         #region properties
-		[System.Xml.Serialization.XmlAttributeAttribute("mimeType")]
+        [System.Xml.Serialization.XmlAttribute("mimeType")]
         public string MimeType
         {
             get { return _mimeType; }
             set { _mimeType = value; }
         }
 
-        [System.Xml.Serialization.XmlAttributeAttribute("isOpaque")]
+        [System.Xml.Serialization.XmlAttribute("isOpaque")]
         public bool IsOpaque
         {
             get { return _isOpaque; }

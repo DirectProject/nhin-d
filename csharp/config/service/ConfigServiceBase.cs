@@ -5,8 +5,6 @@ using System.ServiceModel;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Config.Store;
 
-using NHINDirect.Config.Store;
-
 namespace Health.Direct.Config.Service
 {
     public class ConfigServiceBase

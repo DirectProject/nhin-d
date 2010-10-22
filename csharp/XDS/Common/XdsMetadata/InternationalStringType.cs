@@ -16,36 +16,33 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Xml.Serialization;
-
-namespace NHINDirect.XDS.Common.Metadata
+namespace Health.Direct.Xds.Common.XdsMetadata
 {
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
-    [System.Xml.Serialization.XmlRootAttribute("International", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
-	public class InternationalStringType
-	{
-		#region fields
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private LocalizedStringType[] _localizedString;
-		#endregion
+    [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlRoot("International", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+    public class InternationalStringType
+    {
+        #region fields
+        [System.Xml.Serialization.XmlIgnore()]
+        private LocalizedStringType[] _localizedString;
+        #endregion
 
-		public InternationalStringType()
-		{
-		}
+        public InternationalStringType()
+        {
+        }
 
-		public InternationalStringType(LocalizedStringType[] localizedStrings)
-		{
-			this.LocalizedString = localizedStrings;
-		}
+        public InternationalStringType(LocalizedStringType[] localizedStrings)
+        {
+            this.LocalizedString = localizedStrings;
+        }
 
-		#region properties
-		[System.Xml.Serialization.XmlElementAttribute("LocalizedString")]
-		public LocalizedStringType[] LocalizedString
-		{
-			get { return _localizedString; }
-			set { _localizedString = value; }
-		}
-		#endregion
-	}
+        #region properties
+        [System.Xml.Serialization.XmlElement("LocalizedString")]
+        public LocalizedStringType[] LocalizedString
+        {
+            get { return _localizedString; }
+            set { _localizedString = value; }
+        }
+        #endregion
+    }
 }

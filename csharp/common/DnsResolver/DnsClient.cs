@@ -20,7 +20,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Health.Direct.Common.Resolver
+namespace Health.Direct.Common.DnsResolver
 {
     /// <summary>
     ///   DNS client resolver, handling a variety of DNS request types and using TCP by default.

@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NHINDirect.Agent.Config;
-using NHINDirect.Diagnostics;
+
+using Health.Direct.Agent.Config;
+using Health.Direct.Common.Diagnostics;
+
 using System.Xml.Serialization;
 
-namespace NHINDirect.ScriptAgent
+namespace Health.Direct.Sample.ScriptAgent
 {
     [XmlType("SmtpAgentConfig")]
     public class SmtpAgentSettings : AgentSettings
     {
-        public SmtpAgentSettings()
-        {
-        }
-        
         [XmlElement("Log")]
         public LogFileSettings LogSettings
         {
@@ -26,14 +21,14 @@ namespace NHINDirect.ScriptAgent
         {
             if (this.LogSettings == null)
             {
-                throw new ArgumentNullException("Log Settings not specified");
+                throw new Exception("Log Settings not specified");
             }
             this.LogSettings.Validate();
         }
         
-        public static SmtpAgentSettings LoadFile(string configFilePath)
+        public new static SmtpAgentSettings LoadFile(string configFilePath)
         {
-            return AgentSettings.LoadFile<SmtpAgentSettings>(configFilePath);
+            return LoadFile<SmtpAgentSettings>(configFilePath);
         }
     }
 }

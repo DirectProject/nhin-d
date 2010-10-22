@@ -17,50 +17,40 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
 using System.Xml.Serialization;
-using System.Collections;
-using System.Collections.Generic;
-
-using System.ServiceModel.Channels;
-using System.Runtime.Serialization;
-
-using NHINDirect.XDS.Common.Metadata;
 
 
-namespace NHINDirect.XDS.Common.Metadata
+namespace Health.Direct.Xds.Common.XdsMetadata
 {
+    [XmlRoot("SubmitObjectsRequest", Namespace = GlobalValues.ebXmlLCMNamespace, IsNullable = false)]
+    public class SubmitObjectsRequest
+    {
+        private RegistryObjectListType _registryObjectList;
 
-    //[DataContractAttribute(Name="SubmitObjectsRequest", Namespace=GlobalValues.ebXmlLCMNamespace)]
-	[XmlRoot("SubmitObjectsRequest", Namespace = GlobalValues.ebXmlLCMNamespace, IsNullable = false)]
-	public class SubmitObjectsRequest
-	{
-		private RegistryObjectListType _registryObjectList;
+        public SubmitObjectsRequest()
+        {
+            // for XML serialization
+            _registryObjectList = new RegistryObjectListType();
+        }
 
-		public SubmitObjectsRequest()
-		{
-			// for XML serialization
-			_registryObjectList = new RegistryObjectListType();
-		}
-
-		public SubmitObjectsRequest(RegistryObjectListType registryObjectList)
-		{
-			_registryObjectList = registryObjectList;
-		}
+        public SubmitObjectsRequest(RegistryObjectListType registryObjectList)
+        {
+            _registryObjectList = registryObjectList;
+        }
 
 
-		#region Properties
+        #region Properties
 
-		//[DataMember(Name="RegistryObjectList")]
+        //[DataMember(Name="RegistryObjectList")]
         [XmlElement("RegistryObjectList", Namespace = GlobalValues.ebXmlRIMNamespace)]
-		public RegistryObjectListType RegistryObjectList
-		{
-			get { return _registryObjectList; }
-			set { _registryObjectList = value; }
-		}
+        public RegistryObjectListType RegistryObjectList
+        {
+            get { return _registryObjectList; }
+            set { _registryObjectList = value; }
+        }
 
-		#endregion Properties
+        #endregion Properties
 
 
-	}
+    }
 }

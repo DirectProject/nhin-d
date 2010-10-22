@@ -6,7 +6,7 @@ using System.Xml.Schema;
 
 using Health.Direct.Common.Diagnostics;
 
-namespace NHINDirect.XDS
+namespace Health.Direct.XDS
 {
     public class XDSHelper
     {
@@ -18,7 +18,7 @@ namespace NHINDirect.XDS
             m_logger = Log.For(this);
         }
 
-		//To create slots for meta data.
+        //To create slots for meta data.
         public XmlDocument CreateRepositoryMetadata(XmlDocument xmlDocMsgBody, string slotName, string slotValue, string documentID)
         {
             XmlDocument xmlDocRepositoryMetadata = new XmlDocument();

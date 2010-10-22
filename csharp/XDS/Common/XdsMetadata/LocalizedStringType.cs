@@ -16,57 +16,54 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Xml.Serialization;
-
-namespace NHINDirect.XDS.Common.Metadata
+namespace Health.Direct.Xds.Common.XdsMetadata
 {
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
-    [System.Xml.Serialization.XmlRootAttribute("LocalizedString", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+    [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlRoot("LocalizedString", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
     public class LocalizedStringType
     {
-		#region fields
+        #region fields
 		
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private string _lang = "en-US";
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private string _charset = "UTF-8";
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private string _value;
+        [System.Xml.Serialization.XmlIgnore()]
+        private string _lang = "en-US";
+        [System.Xml.Serialization.XmlIgnore()]
+        private string _charset = "UTF-8";
+        [System.Xml.Serialization.XmlIgnore()]
+        private string _value;
 
-		#endregion
+        #endregion
 
         public LocalizedStringType()
         {
         }
 
-		public LocalizedStringType(string value)
-		{
-			this.Value = value;
-		}
+        public LocalizedStringType(string value)
+        {
+            this.Value = value;
+        }
 
-		#region properties
-		//[System.Xml.Serialization.XmlAttributeAttribute(Form=System.Xml.Schema.XmlSchemaForm.Qualified, DataType="language")]
-		[System.Xml.Serialization.XmlAttributeAttribute("lang", DataType="language")]
-		[System.ComponentModel.DefaultValueAttribute("en-US")]
-		public string Lang
-		{
-			get { return _lang; }
-			set { _lang = value; }
-		}
-		[System.Xml.Serialization.XmlAttributeAttribute("charset")]
-		[System.ComponentModel.DefaultValueAttribute("UTF-8")]
-		public string Charset
-		{
-			get { return _charset; }
-			set { _charset = value; }
-		}
-		[System.Xml.Serialization.XmlAttributeAttribute("value")]
-		public string Value
-		{
-			get { return _value; }
-			set { _value = value; }
-		}	
-		#endregion
+        #region properties
+        //[System.Xml.Serialization.XmlAttributeAttribute(Form=System.Xml.Schema.XmlSchemaForm.Qualified, DataType="language")]
+        [System.Xml.Serialization.XmlAttribute("lang", DataType="language")]
+        [System.ComponentModel.DefaultValue("en-US")]
+        public string Lang
+        {
+            get { return _lang; }
+            set { _lang = value; }
+        }
+        [System.Xml.Serialization.XmlAttribute("charset")]
+        [System.ComponentModel.DefaultValue("UTF-8")]
+        public string Charset
+        {
+            get { return _charset; }
+            set { _charset = value; }
+        }
+        [System.Xml.Serialization.XmlAttribute("value")]
+        public string Value
+        {
+            get { return _value; }
+            set { _value = value; }
+        }	
+        #endregion
     }
 }

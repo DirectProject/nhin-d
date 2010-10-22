@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 
 using Health.Direct.Common.Dns;
-using Health.Direct.Common.Resolver;
+using Health.Direct.Common.DnsResolver;
 
 using Xunit;
 using Xunit.Extensions;

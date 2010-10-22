@@ -15,12 +15,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace NHINDirect.XDS
+namespace Health.Direct.XDS
 {
     [XmlRoot(Namespace = "urn:ihe:iti:xds-b:2007", ElementName = "ProvideAndRegisterDocumentSetRequest")]
     class ProvideAndRegisterRequest : IXmlSerializable

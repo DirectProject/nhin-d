@@ -16,60 +16,57 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Xml.Serialization;
-
-namespace NHINDirect.XDS.Common.Metadata
+namespace Health.Direct.Xds.Common.XdsMetadata
 {
-	[System.Xml.Serialization.XmlTypeAttribute(Namespace=GlobalValues.ebXmlRIMNamespace)]
-	public enum RegistryEntryStability 
-	{
+    [System.Xml.Serialization.XmlType(Namespace=GlobalValues.ebXmlRIMNamespace)]
+    public enum RegistryEntryStability 
+    {
     
-		Dynamic,
-		DynamicCompatible,
-		Static
-	}
+        Dynamic,
+        DynamicCompatible,
+        Static
+    }
 
-	static public class RegistryEntryStatus
-	{
-		public const string Approved = "urn:oasis:names:tc:ebxml-regrep:StatusType:Approved";
-		public const string Submitted = "urn:oasis:names:tc:ebxml-regrep:StatusType:Submitted";
-		public const string Deprecated = "urn:oasis:names:tc:ebxml-regrep:StatusType:Deprecated";
-		public const string Withdrawn = "urn:oasis:names:tc:ebxml-regrep:StatusType:Withdrawn";
-	}
+    static public class RegistryEntryStatus
+    {
+        public const string Approved = "urn:oasis:names:tc:ebxml-regrep:StatusType:Approved";
+        public const string Submitted = "urn:oasis:names:tc:ebxml-regrep:StatusType:Submitted";
+        public const string Deprecated = "urn:oasis:names:tc:ebxml-regrep:StatusType:Deprecated";
+        public const string Withdrawn = "urn:oasis:names:tc:ebxml-regrep:StatusType:Withdrawn";
+    }
 
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
-    [System.Xml.Serialization.XmlRootAttribute("RegistryEntry", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+    [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlRoot("RegistryEntry", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
     public class RegistryEntryType : RegistryObjectType
     {
-		#region fields
-		/*
+        #region fields
+        /*
 		[System.Xml.Serialization.XmlIgnoreAttribute()]
 		private System.DateTime _expiration;
         */
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private string _majorVersion = "1";
+        [System.Xml.Serialization.XmlIgnore()]
+        private string _majorVersion = "1";
     
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private string _minorVersion = "0";
+        [System.Xml.Serialization.XmlIgnore()]
+        private string _minorVersion = "0";
     
-		//[System.Xml.Serialization.XmlIgnoreAttribute()]
-		//private RegistryEntryStability _stability;
+        //[System.Xml.Serialization.XmlIgnoreAttribute()]
+        //private RegistryEntryStability _stability;
 
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private string _status;
+        [System.Xml.Serialization.XmlIgnore()]
+        private string _status;
     
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private string _userVersion;
-		#endregion
+        [System.Xml.Serialization.XmlIgnore()]
+        private string _userVersion;
+        #endregion
 
         public RegistryEntryType()
         {
-			_status = RegistryEntryStatus.Approved;  // set default status to approved
+            _status = RegistryEntryStatus.Approved;  // set default status to approved
         }
 
-		#region properties
-		/* 
+        #region properties
+        /* 
 		[System.Xml.Serialization.XmlAttributeAttribute("expiration")]
 		public System.DateTime Expiration
 		{
@@ -78,42 +75,42 @@ namespace NHINDirect.XDS.Common.Metadata
 		}
 		*/
     
-		[System.Xml.Serialization.XmlAttributeAttribute("majorVersion",DataType="integer")]
-		[System.ComponentModel.DefaultValueAttribute("1")]
-		public string MajorVersion
-		{
-			get { return _majorVersion; }
-			set { _majorVersion = value; }
-		}
+        [System.Xml.Serialization.XmlAttribute("majorVersion",DataType="integer")]
+        [System.ComponentModel.DefaultValue("1")]
+        public string MajorVersion
+        {
+            get { return _majorVersion; }
+            set { _majorVersion = value; }
+        }
     
-		[System.Xml.Serialization.XmlAttributeAttribute("minorVersion",DataType="integer")]
-		[System.ComponentModel.DefaultValueAttribute("0")]
-		public string MinorVersion
-		{
-			get { return _minorVersion; }
-			set { _minorVersion = value; }
-		}
+        [System.Xml.Serialization.XmlAttribute("minorVersion",DataType="integer")]
+        [System.ComponentModel.DefaultValue("0")]
+        public string MinorVersion
+        {
+            get { return _minorVersion; }
+            set { _minorVersion = value; }
+        }
     
-		//[System.Xml.Serialization.XmlAttributeAttribute("stability")]
-		//public RegistryEntryStability Stability
-		//{
-		//    get { return _stability; }
-		//    set { _stability = value; }
-		//}
+        //[System.Xml.Serialization.XmlAttributeAttribute("stability")]
+        //public RegistryEntryStability Stability
+        //{
+        //    get { return _stability; }
+        //    set { _stability = value; }
+        //}
 
-		[System.Xml.Serialization.XmlAttributeAttribute("status")]
-		public string Status
-		{
-			get { return _status; }
-			set { _status = value; }
-		}
+        [System.Xml.Serialization.XmlAttribute("status")]
+        public string Status
+        {
+            get { return _status; }
+            set { _status = value; }
+        }
     
-		[System.Xml.Serialization.XmlAttributeAttribute("userVersion")]
-		public string UserVersion
-		{
-			get { return _userVersion; }
-			set { _userVersion = value; }
-		}
-		#endregion
+        [System.Xml.Serialization.XmlAttribute("userVersion")]
+        public string UserVersion
+        {
+            get { return _userVersion; }
+            set { _userVersion = value; }
+        }
+        #endregion
     }
 }

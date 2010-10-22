@@ -16,8 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Linq;
 
+using Health.Direct.Common.DnsResolver;
 using Health.Direct.Common.Extensions;
-using Health.Direct.Common.Resolver;
 
 namespace Health.Direct.Common.Caching
 {

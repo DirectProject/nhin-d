@@ -18,7 +18,7 @@ namespace Health.Direct.Common.Diagnostics
     /// </remarks>
     /// <example>
     ///   &lt;!-- place this in the configSections --&gt;
-    ///   &lt;section name="logging" type="NHINDirect.Diagnostics.LogFileSection"/&gt;
+    ///   &lt;section name="logging" type="Health.Direct.Common.Diagnostics.LogFileSection"/&gt;
     ///   &lt;!-- insert into your app.config file --&gt;
     ///   &lt;logging&gt;
     ///     &lt;location directory="~\Log" name="ConfigService" extension="log" /&gt;

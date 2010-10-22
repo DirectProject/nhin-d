@@ -18,8 +18,6 @@ using System.Data.Linq.Mapping;
 using System.Runtime.Serialization;
 using System.Net.Mail;
 
-using NHINDirect.Config.Store;
-
 namespace Health.Direct.Config.Store
 {
     [Table(Name="Domains")]

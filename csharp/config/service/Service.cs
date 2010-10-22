@@ -16,9 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using Health.Direct.Common.Container;
 using Health.Direct.Common.Diagnostics;
+using Health.Direct.Config.Store;
 using Health.Direct.Diagnostics.NLog;
-
-using NHINDirect.Config.Store;
 
 namespace Health.Direct.Config.Service
 {

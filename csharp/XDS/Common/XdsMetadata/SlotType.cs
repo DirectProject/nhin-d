@@ -16,116 +16,111 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Xml.Serialization;
-
-namespace NHINDirect.XDS.Common.Metadata
+namespace Health.Direct.Xds.Common.XdsMetadata
 {
-	#region Enums
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
-	public enum SlotNameType
-	{
-		authorInstitution,
-		authorInstitutionId,
-		authorPerson,
-		authorRole,
-		authorSpecialty,
-		creationTime,
-		hash,
-		languageCode,
-		legalAuthenticator,
-		serviceStartTime,
-		serviceStopTime,
-		size,
-		sourcePatientId,
-		sourcePatientInfo,
-		URI,
+    [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    public enum SlotNameType
+    {
+        authorInstitution,
+        authorInstitutionId,
+        authorPerson,
+        authorRole,
+        authorSpecialty,
+        creationTime,
+        hash,
+        languageCode,
+        legalAuthenticator,
+        serviceStartTime,
+        serviceStopTime,
+        size,
+        sourcePatientId,
+        sourcePatientInfo,
+        URI,
 
-		//external classifications
-		codingScheme,
+        //external classifications
+        codingScheme,
 
-		// XDSSubmissionSet 
-		//authorInstitution,
-		submissionTime,
+        // XDSSubmissionSet 
+        //authorInstitution,
+        submissionTime,
 
-		// XDSFolder
-		lastUpdateTime,
+        // XDSFolder
+        lastUpdateTime,
 
-		// HasMember Association
-		SubmissionSetStatus
-	}
-	#endregion
+        // HasMember Association
+        SubmissionSetStatus
+    }
 
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
-    [System.Xml.Serialization.XmlRootAttribute("Slot", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
-	public class SlotType
-	{
-		#region fields
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private ValueListType _valueList;
+    [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlRoot("Slot", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+    public class SlotType
+    {
+        #region fields
+        [System.Xml.Serialization.XmlIgnore()]
+        private ValueListType _valueList;
 
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private SlotNameType _name;
+        [System.Xml.Serialization.XmlIgnore()]
+        private SlotNameType _name;
 
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private string _slotType;
-		#endregion
+        [System.Xml.Serialization.XmlIgnore()]
+        private string _slotType;
+        #endregion
 
-		public SlotType()
-		{
-		}
+        public SlotType()
+        {
+        }
 
-		/// <summary>
-		/// Creates a new XDS Slot object with the given name and values.
-		/// </summary>
-		/// <param name="name">name of the slot</param>
-		/// <param name="values">values to include in the slot object</param>
-		/// <returns>Returns the new SlotType object</returns>
-		public SlotType(SlotNameType name, string[] values)
-		{
-			this.Name = name;
-			this.ValueList = new ValueListType();
-			this.ValueList.Value = values;
-		}
+        /// <summary>
+        /// Creates a new XDS Slot object with the given name and values.
+        /// </summary>
+        /// <param name="name">name of the slot</param>
+        /// <param name="values">values to include in the slot object</param>
+        /// <returns>Returns the new SlotType object</returns>
+        public SlotType(SlotNameType name, string[] values)
+        {
+            this.Name = name;
+            this.ValueList = new ValueListType();
+            this.ValueList.Value = values;
+        }
 
-		#region properties
-		[System.Xml.Serialization.XmlElementAttribute("ValueList")]
-		public ValueListType ValueList
-		{
-			get { return _valueList; }
-			set { _valueList = value; }
-		}
+        #region properties
+        [System.Xml.Serialization.XmlElement("ValueList")]
+        public ValueListType ValueList
+        {
+            get { return _valueList; }
+            set { _valueList = value; }
+        }
 
-		[System.Xml.Serialization.XmlAttributeAttribute("name")]
-		public SlotNameType Name
-		{
-			get { return _name; }
-			set { _name = value; }
-		}
+        [System.Xml.Serialization.XmlAttribute("name")]
+        public SlotNameType Name
+        {
+            get { return _name; }
+            set { _name = value; }
+        }
 
-		[System.Xml.Serialization.XmlAttributeAttribute("slotType")]
-		public string Type
-		{
-			get { return _slotType; }
-			set { _slotType = value; }
-		}
-		#endregion
+        [System.Xml.Serialization.XmlAttribute("slotType")]
+        public string Type
+        {
+            get { return _slotType; }
+            set { _slotType = value; }
+        }
+        #endregion
 
 
-		#region Methods
+        #region Methods
 
-		/// <summary>
-		/// Creates a new XDS Slot object with the given name and values.
-		/// </summary>
-		/// <param name="name">name of the slot</param>
-		/// <param name="values">values to include in the slot object</param>
-		/// <returns>Returns the new SlotType object</returns>
-		public static SlotType CreateSlot(SlotNameType name, string[] values)
-		{
-			SlotType slot = new SlotType(name, values);
-			return slot;
-		}
+        /// <summary>
+        /// Creates a new XDS Slot object with the given name and values.
+        /// </summary>
+        /// <param name="name">name of the slot</param>
+        /// <param name="values">values to include in the slot object</param>
+        /// <returns>Returns the new SlotType object</returns>
+        public static SlotType CreateSlot(SlotNameType name, string[] values)
+        {
+            SlotType slot = new SlotType(name, values);
+            return slot;
+        }
 
-		#endregion Methods
-	}
+        #endregion Methods
+    }
 }

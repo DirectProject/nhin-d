@@ -18,7 +18,7 @@ using System.Linq;
 using System.IO;
 
 using Health.Direct.Common.Caching;
-using Health.Direct.Common.Resolver;
+using Health.Direct.Common.DnsResolver;
 
 using Xunit;
 

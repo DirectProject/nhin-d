@@ -20,8 +20,6 @@ using System.Runtime.Serialization;
 
 using Health.Direct.Common.Extensions;
 
-using NHINDirect.Config.Store;
-
 namespace Health.Direct.Config.Store
 {
     [Table(Name="Certificates")]

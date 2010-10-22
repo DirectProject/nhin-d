@@ -21,8 +21,6 @@ using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
 
-using NHINDirect.Config.Store;
-
 namespace Health.Direct.Config.Store
 {
     public class CertificateManager : IX509CertificateIndex

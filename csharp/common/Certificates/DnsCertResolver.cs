@@ -21,7 +21,7 @@ using System.Security.Cryptography.X509Certificates;
 
 using Health.Direct.Common.Caching;
 using Health.Direct.Common.Dns;
-using Health.Direct.Common.Resolver;
+using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.Common.Certificates
 {

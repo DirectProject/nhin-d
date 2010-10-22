@@ -8,7 +8,7 @@
     <ProjectGuid>{14654060-C0C0-4B9A-84C0-2BF8378A2CF8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProvideAndRegisterDocumentSet</RootNamespace>
+    <RootNamespace>Health.Direct.XDS</RootNamespace>
     <AssemblyName>ProvideAndRegisterDocumentSet</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -65,9 +65,9 @@
       <Project>{6A48C90B-0BD0-4F19-BBAE-B973AD504902}</Project>
       <Name>common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\Common.csproj">
+    <ProjectReference Include="..\Common\XdsCommon.csproj">
       <Project>{8284EBE6-AE5C-4920-9738-8169A75DE618}</Project>
-      <Name>xds.common</Name>
+      <Name>XdsCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

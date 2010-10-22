@@ -16,21 +16,18 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Xml.Serialization;
-
-namespace NHINDirect.XDS.Common.Metadata
+namespace Health.Direct.Xds.Common.XdsMetadata
 {
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
-    [System.Xml.Serialization.XmlRootAttribute("ExternalIdentifier", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+    [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlRoot("ExternalIdentifier", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
     public class ExternalIdentifierType : RegistryObjectType
     {
         #region fields
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [System.Xml.Serialization.XmlIgnore()]
         private string _registryObject;
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [System.Xml.Serialization.XmlIgnore()]
         private string _identificationScheme;
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [System.Xml.Serialization.XmlIgnore()]
         private string _value;
         #endregion
 
@@ -38,34 +35,34 @@ namespace NHINDirect.XDS.Common.Metadata
         {
         }
 
-		public ExternalIdentifierType(string scheme, string value, string id, string registryObject, string name)
-		{
-			this.IdentificationScheme = scheme;
-			this.Value = value;
-			this.Id = id;
-			this.RegistryObject = registryObject;
+        public ExternalIdentifierType(string scheme, string value, string id, string registryObject, string name)
+        {
+            this.IdentificationScheme = scheme;
+            this.Value = value;
+            this.Id = id;
+            this.RegistryObject = registryObject;
 
-			this.Name = new InternationalStringType();
-			this.Name.LocalizedString = new LocalizedStringType[1];
-			this.Name.LocalizedString[0] = new LocalizedStringType(name);
-		}
+            this.Name = new InternationalStringType();
+            this.Name.LocalizedString = new LocalizedStringType[1];
+            this.Name.LocalizedString[0] = new LocalizedStringType(name);
+        }
 
         #region properties
-		[System.Xml.Serialization.XmlAttributeAttribute("registryObject",DataType="IDREF")]
+        [System.Xml.Serialization.XmlAttribute("registryObject",DataType="IDREF")]
         public string RegistryObject
         {
             get { return _registryObject; }
             set { _registryObject = value; }
         }
 
-        [System.Xml.Serialization.XmlAttributeAttribute("identificationScheme",DataType="IDREF")]
+        [System.Xml.Serialization.XmlAttribute("identificationScheme",DataType="IDREF")]
         public string IdentificationScheme
         {
             get { return _identificationScheme; }
             set { _identificationScheme = value; }
         }
 
-        [System.Xml.Serialization.XmlAttributeAttribute("value")]
+        [System.Xml.Serialization.XmlAttribute("value")]
         public string Value
         {
             get { return _value; }

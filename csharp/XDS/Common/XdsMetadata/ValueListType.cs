@@ -17,37 +17,34 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Xml.Serialization;
-
-namespace NHINDirect.XDS.Common.Metadata
+namespace Health.Direct.Xds.Common.XdsMetadata
 {
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = GlobalValues.ebXmlRIMNamespace)]
-    [System.Xml.Serialization.XmlRootAttribute("ValueList", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
+    [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
+    [System.Xml.Serialization.XmlRoot("ValueList", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]
     public class ValueListType
     {
-		#region fields
+        #region fields
 
-		[System.Xml.Serialization.XmlIgnoreAttribute()]
-		private string[] _value;
+        [System.Xml.Serialization.XmlIgnore()]
+        private string[] _value;
 
-		#endregion
+        #endregion
 
 
-		public ValueListType()
+        public ValueListType()
         {
         }
 		
 
-		#region properties
+        #region properties
 
-		[System.Xml.Serialization.XmlElementAttribute("Value")]
-		public string[] Value
-		{
-			get { return _value; }
-			set { _value = value; }
-		}
+        [System.Xml.Serialization.XmlElement("Value")]
+        public string[] Value
+        {
+            get { return _value; }
+            set { _value = value; }
+        }
 
-		#endregion
+        #endregion
     }
 }

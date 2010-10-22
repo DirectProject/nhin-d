@@ -8,7 +8,7 @@
     <ProjectGuid>{C09C7321-8400-4DBA-950F-92C3E618AF3E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect.XDS</RootNamespace>
+    <RootNamespace>Health.Direct.XDS</RootNamespace>
     <AssemblyName>ReceiveDocumentSet</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

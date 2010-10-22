@@ -21,7 +21,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.IO;
 using System.Net;
 
-namespace Health.Direct.Common.Resolver
+namespace Health.Direct.Common.DnsResolver
 {
     /// <summary>
     /// Representation of an X509 cert in a DNS CERT RR.
