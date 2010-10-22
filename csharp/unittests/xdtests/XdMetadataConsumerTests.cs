@@ -22,7 +22,6 @@ using Xunit;
 using Xunit.Extensions;
 
 using NHINDirect.Metadata;
-using NHINDirect.Xd;
 
 namespace Health.Direct.Xd.Tests
 {

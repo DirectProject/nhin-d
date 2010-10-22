@@ -4,7 +4,6 @@ using System.Linq;
 using System.Xml.Linq;
 
 using NHINDirect.Metadata;
-using NHINDirect.Xd;
 
 namespace Health.Direct.Xd.Tests
 {

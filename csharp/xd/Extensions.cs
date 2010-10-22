@@ -16,9 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace NHINDirect.Xd
+namespace Health.Direct.Xd
 {
     /// <summary>
     /// General extension methods for use with XD* processing.

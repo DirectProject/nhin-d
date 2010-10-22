@@ -16,13 +16,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
 using NHINDirect.Metadata;
-using System.Globalization;
 
-namespace NHINDirect.Xd
+namespace Health.Direct.Xd
 {
     /// <summary>
     /// Consumes XElements to create document and document package metadata
