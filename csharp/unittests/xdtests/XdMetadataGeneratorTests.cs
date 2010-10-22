@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, NHIN Direct Project
+ Copyright (c) 2010, Direct Project
  All rights reserved.
 
  Authors:
@@ -9,27 +9,23 @@ Redistribution and use in source and binary forms, with or without modification,
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+Neither the name of the The Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
 using NHINDirect.Xd;
 using NHINDirect.Metadata;
 using Xunit;
-using Xunit.Extensions;
 
-namespace NHINDirect.Tests.xdTests
+namespace Health.Direct.Xd.Tests
 {
     public class XdMetadataGeneratorTests
     {
-
-
         [Fact]
         public void NoDocumentMetadata()
         {
@@ -71,7 +67,7 @@ namespace NHINDirect.Tests.xdTests
         {
             XElement node = TestDocXElement.Classifications(XDMetadataStandard.UUIDs.DocumentClass).First();
             string code = node.Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value;
-            Assert.Equal(C80ClassCodeUtils.Decode(Metadata.C80ClassCode.TransferOfCareReferralNote).Key, code);
+            Assert.Equal(C80ClassCodeUtils.Decode(NHINDirect.Metadata.C80ClassCode.TransferOfCareReferralNote).Key, code);
         }
 
         [Fact]
@@ -139,7 +135,7 @@ namespace NHINDirect.Tests.xdTests
         public void DocumentFacilityCodeHasCorrectValue()
         {
             Assert.Equal(C80FacilityCodeUtils.Decode(C80FacilityCodes.PrivatePhysiciansGroupOffice).Key,
-                TestDocXElement.Classification(XDMetadataStandard.UUIDs.FacilityCode).Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value);
+                         TestDocXElement.Classification(XDMetadataStandard.UUIDs.FacilityCode).Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value);
         }
 
         [Fact]
@@ -196,7 +192,7 @@ namespace NHINDirect.Tests.xdTests
         public void PracticeSettingCodeHasCorrectValue()
         {
             Assert.Equal(C80SpecialtyCodeUtils.Decode(C80ClinicalSpecialties.FamilyPractice).Key,
-                TestDocXElement.Classification(XDMetadataStandard.UUIDs.PracticeSetting).Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value);
+                         TestDocXElement.Classification(XDMetadataStandard.UUIDs.PracticeSetting).Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value);
         }
 
         [Fact]
@@ -383,8 +379,8 @@ namespace NHINDirect.Tests.xdTests
             Assert.NotNull(elt.Attribute("id").Value);
             string id = elt.Attribute("id").Value;
             IEnumerable<XElement> classifications = from el in elt.DescendantsAnyNs(XDMetadataStandard.Elts.Classification)
-                                       where (string) el.Attribute("classificationNode") == XDMetadataStandard.UUIDs.SubmissionSetClassification
-                                       select el;
+                                                    where (string) el.Attribute("classificationNode") == XDMetadataStandard.UUIDs.SubmissionSetClassification
+                                                    select el;
             Assert.NotEmpty(classifications);
             Assert.Equal(id, classifications.First().Attribute("classifiedObject").Value);
         }

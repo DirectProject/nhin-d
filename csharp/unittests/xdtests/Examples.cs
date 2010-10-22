@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
 using NHINDirect.Metadata;
 using NHINDirect.Xd;
 
-namespace NHINDirect.Tests.xdTests
+namespace Health.Direct.Xd.Tests
 {
     public static class Examples
     {
@@ -52,14 +51,14 @@ namespace NHINDirect.Tests.xdTests
                     m_docMeta.Author = new Author();
                     m_docMeta.Author.Person = new Person { First = "Tom", Last = "Jones", Degree = "M.D." };
                     m_docMeta.Author.Institutions.Add(new Institution("Direct U"));
-                    m_docMeta.Class = Metadata.C80ClassCode.TransferOfCareReferralNote.ToCodedValue();
+                    m_docMeta.Class = NHINDirect.Metadata.C80ClassCode.TransferOfCareReferralNote.ToCodedValue();
                     m_docMeta.Comments = "This is a nice document";
-                    m_docMeta.Confidentiality = Metadata.C80Confidentialty.Normal.ToCodedValue();
+                    m_docMeta.Confidentiality = NHINDirect.Metadata.C80Confidentialty.Normal.ToCodedValue();
                     m_docMeta.CreatedOn = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
                     var evtCodes = new List<CodedValue>();
                     evtCodes.Add(new CodedValue("foo", "bar", "test"));
                     m_docMeta.EventCodes = evtCodes;
-                    m_docMeta.FormatCode = Metadata.C80FormatCode.CareManagement.ToCodedValue();
+                    m_docMeta.FormatCode = NHINDirect.Metadata.C80FormatCode.CareManagement.ToCodedValue();
                     m_docMeta.Hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
                     m_docMeta.FacilityCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
                     m_docMeta.LanguageCode = "en-us";
@@ -72,13 +71,13 @@ namespace NHINDirect.Tests.xdTests
                     m_docMeta.Size = 1000;
                     m_docMeta.SourcePtId = new PatientID("XYZ", "PDQ", "foo");
                     m_docMeta.Patient = new Person
-                    {
-                        First = "Bob",
-                        Last = "Smith",
-                        Sex = Sex.Male,
-                        Dob = new DateTime(1975, 05, 05, 00, 00, 00, DateTimeKind.Utc),
-                        Address = new PostalAddress { Street = "150 Main St", City = "Anywhere", State = "CA", Zip = "90000" }
-                    };
+                                            {
+                                                First = "Bob",
+                                                Last = "Smith",
+                                                Sex = Sex.Male,
+                                                Dob = new DateTime(1975, 05, 05, 00, 00, 00, DateTimeKind.Utc),
+                                                Address = new PostalAddress { Street = "150 Main St", City = "Anywhere", State = "CA", Zip = "90000" }
+                                            };
                     m_docMeta.Title = "The foo document";
                     m_docMeta.UniqueId = "abc123xyz";
                     m_docMeta.Uri = "http://www.google.com?q=the+foo+document";
@@ -152,7 +151,5 @@ namespace NHINDirect.Tests.xdTests
                 return m_roundTripPackage;
             }
         }
-
-
     }
 }

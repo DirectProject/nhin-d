@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, NHIN Direct Project
+ Copyright (c) 2010, Direct Project
  All rights reserved.
 
  Authors:
@@ -9,7 +9,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-Neither the name of the The NHIN Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+Neither the name of the The Direct Project (nhindirect.org). nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
@@ -447,12 +447,12 @@ namespace NHINDirect.Agent
         /// A <see cref="NHINDAddressCollection"/> instance representing recipient addresses. 
         /// </param> 
         /// <param name="sender"> 
-        /// An <see cref="NHINDAddress"/> instance representing the sender address 
+        /// An <see cref="DirectAddress"/> instance representing the sender address 
         /// </param> 
         /// <returns> 
         /// An <see cref="IncomingMessage"/> instance with the trust verified decrypted and verified message. 
         /// </returns> 
-        public IncomingMessage ProcessIncoming(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
+        public IncomingMessage ProcessIncoming(string messageText, NHINDAddressCollection recipients, DirectAddress sender)
         {
             IncomingMessage message = new IncomingMessage(messageText, recipients, sender);
             return this.ProcessIncoming(message);                    
@@ -568,7 +568,7 @@ namespace NHINDirect.Agent
             NHINDAddressCollection recipients = message.DomainRecipients;
             for (int i = 0, count = recipients.Count; i < count; ++i)
             {
-                NHINDAddress recipient = recipients[i];
+                DirectAddress recipient = recipients[i];
                 recipient.Certificates = this.ResolvePrivateCerts(recipient, false);
                 recipient.TrustAnchors = m_trustAnchors.IncomingAnchors.GetCertificates(recipient);
             }
@@ -704,12 +704,12 @@ namespace NHINDirect.Agent
 		/// An <see cref="NHINDAddressCollection"/> instance specifying message recipients.
 		/// </param>
 		/// <param name="sender">
-		/// An <see cref="NHINDAddress"/> instance specifying message sender
+		/// An <see cref="DirectAddress"/> instance specifying message sender
 		/// </param>
 		/// <returns>
 		/// An <see cref="OutgoingMessage"/> instance containing the encrypted and trust verified message.
 		/// </returns>
-        public OutgoingMessage ProcessOutgoing(string messageText, NHINDAddressCollection recipients, NHINDAddress sender)
+        public OutgoingMessage ProcessOutgoing(string messageText, NHINDAddressCollection recipients, DirectAddress sender)
         {
             OutgoingMessage message = new OutgoingMessage(this.WrapMessage(messageText), recipients, sender);            
             return this.ProcessOutgoing(message);            
@@ -839,7 +839,7 @@ namespace NHINDirect.Agent
             NHINDAddressCollection recipients = message.Recipients;
             for (int i = 0, count = recipients.Count; i < count; ++i)
             {
-                NHINDAddress recipient = recipients[i];
+                DirectAddress recipient = recipients[i];
                 recipient.Certificates = this.ResolvePublicCerts(recipient, false);
             }
         }

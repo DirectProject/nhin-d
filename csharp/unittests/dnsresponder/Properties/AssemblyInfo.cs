@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("dnsresp")]
+[assembly: AssemblyTitle("Health Direct DnsResponder")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft IT")]
-[assembly: AssemblyProduct("dnsresp")]
-[assembly: AssemblyCopyright("Copyright © Microsoft IT 2010")]
+[assembly: AssemblyCompany("Direct Project")]
+[assembly: AssemblyProduct("Direct Project")]
+[assembly: AssemblyCopyright("Copyright © Direct Project 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

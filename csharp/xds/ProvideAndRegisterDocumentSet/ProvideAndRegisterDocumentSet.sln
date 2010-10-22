@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProvideAndRegisterDocumentSet", "ProvideAndRegisterDocumentSet.csproj", "{14654060-C0C0-4B9A-84C0-2BF8378A2CF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "..\Common\Common.csproj", "{8284EBE6-AE5C-4920-9738-8169A75DE618}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xds.common", "..\Common\Common.csproj", "{8284EBE6-AE5C-4920-9738-8169A75DE618}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nhinCommon", "..\..\common\nhinCommon.csproj", "{6A48C90B-0BD0-4F19-BBAE-B973AD504902}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "..\..\common\common.csproj", "{6A48C90B-0BD0-4F19-BBAE-B973AD504902}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

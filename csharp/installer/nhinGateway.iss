@@ -7,14 +7,14 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
-AppName=NHIN Direct .NET Gateway
-AppVerName=NHIN Direct .NET Gateway 1.0
-AppPublisher=The NHIN Direct Project (nhindirect.org)
+AppName=Direct Project .NET Gateway
+AppVerName=Direct Project .NET Gateway 1.0
+AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
 AppUpdatesURL=http://nhindirect.org
-DefaultDirName={pf}\NHIN .NET Gateway
-DefaultGroupName=NHIN Direct .NET Gateway
+DefaultDirName={pf}\Direct Project .NET Gateway
+DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
 OutputBaseFilename=nhinDirect Gateway
@@ -61,7 +61,7 @@ Source: "createconfigsvc.bat"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "configconsole.bat"; DestDir: "{app}"; Flags: ignoreversion;
 
 [Icons]
-Name: "{group}\NHIN Config Console"; Filename: "{app}\nhinConfigConsole.exe"; WorkingDir: "{app}";
+Name: "{group}\NHIN Config Console"; Filename: "{app}\ConfigConsole.exe"; WorkingDir: "{app}";
 Name: "{group}\Test Database"; Filename: "http://localhost/ConfigService/TestService.aspx";
 Name: "{group}\{cm:UninstallProgram,NHIN .NET Gateway}"; Filename: "{uninstallexe}";
 
