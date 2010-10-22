@@ -6,7 +6,7 @@ using System.IO;
 using Xunit;
 using Xunit.Extensions;
 
-namespace DnsResolverTests
+namespace Health.Direct.Common.Tests.DnsResolver
 {
     public class TestSerialization
     {

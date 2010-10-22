@@ -8,8 +8,8 @@
     <ProjectGuid>{6F82A7A0-FB38-418F-A33F-BF289C39797A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect.Tests</RootNamespace>
-    <AssemblyName>commonXUnitTests</AssemblyName>
+    <RootNamespace>Health.Direct.Common.Tests</RootNamespace>
+    <AssemblyName>Health.Direct.Common.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

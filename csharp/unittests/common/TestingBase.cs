@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-namespace NHINDirect.Tests
+namespace Health.Direct.Common.Tests
 {
     public class TestingBase
     {

@@ -23,7 +23,7 @@ using NHINDirect.Dns;
 using Xunit;
 using Xunit.Extensions;
 
-namespace NHINDirect.Tests.Caching
+namespace Health.Direct.Common.Tests.Caching
 {
     public class DnsClientWithCacheFacts : TestingBase, IDisposable
     {
@@ -33,7 +33,7 @@ namespace NHINDirect.Tests.Caching
         private readonly DnsClientWithCache m_client;
         private readonly DnsClient m_clientNoCache;
 
-    	const string PublicDns = "8.8.8.8";
+        const string PublicDns = "8.8.8.8";
         //const string SubnetDns = "192.168.0.1";
         //const string PublicDns = "4.2.2.1";
         //const string LocalDns = "127.0.0.1";
@@ -64,7 +64,7 @@ namespace NHINDirect.Tests.Caching
             : base(DumpIsEnabled)
         {
             m_client = new DnsClientWithCache(PublicDns) { Timeout = TimeSpan.FromSeconds(10) };
-			m_clientNoCache = new DnsClient(PublicDns) { Timeout = TimeSpan.FromSeconds(10) };
+            m_clientNoCache = new DnsClient(PublicDns) { Timeout = TimeSpan.FromSeconds(10) };
         }
 
         /// <summary>
@@ -92,10 +92,10 @@ namespace NHINDirect.Tests.Caching
             // try with ResolveCert
             Dump("Attempting to resolve CERT records for [{0}]", domain);
 
-            IEnumerable<DnsResolver.AddressRecord> results = m_client.ResolveA(domain);
+            IEnumerable<AddressRecord> results = m_client.ResolveA(domain);
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.DnsStandard.RecordType.ANAME));
+                                                                 , DnsStandard.RecordType.ANAME));
 
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
@@ -112,12 +112,12 @@ namespace NHINDirect.Tests.Caching
             // try with ResolveCert
             Dump("Attempting to resolve CERT records for [{0}]", domain);
 
-            IEnumerable<DnsResolver.CertRecord> results = m_client.ResolveCERT(domain);
+            IEnumerable<CertRecord> results = m_client.ResolveCERT(domain);
             Assert.True(results != null, domain);
 
             Dump("ensuring item is stored in cache");
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.DnsStandard.RecordType.CERT));
+                                                                 , DnsStandard.RecordType.CERT));
             Assert.NotNull(res);
         }
 
@@ -132,12 +132,12 @@ namespace NHINDirect.Tests.Caching
             // try with ResolveCert
             Dump("Attempting to resolve CERT records for [{0}]", domain);
 
-            IEnumerable<DnsResolver.CertRecord> results = m_client.ResolveCERTFromNameServer(domain);
+            IEnumerable<CertRecord> results = m_client.ResolveCERTFromNameServer(domain);
             Assert.True(results != null, domain);
             
             Dump("ensuring item is stored in cache");
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.DnsStandard.RecordType.CERT));
+                                                                 , DnsStandard.RecordType.CERT));
             Assert.NotNull(res);
         }
 
@@ -154,11 +154,11 @@ namespace NHINDirect.Tests.Caching
             // try with ResolveCert
             Dump("Attempting to resolve MX records for [{0}]", domain);
 
-            IEnumerable<DnsResolver.MXRecord> results = m_client.ResolveMX(domain);
+            IEnumerable<MXRecord> results = m_client.ResolveMX(domain);
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.DnsStandard.RecordType.MX));
+                                                                 , DnsStandard.RecordType.MX));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }
@@ -177,11 +177,11 @@ namespace NHINDirect.Tests.Caching
             // try with ResolveCert
             Dump("Attempting to resolve MX records for [{0}]", domain);
 
-            IEnumerable<DnsResolver.TextRecord> results = m_client.ResolveTXT(domain);
+            IEnumerable<TextRecord> results = m_client.ResolveTXT(domain);
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.DnsStandard.RecordType.TXT));
+                                                                 , DnsStandard.RecordType.TXT));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }
@@ -200,11 +200,11 @@ namespace NHINDirect.Tests.Caching
             // try with ResolveCert
             Dump("Attempting to resolve MX records for [{0}]", domain);
 
-            IEnumerable<DnsResolver.PtrRecord> results = m_client.ResolvePTR(domain);
+            IEnumerable<PtrRecord> results = m_client.ResolvePTR(domain);
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.DnsStandard.RecordType.PTR));
+                                                                 , DnsStandard.RecordType.PTR));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }
@@ -223,11 +223,11 @@ namespace NHINDirect.Tests.Caching
             // try with ResolveCert
             Dump("Attempting to resolve MX records for [{0}]", domain);
 
-            IEnumerable<DnsResolver.NSRecord> results = m_client.ResolveNS(domain);
+            IEnumerable<NSRecord> results = m_client.ResolveNS(domain);
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.DnsStandard.RecordType.NS));
+                                                                 , DnsStandard.RecordType.NS));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }
@@ -245,11 +245,11 @@ namespace NHINDirect.Tests.Caching
         {
             // try with ResolveCert
             Dump("Attempting to resolve MX records for [{0}]", domain);
-            IEnumerable<DnsResolver.SOARecord> results = m_client.ResolveSOA(domain);
+            IEnumerable<SOARecord> results = m_client.ResolveSOA(domain);
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
-                , DnsResolver.DnsStandard.RecordType.SOA));
+                                                                 , DnsStandard.RecordType.SOA));
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }

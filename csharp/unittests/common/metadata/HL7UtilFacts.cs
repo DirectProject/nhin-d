@@ -15,15 +15,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Xunit;
-using Xunit.Extensions;
 
 using NHINDirect.Metadata;
 
-namespace NHINDirect.Tests.metadata
+namespace Health.Direct.Common.Tests.Metadata
 {
     public class HL7UtilFacts
     {

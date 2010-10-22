@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using NHINDirect.Metadata;
+
 using Xunit;
 
-namespace NHINDirect.Tests.metadata
+namespace Health.Direct.Common.Tests.Metadata
 {
     public class PersonFacts
     {

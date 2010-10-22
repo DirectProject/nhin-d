@@ -14,19 +14,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Net.Mime;
 using System.Net.Mail;
-using NHINDirect;
+
 using NHINDirect.Mime;
 using NHINDirect.Mail;
 using NHINDirect.Mail.Notifications;
-using Xunit;
-using Xunit.Extensions;
 
-namespace NHINDirect.Tests.Mail
+using Xunit;
+
+namespace Health.Direct.Common.Tests.Mail
 {
     /// <summary>
     /// NOTE: Some of the functionality in NHINDirect.Mail.Notifications is exercised from Tests in smtpAgentTests

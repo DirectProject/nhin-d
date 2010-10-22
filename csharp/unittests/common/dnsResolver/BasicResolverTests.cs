@@ -7,7 +7,7 @@ using DnsResolver;
 using Xunit;
 using Xunit.Extensions;
 
-namespace DnsResolverTests
+namespace Health.Direct.Common.Tests.DnsResolver
 {
     public class BasicResolverTests : IDisposable
     {
