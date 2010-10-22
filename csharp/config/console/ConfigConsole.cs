@@ -20,6 +20,7 @@ using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Console.Command;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.ToolLib.Command;
 
 using NHINDirect.Tools.Command;
 

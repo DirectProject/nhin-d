@@ -21,6 +21,8 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Reflection;
 
+using Health.Direct.Config.ToolLib.Command;
+
 namespace NHINDirect.Tools.Command
 {
     /// <summary>

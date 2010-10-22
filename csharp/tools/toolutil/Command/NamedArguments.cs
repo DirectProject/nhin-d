@@ -16,9 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace NHINDirect.Tools.Command
+namespace Health.Direct.Config.ToolLib.Command
 {
     /// <summary>
     /// A Dictionary of name value pairs, where value is optional 

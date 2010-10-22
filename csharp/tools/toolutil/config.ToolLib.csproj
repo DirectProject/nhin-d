@@ -8,8 +8,8 @@
     <ProjectGuid>{D46A743B-E82F-45F7-87CB-29DBBFF9B9A0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect.Tools</RootNamespace>
-    <AssemblyName>nhinToolLib</AssemblyName>
+    <RootNamespace>Health.Direct.Config.ToolLib</RootNamespace>
+    <AssemblyName>Health.Direct.Config.ToolLib</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

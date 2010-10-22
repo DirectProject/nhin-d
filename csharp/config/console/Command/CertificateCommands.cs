@@ -25,9 +25,9 @@ using DnsResolver;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.ToolLib.Command;
 
 using NHINDirect.Certificates;
-using NHINDirect.Tools.Command;
 using NHINDirect.Extensions;
 
 namespace Health.Direct.Config.Console.Command
