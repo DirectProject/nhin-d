@@ -16,10 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
-namespace NHINDirect.Xd
+namespace Health.Direct.Xd
 {
     /// <summary>
     /// Contains XML to Linq custom Axis methods for IHE XD* ebXML

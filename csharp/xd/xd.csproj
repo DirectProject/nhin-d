@@ -8,8 +8,8 @@
     <ProjectGuid>{34C79F52-0820-4365-B7E8-9660163E7A21}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NHINDirect.Xd</RootNamespace>
-    <AssemblyName>xd</AssemblyName>
+    <RootNamespace>Health.Direct.Xd</RootNamespace>
+    <AssemblyName>Health.Direct.Xd</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\Debug\xd.xml</DocumentationFile>
+    <DocumentationFile>..\bin\Debug\Health.Direct.Xd.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,7 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\Release\xd.xml</DocumentationFile>
+    <DocumentationFile>..\bin\Release\Health.Direct.Xd.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

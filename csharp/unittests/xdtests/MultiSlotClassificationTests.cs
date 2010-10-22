@@ -15,10 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System.Linq;
 
-using NHINDirect.Xd;
-
 using Xunit;
-
 
 namespace Health.Direct.Xd.Tests
 {

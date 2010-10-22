@@ -18,8 +18,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-using NHINDirect.Xd;
 using NHINDirect.Metadata;
+
 using Xunit;
 
 namespace Health.Direct.Xd.Tests

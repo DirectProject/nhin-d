@@ -14,12 +14,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
-namespace NHINDirect.Xd
+namespace Health.Direct.Xd
 {
     /// <summary>
     /// Provides an <see cref="XElement"/> for an IHE compliant ebXML classification
@@ -77,14 +74,14 @@ namespace NHINDirect.Xd
         {
             InitializeContentBase(classifiedObject);
             this.Add(new XAttribute("classificationScheme", scheme),
-                   new XAttribute("nodeRepresentation", nodeRepresentation),
-                   content);
+                     new XAttribute("nodeRepresentation", nodeRepresentation),
+                     content);
         }
 
         private void InitializeContentBase(string classifiedObject)
         {
             this.Add(new XAttribute(XDMetadataStandard.Attrs.ClassifiedObject, classifiedObject),
-                   new XAttribute("objectType", "urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"));
+                     new XAttribute("objectType", "urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"));
         }
 
 
