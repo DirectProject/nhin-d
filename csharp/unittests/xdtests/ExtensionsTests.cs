@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Linq;
 
-using NHINDirect.Metadata;
+using Health.Direct.Common.Metadata;
 
 using Xunit;
 

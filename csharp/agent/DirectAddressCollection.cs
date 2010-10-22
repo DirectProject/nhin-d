@@ -18,10 +18,10 @@ using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Collections;
-using NHINDirect.Certificates;
-using NHINDirect.Mime;
-using NHINDirect.Mail;
+using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Collections;
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mime;
 
 namespace Health.Direct.Agent
 {

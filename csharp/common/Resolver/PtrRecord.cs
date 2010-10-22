@@ -14,71 +14,63 @@ Neither the name of the The Direct Project (nhindirect.org). nor the names of it
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DnsResolver
+namespace Health.Direct.Common.Resolver
 {
     /// <summary>
-    /// Represents NS DNS RDATA
+    /// Represents a PTR DNS RR
     /// </summary>
     /// <remarks>
-    /// RFC 1035, Section 3.3.11, NS RDATA format
-    /// <code>
+    /// RFC 1035, 
     /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// /                   NSDNAME                     /
-    /// /                                               /
+    /// /                   PTRDNAME                    /
     /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// </code>
     ///
     /// where:
-    /// 
-    /// NSDNAME         A &lt;domain-name&gt; which specifies a host which should be
-    ///                 authoritative for the specified class and domain.
+    ///
+    /// PTRDNAME        A &lt;domain-name&gt; which points to some location in the
+    ///                domain name space.
     /// </remarks>
-    public class NSRecord : DnsResourceRecord
-    {
-        string m_nameserver;
+    public class PtrRecord : DnsResourceRecord
+    {    
+        string m_domain;
         
-        internal NSRecord()
+        internal PtrRecord()
         {
         }
-        
+
         /// <summary>
-        /// Initializes an instance with the supplied data.
+        /// Instantiates a new RR
         /// </summary>
         /// <param name="name">The domain name for which this is a record</param>
-        /// <param name="nameserver">The authoritative nameserver for this domain.</param>
-        public NSRecord(string name, string nameserver)
-            : base(name, DnsStandard.RecordType.NS)
+        /// <param name="domain">The domain name to which the PTR points</param>
+        public PtrRecord(string name, string domain)
+            : base(name, DnsStandard.RecordType.PTR)
         {
-            this.NameServer = nameserver;
+            this.Domain = domain;
         }
         
         /// <summary>
-        /// The authoritative nameserver for this domain.
+        /// The domain name to which the PTR points
         /// </summary>
-        public string NameServer
+        public string Domain
         {
             get
             {
-                return m_nameserver;
+                return m_domain;
             }
             set
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new DnsProtocolException(DnsProtocolError.InvalidNSRecord);
+                    throw new DnsProtocolException(DnsProtocolError.InvalidPtrRecord);
                 }
                 
-                m_nameserver = value;
+                m_domain = value;
             }
         }
 
         /// <summary>
-        /// Tests equality between this NS record and the other <paramref name="record"/>.
+        /// Tests equality between this PTR record and the other <paramref name="record"/>.
         /// </summary>
         /// <param name="record">The other record.</param>
         /// <returns><c>true</c> if the RRs are equal, <c>false</c> otherwise.</returns>
@@ -88,14 +80,14 @@ namespace DnsResolver
             {
                 return false;
             }
-            
-            NSRecord nsRecord = record as NSRecord;
-            if (nsRecord == null)
+
+            PtrRecord ptrRecord = record as PtrRecord;
+            if (ptrRecord == null)
             {
                 return false;
             }
             
-            return (DnsStandard.Equals(m_nameserver, nsRecord.NameServer));
+            return (DnsStandard.Equals(this.m_domain, ptrRecord.m_domain));
         }
 
         /// <summary>
@@ -104,7 +96,7 @@ namespace DnsResolver
         /// <param name="buffer">The buffer to which DNS wire data are written</param>
         protected override void SerializeRecordData(DnsBuffer buffer)
         {
-            buffer.AddDomainName(m_nameserver);
+            buffer.AddDomainName(m_domain);
         }
 
         /// <summary>
@@ -113,7 +105,7 @@ namespace DnsResolver
         /// <param name="reader">Reader in which wire format data for this RR is already buffered.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
-            this.NameServer = reader.ReadDomainName();
+            this.Domain = reader.ReadDomainName();
         }
     }
 }

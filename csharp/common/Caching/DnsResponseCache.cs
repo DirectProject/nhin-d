@@ -16,11 +16,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Linq;
 
-using DnsResolver;
+using Health.Direct.Common.Extensions;
+using Health.Direct.Common.Resolver;
 
-using NHINDirect.Extensions;
-
-namespace NHINDirect.Caching
+namespace Health.Direct.Common.Caching
 {
     /// <summary>
     /// extends the base 
@@ -52,8 +51,8 @@ namespace NHINDirect.Caching
             }
 
             return string.Format("{0}.{1}"
-                    , question.Type
-                    , question.Domain ?? "unknown").ToLower();
+                                 , question.Type
+                                 , question.Domain ?? "unknown").ToLower();
         }
         
         /// <summary>
@@ -62,7 +61,7 @@ namespace NHINDirect.Caching
         /// <param name="response">DnsResponse instace to be stored in the cache; DnsQuestion from this instance is used for the key</param>
         /// <param name="ttl">Timespan specifying the ttl for the DnsResponse object that is to be stored in the cache</param>
         public void Put(DnsResponse response
-            , TimeSpan ttl)
+                        , TimeSpan ttl)
         {
             if (response == null || response.AnswerRecords.IsNullOrEmpty())
             {
@@ -70,8 +69,8 @@ namespace NHINDirect.Caching
             }
 
             base.Put(BuildKey(response.Question)
-                , response
-                , ttl);
+                     , response
+                     , ttl);
         }
 
         /// <summary>

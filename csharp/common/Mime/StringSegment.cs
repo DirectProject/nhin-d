@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 
-namespace NHINDirect.Mime
+namespace Health.Direct.Common.Mime
 {
     /// <summary>
     /// Class providing efficient management of subsegments of a single long string (e.g., parts of a long textual document or message).
@@ -36,7 +36,7 @@ namespace NHINDirect.Mime
         /// Creates an instance from a string, encompassing the entire string.
         /// </summary>
         /// <param name="source">The underlying string for this segement.</param>
-    	public StringSegment(string source)
+        public StringSegment(string source)
         {
             m_source = source;
             m_startIndex = 0;
@@ -350,10 +350,10 @@ namespace NHINDirect.Mime
         /// <returns>An enumeration of <see cref="StringSegment"/> instances, one for each parsed part.</returns>
         internal static IEnumerable<StringSegment> Split(StringSegment source, char separator)
         {
-			if (source.IsNull || source.IsEmpty)
-			{
-				yield break;
-			}
+            if (source.IsNull || source.IsEmpty)
+            {
+                yield break;
+            }
 
             int startAt = source.StartIndex;
             CharReader reader = new CharReader(source);

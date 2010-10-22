@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Net;
-using DnsResolver;
 using System.IO;
+
+using Health.Direct.Common.Resolver;
 
 using Xunit;
 using Xunit.Extensions;

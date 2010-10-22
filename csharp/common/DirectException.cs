@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-namespace NHINDirect
+namespace Health.Direct.Common
 {
     /// <summary>
     /// Represents Direct specific errors that occur during application execution.
@@ -50,7 +50,7 @@ namespace NHINDirect
         {
         }
     }
-    
+
     /// <summary>
     /// Represents Direct specific exceptions specialized to a specific type of error
     /// </summary>

@@ -14,40 +14,39 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.ComponentModel;
 
-namespace NHINDirect.Mime
+namespace Health.Direct.Common.Mime
 {
     /// <summary>
     /// Generic class for MIME and other entities, parameterized, generally by entity type enumeration.
     /// </summary>
     /// <typeparam name="T">The subtype, generally an enumeration type.</typeparam>
-	public class EntityPart<T>
-	{
-		StringSegment m_sourceText; // Text from the source message string: VERBATIM. Necessary for signatures etc.
-		string m_text;
+    public class EntityPart<T>
+    {
+        StringSegment m_sourceText; // Text from the source message string: VERBATIM. Necessary for signatures etc.
+        string m_text;
 
         /// <summary>
         /// Intializes an instance with the associated entity type.
         /// </summary>
         /// <remarks>See <see cref="MimePart"/> for concrete parameterized instances.</remarks>
         /// <param name="type">The entity type for this instance.</param>
-		public EntityPart(T type)
-		{
+        public EntityPart(T type)
+        {
             Type = type;
             m_sourceText = StringSegment.Null;
-		}
+        }
 
         /// <summary>
         /// Initalizes an instance with entity type and raw entity text.
         /// </summary>
         /// <param name="type">The entity type for this instance.</param>
         /// <param name="text">The raw entity text for this entity.</param>
-		protected EntityPart(T type, string text)
-			: this(type)
-		{
-			Text = text;
-		}
+        protected EntityPart(T type, string text)
+            : this(type)
+        {
+            Text = text;
+        }
 
         /// <summary>
         /// Initalizes an instance with entity type and raw entity text as a <see cref="StringSegment"/>
@@ -55,21 +54,21 @@ namespace NHINDirect.Mime
         /// <param name="type">The entity type for this instance.</param>
         /// <param name="segment">The raw entity text for this entity as a <see cref="StringSegment"/>.</param>
         protected EntityPart(T type, StringSegment segment)
-		{
+        {
             Type = type;
             m_sourceText = segment;
-		}
+        }
 
         /// <summary>
         /// Gets the type for this entity.
         /// </summary>
-		public T Type { get; internal set; }
+        public T Type { get; internal set; }
 
         /// <summary>
         /// Gets the raw text for this instance as a <see cref="StringSegment"/>
         /// </summary>
         /// <value>A <see cref="StringSegment"/> encompassing the entire entity text.</value>
-		public StringSegment SourceText
+        public StringSegment SourceText
         {
             get
             {
@@ -80,65 +79,65 @@ namespace NHINDirect.Mime
         /// <summary>
         /// Gets the raw text for this instance
         /// </summary>
-		public virtual string Text
-		{
-			get
-			{
-				if (m_text == null)
-				{
+        public virtual string Text
+        {
+            get
+            {
+                if (m_text == null)
+                {
                     m_text = m_sourceText.ToString();
-				}
+                }
 
-				return m_text;
-			}
-			protected set
-			{
-				if (value == null)
-				{
+                return m_text;
+            }
+            protected set
+            {
+                if (value == null)
+                {
                     throw new ArgumentNullException("value");
-				}
+                }
             
                 m_sourceText = new StringSegment(value);
-				m_text = null; 
-			}
-		}
+                m_text = null; 
+            }
+        }
 
         /// <summary>
         /// Returns a default string representation of this entity
         /// </summary>
         /// <returns>The entity text as a <see cref="string"/></returns>
-		public override string ToString()
-		{
+        public override string ToString()
+        {
             return Text;
-		}
+        }
 
         /// <summary>
         /// Appends text to the text for this entity.
         /// </summary>
         /// <param name="text">The text to append to this entity.</param>
-		internal void AppendText(string text)
-		{
+        internal void AppendText(string text)
+        {
             m_text = Text + text;
-		}
+        }
 
-		internal virtual void AppendSourceText(StringSegment segment)
-		{
+        internal virtual void AppendSourceText(StringSegment segment)
+        {
             m_sourceText.Union(segment);
-		}
-	}
+        }
+    }
 
     /// <summary>
     /// Represents MIME entity parts
     /// </summary>
     /// <remarks>MIME entity parts are the decomposed subparts of a MIME entity. <see cref="MimePartType"/>
     /// for the concrete parts.</remarks>
-	public class MimePart : EntityPart<MimePartType>
+    public class MimePart : EntityPart<MimePartType>
     {
         /// <summary>
         /// Intializes an instance with the supplied <paramref name="type"/>
         /// </summary>
         /// <param name="type">The <see cref="MimePartType"/> of this instance.</param>
-		protected MimePart(MimePartType type)
+        protected MimePart(MimePartType type)
             : base(type)
         {
         }
@@ -149,13 +148,13 @@ namespace NHINDirect.Mime
         /// <param name="type">The <see cref="MimePartType"/> of this instance.</param>
         /// <param name="text">The body text.</param>
         protected MimePart(MimePartType type, string text)
-			: base(type, text)
-		{
-		}
+            : base(type, text)
+        {
+        }
 
-		internal MimePart(MimePartType type, StringSegment segment)
+        internal MimePart(MimePartType type, StringSegment segment)
             : base(type, segment)
         {
         }
     }
- }
+}

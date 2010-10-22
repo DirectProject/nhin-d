@@ -18,9 +18,8 @@ using System.Net.Mail;
 
 using Health.Direct.Agent;
 using Health.Direct.Agent.Tests;
-
-using NHINDirect.Mime;
-using NHINDirect.Mail;
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mime;
 
 using Xunit;
 using Xunit.Extensions;

@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-using NHINDirect.Metadata;
+using Health.Direct.Common.Metadata;
 
 using Xunit;
 
@@ -67,7 +67,7 @@ namespace Health.Direct.Xd.Tests
         {
             XElement node = TestDocXElement.Classifications(XDMetadataStandard.UUIDs.DocumentClass).First();
             string code = node.Attribute(XDMetadataStandard.Attrs.NodeRepresentation).Value;
-            Assert.Equal(C80ClassCodeUtils.Decode(NHINDirect.Metadata.C80ClassCode.TransferOfCareReferralNote).Key, code);
+            Assert.Equal(C80ClassCodeUtils.Decode(C80ClassCode.TransferOfCareReferralNote).Key, code);
         }
 
         [Fact]

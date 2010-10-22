@@ -1,4 +1,4 @@
-﻿using NHINDirect.Mime;
+﻿using Health.Direct.Common.Mime;
 
 using Xunit;
 

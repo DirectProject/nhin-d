@@ -18,8 +18,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Health.Direct.Common.Extensions;
+
 using NHINDirect.Config.Store;
-using NHINDirect.Extensions;
 
 namespace Health.Direct.Config.Store
 {

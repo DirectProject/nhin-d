@@ -18,9 +18,8 @@ using System.Collections.Generic;
 
 using Health.Direct.Agent;
 using Health.Direct.Agent.Tests;
+using Health.Direct.Common.Mail;
 using Health.Direct.Config.Store;
-
-using NHINDirect.Mail;
 
 using Xunit;
 

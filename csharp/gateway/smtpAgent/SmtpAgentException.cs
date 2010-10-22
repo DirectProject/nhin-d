@@ -1,4 +1,4 @@
-﻿using NHINDirect;
+﻿using Health.Direct.Common;
 
 namespace Health.Direct.SmtpAgent
 {

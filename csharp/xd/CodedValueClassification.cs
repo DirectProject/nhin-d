@@ -14,7 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using NHINDirect.Metadata;
+using Health.Direct.Common.Metadata;
 
 namespace Health.Direct.Xd
 {

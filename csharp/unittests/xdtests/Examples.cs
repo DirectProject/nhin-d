@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-using NHINDirect.Metadata;
+using Health.Direct.Common.Metadata;
 
 namespace Health.Direct.Xd.Tests
 {
@@ -50,14 +50,14 @@ namespace Health.Direct.Xd.Tests
                     m_docMeta.Author = new Author();
                     m_docMeta.Author.Person = new Person { First = "Tom", Last = "Jones", Degree = "M.D." };
                     m_docMeta.Author.Institutions.Add(new Institution("Direct U"));
-                    m_docMeta.Class = NHINDirect.Metadata.C80ClassCode.TransferOfCareReferralNote.ToCodedValue();
+                    m_docMeta.Class = C80ClassCode.TransferOfCareReferralNote.ToCodedValue();
                     m_docMeta.Comments = "This is a nice document";
-                    m_docMeta.Confidentiality = NHINDirect.Metadata.C80Confidentialty.Normal.ToCodedValue();
+                    m_docMeta.Confidentiality = C80Confidentialty.Normal.ToCodedValue();
                     m_docMeta.CreatedOn = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
                     var evtCodes = new List<CodedValue>();
                     evtCodes.Add(new CodedValue("foo", "bar", "test"));
                     m_docMeta.EventCodes = evtCodes;
-                    m_docMeta.FormatCode = NHINDirect.Metadata.C80FormatCode.CareManagement.ToCodedValue();
+                    m_docMeta.FormatCode = C80FormatCode.CareManagement.ToCodedValue();
                     m_docMeta.Hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
                     m_docMeta.FacilityCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
                     m_docMeta.LanguageCode = "en-us";

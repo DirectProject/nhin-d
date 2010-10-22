@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace NHINDirect.Diagnostics
+namespace Health.Direct.Common.Diagnostics
 {
     ///<summary>
     /// A convience class that allows the implementor to surround a block of code

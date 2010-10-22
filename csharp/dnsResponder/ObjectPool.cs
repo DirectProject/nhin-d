@@ -15,10 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace DnsResponder
+namespace Health.Direct.DnsResponder
 {
     public abstract class ObjectPoolBase<T>
     {
@@ -61,13 +59,13 @@ namespace DnsResponder
         public abstract T Get();
         public abstract void Put(T value);
     }
-    
+
     public class NullPool<T> : ObjectPoolBase<T>
     {
         public override T Get() { return default(T);}
         public override void Put(T value) { }
     }
-    
+
     public class ObjectPool<T> : ObjectPoolBase<T>
     {
         protected Stack<T> m_stack;
@@ -109,8 +107,7 @@ namespace DnsResponder
             }
         }
     }
-    
-    
+
     /// <summary>
     /// The weak pool lives off a Weak References and can be GC'd safely under memory pressure
     /// </summary>
@@ -169,5 +166,5 @@ namespace DnsResponder
             pool.MaxSize = this.MaxSize;
             return pool;
         }
-    }    
+    }
 }

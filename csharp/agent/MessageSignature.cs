@@ -17,7 +17,7 @@ using System;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Certificates;
+using Health.Direct.Common.Certificates;
 
 namespace Health.Direct.Agent
 {

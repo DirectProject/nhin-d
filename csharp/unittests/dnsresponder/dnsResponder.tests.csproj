@@ -64,9 +64,9 @@
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\dnsResponder\DnsResponder.csproj">
+    <ProjectReference Include="..\..\dnsResponder\responder.csproj">
       <Project>{A0C03E4C-549D-4868-8B03-DF2C467C1A47}</Project>
-      <Name>DnsResponder</Name>
+      <Name>responder</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

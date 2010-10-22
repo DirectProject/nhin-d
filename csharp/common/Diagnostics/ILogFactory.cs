@@ -15,25 +15,25 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-namespace NHINDirect.Diagnostics
+namespace Health.Direct.Common.Diagnostics
 {
-	/// <summary>
-	/// Defines a factory class that creates an instance of an logging framework specific logger.
-	/// </summary>
-	public interface ILogFactory
-	{
-		/// <summary>
-		/// Given the <paramref name="name"/> used as a key, return a specific <see cref="ILogger"/> instance.
-		/// </summary>
-		/// <param name="name">The name is used as the key to obtain an instance of the <see cref="ILogger"/></param>
-		/// <returns>An instance of <see cref="ILogger"/></returns>
-		ILogger GetLogger(string name);
+    /// <summary>
+    /// Defines a factory class that creates an instance of an logging framework specific logger.
+    /// </summary>
+    public interface ILogFactory
+    {
+        /// <summary>
+        /// Given the <paramref name="name"/> used as a key, return a specific <see cref="ILogger"/> instance.
+        /// </summary>
+        /// <param name="name">The name is used as the key to obtain an instance of the <see cref="ILogger"/></param>
+        /// <returns>An instance of <see cref="ILogger"/></returns>
+        ILogger GetLogger(string name);
 
-		///<summary>
-		/// Given the <paramref name="loggerType"/>'s FullName used as a key, return a specific <see cref="ILogger"/> instance.
-		///</summary>
-		///<param name="loggerType"></param>
-		///<returns></returns>
-		ILogger GetLogger(Type loggerType);
-	}
+        ///<summary>
+        /// Given the <paramref name="loggerType"/>'s FullName used as a key, return a specific <see cref="ILogger"/> instance.
+        ///</summary>
+        ///<param name="loggerType"></param>
+        ///<returns></returns>
+        ILogger GetLogger(Type loggerType);
+    }
 }

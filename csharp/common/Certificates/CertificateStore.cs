@@ -17,9 +17,9 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Extensions;
+using Health.Direct.Common.Extensions;
 
-namespace NHINDirect.Certificates
+namespace Health.Direct.Common.Certificates
 {
     /// <summary>
     /// Abstract class for certificate storage and resolution.

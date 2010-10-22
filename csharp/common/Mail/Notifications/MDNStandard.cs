@@ -14,15 +14,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mime;
-using System.Net.Mail;
-using NHINDirect.Mime;
-using NHINDirect.Mail;
 
-namespace NHINDirect.Mail.Notifications
+using Health.Direct.Common.Mime;
+
+namespace Health.Direct.Common.Mail.Notifications
 {
     /// <summary>
     /// Provides constants and utility functions for working with MDN

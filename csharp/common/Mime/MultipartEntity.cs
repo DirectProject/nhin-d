@@ -15,11 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mime;
 
-namespace NHINDirect.Mime
+namespace Health.Direct.Common.Mime
 {
     /// <summary>
     /// Represents a MIME multipart entity, with body parts.

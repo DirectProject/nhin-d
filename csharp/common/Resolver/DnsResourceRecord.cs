@@ -15,11 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace DnsResolver
+namespace Health.Direct.Common.Resolver
 {
     /// <summary>
     /// Represents an RR
@@ -199,10 +196,10 @@ namespace DnsResolver
             }
             
             return (
-                    this.Type == record.Type
-                &&  this.Class == record.Class
-                &&  DnsStandard.Equals(this.Name, record.Name)
-            );
+                       this.Type == record.Type
+                       &&  this.Class == record.Class
+                       &&  DnsStandard.Equals(this.Name, record.Name)
+                   );
         }
 
         /// <summary>
@@ -405,5 +402,5 @@ namespace DnsResolver
                 this.RecordDataLength = reader.ReadShort();
             }
         }
-    }    
+    }
 }

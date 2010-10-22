@@ -18,9 +18,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-using NHINDirect.Mail;
+using Health.Direct.Common.Mail;
 
-namespace NHINDirect.Mime
+namespace Health.Direct.Common.Mime
 {
     /// <summary>
     /// The basic serializer/deserialize to and from RFC 5322 messages.
@@ -32,7 +32,7 @@ namespace NHINDirect.Mime
         /// </summary>
         /// <param name="entity">The <see cref="MimeEntity"/> to serialize</param>
         /// <returns>An RFC 5322 string for the <paramref name="entity"/></returns>
-    	public override string Serialize(MimeEntity entity)
+        public override string Serialize(MimeEntity entity)
         {
             Message message = entity as Message;
             if (message != null)
@@ -63,10 +63,10 @@ namespace NHINDirect.Mime
                 throw new ArgumentNullException("entity");
             }
 
-			using (MimeWriter entityWriter = new MimeWriter(writer))
-			{
-				Serialize(entity, entityWriter);
-			}
+            using (MimeWriter entityWriter = new MimeWriter(writer))
+            {
+                Serialize(entity, entityWriter);
+            }
         }
 
         /// <summary>
@@ -117,15 +117,15 @@ namespace NHINDirect.Mime
                 throw new ArgumentNullException("entities");
             }
 
-			using (MimeWriter entityWriter = new MimeWriter(writer))
-			{
-				foreach (MimeEntity entity in entities)
-				{
-					entityWriter.WriteMimeBoundary(boundary, false);
-					Serialize(entity, entityWriter);
-				}
-				entityWriter.WriteMimeBoundary(boundary, true);
-			}
+            using (MimeWriter entityWriter = new MimeWriter(writer))
+            {
+                foreach (MimeEntity entity in entities)
+                {
+                    entityWriter.WriteMimeBoundary(boundary, false);
+                    Serialize(entity, entityWriter);
+                }
+                entityWriter.WriteMimeBoundary(boundary, true);
+            }
         }
 
         /// <summary>
@@ -187,8 +187,8 @@ namespace NHINDirect.Mime
             }
             if (string.IsNullOrEmpty(headerPair.Value))
             {
-				throw new ArgumentException("headerText.Value was null or empty");
-			}
+                throw new ArgumentException("headerText.Value was null or empty");
+            }
 
             StringBuilder builder = new StringBuilder();
             builder.Append(headerPair.Key);

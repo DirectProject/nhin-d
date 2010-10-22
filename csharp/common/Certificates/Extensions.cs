@@ -19,9 +19,9 @@ using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Extensions;
+using Health.Direct.Common.Extensions;
 
-namespace NHINDirect.Certificates
+namespace Health.Direct.Common.Certificates
 {
     /// <summary>
     /// Extend the public APIs for some crypto objects by attaching these handy methods
@@ -677,4 +677,4 @@ namespace NHINDirect.Certificates
             return null;
         }
     }
- }
+}

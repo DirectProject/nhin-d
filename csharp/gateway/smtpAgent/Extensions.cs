@@ -17,7 +17,8 @@ using System;
 using System.IO;
 using System.Net.Mail;
 
-using NHINDirect.Mail;
+using Health.Direct.Common.Mail;
+
 using CDO;
 using ADODB;
 

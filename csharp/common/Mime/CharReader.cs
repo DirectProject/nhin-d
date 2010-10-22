@@ -15,67 +15,67 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-namespace NHINDirect.Mime
+namespace Health.Direct.Common.Mime
 {
-	/// <summary>
-	/// CharReader tokenizes a text buffer, the <see cref="Read"/> method returns a single
-	/// char at a time and returns back the <see cref="EOF"/> token when the end of the buffer
-	/// is reached. The <see cref="ReadTo"/> method will consume characters and optionally ignore
-	/// any escape sequence in the buffer. The escape character is defined as <see cref="MimeStandard.Escape"/>.
-	/// 
-	/// CharReader is a struct for perfomance reasons. Don't change without consulting the author(s) :)
-	/// </summary>
-	public struct CharReader
+    /// <summary>
+    /// CharReader tokenizes a text buffer, the <see cref="Read"/> method returns a single
+    /// char at a time and returns back the <see cref="EOF"/> token when the end of the buffer
+    /// is reached. The <see cref="ReadTo"/> method will consume characters and optionally ignore
+    /// any escape sequence in the buffer. The escape character is defined as <see cref="MimeStandard.Escape"/>.
+    /// 
+    /// CharReader is a struct for perfomance reasons. Don't change without consulting the author(s) :)
+    /// </summary>
+    public struct CharReader
     {
-		/// <summary>
-		/// EOF is a sentinal value returned when the end of the buffer is reached.
-		/// </summary>
-		public const char EOF = char.MinValue;
+        /// <summary>
+        /// EOF is a sentinal value returned when the end of the buffer is reached.
+        /// </summary>
+        public const char EOF = char.MinValue;
 
-		private readonly string m_source;
-		private readonly int m_maxPosition;
+        private readonly string m_source;
+        private readonly int m_maxPosition;
 
-		private int m_position;
+        private int m_position;
         
-		/// <summary>
-		/// Constructs a new CharReader from an existing <see cref="StringSegment"/>.
-		/// </summary>
-		/// <param name="source">The segment to obtain the buffer from.</param>
+        /// <summary>
+        /// Constructs a new CharReader from an existing <see cref="StringSegment"/>.
+        /// </summary>
+        /// <param name="source">The segment to obtain the buffer from.</param>
         public CharReader(StringSegment source)
-			: this(source.Source, source.StartIndex, source.StartIndex + source.Length)
+            : this(source.Source, source.StartIndex, source.StartIndex + source.Length)
         {
         }
 
-		/// <summary>
-		/// Constructs a new CharReader from the <paramref name="source"/>.
-		/// </summary>
-		/// <param name="source">The text to construct the buffer from.</param>
-		public CharReader(string source)
-			: this(source, 0, (source ?? "").Length)
+        /// <summary>
+        /// Constructs a new CharReader from the <paramref name="source"/>.
+        /// </summary>
+        /// <param name="source">The text to construct the buffer from.</param>
+        public CharReader(string source)
+            : this(source, 0, (source ?? "").Length)
         {
         }
 
-		/// <summary>
-		/// Constructs a new CharReader from <paramref name="source"/> between <paramref name="position"/> and <paramref name="maxPosition"/>
-		/// </summary>
-		/// <param name="source">The text to construct the buffer from.</param>
-		/// <param name="position">The initial position of the buffer</param>
-		/// <param name="maxPosition">The maximum position to which to scan the buffer.</param>
-    	private CharReader(string source, int position, int maxPosition)
-    	{
-			if (string.IsNullOrEmpty(source))
-			{
-				throw new ArgumentException("source was null or empty", "source");
-			}
+        /// <summary>
+        /// Constructs a new CharReader from <paramref name="source"/> between <paramref name="position"/> and <paramref name="maxPosition"/>
+        /// </summary>
+        /// <param name="source">The text to construct the buffer from.</param>
+        /// <param name="position">The initial position of the buffer</param>
+        /// <param name="maxPosition">The maximum position to which to scan the buffer.</param>
+        private CharReader(string source, int position, int maxPosition)
+        {
+            if (string.IsNullOrEmpty(source))
+            {
+                throw new ArgumentException("source was null or empty", "source");
+            }
 
-			m_source = source;
-    		m_position = position;
-    		m_maxPosition = maxPosition;
-    	}
+            m_source = source;
+            m_position = position;
+            m_maxPosition = maxPosition;
+        }
 
-		/// <summary>
-		/// The current position in the buffer.
-		/// </summary>
+        /// <summary>
+        /// The current position in the buffer.
+        /// </summary>
         public int Position
         {
             get
@@ -84,9 +84,9 @@ namespace NHINDirect.Mime
             }
         }
         
-		/// <summary>
-		/// Returns true if the current <see cref="Position"/> has passed the end of the buffer.
-		/// </summary>
+        /// <summary>
+        /// Returns true if the current <see cref="Position"/> has passed the end of the buffer.
+        /// </summary>
         public bool IsDone
         {
             get
@@ -95,26 +95,26 @@ namespace NHINDirect.Mime
             }
         }
         
-		/// <summary>
-		/// Returns the current character at <see cref="Position"/> in the buffer. As a result of this
-		/// call the <see cref="Position"/> is incremented.
-		/// </summary>
-		/// <returns>Returns the current character or <see cref="EOF"/> when the end of the buffer is reached.</returns>
+        /// <summary>
+        /// Returns the current character at <see cref="Position"/> in the buffer. As a result of this
+        /// call the <see cref="Position"/> is incremented.
+        /// </summary>
+        /// <returns>Returns the current character or <see cref="EOF"/> when the end of the buffer is reached.</returns>
         public char Read()
         {
-        	return IsDone ? EOF : m_source[m_position++];
+            return IsDone ? EOF : m_source[m_position++];
         }
 
-		/// <summary>
-		/// Read up the specified character, or to the end, skippng escaped characters.
-		/// </summary>
-		/// <param name="chTo">The character to read to</param>
-		/// <param name="ignoreEscape">Indicates if the reader should skip escape characters</param>
-		/// <returns><c>true</c> if the character was found, <c>false</c> if not, and reader is at end</returns>
-		public bool ReadTo(char chTo, bool ignoreEscape)
-		{
-			char ch;
-			bool escaped = false;
+        /// <summary>
+        /// Read up the specified character, or to the end, skippng escaped characters.
+        /// </summary>
+        /// <param name="chTo">The character to read to</param>
+        /// <param name="ignoreEscape">Indicates if the reader should skip escape characters</param>
+        /// <returns><c>true</c> if the character was found, <c>false</c> if not, and reader is at end</returns>
+        public bool ReadTo(char chTo, bool ignoreEscape)
+        {
+            char ch;
+            bool escaped = false;
             while ((ch = Read()) != EOF)
             {
                 if (!escaped && ch == chTo)
@@ -122,21 +122,21 @@ namespace NHINDirect.Mime
                     return true;
                 }
 
-            	escaped = ignoreEscape && (ch == MimeStandard.Escape);
+                escaped = ignoreEscape && (ch == MimeStandard.Escape);
             }
             
             return false;
         }
         
-		/// <summary>
-		/// Returns the specified part of the reader's buffer as a <see cref="StringSegment"/>.
-		/// </summary>
-		/// <param name="startIndex">The first position in the buffer to return.</param>
-		/// <param name="endIndex">The last position in the buffer to return.</param>
-		/// <returns>A new StringSegment containing the reader's buffer between <paramref name="startIndex"/> and <paramref name="endIndex"/></returns>
-		public StringSegment GetSegment(int startIndex, int endIndex)
-		{
-			return new StringSegment(m_source, startIndex, endIndex);
-		}
+        /// <summary>
+        /// Returns the specified part of the reader's buffer as a <see cref="StringSegment"/>.
+        /// </summary>
+        /// <param name="startIndex">The first position in the buffer to return.</param>
+        /// <param name="endIndex">The last position in the buffer to return.</param>
+        /// <returns>A new StringSegment containing the reader's buffer between <paramref name="startIndex"/> and <paramref name="endIndex"/></returns>
+        public StringSegment GetSegment(int startIndex, int endIndex)
+        {
+            return new StringSegment(m_source, startIndex, endIndex);
+        }
     }
 }

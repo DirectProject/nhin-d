@@ -15,11 +15,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DnsResolver;
 
-namespace DnsResponder
+using Health.Direct.Common.Resolver;
+
+namespace Health.Direct.DnsResponder
 {
     /// <summary>
     /// A trivial Memory Dns Store.

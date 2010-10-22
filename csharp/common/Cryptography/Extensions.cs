@@ -14,19 +14,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Net.Mail;
 using System.Net.Mime;
-using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
-using System.Security.Cryptography.X509Certificates;
-using NHINDirect.Certificates;
 
-namespace NHINDirect.Cryptography
+using Health.Direct.Common.Certificates;
+
+namespace Health.Direct.Common.Cryptography
 {
     /// <summary>
     /// Extension methods for cryto
@@ -189,4 +182,4 @@ namespace NHINDirect.Cryptography
             return SMIMECryptographer.ToAlgorithmID(algorithm);
         }
     }
- }
+}

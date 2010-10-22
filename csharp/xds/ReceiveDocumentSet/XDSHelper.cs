@@ -4,7 +4,7 @@ using System.Xml;
 using System.IO;
 using System.Xml.Schema;
 
-using NHINDirect.Diagnostics;
+using Health.Direct.Common.Diagnostics;
 
 namespace NHINDirect.XDS
 {

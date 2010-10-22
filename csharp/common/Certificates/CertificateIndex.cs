@@ -15,14 +15,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 
-namespace NHINDirect.Certificates
-{    
+namespace Health.Direct.Common.Certificates
+{
     /// <summary>
     /// Represents an index of certificates by subject.
     /// </summary>
@@ -110,7 +107,7 @@ namespace NHINDirect.Certificates
             return certIndex;
         }
     }
-    
+
     internal class CertificateDictionary : Dictionary<string, X509Certificate2Collection>
     {
         internal CertificateDictionary()
@@ -118,5 +115,4 @@ namespace NHINDirect.Certificates
         {
         }
     }
-
 }

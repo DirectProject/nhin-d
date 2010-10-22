@@ -15,11 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace DnsResolver
+namespace Health.Direct.Common.Resolver
 {
     /// <summary>A representation of CERT DNS RDATA</summary>
     /// <remarks>
@@ -222,11 +219,11 @@ namespace DnsResolver
             }
             
             return (
-                    this.m_algorithm == certRecord.m_algorithm
-                &&  this.m_certType == certRecord.m_certType
-                &&  this.m_keyTag == certRecord.m_keyTag
-                &&  DnsStandard.Equals(this.Cert.Name, certRecord.Cert.Name)
-            );
+                       this.m_algorithm == certRecord.m_algorithm
+                       &&  this.m_certType == certRecord.m_certType
+                       &&  this.m_keyTag == certRecord.m_keyTag
+                       &&  DnsStandard.Equals(this.Cert.Name, certRecord.Cert.Name)
+                   );
         }
 
         /// <summary>

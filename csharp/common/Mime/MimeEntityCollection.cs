@@ -15,12 +15,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Mime;
-using NHINDirect.Collections;
 
-namespace NHINDirect.Mime
+using Health.Direct.Common.Collections;
+
+namespace Health.Direct.Common.Mime
 {
     /// <summary>
     /// Represents a collection of MIME entities in a MIME multipart entity.

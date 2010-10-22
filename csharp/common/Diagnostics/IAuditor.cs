@@ -1,6 +1,6 @@
-using NHINDirect.Container;
+using Health.Direct.Common.Container;
 
-namespace NHINDirect.Diagnostics
+namespace Health.Direct.Common.Diagnostics
 {
     ///<summary>
     /// The interface that provides access to the audit sub-system. Any implementation

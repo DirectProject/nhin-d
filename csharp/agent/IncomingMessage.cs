@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System.Security.Cryptography.Pkcs;
 
-using NHINDirect.Mail;
+using Health.Direct.Common.Mail;
 
 namespace Health.Direct.Agent
 {

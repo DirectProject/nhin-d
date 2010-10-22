@@ -14,74 +14,97 @@ Neither the name of the The Direct Project (nhindirect.org). nor the names of it
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DnsResolver
+namespace Health.Direct.Common.Resolver
 {
-    /*
-     *+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-      /                   PTRDNAME                    /
-      +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-     */
-
     /// <summary>
-    /// Represents a PTR DNS RR
+    /// Represents RDATA for an MX DNS RR.
     /// </summary>
     /// <remarks>
-    /// RFC 1035, 
+    /// RFC 1035, 3.3.9. MX RDATA format
+    /// <code>
     /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// /                   PTRDNAME                    /
+    /// |                  PREFERENCE                   |
     /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    ///
+    /// /                   EXCHANGE                    /
+    /// /                                               /
+    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    /// </code>
     /// where:
     ///
-    /// PTRDNAME        A &lt;domain-name&gt; which points to some location in the
-    ///                domain name space.
+    /// PREFERENCE      A 16 bit integer which specifies the preference given to
+    ///                 this RR among others at the same owner.  Lower values
+    ///                 are preferred.
+    ///
+    /// EXCHANGE        A %lt;domain-name%gt; which specifies a host willing to act as
+    ///                 a mail exchange for the owner name.
     /// </remarks>
-    public class PtrRecord : DnsResourceRecord
-    {    
-        string m_domain;
+    public class MXRecord : DnsResourceRecord
+    {
+        string m_exchange;
+
+        internal MXRecord()
+        {
+        }
         
-        internal PtrRecord()
+        /// <summary>
+        /// Initializes a record with the supplied data and default preference.
+        /// </summary>
+        /// <param name="name">the domain name for which this is a record</param>
+        /// <param name="exchange">The domain name for the SMTP server for this domain.</param>
+        public MXRecord(string name, string exchange)
+            : this(name, exchange, 10)
         {
         }
 
         /// <summary>
-        /// Instantiates a new RR
+        /// Initializes a record with the supplied data and default preference.
         /// </summary>
-        /// <param name="name">The domain name for which this is a record</param>
-        /// <param name="domain">The domain name to which the PTR points</param>
-        public PtrRecord(string name, string domain)
-            : base(name, DnsStandard.RecordType.PTR)
+        /// <param name="name">the domain name for which this is a record</param>
+        /// <param name="exchange">The domain name for the SMTP server for this domain.</param>
+        /// <param name="preference">The preference given to
+        /// this RR among others at the same owner.  Lower values
+        /// are preferred.</param>
+        public MXRecord(string name, string exchange, short preference)
+            : base(name, DnsStandard.RecordType.MX)
         {
-            this.Domain = domain;
+            this.Preference = preference;
+            this.Exchange = exchange;
         }
         
         /// <summary>
-        /// The domain name to which the PTR points
+        /// The preference given to
+        /// this RR among others at the same owner.  Lower values
+        /// are preferred.
         /// </summary>
-        public string Domain
+        public short Preference
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// The mail exchange (SMTP server) domain name
+        /// </summary>
+        /// <value>A <see cref="string"/> representation of the domain name.</value>
+        public string Exchange
         {
             get
             {
-                return m_domain;
+                return m_exchange;
             }
             set
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new DnsProtocolException(DnsProtocolError.InvalidPtrRecord);
+                    throw new DnsProtocolException(DnsProtocolError.InvalidMXRecord);
                 }
                 
-                m_domain = value;
+                m_exchange = value;
             }
         }
 
         /// <summary>
-        /// Tests equality between this PTR record and the other <paramref name="record"/>.
+        /// Tests equality between this TXT record and the other <paramref name="record"/>.
         /// </summary>
         /// <param name="record">The other record.</param>
         /// <returns><c>true</c> if the RRs are equal, <c>false</c> otherwise.</returns>
@@ -91,14 +114,17 @@ namespace DnsResolver
             {
                 return false;
             }
-
-            PtrRecord ptrRecord = record as PtrRecord;
-            if (ptrRecord == null)
+            
+            MXRecord mxRecord = record as MXRecord;
+            if (mxRecord == null)
             {
                 return false;
             }
             
-            return (DnsStandard.Equals(this.m_domain, ptrRecord.m_domain));
+            return (
+                       DnsStandard.Equals(m_exchange, mxRecord.m_exchange)
+                       &&  this.Preference == mxRecord.Preference
+                   );
         }
 
         /// <summary>
@@ -107,7 +133,8 @@ namespace DnsResolver
         /// <param name="buffer">The buffer to which DNS wire data are written</param>
         protected override void SerializeRecordData(DnsBuffer buffer)
         {
-            buffer.AddDomainName(m_domain);
+            buffer.AddShort(this.Preference);
+            buffer.AddDomainName(m_exchange);
         }
 
         /// <summary>
@@ -116,7 +143,8 @@ namespace DnsResolver
         /// <param name="reader">Reader in which wire format data for this RR is already buffered.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
-            this.Domain = reader.ReadDomainName();
+            this.Preference = reader.ReadShort();
+            this.Exchange = reader.ReadDomainName();
         }
     }
 }

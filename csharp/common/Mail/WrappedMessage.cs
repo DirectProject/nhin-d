@@ -15,9 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-using NHINDirect.Mime;
+using Health.Direct.Common.Mime;
 
-namespace NHINDirect.Mail
+namespace Health.Direct.Common.Mail
 {
     /// <summary>
     /// Encapsulates an RFC 5322 message wrapped as a separate RFC5322 message containing the wrapped message

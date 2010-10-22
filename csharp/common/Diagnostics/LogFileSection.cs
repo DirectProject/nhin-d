@@ -3,7 +3,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Web;
 
-namespace NHINDirect.Diagnostics
+namespace Health.Direct.Common.Diagnostics
 {
     ///<summary>
     /// The LogFileSection class allows us to specify LogFileSettings in an
@@ -52,8 +52,8 @@ namespace NHINDirect.Diagnostics
             if (settings.DirectoryPath.Contains("~"))
             {
                 settings.DirectoryPath = HttpContext.Current != null 
-                    ? HttpContext.Current.Server.MapPath(settings.DirectoryPath)
-                    : settings.DirectoryPath.Replace("~", Environment.CurrentDirectory);
+                                             ? HttpContext.Current.Server.MapPath(settings.DirectoryPath)
+                                             : settings.DirectoryPath.Replace("~", Environment.CurrentDirectory);
             }
 
             EventLog.WriteEntry(settings.EventLogSource,

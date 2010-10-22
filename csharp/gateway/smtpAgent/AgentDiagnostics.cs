@@ -17,10 +17,9 @@ using System;
 using System.Text;
 
 using Health.Direct.Agent;
-
-using NHINDirect.Certificates;
-using NHINDirect.Diagnostics;
-using NHINDirect.Extensions;
+using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Diagnostics;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.SmtpAgent
 {

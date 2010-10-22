@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
-using NHINDirect.Diagnostics;
+using Health.Direct.Common.Diagnostics;
 
 using NLog;
 

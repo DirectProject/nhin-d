@@ -16,8 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 
-namespace NHINDirect.Mime
-{   
+namespace Health.Direct.Common.Mime
+{
     /// <summary>A set of lightweight MIME and email entity parsing routines.</summary>
     /// <remarks>
     /// A set of lightweight MIME entity parsing routines. They utilize .NET's "lazy evaluation/LINQ" technique to generate
@@ -468,32 +468,32 @@ namespace NHINDirect.Mime
             while ((ch = reader.Read()) != CharReader.EOF)
             {
                 switch (ch)
-            	{
+                {
                     default:
                         endIndex = reader.Position;
                         break;
 
                     case MimeStandard.CR:
-            		//
+                        //
                         // RFC 2822 mandates that CRLF be together always
-            		//
+                        //
                         if (reader.Read() != MimeStandard.LF)
-            		{
-            			throw new MimeException(MimeError.InvalidCRLF);
-            		}
+                        {
+                            throw new MimeException(MimeError.InvalidCRLF);
+                        }
 
-            		yield return reader.GetSegment(startIndex, endIndex);
+                        yield return reader.GetSegment(startIndex, endIndex);
 
-					startIndex = reader.Position + 1;
-            		endIndex = reader.Position;
+                        startIndex = reader.Position + 1;
+                        endIndex = reader.Position;
                         break;
                         
                     case MimeStandard.LF:
-					//
+                        //
                         // No standalone LF allowed
-					//
-            			throw new MimeException(MimeError.InvalidCRLF);
-            		}
+                        //
+                        throw new MimeException(MimeError.InvalidCRLF);
+                }
             }
         
             if (endIndex >= 0)
@@ -512,11 +512,11 @@ namespace NHINDirect.Mime
             CharReader reader = new CharReader(text);
             char ch;
             while ((ch = reader.Read()) != CharReader.EOF && MimeStandard.IsWhitespace(ch))
-			{
-				// quick skip
-			}
+            {
+                // quick skip
+            }
 
-        	return new StringSegment(text.Source, reader.Position, text.EndIndex);
+            return new StringSegment(text.Source, reader.Position, text.EndIndex);
         }
 
         /// <summary>
@@ -525,16 +525,16 @@ namespace NHINDirect.Mime
         /// <param name="text">The <see cref="string"/> to search</param>
         /// <param name="ch">The <c>char</c> to test for</param>
         /// <returns>The zero-based index of the first instance of <paramref name="ch"/>, or -1 if no instances found/</returns>
-		public static int IndexOf(string text, char ch)
-		{
-			CharReader reader = new CharReader(text);
+        public static int IndexOf(string text, char ch)
+        {
+            CharReader reader = new CharReader(text);
 
-			if (reader.ReadTo(ch, false))
-			{
-				return reader.Position;
-			}
+            if (reader.ReadTo(ch, false))
+            {
+                return reader.Position;
+            }
 
-			return -1;
-		}
+            return -1;
+        }
     }
 }

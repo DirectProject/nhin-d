@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Certificates;
+using Health.Direct.Common.Certificates;
 
 using Xunit;
 using Xunit.Extensions;

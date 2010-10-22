@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Extensions;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Agent
 {

@@ -15,12 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
-namespace DnsResolver
+namespace Health.Direct.Common.Resolver
 {
     /// <summary>
     /// Prints a textual representation of DNS transactions (request, response, records, etc.)
@@ -56,35 +53,35 @@ namespace DnsResolver
             
             if (response.IsNameError)
             {
-				this.Print("Is Name Error");
+                this.Print("Is Name Error");
                 return;
             }
             
             if (!response.IsSuccess)
             {
-				this.Print("Failed");
+                this.Print("Failed");
                 return;
             }
             
             if (response.HasAnswerRecords)
             {
-				this.Print("***ANSWERS***");
+                this.Print("***ANSWERS***");
                 this.Print(response.AnswerRecords);
             }
             else
             {
-				this.Print("No answers");
+                this.Print("No answers");
             }              
             
             if (response.HasNameServerRecords)
             {
-				this.Print("***NAME SERVERS***");
+                this.Print("***NAME SERVERS***");
                 this.Print(response.NameServerRecords);
             }
             
             if (response.HasAdditionalRecords)
             {
-				this.Print("***Additional***");
+                this.Print("***Additional***");
                 this.Print(response.AdditionalRecords);
             }
         }
@@ -246,7 +243,7 @@ namespace DnsResolver
         /// <param name="cname">The RR to print</param>
         public void Print(CNameRecord cname)
         {
-			this.Print(cname.CName);
+            this.Print(cname.CName);
         }
         
         /// <summary>
@@ -255,7 +252,7 @@ namespace DnsResolver
         /// <param name="soa">The RR to print</param>
         public void Print(SOARecord soa)
         {
-			this.Print(soa.DomainName);
+            this.Print(soa.DomainName);
         }
         
         /// <summary>
@@ -266,7 +263,7 @@ namespace DnsResolver
         {
             if (cert.Cert != null)
             {
-				this.Print(cert.Cert.Certificate.Subject);
+                this.Print(cert.Cert.Certificate.Subject);
             }
         }
         
@@ -276,7 +273,7 @@ namespace DnsResolver
         /// <param name="ns">The RR to print</param>
         public void Print(NSRecord ns)
         {
-			this.Print(ns.NameServer);
+            this.Print(ns.NameServer);
         }
         
         /// <summary>
@@ -308,9 +305,9 @@ namespace DnsResolver
             m_writer.WriteLine("{0}={1}", name, value);
         }
 
-		void Print(string message)
-		{
-			m_writer.WriteLine(message);
-		}
+        void Print(string message)
+        {
+            m_writer.WriteLine(message);
+        }
     }
 }

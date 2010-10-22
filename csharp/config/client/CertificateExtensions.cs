@@ -17,11 +17,10 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
+using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;
-
-using NHINDirect.Certificates;
-using NHINDirect.Extensions;
 
 namespace Health.Direct.Config.Client
 {

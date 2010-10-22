@@ -8,8 +8,8 @@
     <ProjectGuid>{A0C03E4C-549D-4868-8B03-DF2C467C1A47}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DnsResponder</RootNamespace>
-    <AssemblyName>DnsResponder</AssemblyName>
+    <RootNamespace>Health.Direct.DnsResponder</RootNamespace>
+    <AssemblyName>Health.Direct.DnsResponder</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <StartupObject>

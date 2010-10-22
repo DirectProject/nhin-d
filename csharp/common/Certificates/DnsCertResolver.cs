@@ -19,9 +19,11 @@ using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 
-using DnsResolver;
+using Health.Direct.Common.Caching;
+using Health.Direct.Common.Dns;
+using Health.Direct.Common.Resolver;
 
-namespace NHINDirect.Certificates
+namespace Health.Direct.Common.Certificates
 {
     /// <summary>
     /// Implements a certificate resolver using DNS CERT records. Supports the concept of a fallback
@@ -29,10 +31,10 @@ namespace NHINDirect.Certificates
     /// </summary>
     public class DnsCertResolver : ICertificateResolver
     {
-    	private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
-        Caching.DnsResponseCache m_cache = null;
+        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
+        DnsResponseCache m_cache = null;
 
-    	IPAddress m_serverIP;
+        IPAddress m_serverIP;
         string m_fallbackDomain = string.Empty;
         bool m_cacheEnabled = false;
         TimeSpan m_timeout;
@@ -64,8 +66,8 @@ namespace NHINDirect.Certificates
         /// <param name="timeout">Timeout value</param>
         /// <param name="fallbackDomain">A fallback domain name to try if the main domain name is not resolved.</param>
         public DnsCertResolver(IPAddress serverIP
-            , TimeSpan timeout
-            , string fallbackDomain) : this(serverIP, timeout,fallbackDomain, false)
+                               , TimeSpan timeout
+                               , string fallbackDomain) : this(serverIP, timeout,fallbackDomain, false)
         {
         }
         
@@ -77,9 +79,9 @@ namespace NHINDirect.Certificates
         /// <param name="fallbackDomain">A fallback domain name to try if the main domain name is not resolved.</param>
         /// <param name="cacheEnabled">boolean flag indicating whether or not to use the client with cache</param>
         public DnsCertResolver(IPAddress serverIP
-            , TimeSpan timeout
-            , string fallbackDomain
-            , bool cacheEnabled)
+                               , TimeSpan timeout
+                               , string fallbackDomain
+                               , bool cacheEnabled)
         {
             if (serverIP == null)
             {
@@ -96,7 +98,7 @@ namespace NHINDirect.Certificates
             m_cacheEnabled = cacheEnabled;
             if (m_cacheEnabled)
             {
-                m_cache = new NHINDirect.Caching.DnsResponseCache();
+                m_cache = new DnsResponseCache();
             }
         }
 
@@ -242,7 +244,7 @@ namespace NHINDirect.Certificates
             }
             catch (DnsServerException dnsEx)
             {
-                if (dnsEx.ResponseCode != DnsResolver.DnsStandard.ResponseCode.Refused)
+                if (dnsEx.ResponseCode != DnsStandard.ResponseCode.Refused)
                 {
                     throw;
                 }
@@ -279,7 +281,7 @@ namespace NHINDirect.Certificates
         
         DnsClient CreateDnsClient()
         {
-            DnsClient client = (m_cacheEnabled) ? new NHINDirect.Dns.DnsClientWithCache(m_serverIP, m_cache) : new DnsClient(m_serverIP);
+            DnsClient client = (m_cacheEnabled) ? new DnsClientWithCache(m_serverIP, m_cache) : new DnsClient(m_serverIP);
             if (Timeout.Ticks > 0)
             {
                 client.Timeout = Timeout;
@@ -293,7 +295,7 @@ namespace NHINDirect.Certificates
                 
         void NotifyException(Exception ex)
         {
-        	var errorHandler = this.Error;
+            var errorHandler = this.Error;
             if (errorHandler != null)
             {
                 try

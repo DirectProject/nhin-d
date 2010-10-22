@@ -18,9 +18,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Certificates;
+using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Extensions;
+
 using NHINDirect.Config.Store;
-using NHINDirect.Extensions;
 
 namespace Health.Direct.Config.Store
 {

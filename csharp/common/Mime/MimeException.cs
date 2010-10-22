@@ -14,13 +14,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Security.Cryptography;
 
-namespace NHINDirect.Mime
-{    
+namespace Health.Direct.Common.Mime
+{
     /// <summary>
     /// Exception for mime parsing errors.
     /// </summary>
@@ -65,5 +61,5 @@ namespace NHINDirect.Mime
             : base(error, message, innerException)
         {
         }
-    }    
+    }
 }

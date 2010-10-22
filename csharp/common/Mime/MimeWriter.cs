@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.IO;
 
-namespace NHINDirect.Mime
+namespace Health.Direct.Common.Mime
 {
     /// <summary>
     /// A very basic mime/entity writer
@@ -97,23 +97,23 @@ namespace NHINDirect.Mime
             Write(body.SourceText);
         }
         
-		// not referenced in any current code...
-		//public void WriteHeader(string name, string value)
-		//{
-		//    if (string.IsNullOrEmpty(name))
-		//    {
-		//        throw new ArgumentException("name was null or empty", "name");
-		//    }
+        // not referenced in any current code...
+        //public void WriteHeader(string name, string value)
+        //{
+        //    if (string.IsNullOrEmpty(name))
+        //    {
+        //        throw new ArgumentException("name was null or empty", "name");
+        //    }
             
-		//    m_writer.Write(name);
-		//    if (!string.IsNullOrEmpty(value))
-		//    {
-		//        m_writer.Write(MimeStandard.NameValueSeparator);
-		//        m_writer.Write(value);
-		//    }
+        //    m_writer.Write(name);
+        //    if (!string.IsNullOrEmpty(value))
+        //    {
+        //        m_writer.Write(MimeStandard.NameValueSeparator);
+        //        m_writer.Write(value);
+        //    }
             
-		//    WriteCRLF();
-		//}
+        //    WriteCRLF();
+        //}
                 
         /// <summary>
         /// Writes a boundary between body parts of a multipart message.

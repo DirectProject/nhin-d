@@ -18,10 +18,10 @@ using System.Net.Mail;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 
-using NHINDirect.Mail;
-using NHINDirect.Mime;
-using NHINDirect.Certificates;
-using NHINDirect.Cryptography;
+using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Cryptography;
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mime;
 
 namespace Health.Direct.Agent
 {
@@ -96,15 +96,15 @@ namespace Health.Direct.Agent
         /// The local domain name managed by this agent.
         /// </param>
         /// <param name="privateCerts">
-        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
+        /// An <see cref="ICertificateResolver"/> instance providing private certificates
         /// for senders of outgoing messages and receivers of incoming messages.
         /// </param>
         /// <param name="publicCerts">
-        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
+        /// An <see cref="ICertificateResolver"/> instance providing public certificates 
         /// for receivers of outgoing messages and senders of incoming messages. 
         /// </param>
         /// <param name="anchors">
-        /// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
+        /// An <see cref="ITrustAnchorResolver"/> instance providing trust anchors.
         /// </param>
         public DirectAgent(string domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
             : this(new string[] {domain}, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default)
@@ -119,15 +119,15 @@ namespace Health.Direct.Agent
         /// The local domain names managed by this agent.
         /// </param>
         /// <param name="privateCerts">
-        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
+        /// An <see cref="ICertificateResolver"/> instance providing private certificates
         /// for senders of outgoing messages and receivers of incoming messages.
         /// </param>
         /// <param name="publicCerts">
-        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
+        /// An <see cref="ICertificateResolver"/> instance providing public certificates 
         /// for receivers of outgoing messages and senders of incoming messages. 
         /// </param>
         /// <param name="anchors">
-        /// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
+        /// An <see cref="ITrustAnchorResolver"/> instance providing trust anchors.
         /// </param>
         public DirectAgent(string[] domains, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
             : this(domains, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default)
@@ -142,21 +142,21 @@ namespace Health.Direct.Agent
         /// The local domain name managed by this agent.
         /// </param>
         /// <param name="privateCerts">
-        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
+        /// An <see cref="ICertificateResolver"/> instance providing private certificates
         /// for senders of outgoing messages and receivers of incoming messages.
         /// </param>
         /// <param name="publicCerts">
-        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
+        /// An <see cref="ICertificateResolver"/> instance providing public certificates 
         /// for receivers of outgoing messages and senders of incoming messages. 
         /// </param>
         /// <param name="anchors">
-        /// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
+        /// An <see cref="ITrustAnchorResolver"/> instance providing trust anchors.
         /// </param>
         /// <param name="trustModel">
         /// An instance or subclass of <see cref="Health.Direct.Agent.TrustModel"/> providing a custom trust model.
         /// </param>
         /// <param name="cryptographer">
-        /// An instance or subclass of <see cref="NHINDirect.Cryptography.SMIMECryptographer"/> providing a custom cryptography model.
+        /// An instance or subclass of <see cref="SMIMECryptographer"/> providing a custom cryptography model.
         /// </param>
         public DirectAgent(string domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
             : this(new string[] {domain}, privateCerts, publicCerts, anchors, trustModel, cryptographer)
@@ -172,15 +172,15 @@ namespace Health.Direct.Agent
         /// An array of local domain name managed by this agent.
         /// </param>
         /// <param name="privateCerts">
-        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing private certificates
+        /// An <see cref="ICertificateResolver"/> instance providing private certificates
         /// for senders of outgoing messages and receivers of incoming messages.
         /// </param>
         /// <param name="publicCerts">
-        /// An <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance providing public certificates 
+        /// An <see cref="ICertificateResolver"/> instance providing public certificates 
         /// for receivers of outgoing messages and senders of incoming messages. 
         /// </param>
         /// <param name="anchors">
-        /// An <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance providing trust anchors.
+        /// An <see cref="ITrustAnchorResolver"/> instance providing trust anchors.
         /// </param>
         /// <param name="trustModel">
         /// An instance or subclass of <see cref="SMIMECryptographer"/> providing a custom trust model.
@@ -302,7 +302,7 @@ namespace Health.Direct.Agent
         /// Gets the public certificate resolver (set in the constructor).  
         /// </summary> 
         /// <value> 
-        /// The <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance used for resolving public certificates. 
+        /// The <see cref="ICertificateResolver"/> instance used for resolving public certificates. 
         /// </value> 
         public ICertificateResolver PublicCertResolver
         {
@@ -316,7 +316,7 @@ namespace Health.Direct.Agent
         /// Gets the private certificate resolver (set in the constructor).  
         /// </summary> 
         /// <value> 
-        /// The <see cref="NHINDirect.Certificates.ICertificateResolver"/> instance used for resolving private certificates. 
+        /// The <see cref="ICertificateResolver"/> instance used for resolving private certificates. 
         /// </value> 
         public ICertificateResolver PrivateCertResolver
         {
@@ -329,7 +329,7 @@ namespace Health.Direct.Agent
         /// Getst the trust anchor resolver (set in the constructor).  
         /// </summary> 
         /// <value> 
-        /// The <see cref="NHINDirect.Certificates.ITrustAnchorResolver"/> instance used for resolving trust anchors. 
+        /// The <see cref="ITrustAnchorResolver"/> instance used for resolving trust anchors. 
         /// </value>
         public ITrustAnchorResolver TrustAnchors
         {

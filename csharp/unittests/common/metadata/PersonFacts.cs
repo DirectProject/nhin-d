@@ -1,6 +1,6 @@
 ﻿using System;
 
-using NHINDirect.Metadata;
+using Health.Direct.Common.Metadata;
 
 using Xunit;
 

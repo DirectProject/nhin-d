@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 
-namespace NHINDirect.Container
+namespace Health.Direct.Common.Container
 {
     public class SimpleContainerSection : ConfigurationSection
     {

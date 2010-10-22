@@ -16,10 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Net.Mail;
 
-namespace NHINDirect.Metadata
+namespace Health.Direct.Common.Metadata
 {
     /// <summary>
     /// Represents the author of a document
@@ -82,10 +81,10 @@ namespace NHINDirect.Metadata
         public override string ToString()
         {
             return String.Format("Person: {0}\nInstitions: {1}\nRoles: {2}\nSpecialties{3}",
-                Person == null ? "none" : Person.ToString(),
-                Institutions == null || Institutions.Count == 0 ? "none" : Institutions.Skip(1).Aggregate(Institutions.First().ToString(), (a, i) => a + ", " + i.ToString()),
-                String.Join(", ", Roles == null || Roles.Count == 0 ? new string[] {"none"} : Roles.ToArray()),
-                String.Join(", ", Specialities == null || Specialities.Count == 0 ? new string[] {"none"}: Specialities.ToArray()));
+                                 Person == null ? "none" : Person.ToString(),
+                                 Institutions == null || Institutions.Count == 0 ? "none" : Institutions.Skip(1).Aggregate(Institutions.First().ToString(), (a, i) => a + ", " + i.ToString()),
+                                 String.Join(", ", Roles == null || Roles.Count == 0 ? new string[] {"none"} : Roles.ToArray()),
+                                 String.Join(", ", Specialities == null || Specialities.Count == 0 ? new string[] {"none"}: Specialities.ToArray()));
         }
     }
 }

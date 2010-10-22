@@ -18,9 +18,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NHINDirect.Metadata
+namespace Health.Direct.Common.Metadata
 {
-
     /// <summary>
     /// Enumeration for biological sex (male, female, other (XYY, etc.))
     /// </summary>
@@ -39,7 +38,6 @@ namespace NHINDirect.Metadata
         /// </summary>
         Other
     }
-
 
     /// <summary>
     /// Represents a human person
@@ -181,12 +179,12 @@ namespace NHINDirect.Metadata
         public string ToXCN()
         {
             return String.Format("^{0}^{1}^{2}^{3}^{4}^{5}",
-                Last ?? "",
-                First ?? "",
-                MI ?? "",
-                Suffix ?? "",
-                Prefix ?? "",
-                Degree ?? "");
+                                 Last ?? "",
+                                 First ?? "",
+                                 MI ?? "",
+                                 Suffix ?? "",
+                                 Prefix ?? "",
+                                 Degree ?? "");
         }
 
         /// <summary>

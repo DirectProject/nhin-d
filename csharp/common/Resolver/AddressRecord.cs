@@ -15,14 +15,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
 
-namespace DnsResolver
+namespace Health.Direct.Common.Resolver
 {
-
     /// <summary>
     /// Represents a DNS A record RDATA
     /// </summary>

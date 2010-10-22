@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-using NHINDirect.Diagnostics;
+using Health.Direct.Common.Diagnostics;
 
 namespace Health.Direct.SmtpAgent
 {

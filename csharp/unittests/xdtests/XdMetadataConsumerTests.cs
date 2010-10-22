@@ -18,10 +18,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
+using Health.Direct.Common.Metadata;
+
 using Xunit;
 using Xunit.Extensions;
-
-using NHINDirect.Metadata;
 
 namespace Health.Direct.Xd.Tests
 {

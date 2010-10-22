@@ -16,10 +16,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using DnsResolver;
 
-namespace DnsResponder
+using Health.Direct.Common.Resolver;
+
+namespace Health.Direct.DnsResponder
 {
     /// <summary>
     /// A trivial in-memory record store 
@@ -76,10 +76,10 @@ namespace DnsResponder
                 }
                 
                 return (
-                    from record in matches
-                    where record.Type == type
-                    select record
-                );
+                           from record in matches
+                           where record.Type == type
+                           select record
+                       );
             }
         }
         

@@ -1,9 +1,8 @@
 ﻿using System.Xml.Serialization;
 
 using Health.Direct.Agent.Config;
+using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Client;
-
-using NHINDirect.Certificates;
 
 namespace Health.Direct.SmtpAgent
 {

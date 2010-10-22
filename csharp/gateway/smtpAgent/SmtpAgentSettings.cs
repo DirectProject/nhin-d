@@ -19,10 +19,9 @@ using System.Text;
 using System.Xml.Serialization;
 
 using Health.Direct.Agent.Config;
+using Health.Direct.Common.Diagnostics;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client;
-
-using NHINDirect.Diagnostics;
-using NHINDirect.Extensions;
 
 namespace Health.Direct.SmtpAgent
 {

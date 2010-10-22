@@ -16,9 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 
-using DnsResolver;
-
-using NHINDirect.Dns;
+using Health.Direct.Common.Dns;
+using Health.Direct.Common.Resolver;
 
 using Xunit;
 using Xunit.Extensions;

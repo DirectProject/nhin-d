@@ -16,98 +16,76 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace DnsResolver
+namespace Health.Direct.Common.Resolver
 {
-    
-    /// <summary>
-    /// Represents RDATA for an MX DNS RR.
-    /// </summary>
+    /// <summary>Represents a TXT RR</summary>
     /// <remarks>
-    /// RFC 1035, 3.3.9. MX RDATA format
+    /// RFC 1035, 3.3.14, TXT RDATA format
     /// <code>
     /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// |                  PREFERENCE                   |
-    /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-    /// /                   EXCHANGE                    /
-    /// /                                               /
+    /// /                   TXT-DATA                    /
     /// +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
     /// </code>
     /// where:
-    ///
-    /// PREFERENCE      A 16 bit integer which specifies the preference given to
-    ///                 this RR among others at the same owner.  Lower values
-    ///                 are preferred.
-    ///
-    /// EXCHANGE        A %lt;domain-name%gt; which specifies a host willing to act as
-    ///                 a mail exchange for the owner name.
+    /// TXT-DATA        One or more &lt;character-string&gt;s.
+    /// <para>
+    /// TXT RRs are used to hold descriptive text.  The semantics of the text
+    /// depends on the domain where it is found.
+    /// </para>
     /// </remarks>
-    public class MXRecord : DnsResourceRecord
+    public class TextRecord : DnsResourceRecord
     {
-        string m_exchange;
-
-        internal MXRecord()
+        IList<string> m_strings;
+        
+        internal TextRecord()
         {
+            // nothing
         }
         
         /// <summary>
-        /// Initializes a record with the supplied data and default preference.
+        /// Initializes a new instance with the supplied strings.
         /// </summary>
         /// <param name="name">the domain name for which this is a record</param>
-        /// <param name="exchange">The domain name for the SMTP server for this domain.</param>
-        public MXRecord(string name, string exchange)
-            : this(name, exchange, 10)
+        /// <param name="strings">The strings held by this TXT RR</param>
+        public TextRecord(string name, IList<string> strings)
+            : base(name, DnsStandard.RecordType.TXT)
         {
-        }
-
-        /// <summary>
-        /// Initializes a record with the supplied data and default preference.
-        /// </summary>
-        /// <param name="name">the domain name for which this is a record</param>
-        /// <param name="exchange">The domain name for the SMTP server for this domain.</param>
-        /// <param name="preference">The preference given to
-        /// this RR among others at the same owner.  Lower values
-        /// are preferred.</param>
-        public MXRecord(string name, string exchange, short preference)
-            : base(name, DnsStandard.RecordType.MX)
-        {
-            this.Preference = preference;
-            this.Exchange = exchange;
+            this.Strings = strings;
         }
         
         /// <summary>
-        /// The preference given to
-        /// this RR among others at the same owner.  Lower values
-        /// are preferred.
+        /// Gets and sets the strings held by this RR.
         /// </summary>
-        public short Preference
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// The mail exchange (SMTP server) domain name
-        /// </summary>
-        /// <value>A <see cref="string"/> representation of the domain name.</value>
-        public string Exchange
+        public IList<string> Strings
         {
             get
             {
-                return m_exchange;
+                return this.m_strings;
             }
             set
             {
-                if (string.IsNullOrEmpty(value))
+                if (value == null)
                 {
-                    throw new DnsProtocolException(DnsProtocolError.InvalidMXRecord);
+                    throw new DnsProtocolException(DnsProtocolError.InvalidTextRecord);
                 }
-                
-                m_exchange = value;
+
+                m_strings = value;
             }
         }
+        
+        /// <summary>
+        /// Gets if this TXT RR has strings associated with it.
+        /// </summary>
+        public bool HasStrings
+        {
+            get
+            {
+                return (this.m_strings != null && this.m_strings.Count > 0);
+            }
+        }
+
 
         /// <summary>
         /// Tests equality between this TXT record and the other <paramref name="record"/>.
@@ -120,37 +98,68 @@ namespace DnsResolver
             {
                 return false;
             }
-            
-            MXRecord mxRecord = record as MXRecord;
-            if (mxRecord == null)
+
+            TextRecord textRecord = record as TextRecord;
+            if (textRecord == null)
             {
                 return false;
             }
             
-            return (
-                    DnsStandard.Equals(m_exchange, mxRecord.m_exchange)
-                &&  this.Preference == mxRecord.Preference
-            );
+            if (this.HasStrings != textRecord.HasStrings || m_strings.Count != textRecord.Strings.Count)
+            {
+                return false;
+            }
+            
+            for (int i = 0, count = m_strings.Count; i < count; ++i)
+            {
+                if (!string.Equals(m_strings[i], textRecord.Strings[i], StringComparison.Ordinal))
+                {
+                    return false;
+                }
+            }
+            
+            return true;
         }
-
+        
         /// <summary>
         /// Writes this RR in DNS wire format to the <paramref name="buffer"/>
         /// </summary>
         /// <param name="buffer">The buffer to which DNS wire data are written</param>
         protected override void SerializeRecordData(DnsBuffer buffer)
         {
-            buffer.AddShort(this.Preference);
-            buffer.AddDomainName(m_exchange);
+            foreach(string text in this.m_strings)
+            {
+                if (text.Length > byte.MaxValue)
+                {
+                    throw new DnsProtocolException(DnsProtocolError.StringTooLong);
+                }
+                
+                buffer.AddByte((byte) text.Length);
+                buffer.AddChars(text);
+            }
         }
-
+        
         /// <summary>
         /// Reads data into this RR from the DNS wire format data in <paramref name="reader"/>
         /// </summary>
         /// <param name="reader">Reader in which wire format data for this RR is already buffered.</param>
         protected override void DeserializeRecordData(ref DnsBufferReader reader)
         {
-            this.Preference = reader.ReadShort();
-            this.Exchange = reader.ReadDomainName();
+            List<string> stringList = new List<string>();
+
+            int maxIndex = reader.Index + this.RecordDataLength;
+            while (reader.Index < maxIndex)
+            {
+                StringBuilder sb = reader.EnsureStringBuilder();
+                int cb = reader.ReadByte();
+                while (cb-- > 0)
+                {
+                    sb.Append(reader.ReadChar());
+                }
+                stringList.Add(sb.ToString());
+            }
+
+            this.Strings = stringList;
         }
     }
 }

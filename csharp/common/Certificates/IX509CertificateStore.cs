@@ -15,12 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Security.Cryptography.X509Certificates;
-using NHINDirect;
 
-namespace NHINDirect.Certificates
+namespace Health.Direct.Common.Certificates
 {
     /// <summary>
     /// Interface supporting indexing certificates by subject name.
@@ -100,5 +97,5 @@ namespace NHINDirect.Certificates
         /// </summary>
         /// <returns>The collection of all certificates in this store.</returns>
         X509Certificate2Collection GetAllCertificates();             
-    }        
+    }
 }

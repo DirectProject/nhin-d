@@ -102,7 +102,7 @@
     </ProjectReference>
     <ProjectReference Include="..\store\config.store.csproj">
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
-      <Name>configStore</Name>
+      <Name>config.store</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

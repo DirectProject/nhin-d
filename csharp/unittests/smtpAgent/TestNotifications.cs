@@ -18,9 +18,8 @@ using System.IO;
 
 using Health.Direct.Agent;
 using Health.Direct.Agent.Tests;
-
-using NHINDirect.Mail;
-using NHINDirect.Mail.Notifications;
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mail.Notifications;
 
 using Xunit;
 

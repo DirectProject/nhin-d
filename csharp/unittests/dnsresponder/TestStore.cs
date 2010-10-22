@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using DnsResolver;
-using DnsResponder;
+using Health.Direct.Common.Resolver;
 
 namespace Health.Direct.DnsResponder.Tests
 {

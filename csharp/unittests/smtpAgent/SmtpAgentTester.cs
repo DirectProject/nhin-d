@@ -18,8 +18,8 @@ using System.IO;
 using System.Net.Mime;
 
 using Health.Direct.Agent;
-
-using NHINDirect.Mail;
+using Health.Direct.Common.Cryptography;
+using Health.Direct.Common.Mail;
 
 using Xunit;
 
@@ -98,13 +98,13 @@ Yo. Wassup?";
             Assert.True(string.IsNullOrEmpty(message.Subject));
          
             ContentType contentType = new ContentType(message.GetContentType());
-            Assert.True(NHINDirect.Cryptography.SMIMEStandard.IsContentEncrypted(contentType));
+            Assert.True(SMIMEStandard.IsContentEncrypted(contentType));
         }
         
         internal void VerifyIncomingMessage(CDO.Message message)
         {
             ContentType contentType = new ContentType(message.GetContentType());
-            Assert.False(NHINDirect.Cryptography.SMIMEStandard.IsContentEncrypted(contentType));            
+            Assert.False(SMIMEStandard.IsContentEncrypted(contentType));            
         }
 
         internal void ProcessEndToEnd(SmtpAgent agent, Message msg, out OutgoingMessage outgoing, out IncomingMessage incoming)

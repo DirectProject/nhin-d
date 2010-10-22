@@ -22,8 +22,6 @@ using Health.Direct.Config.Console.Command;
 using Health.Direct.Config.Store;
 using Health.Direct.Config.Tools.Command;
 
-using NHINDirect.Tools.Command;
-
 namespace Health.Direct.Config.Console
 {
     internal class ConfigConsole

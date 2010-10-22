@@ -17,9 +17,9 @@ using System;
 using System.Collections.Generic;
 using System.Net.Mime;
 
-using NHINDirect.Mime;
+using Health.Direct.Common.Mime;
 
-namespace NHINDirect.Cryptography
+namespace Health.Direct.Common.Cryptography
 {
     /// <summary>
     /// Represents a <c>multipart/signed</c> MIME entity.
@@ -160,7 +160,7 @@ namespace NHINDirect.Cryptography
         {
             ContentType contentType = new ContentType(SMIMEStandard.MultiPartTypeSigned);
             contentType.Parameters.Add(SMIMEStandard.ProtocolParameterKey, SMIMEStandard.SignatureProtocol);
-			contentType.Parameters.Add(SMIMEStandard.MICAlgorithmKey, digestAlgorithm.ToString());
+            contentType.Parameters.Add(SMIMEStandard.MICAlgorithmKey, digestAlgorithm.ToString());
             return contentType;
         }
     }
