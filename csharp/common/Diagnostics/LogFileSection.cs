@@ -23,7 +23,7 @@ namespace Health.Direct.Common.Diagnostics
     ///   &lt;logging&gt;
     ///     &lt;location directory="~\Log" name="ConfigService" extension="log" /&gt;
     ///     &lt;behavior rolloverFrequency="24" loggingLevel="Debug" /&gt;
-    ///     &lt;eventLog threshold="Fatal" source="nhinConfigService" /&gt;
+    ///     &lt;eventLog threshold="Fatal" source="Health.Direct.Config.Service" /&gt;
     ///   &lt;/logging&gt;
     /// </example>
     public class LogFileSection : ConfigurationSection
@@ -56,9 +56,8 @@ namespace Health.Direct.Common.Diagnostics
                                              : settings.DirectoryPath.Replace("~", Environment.CurrentDirectory);
             }
 
-            EventLog.WriteEntry(settings.EventLogSource,
-                                "Writing log file to " + settings.DirectoryPath,
-                                EventLogEntryType.Information, 1);
+            EventLogHelper.WriteInformation(settings.EventLogSource,
+                                "Writing log file to " + settings.DirectoryPath);
 
             return settings;
         }
@@ -94,7 +93,7 @@ namespace Health.Direct.Common.Diagnostics
         /// will write to the system's EventLog. This configuration 
         /// </summary>
         /// <example>
-        ///     &lt;eventLog threshold="Fatal" source="nhinConfigService" /&gt;
+        ///     &lt;eventLog threshold="Fatal" source="Health.Direct.Config.Service" /&gt;
         /// </example>
         [ConfigurationProperty(EventLogTag)]
         public EventLogElement EventLogInfo

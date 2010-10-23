@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DocumentationFile>..\bin\Release\nhinCommon.xml</DocumentationFile>
+    <DocumentationFile>..\bin\Release\Health.Direct.Common.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -76,6 +76,7 @@
     <Compile Include="Cryptography\SMIMEStandard.cs" />
     <Compile Include="Diagnostics\AuditNames.cs" />
     <Compile Include="Diagnostics\EventLogAuditor.cs" />
+    <Compile Include="Diagnostics\EventLogHelper.cs" />
     <Compile Include="Diagnostics\IAuditor.cs" />
     <Compile Include="Diagnostics\ILogFactory.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
