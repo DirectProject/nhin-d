@@ -27,12 +27,12 @@ namespace Health.Direct.Common.Diagnostics
         {
             try
             {
-                string msg = string.Format("AUDIT: {0} - {1}", category, message);
-                EventLog.WriteEntry("nhinAudit", msg, EventLogEntryType.Information, 1);
+                EventLogHelper.WriteInformation("Health.Direct.Audit", 
+                    string.Format("AUDIT: {0} - {1}", category, message));
             }
             catch (Exception ex)
             {
-                Health.Direct.Common.Diagnostics.Log.For(this).Warn("While auditing", ex);
+                Diagnostics.Log.For(this).Warn("While auditing", ex);
             }
         }
     }

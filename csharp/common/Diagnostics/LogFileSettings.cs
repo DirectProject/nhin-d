@@ -19,7 +19,7 @@ namespace Health.Direct.Common.Diagnostics
             Ext = "log";
             Level = LoggingLevel.Error;
 
-            EventLogSource = "nhin";
+            EventLogSource = "Health.Direct";
             EventLogLevel = LoggingLevel.Fatal;
         }
         

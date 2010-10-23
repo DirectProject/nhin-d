@@ -20,7 +20,7 @@ namespace Health.Direct.AdminUI
                             DirectoryPath = HttpContext.Current.Server.MapPath(@"~\Log"),
                             Level = LoggingLevel.Debug,
                             EventLogLevel = LoggingLevel.Fatal,
-                            EventLogSource = "AdminUI",
+                            EventLogSource = "Health.Direct.AdminUI",
                             Ext = ".log",
                             FileChangeFrequency = 24,
                             NamePrefix = "adminui"

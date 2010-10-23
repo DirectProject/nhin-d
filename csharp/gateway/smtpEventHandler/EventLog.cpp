@@ -86,7 +86,8 @@ HRESULT EventLog::WriteV(const WORD type, const WCHAR *format, va_list argList) 
 	message.AppendFormatV(format, argList);	
 	
 	LPCWSTR eventMsg = message;
-	if (!::ReportEvent(m_hLog, type, 0, 0, NULL, 1, 0, &eventMsg, NULL))
+	// ReportEvent(hEventLog, wType, wCategory, dwEventID, lpUserSid, wNumStrings, dwDataSize, lpStrings, lpRawaData)
+	if (!::ReportEvent(m_hLog, type, 0, 1, NULL, 1, 0, &eventMsg, NULL))
 	{
 		hr = HRESULT_FROM_WIN32(::GetLastError());
 		goto LBail;
@@ -98,7 +99,7 @@ LBail:
 	return hr;	
 }
 
-const WCHAR* DEFAULT_LOG = L"nhinMessageSink";
+const WCHAR* DEFAULT_LOG = L"Health.Direct.MessageSink";
 
 void Log(const WCHAR* message)
 {

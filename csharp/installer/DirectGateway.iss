@@ -17,7 +17,7 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=nhinDirect Gateway
+OutputBaseFilename=Direct Gateway
 Compression=lzma
 SolidCompression=yes
 
@@ -61,15 +61,15 @@ Source: "createconfigsvc.bat"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "configconsole.bat"; DestDir: "{app}"; Flags: ignoreversion;
 
 [Icons]
-Name: "{group}\NHIN Config Console"; Filename: "{app}\ConfigConsole.exe"; WorkingDir: "{app}";
+Name: "{group}\Config Console"; Filename: "{app}\ConfigConsole.exe"; WorkingDir: "{app}";
 Name: "{group}\Test Database"; Filename: "http://localhost/ConfigService/TestService.aspx";
-Name: "{group}\{cm:UninstallProgram,NHIN .NET Gateway}"; Filename: "{uninstallexe}";
+Name: "{group}\{cm:UninstallProgram,Direct Gateway}"; Filename: "{uninstallexe}";
 
 [Run]
 Filename: "{app}\Libraries\vcredist.exe"; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked;
 Filename: "{app}\SQL\createdatabase.bat"; Parameters: ".\sqlexpress NHINDConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: postinstall runascurrentuser unchecked;
 Filename: "{app}\createconfigsvc.bat"; Parameters: """{app}\ConfigService"""; Description: Create Config Service; Flags: postinstall runascurrentuser unchecked;
-Filename: "{app}\install.bat"; Parameters: """{app}\DevAgentWithServiceConfig.xml"" nocopy"; Description: "Register NHIN Direct Gateway"; Flags: postinstall runascurrentuser unchecked;
+Filename: "{app}\install.bat"; Parameters: """{app}\DevAgentWithServiceConfig.xml"" nocopy"; Description: "Register Direct Gateway"; Flags: postinstall runascurrentuser unchecked;
 Filename: "{app}\configConsole.bat"; WorkingDir: "{app}"; Parameters: "batch setupdomains.txt"; Description: "Install Certs in Configuration Service"; Flags: postinstall runascurrentuser unchecked;
 
 [UninstallRun]

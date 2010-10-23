@@ -28,12 +28,10 @@ namespace Health.Direct.Config.Service
 
         private static void WriteToEventLog(Exception ex)
         {
-            const string source = "nhinConfigService";
-            const EventLogEntryType type = EventLogEntryType.Error;
-            const int id = 1;
+            const string source = "Health.Direct.Config.Service";
 
-            EventLog.WriteEntry(source, ex.Message, type, id);
-            EventLog.WriteEntry(source, ex.GetBaseException().ToString(), type, id);
+            EventLogHelper.WriteError(source, ex.Message);
+            EventLogHelper.WriteError(source, ex.GetBaseException().ToString());
         }
 
         private ILogger Logger

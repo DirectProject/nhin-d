@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 
 using Health.Direct.Common.Container;
 using Health.Direct.Common.Diagnostics;
@@ -29,11 +28,11 @@ namespace Health.Direct.SmtpAgent
                 // dependencies, etc...
                 string source = settings == null 
                                 || settings.LogSettings == null 
-                                || String.IsNullOrEmpty(settings.LogSettings.EventLogSource)
-                                    ? "nhin" 
+                                || string.IsNullOrEmpty(settings.LogSettings.EventLogSource)
+                                    ? null 
                                     : settings.LogSettings.EventLogSource;
 
-                EventLog.WriteEntry(source, "While loading SmtpAgent settings" + ex, EventLogEntryType.Error, 1);
+                EventLogHelper.WriteError(source, "While loading SmtpAgent settings - " + ex);
 
                 throw;
             }
