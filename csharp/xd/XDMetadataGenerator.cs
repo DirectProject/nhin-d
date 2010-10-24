@@ -76,14 +76,18 @@ namespace Health.Direct.Xd
         /// </summary>
         public static XElement Generate(this DocumentPackage docPackage)
         {
-            XElement package = new XElement("SubmitObjectsRequest");
+            XElement submitObjectsRequest = new XElement("SubmitObjectsRequest");
             XElement packageList = new XElement("RegistryObjectList");
-            package.Add(packageList);
-            packageList.Add(GeneratePackage(docPackage));
+            submitObjectsRequest.Add(packageList);
+            XElement package = GeneratePackage(docPackage);
+            packageList.Add(package);
 
             foreach (DocumentMetadata m in docPackage.Documents)
             {
-                packageList.Add(m.Generate());
+                XElement doc = m.Generate();
+                Association assoc = Association.OriginalDocumentAssociation(package.AttributeValue("Id"), doc.AttributeValue("Id"));
+                packageList.Add(doc);
+                packageList.Add(assoc);
             }
             return package;
         }
