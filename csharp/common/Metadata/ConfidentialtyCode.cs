@@ -77,7 +77,7 @@ namespace Health.Direct.Common.Metadata
         public static CodedValue ToCodedValue(this C80Confidentialty code)
         {
             KeyValuePair<string, string> pair = Decode(code);
-            return new CodedValue(pair.Key, pair.Value, "HITSP C80 Confidentiality");
+            return new CodedValue(pair.Key, pair.Value, "2.16.840.1.113883.1.11.10228");
         }
 
         private static Dictionary<C80Confidentialty, KeyValuePair<string, string>> m_C80Confidentiality_mappings

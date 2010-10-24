@@ -201,7 +201,7 @@ namespace Health.Direct.Common.Metadata
         public static CodedValue ToCodedValue(this C80ClassCode code)
         {
             KeyValuePair<string, string> pair = Decode(code);
-            return new CodedValue(pair.Key, pair.Value, "HITSP C80 class codes (table 2-144)");
+            return new CodedValue(pair.Key, pair.Value, "2.16.840.1.113883.3.88.12.80.46");
         }
 
         private static Dictionary<C80ClassCode, KeyValuePair<string, string>> m_C80DocumentClass_mappings

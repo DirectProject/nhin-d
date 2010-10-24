@@ -104,7 +104,7 @@ namespace Health.Direct.Common.Metadata
         public static CodedValue ToCodedValue(this C80FormatCode code)
         {
             KeyValuePair<string, string> pair = Decode(code);
-            return new CodedValue(pair.Key, pair.Value, "HITSP C80 Format");
+            return new CodedValue(pair.Key, pair.Value, "2.16.840.1.113883.3.88.12.80.73");
         }
 
         private static Dictionary<C80FormatCode, KeyValuePair<string, string>> m_C80FormatCode_mappings
