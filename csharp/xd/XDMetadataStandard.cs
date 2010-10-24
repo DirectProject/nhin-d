@@ -220,6 +220,11 @@ namespace Health.Direct.Xd
             /// </summary>
             public const string LocalizedString = "LocalizedString";
 
+            /// <summary>
+            /// Element name for an association
+            /// </summary>
+            public const string Association = "Association";
+
         }
 
         /// <summary>
@@ -256,11 +261,25 @@ namespace Health.Direct.Xd
             /// </summary>
             public const string ClassifiedObject = "classifiedObject";
 
-
             /// <summary>
             /// The attribute name for object type
             /// </summary>
             public const string ObjectType = "objectType";
+
+            /// <summary>
+            /// Association type attribute
+            /// </summary>
+            public const string AssociationType = "associationType";
+
+            /// <summary>
+            /// Association source object attribute
+            /// </summary>
+            public const string SourceObject = "sourceObject";
+
+            /// <summary>
+            /// Association target object attribute
+            /// </summary>
+            public const string TargetObject = "targetObject";
 
         }
         // Slot names
@@ -355,6 +374,11 @@ namespace Health.Direct.Xd
             /// The slot name for intended recipient
             /// </summary>
             public const string IntendedRecipient = "intendedRecipient";
+
+            /// <summary>
+            /// The slot name for submission set status
+            /// </summary>
+            public const string SubmissionSetStatus = "SubmissionSetStatus";
         }
         
         // Object types
