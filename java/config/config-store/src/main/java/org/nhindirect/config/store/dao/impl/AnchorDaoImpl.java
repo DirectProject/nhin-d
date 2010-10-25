@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -127,10 +128,10 @@ public class AnchorDaoImpl implements AnchorDao {
             {
                 nameList.append(", ");
             }
-            nameList.append("'").append(owner).append("'");
+            nameList.append("'").append(owner.toUpperCase(Locale.getDefault())).append("'");
         }
         nameList.append(")");
-        String query = "SELECT a from Anchor a WHERE a.owner IN " + nameList.toString();
+        String query = "SELECT a from Anchor a WHERE UPPER(a.owner) IN " + nameList.toString();
  
         select = entityManager.createQuery(query);
         List rs = select.getResultList();
@@ -379,8 +380,8 @@ public class AnchorDaoImpl implements AnchorDao {
         
         int count = 0;
         if (owner != null) {
-            Query delete = entityManager.createQuery("DELETE FROM Anchor a WHERE a.owner = ?1");
-            delete.setParameter(1, owner);
+            Query delete = entityManager.createQuery("DELETE FROM Anchor a WHERE UPPER(a.owner) = ?1");
+            delete.setParameter(1, owner.toUpperCase(Locale.getDefault()));
             count = delete.executeUpdate();
         }
 

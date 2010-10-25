@@ -17,6 +17,7 @@ using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.Web;
+using System.Web.Hosting;
 
 namespace Health.Direct.Common.Diagnostics
 {
@@ -66,9 +67,8 @@ namespace Health.Direct.Common.Diagnostics
             LogFileSettings settings = section.ToSettings();
             if (settings.DirectoryPath.Contains("~"))
             {
-                settings.DirectoryPath = HttpContext.Current != null 
-                                             ? HttpContext.Current.Server.MapPath(settings.DirectoryPath)
-                                             : settings.DirectoryPath.Replace("~", Environment.CurrentDirectory);
+                string appDirectory = HostingEnvironment.ApplicationPhysicalPath ?? Environment.CurrentDirectory;
+                settings.DirectoryPath = settings.DirectoryPath.Replace("~", appDirectory);
             }
 
             EventLogHelper.WriteInformation(settings.EventLogSource,

@@ -94,7 +94,7 @@ public class DomainDaoTest  {
 		domain.setStatus(EntityStatus.ENABLED);
 		domainDao.add(domain);
 		
-		Domain testDomain = domainDao.getDomainByName("health.testdomain.com");
+		Domain testDomain = domainDao.getDomainByName("Health.testdomain.com");
 		log.info("Newly added Domain ID is: " + testDomain.getId());
 		log.info("Newly added Domain Status is: " + testDomain.getStatus());
 		
