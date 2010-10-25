@@ -81,8 +81,7 @@ goto :EOF
 :CopyBins
 call :PrintHeading Copying BINS to "%dest%"
 
-call :CopyFiles Health.Direct.DnsResolver.dll ^
-  Health.Direct.Common.dll ^
+call :CopyFiles Health.Direct.Common.dll ^
   Health.Direct.Agent.dll ^
   Health.Direct.SmtpAgent.dll ^
   Interop.ADODB.dll ^
