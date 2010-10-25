@@ -22,16 +22,20 @@ using System.Reflection;
 
 namespace Health.Direct.Config.Tools.Command
 {
+    public class CommandUsageAttribute : Attribute
+    {
+        public string Name { get; set; }
+    }
+
     /// <summary>
     /// For the EASY implementation of command line apps. Can't always do Powershell, or may not want to.
     /// 
     /// 1. Create a class. This class will handle commands.
     /// 2. Create a handler method for each of your commands. 
-    ///   - Prefix the method with Command_.  E.g. Command_PrintCurrentDate
+    ///   - Use the <see cref="CommandAttribute"/> to mark up your method
     ///   - The handler MUST have the signature Action<string[]>
-    /// 3. Optionally, create a method to provide usage information for your command. 
-    ///    - Prefix the method with Usage_. E.g. Usage_PrintCurrentDate
-    ///    - Usage methods have the signature Action()
+    /// 3. Optionally, provide usage information for your command. 
+    ///    - Use the Usage property of the <see cref="CommandAttribute.Usage"/>
     /// 4. You can create multiple classes, each with multiple commands. 
     /// 5. In the Main method for your class, create a new instance of the Commands object (see below).
     /// 6. Register each of your classes with the Commands object   
@@ -60,14 +64,14 @@ namespace Health.Direct.Config.Tools.Command
      */
     public class Commands
     {
-        const string CommandPrefix = "command_";
-        const string UsagePrefix = "usage_";
-        
+        private const string CRLF = "\r\n";
+
         static string[] EmptyArgs = new string[0];
-        
-        string m_appName;
-        List<object> m_instances;        
-        Dictionary<string, CommandDef> m_commands;
+
+        readonly string m_appName;
+        readonly List<object> m_instances;
+        readonly Dictionary<string, CommandDef> m_commands;
+        readonly Dictionary<Type, object> m_typeLookup;
         string[] m_commandNames;
         
         public Commands(string appName)
@@ -79,6 +83,7 @@ namespace Health.Direct.Config.Tools.Command
             m_appName = appName;
             m_instances = new List<object>();
             m_commands = new Dictionary<string,CommandDef>(StringComparer.OrdinalIgnoreCase);
+            m_typeLookup = new Dictionary<Type, object>();
             
             this.Register(this);
         }
@@ -95,7 +100,18 @@ namespace Health.Direct.Config.Tools.Command
                 return null;
             }
         }
-        
+
+        public T GetCommand<T>()
+            where T : class
+        {
+            T cmd = m_typeLookup[typeof (T)] as T;
+            if (cmd == null)
+            {
+                throw new Exception("Command of type " + typeof(T) + " was not found.");
+            }
+            return cmd;
+        }
+
         public IEnumerable<string> CommandNames
         {
             get
@@ -122,23 +138,32 @@ namespace Health.Direct.Config.Tools.Command
             }
 
             m_instances.Add(instance);
+            m_typeLookup.Add(instance.GetType(), instance);
             this.DiscoverCommandMethods(methods, instance);
         }
         
-        void DiscoverCommandMethods(MethodInfo[] methods, object instance)
+        void DiscoverCommandMethods(IEnumerable<MethodInfo> methods, object instance)
         {
             foreach (MethodInfo method in methods)
             {
-                string name = method.Name.ToLower();
-                if (name.StartsWith(CommandPrefix, StringComparison.OrdinalIgnoreCase))
+                object[] attributes = method.GetCustomAttributes(typeof (CommandAttribute), true);
+                for (int i = 0; i < attributes.Length; i++ )
                 {
-                    name = name.Replace(CommandPrefix, string.Empty);                    
-                    this.SetEval(name, (Action<string[]>) Delegate.CreateDelegate(typeof(Action<string[]>), instance, method));
-                }
-                else if (name.StartsWith(UsagePrefix, StringComparison.OrdinalIgnoreCase))
-                {
-                    name = name.Replace(UsagePrefix, string.Empty);
-                    this.SetUsage(name, (Action)Delegate.CreateDelegate(typeof(Action), instance, method));
+                    CommandAttribute attribute = (CommandAttribute) attributes[i];
+                    if (!string.IsNullOrEmpty(attribute.Name))
+                    {
+                        this.SetEval(attribute.Name, (Action<string[]>)Delegate.CreateDelegate(typeof(Action<string[]>), instance, method));
+
+                        if (!string.IsNullOrEmpty(attribute.Usage))
+                        {
+                            string usage = attribute.Usage;
+                            if (usage.Contains("{0}") && attribute.UsageParam != null)
+                            {
+                                usage = string.Format(usage, attribute.UsageParam);
+                            }
+                            this.SetUsage(attribute.Name, () => Console.WriteLine(usage));
+                        }
+                    }
                 }
             }        
         }    
@@ -199,7 +224,7 @@ namespace Health.Direct.Config.Tools.Command
             {
                 CommandUI.PrintUpperCase("{0} not found", commandName);
                 CommandUI.PrintSectionBreak();
-                Usage_Help();
+                Console.WriteLine(HelpUsage);
                 return;
             }
             
@@ -267,25 +292,25 @@ namespace Health.Direct.Config.Tools.Command
                     select name);
         }
 
-        void Exit(int code)
+        static void Exit(int code)
         {
             Environment.Exit(code);
         }
 
-        bool Validate()
-        {
-            bool isValid = true;
-            foreach (CommandDef cmd in m_commands.Values)
-            {
-                if (cmd.Eval == null)
-                {
-                    Console.WriteLine("{0} has no Eval method", cmd.Name);
-                    isValid = false;
-                }
-            }
+        //bool Validate()
+        //{
+        //    bool isValid = true;
+        //    foreach (CommandDef cmd in m_commands.Values)
+        //    {
+        //        if (cmd.Eval == null)
+        //        {
+        //            Console.WriteLine("{0} has no Eval method", cmd.Name);
+        //            isValid = false;
+        //        }
+        //    }
 
-            return isValid;
-        }
+        //    return isValid;
+        //}
         
         CommandDef Bind(string name)
         {
@@ -353,27 +378,21 @@ namespace Health.Direct.Config.Tools.Command
         // Built in Standard Commands
         //
         //-------------------------------
-        public void Command_Quit(string[] args)
-        {
-            Command_Exit(args);
-        }
-        public void Usage_Quit()
-        {
-            Usage_Exit();
-        }
-        public void Command_Exit(string[] args)
+        [Command(Name = "Quit", Usage = ExitUsage)]
+        [Command(Name = "Exit", Usage = ExitUsage)]
+        public void Quit(string[] args)
         {
             Exit(0);
         }
-        public void Usage_Exit()
-        {
-            Console.WriteLine("Exit the application");
-        }
+
+        private const string ExitUsage
+            = "Exit the application";
         
         /// <summary>
         /// Show help
         /// </summary>
-        public void Command_Help(string[] args)
+        [Command(Name = "Help", Usage = HelpUsage)]
+        public void Help(string[] args)
         {
             string cmdName = null;
             if (!args.IsNullOrEmpty())
@@ -383,7 +402,7 @@ namespace Health.Direct.Config.Tools.Command
             
             if (string.IsNullOrEmpty(cmdName))
             {
-                Usage_Help();
+                Console.WriteLine(HelpUsage);
                 return;
             }
             
@@ -406,23 +425,22 @@ namespace Health.Direct.Config.Tools.Command
             {
                 this.Bind(name).ShowUsage();
             }
-        }        
-        public void Usage_Help()
-        {
-            Console.WriteLine("Show help");
-            Console.WriteLine("help ['all' | name]");
-            Console.WriteLine("   all: All commands");
-            Console.WriteLine("   name: This command name or names with this PREFIX"); 
-            Console.WriteLine();
-            Console.WriteLine("search [pattern]");
-            Usage_Search();
         }
+
+        private const string HelpUsage
+            = "Show help"
+              + CRLF + "help ['all' | name]"
+              + CRLF + "   all: All commands"
+              + CRLF + "   name: This command name or names with this PREFIX"
+              + CRLF + CRLF + "search [pattern]"
+              + CRLF + SearchUsage;
         
         /// <summary>
         /// Search for a command containing the given pattern
         /// </summary>
         /// <param name="args"></param>
-        public void Command_Search(string[] args)
+        [Command(Name = "Search", Usage = SearchUsage)]
+        public void Search(string[] args)
         {
             string pattern = args.GetOptionalValue(0, null);
             if (string.IsNullOrEmpty(pattern))
@@ -437,19 +455,20 @@ namespace Health.Direct.Config.Tools.Command
                 this.Bind(name).ShowUsage();
             }
         }
-        public void Usage_Search()
-        {
-            Console.WriteLine("Search for commands matching the given wildcard pattern");
-            Console.WriteLine("    pattern");
-            Console.WriteLine("\t pattern: (optional) pattern, containing '*' wildcards");
-        }
+
+        private const string SearchUsage
+            = "Search for commands matching the given wildcard pattern"
+              + CRLF + "    pattern"
+              + CRLF + "\t pattern: (optional) pattern, containing '*' wildcards";
+
         /// <summary>
         /// Run commands in a batch
         /// </summary>
-        public void Command_Batch(string[] args)
+        [Command(Name = "Batch", Usage = BatchUsage)]
+        public void Batch(string[] args)
         {
             string filePath = args.GetRequiredValue(0);
-            bool echo = args.GetOptionalValue<bool>(1, true);
+            bool echo = args.GetOptionalValue(1, true);
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException(filePath);
@@ -472,14 +491,14 @@ namespace Health.Direct.Config.Tools.Command
                 }
             }
         }
-        public void Usage_Batch()
-        {
-            Console.WriteLine("Run a series of commands from a file");
-            Console.WriteLine("Each command is on its own line. Comments begin with //");
-            Console.WriteLine("   filepath [echo command (default true)]");
-        }
-        
-        public void Command_Echo(string[] args)
+
+        private const string BatchUsage
+            = "Run a series of commands from a file"
+              + CRLF + "Each command is on its own line. Comments begin with //"
+              + CRLF + "   filepath [echo command (default true)]";
+
+        [Command(Name = "Echo", Usage = "Echo the args to the console")]
+        public void Echo(string[] args)
         {
             if (args.IsNullOrEmpty())
             {
@@ -489,10 +508,6 @@ namespace Health.Direct.Config.Tools.Command
             {
                 Console.WriteLine(arg);
             }
-        }
-        public void Usage_Echo()
-        {
-            Console.WriteLine("Echo the args to the console");
         }
     }
 }

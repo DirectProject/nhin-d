@@ -85,7 +85,7 @@ namespace Health.Direct.Agent.Config
         /// <returns>The configured store.</returns>
         public SystemX509Store OpenStore()
         {
-            return new SystemX509Store(Extensions.OpenStoreRead(this.Name, this.Location), null);
+            return new SystemX509Store(CryptoUtility.OpenStoreRead(this.Name, this.Location), null);
         }
     }
 }

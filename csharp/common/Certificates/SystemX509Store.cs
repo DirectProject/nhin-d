@@ -164,7 +164,7 @@ namespace Health.Direct.Common.Certificates
         /// <returns>The default anchor machine certificate store.</returns>
         public static SystemX509Store OpenAnchor()
         {
-            return new SystemX509Store(Extensions.OpenStoreRead(AnchorCertsStoreName, StoreLocation.LocalMachine), null);
+            return new SystemX509Store(CryptoUtility.OpenStoreRead(AnchorCertsStoreName, StoreLocation.LocalMachine), null);
         }
         /// <summary>
         /// Opens the default anchor machine certificate store for reads and writes.
@@ -172,7 +172,7 @@ namespace Health.Direct.Common.Certificates
         /// <returns>The default anchor machine certificate store.</returns>
         public static SystemX509Store OpenAnchorEdit()
         {
-            return new SystemX509Store(Extensions.OpenStoreReadWrite(AnchorCertsStoreName, StoreLocation.LocalMachine), null);
+            return new SystemX509Store(CryptoUtility.OpenStoreReadWrite(AnchorCertsStoreName, StoreLocation.LocalMachine), null);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace Health.Direct.Common.Certificates
         /// <returns>The default private certificate store.</returns>
         public static SystemX509Store OpenPrivate()
         {
-            return new SystemX509Store(Extensions.OpenStoreRead(PrivateCertsStoreName, StoreLocation.LocalMachine),
+            return new SystemX509Store(CryptoUtility.OpenStoreRead(PrivateCertsStoreName, StoreLocation.LocalMachine),
                                        x => x.HasPrivateKey);
         }
 
@@ -191,7 +191,7 @@ namespace Health.Direct.Common.Certificates
         /// <returns>The default private certificate store.</returns>
         public static SystemX509Store OpenPrivateEdit()
         {
-            return new SystemX509Store(Extensions.OpenStoreReadWrite(PrivateCertsStoreName, StoreLocation.LocalMachine),
+            return new SystemX509Store(CryptoUtility.OpenStoreReadWrite(PrivateCertsStoreName, StoreLocation.LocalMachine),
                                        x => x.HasPrivateKey);
         }
 
@@ -201,7 +201,7 @@ namespace Health.Direct.Common.Certificates
         /// <returns>The default external certificate store.</returns>
         public static SystemX509Store OpenExternal()
         {
-            return new SystemX509Store(Extensions.OpenStoreRead(ExternalCertsStoreName, StoreLocation.LocalMachine), null);
+            return new SystemX509Store(CryptoUtility.OpenStoreRead(ExternalCertsStoreName, StoreLocation.LocalMachine), null);
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace Health.Direct.Common.Certificates
         /// <returns>The default external certificate store.</returns>
         public static SystemX509Store OpenExternalEdit()
         {
-            return new SystemX509Store(Extensions.OpenStoreReadWrite(ExternalCertsStoreName, StoreLocation.LocalMachine), null);
+            return new SystemX509Store(CryptoUtility.OpenStoreReadWrite(ExternalCertsStoreName, StoreLocation.LocalMachine), null);
         }        
     }
 }

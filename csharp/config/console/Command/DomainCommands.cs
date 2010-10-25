@@ -26,126 +26,144 @@ namespace Health.Direct.Config.Console.Command
     /// <summary>
     /// Commands to manage domains
     /// </summary>
-    public class DomainCommands : CommandsBase
+    public class DomainCommands : CommandsBase<DomainManagerClient>
     {
         const int DefaultChunkSize = 25;
-        
+
+        private readonly Func<AddressManagerClient> m_addressClientResolver;
+
+        internal DomainCommands(ConfigConsole console, Func<DomainManagerClient> client, Func<AddressManagerClient> addressClient)
+            : base(console, client)
+        {
+            m_addressClientResolver = addressClient;
+        }
+
+        private AddressManagerClient AddressClient
+        {
+            get
+            {
+                return m_addressClientResolver();
+            }
+        }
+
         //---------------------------------------
         //
         // Commands
         //
         //---------------------------------------
-        
+
         /// <summary>
         /// Add a domain
         /// </summary>
-        public void Command_Domain_Add(string[] args)
+        [Command(Name = "Domain_Add", Usage = DomainAddUsage)]
+        public void CommandDomainAdd(string[] args)
         {            
-            Domain domain = new Domain(args.GetRequiredValue(0));
-            domain.Status = args.GetOptionalEnum<EntityStatus>(1, EntityStatus.New);
-            
-            if (ConfigConsole.Current.DomainClient.DomainExists(domain.Name))
+            Domain domain = new Domain(args.GetRequiredValue(0))
+                                {
+                                    Status = args.GetOptionalEnum(1, EntityStatus.New)
+                                };
+
+            if (Client.DomainExists(domain.Name))
             {
-                System.Console.WriteLine("Exists {0}", domain.Name);
+                WriteLine("Exists {0}", domain.Name);
             }
             else
             {
-                ConfigConsole.Current.DomainClient.AddDomain(domain);
-                System.Console.WriteLine("Added {0}", domain.Name);
+                Client.AddDomain(domain);
+                WriteLine("Added {0}", domain.Name);
             }
-        }                   
-        public void Usage_Domain_Add()
-        {
-            System.Console.WriteLine("Add a new domain.");
-            System.Console.WriteLine("    domainName [status]");
-            System.Console.WriteLine("\t domainName: New domain name");
-            System.Console.WriteLine("\t status {0}", EntityStatusString);
-        }
+        }                  
+        
+        private const string DomainAddUsage
+            = "Add a new domain."
+            + CRLF + "    domainName [status]"
+            + CRLF + "\t domainName: New domain name"
+            + CRLF + "\t status " + EntityStatusString;
         
         /// <summary>
         /// Retrieve a domain
         /// </summary>
-        public void Command_Domain_Get(string[] args)
+        [Command(Name = "Domain_Get", Usage = DomainGetUsage)]
+        public void DomainGet(string[] args)
         {
             string name = args.GetRequiredValue(0);
             Print(this.DomainGet(name));
         }
-        public void Usage_Domain_Get()
-        {
-            System.Console.WriteLine("Retrieve information for an existing domain.");
-            System.Console.WriteLine("    domainName");
-        }
+
+        private const string DomainGetUsage
+            = "Retrieve information for an existing domain."
+              + CRLF + "    domainName";
         
         /// <summary>
         /// How many domains exist? 
         /// </summary>
-        public void Command_Domain_Count(string[] args)
+        [Command(Name = "Domain_Count", Usage = "Retrieve # of domains.")]
+        public void DomainCount(string[] args)
         {
-            System.Console.WriteLine("{0} domains", ConfigConsole.Current.DomainClient.GetDomainCount());
-        }
-        public void Usage_Domain_Count()
-        {
-            System.Console.WriteLine("Retrieve # of domains.");
+            WriteLine("{0} domains", Client.GetDomainCount());
         }
         
         /// <summary>
         /// Set the status for a domain
         /// </summary>                        
-        public void Command_Domain_Status_Set(string[] args)
+        [Command(Name = "Domain_Status_Set", Usage = DomainStatusSetUsage)]
+        public void DomainStatusSet(string[] args)
         {
             string name = args.GetRequiredValue(0);
             EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
 
             Domain domain = this.DomainGet(name);
             domain.Status = status;            
-            ConfigConsole.Current.DomainClient.UpdateDomain(domain);
-        }        
-        public void Usage_Domain_Status_Set()
-        {
-            System.Console.WriteLine("Change a domain's status");
-            System.Console.WriteLine("    domainName status");
-            System.Console.WriteLine("\t domainName: Set status for this domain");
-            System.Console.WriteLine("\t status: {0}", EntityStatusString); 
+            Client.UpdateDomain(domain);
         }
+
+        private const string DomainStatusSetUsage
+            = "Change a domain's status"
+              + CRLF + "    domainName status"
+              + CRLF + "\t domainName: Set status for this domain"
+              + CRLF + "\t status: " + EntityStatusString;
         
         /// <summary>
         /// Set the status for all addresses in a domain
         /// </summary>
-        public void Command_Domain_Address_Status_Set(string[] args)
+        [Command(Name = "Domain_Address_Status_Set", Usage = DomainAddressStatusSetUsage)]
+        public void DomainAddressStatusSet(string[] args)
         {
             string name = args.GetRequiredValue(0);
             EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
 
             Domain domain = this.DomainGet(name);
-            ConfigConsole.Current.AddressClient.SetDomainAddressesStatus(domain.ID, status);
+            AddressClient.SetDomainAddressesStatus(domain.ID, status);
         }
-        public void Usage_Domain_Address_Status_Set()
-        {
-            System.Console.WriteLine("Set the status of all addresses in this domain");
-            System.Console.WriteLine("    domainName status");
-            System.Console.WriteLine("\t domainName: Set status for this domain");
-            System.Console.WriteLine("\t status: {0}", EntityStatusString);
-        }
+
+        private const string DomainAddressStatusSetUsage
+            = "Set the status of all addresses in this domain"
+              + CRLF + "    domainName status"
+              + CRLF + "\t domainName: Set status for this domain"
+              + CRLF + "\t status: " + EntityStatusString;
         
         // We think this is no longer needed. Remove when confirmed
         /*
-        public void Command_Domain_Postmaster_Get(string[] args)
+        [Command(Name = "Domain_Postmaster_Get", Usage = DomainPostmasterGetUsage)]
+        public void DomainPostmasterGet(string[] args)
         {
             string name = args.GetRequiredValue(0);
             Domain domain = DomainGet(name);
-            Address address = ConfigConsole.Current.AddressClient.GetAddress(domain.ID);
+            Address address = CurrentConsole.AddressClient.GetAddress(domain.ID);
             AddressCommands.Print(address);
         }
-        public void Usage_Domain_Postmaster_Get()
-        {
-            Console.WriteLine("Display a domain's postmaster, if set explicitly.");
-            Console.WriteLine("    domainName");
+
+        private const string DomainPostmasterGetUsage
+            = "Display a domain's postmaster, if set explicitly."
+                + CRLF + "    domainName";
         }
-        public void Command_Domain_Postmaster_Set(string[] args)
+
+        [Command(Name = "Domain_Postmaster_Set", Usage = DomainPostmasterSetUsage)]
+        public void DomainPostmasterSet(string[] args)
         {
             MailAddress email = new MailAddress(args.GetRequiredValue(0));
             
-            Address postmaster = ConfigConsole.Current.AddressClient.GetAddress(email);
+            Address postmaster = CurrentConsole.AddressClient.GetAddress(email);
             if (postmaster == null)
             {
                 throw new ArgumentException(string.Format("Postmaster address {0} not found", email));
@@ -153,37 +171,33 @@ namespace Health.Direct.Config.Console.Command
             
             Domain domain = this.DomainGet(email.Host);
             domain.PostmasterID = postmaster.ID;
-            ConfigConsole.Current.DomainClient.UpdateDomain(domain);
+            Client.UpdateDomain(domain);
         }        
-        public void Usage_Domain_Postmaster_Set()
-        {
-            Console.WriteLine("Set the postmaster address for a domain. The address must have been already created.");
-            Console.WriteLine("    postmasterEmail");
-        }
+
+        private const string DomainPostmasterSetUsage
+            = "Set the postmaster address for a domain. The address must have been already created."
+                + CRLF + "    postmasterEmail";
         */
-        
+
         /// <summary>
         /// Remove domain
         /// </summary>
-        public void Command_Domain_Remove(string[] args)
+        [Command(Name = "Domain_Remove", Usage = DomainRemoveUsage)]
+        public void DomainRemove(string[] args)
         {
-            ConfigConsole.Current.DomainClient.RemoveDomain(args.GetRequiredValue(0));
+            Client.RemoveDomain(args.GetRequiredValue(0));
         }
-        public void Usage_Domain_Remove()
+
+        private const string DomainRemoveUsage
+            = "Remove a domain."
+              + CRLF + "    domainName"
+              + CRLF + "\t domainName: remove this domain";
+
+        [Command(Name = "Domain_List", Usage = "List all domains")]
+        public void DomainList(string[] args)
         {
-            System.Console.WriteLine("Remove a domain.");
-            System.Console.WriteLine("    domainName");
-            System.Console.WriteLine("\t domainName: remove this domain");
-        }
-        
-        public void Command_Domain_List(string[] args)
-        {
-            int chunkSize = args.GetOptionalValue<int>(0, DefaultChunkSize);            
-            Print(ConfigConsole.Current.DomainClient.EnumerateDomains(chunkSize));
-        }
-        public void Usage_Domain_List()
-        {
-            System.Console.WriteLine("List all domains");
+            int chunkSize = args.GetOptionalValue(0, DefaultChunkSize);            
+            Print(Client.EnumerateDomains(chunkSize));
         }
 
         //---------------------------------------
@@ -191,15 +205,10 @@ namespace Health.Direct.Config.Console.Command
         // Implementation
         //
         //---------------------------------------
-        
-        Domain DomainGet(string name)
-        {
-            return DomainGet(ConfigConsole.Current.DomainClient, name);
-        }
 
-        internal static Domain DomainGet(DomainManagerClient client, string name)
+        public Domain DomainGet(string name)
         {
-            Domain domain = client.GetDomain(name);
+            Domain domain = Client.GetDomain(name);
             if (domain == null)
             {
                 throw new ArgumentException(string.Format("Domain {0} not found", name));
@@ -208,7 +217,7 @@ namespace Health.Direct.Config.Console.Command
             return domain;
         }
         
-        public static void Print(IEnumerable<Domain> domains)
+        public void Print(IEnumerable<Domain> domains)
         {
             foreach(Domain domain in domains)
             {
@@ -217,7 +226,7 @@ namespace Health.Direct.Config.Console.Command
             }
         }
         
-        public static void Print(Domain domain)
+        public void Print(Domain domain)
         {
             CommandUI.Print("Name", domain.Name);
             CommandUI.Print("ID", domain.ID);
