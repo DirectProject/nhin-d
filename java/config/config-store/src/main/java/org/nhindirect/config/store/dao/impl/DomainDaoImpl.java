@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -272,8 +273,8 @@ public class DomainDaoImpl implements DomainDao {
         Domain result = null;
 
         if (name != null) {
-            Query select = entityManager.createQuery("SELECT DISTINCT d from Domain d WHERE d.domainName = ?1");
-            Query paramQuery = select.setParameter(1, name);
+            Query select = entityManager.createQuery("SELECT DISTINCT d from Domain d WHERE UPPER(d.domainName) = ?1");
+            Query paramQuery = select.setParameter(1, name.toUpperCase(Locale.getDefault()));
             if (paramQuery.getResultList().size() > 0)
             	result = (Domain) paramQuery.getSingleResult();
         }
@@ -305,10 +306,10 @@ public class DomainDaoImpl implements DomainDao {
                 if (nameList.length() > 1) {
                     nameList.append(", ");
                 }
-                nameList.append("'").append(aName).append("'");
+                nameList.append("'").append(aName.toUpperCase(Locale.getDefault())).append("'");
             }
             nameList.append(")");
-            String query = "SELECT d from Domain d WHERE d.domainName IN " + nameList.toString();
+            String query = "SELECT d from Domain d WHERE UPPER(d.domainName) IN " + nameList.toString();
 
             if (status != null) {
                 select = entityManager.createQuery(query + " AND d.status = ?1");
@@ -354,8 +355,8 @@ public class DomainDaoImpl implements DomainDao {
         List<Domain> result = null;
         Query select = null;
         if (name != null) {
-            select = entityManager.createQuery("SELECT d from Domain d WHERE d.domainName = ?1");
-            select.setParameter(1, name);
+            select = entityManager.createQuery("SELECT d from Domain d WHERE UPPER(d.domainName) = ?1");
+            select.setParameter(1, name.toUpperCase(Locale.getDefault()));
         } else {
             select = entityManager.createQuery("SELECT d from Domain d");
         }
@@ -408,9 +409,9 @@ public class DomainDaoImpl implements DomainDao {
         StringBuffer query = new StringBuffer("");
         Query select = null;
         if (name != null) {
-            String search = name.replace('*', '%');
+            String search = name.replace('*', '%').toUpperCase(Locale.getDefault());
             search.replace('?', '_');
-            query.append("SELECT d from Domain d WHERE d.domainName LIKE ?1 ");
+            query.append("SELECT d from Domain d WHERE UPPER(d.domainName) LIKE ?1 ");
             if (status != null) {
                 query.append("AND d.status = ?2");
                 select = entityManager.createQuery(query.toString());

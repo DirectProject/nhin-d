@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -89,10 +90,10 @@ public class SettingDaoImpl implements SettingDao
 	            {
 	            	queryNames.append(", ");
 	            }
-	            queryNames.append("'").append(name).append("'");
+	            queryNames.append("'").append(name.toUpperCase(Locale.getDefault())).append("'");
 	        }
 	        queryNames.append(")");
-	        String query = "DELETE FROM Setting s WHERE s.name IN " + queryNames.toString();
+	        String query = "DELETE FROM Setting s WHERE UPPER(s.name) IN " + queryNames.toString();
 	        
 	        int count = 0;
 	        Query delete = entityManager.createQuery(query);
@@ -155,10 +156,10 @@ public class SettingDaoImpl implements SettingDao
             {
                 nameList.append(", ");
             }
-            nameList.append("'").append(name).append("'");
+            nameList.append("'").append(name.toUpperCase(Locale.getDefault())).append("'");
         }
         nameList.append(")");
-        String query = "SELECT s from Setting s WHERE s.name IN " + nameList.toString();
+        String query = "SELECT s from Setting s WHERE UPPER(s.name) IN " + nameList.toString();
  
         select = entityManager.createQuery(query);
         List rs = select.getResultList();
