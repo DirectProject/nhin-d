@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Association.cs" />
     <Compile Include="MultiSlotClassification.cs" />
     <Compile Include="AxisMethods.cs" />
     <Compile Include="Classification.cs" />
