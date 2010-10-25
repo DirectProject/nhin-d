@@ -24,8 +24,9 @@ package org.nhindirect.stagent.cert.tools;
 /**
  * Application class for creating PKCS12 files from X509 DER encoded files and PKCS8 DER encoded private key files.  Unlike the Java keytool application,
  * CreatePKCS12 creates pcks12 files without a passphrase and can accept encrypted private key files.
+ * 
+ * @author Greg Meyer
  */
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -162,6 +163,9 @@ public class CreatePKCS12
 	{
 		File pkcs12File = null; 
 		
+		CreatePKCS12.certFile = certFile;
+		CreatePKCS12.keyFile = keyFile;
+		
 		// load cert file
 		try
 		{
@@ -211,7 +215,7 @@ public class CreatePKCS12
 		}
 		
 		
-		return createFile;
+		return pkcs12File;
 	}
 	
 	/*
