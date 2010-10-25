@@ -16,6 +16,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
 import org.nhind.config.Address;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.Domain;
+import org.nhind.config.EntityStatus;
 import org.nhindirect.xd.routing.RoutingResolver;
 
 /**
@@ -64,6 +65,15 @@ public class RoutingResolverImplTest extends TestCase
     protected void tearDown() throws Exception
     {
         super.tearDown();
+        
+        try
+        {
+            stopService();
+        }
+        catch (Exception e)
+        {
+            // eat it
+        }
     }
 
     private void startService() throws Exception
@@ -168,13 +178,8 @@ public class RoutingResolverImplTest extends TestCase
      */
     public void testResolverWithConfigService() throws Exception
     {
-        // TODO
-        // incorporate test below
-    }
-
-    @SuppressWarnings("unused")
-    private void todo() throws Exception
-    {
+        startService();
+        
         Address[] addrs = new Address[4];
 
         List<String> smtpEndpoints = Arrays.asList("smtp@nologs.org");
@@ -193,36 +198,58 @@ public class RoutingResolverImplTest extends TestCase
         addrs[0].setEmailAddress(smtpEndpoints.get(0));
         addrs[0].setDisplayName("displayName");
         addrs[0].setType("SMTP");
+        addrs[0].setStatus(EntityStatus.ENABLED);
 
         // XD
         addrs[1] = new Address();
         addrs[1].setEmailAddress(xdEndpoints.get(0));
         addrs[1].setDisplayName("displayName");
         addrs[1].setType("XD");
+        addrs[1].setEndpoint("xd_endpoint");
+        addrs[1].setStatus(EntityStatus.ENABLED);
 
         // LOCAL
         addrs[2] = new Address();
         addrs[2].setEmailAddress(localEndpoints.get(0));
         addrs[2].setDisplayName("displayName");
         addrs[2].setType("LOCAL");
+        addrs[2].setStatus(EntityStatus.ENABLED);
 
         // EMPTY
         addrs[3] = new Address();
         addrs[3].setEmailAddress(emptyEndpoints.get(0));
         addrs[3].setDisplayName("displayName");
+        addrs[3].setStatus(EntityStatus.ENABLED);
 
-        proxy.addAddress(addrs);
+        Domain d = new Domain();
+        d.setDomainName("domainName");
+        d.setAddress(addrs);
+        
+        proxy.addDomain(d);
 
         RoutingResolver resolver = new RoutingResolverImpl(configServiceURL);
 
         Collection<String> smtpResolved = resolver.getSmtpEndpoints(endpoints);
-        Collection<String> xdResolved = resolver.getXdEndpoints(endpoints);
-
-        assertEquals("List does not match expected size", 1, smtpResolved.size());
+        assertEquals("List does not match expected size", 2, smtpResolved.size());
         assertEquals("List does not contain expected element", (new ArrayList<String>(smtpResolved)).get(0), smtpEndpoints.get(0));
+        assertEquals("List does not contain expected element", (new ArrayList<String>(emptyEndpoints)).get(0), emptyEndpoints.get(0));
 
+        Collection<String> xdResolved = resolver.getXdEndpoints(endpoints);
         assertEquals("List does not match expected size", 1, xdResolved.size());
         assertEquals("List does not contain expected element", (new ArrayList<String>(xdResolved)).get(0), xdEndpoints.get(0));
+        assertEquals("List does not match expected size", 1, xdResolved.size());
+        assertEquals("List does not contain expected element", (new ArrayList<String>(xdResolved)).get(0), xdEndpoints.get(0));       
+
+        boolean local = resolver.isLocalEndpoint(localEndpoints.get(0));
+        assertTrue("Output does not match expected", local);
+
+        boolean nonLocal = resolver.isLocalEndpoint(emptyEndpoints.get(0));
+        assertFalse("Output does not match expected", nonLocal);
+
+        String endpoint = resolver.resolve(xdEndpoints.get(0));
+        assertEquals("Output does not match expected", addrs[1].getEndpoint(), endpoint);
+        
+        stopService();
     }
 
 }

@@ -80,9 +80,14 @@ public class RoutingResolverImpl extends RoutingResolver
     {
         Address addr = lookup(address);
 
-        // TODO: return a routing field
         if (addr != null)
+        {
+            if (StringUtils.isNotBlank(addr.getEndpoint()))
+                return addr.getEndpoint();
+
+            // fallback
             return addr.getEmailAddress();
+        }
 
         // fallback
         return address;
@@ -101,12 +106,12 @@ public class RoutingResolverImpl extends RoutingResolver
 
         Address addr = lookup(address);
 
-        if (addr != null)
+        if (addr != null && StringUtils.isNotBlank(addr.getType()))
         {
             if (StringUtils.equalsIgnoreCase(addr.getType(), "SMTP"))
                 return true;
-            else
-                return false;
+            
+            return false;
         }
 
         // fallback
@@ -126,12 +131,12 @@ public class RoutingResolverImpl extends RoutingResolver
 
         Address addr = lookup(address);
 
-        if (addr != null)
+        if (addr != null && StringUtils.isNotBlank(addr.getType()))
         {
             if (StringUtils.equalsIgnoreCase(addr.getType(), "XD"))
                 return true;
-            else
-                return false;
+            
+            return false;
         }
 
         // fallback
@@ -152,12 +157,12 @@ public class RoutingResolverImpl extends RoutingResolver
 
         Address addr = lookup(address);
 
-        if (addr != null)
+        if (addr != null && StringUtils.isNotBlank(addr.getType()))
         {
             if (StringUtils.equalsIgnoreCase(addr.getType(), "LOCAL"))
                 return true;
-            else
-                return false;
+
+            return false;
         }
 
         // fallback
@@ -168,7 +173,7 @@ public class RoutingResolverImpl extends RoutingResolver
     {
         if (proxy == null)
         {
-            LOGGER.warn("Attempt to lookup address with unititialized configuration service.");
+            LOGGER.warn("Attempt to lookup address with unititialized configuration service, falling back to default routing.");
             return null;
         }
 

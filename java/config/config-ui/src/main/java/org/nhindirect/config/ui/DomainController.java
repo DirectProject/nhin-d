@@ -261,6 +261,7 @@ public class DomainController {
 		AddressForm addressForm2 = new AddressForm();
 		
 		addressForm2.setDisplayName("");
+		addressForm2.setEndpoint("");
 		addressForm2.setEmailAddress("");
 		addressForm2.setType("");
 		addressForm2.setId(Long.parseLong(strid));
@@ -490,6 +491,7 @@ public class DomainController {
 		AddressForm addressForm2 = new AddressForm();
 		
 		addressForm2.setDisplayName("");
+		addressForm2.setEndpoint("");
 		addressForm2.setEmailAddress("");
 		addressForm2.setType("");
 		addressForm2.setId(Long.parseLong(strid));
@@ -637,6 +639,7 @@ public class DomainController {
 				// insert the new address into the Domain list of Addresses
 				String anEmail = addressForm.getEmailAddress();
 				String displayname = addressForm.getDisplayName();
+				String endpoint = addressForm.getEndpoint();
 				EntityStatus estatus = addressForm.getaStatus();
 				String etype = addressForm.getType();
 				
@@ -644,6 +647,7 @@ public class DomainController {
 				Address e = new Address();
 				e.setEmailAddress(anEmail);
 				e.setDisplayName(displayname);
+				e.setEndpoint(endpoint);
 				e.setStatus(estatus);
 				e.setType(etype);
 				
@@ -706,6 +710,7 @@ public class DomainController {
 		AddressForm addressForm2 = new AddressForm();
 		
 		addressForm2.setDisplayName("");
+		addressForm2.setEndpoint("");
 		addressForm2.setEmailAddress("");
 		addressForm2.setType("");
 		addressForm2.setId(Long.parseLong(strid));

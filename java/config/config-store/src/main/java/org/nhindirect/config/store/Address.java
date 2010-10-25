@@ -53,6 +53,8 @@ public class Address {
     private Domain domain;
 
     private String displayName;
+    
+    private String endpoint;
 
     private Calendar createTime;
 
@@ -115,6 +117,7 @@ public class Address {
             setDomain(anAddress.getDomain());
             setEmailAddress(anAddress.getEmailAddress());
             setDisplayName(anAddress.getDisplayName());
+            setEndpoint(anAddress.getEndpoint());
             setCreateTime(anAddress.getCreateTime());
             setUpdateTime(anAddress.getUpdateTime());
             setStatus(anAddress.getStatus());
@@ -212,6 +215,26 @@ public class Address {
     }
 
     /**
+     * Get the value of endpoint.
+     * 
+     * @return the value of entpoint.
+     */
+    @Column(name = "endpoint", length = 255)
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    /**
+     * Set the value of endpoint.
+     * 
+     * @param anEndpoint
+     *            The value of endpoint.
+     */
+    public void setEndpoint(String anEndpoint) {
+        endpoint = anEndpoint;
+    }
+    
+    /**
      * Get the value of createTime.
      * 
      * @return the value of createTime.
@@ -299,8 +322,14 @@ public class Address {
      */
     @Override
     public String toString() {
-        return "[ID: " + getId() + " | Address: " + getEmailAddress() + " | For: " + getDisplayName() + " | Domain: "
-                + getDomain().getDomainName() + "]";
+        return "[ID: " + getId() + 
+               " | Address: " + getEmailAddress() + 
+               " | For: " + getDisplayName() + 
+               " | Domain: " + getDomain().getDomainName() + 
+               " | Endpoint: " + getEndpoint() +
+               " | Status: " + getStatus() +
+               " | Type: " + getType() + 
+               "]";
     }
 
     /**

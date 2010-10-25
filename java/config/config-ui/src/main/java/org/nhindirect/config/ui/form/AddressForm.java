@@ -8,6 +8,8 @@ public class AddressForm {
     private Long id;
 
     private String displayName;
+    
+    private String endpoint;
 
     private EntityStatus aStatus;
 
@@ -36,6 +38,14 @@ public class AddressForm {
 	public String getDisplayName() {
 		return displayName;
 	}
+	
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
+    }
 
 	public void setType(String type) {
 		this.type = type;

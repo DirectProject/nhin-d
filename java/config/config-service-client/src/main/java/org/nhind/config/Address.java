@@ -14,6 +14,8 @@ public class Address  implements java.io.Serializable {
 
     private java.lang.String emailAddress;
 
+    private java.lang.String endpoint;
+
     private org.nhind.config.EntityStatus status;
 
     private java.lang.String type;
@@ -29,6 +31,7 @@ public class Address  implements java.io.Serializable {
            java.util.Calendar createTime,
            java.lang.String displayName,
            java.lang.String emailAddress,
+           java.lang.String endpoint,
            org.nhind.config.EntityStatus status,
            java.lang.String type,
            java.util.Calendar updateTime,
@@ -36,6 +39,7 @@ public class Address  implements java.io.Serializable {
            this.createTime = createTime;
            this.displayName = displayName;
            this.emailAddress = emailAddress;
+           this.endpoint = endpoint;
            this.status = status;
            this.type = type;
            this.updateTime = updateTime;
@@ -100,6 +104,26 @@ public class Address  implements java.io.Serializable {
      */
     public void setEmailAddress(java.lang.String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+
+    /**
+     * Gets the endpoint value for this Address.
+     * 
+     * @return endpoint
+     */
+    public java.lang.String getEndpoint() {
+        return endpoint;
+    }
+
+
+    /**
+     * Sets the endpoint value for this Address.
+     * 
+     * @param endpoint
+     */
+    public void setEndpoint(java.lang.String endpoint) {
+        this.endpoint = endpoint;
     }
 
 
@@ -203,6 +227,9 @@ public class Address  implements java.io.Serializable {
             ((this.emailAddress==null && other.getEmailAddress()==null) || 
              (this.emailAddress!=null &&
               this.emailAddress.equals(other.getEmailAddress()))) &&
+            ((this.endpoint==null && other.getEndpoint()==null) || 
+             (this.endpoint!=null &&
+              this.endpoint.equals(other.getEndpoint()))) &&
             ((this.status==null && other.getStatus()==null) || 
              (this.status!=null &&
               this.status.equals(other.getStatus()))) &&
@@ -232,6 +259,9 @@ public class Address  implements java.io.Serializable {
         }
         if (getEmailAddress() != null) {
             _hashCode += getEmailAddress().hashCode();
+        }
+        if (getEndpoint() != null) {
+            _hashCode += getEndpoint().hashCode();
         }
         if (getStatus() != null) {
             _hashCode += getStatus().hashCode();
@@ -275,6 +305,13 @@ public class Address  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("emailAddress");
         elemField.setXmlName(new javax.xml.namespace.QName("", "emailAddress"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("endpoint");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "endpoint"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
