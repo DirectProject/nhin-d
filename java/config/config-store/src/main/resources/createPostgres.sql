@@ -43,6 +43,7 @@ CREATE TABLE address (
 	eMailAddress varchar(400) NOT NULL,
 	domainId    bigint NOT NULL references domain(id),
 	displayName varchar(100) NOT NULL,
+    endpoint    varchar(255) NOT NULL,
 	createTime  timestamp with time zone DEFAULT now() NOT NULL,
 	updateTime  timestamp with time zone DEFAULT now() NOT NULL,
 	type        varchar(64) NULL,
