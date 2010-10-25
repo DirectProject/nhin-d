@@ -283,7 +283,7 @@ namespace Health.Direct.Config.Tools.Command
 
         public IEnumerable<string> MatchCommandNames(string pattern)
         {
-            Regex regex = new Regex(pattern);
+            Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
             //
             // Do a prefix match. Note: if needed, we can speed this up since the name array is sorted. 
             //
