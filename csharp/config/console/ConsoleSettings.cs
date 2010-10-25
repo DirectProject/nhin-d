@@ -24,6 +24,14 @@ namespace Health.Direct.Config.Console
     [XmlRoot("ConsoleSettings")]
     public class ConsoleSettings
     {
+        public event EventHandler HostAndPortChanged;
+
+        private void InvokeHostAndPortChanged()
+        {
+            EventHandler changed = HostAndPortChanged;
+            if (changed != null) changed(this, EventArgs.Empty);
+        }
+
         [XmlElement]
         public ClientSettings DomainManager
         {
@@ -51,13 +59,15 @@ namespace Health.Direct.Config.Console
             get;
             set;
         }
-        
-        public void SetHost(string host,  int port)
+
+        public void SetHost(string host, int port)
         {
             this.DomainManager.SetHost(host, port);
             this.AddressManager.SetHost(host, port);
             this.CertificateManager.SetHost(host, port);
             this.AnchorManager.SetHost(host, port);
+
+            InvokeHostAndPortChanged();
         }
         
         public void Validate()
@@ -86,7 +96,7 @@ namespace Health.Direct.Config.Console
         
         public static ConsoleSettings Load()
         {
-            return ConsoleSettings.Load("ConfigConsoleSettings.xml");
+            return Load("ConfigConsoleSettings.xml");
         }
         
         public static ConsoleSettings Load(string path)

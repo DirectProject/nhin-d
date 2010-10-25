@@ -27,19 +27,25 @@ namespace Health.Direct.Config.Console.Command
     /// <summary>
     /// Commands to manage Addresses
     /// </summary>
-    public class AddressCommands : CommandsBase
+    public class AddressCommands : CommandsBase<AddressManagerClient>
     {
         const int DefaultChunkSize = 25;
-                
+
         //---------------------------------------
         //
         // Commands
         //
         //---------------------------------------
+
+        internal AddressCommands(ConfigConsole console, Func<AddressManagerClient> client) : base(console, client)
+        {
+        }
+
         /// <summary>
         /// Add a new email address
         /// </summary>
-        public void Command_Address_Add(string[] args)
+        [Command(Name = "Address_Add", Usage = AddressAddUsage)]
+        public void AddressAdd(string[] args)
         {
             MailAddress address = new MailAddress(args.GetRequiredValue(0));            
             string addressType = args.GetOptionalValue(1, "SMTP");
@@ -49,158 +55,157 @@ namespace Health.Direct.Config.Console.Command
                 displayName = address.DisplayName;
             }
             
-            if (ConfigConsole.Current.AddressClient.AddressExists(address))
+            if (Client.AddressExists(address))
             {
-                System.Console.WriteLine("Exists {0}", address);
+                WriteLine("Exists {0}", address);
             }
             else
             {
-                Domain domain = DomainCommands.DomainGet(ConfigConsole.Current.DomainClient, address.Host);
-                Address newAddress = new Address(domain.ID, address.Address, displayName);
-                newAddress.Type = addressType;
-                
-                ConfigConsole.Current.AddressClient.AddAddress(newAddress);
-                System.Console.WriteLine("Added {0}", address);
+                Domain domain = GetCommand<DomainCommands>().DomainGet(address.Host);
+                Address newAddress = new Address(domain.ID, address.Address, displayName) {Type = addressType};
+
+                Client.AddAddress(newAddress);
+                WriteLine("Added {0}", address);
             }
-        }                
-        public void Usage_Address_Add()
-        {
-            System.Console.WriteLine("Add a new email address. The address domain must already exist.");
-            System.Console.WriteLine("    emailAddress [addressType] [displayName]");
-            System.Console.WriteLine("\t emailAddress: valid email address. Verifies that the domain already exists.");
-            System.Console.WriteLine("\t addressType: (optional) such as XDR. Used for routing. default:SMTP");
-            System.Console.WriteLine("\t displayName: (optional)");
         }
-        
+
+        private const string AddressAddUsage
+            = "Add a new email address. The address domain must already exist."
+              + CRLF + "    emailAddress [addressType] [displayName]"
+              + CRLF + "\t emailAddress: valid email address. Verifies that the domain already exists."
+              + CRLF + "\t addressType: (optional) such as XDR. Used for routing. default:SMTP"
+              + CRLF + "\t displayName: (optional)";
+
         /// <summary>
         /// Set the display name for an address
         /// </summary>
         /// <param name="args"></param>
-        public void Command_Address_DisplayName_Set(string[] args)
+        [Command(Name = "Address_DisplayName_Set", Usage= AddressDisplayNameSetUsage)]
+        public void AddressDisplayNameSet(string[] args)
         {
             string emailAddress = args.GetRequiredValue(0);
             string displayName = args.GetRequiredValue(1);
             
-            Address address = ConfigConsole.Current.AddressClient.GetAddress(emailAddress);
+            Address address = Client.GetAddress(emailAddress);
             if (address == null)
             {
                 throw new ArgumentException(string.Format("{0} not found", emailAddress));
             }
             
             address.DisplayName = displayName;
-            ConfigConsole.Current.AddressClient.UpdateAddress(address);
-        }        
-        public void Usage_Address_DisplayName_Set()
-        {
-            System.Console.WriteLine("Set the display name for the given address");
-            System.Console.WriteLine("    emailAddress displayname");
-            System.Console.WriteLine("\t emailAddress: existing email address.");
-            System.Console.WriteLine("\t displayname: new display name.");
+            Client.UpdateAddress(address);
         }
+
+        private const string AddressDisplayNameSetUsage
+            = "Set the display name for the given address"
+              + CRLF + "    emailAddress displayname"
+              + CRLF + "\t emailAddress: existing email address."
+              + CRLF + "\t displayname: new display name.";
         
         /// <summary>
         /// Retrieve an existing address
         /// </summary>
-        public void Command_Address_Get(string[] args)
+        [Command(Name = "Address_Get", Usage = AddressGetUsage)]
+        public void AddressGet(string[] args)
         {
             MailAddress email = new MailAddress(args.GetRequiredValue(0));
             
             Address address = GetAddress(email.Address);
             Print(address);
         }
-        public void Usage_Address_Get()
-        {
-            System.Console.WriteLine("Retrieve an existing address.");
-            System.Console.WriteLine("    emailAddress");
-        }
+
+        private const string AddressGetUsage
+            = "Retrieve an existing address."
+              + CRLF + "    emailAddress";
         
         /// <summary>
         /// Remove an existing email address
         /// </summary>
-        public void Command_Address_Remove(string[] args)
+        [Command(Name = "Address_Remove", Usage = AddressRemoveUsage)]
+        public void AddressRemove(string[] args)
         {
             MailAddress address = new MailAddress(args.GetRequiredValue(0));
-            ConfigConsole.Current.AddressClient.RemoveAddress(address);
+            Client.RemoveAddress(address);
+
         }
-        public void Usage_Address_Remove()
-        {
-            System.Console.WriteLine("Remove an existing address.");
-            System.Console.WriteLine("    emailAddress");
-        }
+
+        private const string AddressRemoveUsage
+            = "Remove an existing address."
+              + CRLF + "    emailAddress";
         
         /// <summary>
         /// List all email addresses in a domain
         /// </summary>
-        public void Command_Address_List(string[] args)
+        [Command(Name = "Address_List", Usage = AddressListUsage, UsageParam = DefaultChunkSize)]
+        public void AddressList(string[] args)
         {
             string domainName = args.GetRequiredValue(0);
-            int chunkSize = args.GetOptionalValue<int>(1, DefaultChunkSize);
+            int chunkSize = args.GetOptionalValue(1, DefaultChunkSize);
          
-            Print(ConfigConsole.Current.AddressClient.EnumerateDomainAddresses(domainName, chunkSize));
-        }        
-        public void Usage_Address_List()
-        {
-            System.Console.WriteLine("List addresses for a domain.");
-            System.Console.WriteLine("   domainName [chunkSize]");
-            System.Console.WriteLine("\t domainName: list addresses for this domain");
-            System.Console.WriteLine("\tchunkSize: (optional) Number of addresses to download from service at a time. Default is {0}", DefaultChunkSize);
+            Print(Client.EnumerateDomainAddresses(domainName, chunkSize));
         }
-        
+
+        private const string AddressListUsage
+            = "List addresses for a domain."
+              + CRLF + "   domainName [chunkSize]"
+              + CRLF + "\t domainName: list addresses for this domain"
+              + CRLF + "\t chunkSize: (optional) Number of addresses to download from service at a time. Default is {0}";
+
         /// <summary>
         /// List all email addresses
         /// </summary>
         /// <param name="args"></param>
-        public void Command_Address_ListAll(string[] args)
+        [Command(Name = "Address_ListAll", Usage = AddressListAllUsage)]
+        public void AddressListAll(string[] args)
         {
-            int chunkSize = args.GetOptionalValue<int>(0, DefaultChunkSize);
-            Print(ConfigConsole.Current.AddressClient.EnumerateAddresses(chunkSize));
+            int chunkSize = args.GetOptionalValue(0, DefaultChunkSize);
+            Print(Client.EnumerateAddresses(chunkSize));
         }
-        public void Usage_Address_ListAll()
-        {
-            System.Console.WriteLine("List all addresses.");
-            System.Console.WriteLine("    [chunkSize]");
-            System.Console.WriteLine("\tchunkSize: Number of addresses to download from service at a time.");
-        }
+
+        private const string AddressListAllUsage
+            = "List all addresses."
+            + CRLF + "    [chunkSize]"
+            + CRLF + "\tchunkSize: Number of addresses to download from service at a time.";
         
         /// <summary>
         /// Set the status of a specific email address
         /// </summary>
         /// <param name="args"></param>
-        public void Command_Address_Status_Set(string[] args)
+        [Command(Name = "Address_Status_Set", Usage = AddressStatusSetUsage)]
+        public void AddressStatusSet(string[] args)
         {
             MailAddress emailAddress = new MailAddress(args.GetRequiredValue(0));
             EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
-            
-            Address address = ConfigConsole.Current.AddressClient.GetAddress(emailAddress);
+
+            Address address = Client.GetAddress(emailAddress);
             if (address == null)
             {
                 throw new ArgumentException("Address not found");
             }
-            
+
             address.Status = status;
-            ConfigConsole.Current.AddressClient.UpdateAddress(address);
-        }        
-        public void Usage_Address_Status_Set()
-        {
-            System.Console.WriteLine("Set the status of an address");
-            System.Console.WriteLine("    emailAddress status");
-            System.Console.WriteLine("\t emailAddress: set the status of this address");
-            System.Console.WriteLine("\t status: {0}", EntityStatusString);
+            Client.UpdateAddress(address);
         }
+
+        private const string AddressStatusSetUsage
+            = "Set the status of an address"
+              + CRLF + "    emailAddress status"
+              + CRLF + "\t emailAddress: set the status of this address"
+              + CRLF + "\t status: New | Enabled | Disabled";
         
         /// <summary>
         /// Return # of addresses in a domain
         /// </summary>
-        public void Command_Address_Count(string[] args)
+        [Command(Name = "Address_Count", Usage = AddressCountUsage)]
+        public void AddressCount(string[] args)
         {
             string domainName = args.GetRequiredValue(0);
-            System.Console.WriteLine("{0} addresses", ConfigConsole.Current.AddressClient.GetAddressCount(domainName));
+            WriteLine("{0} addresses", Client.GetAddressCount(domainName));
         }
-        public void Usage_Address_Count()
-        {
-            System.Console.WriteLine("Retrieve # of addresses in given domain.");
-            System.Console.WriteLine("  domainName");
-        }
+
+        private const string AddressCountUsage
+            = "Retrieve # of addresses in given domain."
+            + CRLF + "  domainName";
 
         //---------------------------------------
         //
@@ -210,10 +215,10 @@ namespace Health.Direct.Config.Console.Command
         
         internal Address GetAddress(string email)
         {
-            return GetAddress(ConfigConsole.Current.AddressClient, email);
+            return GetAddress(Client, email);
         }
         
-        internal static Address GetAddress(AddressManagerClient client, string email)
+        internal Address GetAddress(AddressManagerClient client, string email)
         {
             Address address = client.GetAddress(email);
             if (address == null)
@@ -224,7 +229,7 @@ namespace Health.Direct.Config.Console.Command
             return address;
         }
                 
-        internal static void Print(IEnumerable<Address> addresses)
+        internal void Print(IEnumerable<Address> addresses)
         {
             foreach(Address address in addresses)
             {
@@ -233,7 +238,7 @@ namespace Health.Direct.Config.Console.Command
             }
         }
         
-        internal static void Print(Address address)
+        internal void Print(Address address)
         {
             CommandUI.Print("Email", address.EmailAddress);
             CommandUI.Print("ID", address.ID);

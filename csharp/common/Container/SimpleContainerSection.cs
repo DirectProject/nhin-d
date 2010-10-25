@@ -19,6 +19,7 @@ using System.Configuration;
 
 namespace Health.Direct.Common.Container
 {
+    /*
     public class SimpleContainerSection : ConfigurationSection
     {
         public SimpleContainerSection()
@@ -48,4 +49,5 @@ namespace Health.Direct.Common.Container
             get; set;
         }
     }
+    */
 }

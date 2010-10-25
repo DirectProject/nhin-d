@@ -19,40 +19,41 @@ using Health.Direct.Config.Tools.Command;
 
 namespace Health.Direct.Config.Console.Command
 {
-    public class SettingsCommands
+    public class SettingsCommands : CommandsBase
     {
-        public void Command_Settings_Host_Get(string[] args)
+        internal SettingsCommands(ConfigConsole console) : base(console)
         {
-            System.Console.WriteLine("DomainManager {0}", GetHost(ConfigConsole.Settings.DomainManager.Url));
-            System.Console.WriteLine("AddressManager {0}", GetHost(ConfigConsole.Settings.AddressManager.Url));
-            System.Console.WriteLine("CertificateManager {0}", GetHost(ConfigConsole.Settings.CertificateManager.Url));
-            System.Console.WriteLine("AnchorManager {0}", GetHost(ConfigConsole.Settings.AnchorManager.Url));
-        }        
-        public void Usage_Settings_Host_Get()
-        {
-            System.Console.WriteLine("Get hosts used by config service clients");
         }
-        
-        public void Command_Settings_Host_Set(string[] args)
+
+        [Command(Name = "Settings_Host_Get",
+            Usage = "Get hosts used by config service clients")]
+        public void SettingsHostGet(string[] args)
+        {
+            WriteLine("DomainManager {0}", GetHost(CurrentConsole.Settings.DomainManager.Url));
+            WriteLine("AddressManager {0}", GetHost(CurrentConsole.Settings.AddressManager.Url));
+            WriteLine("CertificateManager {0}", GetHost(CurrentConsole.Settings.CertificateManager.Url));
+            WriteLine("AnchorManager {0}", GetHost(CurrentConsole.Settings.AnchorManager.Url));
+        }
+
+        [Command(Name = "Settings_Host_Set", Usage = SettingsHostSetUsage)]
+        public void SettingsHostSet(string[] args)
         {
             string host = args.GetRequiredValue(0);
-            int port = args.GetOptionalValue<int>(1, -1);            
-            ConfigConsole.Current.SetHost(host, port);
+            int port = args.GetOptionalValue(1, -1);
+            CurrentConsole.Settings.SetHost(host, port);
             
-            System.Console.WriteLine("Host set to {0}", host);
-        }        
-        public void Usage_Settings_Host_Set()
-        {
-            System.Console.WriteLine("Specify the host name and (optionally) the port on which the config service is running");
-            System.Console.WriteLine("    host [port]");
-            System.Console.WriteLine("E.g. foomachine OR foomachine 83");
+            WriteLine("Host set to {0}", host);
         }
-                
-        string GetHost(string url)
+
+        private const string SettingsHostSetUsage
+            = "Specify the host name and (optionally) the port on which the config service is running"
+              + CRLF + "    host [port]"
+              + CRLF + "E.g. foomachine OR foomachine 83";
+
+        static string GetHost(string url)
         {
             Uri uri = new Uri(url);
             return (uri.Host + ':' + uri.Port);
         }
-
     }
 }

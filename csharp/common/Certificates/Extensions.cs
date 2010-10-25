@@ -34,58 +34,7 @@ namespace Health.Direct.Common.Certificates
         // X509Store
         //
         //---------------------------------------
-        /// <summary>
-        /// Opens an existing <see cref="X509Store"/> in read-only mode.
-        /// </summary>
-        /// <param name="location">The <see cref="StoreLocation"/> of the store to open.</param>
-        /// <returns>The newly opened <see cref="X509Store"/></returns>
-        public static X509Store OpenStoreRead(StoreLocation location)
-        {
-            X509Store store = new X509Store(location);
-            store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
-            return store;
-        }
 
-        /// <summary>
-        /// Opens a <see cref="X509Store"/> in read-write-only mode,
-        /// creating it if necessary
-        /// </summary>
-        /// <param name="location">The <see cref="StoreLocation"/> of the store to open.</param>
-        /// <returns>The newly opened <see cref="X509Store"/></returns>
-        public static X509Store OpenStoreReadWrite(StoreLocation location)
-        {
-            X509Store store = new X509Store(location);
-            store.Open(OpenFlags.ReadWrite);
-            return store;
-        }
-
-
-        /// <summary>
-        /// Opens a named existing <see cref="X509Store"/> in read-only mode.
-        /// </summary>
-        /// <param name="location">The <see cref="StoreLocation"/> of the store to open.</param>
-        /// <param name="storeName">The name of the store to open</param>
-        /// <returns>The newly opened <see cref="X509Store"/></returns>
-        public static X509Store OpenStoreRead(string storeName, StoreLocation location)
-        {
-            X509Store store = new X509Store(storeName, location);
-            store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
-            return store;
-        }
-
-        /// <summary>
-        /// Opens a named <see cref="X509Store"/> in read-write mode, creating it if necessary.
-        /// </summary>
-        /// <param name="location">The <see cref="StoreLocation"/> of the store to open.</param>
-        /// <param name="storeName">The name of the store to open</param>
-        /// <returns>The newly opened <see cref="X509Store"/></returns>
-        public static X509Store OpenStoreReadWrite(string storeName, StoreLocation location)
-        {
-            X509Store store = new X509Store(storeName, location);
-            store.Open(OpenFlags.ReadWrite);
-            return store;
-        }
-        
         /// <summary>
         /// Adds an enumeration of certificates to a store
         /// </summary>
@@ -444,19 +393,18 @@ namespace Health.Direct.Common.Certificates
             return cert.HasValidDateRange(DateTime.Now);     
         }
 
-        // TODO: "now" a lousy name...
         /// <summary>
         /// Tests if the supplied certificate is valid by date as of the supplied <see cref="DateTime"/>
         /// </summary>
         /// <param name="cert">The certificate to test</param>
-        /// <param name="now">The <see cref="DateTime"/> to test this certificate against.</param>
+        /// <param name="time">The <see cref="DateTime"/> to test this certificate against.</param>
         /// <returns><c>true</c> if it is valid by date, <c>false</c> otherwise.</returns>
-        public static bool HasValidDateRange(this X509Certificate2 cert, DateTime now)
+        public static bool HasValidDateRange(this X509Certificate2 cert, DateTime time)
         {
             //
             // Times are in local time
             //
-            return (cert.NotBefore < now && now < cert.NotAfter);
+            return (cert.NotBefore < time && time < cert.NotAfter);
         }
         
         /// <summary>
@@ -469,19 +417,18 @@ namespace Health.Direct.Common.Certificates
             return cert.HasExpired(DateTime.Now);
         }
 
-        // TODO: "now" a bad parameter name...
         /// <summary>
         /// Tests if a certificate has expired at the indicated <see cref="DateTime"/>.
         /// </summary>
         /// <param name="cert">The certificate to test</param>
-        /// <param name="now">The <see cref="DateTime"/> to test this certificate against.</param>
+        /// <param name="time">The <see cref="DateTime"/> to test this certificate against.</param>
         /// <returns><c>true</c> if the certificate is expired at the indicated <see cref="DateTime"/>, <c>false if not</c></returns>
-        public static bool HasExpired(this X509Certificate2 cert, DateTime now)
+        public static bool HasExpired(this X509Certificate2 cert, DateTime time)
         {
             //
             // Times are in local time
             //
-            return (now < cert.NotAfter);
+            return (time < cert.NotAfter);
         }            
         
         // TODO: Should be name ExtractExtension to be consistent with ExtractFoo above

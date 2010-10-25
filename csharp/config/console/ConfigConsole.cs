@@ -24,48 +24,54 @@ using Health.Direct.Config.Tools.Command;
 
 namespace Health.Direct.Config.Console
 {
-    internal class ConfigConsole
+    public class ConfigConsole
     {
-        internal static ConsoleSettings Settings;
-        internal static ConfigConsole Current;
+        readonly ConsoleSettings m_settings;
+        readonly Commands m_commands;
+
+        private DomainManagerClient m_domainClient;
+        private AddressManagerClient m_addressClient;
+        private CertificateStoreClient m_certificateClient;
+        private AnchorStoreClient m_anchorClient;
         
-        Commands m_commands;
-        
-        internal ConfigConsole()
+        internal ConfigConsole(ConsoleSettings settings)
         {
+            m_settings = settings;
+
             this.CreateClients();
 
             m_commands = new Commands("ConfigConsole");
             m_commands.Error += PrintError;
             
-            m_commands.Register(new DomainCommands());
-            m_commands.Register(new AddressCommands());
-            m_commands.Register(new CertificateCommands());
-            m_commands.Register(new AnchorCommands());
-            m_commands.Register(new TestCommands());
-            m_commands.Register(new SettingsCommands());            
+            m_commands.Register(new AddressCommands(this, () => m_addressClient));
+            m_commands.Register(new AnchorCommands(this, () => m_anchorClient));
+            m_commands.Register(new CertificateCommands(this, () => m_certificateClient));
+            m_commands.Register(new DomainCommands(this, () => m_domainClient, () => m_addressClient));
+            m_commands.Register(new SettingsCommands(this));
+            m_commands.Register(new TestCommands(this));
+
+            m_settings.HostAndPortChanged += HostAndPortChanged;
         }
 
-        internal DomainManagerClient DomainClient;
-        internal AddressManagerClient AddressClient;
-        internal CertificateStoreClient CertificateClient;
-        internal AnchorStoreClient AnchorClient;
-        
-        internal void SetHost(string host, int port)
-        {        
-            Settings.SetHost(host, port);     
-            this.CreateClients();        
+        public ConsoleSettings Settings
+        {
+            get { return m_settings; }
+        }
+
+        private void HostAndPortChanged(object sender, EventArgs e)
+        {
+            this.CreateClients();
         }
         
         void CreateClients()
         {
-            DomainClient = Settings.DomainManager.CreateDomainManagerClient();
-            AddressClient = Settings.AddressManager.CreateAddressManagerClient();
-            CertificateClient = Settings.CertificateManager.CreateCertificateStoreClient();
-            AnchorClient = Settings.AnchorManager.CreateAnchorStoreClient();
+            m_domainClient = m_settings.DomainManager.CreateDomainManagerClient();
+            m_addressClient = m_settings.AddressManager.CreateAddressManagerClient();
+            m_certificateClient = m_settings.CertificateManager.CreateCertificateStoreClient();
+            m_anchorClient = m_settings.AnchorManager.CreateAnchorStoreClient();
         }
         
-        internal bool Run(string[] args)
+        bool Run(string[] args)
         {
             if (args != null && args.Length > 0)
             {
@@ -78,16 +84,16 @@ namespace Health.Direct.Config.Console
         
         static void Main(string[] args)
         {
-            ConfigConsole.Settings = ConsoleSettings.Load();
-            ConfigConsole.Current = new ConfigConsole();
-            bool result = ConfigConsole.Current.Run(args);
+            ConfigConsole console = new ConfigConsole(ConsoleSettings.Load());
+
+            bool result = console.Run(args);
             if (!result && Environment.ExitCode == 0)
             {
                 Environment.ExitCode = -1;
             }
         }
-        
-        void PrintError(Exception ex)
+
+        static void PrintError(Exception ex)
         {
             FaultException<ConfigStoreFault> fault = ex as FaultException<ConfigStoreFault>;
             if (fault != null)
@@ -101,6 +107,12 @@ namespace Health.Direct.Config.Console
             {
                 System.Console.WriteLine(ex.Message);
             }
-        }        
+        }
+
+        public T GetCommand<T>()
+            where T : class
+        {
+            return m_commands.GetCommand<T>();
+        }
     }
 }
