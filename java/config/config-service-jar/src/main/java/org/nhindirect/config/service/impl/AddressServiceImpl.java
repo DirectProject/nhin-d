@@ -21,7 +21,10 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.config.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.jws.WebService;
 
@@ -88,8 +91,11 @@ public class AddressServiceImpl implements AddressService {
      */
     public Collection<Address> getAddress(Collection<String> addressNames, EntityStatus status)
             throws ConfigurationServiceException {
-        // TODO Auto-generated method stub
-        return null;
+        if (addressNames == null || addressNames.size() == 0)
+            return Collections.emptyList();
+
+        List<String> addresses = new ArrayList<String>(addressNames);
+        return dao.listAddresses(addresses, status);
     }
 
     /*

@@ -199,13 +199,22 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 							            <form:errors path="displayName" cssClass="error" />
 					</form:label></th>
 					<th><form:input path="displayName" /></th>
+					<td>&nbsp;</td>
 				</tr>
 				<tr>
 					<th><form:label path="emailAddress">E-Mail Address:
 							            <form:errors path="emailAddress" cssClass="error" />
 					</form:label></th>
 					<th><form:input path="emailAddress" /></th>
+                    <td>&nbsp;</td>
 				</tr>
+                <tr>
+                    <th><form:label path="endpoint">Endpoint:
+                                        <form:errors path="endpoint" cssClass="error" />
+                    </form:label></th>
+                    <th><form:input path="endpoint" /></th>
+                    <td>(an XD* endpoint, or actual email destination)</td>
+                </tr>
 				<tr>
 					<th><form:label path="aStatus">Status: 
 						                <form:errors path="aStatus" cssClass="error" />
@@ -213,12 +222,14 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 					<th><form:select path="aStatus">
 						<form:options items="${statusList}" />
 					</form:select></th>
+                    <td>&nbsp;</td>
 				</tr>
 				<tr>
 					<th><form:label path="type">Type:
 							            <form:errors path="type" cssClass="error" />
 					</form:label></th>
 					<th><form:input path="type" /></th>
+                    <td>&nbsp;</td>
 				</tr>
 			</table>
 			<button name="submitType" id="submitType" type="submit"
@@ -238,11 +249,12 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 			class="tablesorter">
 			<thead>
 				<tr>
-					<th width="30%">Email Address</th>
-					<th width="25%">Display Name</th>
+					<th width="25%">Email Address</th>
+					<th width="18%">Display Name</th>
+                    <th width="17%">Endpoint</th>
 					<th width="15%">Type</th>
 					<th width="15%">Status</th>
-					<th width="15%">Sel</th>
+					<th width="10%">Sel</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -257,23 +269,25 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 							<tr class="oddRow">
 						</c:otherwise>
 					</c:choose>
-					<td width="30%"><a
+					<td width="25%"><a
 						href='../address?id=<c:out value="${address.id}"/>'>'${address.emailAddress}'</a></td>
-					<td width="25%"><c:out value="${address.displayName}" /></td>
+					<td width="18%"><c:out value="${address.displayName}" /></td>
+					<td width="17%"><c:out value="${address.endpoint}" /></td>
 					<td width="15%"><c:out value="${address.type}" /></td>
 					<td width="15%"><c:out value="${address.status}" /></td>
-					<td width="15%"><form:checkbox path="remove"
+					<td width="10%"><form:checkbox path="remove"
 						value="${address.id}" /></td>
 					</tr>
 				</c:forEach>
 			</tbody>
 			<tfoot>
 				<tr>
-					<th width="30%"></th>
 					<th width="25%"></th>
+					<th width="18%"></th>
+                    <th width="17%"></th>					
 					<th width="15%"></th>
 					<th width="15%"></th>
-					<th width="15%"></th>
+					<th width="10%"></th>
 				</tr>
 			</tfoot>
 		</table>

@@ -101,6 +101,7 @@ public class AddressDaoImpl implements AddressDao {
         if (item != null) {
             Address inDb = entityManager.find(Address.class, item.getId());
             inDb.setDisplayName(item.getDisplayName());
+            inDb.setEndpoint(item.getEndpoint());
             inDb.setDomain(item.getDomain());
             inDb.setEmailAddress(item.getEmailAddress());
             inDb.setType(item.getType());
@@ -204,7 +205,7 @@ public class AddressDaoImpl implements AddressDao {
             String query = "SELECT a from Address a WHERE a.emailAddress IN " + nameList.toString();
 
             if (status != null) {
-                select = entityManager.createQuery(query + " AND d.status = ?1");
+                select = entityManager.createQuery(query + " AND a.status = ?1");
                 select.setParameter(1, status);
             } else {
                 select = entityManager.createQuery(query);
@@ -248,7 +249,7 @@ public class AddressDaoImpl implements AddressDao {
             String query = "SELECT a from Address a WHERE a.domain = ?1";
 
             if (status != null) {
-                select = entityManager.createQuery(query + " AND d.status = ?2");
+                select = entityManager.createQuery(query + " AND a.status = ?2");
                 select.setParameter(1, domain);
                 select.setParameter(2, status);
             } else {
