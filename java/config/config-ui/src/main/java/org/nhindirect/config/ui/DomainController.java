@@ -20,14 +20,22 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 import java.io.IOException;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
+import javax.security.auth.x500.X500Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -69,6 +77,7 @@ import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.Anchor;
 import java.io.FileOutputStream;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -97,6 +106,46 @@ public class DomainController {
 		if (log.isDebugEnabled()) log.debug("DomainController initialized");
 	}
 	
+	private Collection<AnchorForm> convertAnchors(Collection<Anchor> anchors){
+		Collection<AnchorForm> form = new ArrayList<AnchorForm>();
+		for (Iterator iter = anchors.iterator(); iter.hasNext();) {
+			Anchor t = (Anchor) iter.next();
+			AnchorForm e = new AnchorForm();
+			e.setCertificateData(t.getData());
+			e.setCertificateId(t.getCertificateId());
+			e.setCreateTime(t.getCreateTime());
+			e.setId(t.getId());
+			e.setIncoming(t.isIncoming());
+			e.setOutgoing(t.isOutgoing());
+			e.setOwner(t.getOwner());
+			e.setStatus(t.getStatus());
+			e.setThumbprint(t.getThumbprint());
+			e.setValidEndDate(t.getValidEndDate());
+			e.setValidStartDate(t.getValidStartDate());
+
+            String theUser = "";
+            if (t.getData() != null)
+            {
+                    // get the owner from the certificate information
+                    // first transform into a certificate
+                    CertContainer cont;
+					try {
+						cont = toCertContainer(t.getData());
+	                    if (cont != null && cont.getCert() != null)
+	                    {
+	                            // now get the owner info from the cert
+	                            theUser = getEmailAddress(cont.getCert().getSubjectX500Principal());
+	                    }
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+            }
+			e.setTrusteddomainoruser(theUser);
+			form.add(e);
+		}			
+		
+		return form;
+	}
 	@RequestMapping(value="/addanchor", method = RequestMethod.POST)
 	public ModelAndView addAnchor (
 								@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
@@ -123,6 +172,20 @@ public class DomainController {
 				try{
 					if (!anchorForm.getFileData().isEmpty()) {
 						byte[] bytes = anchorForm.getFileData().getBytes();
+                       String theUser = "";
+                        if (bytes != null)
+                        {
+                                // get the owner from the certificate information
+                                // first transform into a certificate
+                                CertContainer cont = toCertContainer(bytes);
+                                if (cont != null && cont.getCert() != null)
+                                {
+                                        // now get the owner info from the cert
+                                        theUser = getEmailAddress(cont.getCert().getSubjectX500Principal());
+                                        anchorForm.setTrusteddomainoruser(theUser);
+                                }
+                        }
+
 						// store the bytes somewhere
 						Anchor ank = new Anchor();
 						ank.setData(bytes);
@@ -154,7 +217,10 @@ public class DomainController {
 					model.addAttribute("certificatesResults", certs);
 					 
 					Collection<Anchor> anchors = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-					model.addAttribute("anchorsResults", anchors);
+					// convert Anchor to AnchorForm
+					Collection<AnchorForm> convertedanchors = convertAnchors(anchors);					
+					// now set anchorsResults
+					model.addAttribute("anchorsResults", convertedanchors);
 					
 					CertificateForm cform = new CertificateForm();
 					cform.setId(dom.getId());
@@ -305,7 +371,11 @@ public class DomainController {
 			}
 			
 			model.addAttribute("certificatesResults", certlist);
-			model.addAttribute("anchorsResults", anchorlist);			
+			// convert Anchor to AnchorForm
+			Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);					
+			// now set anchorsResults
+			model.addAttribute("anchorsResults", convertedanchors);
+			
 			// END: temporary code for mocking purposes			
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		}else{
@@ -376,7 +446,10 @@ public class DomainController {
 					model.addAttribute("certificatesResults", certs);
 					 
 					Collection<Anchor> anchors = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-					model.addAttribute("anchorsResults", anchors);
+					// convert Anchor to AnchorForm
+					Collection<AnchorForm> convertedanchors = convertAnchors(anchors);					
+					// now set anchorsResults
+					model.addAttribute("anchorsResults", convertedanchors);
 					
 					CertificateForm cform = new CertificateForm();
 					cform.setId(dom.getId());
@@ -527,7 +600,11 @@ public class DomainController {
 			}
 			
 			model.addAttribute("certificatesResults", certlist);
-			model.addAttribute("anchorsResults", anchorlist);			
+			// convert Anchor to AnchorForm
+			Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);					
+			// now set anchorsResults
+			model.addAttribute("anchorsResults", convertedanchors);
+			
 			// END: temporary code for mocking purposes			
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		}else{
@@ -585,7 +662,10 @@ public class DomainController {
 					model.addAttribute("certificatesResults", certs);
 					 
 					Collection<Anchor> anchors = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-					model.addAttribute("anchorsResults", anchors);
+					// convert Anchor to AnchorForm
+					Collection<AnchorForm> convertedanchors = convertAnchors(anchors);					
+					// now set anchorsResults
+					model.addAttribute("anchorsResults", convertedanchors);
 					
 					CertificateForm cform = new CertificateForm();
 					cform.setId(dom.getId());
@@ -709,7 +789,10 @@ public class DomainController {
 					}
 					
 					model.addAttribute("certificatesResults", certlist);
-					model.addAttribute("anchorsResults", anchorlist);			
+					// convert Anchor to AnchorForm
+					Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);					
+					// now set anchorsResults
+					model.addAttribute("anchorsResults", convertedanchors);
 				
 					// END: temporary code for mocking purposes			
 					
@@ -751,7 +834,10 @@ public class DomainController {
 				model.addAttribute("certificatesResults", certs);
 				 
 				Collection<Anchor> anchors = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-				model.addAttribute("anchorsResults", anchors);
+				// convert Anchor to AnchorForm
+				Collection<AnchorForm> convertedanchors = convertAnchors(anchors);					
+				// now set anchorsResults
+				model.addAttribute("anchorsResults", convertedanchors);
 				
 				CertificateForm cform = new CertificateForm();
 				cform.setId(dom.getId());
@@ -923,7 +1009,11 @@ public class DomainController {
 						}
 						
 						model.addAttribute("certificatesResults", certlist);
-						model.addAttribute("anchorsResults", anchorlist);			
+						
+						// convert Anchor to AnchorForm
+						Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);					
+						// now set anchorsResults
+						model.addAttribute("anchorsResults", convertedanchors);
 					
 						// END: temporary code for mocking purposes			
 
@@ -1049,7 +1139,11 @@ public class DomainController {
 						}
 						
 						model.addAttribute("certificatesResults", certlist);
-						model.addAttribute("anchorsResults", anchorlist);			
+						
+						// convert Anchor to AnchorForm
+						Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);					
+						// now set anchorsResults
+						model.addAttribute("anchorsResults", convertedanchors);
 					
 						// END: temporary code for mocking purposes			
 
@@ -1104,5 +1198,113 @@ public class DomainController {
 	public void setdService(DomainService service) {
 		this.dService = service;
 	}
+
 	
+    public CertContainer toCertContainer(byte[] data) throws Exception
+    {
+        CertContainer certContainer = null;
+        try
+        {
+            ByteArrayInputStream bais = new ByteArrayInputStream(data);
+
+            // lets try this a as a PKCS12 data stream first
+            try
+            {
+                KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+
+                localKeyStore.load(bais, "".toCharArray());
+                Enumeration<String> aliases = localKeyStore.aliases();
+
+
+                        // we are really expecting only one alias
+                        if (aliases.hasMoreElements())
+                        {
+                                String alias = aliases.nextElement();
+                                X509Certificate cert = (X509Certificate)localKeyStore.getCertificate(alias);
+
+                                // check if there is private key
+                                Key key = localKeyStore.getKey(alias, "".toCharArray());
+                                if (key != null && key instanceof PrivateKey)
+                                {
+                                        certContainer = new CertContainer(cert, key);
+
+                                }
+                        }
+            }
+            catch (Exception e)
+            {
+                // must not be a PKCS12 stream, go on to next step
+            }
+
+            if (certContainer == null)
+            {
+                //try X509 certificate factory next
+                bais.reset();
+                bais = new ByteArrayInputStream(data);
+
+                X509Certificate cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(bais);
+                certContainer = new CertContainer(cert, null);
+            }
+            bais.close();
+        }
+        catch (Exception e)
+        {
+            throw new ConfigurationServiceException("Data cannot be converted to a valid X.509 Certificate", e);
+        }
+
+        return certContainer;
+    }
+
+    public static class CertContainer
+    {
+                private final X509Certificate cert;
+        private final Key key;
+
+        public CertContainer(X509Certificate cert, Key key)
+        {
+                this.cert = cert;
+                this.key = key;
+        }
+
+        public X509Certificate getCert()
+        {
+                        return cert;
+                }
+
+                public Key getKey()
+                {
+                        return key;
+                }
+
+    }
+
+    private String getEmailAddress(X500Principal prin)
+    {
+        // get the domain name
+                Map<String, String> oidMap = new HashMap<String, String>();
+                oidMap.put("1.2.840.113549.1.9.1", "EMAILADDRESS");  // OID for email address
+                String prinName = prin.getName(X500Principal.RFC1779, oidMap);
+
+                // see if there is an email address first in the DN
+                String searchString = "EMAILADDRESS=";
+                int index = prinName.indexOf(searchString);
+                if (index == -1)
+                {
+                        searchString = "CN=";
+                        // no Email.. check the CN
+                        index = prinName.indexOf(searchString);
+                        if (index == -1)
+                                return ""; // no CN... nothing else that can be done from here
+                }
+
+                // look for a "," to find the end of this attribute
+                int endIndex = prinName.indexOf(",", index);
+                String address;
+                if (endIndex > -1)
+                        address = prinName.substring(index + searchString.length(), endIndex);
+                else
+                        address= prinName.substring(index + searchString.length());
+
+                return address;
+    }
 }

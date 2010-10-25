@@ -353,7 +353,8 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 			class="tablesorter">
 			<thead>
 				<tr>
-					<th width="24%">Owner</th>
+					<th width="13%">Trusted Domain or User</th>
+					<th width="12%">Owner</th>
 					<th width="15%">Thumb</th>
 					<th width="15%">Create</th>
 					<th width="15%">Start</th>
@@ -376,7 +377,8 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 							<tr class="oddRow">
 						</c:otherwise>
 					</c:choose>
-					<td width="24%"><a
+					<td width="13%"><c:out value="${anchors.trusteddomainoruser}" /></td>
+					<td width="12%"><a
 						href='../anchor?id=<c:out value="${anchors.id}"/>'>'${anchors.owner}'</a></td>
 					<td width="15%"><c:out value="${anchors.thumbprint}" /></td>
 					<td width="15%"><fmt:formatDate
@@ -395,7 +397,8 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 			</tbody>
 			<tfoot>
 				<tr>
-					<th width="24%"></th>
+					<th width="13%"></th>
+					<th width="12%"></th>
 					<th width="15%"></th>
 					<th width="15%"></th>
 					<th width="15%"></th>
