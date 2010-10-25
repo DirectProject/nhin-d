@@ -24,6 +24,7 @@ package org.nhindirect.config.store.dao.impl;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -137,8 +138,8 @@ public class AddressDaoImpl implements AddressDao {
         
         int count = 0;
         if (name != null) {
-            Query delete = entityManager.createQuery("DELETE FROM Address a WHERE a.emailAddress = ?1");
-            delete.setParameter(1, name);
+            Query delete = entityManager.createQuery("DELETE FROM Address a WHERE UPPER(a.emailAddress) = ?1");
+            delete.setParameter(1, name.toUpperCase(Locale.getDefault()));
             count = delete.executeUpdate();
         }
 
@@ -171,8 +172,8 @@ public class AddressDaoImpl implements AddressDao {
         Address result = null;
 
         if (name != null) {
-            Query select = entityManager.createQuery("SELECT DISTINCT a from Address a d WHERE a.emailAddress = ?1");
-            result = (Address) select.setParameter(1, name).getSingleResult();
+            Query select = entityManager.createQuery("SELECT DISTINCT a from Address a d WHERE UPPER(a.emailAddress) = ?1");
+            result = (Address) select.setParameter(1, name.toUpperCase(Locale.getDefault())).getSingleResult();
         }
 
         if (log.isDebugEnabled())
@@ -198,10 +199,10 @@ public class AddressDaoImpl implements AddressDao {
                 if (nameList.length() > 1) {
                     nameList.append(", ");
                 }
-                nameList.append("'").append(aName).append("'");
+                nameList.append("'").append(aName.toUpperCase(Locale.getDefault())).append("'");
             }
             nameList.append(")");
-            String query = "SELECT a from Address a WHERE a.emailAddress IN " + nameList.toString();
+            String query = "SELECT a from Address a WHERE UPPER(a.emailAddress) IN " + nameList.toString();
 
             if (status != null) {
                 select = entityManager.createQuery(query + " AND d.status = ?1");
