@@ -28,6 +28,7 @@
 
 package org.nhindirect.config.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -179,29 +180,29 @@ public class AddressServiceTest extends MockObjectTestCase
      */
     public void testGetAddress()
     {
-//        final AddressDao addressDao = context.mock(AddressDao.class);
-//
-//        final Collection<String> addresses = Arrays.asList("beau@healthdomain.com", "beau@helthdomain2.com");
-//        final EntityStatus status = EntityStatus.ENABLED;
-//
-//        context.checking(new Expectations()
-//        {
-//            {
-//                // TODO
-//            }
-//        });
-//
-//        AddressServiceImpl service = new AddressServiceImpl();
-//        service.setDao(addressDao);
-//
-//        try
-//        {
-//            service.getAddress(addresses, status);
-//        }
-//        catch (Exception e)
-//        {
-//            fail("Exception thrown");
-//        }
+        final AddressDao addressDao = context.mock(AddressDao.class);
+
+        final Collection<String> addresses = Arrays.asList("beau@healthdomain.com", "beau@helthdomain2.com");
+        final EntityStatus status = EntityStatus.ENABLED;
+
+        context.checking(new Expectations()
+        {
+            {
+                oneOf(addressDao).listAddresses(with(equal(new ArrayList<String>(addresses))), with(same(status)));
+            }
+        });
+
+        AddressServiceImpl service = new AddressServiceImpl();
+        service.setDao(addressDao);
+
+        try
+        {
+            service.getAddress(addresses, status);
+        }
+        catch (Exception e)
+        {
+            fail("Exception thrown");
+        }
     }
 
     /**
