@@ -30,7 +30,7 @@ namespace Health.Direct.Config.Service
             }
             catch(Exception ex)
             {
-                this.TestStatus.Text = ex.Message + Environment.NewLine + ex.InnerException.Message;
+                this.TestStatus.Text = ex.ToString();
             }
         }
     }
