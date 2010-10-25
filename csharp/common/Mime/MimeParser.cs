@@ -487,12 +487,6 @@ namespace Health.Direct.Common.Mime
                         startIndex = reader.Position + 1;
                         endIndex = reader.Position;
                         break;
-                        
-                    case MimeStandard.LF:
-                        //
-                        // No standalone LF allowed
-                        //
-                        throw new MimeException(MimeError.InvalidCRLF);
                 }
             }
         
