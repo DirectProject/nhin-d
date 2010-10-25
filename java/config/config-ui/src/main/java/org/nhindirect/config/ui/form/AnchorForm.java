@@ -7,6 +7,7 @@ import org.nhindirect.config.store.EntityStatus;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class AnchorForm {
+	private String trusteddomainoruser;
     private String owner;
     private String thumbprint;
     private long certificateId;
@@ -99,6 +100,12 @@ public class AnchorForm {
 	}
 	public CommonsMultipartFile getFileData() {
 		return fileData;
+	}
+	public void setTrusteddomainoruser(String trusteddomainoruser) {
+		this.trusteddomainoruser = trusteddomainoruser;
+	}
+	public String getTrusteddomainoruser() {
+		return trusteddomainoruser;
 	}
 
 }

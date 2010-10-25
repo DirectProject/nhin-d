@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -76,19 +77,19 @@ public class CertificateDaoImpl implements CertificateDao
         } 
         else if (owner != null && thumbprint == null)
         {
-        	select = entityManager.createQuery("SELECT c from Comain c WHERE c.owner = ?1");
-        	select.setParameter(1, owner);	
+        	select = entityManager.createQuery("SELECT c from Certificate c WHERE UPPER(c.owner) = ?1");
+        	select.setParameter(1, owner.toUpperCase(Locale.getDefault()));	
         }
         else if (owner == null && thumbprint != null)
         {
-        	select = entityManager.createQuery("SELECT c from Comain c WHERE c.thumbprint = ?1");
+        	select = entityManager.createQuery("SELECT c from Certificate c WHERE c.thumbprint = ?1");
         	select.setParameter(1, thumbprint);	
         }
         else
         {
-        	select = entityManager.createQuery("SELECT c from Comain c WHERE c.thumbprint = ?1 and c.owner = ?2");
+        	select = entityManager.createQuery("SELECT c from Certificate c WHERE c.thumbprint = ?1 and UPPER(c.owner) = ?2");
         	select.setParameter(1, thumbprint);
-        	select.setParameter(2, owner);	        	
+        	select.setParameter(2, owner.toUpperCase(Locale.getDefault()));	        	
         }
 
         List rs = select.getResultList();
@@ -166,8 +167,8 @@ public class CertificateDaoImpl implements CertificateDao
         } 
         else if (owner != null)
         {
-        	select = entityManager.createQuery("SELECT c from Certificate c WHERE c.owner = ?1");
-        	select.setParameter(1, owner);	
+        	select = entityManager.createQuery("SELECT c from Certificate c WHERE UPPER(c.owner) = ?1");
+        	select.setParameter(1, owner.toUpperCase(Locale.getDefault()));	
         }
 
         List rs = select.getResultList();
@@ -362,8 +363,8 @@ public class CertificateDaoImpl implements CertificateDao
         int count = 0;
         if (owner != null) 
         {
-            Query delete = entityManager.createQuery("DELETE FROM Certificate c WHERE c.owner = ?1");
-            delete.setParameter(1, owner);
+            Query delete = entityManager.createQuery("DELETE FROM Certificate c WHERE UPPER(c.owner) = ?1");
+            delete.setParameter(1, owner.toUpperCase(Locale.getDefault()));
             count = delete.executeUpdate();
         }
 
