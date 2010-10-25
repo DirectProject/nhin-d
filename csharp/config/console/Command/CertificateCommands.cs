@@ -20,7 +20,7 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 using System.ServiceModel;
-
+using System.Net;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Common.Extensions;
@@ -226,6 +226,78 @@ namespace Health.Direct.Config.Console.Command
               + CRLF + "    [storeName] [outputFile]"
               + CRLF + "\t storeName: (optional) Default is NHINDPrivate."
               + CRLF + "\t outputFile: (optional) Export to file. Else write to Console";
+
+
+        /// <summary>
+        /// Export the given CER file in "zone" format
+        /// </summary>
+        /// <param name="args"></param>
+        [Command(Name = "Certificate_Export_ToFile", Usage = CertificateExportToFileUsage)]
+        public void CertificateExportToFile(string[] args)
+        {
+            string path = args.GetRequiredValue(0);
+            string outputFile = args.GetOptionalValue(1, null);
+
+            IEnumerable<X509Certificate2> certs;
+            if (Directory.Exists(path))
+            {
+                certs = from file in Directory.GetFiles(path, "*.cer")
+                        select new X509Certificate2(file);
+            }
+            else if (File.Exists(path))
+            {
+                certs = new X509Certificate2Collection(new X509Certificate2(path)).Enumerate();
+            }
+            else
+            {
+                throw new FileNotFoundException(path);
+            }
+
+            ExportCerts(certs, outputFile);
+        }
+        const string CertificateExportToFileUsage =
+                "Exports public certificates in given file or folder in zone file format\r\n"
+              + "    [fileName or folderPath] [outputFile]\r\n"
+              + "    fileName or foldrePath: If file, exports file. If folder, exports all certificates in folder\r\n"
+              + "    outputFile: (optional) Export to this file. Else write to Console\r\n";
+        
+        /// <summary>
+        /// Resolves certificates for a domain or email address using Dns
+        /// </summary>
+        /// <param name="args"></param>
+        [Command(Name="Certificate_DnsResolve", Usage=CertificateDnsResolveUsage)]
+        public void CertificateDnsResolve(string[] args)
+        {
+            string domain = args.GetRequiredValue(0);
+            IPAddress server = IPAddress.Parse(args.GetOptionalValue(1, "8.8.8.8"));
+            string fallbackDomain = args.GetOptionalValue(2, null);
+            DnsCertResolver resolver = new DnsCertResolver(server, TimeSpan.FromSeconds(5), fallbackDomain);
+
+            MailAddress address = null;
+            try
+            {
+                address = new MailAddress(domain);
+            }
+            catch
+            {
+            }
+            X509Certificate2Collection certs;
+            if (address != null)
+            {
+                this.WriteLine("Resolving mail address {0}", domain);
+                certs = resolver.GetCertificates(address);
+            }
+            else
+            {
+                certs = resolver.GetCertificatesForDomain(domain);
+            }
+
+            Print(certs);
+        }
+        const string CertificateDnsResolveUsage =
+              "Resolve certificates for an address or domain using Dns\r\n"
+            + "   domain or address\r\n"
+            + "   server : (optional)\r\n";
         
         //---------------------------------------
         //
