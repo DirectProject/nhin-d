@@ -328,8 +328,12 @@ public abstract class DocumentRepositoryAbstract
     {
         if (resolver == null)
         {
-            String configService = getServletContext().getInitParameter(PARAM_CONFIG_SERVICE);
-
+            String configService = null;
+            try{
+                configService = getServletContext().getInitParameter(PARAM_CONFIG_SERVICE);
+            }catch(Exception x){
+                
+            }
             if (StringUtils.isNotBlank(configService))
                 resolver = new RoutingResolverImpl(configService);
             else
