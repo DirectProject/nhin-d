@@ -234,6 +234,11 @@ namespace Health.Direct.Xd
         {
 
             /// <summary>
+            /// The attribute name for XML id
+            /// </summary>
+            public const string Id = "id";
+
+            /// <summary>
             /// The attribute name for document media type
             /// </summary>
             public const string MimeType = "mimeType";

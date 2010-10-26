@@ -36,6 +36,8 @@ namespace Health.Direct.Xd
         public Association(string type, string source, string target, params object[] content)
             : base(XDMetadataStandard.Elts.Association)
         {
+            if (source == null || target == null) throw new XdMetadataException(XdError.MissingId);
+
             Add(new XAttribute(XDMetadataStandard.Attrs.AssociationType, type),
                 new XAttribute(XDMetadataStandard.Attrs.SourceObject, source),
                 new XAttribute(XDMetadataStandard.Attrs.TargetObject, target),
