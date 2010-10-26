@@ -151,7 +151,6 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		
 		// build the public cert store
 		buildPublicCertStore();
-		publicCertModule = new PublicCertStoreModule(resolverProviders);
 		
 		// build the private cert store
 		buildPrivateCertStore();
@@ -584,6 +583,14 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 						new KeyStoreCertificateStore(new File("DNSCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DefaultCertStoreCachePolicy());								
 			}
 			/*
+			 * Web Services
+			 */
+			else if (storeType.equalsIgnoreCase(STORE_TYPE_WS))
+			{
+				resolverProvider = new ConfigServiceCertificateStoreProvider(cfService, 
+						new KeyStoreCertificateStore(new File("WSPublicCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DefaultCertStoreCachePolicy());
+			}
+			/*
 			 * Default to DNS with a default cache policy
 			 */
 			else
@@ -594,7 +601,8 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			
 			resolverProviders.add(resolverProvider);
 		}
-			
+		
+		publicCertModule = new PublicCertStoreModule(resolverProviders);
 	}	
 		
 	protected void buildPrivateCertStore()

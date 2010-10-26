@@ -13,6 +13,7 @@ import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -178,9 +179,14 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
         	
         	// clean certificates
         	Certificate[] certs = proxy.listCertificates(0, 0x8FFFF, null);
-        	if (certs != null)
-        		for (Certificate cert : certs)
-        			proxy.removeCertificatesForOwner(cert.getOwner());
+        	if (certs != null && certs.length > 0)
+        	{
+        		long[] ids = new long[certs.length];
+        		for (int i = 0; i < certs.length; ++i)
+        			ids[i] = certs[i].getId();
+        		
+        		proxy.removeCertificates(ids) ;
+        	}
         	
         	// clean settings
         	Setting[] settings = proxy.getAllSettings();
@@ -249,6 +255,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             removeFile("DNSCacheStore");
             removeFile("WSPrivCacheStore");
             removeFile("PublicStoreKeyFile");
+            removeFile("WSPublicCacheStore");
         }
         
         protected void removeFile(String filename){
@@ -601,15 +608,24 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	proxy.addSetting("PrivateStoreLDAPSearchAttr", "email");
             	proxy.addSetting("PrivateStoreLDAPCertAttr", "privKeyStore");
             	proxy.addSetting("PrivateStoreLDAPCertFormat", "X509");
-            	proxy.addSetting("PublicStoreType", "Keystore,DNS");
+            	proxy.addSetting("PublicStoreType", "Keystore,DNS,WS");
             }
         	
+
+            
             @Override
             protected void addPrivateCertificates() throws Exception
             {
                 addCertificatesToLdap(new String[]{"/cacert.der"}, "gm2552@cerner.com"); 
                 addCertificatesToLdap(new String[]{"/cacert.der"}, "gm25@cerner.com"); 
                 addCertificatesToLdap(new String[]{"/cacert.der"}, "jp018858@securehealthemail.com"); 
+                
+                /*
+                 * will test these with the public cert resolver
+                 */
+            	addCertificatesToConfig("cacert.der", null, "cerner.com");
+            	addCertificatesToConfig("cacert.der", null, "cerner.com");
+            	addCertificatesToConfig("cacert.der", null, "test@cerner.com");
             }
             
             protected void doAssertions(SmtpAgent agent) throws Exception
@@ -626,7 +642,27 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	
             	Collection<CertificateResolver> publicResls = nAgent.getPublicCertResolvers();
             	assertNotNull(publicResls);
-            	assertEquals(2, publicResls.size());
+            	assertEquals(3, publicResls.size());
+            	
+            	// get the WS resolvers
+            	CertificateResolver wsRes = null;
+            	for (CertificateResolver res : publicResls)
+            	{
+            		if (res instanceof ConfigServiceCertificateStore)
+            		{
+            			wsRes = res;
+            			break;
+            		}
+            	}
+            	assertNotNull(wsRes);
+            	
+            	certs = wsRes.getCertificates(new InternetAddress("test@cerner.com"));
+            	assertNotNull(certs);
+            	assertEquals(1, certs.size());
+            	
+            	certs = wsRes.getCertificates(new InternetAddress("cerner.com"));
+            	assertNotNull(certs);
+            	assertEquals(2, certs.size());            	
             }
         }.perform();
     }		
