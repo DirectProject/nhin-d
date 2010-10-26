@@ -85,11 +85,13 @@ namespace Health.Direct.Xd
             foreach (DocumentMetadata m in docPackage.Documents)
             {
                 XElement doc = m.Generate();
-                Association assoc = Association.OriginalDocumentAssociation(package.AttributeValue("Id"), doc.AttributeValue("Id"));
+                Association assoc = Association.OriginalDocumentAssociation(
+                    package.AttributeValue(XDMetadataStandard.Attrs.Id),
+                    doc.AttributeValue(XDMetadataStandard.Attrs.Id));
                 packageList.Add(doc);
                 packageList.Add(assoc);
             }
-            return package;
+            return submitObjectsRequest;
         }
 
         /// <summary>
@@ -99,7 +101,7 @@ namespace Health.Direct.Xd
         {
             string packageId = MakeUUID();
             XElement packageMetadata = new XElement(XDMetadataStandard.Elts.SubmissionSet,
-                                                    new XAttribute("id", packageId),
+                                                    new XAttribute(XDMetadataStandard.Attrs.Id, packageId),
                                                     new Classification(XDMetadataStandard.UUIDs.SubmissionSetClassification, packageId));
 
             List<Pair<Object, Func<XObject>>> specs = new List<Pair<Object, Func<XObject>>>
@@ -150,8 +152,10 @@ namespace Health.Direct.Xd
             // do in C# than in Ruby :-)
             string documentName = MakeUUID();
 
-            XElement docEbX = new XElement(XDMetadataStandard.Elts.DocumentEntry,
-                                           new XAttribute(XDMetadataStandard.Attrs.ObjectType, XDMetadataStandard.UUIDs.DocumentEntry));
+            XElement docEbX = new XElement(
+                XDMetadataStandard.Elts.DocumentEntry,
+                new XAttribute(XDMetadataStandard.Attrs.Id, documentName),
+                new XAttribute(XDMetadataStandard.Attrs.ObjectType, XDMetadataStandard.UUIDs.DocumentEntry));
 
 
             List<Pair<Object, Func<XObject>>> specs = new List<Pair<Object, Func<XObject>>>
