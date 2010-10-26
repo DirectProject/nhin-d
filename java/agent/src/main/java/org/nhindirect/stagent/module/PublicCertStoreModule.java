@@ -22,28 +22,47 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.module;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.nhindirect.stagent.annotation.PublicCerts;
 import org.nhindirect.stagent.cert.CertificateResolver;
+import org.nhindirect.stagent.utils.InjectionUtils;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 
 public class PublicCertStoreModule extends AbstractModule 
 {
-	private final Provider<CertificateResolver> storeProvider;
+	private final Collection<Provider<CertificateResolver>> storeProvider;
 	
 	public static PublicCertStoreModule create(Provider<CertificateResolver> storeProvider)
+	{
+		return new PublicCertStoreModule(Arrays.asList(storeProvider));
+	}
+	
+	public static PublicCertStoreModule create(Collection<Provider<CertificateResolver>> storeProvider)
 	{
 		return new PublicCertStoreModule(storeProvider);
 	}
 	
-	public PublicCertStoreModule (Provider<CertificateResolver> storeProvider)
+	public PublicCertStoreModule (Collection<Provider<CertificateResolver>> storeProvider)
 	{
 		this.storeProvider = storeProvider;
 	}
 	
+	public PublicCertStoreModule (Provider<CertificateResolver> storeProvider)
+	{
+		this(Arrays.asList(storeProvider));
+	}
+	
 	protected void configure()
 	{
-		bind(CertificateResolver.class).annotatedWith(PublicCerts.class).toProvider(storeProvider);
+		Collection<CertificateResolver> resolvers = new ArrayList<CertificateResolver>();
+		for (Provider<CertificateResolver> provider : storeProvider)
+			resolvers.add(provider.get());
+		
+		bind(InjectionUtils.collectionOf(CertificateResolver.class)).annotatedWith(PublicCerts.class).toInstance(resolvers);
 	}
 }

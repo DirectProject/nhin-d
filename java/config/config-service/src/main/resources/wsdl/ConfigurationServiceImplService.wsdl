@@ -4,6 +4,18 @@
   <import namespace="http://nhind.org/config" location="ConfigurationService.wsdl"/>
   <binding name="ConfigurationServiceImplPortBinding" type="ns1:ConfigurationService" xmlns:ns1="http://nhind.org/config">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="getAddresss">
+      <soap:operation soapAction="urn:GetAddresss"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
     <operation name="addAddress">
       <soap:operation soapAction="urn:AddAddress"/>
       <input>
@@ -54,18 +66,6 @@
     </operation>
     <operation name="listAddresss">
       <soap:operation soapAction="urn:ListAddresss"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="ConfigurationServiceException">
-        <soap:fault name="ConfigurationServiceException" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="getAddresss">
-      <soap:operation soapAction="urn:GetAddresss"/>
       <input>
         <soap:body use="literal"/>
       </input>
@@ -166,6 +166,39 @@
         <soap:body use="literal"/>
       </output>
     </operation>
+    <operation name="contains">
+      <soap:operation soapAction="urn:Contains"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getCertificates">
+      <soap:operation soapAction="urn:GetCertificates"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getCertificate">
+      <soap:operation soapAction="urn:GetCertificate"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
     <operation name="addCertificates">
       <soap:operation soapAction="urn:AddCertificates"/>
       <input>
@@ -240,39 +273,6 @@
     </operation>
     <operation name="listCertificates">
       <soap:operation soapAction="urn:ListCertificates"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="ConfigurationServiceException">
-        <soap:fault name="ConfigurationServiceException" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="contains">
-      <soap:operation soapAction="urn:Contains"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-    </operation>
-    <operation name="getCertificates">
-      <soap:operation soapAction="urn:GetCertificates"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="ConfigurationServiceException">
-        <soap:fault name="ConfigurationServiceException" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="getCertificate">
-      <soap:operation soapAction="urn:GetCertificate"/>
       <input>
         <soap:body use="literal"/>
       </input>

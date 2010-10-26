@@ -56,35 +56,35 @@ public class TrustChainValidator
 	
 	private static int DefaultMaxIssuerChainLength = 5;
 
-	private CertificateResolver certResolver;
+	private Collection<CertificateResolver> certResolvers;
 	
 	private int maxIssuerChainLength = DefaultMaxIssuerChainLength;
 	
 	/**
-	 * Indicates if the TrustChainValidator has a certificate resolver for resolving intermediates certificates.
+	 * Indicates if the TrustChainValidator has a certificate resolvers for resolving intermediates certificates.
 	 * @return True is an intermediate certificate resolver is present.  False otherwise.
 	 */
 	public boolean isCertificateResolver()
 	{
-		return certResolver != null;
+		return certResolvers != null;
 	}
 	
 	/**
-	 * Gets the intermediate certificate resolver.  This is generally a resolver capable of resolving public certificates.
-	 * @return The intermediate certificate resolver.
+	 * Gets the intermediate certificate resolvers.  This is generally a resolver capable of resolving public certificates.
+	 * @return The intermediate certificate resolvers.
 	 */
-	public CertificateResolver getCertificateResolver()
+	public Collection<CertificateResolver> getCertificateResolver()
 	{
-		return certResolver;
+		return certResolvers;
 	}
 	
 	/**
-	 * Sets the intermediate certificate resolver.  This is generally a resolver capable of resolving public certificates.
+	 * Sets the intermediate certificate resolvers.  This is generally a resolver capable of resolving public certificates.
 	 * @param resolver the intermediate certificate resolver.
 	 */
-	public void setCertificateResolver(CertificateResolver resolver)
+	public void setCertificateResolver(Collection<CertificateResolver> resolver)
 	{
-		certResolver = resolver;
+		certResolvers = resolver;
 	}
 	
 	/**
@@ -111,7 +111,7 @@ public class TrustChainValidator
         	certs.add(certificate);
         	
         	// check for intermediates
-        	if (certResolver != null)
+        	if (certResolvers != null)
         	{
         		Collection<X509Certificate> intermediatesCerts = resolveIntermediateIssuers(certificate);
         		if (intermediatesCerts != null && intermediatesCerts.size() > 0)
@@ -201,17 +201,26 @@ public class TrustChainValidator
     	if (address == null || address.isEmpty())
     		return;// not much we can do about this... the resolver interface only knows how to work with addresses
     	
-		Collection<X509Certificate> issuerCerts = null;
-		try
-		{			
-			issuerCerts = certResolver.getCertificates(new InternetAddress(address));
-		}
-		catch (AddressException e)
-		{
-			// no-op
-		}
+		Collection<X509Certificate> issuerCerts = new ArrayList<X509Certificate>();
 		
-		if (issuerCerts == null || issuerCerts.size() == 0)
+		// look in each resolver...  the list could be blasted across 
+		// multiple resolvers
+    	for (CertificateResolver publicResolver : certResolvers)
+    	{
+    		try
+    		{	
+    			Collection<X509Certificate> holdCerts = publicResolver.getCertificates(new InternetAddress(address));
+    			if (holdCerts != null && holdCerts.size() > 0)
+    				issuerCerts.addAll(holdCerts);
+    		}
+    		catch (AddressException e)
+    		{
+    			// no-op
+    		}
+        }
+
+		
+		if (issuerCerts.size() == 0)
 			return; // no intermediates.. just return
 		
 		for (X509Certificate issuerCert : issuerCerts)

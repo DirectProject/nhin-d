@@ -412,10 +412,65 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
         }.perform();
     }
     
+    public void testValidUniformLdapConfigurationForPKCS12AndMultiPublicCerts() throws Exception 
+    {
+        new UniformTestPlan() 
+        {
+            
+            protected String getConfigFileName()
+            {
+                return "ValidUniformLdapMultiPublicResConfig.xml";
+            } 
+            
+            @Override
+            protected int createNumberOfDomains(){
+                return 1;
+            }
+            @Override
+            protected int createNumberOfCerts(){
+                return 3;
+            }
+
+            @Override
+            protected void addCertificates() throws NamingException {
+                addCertificatesToLdap(new String[]{"/certs/cacert.der", "/certs/bob.der"}, "gm2552@cerner.com"); 
+                addCertificatesToLdap(new String[]{"/certs/cacert.der"}, "gm25@cerner.com"); 
+            }
+            
+            @Override
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+                
+             // check postmasters
+                SmtpAgentSettings settings = agent.getSmtpAgentSettings();
+                assertNotNull(settings);
+                
+                assertNotNull(settings.getDomainPostmasters());
+                assertEquals(createNumberOfDomains(), settings.getDomainPostmasters().size());
+                
+                // make sure we hit both domains in the configuration
+                assertDomainPostmastersConfig(settings);
+                
+                // check domains on the main agent 
+                assertDomainConfig(agent);            
+                
+                DefaultNHINDAgent nAgent = ((DefaultNHINDAgent)agent.getAgent());
+                TrustAnchorResolver trustAnchorResolver = nAgent.getTrustAnchors();
+                Collection<CertificateResolver> publicCertificateResolvers = nAgent.getPublicCertResolvers();
+                assertNotNull(trustAnchorResolver);
+                assertNotNull(publicCertificateResolvers);
+                assertEquals(2, publicCertificateResolvers.size());
+     
+            }
+            
+        }.perform();
+    }
+    
     protected void removeTestFiles(){
         removeFile("LDAPPrivateCertStore");
         removeFile("LDAPTrustAnchorStore");
         removeFile("LdapCacheStore");
+        removeFile("DNSCacheStore");
     }
     
     protected void removeFile(String filename){

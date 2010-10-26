@@ -40,7 +40,7 @@ public class DefaultSmtpAgentProvider implements Provider<SmtpAgent>
 	public DefaultSmtpAgentProvider(SmtpAgentSettings settings)
 	{
 		this.settings = settings;
-	}
+	}	
 	
 	public SmtpAgent get()
 	{

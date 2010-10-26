@@ -105,6 +105,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	private ProcessOutgoingSettings outgoingSettings;
 	private ProcessBadMessageSettings badSettings;
 	private NotificationProducer notificationProducer;
+	private Collection<Provider<CertificateResolver>> resolverProviders;
 	
 	/**
 	 * Construct and configuration component with the location of the configuration file and an optional provider for creating
@@ -115,6 +116,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	 */
 	public XMLSmtpAgentConfig(String configFile, Provider<NHINDAgent> agentProvider)
 	{
+		resolverProviders = new ArrayList<Provider<CertificateResolver>>();
 		this.agentProvider = agentProvider;
 		
 		try
@@ -162,7 +164,16 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			else if (docNode.getNodeName().equalsIgnoreCase("publiccertstore"))
 			{
 				buildPublicCertStore(docNode);
-			}			
+				publicCertModule = new PublicCertStoreModule(resolverProviders);
+			}	
+			/*
+			 * public cert store
+			 */
+			else if (docNode.getNodeName().equalsIgnoreCase("publiccertstores"))
+			{
+				buildPublicCertStores(docNode);
+				publicCertModule = new PublicCertStoreModule(resolverProviders);
+			}						
 			/*
 			 * private cert store
 			 */
@@ -466,12 +477,33 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	}
 	
 	/*
+	 * Build the certificate resolvers for public certificates
+	 */
+	@SuppressWarnings("unchecked")
+	private void buildPublicCertStores(Node publicCertsNode)
+	{
+		Node publicCertNode = publicCertsNode.getFirstChild();
+		do
+		{
+			if (publicCertNode.getNodeType() == Node.ELEMENT_NODE && publicCertNode.getNodeName().equalsIgnoreCase("PublicCertStore"))
+			{
+				buildPublicCertStore(publicCertNode);
+			}
+			publicCertNode = publicCertNode.getNextSibling();
+		} while (publicCertNode != null);		
+	}
+	
+	/*
 	 * Build the certificate resolver for public certificates
 	 */
 	@SuppressWarnings("unchecked")
 	private void buildPublicCertStore(Node publicCertNode)
 	{
 		Provider<CertificateResolver> resolverProvider = null;
+		
+		// check for multiple configured certs stores
+		
+		
 		
 		if (publicCertNode.getNodeType() == Node.ELEMENT_NODE)
 		{
@@ -492,7 +524,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			else if(storeType.equalsIgnoreCase("dns"))
 			{
 				resolverProvider = new DNSCertStoreProvider(Collections.EMPTY_LIST, 
-						new KeyStoreCertificateStore(new File("DNSCacheStore")), new DefaultCertStoreCachePolicy());								
+						new KeyStoreCertificateStore(new File("DNSCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DefaultCertStoreCachePolicy());								
 			}
 			/*
 			 * Default to DNS with a default cache policy
@@ -504,8 +536,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			}
 		}
 		
-		publicCertModule = new PublicCertStoreModule(resolverProvider);
-	
+		resolverProviders.add(resolverProvider);
 	}
 	
 	/*

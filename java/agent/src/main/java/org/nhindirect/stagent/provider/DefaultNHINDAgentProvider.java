@@ -22,33 +22,49 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.provider;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.NHINDAgent;
 import org.nhindirect.stagent.cert.CertificateResolver;
+import org.nhindirect.stagent.cryptography.SMIMECryptographerImpl;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
+import org.nhindirect.stagent.trust.TrustModel;
 
 import com.google.inject.Provider;
+
+import java.util.Arrays;
 
 public class DefaultNHINDAgentProvider implements Provider<NHINDAgent> 
 {
 	private Collection<String> domains;
-	private Provider<CertificateResolver> publicCerts;
+	private Collection<Provider<CertificateResolver>> publicCerts;
 	private Provider<CertificateResolver> privateCerts;
 	private Provider<TrustAnchorResolver> trustResolver;
 	
 	public DefaultNHINDAgentProvider(Collection<String> domains, Provider<CertificateResolver> publicCerts,
 			Provider<CertificateResolver> privateCerts, Provider<TrustAnchorResolver> trustResolver)
 	{
+		this(domains, Arrays.asList(publicCerts), privateCerts, trustResolver);
+	}
+	
+	public DefaultNHINDAgentProvider(Collection<String> domains, Collection<Provider<CertificateResolver>> publicCerts,
+			Provider<CertificateResolver> privateCerts, Provider<TrustAnchorResolver> trustResolver)
+	{
 		this.domains = domains;
 		this.publicCerts = publicCerts;
 		this.privateCerts = privateCerts;
 		this.trustResolver = trustResolver;
-	}
+	}	
 	
 	public NHINDAgent get()
 	{
-		return new DefaultNHINDAgent(domains, privateCerts.get(), publicCerts.get(), trustResolver.get());
+		Collection<CertificateResolver> publicResolvers = new ArrayList<CertificateResolver>();
+		for (Provider<CertificateResolver> provider : publicCerts)
+			publicResolvers.add(provider.get());
+		
+		return new DefaultNHINDAgent(domains, privateCerts.get(), publicResolvers, trustResolver.get(),
+				TrustModel.Default, SMIMECryptographerImpl.Default);
 	}
 }

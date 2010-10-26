@@ -241,12 +241,14 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
         	proxy.addDomain(dom);
         }
         
-        protected void removeTestFiles(){
+        protected void removeTestFiles()
+        {
             removeFile("LDAPPrivateCertStore");
             removeFile("LDAPTrustAnchorStore");
             removeFile("LdapCacheStore");
             removeFile("DNSCacheStore");
             removeFile("WSPrivCacheStore");
+            removeFile("PublicStoreKeyFile");
         }
         
         protected void removeFile(String filename){
@@ -585,6 +587,49 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             }
         }.perform();
     }	
+	
+	public void testConfigurationPrivateLDAPStoreAndMultiplePublicStore() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+
+            protected void addSettings() throws Exception
+            {
+            	proxy.addSetting("PrivateStoreType", "LDAP");
+            	proxy.addSetting("PrivateStoreLDAPUrl", "ldap://localhost:" + configuration.getLdapPort());
+            	proxy.addSetting("PrivateStoreLDAPSearchBase", "cn=lookupTest");
+            	proxy.addSetting("PrivateStoreLDAPSearchAttr", "email");
+            	proxy.addSetting("PrivateStoreLDAPCertAttr", "privKeyStore");
+            	proxy.addSetting("PrivateStoreLDAPCertFormat", "X509");
+            	proxy.addSetting("PublicStoreType", "Keystore,DNS");
+            }
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+                addCertificatesToLdap(new String[]{"/cacert.der"}, "gm2552@cerner.com"); 
+                addCertificatesToLdap(new String[]{"/cacert.der"}, "gm25@cerner.com"); 
+                addCertificatesToLdap(new String[]{"/cacert.der"}, "jp018858@securehealthemail.com"); 
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+            	DefaultNHINDAgent nAgent = ((DefaultNHINDAgent)agent.getAgent());
+            	CertificateResolver privResl = nAgent.getPrivateCertResolver();
+            	assertNotNull(privResl);
+            	Collection<X509Certificate> certs = privResl.getCertificates(new InternetAddress("gm2552@cerner.com"));
+            	assertNotNull(certs);
+            	assertEquals(1, certs.size());
+            	assertTrue(privResl instanceof LDAPCertificateStore);
+            	
+            	
+            	Collection<CertificateResolver> publicResls = nAgent.getPublicCertResolvers();
+            	assertNotNull(publicResls);
+            	assertEquals(2, publicResls.size());
+            }
+        }.perform();
+    }		
 	
 	public void testConfigurationPrivateKeyStoreFile() throws Exception 
     {

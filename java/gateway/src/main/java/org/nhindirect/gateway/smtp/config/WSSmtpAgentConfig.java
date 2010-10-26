@@ -96,6 +96,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	private ProcessOutgoingSettings outgoingSettings;
 	private ProcessBadMessageSettings badSettings;
 	private NotificationProducer notificationProducer;	
+	private Collection<Provider<CertificateResolver>> resolverProviders;
 	
 	private final ConfigurationServiceProxy cfService;
 	
@@ -129,6 +130,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	 */
 	public WSSmtpAgentConfig(URL configServiceLocation, Provider<NHINDAgent> agentProvider)
 	{
+		resolverProviders = new ArrayList<Provider<CertificateResolver>>();
 		this.agentProvider = agentProvider;		
 		
 		cfService = new ConfigurationServiceProxy(configServiceLocation.toExternalForm());
@@ -149,6 +151,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		
 		// build the public cert store
 		buildPublicCertStore();
+		publicCertModule = new PublicCertStoreModule(resolverProviders);
 		
 		// build the private cert store
 		buildPrivateCertStore();
@@ -532,7 +535,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		Provider<CertificateResolver> resolverProvider = null;
 		
 		Setting setting = null;
-		String storeType;
+		String storeTypes;
 		try
 		{
 			setting = cfService.getSettingByName("PublicStoreType");
@@ -543,52 +546,55 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		}		
 		
 		if (setting == null || setting.getValue() == null || setting.getValue().isEmpty())
-			storeType = STORE_TYPE_DNS; // default to DNS
+			storeTypes = STORE_TYPE_DNS; // default to DNS
 		else
-			storeType = setting.getValue();
+			storeTypes = setting.getValue();
 		
 		/*
 		 * KeyStore based resolver
 		 */
-		if (storeType.equalsIgnoreCase(STORE_TYPE_KEYSTORE))
+		String[] types = storeTypes.split(",");
+		for (String storeType : types)
 		{
-			Setting file;
-			Setting pass;
-			Setting privKeyPass;
-			try
+			if (storeType.equalsIgnoreCase(STORE_TYPE_KEYSTORE))
 			{
-				file = cfService.getSettingByName("PublicStoreFile");
-				pass = cfService.getSettingByName("PublicStoreFilePass");
-				privKeyPass = cfService.getSettingByName("PublicStorePrivKeyPass");
+				Setting file;
+				Setting pass;
+				Setting privKeyPass;
+				try
+				{
+					file = cfService.getSettingByName("PublicStoreFile");
+					pass = cfService.getSettingByName("PublicStoreFilePass");
+					privKeyPass = cfService.getSettingByName("PublicStorePrivKeyPass");
+				}
+				catch (Exception e)
+				{
+					throw new SmtpAgentException(SmtpAgentError.InvalidConfigurationFormat, "WebService error getting public store file settings: " + e.getMessage(), e);
+				}
+				
+				resolverProvider = new KeyStoreCertificateStoreProvider((file == null) ? "PublicStoreKeyFile" : file.getValue(), 
+						(pass == null) ? "DefaultFilePass" : pass.getValue(), (privKeyPass == null) ? "DefaultKeyPass" : privKeyPass.getValue());
 			}
-			catch (Exception e)
+			/*
+			 * DNS resolver
+			 */			
+			else if(storeType.equalsIgnoreCase(STORE_TYPE_DNS))
 			{
-				throw new SmtpAgentException(SmtpAgentError.InvalidConfigurationFormat, "WebService error getting public store file settings: " + e.getMessage(), e);
+				resolverProvider = new DNSCertStoreProvider(Collections.EMPTY_LIST, 
+						new KeyStoreCertificateStore(new File("DNSCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DefaultCertStoreCachePolicy());								
+			}
+			/*
+			 * Default to DNS with a default cache policy
+			 */
+			else
+			{
+				resolverProvider = new DNSCertStoreProvider(Collections.EMPTY_LIST, 
+						new KeyStoreCertificateStore(new File("DNSCacheStore")), new DefaultCertStoreCachePolicy());			
 			}
 			
-			resolverProvider = new KeyStoreCertificateStoreProvider((file == null) ? null : file.getValue(), 
-					(pass == null) ? "DefaultFilePass" : pass.getValue(), (privKeyPass == null) ? "DefaultKeyPass" : privKeyPass.getValue());
+			resolverProviders.add(resolverProvider);
 		}
-		/*
-		 * DNS resolver
-		 */			
-		else if(storeType.equalsIgnoreCase(STORE_TYPE_DNS))
-		{
-			resolverProvider = new DNSCertStoreProvider(Collections.EMPTY_LIST, 
-					new KeyStoreCertificateStore(new File("DNSCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DefaultCertStoreCachePolicy());								
-		}
-		/*
-		 * Default to DNS with a default cache policy
-		 */
-		else
-		{
-			resolverProvider = new DNSCertStoreProvider(Collections.EMPTY_LIST, 
-					new KeyStoreCertificateStore(new File("DNSCacheStore")), new DefaultCertStoreCachePolicy());			
-		}
-
-		
-		publicCertModule = new PublicCertStoreModule(resolverProvider);
-	
+			
 	}	
 		
 	protected void buildPrivateCertStore()

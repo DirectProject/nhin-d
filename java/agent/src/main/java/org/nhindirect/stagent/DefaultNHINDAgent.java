@@ -81,7 +81,7 @@ public class DefaultNHINDAgent implements NHINDAgent
 	
 	private Cryptographer cryptographer;
     private CertificateResolver privateCertResolver;
-    private CertificateResolver publicCertResolver;
+    private Collection<CertificateResolver> publicCertResolver;
     private TrustAnchorResolver trustAnchors;
 
     private TrustModel trustModel;
@@ -128,6 +128,8 @@ public class DefaultNHINDAgent implements NHINDAgent
     	this(domains, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographerImpl.Default);
     }    
     
+
+    
     /**
      * Constructs an agent with domain, certificate services, and trust anchor store.
      * @param domain The domain that this agent will be serving.
@@ -141,24 +143,18 @@ public class DefaultNHINDAgent implements NHINDAgent
      */    
     public DefaultNHINDAgent(String domain, CertificateResolver privateCerts, CertificateResolver publicCerts, TrustAnchorResolver anchors, TrustModel trustModel, Cryptographer cryptographer)
     {            	
-    	this(Arrays.asList(new String[] {domain}), privateCerts, publicCerts, anchors, trustModel, cryptographer);    	
+    	this(Arrays.asList(domain), privateCerts, Arrays.asList(publicCerts), anchors, trustModel, cryptographer);    	
     }
 
     /**
-     * Constructs an agent with a list of domain, certificate services, and trust anchor store.
-     * @param domain A list of domains that this agent will be serving.
-     * @param internalCerts A certificate store for messages originating internally.  The store contains certificates that have access to private keys for decryption and 
-     * signing messages.
-     * @param externalCerts A certificate store for incoming messages.  The store contains public certificates for message signature validation and encyprtion. 
-     * @param trustSettings A certificate store for certificate anchors.  Certificate anchors are certificates that can validate the authenticity of
-     * a certificate.  They are also used by the agent to determine if a certificate is trusted by the system.
-     * @param A trust model implementation that asserts the if a message is trusted.
-     * @param A cryptography implementation used to sign, encrypt, and decrypt messages.
+     * Constructs an agent with a list of domains, certificate stores, and a trust anchor store.
      */   
     @Inject
     public DefaultNHINDAgent(@AgentDomains Collection<String> domains, @PrivateCerts CertificateResolver privateCerts, 
-    		@PublicCerts CertificateResolver publicCerts, TrustAnchorResolver anchors, TrustModel trustModel, Cryptographer cryptographer)
-    {            	
+    		@PublicCerts Collection<CertificateResolver> publicCerts, TrustAnchorResolver anchors, 
+    		TrustModel trustModel, Cryptographer cryptographer)
+    {
+
     	if (domains == null || domains.size() == 0 || privateCerts == null || publicCerts == null || anchors == null || trustModel == null || cryptographer == null)
         {
             throw new IllegalArgumentException();
@@ -183,6 +179,24 @@ public class DefaultNHINDAgent implements NHINDAgent
         {
         	this.trustModel.getCertChainValidator().setCertificateResolver(this.publicCertResolver);
         }
+    }          
+    
+    /**
+     * Constructs an agent with a list of domain, certificate services, and trust anchor store.
+     * @param domain A list of domains that this agent will be serving.
+     * @param internalCerts A certificate store for messages originating internally.  The store contains certificates that have access to private keys for decryption and 
+     * signing messages.
+     * @param externalCerts A certificate store for incoming messages.  The store contains public certificates for message signature validation and encyprtion. 
+     * @param trustSettings A certificate store for certificate anchors.  Certificate anchors are certificates that can validate the authenticity of
+     * a certificate.  They are also used by the agent to determine if a certificate is trusted by the system.
+     * @param A trust model implementation that asserts the if a message is trusted.
+     * @param A cryptography implementation used to sign, encrypt, and decrypt messages.
+     */   
+    
+    public DefaultNHINDAgent( Collection<String> domains,  CertificateResolver privateCerts, 
+    		 CertificateResolver publicCerts, TrustAnchorResolver anchors, TrustModel trustModel, Cryptographer cryptographer)
+    {            	    	
+    	this(domains, privateCerts, Arrays.asList(publicCerts), anchors, trustModel, cryptographer);  
     }    
     
     /**
@@ -245,12 +259,25 @@ public class DefaultNHINDAgent implements NHINDAgent
 	/**
      * Gets the certificate store used to encrypt messages and validate signatures.  This store generally contains only public certificates
      * @return The certificate store used to encrypt messages and validate signatures.
+     * @deprecated Use {{@link #getPublicCertResolvers()}
      */
     public CertificateResolver getPublicCertResolver()
     {
-        return this.publicCertResolver;
+    	if (publicCertResolver != null && publicCertResolver.size() > 0)
+    		return this.publicCertResolver.iterator().next();
+    	
+    	return null;
     }
 
+	/**
+     * Gets the certificate stores used to encrypt messages and validate signatures.  This store generally contains only public certificates
+     * @return The certificate stores used to encrypt messages and validate signatures.
+     */
+    public Collection<CertificateResolver> getPublicCertResolvers()
+    {
+        return this.publicCertResolver;
+    }    
+    
     /**
      * Gets the certificate store used to decrypt and sign messages.  Certificates in this store must have access to the certifcate's private key.
      * @return The certificate store used to decrypt and sign messages.
@@ -955,7 +982,14 @@ public class DefaultNHINDAgent implements NHINDAgent
     	Collection<X509Certificate> certs = null;
         try
         {
-            certs = this.publicCertResolver.getCertificates(address);
+            // try each resolver until it's found
+        	for (CertificateResolver publicResolver : publicCertResolver)
+        	{
+        		certs = publicResolver.getCertificates(address);
+        		if (certs != null)
+        			break;
+        	}
+        	
             if (certs == null && required)
             {
                 throw new AgentException(AgentError.UnknownRecipient);
