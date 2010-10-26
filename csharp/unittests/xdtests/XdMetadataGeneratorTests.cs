@@ -50,6 +50,12 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Fact]
+        public void DocumentHasId()
+        {
+            Assert.NotNull(TestDocXElement.AttributeValue(XDMetadataStandard.Attrs.Id));
+        }
+
+        [Fact]
         public void DocumentHasAuthorClassification()
         {
             Assert.NotEmpty(TestDocXElement.Classifications(XDMetadataStandard.UUIDs.DocumentAuthor));
@@ -375,14 +381,14 @@ namespace Health.Direct.Xd.Tests
         [Fact]
         public void SubmitObjectsHasProperlyClassifiedRegistryPackage()
         {
-            XElement elt = TestSubmitObjectsXElement.Descendants("RegistryPackage").First();
-            Assert.NotNull(elt.Attribute("id").Value);
-            string id = elt.Attribute("id").Value;
+            XElement elt = TestSubmitObjectsXElement.DescendantsAnyNs(XDMetadataStandard.Elts.SubmissionSet).First();
+            Assert.NotNull(elt.Attribute(XDMetadataStandard.Attrs.Id).Value);
+            string id = elt.Attribute(XDMetadataStandard.Attrs.Id).Value;
             IEnumerable<XElement> classifications = from el in elt.DescendantsAnyNs(XDMetadataStandard.Elts.Classification)
-                                                    where (string) el.Attribute("classificationNode") == XDMetadataStandard.UUIDs.SubmissionSetClassification
+                                                    where (string) el.Attribute(XDMetadataStandard.Attrs.ClassificationNode) == XDMetadataStandard.UUIDs.SubmissionSetClassification
                                                     select el;
             Assert.NotEmpty(classifications);
-            Assert.Equal(id, classifications.First().Attribute("classifiedObject").Value);
+            Assert.Equal(id, classifications.First().AttributeValue(XDMetadataStandard.Attrs.ClassifiedObject));
         }
 
         [Fact]
