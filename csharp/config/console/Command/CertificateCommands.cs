@@ -232,8 +232,8 @@ namespace Health.Direct.Config.Console.Command
         /// Export the given CER file in "zone" format
         /// </summary>
         /// <param name="args"></param>
-        [Command(Name = "Certificate_Export_ToFile", Usage = CertificateExportToFileUsage)]
-        public void CertificateExportToFile(string[] args)
+        [Command(Name = "Certificate_Export_FromFile", Usage = CertificateExportFromFileUsage)]
+        public void CertificateExportFromFile(string[] args)
         {
             string path = args.GetRequiredValue(0);
             string outputFile = args.GetOptionalValue(1, null);
@@ -255,7 +255,7 @@ namespace Health.Direct.Config.Console.Command
 
             ExportCerts(certs, outputFile);
         }
-        const string CertificateExportToFileUsage =
+        const string CertificateExportFromFileUsage =
                 "Exports public certificates in given file or folder in zone file format\r\n"
               + "    [fileName or folderPath] [outputFile]\r\n"
               + "    fileName or foldrePath: If file, exports file. If folder, exports all certificates in folder\r\n"
