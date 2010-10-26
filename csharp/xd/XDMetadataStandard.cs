@@ -178,6 +178,24 @@ namespace Health.Direct.Xd
 
         }
 
+
+
+        /// <summary>
+        /// XD*/ebXML standard XML namespaces
+        /// </summary>
+        public struct Ns
+        {
+            /// <summary>
+            /// Registry Information Model namespace
+            /// </summary>
+            public const string Rim = "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0";
+
+            /// <summary>
+            /// LCM namespace
+            /// </summary>
+            public const string Lcm = "urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0";
+        }
+
         // Element Names
 
         /// <summary>
@@ -185,6 +203,17 @@ namespace Health.Direct.Xd
         /// </summary>
         public struct Elts
         {
+
+            /// <summary>
+            /// Element name for a SubmitObjectsRequest root element
+            /// </summary>
+            public const string SubmitObjectsRequest = "SubmitObjectsRequest";
+
+            /// <summary>
+            /// Element name for RegistryObjectsList
+            /// </summary>
+            public const string RegistryObjectsList = "RegistryObjectList";
+
             /// <summary>
             /// Element name for a DocumentEntry object (ExtrinsicObject)
             /// </summary>
