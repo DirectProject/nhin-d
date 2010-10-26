@@ -96,8 +96,9 @@ public abstract class DocumentRepositoryAbstract
     private static final String PARAM_AUDIT_HOST = "auditHost";
     private static final String PARAM_AUDIT_PORT = "auditPort";
     private static final String PARAM_AUDIT_FILE = "auditFile";
+    private static final String PARAM_CONFIG_SERVICE = "configService";
     
-    private RoutingResolver resolver = new RoutingResolverImpl();
+    private RoutingResolver resolver = null;
     
     private AuditMessageGenerator auditMessageGenerator = null;
     
@@ -166,7 +167,7 @@ public abstract class DocumentRepositoryAbstract
             getAuditMessageGenerator().provideAndRegisterAudit( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
 
             // Send to SMTP endpoints
-            if (resolver.hasSmtpEndpoints(forwards)) 
+            if (getResolver().hasSmtpEndpoints(forwards)) 
             {
                 // Get a reply address
                 replyEmail = metadata.getAuthorPerson();
@@ -179,11 +180,11 @@ public abstract class DocumentRepositoryAbstract
                 // Get document
                 byte[] docs = getDocs(prdst);
 
-                LOGGER.info("SENDING EMAIL TO " + resolver.getSmtpEndpoints(forwards) + " with message id "
+                LOGGER.info("SENDING EMAIL TO " + getResolver().getSmtpEndpoints(forwards) + " with message id "
                         + messageId);
 
                 // Construct message wrapper
-                DirectMessage message = new DirectMessage(replyEmail, resolver.getSmtpEndpoints(forwards));
+                DirectMessage message = new DirectMessage(replyEmail, getResolver().getSmtpEndpoints(forwards));
                 message.setSubject("data");
                 message.setBody("data attached");
 
@@ -201,7 +202,7 @@ public abstract class DocumentRepositoryAbstract
             }
 
             // Send to XD endpoints
-            for (String reqEndpoint : resolver.getXdEndpoints(forwards)) 
+            for (String reqEndpoint : getResolver().getXdEndpoints(forwards)) 
             {
                 String to = StringUtils.remove(reqEndpoint, "?wsdl");
 
@@ -323,6 +324,21 @@ public abstract class DocumentRepositoryAbstract
         return ret;
     }
 
+    private RoutingResolver getResolver()
+    {
+        if (resolver == null)
+        {
+            String configService = getServletContext().getInitParameter(PARAM_CONFIG_SERVICE);
+
+            if (StringUtils.isNotBlank(configService))
+                resolver = new RoutingResolverImpl(configService);
+            else
+                resolver = new RoutingResolverImpl();
+        }
+
+        return resolver;
+    }
+    
     private ServletContext getServletContext()
     {
         return (ServletContext) context.getMessageContext().get(MessageContext.SERVLET_CONTEXT);
@@ -390,6 +406,17 @@ public abstract class DocumentRepositoryAbstract
     public void setAuditMessageGenerator(AuditMessageGenerator auditMessageGenerator)
     {
         this.auditMessageGenerator = auditMessageGenerator;
+    }
+    
+    /**
+     * Set the value of resolver.
+     * 
+     * @param resolver
+     *            the value of resolver.
+     */
+    public void setResolver(RoutingResolver resolver)
+    {
+        this.resolver = resolver;
     }
 
     /**
