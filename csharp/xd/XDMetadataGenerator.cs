@@ -76,8 +76,13 @@ namespace Health.Direct.Xd
         /// </summary>
         public static XElement Generate(this DocumentPackage docPackage)
         {
-            XElement submitObjectsRequest = new XElement("SubmitObjectsRequest");
-            XElement packageList = new XElement("RegistryObjectList");
+            XNamespace lcm = XDMetadataStandard.Ns.Lcm;
+
+            XElement submitObjectsRequest = new XElement(lcm + XDMetadataStandard.Elts.SubmitObjectsRequest,
+                new XAttribute(XNamespace.Xmlns + "lcm", XDMetadataStandard.Ns.Lcm),
+                new XAttribute("xmlns", XDMetadataStandard.Ns.Rim)); // RIM is the default NS
+
+            XElement packageList = new XElement(XDMetadataStandard.Elts.RegistryObjectsList); 
             submitObjectsRequest.Add(packageList);
             XElement package = GeneratePackage(docPackage);
             packageList.Add(package);
@@ -97,35 +102,27 @@ namespace Health.Direct.Xd
         /// <summary>
         /// Generates an <see cref="XElement"/> for a RegistryPackage
         /// </summary>
-        public static XElement GeneratePackage(DocumentPackage docPackage)
+        public static XElement GeneratePackage(DocumentPackage dp)
         {
             string packageId = MakeUUID();
             XElement packageMetadata = new XElement(XDMetadataStandard.Elts.SubmissionSet,
                                                     new XAttribute(XDMetadataStandard.Attrs.Id, packageId),
                                                     new Classification(XDMetadataStandard.UUIDs.SubmissionSetClassification, packageId));
 
-            List<Pair<Object, Func<XObject>>> specs = new List<Pair<Object, Func<XObject>>>
-                                                          {   
-                                                              Map(docPackage.Author,
-                                                                  () => new MultiSlotClassification(XDMetadataStandard.UUIDs.SubmissionSetAuthor, "", packageId,
-                                                                                                    AuthorSlots(docPackage.Author))),
-                                                              Map(docPackage.Comments,
-                                                                  () => new Description(docPackage.Comments)),
-                                                              Map(docPackage.ContentTypeCode,
-                                                                  () => new CodedValueClassification(XDAttribute.ContentTypeCode, packageId, docPackage.ContentTypeCode)),
-                                                              Map(docPackage.IntendedRecipients,
-                                                                  () => new Slot(XDMetadataStandard.Slots.IntendedRecipient, docPackage.IntendedRecipients.Select(r => r.ToXONXCN()))),
-                                                              Map(docPackage.PatientId,
-                                                                  () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetPatientId, docPackage.PatientId.ToEscapedCx(), "XDSSubmissionSet.patientId")),
-                                                              Map(docPackage.SourceId,
-                                                                  () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetSourceId, docPackage.SourceId, "XDSSubmissionSet.sourceId")),
-                                                              Map(docPackage.SubmissionTime,
-                                                                  () => new Slot(XDMetadataStandard.Slots.SubmissionTime, docPackage.SubmissionTime.ToHL7Date())),
-                                                              Map(docPackage.Title,
-                                                                  () => new Name(docPackage.Title)),
-                                                              Map(docPackage.UniqueId,
-                                                                  () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetUniqueId, docPackage.UniqueId, "XDSSubmissionSet.uniqueId")),
-                                                          };
+            List<Pair<Object, Func<XObject>>> specs = 
+            new List<Pair<Object, Func<XObject>>>
+            {   
+                // XSD requires the following order: name, description, slots, classifications, external identifiers
+                Map(dp.Title,             () => new Name(dp.Title)),
+                Map(dp.Comments,          () => new Description(dp.Comments)),
+                Map(dp.Author,            () => new MultiSlotClassification(XDMetadataStandard.UUIDs.SubmissionSetAuthor, "", packageId, AuthorSlots(dp.Author))),
+                Map(dp.IntendedRecipients,() => new Slot(XDMetadataStandard.Slots.IntendedRecipient, dp.IntendedRecipients.Select(r => r.ToXONXCN()))),
+                Map(dp.SubmissionTime,    () => new Slot(XDMetadataStandard.Slots.SubmissionTime, dp.SubmissionTime.ToHL7Date())),
+                Map(dp.ContentTypeCode,   () => new CodedValueClassification(XDAttribute.ContentTypeCode, packageId, dp.ContentTypeCode)),
+                Map(dp.PatientId,         () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetPatientId, dp.PatientId.ToEscapedCx(), "XDSSubmissionSet.patientId")),
+                Map(dp.SourceId,          () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetSourceId, dp.SourceId, "XDSSubmissionSet.sourceId")),
+                Map(dp.UniqueId,          () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetUniqueId, dp.UniqueId, "XDSSubmissionSet.uniqueId")),
+            };
 
             foreach (Pair<Object, Func<XObject>> p in specs)
             {
@@ -143,9 +140,9 @@ namespace Health.Direct.Xd
         /// <summary>
         /// Returns an <see cref="XElement"/> for this document metadata in IHE XD* ebXML
         /// </summary>
-        /// <param name="docMetadata">This document metadata</param>
+        /// <param name="dm">This document metadata</param>
         /// <returns>An <see cref="XElement"/> for this document metadata in IHE XD* ebXML</returns>
-        public static XElement Generate(this DocumentMetadata docMetadata)
+        public static XElement Generate(this DocumentMetadata dm)
         {
 
             // TODO: this method cries out for a domain specific language, but this turns out to be harder to
@@ -158,58 +155,35 @@ namespace Health.Direct.Xd
                 new XAttribute(XDMetadataStandard.Attrs.ObjectType, XDMetadataStandard.UUIDs.DocumentEntry));
 
 
-            List<Pair<Object, Func<XObject>>> specs = new List<Pair<Object, Func<XObject>>>
-                                                          {
-                                                              Map(docMetadata.Author,
-                                                                  () => new MultiSlotClassification(XDMetadataStandard.UUIDs.DocumentAuthor, "", documentName,
-                                                                                                    AuthorSlots(docMetadata.Author))),
-                                                              Map(docMetadata.Class,
-                                                                  () => new CodedValueClassification(XDAttribute.ClassCode, documentName, docMetadata.Class)),
-                                                              Map(docMetadata.Comments,
-                                                                  () => new Description(docMetadata.Comments)),
-                                                              Map(docMetadata.Confidentiality,
-                                                                  () => new CodedValueClassification(XDAttribute.ConfidentialityCode, documentName, docMetadata.Confidentiality)),
-                                                              Map(docMetadata.CreatedOn,
-                                                                  () => new Slot(XDMetadataStandard.Slots.CreationTime, docMetadata.CreatedOn.ToHL7Date())),
-                                                              Map(docMetadata.EventCodes,
-                                                                  () => EventCodeClassifications(docMetadata.EventCodes, documentName)),
-                                                              Map(docMetadata.FormatCode,
-                                                                  () =>  new CodedValueClassification(XDAttribute.FormatCode, documentName, docMetadata.FormatCode)),
-                                                              Map(docMetadata.Hash,
-                                                                  () => new Slot(XDMetadataStandard.Slots.Hash, docMetadata.Hash)),
-                                                              Map(docMetadata.FacilityCode,
-                                                                  () => new CodedValueClassification(XDAttribute.FacilityType, documentName,docMetadata.FacilityCode)),
-                                                              Map(docMetadata.LanguageCode,
-                                                                  () => new Slot(XDMetadataStandard.Slots.LanguageCode, docMetadata.LanguageCode)),
-                                                              Map(docMetadata.LegalAuthenticator,
-                                                                  () => new Slot(XDMetadataStandard.Slots.LegalAuthenticator, docMetadata.LegalAuthenticator.ToXCN())),
-                                                              Map(docMetadata.MediaType,
-                                                                  () => new XAttribute(XDMetadataStandard.Attrs.MimeType, docMetadata.MediaType) ),
-                                                              Map(docMetadata.PatientID,
-                                                                  () => new ExternalIdentifier(XDMetadataStandard.UUIDs.DocumentEntryPatientIdentityScheme,
-                                                                                               docMetadata.PatientID.ToEscapedCx(), "XDSDocumentEntry.patientId")),
-                                                              Map(docMetadata.ServiceStart,
-                                                                  () => new Slot(XDMetadataStandard.Slots.ServiceStart, docMetadata.ServiceStart.ToHL7Date())),
-                                                              Map(docMetadata.ServiceStop,
-                                                                  () =>  new Slot(XDMetadataStandard.Slots.ServiceStop, docMetadata.ServiceStop.ToHL7Date()) ),
-                                                              Map(docMetadata.PracticeSetting,
-                                                                  () => new CodedValueClassification(XDAttribute.PracticeSettingCode, documentName, docMetadata.PracticeSetting) ),
-                                                              Map(docMetadata.Size,
-                                                                  () => new Slot(XDMetadataStandard.Slots.Size, docMetadata.Size.ToString()) ),
-                                                              Map(docMetadata.SourcePtId,
-                                                                  () => new Slot(XDMetadataStandard.Slots.SourcePatientID, docMetadata.SourcePtId.ToEscapedCx()) ),
-                                                              Map(docMetadata.Patient,
-                                                                  () => new Slot(XDMetadataStandard.Slots.SourcePatientInfo, docMetadata.Patient.ToSourcePatientInfoValues(docMetadata.SourcePtId))),
-                                                              Map(docMetadata.Title,
-                                                                  () => new Name(docMetadata.Title) ),
-                                                              // typeCode is the same as class.
-                                                              Map(docMetadata.Class,
-                                                                  () => new CodedValueClassification(XDAttribute.TypeCode, documentName, docMetadata.Class) ),
-                                                              Map(docMetadata.UniqueId,
-                                                                  () => new ExternalIdentifier(XDMetadataStandard.UUIDs.DocumentUniqueIdIdentityScheme, docMetadata.UniqueId,"XDSDocumentEntry.uniqueId")),
-                                                              Map(docMetadata.Uri,
-                                                                  () => new Slot(XDMetadataStandard.Slots.Uri, UriValues(docMetadata.Uri))),
-                                                          };
+            List<Pair<Object, Func<XObject>>> specs =
+            new List<Pair<Object, Func<XObject>>>
+            {
+                Map(dm.MediaType,         () => new XAttribute(XDMetadataStandard.Attrs.MimeType, dm.MediaType) ),
+                // XSD requires the following order: name, description, slots, classifications, external identifiers
+                Map(dm.Title,             () => new Name(dm.Title) ),
+                Map(dm.Comments,          () => new Description(dm.Comments)),
+                Map(dm.Author,            () => new MultiSlotClassification(XDMetadataStandard.UUIDs.DocumentAuthor, "", documentName, AuthorSlots(dm.Author))),
+                Map(dm.CreatedOn,         () => new Slot(XDMetadataStandard.Slots.CreationTime, dm.CreatedOn.ToHL7Date())),
+                Map(dm.Hash,              () => new Slot(XDMetadataStandard.Slots.Hash, dm.Hash)),
+                Map(dm.LanguageCode,      () => new Slot(XDMetadataStandard.Slots.LanguageCode, dm.LanguageCode)),
+                Map(dm.LegalAuthenticator,() => new Slot(XDMetadataStandard.Slots.LegalAuthenticator, dm.LegalAuthenticator.ToXCN())),
+                Map(dm.ServiceStart,      () => new Slot(XDMetadataStandard.Slots.ServiceStart, dm.ServiceStart.ToHL7Date())),
+                Map(dm.ServiceStop,       () => new Slot(XDMetadataStandard.Slots.ServiceStop, dm.ServiceStop.ToHL7Date()) ),
+                Map(dm.Size,              () => new Slot(XDMetadataStandard.Slots.Size, dm.Size.ToString()) ),
+                Map(dm.SourcePtId,        () => new Slot(XDMetadataStandard.Slots.SourcePatientID, dm.SourcePtId.ToEscapedCx()) ),
+                Map(dm.Patient,           () => new Slot(XDMetadataStandard.Slots.SourcePatientInfo, dm.Patient.ToSourcePatientInfoValues(dm.SourcePtId))),
+                Map(dm.Uri,               () => new Slot(XDMetadataStandard.Slots.Uri, UriValues(dm.Uri))),
+                Map(dm.Class,             () => new CodedValueClassification(XDAttribute.ClassCode, documentName, dm.Class)),
+                Map(dm.Confidentiality,   () => new CodedValueClassification(XDAttribute.ConfidentialityCode, documentName, dm.Confidentiality)),
+                Map(dm.EventCodes,        () => EventCodeClassifications(dm.EventCodes, documentName)),
+                Map(dm.FormatCode,        () => new CodedValueClassification(XDAttribute.FormatCode, documentName, dm.FormatCode)),
+                Map(dm.FacilityCode,      () => new CodedValueClassification(XDAttribute.FacilityType, documentName,dm.FacilityCode)),
+                Map(dm.PracticeSetting,   () => new CodedValueClassification(XDAttribute.PracticeSettingCode, documentName, dm.PracticeSetting) ),
+                // typeCode is the same as class.
+                Map(dm.Class,             () => new CodedValueClassification(XDAttribute.TypeCode, documentName, dm.Class) ),
+                Map(dm.PatientID,         () => new ExternalIdentifier(XDMetadataStandard.UUIDs.DocumentEntryPatientIdentityScheme, dm.PatientID.ToEscapedCx(), "XDSDocumentEntry.patientId")),
+                Map(dm.UniqueId,          () => new ExternalIdentifier(XDMetadataStandard.UUIDs.DocumentUniqueIdIdentityScheme, dm.UniqueId,"XDSDocumentEntry.uniqueId")),
+            };
 
             foreach (Pair<Object, Func<XObject>> p in specs)
             {
