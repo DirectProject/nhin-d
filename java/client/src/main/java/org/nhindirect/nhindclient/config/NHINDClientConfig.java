@@ -39,27 +39,8 @@ public class NHINDClientConfig
     private String smtpAuthUser;
     private String smtpAuthPassword;
 
-    /**
-     * A default configuration.
-     */
-    public static final NHINDClientConfig DEFAULT;
-
-    static
-    {
-        DEFAULT = new NHINDClientConfig();
-    }
-
-    /*
-     * Default constructor for default values.
-     */
-    private NHINDClientConfig()
-    {
-        // TODO: This will eventually be removed or changed
-        smtpHostName = "gmail-smtp.l.google.com";
-        smtpAuthUser = "lewistower1@gmail.com";
-        smtpAuthPassword = "hadron106";
-    }
-
+    private String configServireUrl;
+    
     /**
      * Construct a new NHINDClientConfig object.
      * 
@@ -75,6 +56,25 @@ public class NHINDClientConfig
         this.smtpHostName = smtpHostName;
         this.smtpAuthUser = smtpAuthUser;
         this.smtpAuthPassword = smtpAuthPassword;
+    }
+    
+    /**
+     * Construct a new NHINDClientConfig object.
+     * 
+     * @param smtpHostName
+     *            The SMTP host name.
+     * @param smtpAuthUser
+     *            The SMTP auth user.
+     * @param smtpAuthPassword
+     *            The SMTP auth password.
+     * @param configServiceUrl
+     *            The configuration service URL
+     */
+    public NHINDClientConfig(String smtpHostName, String smtpAuthUser, String smtpAuthPassword, String configServiceUrl)
+    {
+        this(smtpHostName, smtpAuthUser, smtpAuthPassword);
+        
+        this.configServireUrl = configServiceUrl;
     }
 
     /**
@@ -138,6 +138,27 @@ public class NHINDClientConfig
     public void setSmtpAuthPassword(String smtpAuthPassword)
     {
         this.smtpAuthPassword = smtpAuthPassword;
+    }
+
+    /**
+     * Get the value of configServiceUrl.
+     * 
+     * @return the configServireUrl.
+     */
+    public String getConfigServireUrl()
+    {
+        return configServireUrl;
+    }
+
+    /**
+     * Set the value of configServiceUrl.
+     * 
+     * @param configServireUrl
+     *            The configServireUrl to set.
+     */
+    public void setConfigServireUrl(String configServireUrl)
+    {
+        this.configServireUrl = configServireUrl;
     }
 
 }

@@ -98,7 +98,7 @@ public class NHINDClientTest extends TestCase
         metadata2.setSs_intendedRecipient(Arrays.asList("|beau+document2@nologs.org^Smith^John^^^Dr^^^&amp;1.3.6.1.4.1.21367.3100.1&amp;ISO"));
         message.addDocument(document2);
 
-        NHINDClient client = new NHINDClientImpl(NHINDClientConfig.DEFAULT);
+        NHINDClient client = new NHINDClientImpl(new NHINDClientConfig("gmail-smtp.l.google.com", "lewistower1@gmail.com", "hadron106"));
 
         
         try

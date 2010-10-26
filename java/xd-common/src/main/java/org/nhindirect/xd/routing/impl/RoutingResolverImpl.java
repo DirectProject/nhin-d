@@ -67,7 +67,8 @@ public class RoutingResolverImpl extends RoutingResolver
      */
     public RoutingResolverImpl(String configServiceUrl)
     {
-        proxy = new ConfigurationServiceProxy(configServiceUrl);
+        if (StringUtils.isNotBlank(configServiceUrl))
+            proxy = new ConfigurationServiceProxy(configServiceUrl);
     }
 
     /*

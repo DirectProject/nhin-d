@@ -56,6 +56,7 @@ public class NHINDClientImpl implements NHINDClient
     public NHINDClientImpl(NHINDClientConfig config)
     {
         this.config = config;
+        this.routingResolver = new RoutingResolverImpl(config.getConfigServireUrl());
     }
 
     /*
