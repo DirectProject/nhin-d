@@ -102,6 +102,7 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 			// create instance
 			cache = JCS.getInstance(CACHE_NAME);		
 			applyCachePolicy(cachePolicy == null ? getDefaultPolicy() : cachePolicy);
+			cache.clear();
 					
 		}
 		catch (CacheException e)
