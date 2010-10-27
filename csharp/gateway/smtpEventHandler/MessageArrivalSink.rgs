@@ -1,0 +1,26 @@
+HKCR
+{
+	NHINDirectGateway.MessageArrivalSink.1 = s 'MessageArrivalSink Class'
+	{
+		CLSID = s '{537AE5ED-458B-439D-A4E8-4B2224051B9D}'
+	}
+	NHINDirectGateway.MessageArrivalSink = s 'MessageArrivalSink Class'
+	{
+		CLSID = s '{537AE5ED-458B-439D-A4E8-4B2224051B9D}'
+		CurVer = s 'NHINDirectGateway.MessageArrivalSink.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {537AE5ED-458B-439D-A4E8-4B2224051B9D} = s 'MessageArrivalSink Class'
+		{
+			ProgID = s 'NHINDirectGateway.MessageArrivalSink.1'
+			VersionIndependentProgID = s 'NHINDirectGateway.MessageArrivalSink'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Both'
+			}
+			'TypeLib' = s '{1A8FBB2B-D117-467B-8E69-43625E38347E}'
+		}
+	}
+}
