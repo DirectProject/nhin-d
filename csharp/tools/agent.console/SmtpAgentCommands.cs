@@ -68,7 +68,7 @@ namespace Health.Direct.Tools.Agent
         [Command(Name = "SmtpAgent_Process")]
         public void ProcessIncoming(string[] args)
         {
-            MessageFiles files = new MessageFiles(args);
+            IOFiles files = new IOFiles(args);
             CDO.Message message = Extensions.LoadCDOMessageFromText(files.Read());
             this.Agent.ProcessMessage(message);
             files.Write(message.GetMessageText());

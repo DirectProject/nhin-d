@@ -77,7 +77,7 @@ namespace Health.Direct.Tools.Agent
         [Command(Name = "Agent_Process_Incoming")]
         public void ProcessIncoming(string[] args)
         {
-            MessageFiles files = new MessageFiles(args);
+            IOFiles files = new IOFiles(args);
             IncomingMessage message = this.Agent.ProcessIncoming(files.Read());
             files.Write(message.Message);
         }
@@ -85,7 +85,7 @@ namespace Health.Direct.Tools.Agent
         [Command(Name = "Agent_Process_Outgoing")]
         public void ProcessOutgoing(string[] args)
         {
-            MessageFiles files = new MessageFiles(args);
+            IOFiles files = new IOFiles(args);
             OutgoingMessage message = this.Agent.ProcessOutgoing(files.Read());
             files.Write(message.Message);
         }

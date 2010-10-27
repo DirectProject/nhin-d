@@ -35,6 +35,7 @@ namespace Health.Direct.Tools.Agent
             m_commands.Register(new AgentCommands());
             m_commands.Register(new DnsCommands());
             m_commands.Register(new SmtpAgentCommands());
+            m_commands.Register(new CertificateCommands());
         }
         
         public void Run(string[] args)
@@ -56,9 +57,9 @@ namespace Health.Direct.Tools.Agent
         }
     }
 
-    internal struct MessageFiles
+    internal struct IOFiles
     {
-        internal MessageFiles(string[] args)
+        internal IOFiles(string[] args)
         {
             this.InputFile = args.GetRequiredValue(0);
             this.OutputFile = args.GetOptionalValue(1, null);
