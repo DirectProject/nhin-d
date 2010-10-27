@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Agent;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Tools.Command;
+using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.Tools.Agent
 {
@@ -22,7 +23,63 @@ namespace Health.Direct.Tools.Agent
             
             validator.IsTrustedCertificate(cert, anchors);
         }
-        
+
+        [Command(Name = "Cert_ExportDns")]
+        public void Export(string[] args)
+        {
+            IOFiles ioFiles = new IOFiles(args);
+            if (!ioFiles.HasOutputFile)
+            {
+                Console.WriteLine("Need output file");
+            }
+            X509Certificate2 cert = new X509Certificate2(ioFiles.InputFile);
+            this.ExportCert(cert, ioFiles.OutputFile);
+        }
+        const string ExportDnsUsage =
+            "Export the given certificate file to Zone file format\r\n"
+         + "    inputFile"
+         + "    outputFile";
+
+        //---------------------------------------
+        //
+        // Implementation...
+        //
+        //---------------------------------------
+        void ExportCert(X509Certificate2 cert, string filepath)
+        {
+            X509Certificate2Collection certs = new X509Certificate2Collection(cert);
+            this.ExportCerts(certs.Enumerate(), filepath);
+        }
+
+        void ExportCerts(IEnumerable<X509Certificate2> certs, string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                ExportCerts(certs, System.Console.Out, false);
+                return;
+            }
+
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                ExportCerts(certs, writer, true);
+            }
+        }
+
+        void ExportCerts(IEnumerable<X509Certificate2> certs, TextWriter writer, bool isOutputFile)
+        {
+            foreach (X509Certificate2 cert in certs)
+            {
+                DnsX509Cert dnsCert = new DnsX509Cert(cert);
+                dnsCert.Export(writer, dnsCert.Name);
+                writer.WriteLine();
+
+                if (isOutputFile)
+                {
+                    Console.WriteLine(dnsCert.Name);
+                }
+            }
+        }
+
         [Command(Name="Cert_Dump")]
         public void Dump(string[] args)
         {
