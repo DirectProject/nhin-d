@@ -23,6 +23,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.stagent.cert.impl;
 
 import java.io.File;
+import java.net.UnknownHostException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -301,7 +302,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 		{
 			// try the configured servers first
 			Lookup lu = new Lookup(new Name(lookupName), Type.CERT);
-			lu.setResolver(new ExtendedResolver(servers.toArray(new String[servers.size()])));
+			lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]),2, 3)); // default retries is 3, limite to 2
 			
 			Record[] retRecords = lu.run();
 			
@@ -312,7 +313,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 				// try to find the resource's name server records
 				// the address may be an alias so check if there is a CNAME record
 				lu = new Lookup(new Name(lookupName), Type.CNAME);
-				lu.setResolver(new ExtendedResolver(servers.toArray(new String[servers.size()])));
+				lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]),2,3));
 				
 				retRecords = lu.run();	
 				if (retRecords != null && retRecords.length > 0)
@@ -327,7 +328,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 				while (tempDomain.labels() > 1)
 				{
 					lu = new Lookup(tempDomain, Type.NS);
-					lu.setResolver(new ExtendedResolver(servers.toArray(new String[servers.size()])));
+					lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]), 2, 3));
 					retRecords = lu.run();
 					
 					if (retRecords != null && retRecords.length > 0)
@@ -347,7 +348,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 				
 				// search the name servers for the cert
 				lu = new Lookup(new Name(lookupName), Type.CERT);
-				lu.setResolver(new ExtendedResolver(remoteServers));
+				lu.setResolver(createExResolver(remoteServers, 2, 3));
 				
 				retRecords = lu.run();
 			}
@@ -365,7 +366,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 					}
 				}			
 			}
-			else if (domain.length() <= name.length())  // if this is an email address, do the search again and the host level
+			else if (domain.length() < name.length())  // if this is an email address, do the search again and the host level
 				retVal = lookupDNS(domain);
 		}
 		catch (Exception e)
@@ -494,5 +495,18 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 			return 3600 * 24; // 1 day
 		}
 		
+	}
+	
+	private ExtendedResolver createExResolver(String[] servers, int retries, int timeout)
+	{
+		ExtendedResolver retVal = null;
+		try
+		{
+			retVal = new ExtendedResolver(servers);
+			retVal.setRetries(retries);
+			retVal.setTimeout(timeout);
+		}
+		catch (UnknownHostException e) {/* no-op */}
+		return retVal;
 	}
 }
