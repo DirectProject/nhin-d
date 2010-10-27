@@ -21,6 +21,7 @@ using System.Net;
 using System.Net.Mail;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Common.DnsResolver;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Tools.Command;
 
@@ -34,6 +35,7 @@ namespace Health.Direct.Tools.Agent
         public DnsCommands()
         {
             m_dnsServer = IPAddress.Parse("8.8.8.8");
+            m_fallbackDomain = "hsgincubator.com";
         }
         
         /// <summary>
@@ -84,6 +86,6 @@ namespace Health.Direct.Tools.Agent
             + "   domain or address\r\n"
             + "   outputFile: (optional)\r\n"
             + "   server : (optional)\r\n";
- 
+
     }
 }

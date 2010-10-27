@@ -57,9 +57,9 @@ namespace Health.Direct.Tools.Agent
         }
     }
 
-    internal struct MessageFiles
+    internal struct IOFiles
     {
-        internal MessageFiles(string[] args)
+        internal IOFiles(string[] args)
         {
             this.InputFile = args.GetRequiredValue(0);
             this.OutputFile = args.GetOptionalValue(1, null);
