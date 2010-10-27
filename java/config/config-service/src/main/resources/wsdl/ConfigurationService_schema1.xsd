@@ -374,6 +374,16 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="addAddress">
+    <xs:sequence>
+      <xs:element name="address" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addAddressResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="searchDomain">
     <xs:sequence>
       <xs:element name="name" type="xs:string" minOccurs="0"/>
@@ -385,16 +395,6 @@
     <xs:sequence>
       <xs:element name="return" type="tns:domain" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="addAddress">
-    <xs:sequence>
-      <xs:element name="address" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="addAddressResponse">
-    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="getDomains">
