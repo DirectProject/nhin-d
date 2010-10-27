@@ -28,6 +28,11 @@ namespace Health.Direct.Diagnostics.NLog
 {
     public class NLogFactory : ILogFactory
     {
+        public NLogFactory()
+            : this(LogFileSection.GetAsSettings())
+        {
+        }
+
         // TODO: not sure if this is the way we want to configure the logger, however, this
         // honors the principle of being a code based configuration vs XML/file based.
         public NLogFactory(LogFileSettings settings)
