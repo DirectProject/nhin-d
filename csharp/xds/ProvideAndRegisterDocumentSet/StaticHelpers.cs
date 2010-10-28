@@ -148,53 +148,53 @@ namespace Health.Direct.Xds
             values = new string[1];
             values[0] = document.Class.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
-            eo.Classification[1] = new ClassificationType("urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a",
-                eo.Id, null, "Summarization of episode",
-                "cl01", "Summarization of episode", slots);
+            eo.Classification[1] = new ClassificationType(GlobalValues.XDSDocumentEntry_classCodeUUID,
+                eo.Id, null, document.Class.Code,
+                "cl01", document.Class.Label, slots);
 
             //Confidentiality Code
             slots = new SlotType[1];
             values = new string[1];
-            values[0] = "Connect-a-thon confidentialityCodes";
+            values[0] = document.Confidentiality.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
-            eo.Classification[2] = new ClassificationType("urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f",
-                eo.Id, null, "N", "cl02", "Normal", slots);
+            eo.Classification[2] = new ClassificationType(GlobalValues.XDSDocumentEntry_confidentialityCodeUUID,
+                eo.Id, null, document.Confidentiality.Code, "cl02", document.Confidentiality.Label, slots);
 
             //Format Code
             slots = new SlotType[1];
             values = new string[1];
-            values[0] = "Connect-a-thon formatCodes";
+            values[0] = document.FormatCode.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
-            eo.Classification[3] = new ClassificationType("urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d",
-                eo.Id, null, "CDAR2/IHE 1.0", "cl03",
-                "CDAR2/IHE 1.0", slots);
+            eo.Classification[3] = new ClassificationType(GlobalValues.XDSDocumentEntry_formatCodeUUID,
+                eo.Id, null, document.FormatCode.Code, "cl03",
+                document.FormatCode.Label, slots);
 
             //HealthCare Facility type code
             slots = new SlotType[1];
             values = new string[1];
-            values[0] = "Connect-a-thon healthcareFacilityTypeCodes";
+            values[0] = document.FacilityCode.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
-            eo.Classification[4] = new ClassificationType("urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1",
-                eo.Id, null, "Hospital Setting", "cl04",
-                "Hospital Setting", slots);
+            eo.Classification[4] = new ClassificationType(GlobalValues.XDSDocumentEntry_healthCareFacilityTypeCodeUUID,
+                eo.Id, null, document.FacilityCode.Code, "cl04",
+                document.FacilityCode.Label, slots);
 
             //Practice Setting Code
             slots = new SlotType[1];
             values = new string[1];
-            values[0] = "Connect-a-thon practiceSettingCodes";
+            values[0] = document.PracticeSetting.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
-            eo.Classification[5] = new ClassificationType("urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead",
-                eo.Id, null, "General Medicine", "cl05",
-                "General Medicine", slots);
+            eo.Classification[5] = new ClassificationType(GlobalValues.XDSDocumentEntry_practiceSettingCodeUUID,
+                eo.Id, null, document.PracticeSetting.Code, "cl05",
+                document.PracticeSetting.Label, slots);
 
             //Type Code
             slots = new SlotType[1];
             values = new string[1];
-            values[0] = "LOINC";
+            values[0] = document.Type.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[6] = new ClassificationType("urn:uuid:f0306f51-975f-434e-a61c-c59651d33983",
-                eo.Id, null, Document.DocCode, "cl06",
-                Document.DocCodeName, slots);
+                eo.Id, null, document.Type.Code, "cl06",
+                document.Type.Label, slots);
 
             return eo;
         }
