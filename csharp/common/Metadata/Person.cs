@@ -212,7 +212,7 @@ namespace Health.Direct.Common.Metadata
         /// </summary>
         public IEnumerable<string> ToSourcePatientInfoValues(PatientID id)
         {
-            string idValue = (id == null) ? "" : id.ToEscapedCx();
+            string idValue = (id == null) ? "" : id.ToCx();
             string nameValue =  ToXCN();
             string dateValue =  Dob == null ? "" : Dob.ToHL7Date();
             string sexValue = Sex == null ? "" : Sex.AsString();
