@@ -85,5 +85,13 @@ namespace Health.Direct.Common.Tests.Metadata
             m.SetDocument("abc");
             Assert.Equal(bytes.Length, m.Size);
         }
+
+        [Fact]
+        public void DocumentStringHasStringRepresentation()
+        {
+            DocumentMetadata m = new DocumentMetadata();
+            m.SetDocument("abc123");
+            Assert.Equal("abc123", m.DocumentString);
+        }
     }
 }
