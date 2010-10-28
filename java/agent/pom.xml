@@ -226,6 +226,21 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/target/lib</outputDirectory>
+              <excludeGroupIds>javax.activation,aopalliance,ldapsdk,antlr,backport-util-concurrent,jdbm,concurrent,com.google.inject,commons-lang,commons-codec,commons-logging,junit,org.dnsjava,org.apache.jcs,org.apache.directory.server,org.apache.directory.shared,org.slf4j,org.apache.mina,commons-collections,</excludeGroupIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>     
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId> 
       </plugin>
 	<plugin>
