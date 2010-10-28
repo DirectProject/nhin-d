@@ -14,53 +14,40 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Security.Cryptography;
 
-namespace Health.Direct.Common.Metadata
+using Xunit;
+
+using Health.Direct.Common.Metadata;
+
+namespace Health.Direct.Common.Tests.Metadata
 {
-    /// <summary>
-    /// Extension methods for working with metadata elements
-    /// </summary>
-    public static class Extensions
+    // Many other tests in XD Consume/Generate tests
+    public class DocumentMetadataFacts
     {
 
-        /// <summary>
-        /// Converts the supplied date to an HL7 formatted UTC datetime string
-        /// </summary>
-        public static string ToHL7Date(this DateTime? datetime)
+        [Fact]
+        public void SetDocumentSetsHash()
         {
-            if (datetime == null) return null;
-            return datetime.Value.ToUniversalTime().ToString(HL7Util.DateTimeFormat, System.Globalization.DateTimeFormatInfo.InvariantInfo);
+            DocumentMetadata m = new DocumentMetadata();
+            m.SetDocument("abc");
+            SHA1 sha = new SHA1CryptoServiceProvider();
+            byte[] bytes = (new UTF8Encoding()).GetBytes("abc");
+            string hash = Convert.ToBase64String(sha.ComputeHash(bytes));
+            Assert.Equal(hash, m.Hash);
         }
 
-        /// <summary>
-        /// Formats the provided value as a string suitable for inclusion in HL7
-        /// </summary>
-        public static string AsString(this Sex? s)
+        [Fact]
+        public void SetDocumentSetsSize()
         {
-            return HL7Util.ToHL7Value(s);
+            DocumentMetadata m = new DocumentMetadata();
+            m.SetDocument(new byte[] { 72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100 });
+            Assert.Equal(11, m.Size);
         }
 
-
-        /// <summary>
-        /// Reads all bytes of the supplied string.
-        /// </summary>
-        public static byte[] ReadAllBytes(this Stream stream)
-        {
-            int buffSize = 1024;
-            byte[] buffer = new byte[buffSize];
-
-            int bytesRead = 0;
-            var inStream = new BufferedStream(stream);
-            var outStream = new MemoryStream();
-
-            while ((bytesRead = inStream.Read(buffer, 0, buffSize)) > 0)
-            {
-                outStream.Write(buffer, 0, bytesRead);
-            }
-
-            return outStream.GetBuffer();
-        }
 
     }
 }
