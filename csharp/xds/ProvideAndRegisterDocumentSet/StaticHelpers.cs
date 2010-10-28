@@ -19,7 +19,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 using System.Net.Security;
 
-namespace Health.Direct.XDS
+namespace Health.Direct.Xds
 {
     class StaticHelpers
     {

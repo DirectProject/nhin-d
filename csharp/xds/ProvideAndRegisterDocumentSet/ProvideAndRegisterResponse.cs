@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using Health.Direct.Xds.Common;
 
-namespace Health.Direct.XDS
+namespace Health.Direct.Xds
 {
     // the response from a Provide&Register Document Set-b [ITI-41] transaction
     public class ProvideAndRegisterResponse

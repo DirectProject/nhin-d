@@ -29,7 +29,7 @@ using WCF = System.ServiceModel.Channels;
 
 using System.IO;
 
-namespace Health.Direct.XDS
+namespace Health.Direct.Xds
 {
     public class ExportDocumentSet: IExportDocumentSet
     {
