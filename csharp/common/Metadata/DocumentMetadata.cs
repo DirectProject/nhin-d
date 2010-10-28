@@ -28,7 +28,7 @@ namespace Health.Direct.Common.Metadata
     {
 
         /// <summary>
-        /// Initializes the document metadata with the UTF8 bytes for the supplied string
+        /// Initializes the document metadata with the UTF8 encoded bytes for the supplied string
         /// </summary>
         /// <param name="document"></param>
         public void SetDocument(string document)
@@ -80,6 +80,20 @@ namespace Health.Direct.Common.Metadata
         /// Returns this document as an array of bytes
         /// </summary>
         public byte[] DocumentBytes { get; private set; } 
+
+        /// <summary>
+        /// Returns the document as a string, assuming the DocumentBytes are UTF8-encoded bytes
+        /// </summary>
+        public string DocumentString
+        {
+            get
+            {
+                UTF8Encoding utf8 = new UTF8Encoding();
+                return utf8.GetString(DocumentBytes);
+            }
+        }
+
+
 
         /// <summary>
         /// Represents the humans and/or machines that authored the document
