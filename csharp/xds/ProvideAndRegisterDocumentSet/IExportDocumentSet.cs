@@ -19,16 +19,15 @@ using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.IO;
 
+using Health.Direct.Common.Metadata;
+
 namespace Health.Direct.Xds
 {
     public interface IExportDocumentSet
     {
-        ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(string xdsMetadata, string xdsDocument, string endpointUrl, string certThumbprint);
-        ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, XmlDocument xdsDocument, string endpointUrl, string certThumbprint);
-        ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, XmlDocument xdsDocument, EndpointAddress endpointAddress, string certThumbprint);
-        ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, XmlDocument xdsDocument, EndpointAddress endpointAddress, X509Certificate2 clientCert);
-
-        // allow list of documents, indexed by their id's
-        ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, List<KeyValuePair<string, Stream>> docsById, EndpointAddress endpointAddress, X509Certificate2 clientCert);
+        ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, string endpointUrl, string certThumbprint);
+        ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, string endpointUrl, string certThumbprint);
+        ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, EndpointAddress endpointAddress, string certThumbprint);
+        ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, EndpointAddress endpointAddress, X509Certificate2 clientCert);
     }
 }
