@@ -24,6 +24,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 
 using Health.Direct.Xds.Common;
+using Health.Direct.Common.Metadata;
 
 using WCF = System.ServiceModel.Channels;
 
@@ -44,11 +45,11 @@ namespace Health.Direct.Xds
 
 
         #region IExportDocumentSet Members
-        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(string xdsMetadata, string xdsDocument, string endpointUrl, string certThumbprint)
+        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, string endpointUrl, string certThumbprint)
         {
             EndpointAddress endpointAddress;
             X509Certificate2 clientCert;
-            ProvideAndRegisterRequest pandRXDSBRequest;
+            ProvideAndRegisterDocumentSetRequest pandRXDSBRequest;
             //m_Logger = Log.For(this);
             try
             {
@@ -74,7 +75,7 @@ namespace Health.Direct.Xds
 
         }
 
-        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, XmlDocument xdsDocument, string endpointUrl, string certThumbprint)
+        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, string endpointUrl, string certThumbprint)
         {
             EndpointAddress endpointAddress;
             X509Certificate2 clientCert;
@@ -105,10 +106,10 @@ namespace Health.Direct.Xds
 
         }
 
-        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, XmlDocument xdsDocument, EndpointAddress endpointAddress, string certThumbprint)
+        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, EndpointAddress endpointAddress, string certThumbprint)
         {
             X509Certificate2 clientCert;
-            ProvideAndRegisterRequest pandRXDSBRequest;
+            ProvideAndRegisterDocumentSetRequest pandRXDSBRequest;
             //m_Logger = Log.For(this);
             try
             {
@@ -133,7 +134,7 @@ namespace Health.Direct.Xds
 
         }
 
-        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, XmlDocument xdsDocument, EndpointAddress endpointAddress, X509Certificate2 clientCert)
+        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, EndpointAddress endpointAddress, X509Certificate2 clientCert)
         {
             ProvideAndRegisterRequest pandRXDSBRequest;
             //m_Logger = Log.For(this);
@@ -151,23 +152,7 @@ namespace Health.Direct.Xds
             return exportXDSB(pandRXDSBRequest, endpointAddress, clientCert);
         }
 
-        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, List<KeyValuePair<string, Stream>> docsById, EndpointAddress endpointAddress, X509Certificate2 clientCert)
-        {
-            ProvideAndRegisterRequest pandRXDSBRequest;
-            //m_Logger = Log.For(this);
-            try
-            {
-                // create request
-                pandRXDSBRequest = getPandRRequest(xdsMetadata, docsById);
-            }
-            catch (Exception ex)
-            {
-                ProvideAndRegisterResponse pandRResponse = errorResponse(GlobalValues.CONST_ERROR_CODE_XDSRepositoryError, string.Format("error: {0}; stacktrace{1}", ex.Message, ex.StackTrace));
-                return pandRResponse;
-            }
-
-            return exportXDSB(pandRXDSBRequest, endpointAddress, clientCert);
-        }
+        
         #endregion
 
         #region private
@@ -240,10 +225,10 @@ namespace Health.Direct.Xds
             return getPandRRequest(xdsMetadata, theDocument);
         }
         
-        private ProvideAndRegisterRequest getPandRRequest(XmlDocument xdsMetadata, List<KeyValuePair<string, Stream>> docsById)
+        private ProvideAndRegisterDocumentSetRequest getPandRRequest(XmlDocument xdsMetadata, List<KeyValuePair<string, Stream>> docsById)
         {
             // put together a P&R Request
-            ProvideAndRegisterRequest pandRRequest = new ProvideAndRegisterRequest();
+            ProvideAndRegisterDocumentSetRequest pandRRequest = new ProvideAndRegisterDocumentSetxRequest();
 
             // create a SubmissionSetDocument for each document in the list
             SubmissionDocument aSubmissionDocument = null;
@@ -263,7 +248,7 @@ namespace Health.Direct.Xds
             return pandRRequest;
         }
 
-        private ProvideAndRegisterResponse exportXDSB(ProvideAndRegisterRequest pandRXDSBRequest, System.ServiceModel.EndpointAddress endpointAddress, X509Certificate2 clientCert)
+        private ProvideAndRegisterResponse exportXDSB(ProvideAndRegisterDocumentSetRequest pandRXDSBRequest, System.ServiceModel.EndpointAddress endpointAddress, X509Certificate2 clientCert)
         {
             ProvideAndRegisterResponse pandRResponse = null;
             // setup a default, we blew it, error response
@@ -285,7 +270,7 @@ namespace Health.Direct.Xds
 
                 wcfInput = WCF.Message.CreateMessage(WCF.MessageVersion.Soap12WSAddressing10
                     , StaticHelpers.XDS_PANDR_ACTION    // the action
-                    , pandRXDSBRequest);      // the body
+                    , pandRXDSBRequest, pandRSeriliazer);      // the body
 
                 wcfOutput = WCF.Message.CreateMessage(WCF.MessageVersion.Soap12WSAddressing10, "");
 

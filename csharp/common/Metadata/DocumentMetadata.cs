@@ -15,6 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.IO;
+using System.Security.Cryptography;
 
 namespace Health.Direct.Common.Metadata
 {
@@ -25,6 +28,73 @@ namespace Health.Direct.Common.Metadata
     {
 
         /// <summary>
+        /// Initializes the document metadata with the UTF8 encoded bytes for the supplied string
+        /// </summary>
+        /// <param name="document"></param>
+        public void SetDocument(string document)
+        {
+            SetDocument((new UTF8Encoding()).GetBytes(document));
+        }
+
+        /// <summary>
+        /// Initializes the document metadata with bytes fed from the supplied stream
+        /// </summary>
+        /// <param name="document"></param>
+        public void SetDocument(Stream document)
+        {
+            SetDocument(document.ReadAllBytes());
+        }
+
+        /// <summary>
+        /// Initializes the document metadata with a document supplied as a byte array
+        /// </summary>
+        /// <param name="documentBytes"></param>
+        public void SetDocument(byte[] documentBytes)
+        {
+            DocumentBytes = documentBytes;
+            SetHash();
+            SetSize();
+        }
+
+        private void SetHash()
+        {
+            SHA1 sha = new SHA1CryptoServiceProvider();
+            
+            string h = Convert.ToBase64String(sha.ComputeHash(DocumentBytes));
+            if (Hash == null)
+                Hash = h;
+            else if (Hash != h)
+                throw new FormatException("Hash does not match computed value");
+        }
+
+        private void SetSize()
+        {
+            int s = DocumentBytes.Length;
+            if (Size == null)
+                Size = s;
+            else if (Size != s)
+                throw new FormatException("Size does not match computed value");
+        }
+
+        /// <summary>
+        /// Returns this document as an array of bytes
+        /// </summary>
+        public byte[] DocumentBytes { get; private set; } 
+
+        /// <summary>
+        /// Returns the document as a string, assuming the DocumentBytes are UTF8-encoded bytes
+        /// </summary>
+        public string DocumentString
+        {
+            get
+            {
+                UTF8Encoding utf8 = new UTF8Encoding();
+                return utf8.GetString(DocumentBytes);
+            }
+        }
+
+        /// <summary>
+ 
         /// Represents the humans and/or machines that authored the document
         /// </summary>
         public Author Author { get; set; }
@@ -135,7 +205,7 @@ namespace Health.Direct.Common.Metadata
         public string Title { get; set; }
 
         /// <summary>
-        /// The code specifying the particular type of document. May be the same or different from <see cref="Type"/>
+        /// The code specifying the particular type of document. May be the same or different from <see cref="Class"/>
         /// </summary>
         public CodedValue Type { get; set; }
        
