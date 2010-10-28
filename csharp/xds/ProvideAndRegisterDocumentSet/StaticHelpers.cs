@@ -139,7 +139,7 @@ namespace Health.Direct.Xds
             values[0] = document.Author.TelecomAddress.ToXTN();
             slots[2] = new SlotType(SlotNameType.authorTelecom, values);
 
-            eo.Classification[0] = new ClassificationType("urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d",
+            eo.Classification[0] = new ClassificationType(GlobalValues.XDSDocumentEntry_authorDescriptionUUID,
                 eo.Id, null, null,
                 "cla01", null, slots);
 
@@ -192,7 +192,7 @@ namespace Health.Direct.Xds
             values = new string[1];
             values[0] = document.Type.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
-            eo.Classification[6] = new ClassificationType("urn:uuid:f0306f51-975f-434e-a61c-c59651d33983",
+            eo.Classification[6] = new ClassificationType(GlobalValues.XDSDocumentEntry_typeCodeUUID,
                 eo.Id, null, document.Type.Code, "cl06",
                 document.Type.Label, slots);
 
