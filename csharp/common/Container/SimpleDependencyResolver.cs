@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    John Theisen     jtheisen@kryptiq.com
+    John Theisen
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -30,7 +30,7 @@ namespace Health.Direct.Common.Container
         ///<summary>
         /// A simple <see cref="Dictionary{TKey,TValue}"/> based dependency
         /// resolver. All dependencies need to be initialized on startup and
-        /// prior to calling to <see cref="IoC.Initialize"/>.
+        /// prior to calling to <see cref="IoC.Initialize{T}"/>.
         ///</summary>
         public SimpleDependencyResolver()
         {
@@ -67,8 +67,40 @@ namespace Health.Direct.Common.Container
         ///<returns>An instance of self so the Register calls can be chained.</returns>
         public SimpleDependencyResolver Register<T>(Func<object> functor)
         {
-            m_types.Add(typeof(T), functor);
+            return Register(typeof (T), functor);
+        }
+
+        private SimpleDependencyResolver Register(Type serviceType, Func<object> functor)
+        {
+            m_types.Add(serviceType, functor);
             return this;
+        }
+
+        ///<summary>
+        /// Register all of the components found in the <see cref="SimpleContainerSection"/>
+        ///</summary>
+        ///<param name="section">The configuration section</param>
+        ///<returns>An instance of self so the Register calls can be chained.</returns>
+        public SimpleDependencyResolver RegisterConfig(SimpleContainerSection section)
+        {
+            for (int i = 0; i<section.Components.Count; i++)
+            {
+                SimpleComponentElement component = section.Components[i];
+                Register(component.ServiceType, GetCreator(component));
+            }
+
+            return this;
+        }
+
+        private static Func<object> GetCreator(SimpleComponentElement component)
+        {
+            if (component.Scope == InstanceScope.Transient)
+            {
+                return component.CreateInstance;
+            }
+            
+            object instance = component.CreateInstance();
+            return () => instance;
         }
     }
 }

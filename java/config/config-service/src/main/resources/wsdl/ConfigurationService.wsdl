@@ -45,6 +45,12 @@
   <message name="listAddresssResponse">
     <part name="parameters" element="tns:listAddresssResponse"/>
   </message>
+  <message name="getDomain">
+    <part name="parameters" element="tns:getDomain"/>
+  </message>
+  <message name="getDomainResponse">
+    <part name="parameters" element="tns:getDomainResponse"/>
+  </message>
   <message name="addDomain">
     <part name="parameters" element="tns:addDomain"/>
   </message>
@@ -86,12 +92,6 @@
   </message>
   <message name="searchDomainResponse">
     <part name="parameters" element="tns:searchDomainResponse"/>
-  </message>
-  <message name="getDomain">
-    <part name="parameters" element="tns:getDomain"/>
-  </message>
-  <message name="getDomainResponse">
-    <part name="parameters" element="tns:getDomainResponse"/>
   </message>
   <message name="contains">
     <part name="parameters" element="tns:contains"/>
@@ -280,6 +280,10 @@
       <output message="tns:listAddresssResponse"/>
       <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
     </operation>
+    <operation name="getDomain">
+      <input message="tns:getDomain"/>
+      <output message="tns:getDomainResponse"/>
+    </operation>
     <operation name="addDomain">
       <input message="tns:addDomain"/>
       <output message="tns:addDomainResponse"/>
@@ -313,10 +317,6 @@
     <operation name="searchDomain">
       <input message="tns:searchDomain"/>
       <output message="tns:searchDomainResponse"/>
-    </operation>
-    <operation name="getDomain">
-      <input message="tns:getDomain"/>
-      <output message="tns:getDomainResponse"/>
     </operation>
     <operation name="contains">
       <input message="tns:contains"/>
