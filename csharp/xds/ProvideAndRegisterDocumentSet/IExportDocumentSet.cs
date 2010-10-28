@@ -19,7 +19,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.IO;
 
-namespace Health.Direct.XDS
+namespace Health.Direct.Xds
 {
     public interface IExportDocumentSet
     {

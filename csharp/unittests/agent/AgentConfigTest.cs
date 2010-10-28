@@ -51,6 +51,14 @@ namespace Health.Direct.Agent.Tests
                     <MaxIssuerChainLength>4</MaxIssuerChainLength>
                     <RevocationCheckMode>Offline</RevocationCheckMode>
                     <Timeout>10000</Timeout>
+                    <ProblemFlags>
+                      <Flag>NotTimeValid</Flag>
+                      <Flag>Revoked</Flag>
+                      <Flag>NotSignatureValid</Flag>
+                      <Flag>InvalidBasicConstraints</Flag>
+                      <Flag>CtlNotTimeValid</Flag>
+                      <Flag>CtlNotSignatureValid</Flag>
+                    </ProblemFlags>
                 </Trust>
             </AgentSettings>
         ";

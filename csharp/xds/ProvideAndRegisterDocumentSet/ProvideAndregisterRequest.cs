@@ -17,10 +17,11 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
+using Health.Direct.Xds.Common;
 
-namespace Health.Direct.XDS
+namespace Health.Direct.Xds
 {
-    [XmlRoot(Namespace = "urn:ihe:iti:xds-b:2007", ElementName = "ProvideAndRegisterDocumentSetRequest")]
+    [XmlRoot(Namespace = GlobalValues.IHEXDSbNamespace, ElementName = "ProvideAndRegisterDocumentSetRequest")]
     class ProvideAndRegisterRequest : IXmlSerializable
     {
         #region constructor
