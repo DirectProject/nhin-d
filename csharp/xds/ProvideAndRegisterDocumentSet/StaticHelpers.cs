@@ -18,6 +18,9 @@ using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 using System.Net.Security;
+using Health.Direct.Common.Metadata;
+using Health.Direct.Xds.Common;
+using Health.Direct.Xds.Common.XdsMetadata;
 
 namespace Health.Direct.Xds
 {
@@ -37,6 +40,193 @@ namespace Health.Direct.Xds
                 return coll[0];
             }
             return null;
+        }
+
+        public static ExtrinsicObjectType CreateDocumentEntry(DocumentMetadata document, string documentId)
+        {
+            ExtrinsicObjectType eo = new ExtrinsicObjectType();
+            eo.Id = documentId;
+            eo.ObjectType = GlobalValues.XDSDocumentEntryUUID; //ClassificationNode?
+            eo.MimeType = document.MediaType;
+
+            eo.Name = new InternationalStringType();
+            eo.Name.LocalizedString = new LocalizedStringType[1];
+            eo.Name.LocalizedString[0] = new LocalizedStringType();
+            eo.Name.LocalizedString[0].Value = document.Title;
+
+            SlotType[] slots = new SlotType[6];
+
+            string[] values = new string[1];
+            values[0] = Extensions.ToHL7Date(document.CreatedOn);
+         
+            slots[0] = new SlotType(SlotNameType.creationTime, values);
+
+            values = new string[1];
+            values[0] = document.LanguageCode;
+            slots[1] = new SlotType(SlotNameType.languageCode, values);
+
+            values = new string[1];
+            values[0] = document.SourcePtId.ToCx();
+            slots[2] = new SlotType(SlotNameType.sourcePatientId, values);
+
+            //values = new string[5];
+            //values[0] = "PID-3|" + _patID
+            //values[1] = "PID-5|" + _patName;
+            //values[2] = "PID-7|" + _patDOB;
+            //values[3] = "PID-8|" + _patSex;
+            //values[4] = "PID-11|" + _patAddress;
+            values = (string[])document.Patient.ToSourcePatientInfoValues(document.SourcePtId);
+            slots[3] = new SlotType(SlotNameType.sourcePatientInfo, values);
+
+            values = new string[1];
+            values[0] = document.Size.ToString();
+            slots[4] = new SlotType(SlotNameType.size, values);
+
+            values = new string[1];
+            values[0] = document.Hash.ToString();
+            slots[5] = new SlotType(SlotNameType.hash, values);
+
+            eo.Slot = slots;
+
+            string[] eiScheme = new string[2];
+            string[] eiValue = new string[2];
+            string[] eiName = new string[2];
+            string[] eiId = new string[2];
+            string[] registryObject = new string[2];
+            eiScheme[0] = GlobalValues.XDSDocumentEntry_patientIdUUID;
+            eiScheme[1] = GlobalValues.XDSDocumentEntry_uniqueIdUUID;
+            eiValue[0] = document.PatientID.ToCx();
+            eiValue[1] = document.UniqueId;
+            eiName[0] = "XDSDocumentEntry.patientId";
+            eiName[1] = "XDSDocumentEntry.uniqueId";
+            eiId[0] = "ei01";
+            eiId[1] = "ei02";
+            registryObject[0] = eo.Id;
+            registryObject[1] = eo.Id;
+
+            eo.ExternalIdentifier = CreateEIDs(eiScheme, eiValue, eiName, eiId, registryObject);
+
+            //Create Classifications for authorInstitution/authorPerson, class code, and type code
+            eo.Classification = new ClassificationType[7];
+
+            //Author Institution and Author Person
+            //<rim:Classification id="cl01" classificationScheme="urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d" classifiedObject="Document01">
+            //    <rim:Slot name="authorPerson">
+            //        <rim:ValueList>
+            //            <rim:Value>Gerald Smitty</rim:Value>
+            //        </rim:ValueList>
+            //    </rim:Slot>
+            //    <rim:Slot name="authorInstitution">
+            //        <rim:ValueList>
+            //            <rim:Value>Cleveland Clinic</rim:Value>
+            //            <rim:Value>Parma Community</rim:Value>
+            //        </rim:ValueList>
+            //    </rim:Slot>
+            //</rim:Classification>
+            slots = new SlotType[3];
+            values = new string[document.Author.Institutions.Count];
+            for (int i = 0; i < document.Author.Institutions.Count; i++)
+            {
+                values[i] = document.Author.Institutions[i].ToXON();
+            }
+            slots[0] = new SlotType(SlotNameType.authorInstitution, values);
+
+            values = new string[1];
+            values[0] = document.Author.Person.ToXCN();
+            slots[1] = new SlotType(SlotNameType.authorPerson, values);
+
+            values = new string[1];
+            values[0] = document.Author.TelecomAddress.ToXTN();
+            slots[2] = new SlotType(SlotNameType.authorTelecom, values);
+
+            eo.Classification[0] = new ClassificationType("urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d",
+                eo.Id, null, null,
+                "cla01", null, slots);
+
+            //Class Code
+            slots = new SlotType[1];
+            values = new string[1];
+            values[0] = document.Class.Scheme;
+            slots[0] = new SlotType(SlotNameType.codingScheme, values);
+            eo.Classification[1] = new ClassificationType("urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a",
+                eo.Id, null, "Summarization of episode",
+                "cl01", "Summarization of episode", slots);
+
+            //Confidentiality Code
+            slots = new SlotType[1];
+            values = new string[1];
+            values[0] = "Connect-a-thon confidentialityCodes";
+            slots[0] = new SlotType(SlotNameType.codingScheme, values);
+            eo.Classification[2] = new ClassificationType("urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f",
+                eo.Id, null, "N", "cl02", "Normal", slots);
+
+            //Format Code
+            slots = new SlotType[1];
+            values = new string[1];
+            values[0] = "Connect-a-thon formatCodes";
+            slots[0] = new SlotType(SlotNameType.codingScheme, values);
+            eo.Classification[3] = new ClassificationType("urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d",
+                eo.Id, null, "CDAR2/IHE 1.0", "cl03",
+                "CDAR2/IHE 1.0", slots);
+
+            //HealthCare Facility type code
+            slots = new SlotType[1];
+            values = new string[1];
+            values[0] = "Connect-a-thon healthcareFacilityTypeCodes";
+            slots[0] = new SlotType(SlotNameType.codingScheme, values);
+            eo.Classification[4] = new ClassificationType("urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1",
+                eo.Id, null, "Hospital Setting", "cl04",
+                "Hospital Setting", slots);
+
+            //Practice Setting Code
+            slots = new SlotType[1];
+            values = new string[1];
+            values[0] = "Connect-a-thon practiceSettingCodes";
+            slots[0] = new SlotType(SlotNameType.codingScheme, values);
+            eo.Classification[5] = new ClassificationType("urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead",
+                eo.Id, null, "General Medicine", "cl05",
+                "General Medicine", slots);
+
+            //Type Code
+            slots = new SlotType[1];
+            values = new string[1];
+            values[0] = "LOINC";
+            slots[0] = new SlotType(SlotNameType.codingScheme, values);
+            eo.Classification[6] = new ClassificationType("urn:uuid:f0306f51-975f-434e-a61c-c59651d33983",
+                eo.Id, null, Document.DocCode, "cl06",
+                Document.DocCodeName, slots);
+
+            return eo;
+        }
+
+        /// <summary>
+        /// Creates a new array of XDS ExternalIdentifier objects
+        /// </summary>
+        /// <param name="eiScheme">Array of Schemes for the External Identifier</param>
+        /// <param name="eiValue">Array of Values for the External Identifier</param>
+        /// <param name="eiName">Array of Names for the External Identifier</param>
+        /// <returns>Returns the new array of XDS ExternalIdentifier objects</returns>
+        public static ExternalIdentifierType[] CreateEIDs(string[] eiScheme, string[] eiValue, string[] eiName,
+            string[] eiId, string[] registryObject)
+        {
+            ExternalIdentifierType ei = null;
+            ExternalIdentifierType[] result = new ExternalIdentifierType[eiScheme.Length];
+            for (int i = 0; i < eiScheme.Length; i++)
+            {
+                ei = new ExternalIdentifierType();
+                ei.IdentificationScheme = eiScheme[i];
+                ei.Id = eiId[i];
+                ei.Value = eiValue[i];
+                ei.Name = new InternationalStringType();
+                ei.Name.LocalizedString = new LocalizedStringType[1];
+                ei.Name.LocalizedString[0] = new LocalizedStringType();
+                ei.Name.LocalizedString[0].Value = eiName[i];
+                ei.RegistryObject = registryObject[i];
+
+                result[i] = ei;
+            }
+
+            return result;
         }
 
         public static ProvideAndRegisterRequest CreatePandRRequest(XmlDocument metadata, XmlDocument documentToExport)
