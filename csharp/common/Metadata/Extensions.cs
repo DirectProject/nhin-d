@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.IO;
 
 namespace Health.Direct.Common.Metadata
 {
@@ -38,6 +39,27 @@ namespace Health.Direct.Common.Metadata
         public static string AsString(this Sex? s)
         {
             return HL7Util.ToHL7Value(s);
+        }
+
+
+        /// <summary>
+        /// Reads all bytes of the supplied string.
+        /// </summary>
+        public static byte[] ReadAllBytes(this Stream stream)
+        {
+            int buffSize = 1024;
+            byte[] buffer = new byte[buffSize];
+
+            int bytesRead = 0;
+            var inStream = new BufferedStream(stream);
+            var outStream = new MemoryStream();
+
+            while ((bytesRead = inStream.Read(buffer, 0, buffSize)) > 0)
+            {
+                outStream.Write(buffer, 0, bytesRead);
+            }
+
+            return outStream.GetBuffer();
         }
 
     }

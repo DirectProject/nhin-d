@@ -62,6 +62,7 @@
     <Compile Include="Mail\RoundTripFacts.cs" />
     <Compile Include="Mail\TestMDN.cs" />
     <Compile Include="Metadata\AuthorFacts.cs" />
+    <Compile Include="Metadata\DocumentMetadataFacts.cs" />
     <Compile Include="Metadata\HL7UtilFacts.cs" />
     <Compile Include="Metadata\PatientIDFacts.cs" />
     <Compile Include="Metadata\PersonFacts.cs" />

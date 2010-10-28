@@ -66,6 +66,17 @@ namespace Health.Direct.Agent.Config
             get;
             set;
         }
+
+        /// <summary>
+        /// Revocation Flags
+        /// </summary>
+        [XmlArray("ProblemFlags")]
+        [XmlArrayItem("Flag")]
+        public X509ChainStatusFlags[] ProblemFlags
+        {
+            get;
+            set;
+        }
         
         /// <summary>
         /// Timeouts used when doing online revocation checking, such as when downloading crls
@@ -95,7 +106,18 @@ namespace Health.Direct.Agent.Config
                 validator.ValidationPolicy.UrlRetrievalTimeout = TimeSpan.FromMilliseconds(this.TimeoutMilliseconds);
             }
             
-            return new TrustModel(validator);            
+            TrustModel trustModel = new TrustModel(validator);
+            if (this.ProblemFlags != null)
+            {
+                X509ChainStatusFlags flags = X509ChainStatusFlags.NoError;
+                foreach(X509ChainStatusFlags flag in this.ProblemFlags)
+                {
+                    flags = (flags | flag);
+                }
+                trustModel.CertChainValidator.ProblemFlags = flags;
+            }
+            
+            return trustModel;
         }
                 
         internal void Validate()

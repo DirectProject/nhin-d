@@ -109,16 +109,18 @@ namespace Health.Direct.Agent.Tests
             {
                 for (int i = 0; i < parts.Length; ++i)
                 {
-                    string prefix = EmailNamePrefix;
-                    int index = parts[i].IndexOf(prefix);
-                    if (index < 0)
-                    {
-                        prefix = SubjectNamePrefix;
-                        index = parts[i].IndexOf(prefix);
-                    }
+                    int index = parts[i].IndexOf(EmailNamePrefix);
                     if (index >= 0)
                     {
-                        return parts[i].Substring(index + prefix.Length).Trim();
+                        return parts[i].Substring(index + EmailNamePrefix.Length).Trim();
+                    }
+                }
+                for (int i = 0; i < parts.Length; ++i)
+                {
+                    int index = parts[i].IndexOf(SubjectNamePrefix);
+                    if (index >= 0)
+                    {
+                        return parts[i].Substring(index + SubjectNamePrefix.Length).Trim();
                     }
                 }
             }
