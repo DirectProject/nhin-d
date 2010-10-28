@@ -104,8 +104,8 @@ public class LoginController {
 		//TODO Implement a real authentication service invocation	
 		if (log.isDebugEnabled()) log.debug("Userid: " + form.getUserid() + ", Password: " + form.getPassword());
 		if (validator  != null) {
-			if (log.isDebugEnabled()) log.debug("Got a validator!");
-			validator.validate(form, result);
+		//	if (log.isDebugEnabled()) log.debug("Got a validator!");
+		//	validator.validate(form, result);
 		}
 		else {
 			if (log.isDebugEnabled()) log.debug("No validator was injected.");
