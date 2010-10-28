@@ -51,6 +51,7 @@
     <Compile Include="Certificates\CertificateIndex.cs" />
     <Compile Include="Certificates\CertificateResolver.cs" />
     <Compile Include="Certificates\CertificateStore.cs" />
+    <Compile Include="Certificates\CombinationResolver.cs" />
     <Compile Include="Certificates\CryptoUtility.cs" />
     <Compile Include="Certificates\DnsCertResolver.cs" />
     <Compile Include="Certificates\Extensions.cs" />
