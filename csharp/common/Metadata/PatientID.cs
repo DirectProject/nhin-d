@@ -89,9 +89,16 @@ namespace Health.Direct.Common.Metadata
         /// </summary>
         public bool HasOid { get { return Oid != null; } }
 
+        /// <summary>
+        /// Formats this identifier as an HL7 CXN.
+        /// </summary>
+        public string ToCx()
+        {
+            return String.Format("{0}^^^&{1}&{2}", Id, AssigningAuthority, AssigningAuthorityType);
+        }
 
         /// <summary>
-        /// Formats this identifier as an HL7 CX, with ampersands escaped as XML entities.
+        /// Formats this identifier as an HL7 CXN, with ampersands escaped as XML entities.
         /// </summary>
         public string ToEscapedCx()
         {
