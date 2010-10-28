@@ -48,6 +48,42 @@ namespace Health.Direct.Common.Tests.Metadata
             Assert.Equal(11, m.Size);
         }
 
+        [Fact]
+        public void SetDocumentWithExistingWrongHashThrowsError()
+        {
+            DocumentMetadata m = new DocumentMetadata();
+            m.Hash = "abc123";
+            Assert.Throws<FormatException>(() => m.SetDocument("abc"));
+        }
 
+        [Fact]
+        public void SetDocumentWithExistingRightHashWorks()
+        {
+            DocumentMetadata m = new DocumentMetadata();
+            SHA1 sha = new SHA1CryptoServiceProvider();
+            byte[] bytes = (new UTF8Encoding()).GetBytes("abc");
+            string hash = Convert.ToBase64String(sha.ComputeHash(bytes));
+            m.Hash = hash;
+            m.SetDocument("abc");
+            Assert.Equal(hash, m.Hash);
+        }
+
+        [Fact]
+        public void SetDocumentWithExistingWrongSizeThrowsError()
+        {
+            DocumentMetadata m = new DocumentMetadata();
+            m.Size = 1000000000;
+            Assert.Throws<FormatException>(() => m.SetDocument("abc"));
+        }
+
+        [Fact]
+        public void SetDocumentWithExistingRightSizeWorks()
+        {
+            DocumentMetadata m = new DocumentMetadata();
+            byte[] bytes = (new UTF8Encoding()).GetBytes("abc");
+            m.Size = bytes.Length;
+            m.SetDocument("abc");
+            Assert.Equal(bytes.Length, m.Size);
+        }
     }
 }
