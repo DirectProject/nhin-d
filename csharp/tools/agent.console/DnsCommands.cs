@@ -68,6 +68,12 @@ namespace Health.Direct.Tools.Agent
                 certs = resolver.GetCertificatesForDomain(domain);
             }
             
+            if (certs.IsNullOrEmpty())
+            {
+                Console.WriteLine("No certs found");
+                return;
+            }
+
             Console.WriteLine("{0} found", certs.Count);
             foreach(X509Certificate2 cert in certs)
             {
