@@ -39,7 +39,8 @@ namespace Health.Direct.Tools.Agent
             "Export the given certificate file to Zone file format\r\n"
          + "    inputFile"
          + "    outputFile";
-
+        
+        
         //---------------------------------------
         //
         // Implementation...
@@ -109,6 +110,7 @@ namespace Health.Direct.Tools.Agent
                     break;
 
                 case "2.5.29.35":
+                case "2.5.29.1":
                     Console.WriteLine("Authority Key Identifier");
                     break;
                 
