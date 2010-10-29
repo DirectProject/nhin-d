@@ -26,7 +26,7 @@ namespace Health.Direct.Xds
 {
     class StaticHelpers
     {
-        public const string XDS_PANDR_DEFAULT_DOCUMENTID = "theDocument";
+        //public const string XDS_PANDR_DEFAULT_DOCUMENTID = "theDocument";
         public const string XDS_PANDR_ACTION = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b";
 
 
@@ -227,6 +227,108 @@ namespace Health.Direct.Xds
             }
 
             return result;
+        }
+
+
+        /// <summary>
+        /// creates a submission set containing a document.
+        /// The metadata consists of
+        ///   (O) Description
+        ///   Slots
+        ///     (R2)authorInstitution
+        ///     (O) authorPerson
+        ///     (R2)authorRole
+        ///     (R2)authorSpecialty
+        ///     (R) submissionTime
+        ///   ExternalIdentifiers
+        ///     (R) patientId
+        ///     (R) sourceId
+        ///     (R) uniqueId
+        ///   Classifications
+        ///     (R) contentTypeCode
+        /// </summary>
+        /// <param name="sor">SubmitObjectsRequest corresponding to the new document submission</param>
+        public static void AddSubmissionSet(SubmitObjectsRequest sor, DocumentPackage package, string submissionSetId)
+        {
+            string[] eiScheme = new string[3];
+            string[] eiValue = new string[3];
+            string[] eiName = new string[3];
+            string[] eiId = new string[3];
+            string[] eiRegistryObject = new string[3];
+            eiScheme[0] = "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446";
+            eiScheme[1] = "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832";
+            eiScheme[2] = "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8";
+            eiValue[0] = _patID;  //patID  //TODO change these OIDS
+            eiValue[1] = _docRoot; // "1.3.6.1.4.1.21367.2005.3.11";
+            eiValue[2] = _submissionSetUniqueId; // "1.3.6.1.4.1.21367.2005.3.11.14^" + _docID;  //docID
+
+            eiName[0] = "XDSSubmissionSet.patientId";
+            eiName[1] = "XDSSubmissionSet.sourceId";
+            eiName[2] = "XDSSubmissionSet.uniqueId";
+
+            eiId[0] = "eiId101";
+            eiId[1] = "eiId102";
+            eiId[2] = "eiId103";
+
+            eiRegistryObject[0] = submissionSetId;
+            eiRegistryObject[1] = submissionSetId;
+            eiRegistryObject[2] = submissionSetId;
+
+            SlotType[] slots = new SlotType[1];
+
+            //string[] values = new string[1];
+            //values[0] = _authorInstitution;
+            //slots[0] = new SlotType(SlotNameType.authorInstitution, values);
+
+            //values = new string[1];
+            //values[0] = _authorName;
+            //slots[1] = new SlotType(SlotNameType.authorPerson, values);
+
+            string[] values = new string[1];
+            values[0] = PointInTime.GetHL7DateTimeUTC(DateTime.Now);
+            //HL7Time(XmlConvert.ToString(DateTime.Now, XmlDateTimeSerializationMode.Utc));
+            slots[0] = new SlotType(SlotNameType.submissionTime, values);
+
+
+            // Create Classification for authorPerson and authorInstitution:
+            // <rim:Classification id="cl08" classificationScheme="urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d" classifiedObject="SubmissionSet01">
+            //    <rim:Slot name="authorPerson">
+            //        <rim:ValueList>
+            //            <rim:Value>Sherry Dopplemeyer</rim:Value>
+            //        </rim:ValueList>
+            //    </rim:Slot>
+            //    <rim:Slot name="authorInstitution">
+            //        <rim:ValueList>
+            //            <rim:Value>Cleveland Clinic</rim:Value>
+            //            <rim:Value>Berea Community</rim:Value>
+            //        </rim:ValueList>
+            //    </rim:Slot>
+            // </rim:Classification>
+
+            ClassificationType[] classifications = new ClassificationType[2];
+            SlotType[] cSlots = new SlotType[2];
+            values = new string[1];
+            values[0] = _authorInstitution;
+            cSlots[0] = new SlotType(SlotNameType.authorInstitution, values);
+
+            values = new string[1];
+            values[0] = _authorName;
+            cSlots[1] = new SlotType(SlotNameType.authorPerson, values);
+
+            classifications[0] = new ClassificationType("urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d",
+                submissionSetId, null, null, "cl07", null, cSlots);
+
+            cSlots = new SlotType[1];
+            values = new string[1];
+            values[0] = "Connect-a-thon contentTypeCodes";
+            cSlots[0] = new SlotType(SlotNameType.codingScheme, values);
+            classifications[1] = new ClassificationType("urn:uuid:aa543740-bdda-424e-8c96-df4873be8500",
+                submissionSetId, null, "Transfer summarization", "cl08",
+                "Transfer summarization", cSlots);
+
+            sor.RegistryObjectList.RegistryPackages.Add(
+                new RegistryPackageType(submissionSetId, "Submission Set",
+                eiScheme, eiValue, eiId, eiRegistryObject, eiName, slots, classifications, RegistryEntryStatus.Submitted));
         }
 
         public static ProvideAndRegisterRequest CreatePandRRequest(XmlDocument metadata, XmlDocument documentToExport)

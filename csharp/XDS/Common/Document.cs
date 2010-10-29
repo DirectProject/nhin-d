@@ -36,6 +36,13 @@ namespace Health.Direct.Xds.Common
             _clinicalDocument = clinicalDocument;
         }
 
+        public Document(string id, byte[] documentBytes)
+        {
+            _id = id;
+            _documentBytes = documentBytes;
+            _clinicalDocument = null;
+        }
+
         public Document()
         {
             // for XML serialization
