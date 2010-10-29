@@ -28,6 +28,7 @@ java/gateway/war
 java/install/build
 nhindconfig/service.properties
 config-service-client/war/config-service.war
+java/install/direct
 
 # Ignore Eclipse files
 .classpath

@@ -37,8 +37,8 @@
 	<property name="apache.james.binary.zip" value="${build.download.dir}/apache-james-2.3.2.zip"></property>
 	<property name="metro.download.zip" value="${build.download.dir}/metro-2_0_1.zip"></property>
 	<property name="metro.stage.dir" value="${build.dir}/metro"></property>
+
 	<property name="james.stage.dir" value="${env.DIRECT_INSTALL_DIR}/james-2.3.2"></property>
-	<property name="jce.stage.dir" value="${build.dir}/jce"></property>
 	<property name="james.stage.apps.dir" value="${james.stage.dir}/apps/james"></property>
 	<property name="james.stage.config" value="${james.stage.apps.dir}/SAR-INF/config.xml"></property>
 	<property name="james.stage.config.save" value="${james.stage.apps.dir}/SAR-INF/config.xml.save"></property>
@@ -51,15 +51,11 @@
 	<property name="jetty.binary.zip" value="${build.download.dir}/jetty-6.1.26RC0.zip"></property>
 	<property name="jetty.stage.dir" value="${env.DIRECT_INSTALL_DIR}/jetty-6.1.26RC0"></property>
 	<property name="jetty.webapp.dir" value="${jetty.stage.dir}/webapps"></property>
+	<property name="jetty.stage.config" value="${jetty.stage.dir}/etc/jetty.xml"></property>
+	<property name="jetty.stage.config.save" value="${jetty.stage.config}.save"></property>
+	<property name="jetty.stage.config.new" value="${jetty.stage.config}.new"></property>
 
 	<property name="maven.repo" value="${env.HOME}/.m2/repository"></property>
-	<property name="james.stage.stconfig.src" value="${install.root.dir}/src/main/resources/STConfig.xml"></property>
-	<property name="james.stage.stconfig.dst" value="${james.stage.apps.dir}/SAR-INF/STConfig.xml"></property>
-	<property name="james.stage.stconfig.save" value="${james.stage.apps.dir}/SAR-INF/STConfig.xml.save"></property>
-	<property name="james.stage.stconfig.new" value="${james.stage.apps.dir}/SAR-INF/STConfig-new.xml"></property>
-	<property name="james.stage.keystore.src" value="${install.root.dir}/src/main/resources/keystore.jks"></property>
-	<property name="james.stage.keystore.dst" value="${james.stage.apps.dir}/SAR-INF/keystore.jks"></property>
-	<property name="jce.policy.zip" value="${install.root.dir}/src/main/resources/jce_policy-1_4_2.zip"></property>
 	
 	<!-- Config server files -->
 	<property name="config.root" value="${install.root.dir}/../config"></property>
@@ -107,7 +103,6 @@
 	
 	<!-- Stylesheet to edit the config file -->
 	<property name="edit.config.stylesheet" value="${src}/scripts/edit-config.xsl"></property>
-	<property name="edit.STConfig.stylesheet" value="${src}/scripts/edit-STConfig.xsl"></property>
 
 	<!-- Stylesheet to edit jetty.xml -->
 	<property name="edit.jetty.stylesheet" value="${src}/scripts/edit-jetty.xsl"></property>
@@ -181,15 +176,14 @@
 		<delete dir="${james.stage.dir}"></delete>
 		<delete dir="${metro.stage.dir}"></delete>
 		<delete dir="${jetty.stage.dir}"></delete>
-		<delete dir="${jce.stage.dir}"></delete>
 		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${apache.james.binary.zip}"></unzip>
 		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${jetty.binary.zip}"></unzip>
 		<unzip dest="${build.dir}" src="${metro.download.zip}"></unzip>
-		<unzip dest="${build.dir}" src="${jce.policy.zip}"></unzip>
 		
 		<!-- configure james -->
 		<antcall target="configure"></antcall>
 		<antcall target="make-shell-files-executable"></antcall>
+		<antcall target="clean"></antcall>
 	</target>
 
 	<!-- get apache-james -->
@@ -244,7 +238,8 @@
 	</target>
 
 	<target name="configure" depends="configure-james,configure-jetty"></target>
-	<target name="configure-james" depends="set-stconfig-expanded-path,set-keystore-path">
+
+	<target name="configure-james">
 		<!-- expand the sar file in apps -->
 		<unzip dest="${james.stage.apps.dir}" src="${james.stage.apps.james.sar.path}"></unzip>
 		
@@ -270,7 +265,6 @@
 		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
-		<copy file="${lib.jcs}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.concurrent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.wsdl4j}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.saaj-api}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
@@ -278,9 +272,9 @@
 		<copy file="${lib.commons-discovery}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.axis}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		
-		<property name="james.stage.stconfig.url" value="file://${stconfig.expanded.path}/STConfig.xml"></property>
-		
 		<!-- edit the config.xml file -->
+		<!-- TODO mark :) .. for now just overwrite with custom version -->
+		<!--
 		<xslt style="${edit.config.stylesheet}" in="${james.stage.config}" out="${james.stage.config.new}">
 		    <param name="postmaster" expression="nhin-d+postmaster@nologs.org"></param>
 		    <param name="servername" expression="james.nologs.org"></param>
@@ -291,23 +285,16 @@
 		    <param name="mailet-config-class" expression="NHINDSecurityAndTrustMailet"></param>
 		    <param name="mailet-match-remove" expression="RemoteAddrNotInNetwork=127.0.0.1"></param>
 		</xslt>
+
 		<copy file="${james.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
 		<copy file="${james.stage.config.new}" tofile="${james.stage.config}" overwrite="true"></copy>
+		-->
+		<copy file="${james.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
+		<copy file="${src}/scripts/config.xml" tofile="${james.stage.config}" overwrite="true"></copy>
 
-		<!-- copy resources -->
-		<copy file="${james.stage.stconfig.src}" tofile="${james.stage.stconfig.dst}" overwrite="true"></copy>
-		<copy file="${james.stage.keystore.src}" tofile="${james.stage.keystore.dst}" overwrite="true"></copy>
-		
-		<!-- edit the STConfig.xml file -->
-		<xslt style="${edit.STConfig.stylesheet}" in="${james.stage.stconfig.dst}" out="${james.stage.stconfig.new}">
-		    <param name="keystorepath" expression="${james.stage.keystore.path}"></param>
-		</xslt>
-		<copy file="${james.stage.stconfig.dst}" tofile="${james.stage.stconfig.save}" overwrite="true"></copy>
-		<copy file="${james.stage.stconfig.new}" tofile="${james.stage.stconfig.dst}" overwrite="true"></copy>
-		
+		<copy file="${src}/scripts/setdomain.sh" todir="${james.stage.dir}/bin" overwrite="true"></copy>
+
 		<!-- clean up work files -->
-		<delete file="${james.stage.stconfig.new}" failonerror="false"></delete>
-		<delete file="${james.stage.stconfig.save}" failonerror="false"></delete>
 		<delete file="${james.stage.config.new}" failonerror="false"></delete>
 		
 	</target>
@@ -319,13 +306,16 @@
 		<property name="config.ui.orig.war" value="config-ui.war"></property>
 		<property name="config.ui.dest.war" value="config-ui.war"></property>
 
-		<!-- TODO -->
-		<!-- XSLT jetty.xml to have 8081 -->
-
 		<!-- Copy war files -->
 		<copy file="${config.service.dir}/${config.service.orig.war}" tofile="${jetty.webapp.dir}/${config.service.dest.war}"></copy>
 		<copy file="${config.ui.dir}/${config.ui.orig.war}" tofile="${jetty.webapp.dir}/${config.ui.dest.war}"></copy>
+
+		<!-- edit the jetty.xml file -->
+		<!-- TODO mark :) .. for now just overwrite with custom version -->
+		<copy file="${jetty.stage.config}" tofile="${jetty.stage.config.save}" overwrite="true"></copy>
+		<copy file="${src}/scripts/jetty.xml" tofile="${jetty.stage.config}" overwrite="true"></copy>
 	</target>
+
 	<!-- make shell files executable -->
 	<target name="make-shell-files-executable" if="is.someunix">
 		<exec executable="sh">
@@ -333,48 +323,11 @@
 		</exec>
 	</target>
 
-	<!-- set the expanded path for STConfig -->
-	<target name="set-stconfig-expanded-path" depends="set-stconfig-expanded-path-unix,set-stconfig-expanded-path-windows"></target>
-
-	<target name="set-stconfig-expanded-path-unix" if="is.someunix">
-		<path id="stconfig.path">
-			<pathelement path="${james.stage.apps.dir}/SAR-INF"></pathelement>
-		</path>
-		<pathconvert targetos="unix" property="stconfig.expanded.path" refid="stconfig.path"></pathconvert>
-	</target>
-
-	<target name="set-stconfig-expanded-path-windows" if="is.windows">
-		<path id="stconfig.path">
-			<pathelement path="${james.stage.apps.dir}/SAR-INF"></pathelement>
-		</path>
-		<pathconvert targetos="windows" dirsep="/" property="stconfig.expanded.path" refid="stconfig.path">
-			<map from=":" to=""></map>
-		</pathconvert>
-	</target>
-
-	<!-- set the keystore path -->
-	<target name="set-keystore-path" depends="set-keystore-path-unix,set-keystore-path-windows"></target>
-
-	<target name="set-keystore-path-unix" if="is.someunix">
-		<path id="keystore.path">
-			<pathelement path="${james.stage.apps.dir}/SAR-INF/keystore.jks"></pathelement>
-		</path>
-		<pathconvert targetos="unix" property="james.stage.keystore.path" refid="keystore.path"></pathconvert>
-	</target>
-
-	<target name="set-keystore-path-windows" if="is.windows">
-		<path id="keystore.path">
-			<pathelement path="${james.stage.apps.dir}/SAR-INF/keystore.jks"></pathelement>
-		</path>
-		<pathconvert targetos="windows" dirsep="/" property="james.stage.keystore.path" refid="keystore.path">
-			<map from=":" to=""></map>
-		</pathconvert>
-	</target>
-
 	<!-- clean up -->
 	<target name="clean" depends="init" description="clean up">
 	    <!-- Delete the ${build} directory tree -->
-	    <delete dir="${build.dir}"></delete>
+	    <delete dir="${build.dir}/download"></delete>
+	    <delete dir="${build.dir}/metro"></delete>
 	</target>
 	
 </project>
