@@ -75,37 +75,6 @@ namespace Health.Direct.Xds
 
         }
 
-        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, string endpointUrl, string certThumbprint)
-        {
-            EndpointAddress endpointAddress;
-            X509Certificate2 clientCert;
-            ProvideAndRegisterRequest pandRXDSBRequest;
-            //m_Logger = Log.For(this);
-            try
-            {
-                // create request
-                pandRXDSBRequest = getPandRRequest(xdsMetadata, xdsDocument);
-
-                // get an endpoint from the url string
-                endpointAddress = new EndpointAddress(endpointUrl);
-                // if this is https then get the client cert from the thumbprint
-                clientCert = null;
-                if ((endpointUrl.StartsWith("https")) && (!string.IsNullOrEmpty(certThumbprint)))
-                {
-                    clientCert = StaticHelpers.getCertFromThumbprint(certThumbprint);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                ProvideAndRegisterResponse pandRResponse = errorResponse(GlobalValues.CONST_ERROR_CODE_XDSRepositoryError, string.Format("error: {0}; stacktrace{1}", ex.Message, ex.StackTrace));
-                return pandRResponse;
-            }
-
-            return exportXDSB(pandRXDSBRequest, endpointAddress, clientCert);
-
-        }
-
         public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, EndpointAddress endpointAddress, string certThumbprint)
         {
             X509Certificate2 clientCert;
