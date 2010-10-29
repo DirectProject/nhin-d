@@ -331,6 +331,7 @@ namespace Health.Direct.Xds
                 eiScheme, eiValue, eiId, eiRegistryObject, eiName, slots, classifications, RegistryEntryStatus.Submitted));
         }
 
+        /** seems extraneous
         public static ProvideAndRegisterRequest CreatePandRRequest(XmlDocument metadata, XmlDocument documentToExport)
         {
             return createARequest(metadata, documentToExport.OuterXml);
@@ -350,7 +351,7 @@ namespace Health.Direct.Xds
                 throw ex;
             }
         }
-
+        */
 
         /// <summary>
         /// This method is a callback method used to validate the client certificate(https)
@@ -417,6 +418,7 @@ namespace Health.Direct.Xds
         }
 
         #region private
+        /* Seem to be extraneous
         private static ProvideAndRegisterRequest createARequest(XmlDocument metadata, string documentToExport)
         {
             try
@@ -436,6 +438,7 @@ namespace Health.Direct.Xds
                 throw ex;
             }
         }
+        */
         #endregion
 
     }
