@@ -55,6 +55,7 @@
     <Compile Include="ExportDocumentSet.cs" />
     <Compile Include="IExportDocumentSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProvideAndRegisterDocumentSetRequest.cs" />
     <Compile Include="ProvideAndregisterRequest.cs" />
     <Compile Include="ProvideAndRegisterResponse.cs" />
     <Compile Include="StaticHelpers.cs" />
