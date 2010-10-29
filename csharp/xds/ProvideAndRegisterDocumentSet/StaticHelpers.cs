@@ -99,8 +99,8 @@ namespace Health.Direct.Xds
             eiValue[1] = document.UniqueId;
             eiName[0] = "XDSDocumentEntry.patientId";
             eiName[1] = "XDSDocumentEntry.uniqueId";
-            eiId[0] = "ei01";
-            eiId[1] = "ei02";
+            eiId[0] = documentId + "ei01";
+            eiId[1] = documentId + "ei02";
             registryObject[0] = eo.Id;
             registryObject[1] = eo.Id;
 
@@ -140,8 +140,7 @@ namespace Health.Direct.Xds
             slots[2] = new SlotType(SlotNameType.authorTelecom, values);
 
             eo.Classification[0] = new ClassificationType(GlobalValues.XDSDocumentEntry_authorDescriptionUUID,
-                eo.Id, null, null,
-                "cla01", null, slots);
+                eo.Id, null, null, documentId + "cl01", null, slots);
 
             //Class Code
             slots = new SlotType[1];
@@ -149,8 +148,7 @@ namespace Health.Direct.Xds
             values[0] = document.Class.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[1] = new ClassificationType(GlobalValues.XDSDocumentEntry_classCodeUUID,
-                eo.Id, null, document.Class.Code,
-                "cl01", document.Class.Label, slots);
+                eo.Id, null, document.Class.Code, documentId + "cl02", document.Class.Label, slots);
 
             //Confidentiality Code
             slots = new SlotType[1];
@@ -158,7 +156,7 @@ namespace Health.Direct.Xds
             values[0] = document.Confidentiality.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[2] = new ClassificationType(GlobalValues.XDSDocumentEntry_confidentialityCodeUUID,
-                eo.Id, null, document.Confidentiality.Code, "cl02", document.Confidentiality.Label, slots);
+                eo.Id, null, document.Confidentiality.Code, documentId + "cl03", document.Confidentiality.Label, slots);
 
             //Format Code
             slots = new SlotType[1];
@@ -166,7 +164,7 @@ namespace Health.Direct.Xds
             values[0] = document.FormatCode.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[3] = new ClassificationType(GlobalValues.XDSDocumentEntry_formatCodeUUID,
-                eo.Id, null, document.FormatCode.Code, "cl03",
+                eo.Id, null, document.FormatCode.Code, documentId + "cl04",
                 document.FormatCode.Label, slots);
 
             //HealthCare Facility type code
@@ -175,7 +173,7 @@ namespace Health.Direct.Xds
             values[0] = document.FacilityCode.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[4] = new ClassificationType(GlobalValues.XDSDocumentEntry_healthCareFacilityTypeCodeUUID,
-                eo.Id, null, document.FacilityCode.Code, "cl04",
+                eo.Id, null, document.FacilityCode.Code, documentId + "cl05",
                 document.FacilityCode.Label, slots);
 
             //Practice Setting Code
@@ -184,7 +182,7 @@ namespace Health.Direct.Xds
             values[0] = document.PracticeSetting.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[5] = new ClassificationType(GlobalValues.XDSDocumentEntry_practiceSettingCodeUUID,
-                eo.Id, null, document.PracticeSetting.Code, "cl05",
+                eo.Id, null, document.PracticeSetting.Code, documentId + "cl06",
                 document.PracticeSetting.Label, slots);
 
             //Type Code
@@ -193,7 +191,7 @@ namespace Health.Direct.Xds
             values[0] = document.Type.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[6] = new ClassificationType(GlobalValues.XDSDocumentEntry_typeCodeUUID,
-                eo.Id, null, document.Type.Code, "cl06",
+                eo.Id, null, document.Type.Code, documentId + "cl07",
                 document.Type.Label, slots);
 
             return eo;
@@ -255,12 +253,12 @@ namespace Health.Direct.Xds
             string[] eiName = new string[3];
             string[] eiId = new string[3];
             string[] eiRegistryObject = new string[3];
-            eiScheme[0] = "urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446";
-            eiScheme[1] = "urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832";
-            eiScheme[2] = "urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8";
-            eiValue[0] = _patID;  //patID  //TODO change these OIDS
-            eiValue[1] = _docRoot; // "1.3.6.1.4.1.21367.2005.3.11";
-            eiValue[2] = _submissionSetUniqueId; // "1.3.6.1.4.1.21367.2005.3.11.14^" + _docID;  //docID
+            eiScheme[0] = GlobalValues.XDSSubmissionSet_patientIdUUID;
+            eiScheme[1] = GlobalValues.XDSSubmissionSet_sourceIdUUID;
+            eiScheme[2] = GlobalValues.XDSSubmissionSet_uniqueIdUUID;
+            eiValue[0] = package.PatientId.ToCx();  //patID  //TODO change these OIDS
+            eiValue[1] = package.SourceId; // "1.3.6.1.4.1.21367.2005.3.11";
+            eiValue[2] = package.UniqueId; // "1.3.6.1.4.1.21367.2005.3.11.14"
 
             eiName[0] = "XDSSubmissionSet.patientId";
             eiName[1] = "XDSSubmissionSet.sourceId";
@@ -274,21 +272,18 @@ namespace Health.Direct.Xds
             eiRegistryObject[1] = submissionSetId;
             eiRegistryObject[2] = submissionSetId;
 
-            SlotType[] slots = new SlotType[1];
-
-            //string[] values = new string[1];
-            //values[0] = _authorInstitution;
-            //slots[0] = new SlotType(SlotNameType.authorInstitution, values);
-
-            //values = new string[1];
-            //values[0] = _authorName;
-            //slots[1] = new SlotType(SlotNameType.authorPerson, values);
-
+            SlotType[] slots = new SlotType[2];
             string[] values = new string[1];
-            values[0] = PointInTime.GetHL7DateTimeUTC(DateTime.Now);
+            values[0] = Extensions.ToHL7Date(DateTime.Now);
             //HL7Time(XmlConvert.ToString(DateTime.Now, XmlDateTimeSerializationMode.Utc));
             slots[0] = new SlotType(SlotNameType.submissionTime, values);
 
+            values = new string[package.IntendedRecipients.Count];
+            for (int i = 0; i < package.IntendedRecipients.Count; i++)
+            {
+                values[i] = package.IntendedRecipients[i].ToXONXCNXTN();
+            }
+            slots[0] = new SlotType(SlotNameType.intendedRecipient, values);
 
             // Create Classification for authorPerson and authorInstitution:
             // <rim:Classification id="cl08" classificationScheme="urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d" classifiedObject="SubmissionSet01">
@@ -306,25 +301,32 @@ namespace Health.Direct.Xds
             // </rim:Classification>
 
             ClassificationType[] classifications = new ClassificationType[2];
-            SlotType[] cSlots = new SlotType[2];
-            values = new string[1];
-            values[0] = _authorInstitution;
+            SlotType[] cSlots = new SlotType[3];
+            values = new string[package.Author.Institutions.Count];
+            for (int i = 0; i < package.Author.Institutions.Count; i++)
+            {
+                values[i] = package.Author.Institutions[i].ToXON();
+            }
             cSlots[0] = new SlotType(SlotNameType.authorInstitution, values);
 
             values = new string[1];
-            values[0] = _authorName;
+            values[0] = package.Author.Person.ToXCN();
             cSlots[1] = new SlotType(SlotNameType.authorPerson, values);
 
-            classifications[0] = new ClassificationType("urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d",
-                submissionSetId, null, null, "cl07", null, cSlots);
+            values = new string[1];
+            values[0] = package.Author.TelecomAddress.ToXTN();
+            cSlots[2] = new SlotType(SlotNameType.authorTelecom, values);
+
+            classifications[0] = new ClassificationType(GlobalValues.XDSSubmissionSet_authorDescriptionUUID,
+                submissionSetId, null, null, "cl01", null, cSlots);
 
             cSlots = new SlotType[1];
             values = new string[1];
-            values[0] = "Connect-a-thon contentTypeCodes";
+            values[0] = package.ContentTypeCode.Scheme;
             cSlots[0] = new SlotType(SlotNameType.codingScheme, values);
-            classifications[1] = new ClassificationType("urn:uuid:aa543740-bdda-424e-8c96-df4873be8500",
-                submissionSetId, null, "Transfer summarization", "cl08",
-                "Transfer summarization", cSlots);
+            classifications[1] = new ClassificationType(GlobalValues.XDSSubmissionSet_contentTypeCodeUUID,
+                submissionSetId, null, package.ContentTypeCode.Code, "cl02",
+                package.ContentTypeCode.Label, cSlots);
 
             sor.RegistryObjectList.RegistryPackages.Add(
                 new RegistryPackageType(submissionSetId, "Submission Set",

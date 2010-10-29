@@ -333,7 +333,7 @@ namespace Health.Direct.Xd.Tests
         [Fact]
         public void IntendedRecipientIsCorrect()
         {
-            Assert.Equal(Examples.TestPackage.IntendedRecipients.First().ToXONXCN(), Examples.TestPackageXElement.SlotValues(XDMetadataStandard.Slots.IntendedRecipient).First());
+            Assert.Equal(Examples.TestPackage.IntendedRecipients.First().ToXONXCNXTN(), Examples.TestPackageXElement.SlotValues(XDMetadataStandard.Slots.IntendedRecipient).First());
         }
 
         [Fact]

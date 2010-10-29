@@ -137,7 +137,7 @@ namespace Health.Direct.Xds
                 slots[0] = new SlotType(SlotNameType.SubmissionSetStatus, slotVals);
 
                 _submitObjectsRequest.RegistryObjectList.Associations.Add(new AssociationType(AssociationKind.HasMember,
-                XD_PANDR_DEFAULT_SUBMISSIONSETID, XD_PANDR_DEFAULT_DOCUMENTID + doc.Id , "assoc" + doc.Id , slots));
+                XD_PANDR_DEFAULT_SUBMISSIONSETID, doc.Id , "assoc" + doc.Id , slots));
 
             }
 			/*

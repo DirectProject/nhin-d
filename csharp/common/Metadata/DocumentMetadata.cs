@@ -94,7 +94,6 @@ namespace Health.Direct.Common.Metadata
         }
 
         /// <summary>
- 
         /// Represents the humans and/or machines that authored the document
         /// </summary>
         public Author Author { get; set; }
