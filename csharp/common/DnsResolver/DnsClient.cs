@@ -324,8 +324,6 @@ namespace Health.Direct.Common.DnsResolver
                 attempt++;
                 try
                 {
-                    this.EnsureUdpSocket();
-
                     if (useUDPFirst)
                     {
                         this.ExecuteUDP();
