@@ -14,7 +14,7 @@ ALL CERTIFICATE RESOLUTION IS DONE LOCALLY USING MACHINE CERT STORES
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>testGateway</NamePrefix>
     <FileChangeFrequency>24</FileChangeFrequency>
-    <Level>Debug</Level>
+    <Level>Trace</Level>
   </Log>
   <!--
 

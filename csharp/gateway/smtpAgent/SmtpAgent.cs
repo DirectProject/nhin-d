@@ -133,7 +133,7 @@ namespace Health.Direct.SmtpAgent
             m_auditor = IoC.Resolve<IAuditor>();
             m_logger = Log.For(this);
 
-            m_diagnostics = new AgentDiagnostics();
+            m_diagnostics = new AgentDiagnostics(this);
             m_configService = new ConfigService(m_settings);
 
             using (new MethodTracer(Logger))
@@ -283,6 +283,8 @@ namespace Health.Direct.SmtpAgent
                 {
                     dnsResolver.Error += m_diagnostics.OnDnsError;
                 }
+                
+                m_agent.TrustModel.CertChainValidator.Problem += m_diagnostics.OnCertificateProblem;
             }
         }
         
@@ -686,6 +688,7 @@ namespace Health.Direct.SmtpAgent
             catch (Exception ex)
             {
                 Logger.Error("While copying message", ex);
+                Logger.Debug(ex);
             }
         }
     }

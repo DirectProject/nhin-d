@@ -192,8 +192,8 @@ namespace Health.Direct.Agent.Config
         {
             this.Validate();
             
-            ICertificateResolver privateCerts = this.PrivateCerts.Resolver.CreateResolver();
-            ICertificateResolver publicCerts = this.PublicCerts.Resolver.CreateResolver();
+            ICertificateResolver privateCerts = this.PrivateCerts.CreateResolver();
+            ICertificateResolver publicCerts = this.PublicCerts.CreateResolver();
             ITrustAnchorResolver trustAnchors = this.Anchors.Resolver.CreateResolver();
             TrustModel trustModel = (this.Trust != null) ? this.Trust.CreateTrustModel() : TrustModel.Default;
             SMIMECryptographer cryptographer = this.Cryptographer.Create();
