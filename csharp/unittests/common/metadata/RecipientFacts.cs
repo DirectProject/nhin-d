@@ -30,7 +30,7 @@ namespace Health.Direct.Common.Tests.Metadata
             Person p = new Person { First = "Bob", Last = "Smith", Degree = "MD" };
             Institution i = new Institution("Abc", "123");
             string xonxcn = String.Format("{0}|{1}", i.ToXON(), p.ToXCN());
-            Recipient r = Recipient.FromXONXCN(xonxcn);
+            Recipient r = Recipient.FromXONXCNXTN(xonxcn);
             Assert.Equal(p, r.Person);
             Assert.Equal(i, r.Institution);
         }
@@ -39,7 +39,7 @@ namespace Health.Direct.Common.Tests.Metadata
         {
             Person p = new Person { First = "Bob", Last = "Smith", Degree = "MD" };
             string xonxcn = String.Format("|{0}", p.ToXCN());
-            Recipient r = Recipient.FromXONXCN(xonxcn);
+            Recipient r = Recipient.FromXONXCNXTN(xonxcn);
             Assert.Equal(p, r.Person);
             Assert.Null(r.Institution);
         }
@@ -48,7 +48,7 @@ namespace Health.Direct.Common.Tests.Metadata
         {
             Institution i = new Institution("Abc", "123");
             string xonxcn = String.Format("{0}|", i.ToXON());
-            Recipient r = Recipient.FromXONXCN(xonxcn);
+            Recipient r = Recipient.FromXONXCNXTN(xonxcn);
             Assert.Null(r.Person);
             Assert.Equal(i, r.Institution);
         }
@@ -57,7 +57,7 @@ namespace Health.Direct.Common.Tests.Metadata
         {
             Institution i = new Institution("Abc", "123");
             string xonxcn = String.Format("{0}", i.ToXON());
-            Recipient r = Recipient.FromXONXCN(xonxcn);
+            Recipient r = Recipient.FromXONXCNXTN(xonxcn);
             Assert.Null(r.Person);
             Assert.Equal(i, r.Institution);
         }
