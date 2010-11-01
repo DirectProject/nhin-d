@@ -31,13 +31,25 @@ namespace Health.Direct.Tools.Agent
     {
         IPAddress m_dnsServer;
         string m_fallbackDomain;
+        DnsRecordPrinter m_recordPrinter;
         
         public DnsCommands()
         {
             m_dnsServer = IPAddress.Parse("8.8.8.8");
             m_fallbackDomain = "hsgincubator.com";
+            m_recordPrinter = new DnsRecordPrinter(Console.Out);
         }
         
+        [Command(Name = "Dns_SetServer", Usage=SetServerUsage)]
+        public void SetServer(string[] args)
+        {
+            IPAddress address = IPAddress.Parse(args.GetRequiredValue(0));
+            m_dnsServer = address;
+        }
+        const string SetServerUsage = 
+            "Set the IP address of the dns server to use"
+        +   "    ipaddress";            
+                        
         /// <summary>
         /// Resolves certificates for a domain or email address using Dns
         /// </summary>
@@ -89,9 +101,32 @@ namespace Health.Direct.Tools.Agent
         
         const string ResolveCertUsage =
               "Resolve certificates for an address or domain using Dns\r\n"
-            + "   domain or address\r\n"
+            + "   domain or email-address\r\n"
             + "   outputFile: (optional)\r\n"
             + "   server : (optional)\r\n";
-
+        
+        [Command(Name="Dns_ResolveMx", Usage=ResolveMxUsage)]
+        public void ResolveMX(string[] args)
+        {
+            string domain = args.GetRequiredValue(0);
+            using(DnsClient client = new DnsClient(m_dnsServer))
+            {
+                IEnumerable<MXRecord> matches = client.ResolveMX(domain);
+                if (matches == null)
+                {
+                    Console.WriteLine("No matches");
+                    return;
+                }
+                
+                foreach(MXRecord record in client.ResolveMX(domain))
+                {
+                    m_recordPrinter.Print(record);
+                }
+            }
+        }
+        
+        const string ResolveMxUsage = 
+                "Resolve MX records for the given email domain\r\n"
+            +   "    email domain";
     }
 }
