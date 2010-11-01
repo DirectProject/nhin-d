@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Text;
-
+using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Agent;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Diagnostics;
@@ -26,9 +26,11 @@ namespace Health.Direct.SmtpAgent
     internal class AgentDiagnostics
     {
         private readonly ILogger m_logger;
+        SmtpAgent m_agent;
         
-        internal AgentDiagnostics()
+        internal AgentDiagnostics(SmtpAgent agent)
         {
+            m_agent = agent;
             m_logger = Log.For(this);
         }
 
@@ -67,6 +69,11 @@ namespace Health.Direct.SmtpAgent
         internal void OnDnsError(ICertificateResolver resolver, Exception error)
         {
             Logger.Error("OnDnsError", error);
+        }
+        
+        internal void OnCertificateProblem(X509ChainElement chainElement)
+        {
+            Logger.Error("Certificate problem {0}", this.Summarize(chainElement));
         }
         
         internal void LogEnvelopeHeaders(ISmtpMessage message)
@@ -108,7 +115,7 @@ namespace Health.Direct.SmtpAgent
                 builder.Append("REJECTED RECIPIENTS=").AppendLine(envelope.RejectedRecipients);
                 builder.Append("NO CERTS=").AppendLine(this.CollectNoCertInformation(envelope.RejectedRecipients));
             }
-            if (envelope.HasRejectedRecipients)
+            if (envelope.HasOtherRecipients)
             {
                 builder.Append("OTHER RECIPIENTS=").AppendLine(envelope.OtherRecipients);
             }
@@ -127,6 +134,24 @@ namespace Health.Direct.SmtpAgent
                 if (!recipient.HasCertificates)
                 {
                     builder.Append(recipient.Address).Append(';');
+                }
+            }
+            
+            return builder.ToString();
+        }
+        
+        internal string Summarize(X509ChainElement chainElement)
+        {
+            X509ChainStatusFlags problemFlags = m_agent.SecurityAgent.TrustModel.CertChainValidator.ProblemFlags;
+            
+            StringBuilder builder = new StringBuilder();
+            builder.Append(chainElement.Certificate.SubjectName.Name);
+            builder.Append(";");
+            foreach(X509ChainStatus status in chainElement.ChainElementStatus)
+            {
+                if ((status.Status & problemFlags) != 0)
+                {
+                    builder.Append(status.Status);
                 }
             }
             

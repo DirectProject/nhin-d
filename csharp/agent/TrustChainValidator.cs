@@ -191,6 +191,19 @@ namespace Health.Direct.Agent
         }
         
         /// <summary>
+        /// Event fired if there was an error during certificate validation
+        /// </summary>
+        public event Action<X509Certificate2, Exception> Error;
+        /// <summary>
+        /// Event fired when a certificate is untrusted
+        /// </summary>
+        public event Action<X509Certificate2> Untrusted;
+        /// <summary>
+        /// Event fired if a certificate has a problem.
+        /// </summary>
+        public event Action<X509ChainElement> Problem;
+        
+        /// <summary>
         /// Validates a certificate by walking the certificate chain for all trust anchor chain, validating the leaf certificate against the chain.
         /// </summary>
         /// <remarks>Currently, all intermediate certificates must be stored in the system.</remarks>
@@ -208,6 +221,7 @@ namespace Health.Direct.Agent
             // if there are no anchors we should always fail
             if (CollectionExtensions.IsNullOrEmpty(anchors))
             {
+                this.NotifyUntrusted(certificate);
                 return false;
             }
 
@@ -228,8 +242,9 @@ namespace Health.Direct.Agent
                 X509ChainElementCollection chainElements = chainBuilder.ChainElements;
 
                 // If we don't have a trust chain, then we obviously have a problem...
-                if (CollectionExtensions.IsNullOrEmpty(chainElements))
+                if (chainElements.IsNullOrEmpty())
                 {
+                    this.NotifyUntrusted(certificate);
                     return false;
                 }
 
@@ -238,6 +253,8 @@ namespace Health.Direct.Agent
                 {                
                     if (this.ChainElementHasProblems(chainElement))
                     {
+                        this.NotifyProblem(chainElement);
+                        
                         // Whoops... problem with at least one cert in the chain. Stop immediately
                         return false;
                     }
@@ -251,11 +268,13 @@ namespace Health.Direct.Agent
                     }
                 }
             }
-            catch
+            catch(Exception ex)
             {
+                this.NotifyError(certificate, ex);
                 // just eat it and drop out to return false
             }
-
+            
+            this.NotifyUntrusted(certificate);
             return (false);
         }
                 
@@ -354,6 +373,48 @@ namespace Health.Direct.Agent
                     // And keep working up the chain
                     //
                     this.ResolveIssuers(issuerCertificate, issuers, chainLength + 1);
+                }
+            }
+        }
+        
+        void NotifyUntrusted(X509Certificate2 cert)
+        {
+            if (this.Untrusted != null)
+            {
+                try
+                {
+                    this.Untrusted(cert);
+                }
+                catch
+                {
+                }
+            }
+        }
+        
+        void NotifyProblem(X509ChainElement chainElement)
+        {
+            if (this.Problem != null)
+            {
+                try
+                {
+                    this.Problem(chainElement);
+                }
+                catch
+                {
+                }
+            }
+        }
+        
+        void NotifyError(X509Certificate2 cert, Exception exception)
+        {
+            if (this.Error != null)
+            {
+                try
+                {
+                    this.Error(cert, exception);
+                }
+                catch
+                {
                 }
             }
         }
