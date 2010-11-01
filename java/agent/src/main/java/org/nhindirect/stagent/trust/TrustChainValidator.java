@@ -126,7 +126,7 @@ public class TrustChainValidator
             PKIXParameters params = new PKIXParameters(trustAnchorSet); 
             params.setRevocationEnabled(false); // NHIND Revocations are handled using CertificateStore.getCertificate
         	certPath = factory.generateCertPath(certs);
-        	CertPathValidator pathValidator = CertPathValidator.getInstance("PKIX");    		
+        	CertPathValidator pathValidator = CertPathValidator.getInstance("PKIX", "BC");    		
     		
 
         	pathValidator.validate(certPath, params);
