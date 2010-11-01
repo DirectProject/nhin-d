@@ -13,7 +13,10 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System;
 using System.Xml.Serialization;
+using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Agent.Config
 {
@@ -35,7 +38,7 @@ namespace Health.Direct.Agent.Config
         /// </summary>
         [XmlElement("DnsResolver", typeof(DnsCertResolverSettings))]
         [XmlElement("MachineResolver", typeof(MachineCertResolverSettings))]
-        public CertResolverSettings Resolver
+        public CertResolverSettings[] Resolvers
         {
             get;
             set;
@@ -51,11 +54,39 @@ namespace Health.Direct.Agent.Config
         
         internal void Validate(AgentConfigError error)
         {
-            if (this.Resolver == null)
+            if (this.Resolvers.IsNullOrEmpty())
             {
                 throw new AgentConfigException(error);
             }
-            this.Resolver.Validate();
+            foreach(CertResolverSettings resolverSettings in this.Resolvers)
+            {
+                resolverSettings.Validate();
+            }
+        }
+        
+        /// <summary>
+        /// Create a resolver as defined in the Resolvers setting
+        /// </summary>
+        /// <returns>The certificate resolver instance corresponding to the settings.</returns>
+        public ICertificateResolver CreateResolver()
+        {
+            if (this.Resolvers == null)
+            {
+                throw new NotSupportedException();
+            }
+            
+            if (this.Resolvers.Length == 1)
+            {
+                return this.Resolvers[0].CreateResolver();
+            }
+            
+            CertificateResolverCollection resolvers = new CertificateResolverCollection();
+            foreach (CertResolverSettings resolverSettings in this.Resolvers)
+            {
+                resolvers.Add(resolverSettings.CreateResolver());
+            }
+            
+            return resolvers;
         }
     }
 }
