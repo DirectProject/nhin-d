@@ -92,6 +92,7 @@
 	<property name="lib.jaxrpc-api" value="${maven.repo}/javax/xml/jaxrpc-api/1.1/jaxrpc-api-1.1.jar"></property>
 	<property name="lib.commons-discovery" value="${maven.repo}/commons-discovery/commons-discovery/0.4/commons-discovery-0.4.jar"></property>
 	<property name="lib.axis" value="${maven.repo}/org/apache/axis/axis/1.4/axis-1.4.jar"></property>
+    <property name="lib.config.proxy" value="${config.root}/config-service-client/target/config-service-client-1.0-SNAPSHOT.jar"></property>
 
 	<!-- Package libraries -->
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
@@ -271,6 +272,7 @@
 		<copy file="${lib.jaxrpc-api}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.commons-discovery}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.axis}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+	    <copy file="${lib.config.proxy}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		
 		<!-- edit the config.xml file -->
 		<!-- TODO mark :) .. for now just overwrite with custom version -->
