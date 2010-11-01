@@ -50,7 +50,7 @@ namespace Health.Direct.Common.Metadata
         /// </summary>
         public string ToXONXCNXTN()
         {
-            return String.Format("{0}|{1}|{3}",
+            return String.Format("{0}|{1}|{2}",
                                  Institution == null ? "" : Institution.Value.ToXON(), 
                                  Person == null ? "" : Person.ToXCN(),
                                  TelecomAddress == null ? "" : TelecomAddress.Value.ToXTN());
