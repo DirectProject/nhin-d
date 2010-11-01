@@ -559,7 +559,7 @@ Regards, Postmaster XXX.YYY
          -->
 
          <mailet match="All" class="NHINDSecurityAndTrustMailet">
-            <ConfigURL>http://localhost:8081/config-service</ConfigURL>
+            <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>
          </mailet>
 
          <!-- Attempt remote delivery using the specified repository for the spool, -->
