@@ -28,6 +28,7 @@ namespace Health.Direct.Xds.Common.XdsMetadata
         authorSpecialty,
         creationTime,
         hash,
+        intendedRecipient,
         languageCode,
         legalAuthenticator,
         serviceStartTime,

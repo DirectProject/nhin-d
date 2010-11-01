@@ -26,7 +26,7 @@ namespace Health.Direct.Xds
 {
     class StaticHelpers
     {
-        public const string XDS_PANDR_DEFAULT_DOCUMENTID = "theDocument";
+        //public const string XDS_PANDR_DEFAULT_DOCUMENTID = "theDocument";
         public const string XDS_PANDR_ACTION = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b";
 
 
@@ -99,8 +99,8 @@ namespace Health.Direct.Xds
             eiValue[1] = document.UniqueId;
             eiName[0] = "XDSDocumentEntry.patientId";
             eiName[1] = "XDSDocumentEntry.uniqueId";
-            eiId[0] = "ei01";
-            eiId[1] = "ei02";
+            eiId[0] = documentId + "ei01";
+            eiId[1] = documentId + "ei02";
             registryObject[0] = eo.Id;
             registryObject[1] = eo.Id;
 
@@ -140,8 +140,7 @@ namespace Health.Direct.Xds
             slots[2] = new SlotType(SlotNameType.authorTelecom, values);
 
             eo.Classification[0] = new ClassificationType(GlobalValues.XDSDocumentEntry_authorDescriptionUUID,
-                eo.Id, null, null,
-                "cla01", null, slots);
+                eo.Id, null, null, documentId + "cl01", null, slots);
 
             //Class Code
             slots = new SlotType[1];
@@ -149,8 +148,7 @@ namespace Health.Direct.Xds
             values[0] = document.Class.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[1] = new ClassificationType(GlobalValues.XDSDocumentEntry_classCodeUUID,
-                eo.Id, null, document.Class.Code,
-                "cl01", document.Class.Label, slots);
+                eo.Id, null, document.Class.Code, documentId + "cl02", document.Class.Label, slots);
 
             //Confidentiality Code
             slots = new SlotType[1];
@@ -158,7 +156,7 @@ namespace Health.Direct.Xds
             values[0] = document.Confidentiality.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[2] = new ClassificationType(GlobalValues.XDSDocumentEntry_confidentialityCodeUUID,
-                eo.Id, null, document.Confidentiality.Code, "cl02", document.Confidentiality.Label, slots);
+                eo.Id, null, document.Confidentiality.Code, documentId + "cl03", document.Confidentiality.Label, slots);
 
             //Format Code
             slots = new SlotType[1];
@@ -166,7 +164,7 @@ namespace Health.Direct.Xds
             values[0] = document.FormatCode.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[3] = new ClassificationType(GlobalValues.XDSDocumentEntry_formatCodeUUID,
-                eo.Id, null, document.FormatCode.Code, "cl03",
+                eo.Id, null, document.FormatCode.Code, documentId + "cl04",
                 document.FormatCode.Label, slots);
 
             //HealthCare Facility type code
@@ -175,7 +173,7 @@ namespace Health.Direct.Xds
             values[0] = document.FacilityCode.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[4] = new ClassificationType(GlobalValues.XDSDocumentEntry_healthCareFacilityTypeCodeUUID,
-                eo.Id, null, document.FacilityCode.Code, "cl04",
+                eo.Id, null, document.FacilityCode.Code, documentId + "cl05",
                 document.FacilityCode.Label, slots);
 
             //Practice Setting Code
@@ -184,7 +182,7 @@ namespace Health.Direct.Xds
             values[0] = document.PracticeSetting.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[5] = new ClassificationType(GlobalValues.XDSDocumentEntry_practiceSettingCodeUUID,
-                eo.Id, null, document.PracticeSetting.Code, "cl05",
+                eo.Id, null, document.PracticeSetting.Code, documentId + "cl06",
                 document.PracticeSetting.Label, slots);
 
             //Type Code
@@ -193,7 +191,7 @@ namespace Health.Direct.Xds
             values[0] = document.Type.Scheme;
             slots[0] = new SlotType(SlotNameType.codingScheme, values);
             eo.Classification[6] = new ClassificationType(GlobalValues.XDSDocumentEntry_typeCodeUUID,
-                eo.Id, null, document.Type.Code, "cl06",
+                eo.Id, null, document.Type.Code, documentId + "cl07",
                 document.Type.Label, slots);
 
             return eo;
@@ -229,6 +227,113 @@ namespace Health.Direct.Xds
             return result;
         }
 
+
+        /// <summary>
+        /// creates a submission set containing a document.
+        /// The metadata consists of
+        ///   (O) Description
+        ///   Slots
+        ///     (R2)authorInstitution
+        ///     (O) authorPerson
+        ///     (R2)authorRole
+        ///     (R2)authorSpecialty
+        ///     (R) submissionTime
+        ///   ExternalIdentifiers
+        ///     (R) patientId
+        ///     (R) sourceId
+        ///     (R) uniqueId
+        ///   Classifications
+        ///     (R) contentTypeCode
+        /// </summary>
+        /// <param name="sor">SubmitObjectsRequest corresponding to the new document submission</param>
+        public static void AddSubmissionSet(SubmitObjectsRequest sor, DocumentPackage package, string submissionSetId)
+        {
+            string[] eiScheme = new string[3];
+            string[] eiValue = new string[3];
+            string[] eiName = new string[3];
+            string[] eiId = new string[3];
+            string[] eiRegistryObject = new string[3];
+            eiScheme[0] = GlobalValues.XDSSubmissionSet_patientIdUUID;
+            eiScheme[1] = GlobalValues.XDSSubmissionSet_sourceIdUUID;
+            eiScheme[2] = GlobalValues.XDSSubmissionSet_uniqueIdUUID;
+            eiValue[0] = package.PatientId.ToCx();  //patID  //TODO change these OIDS
+            eiValue[1] = package.SourceId; // "1.3.6.1.4.1.21367.2005.3.11";
+            eiValue[2] = package.UniqueId; // "1.3.6.1.4.1.21367.2005.3.11.14"
+
+            eiName[0] = "XDSSubmissionSet.patientId";
+            eiName[1] = "XDSSubmissionSet.sourceId";
+            eiName[2] = "XDSSubmissionSet.uniqueId";
+
+            eiId[0] = "eiId101";
+            eiId[1] = "eiId102";
+            eiId[2] = "eiId103";
+
+            eiRegistryObject[0] = submissionSetId;
+            eiRegistryObject[1] = submissionSetId;
+            eiRegistryObject[2] = submissionSetId;
+
+            SlotType[] slots = new SlotType[2];
+            string[] values = new string[1];
+            values[0] = Extensions.ToHL7Date(DateTime.Now);
+            //HL7Time(XmlConvert.ToString(DateTime.Now, XmlDateTimeSerializationMode.Utc));
+            slots[0] = new SlotType(SlotNameType.submissionTime, values);
+
+            values = new string[package.IntendedRecipients.Count];
+            for (int i = 0; i < package.IntendedRecipients.Count; i++)
+            {
+                values[i] = package.IntendedRecipients[i].ToXONXCNXTN();
+            }
+            slots[0] = new SlotType(SlotNameType.intendedRecipient, values);
+
+            // Create Classification for authorPerson and authorInstitution:
+            // <rim:Classification id="cl08" classificationScheme="urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d" classifiedObject="SubmissionSet01">
+            //    <rim:Slot name="authorPerson">
+            //        <rim:ValueList>
+            //            <rim:Value>Sherry Dopplemeyer</rim:Value>
+            //        </rim:ValueList>
+            //    </rim:Slot>
+            //    <rim:Slot name="authorInstitution">
+            //        <rim:ValueList>
+            //            <rim:Value>Cleveland Clinic</rim:Value>
+            //            <rim:Value>Berea Community</rim:Value>
+            //        </rim:ValueList>
+            //    </rim:Slot>
+            // </rim:Classification>
+
+            ClassificationType[] classifications = new ClassificationType[2];
+            SlotType[] cSlots = new SlotType[3];
+            values = new string[package.Author.Institutions.Count];
+            for (int i = 0; i < package.Author.Institutions.Count; i++)
+            {
+                values[i] = package.Author.Institutions[i].ToXON();
+            }
+            cSlots[0] = new SlotType(SlotNameType.authorInstitution, values);
+
+            values = new string[1];
+            values[0] = package.Author.Person.ToXCN();
+            cSlots[1] = new SlotType(SlotNameType.authorPerson, values);
+
+            values = new string[1];
+            values[0] = package.Author.TelecomAddress.ToXTN();
+            cSlots[2] = new SlotType(SlotNameType.authorTelecom, values);
+
+            classifications[0] = new ClassificationType(GlobalValues.XDSSubmissionSet_authorDescriptionUUID,
+                submissionSetId, null, null, "cl01", null, cSlots);
+
+            cSlots = new SlotType[1];
+            values = new string[1];
+            values[0] = package.ContentTypeCode.Scheme;
+            cSlots[0] = new SlotType(SlotNameType.codingScheme, values);
+            classifications[1] = new ClassificationType(GlobalValues.XDSSubmissionSet_contentTypeCodeUUID,
+                submissionSetId, null, package.ContentTypeCode.Code, "cl02",
+                package.ContentTypeCode.Label, cSlots);
+
+            sor.RegistryObjectList.RegistryPackages.Add(
+                new RegistryPackageType(submissionSetId, "Submission Set",
+                eiScheme, eiValue, eiId, eiRegistryObject, eiName, slots, classifications, RegistryEntryStatus.Submitted));
+        }
+
+        /** seems extraneous
         public static ProvideAndRegisterRequest CreatePandRRequest(XmlDocument metadata, XmlDocument documentToExport)
         {
             return createARequest(metadata, documentToExport.OuterXml);
@@ -248,7 +353,7 @@ namespace Health.Direct.Xds
                 throw ex;
             }
         }
-
+        */
 
         /// <summary>
         /// This method is a callback method used to validate the client certificate(https)
@@ -315,6 +420,7 @@ namespace Health.Direct.Xds
         }
 
         #region private
+        /* Seem to be extraneous
         private static ProvideAndRegisterRequest createARequest(XmlDocument metadata, string documentToExport)
         {
             try
@@ -334,6 +440,7 @@ namespace Health.Direct.Xds
                 throw ex;
             }
         }
+        */
         #endregion
 
     }

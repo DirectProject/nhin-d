@@ -57,7 +57,7 @@ namespace Health.Direct.Xd
             package.Author = ConsumeAuthor(packageXEl.Classification(XDMetadataStandard.UUIDs.SubmissionSetAuthor));
             package.Comments = packageXEl.DescriptionValue();
             package.ContentTypeCode = ConsumeCodedValue(packageXEl.Classification(XDMetadataStandard.UUIDs.ContentTypeCode));
-            package.IntendedRecipients.AddAll(packageXEl.SlotValues<Recipient>(XDMetadataStandard.Slots.IntendedRecipient, r => Recipient.FromXONXCN(r)));
+            package.IntendedRecipients.AddAll(packageXEl.SlotValues<Recipient>(XDMetadataStandard.Slots.IntendedRecipient, r => Recipient.FromXONXCNXTN(r)));
             package.PatientId = packageXEl.ExternalIdentifierValue<PatientID>(XDMetadataStandard.UUIDs.SubmissionSetPatientId, s => PatientID.FromEscapedCx(s));
             package.SourceId = packageXEl.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetSourceId);
             package.SubmissionTime = packageXEl.SlotValue<DateTime?>(XDMetadataStandard.Slots.SubmissionTime, s => HL7Util.DateTimeFromHL7Value(s));

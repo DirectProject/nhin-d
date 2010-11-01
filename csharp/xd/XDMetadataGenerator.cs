@@ -116,7 +116,7 @@ namespace Health.Direct.Xd
                 Map(dp.Title,             () => new Name(dp.Title)),
                 Map(dp.Comments,          () => new Description(dp.Comments)),
                 Map(dp.Author,            () => new MultiSlotClassification(XDMetadataStandard.UUIDs.SubmissionSetAuthor, "", packageId, AuthorSlots(dp.Author))),
-                Map(dp.IntendedRecipients,() => new Slot(XDMetadataStandard.Slots.IntendedRecipient, dp.IntendedRecipients.Select(r => r.ToXONXCN()))),
+                Map(dp.IntendedRecipients,() => new Slot(XDMetadataStandard.Slots.IntendedRecipient, dp.IntendedRecipients.Select(r => r.ToXONXCNXTN()))),
                 Map(dp.SubmissionTime,    () => new Slot(XDMetadataStandard.Slots.SubmissionTime, dp.SubmissionTime.ToHL7Date())),
                 Map(dp.ContentTypeCode,   () => new CodedValueClassification(XDAttribute.ContentTypeCode, packageId, dp.ContentTypeCode)),
                 Map(dp.PatientId,         () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetPatientId, dp.PatientId.ToEscapedCx(), "XDSSubmissionSet.patientId")),

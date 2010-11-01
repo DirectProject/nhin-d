@@ -68,7 +68,9 @@ namespace Health.Direct.Common.Metadata
         public string ToXTN()
         {
             if (_phone == null)
+            {
                 return String.Format("^^Internet^{0}^^^^^{1}^^", _email.Address, _email.DisplayName);
+            }
             return String.Format("^^Internet^{0}^^^^^{1}^^^{2}", _email.Address, _email.DisplayName, _phone);
         }
 

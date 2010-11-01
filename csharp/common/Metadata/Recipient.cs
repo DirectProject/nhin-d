@@ -35,34 +35,35 @@ namespace Health.Direct.Common.Metadata
         /// <summary>
         /// The Health Internet Address of the recipient
         /// </summary>
-        public MailAddress HealthInternetAddress { get; set; }
+        public Telecom? TelecomAddress { get; set; }
 
         /// <summary>
         /// String representation of the Recipient
         /// </summary>
         public override string ToString()
         {
-            return String.Format("{0} @ {1}", Person == null ? "none" : Person.ToString(), Institution == null ? "none" : Institution.ToString());
+            return String.Format("{0} @ {1} ({2})", Person == null ? "none" : Person.ToString(), Institution == null ? "none" : Institution.ToString(), TelecomAddress == null ? "none" : TelecomAddress.ToString());
         }
 
         /// <summary>
-        /// Formats the recipient as a combination XON/XCN data type
+        /// Formats the recipient as a combination XON/XCN/XTN data type
         /// </summary>
-        public string ToXONXCN()
+        public string ToXONXCNXTN()
         {
-            return String.Format("{0}|{1}",
+            return String.Format("{0}|{1}|{3}",
                                  Institution == null ? "" : Institution.Value.ToXON(), 
-                                 Person == null ? "" : Person.ToXCN());
+                                 Person == null ? "" : Person.ToXCN(),
+                                 TelecomAddress == null ? "" : TelecomAddress.Value.ToXTN());
         }
 
         /// <summary>
         /// Initializes a new Recipient from a string of combination XON/XCN data type
         /// </summary>
-        public static Recipient FromXONXCN(string xonxcn)
+        public static Recipient FromXONXCNXTN(string xonxcnxtn)
         {
             //TODO: more specific exception
-            if (xonxcn == null) throw new ArgumentException();
-            string[] fields = xonxcn.Split('|');
+            if (xonxcnxtn == null) throw new ArgumentException();
+            string[] fields = xonxcnxtn.Split('|');
             
             Recipient r = new Recipient();
 
@@ -74,7 +75,7 @@ namespace Health.Direct.Common.Metadata
             {
                 r.Institution = Metadata.Institution.FromXON(fields[0]);
             }
-            if (fields.Length == 1 || fields[1].Trim() == "")
+            if ((fields.Length == 1) || (fields[1].Trim() == ""))
             {
                 r.Person = null;
             }
@@ -82,7 +83,15 @@ namespace Health.Direct.Common.Metadata
             {
                 r.Person = Person.FromXCN(fields[1]);
             }
-            if (r.Person == null && r.Institution == null) throw new ArgumentException();
+            if ((fields.Length < 3) || (fields[2].Trim() == ""))
+            {
+                r.TelecomAddress = null;
+            }
+            else
+            {
+                r.TelecomAddress = Telecom.FromXTN(fields[2]);
+            }
+            if ((r.Person == null) && (r.Institution == null) && (r.TelecomAddress == null)) throw new ArgumentException();
             return r;
         }
 
@@ -93,7 +102,8 @@ namespace Health.Direct.Common.Metadata
         {
             bool personEqual = (Person == null && other.Person == null) || (Person != null && Person.Equals(other.Person));
             bool institutionEqual = (Institution == null && other.Institution == null) || (Institution != null && Institution.Equals(other.Institution));
-            return personEqual && institutionEqual;
+            bool telecomEqual = (TelecomAddress == null && other.TelecomAddress == null) || (TelecomAddress != null && TelecomAddress.Equals(other.TelecomAddress));
+            return personEqual && institutionEqual && telecomEqual;
         }
     }
 }
