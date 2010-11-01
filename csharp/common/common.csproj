@@ -50,6 +50,7 @@
     <Compile Include="Caching\DnsResponseCache.cs" />
     <Compile Include="Certificates\CertificateIndex.cs" />
     <Compile Include="Certificates\CertificateResolver.cs" />
+    <Compile Include="Certificates\CertificateResolverCollection.cs" />
     <Compile Include="Certificates\CertificateStore.cs" />
     <Compile Include="Certificates\CryptoUtility.cs" />
     <Compile Include="Certificates\DnsCertResolver.cs" />
