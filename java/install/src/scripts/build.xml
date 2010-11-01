@@ -83,7 +83,7 @@
 	<property name="lib.metro.dst" value="${james.stage.apps.SAR-INF.lib.dir}/webservices-rt-2.0.1.jar"></property>
 
 	<!-- Support libraries (DNS) -->
-	<property name="lib.jcs" value="${maven.repo}/jcs/jcs/1.3/jcs-1.3.jar"></property>
+	<property name="lib.jcs" value="${maven.repo}/org/apache/jcs/jcs/1.3/jcs-1.3.jar"></property>
 	<property name="lib.concurrent" value="${maven.repo}/concurrent/concurrent/1.0/concurrent-1.0.jar"></property>
 
 	<!-- Support libraries (config-service) -->
