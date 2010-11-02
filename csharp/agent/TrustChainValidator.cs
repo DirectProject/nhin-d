@@ -219,7 +219,7 @@ namespace Health.Direct.Agent
             }
 
             // if there are no anchors we should always fail
-            if (CollectionExtensions.IsNullOrEmpty(anchors))
+            if (anchors.IsNullOrEmpty())
             {
                 this.NotifyUntrusted(certificate);
                 return false;
@@ -354,7 +354,7 @@ namespace Health.Direct.Agent
             // Retrieve the issuer's certificate
             //
             X509Certificate2Collection issuerCertificates = m_certResolver.SafeGetCertificates(issuerName);
-            if (CollectionExtensions.IsNullOrEmpty(issuerCertificates))
+            if (issuerCertificates.IsNullOrEmpty())
             {
                 return;
             }
