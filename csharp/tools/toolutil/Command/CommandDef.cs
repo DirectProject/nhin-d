@@ -33,22 +33,22 @@ namespace Health.Direct.Config.Tools.Command
         /// <summary>
         /// Prints the command's usage
         /// </summary>
-        public Action Usage { get; set; }
+        public Func<string> UsageFunctor { get; set; }
 
         internal bool HasUsage
         {
             get
             {
-                return (Usage != null);
+                return (UsageFunctor != null);
             }
         }
                 
         internal void ShowUsage()
         {
             CommandUI.PrintUpperCase(this.Name);
-            if (this.Usage != null)
+            if (this.UsageFunctor != null)
             {
-                this.Usage();
+                this.UsageFunctor();
             }
 
             Console.WriteLine();

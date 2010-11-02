@@ -136,7 +136,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// List all email addresses in a domain
         /// </summary>
-        [Command(Name = "Address_List", Usage = AddressListUsage, UsageParam = DefaultChunkSize)]
+        [Command(Name = "Address_List")]
         public void AddressList(string[] args)
         {
             string domainName = args.GetRequiredValue(0);
@@ -145,11 +145,17 @@ namespace Health.Direct.Config.Console.Command
             Print(Client.EnumerateDomainAddresses(domainName, chunkSize));
         }
 
-        private const string AddressListUsage
-            = "List addresses for a domain."
-              + CRLF + "   domainName [chunkSize]"
-              + CRLF + "\t domainName: list addresses for this domain"
-              + CRLF + "\t chunkSize: (optional) Number of addresses to download from service at a time. Default is {0}";
+        [Usage(Name = "Address_List")]
+        public string AddressListUsage()
+        {
+            return string.Format(
+                "List addresses for a domain."
+                + CRLF + "   domainName [chunkSize]"
+                + CRLF + "\t domainName: list addresses for this domain"
+                + CRLF +
+                "\t chunkSize: (optional) Number of addresses to download from service at a time. Default is {0}",
+                DefaultChunkSize);
+        }
 
         /// <summary>
         /// List all email addresses

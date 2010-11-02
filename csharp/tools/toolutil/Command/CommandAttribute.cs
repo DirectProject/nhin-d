@@ -7,6 +7,5 @@ namespace Health.Direct.Config.Tools.Command
     {
         public string Name { get; set; }
         public string Usage { get; set; }
-        public object UsageParam { get; set; }
     }
 }
