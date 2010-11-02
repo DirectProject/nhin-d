@@ -57,7 +57,7 @@ namespace Health.Direct.Common.Metadata
         /// <summary>
         /// The Health Internet Address of the author
         /// </summary>
-        public MailAddress HealthInternetAddress { get; set; }
+        public Telecom TelecomAddress { get; set; }
 
 
         /// <summary>

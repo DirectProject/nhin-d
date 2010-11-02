@@ -7,6 +7,20 @@
     <version>1.0-SNAPSHOT</version>
     <name>NHIN Direct reference implementation components</name>
     <description>NHIN Direct parent project for java reference implementation components.</description>
+	<scm>
+		<url>https://nhin-d.googlecode.com/hg/java</url>
+		<connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java</connection>
+	</scm>	
+    <licenses>
+       <license>
+          <name>New BSD License</name>
+          <url>http://nhindirect.org/BSDLicense</url>
+       </license>
+    </licenses>   
+	<issueManagement>
+		<system>Google Code</system>
+		<url>http://code.google.com/p/nhin-d/issues/list</url>
+	</issueManagement>  	    
     <modules>
         <module>./config</module>
         <module>./agent</module>
@@ -29,4 +43,32 @@
 	 <prerequisites>
 	     <maven>2.0.4</maven>
 	 </prerequisites>
+    <build>	
+        <pluginManagement>
+           <plugins>
+              <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-release-plugin</artifactId>
+                 <version>2.0</version>
+                 <configuration>
+                    <tagBase>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/tags</tagBase>
+                 </configuration>
+              </plugin>
+           </plugins>
+        </pluginManagement>
+    </build>	
+	<distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-snapshot</id>
+            <name>Sonatype OSS Maven SNAPSHOT Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </snapshotRepository>
+         <repository>
+            <id>sonatype-release</id>
+            <name>Sonatype OSS Maven Release Repositor</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </repository>		
+	</distributionManagement>    	 
 </project>

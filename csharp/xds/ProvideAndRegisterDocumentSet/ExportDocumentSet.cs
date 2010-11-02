@@ -19,17 +19,21 @@ using System.Net;
 using System.Net.Security;
 using System.Text;
 using System.Xml;
+using System.Xml.XPath;
+using System.Xml.Serialization;
+using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 
 using Health.Direct.Xds.Common;
+using Health.Direct.Common.Metadata;
 
 using WCF = System.ServiceModel.Channels;
 
 using System.IO;
 
-namespace Health.Direct.XDS
+namespace Health.Direct.Xds
 {
     public class ExportDocumentSet: IExportDocumentSet
     {
@@ -44,16 +48,16 @@ namespace Health.Direct.XDS
 
 
         #region IExportDocumentSet Members
-        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(string xdsMetadata, string xdsDocument, string endpointUrl, string certThumbprint)
+        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, string endpointUrl, string certThumbprint)
         {
             EndpointAddress endpointAddress;
             X509Certificate2 clientCert;
-            ProvideAndRegisterRequest pandRXDSBRequest;
+            ProvideAndRegisterDocumentSetRequest pandRXDSBRequest;
             //m_Logger = Log.For(this);
             try
             {
                 // create request
-                pandRXDSBRequest = getPandRRequest(xdsMetadata, xdsDocument);
+                pandRXDSBRequest = new ProvideAndRegisterDocumentSetRequest(package);
                 // get an endpoint from the url string
                 endpointAddress = new EndpointAddress(endpointUrl);
                 // if this is https then get the client cert from the thumbprint
@@ -74,46 +78,15 @@ namespace Health.Direct.XDS
 
         }
 
-        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, XmlDocument xdsDocument, string endpointUrl, string certThumbprint)
-        {
-            EndpointAddress endpointAddress;
-            X509Certificate2 clientCert;
-            ProvideAndRegisterRequest pandRXDSBRequest;
-            //m_Logger = Log.For(this);
-            try
-            {
-                // create request
-                pandRXDSBRequest = getPandRRequest(xdsMetadata, xdsDocument);
-
-                // get an endpoint from the url string
-                endpointAddress = new EndpointAddress(endpointUrl);
-                // if this is https then get the client cert from the thumbprint
-                clientCert = null;
-                if ((endpointUrl.StartsWith("https")) && (!string.IsNullOrEmpty(certThumbprint)))
-                {
-                    clientCert = StaticHelpers.getCertFromThumbprint(certThumbprint);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                ProvideAndRegisterResponse pandRResponse = errorResponse(GlobalValues.CONST_ERROR_CODE_XDSRepositoryError, string.Format("error: {0}; stacktrace{1}", ex.Message, ex.StackTrace));
-                return pandRResponse;
-            }
-
-            return exportXDSB(pandRXDSBRequest, endpointAddress, clientCert);
-
-        }
-
-        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, XmlDocument xdsDocument, EndpointAddress endpointAddress, string certThumbprint)
+        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, EndpointAddress endpointAddress, string certThumbprint)
         {
             X509Certificate2 clientCert;
-            ProvideAndRegisterRequest pandRXDSBRequest;
+            ProvideAndRegisterDocumentSetRequest pandRXDSBRequest;
             //m_Logger = Log.For(this);
             try
             {
                 //  create request
-                pandRXDSBRequest = getPandRRequest(xdsMetadata, xdsDocument);
+                pandRXDSBRequest = new ProvideAndRegisterDocumentSetRequest(package);
 
                 // if this is https then get the client cert from the thumbprint
                 clientCert = null;
@@ -133,14 +106,14 @@ namespace Health.Direct.XDS
 
         }
 
-        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, XmlDocument xdsDocument, EndpointAddress endpointAddress, X509Certificate2 clientCert)
+        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(DocumentPackage package, EndpointAddress endpointAddress, X509Certificate2 clientCert)
         {
-            ProvideAndRegisterRequest pandRXDSBRequest;
+            ProvideAndRegisterDocumentSetRequest pandRXDSBRequest;
             //m_Logger = Log.For(this);
             try
             {
                 // create request
-                pandRXDSBRequest = getPandRRequest(xdsMetadata, xdsDocument);
+                pandRXDSBRequest = new ProvideAndRegisterDocumentSetRequest(package);
             }
             catch (Exception ex)
             {
@@ -151,119 +124,12 @@ namespace Health.Direct.XDS
             return exportXDSB(pandRXDSBRequest, endpointAddress, clientCert);
         }
 
-        public ProvideAndRegisterResponse ProvideAndRegisterDocumentSet(XmlDocument xdsMetadata, List<KeyValuePair<string, Stream>> docsById, EndpointAddress endpointAddress, X509Certificate2 clientCert)
-        {
-            ProvideAndRegisterRequest pandRXDSBRequest;
-            //m_Logger = Log.For(this);
-            try
-            {
-                // create request
-                pandRXDSBRequest = getPandRRequest(xdsMetadata, docsById);
-            }
-            catch (Exception ex)
-            {
-                ProvideAndRegisterResponse pandRResponse = errorResponse(GlobalValues.CONST_ERROR_CODE_XDSRepositoryError, string.Format("error: {0}; stacktrace{1}", ex.Message, ex.StackTrace));
-                return pandRResponse;
-            }
-
-            return exportXDSB(pandRXDSBRequest, endpointAddress, clientCert);
-        }
+        
         #endregion
 
         #region private
 
-        private ProvideAndRegisterRequest getPandRRequest(XmlDocument xdsMetadata, XmlDocument xdsDocument)
-        {
-            // put together a P&R Request
-            ProvideAndRegisterRequest pandRRequest = new ProvideAndRegisterRequest();
-            SubmissionDocument theSubmissionDocument = new SubmissionDocument();
-
-            // todo - get the id out of the metadata
-            XmlNode extrinsicObject = xdsMetadata.DocumentElement.SelectSingleNode("//*[local-name()='ExtrinsicObject']");
-            string temp = "";
-            XmlNode tempNode = extrinsicObject.Attributes.GetNamedItem("id");
-            if (tempNode != null)
-            {
-                temp = tempNode.InnerXml;
-            }
-            if (!string.IsNullOrEmpty(temp))
-            {
-                theSubmissionDocument.documentID = temp;
-            }
-            else
-            {
-                XmlNode idAttribute = xdsDocument.CreateNode(XmlNodeType.Attribute, "id", "");
-                idAttribute.Value = "theDocument";
-                extrinsicObject.Attributes.SetNamedItem(idAttribute);
-                theSubmissionDocument.documentID = idAttribute.Value;
-            }
-
-            
-            theSubmissionDocument.documentText = ASCIIEncoding.UTF8.GetBytes(xdsDocument.DocumentElement.OuterXml);
-
-            pandRRequest.submissionDocuments.Add(theSubmissionDocument);
-            pandRRequest.submissionMetadata = xdsMetadata.DocumentElement;
-
-            return pandRRequest;
-        }
-
-        private ProvideAndRegisterRequest getPandRRequest(string xdsMetadata, string xdsDocument)
-        {
-            XmlDocument theMetadada;
-            XmlDocument theDocument;
-            try
-            {
-                theMetadada = new XmlDocument();
-                theMetadada.LoadXml(xdsMetadata);
-                theDocument = new XmlDocument();
-                theDocument.LoadXml(xdsDocument);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            return getPandRRequest(theMetadada, theDocument);
-        }
-        
-        private ProvideAndRegisterRequest getPandRRequest(XmlDocument xdsMetadata, string xdsDocument)
-        {
-            XmlDocument theDocument;
-            try
-            {
-                theDocument = new XmlDocument();
-                theDocument.LoadXml(xdsDocument);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            return getPandRRequest(xdsMetadata, theDocument);
-        }
-        
-        private ProvideAndRegisterRequest getPandRRequest(XmlDocument xdsMetadata, List<KeyValuePair<string, Stream>> docsById)
-        {
-            // put together a P&R Request
-            ProvideAndRegisterRequest pandRRequest = new ProvideAndRegisterRequest();
-
-            // create a SubmissionSetDocument for each document in the list
-            SubmissionDocument aSubmissionDocument = null;
-            StreamReader sr = null;
-            foreach (KeyValuePair<string, Stream> aDocByID in docsById)
-            {
-                aSubmissionDocument = new SubmissionDocument();
-                aSubmissionDocument.documentID = aDocByID.Key;
-                sr = new StreamReader(aDocByID.Value);
-                aSubmissionDocument.documentText = ASCIIEncoding.UTF8.GetBytes(sr.ReadToEnd());
-
-                pandRRequest.submissionDocuments.Add(aSubmissionDocument);
-            }
-
-            // add the metadata to the PandR Request
-            pandRRequest.submissionMetadata = xdsMetadata.DocumentElement;
-            return pandRRequest;
-        }
-
-        private ProvideAndRegisterResponse exportXDSB(ProvideAndRegisterRequest pandRXDSBRequest, System.ServiceModel.EndpointAddress endpointAddress, X509Certificate2 clientCert)
+        private ProvideAndRegisterResponse exportXDSB(ProvideAndRegisterDocumentSetRequest pandRXDSBRequest, System.ServiceModel.EndpointAddress endpointAddress, X509Certificate2 clientCert)
         {
             ProvideAndRegisterResponse pandRResponse = null;
             // setup a default, we blew it, error response
@@ -282,10 +148,16 @@ namespace Health.Direct.XDS
                 // 1) build the message
                 // setup the WCF in and output messages
                 WCF.Message wcfInput, wcfOutput;
-
+                XmlSerializer ser = new XmlSerializer(typeof(ProvideAndRegisterDocumentSetRequest));
+                MemoryStream ms = new MemoryStream();
+                ser.Serialize(ms, pandRXDSBRequest);
+                ms.Position = 0;
+                XmlReader requestReader = XmlReader.Create(ms);
+                //string requestString = requestReader.ReadOuterXml();
+                ms.Close();
                 wcfInput = WCF.Message.CreateMessage(WCF.MessageVersion.Soap12WSAddressing10
                     , StaticHelpers.XDS_PANDR_ACTION    // the action
-                    , pandRXDSBRequest);      // the body
+                    , requestReader);      // the body
 
                 wcfOutput = WCF.Message.CreateMessage(WCF.MessageVersion.Soap12WSAddressing10, "");
 

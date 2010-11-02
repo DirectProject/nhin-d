@@ -22,12 +22,13 @@ namespace Health.Direct.Xds.Common.XdsMetadata
     public enum SlotNameType
     {
         authorInstitution,
-        authorInstitutionId,
+        authorTelecom,
         authorPerson,
         authorRole,
         authorSpecialty,
         creationTime,
         hash,
+        intendedRecipient,
         languageCode,
         legalAuthenticator,
         serviceStartTime,

@@ -13,14 +13,45 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>NHIN-Direct Configuration Service</name>
+	<description>NHIN-Direct Configuration Web Services</description>
 
-	<repositories>
-		<repository>
-			<id>jboss-repository</id>
-			<name>JBoss Repository</name>
-			<url>http://repository.jboss.org/maven2</url>
-		</repository>
-	</repositories>
+    <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-service/${project.version}</url>     
+	
+	<scm>
+		<url>https://nhin-d.googlecode.com/hg/java/config/config-store</url>
+		<connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/config/config-store</connection>
+	</scm>
+
+    <developers>
+        <developer>
+            <name>Pat Pyette</name>
+            <email>ppyette@Tinpriva.com</email>
+            <roles>
+                <role>owner</role>
+            </roles>
+        </developer> 
+        <developer>
+            <name>Greg Meyer</name>
+            <id>GM2552</id>
+            <email>gm2552@cerner.com</email>                                        
+        </developer>  
+        <developer>
+            <name>Beau Grantham</name>
+            <email>bgrantha@harris.com</email>                                        
+        </developer>         
+    </developers>
+
+    <licenses>
+       <license>
+          <name>New BSD License</name>
+          <url>http://nhindirect.org/BSDLicense</url>
+       </license>
+    </licenses>
+
+	<issueManagement>
+		<system>Google Code</system>
+		<url>http://code.google.com/p/nhin-d/issues/list</url>
+	</issueManagement>
 	<dependencies>
 		<dependency>
 			<groupId>cglib</groupId>
@@ -86,11 +117,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.5.8</version>
-		</dependency>
-		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>8.4-701.jdbc4</version>
@@ -100,14 +126,7 @@
 	        <groupId>org.apache.derby</groupId>
 	        <artifactId>derby</artifactId>
 	        <version>10.4.1.3</version>
-	    </dependency>			
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.6.1</version>
-			<type>jar</type>
-			<scope>runtime</scope>
-		</dependency>
+	    </dependency>	
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-ws-metadata_2.0_spec</artifactId>
@@ -156,13 +175,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.nhind</groupId>
-			<artifactId>nhind-java-reference-implementation</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<type>pom</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.nhind</groupId>
 			<artifactId>config-service-jar</artifactId>
 			<version>1.0-SNAPSHOT</version>
 			<type>jar</type>
@@ -175,21 +187,21 @@
             <type>jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.6.1</version>
+                <type>jar</type>
+                <scope>runtime</scope>
+        </dependency>        
 		<dependency>
-			<groupId>apache-log4j</groupId>
+			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
+			<version>1.2.16</version>
 			<type>jar</type>
-			<scope>runtime</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.activation</groupId>
-					<artifactId>activation</artifactId>
-				</exclusion>
-			</exclusions>		
-		</dependency>
+			<scope>runtime</scope>			
+		</dependency>		
 	</dependencies>
-	<url>http://www.nhindirect.org</url>
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -209,6 +221,14 @@
 						<wtpversion>2.0</wtpversion>
 					</configuration>
 				</plugin>
+                <plugin>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId>maven-release-plugin</artifactId>
+                   <version>2.0</version>
+                   <configuration>
+                      <tagBase>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/tags</tagBase>
+                   </configuration>
+                </plugin>				
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -283,13 +303,6 @@
 				<type>jar</type>
 				<scope>compile</scope>
 			</dependency>
-			<dependency>
-				<groupId>org.nhind</groupId>
-				<artifactId>nhind-java-reference-implementation</artifactId>
-				<version>1.0-SNAPSHOT</version>
-				<type>jar</type>
-				<scope>compile</scope>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<pluginRepositories>
@@ -303,4 +316,23 @@
 	<properties>
 		<cxf.maven.artifact.version>2.2.9</cxf.maven.artifact.version>
 	</properties>
+	<distributionManagement>
+		<site>
+			<id>nhind-site</id>
+			<name>NHIN Direct API publication site</name>
+			<url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-service/${project.version}</url>
+		</site>
+        <snapshotRepository>
+            <id>sonatype-snapshot</id>
+            <name>Sonatype OSS Maven SNAPSHOT Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </snapshotRepository>
+         <repository>
+            <id>sonatype-release</id>
+            <name>Sonatype OSS Maven Release Repositor</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </repository>		
+	</distributionManagement>	
 </project>

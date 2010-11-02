@@ -8,13 +8,16 @@
     <description>NHIN Direct XD Component</description>
     <inceptionYear>2010</inceptionYear>
     <packaging>war</packaging>
-    <url>https://nhin-d.googlecode.com/hg/</url>
-
+    <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xd/${project.version}</url>     
     <organization>
         <name>HNIN Direct</name>
         <url>http://nhindirect.org</url>
     </organization>
-
+    <parent>
+        <artifactId>nhind-java-reference-implementation</artifactId>
+        <groupId>org.nhind</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <scm>
         <url>https://nhin-d.googlecode.com/hg/java/xd/</url>
         <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/xd
@@ -25,15 +28,12 @@
         <system>Google Code</system>
         <url>http://code.google.com/p/nhin-d/issues/list</url>
     </issueManagement>
-
-    <repositories>
-        <repository>
-            <id>java.net2</id>
-            <name>Repository hosting the jee6 artifacts</name>
-            <url>http://download.java.net/maven/2</url>
-        </repository>
-    </repositories>
-
+    <licenses>
+       <license>
+          <name>New BSD License</name>
+          <url>http://nhindirect.org/BSDLicense</url>
+       </license>
+    </licenses>
     <dependencies>
         <!--
         <dependency>
@@ -245,12 +245,19 @@
                     </execution>
                 </executions>
             </plugin>
-             
-
         </plugins>
-      
-
-        <finalName>xd</finalName>
+        <pluginManagement>
+           <plugins>
+              <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-release-plugin</artifactId>
+                 <version>2.0</version>
+                 <configuration>
+                    <tagBase>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/tags</tagBase>
+                 </configuration>
+              </plugin>
+           </plugins>
+        </pluginManagement>		
     </build>
 
     <profiles>
@@ -398,8 +405,20 @@
             <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xd/${project.version}
             </url>
         </site>
+        <snapshotRepository>
+            <id>sonatype-snapshot</id>
+            <name>Sonatype OSS Maven SNAPSHOT Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </snapshotRepository>
+         <repository>
+            <id>sonatype-release</id>
+            <name>Sonatype OSS Maven Release Repositor</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </repository>		
+        
     </distributionManagement>
-
 </project>
 
 

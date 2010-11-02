@@ -50,6 +50,7 @@
     <Compile Include="Caching\DnsResponseCache.cs" />
     <Compile Include="Certificates\CertificateIndex.cs" />
     <Compile Include="Certificates\CertificateResolver.cs" />
+    <Compile Include="Certificates\CertificateResolverCollection.cs" />
     <Compile Include="Certificates\CertificateStore.cs" />
     <Compile Include="Certificates\CryptoUtility.cs" />
     <Compile Include="Certificates\DnsCertResolver.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="Metadata\Person.cs" />
     <Compile Include="Metadata\Recipient.cs" />
     <Compile Include="Metadata\SpecialtyCode.cs" />
+    <Compile Include="Metadata\Telecom.cs" />
     <Compile Include="Mime\Body.cs" />
     <Compile Include="Mime\CharReader.cs" />
     <Compile Include="Mime\DefaultSerializer.cs" />
