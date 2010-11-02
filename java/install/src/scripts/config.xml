@@ -519,6 +519,10 @@ Regards, Postmaster XXX.YYY
             </message>
          </mailet>
          -->
+         
+         <mailet match="RecipAndSenderIsNotLocal=mydomain.com" class="NHINDSecurityAndTrustMailet">
+            <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>
+         </mailet>
 
          <!-- Is the recipient is for a local account, deliver it locally -->
          <mailet match="RecipientIsLocal" class="LocalDelivery"/>
@@ -557,10 +561,6 @@ Regards, Postmaster XXX.YYY
             <notice>550 - Requested action not taken: relaying denied</notice>
          </mailet>
          -->
-
-         <mailet match="All" class="NHINDSecurityAndTrustMailet">
-            <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>
-         </mailet>
 
          <!-- Attempt remote delivery using the specified repository for the spool, -->
          <!-- using delay time to retry delivery and the maximum number of retries -->
