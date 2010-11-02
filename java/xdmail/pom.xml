@@ -12,40 +12,29 @@
     <artifactId>xdmail</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>NHIN Direct XD* Mail Gateway</name>
-    <url>http://maven.apache.org</url>
-
+    <description>NHIN Direct XD* Mail Gateway</description>
+    <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xdmail/${project.version}</url>     
     <scm>
         <url>https://nhin-d.googlecode.com/hg/java/xdmail/</url>
         <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/xdmail
         </connection>
     </scm>
-
+    <licenses>
+       <license>
+          <name>New BSD License</name>
+          <url>http://nhindirect.org/BSDLicense</url>
+       </license>
+    </licenses>
     <issueManagement>
         <system>Google Code</system>
         <url>http://code.google.com/p/nhin-d/issues/list</url>
     </issueManagement>
-
-    <repositories>
-        <repository>
-            <url>http://download.java.net/maven/2</url>
-            <id>metro</id>
-            <layout>default</layout>
-            <name>Repository for library[metro]</name>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.ws</groupId>
-            <artifactId>webservices-rt</artifactId>
-            <version>1.4</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.james</groupId>
@@ -266,6 +255,18 @@
                 </dependencies>
             </plugin>
         </plugins>
+        <pluginManagement>
+           <plugins>
+              <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-release-plugin</artifactId>
+                 <version>2.0</version>
+                 <configuration>
+                    <tagBase>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/tags</tagBase>
+                 </configuration>
+              </plugin>
+           </plugins>
+        </pluginManagement>	        
     </build>
 
     <reporting>
@@ -366,5 +367,17 @@
             <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xdmail/${project.version}
             </url>
         </site>
+        <snapshotRepository>
+            <id>sonatype-snapshot</id>
+            <name>Sonatype OSS Maven SNAPSHOT Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </snapshotRepository>
+         <repository>
+            <id>sonatype-release</id>
+            <name>Sonatype OSS Maven Release Repositor</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </repository>        
     </distributionManagement>
 </project>
