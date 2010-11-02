@@ -13,17 +13,43 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>NHIN Direct Java RI - Configuration Persistence Layer</name>
-
+    <description>NHIN Direct Security And Trust Agent</description>
+    <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-store/${project.version}</url>     
 	<scm>
 		<url>https://nhin-d.googlecode.com/hg/java/config/config-store</url>
 		<connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/config/config-store</connection>
 	</scm>
 
+    <developers>
+        <developer>
+            <name>Pat Pyette</name>
+            <email>ppyette@Tinpriva.com</email>
+            <roles>
+                <role>owner</role>
+            </roles>
+        </developer> 
+        <developer>
+            <name>Greg Meyer</name>
+            <id>GM2552</id>
+            <email>gm2552@cerner.com</email>                                        
+        </developer>  
+        <developer>
+            <name>Beau Grantham</name>
+            <email>bgrantha@harris.com</email>                                        
+        </developer>         
+    </developers>
+
+    <licenses>
+       <license>
+          <name>New BSD License</name>
+          <url>http://nhindirect.org/BSDLicense</url>
+       </license>
+    </licenses>
+
 	<issueManagement>
 		<system>Google Code</system>
 		<url>http://code.google.com/p/nhin-d/issues/list</url>
 	</issueManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -126,11 +152,16 @@
 	        <artifactId>derby</artifactId>
 	        <version>10.4.1.3</version>
 	        <scope>test</scope>	
-	    </dependency>			
+	    </dependency>	
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>jta</artifactId>
+			<version>1.1</version>
+		</dependency>	    		
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate</artifactId>
-			<version>3.3.2.GA</version>
+			<version>3.2.7.ga</version> 
 			<type>pom</type>
 			<scope>compile</scope>
 		</dependency>
@@ -140,10 +171,10 @@
 			<version>3.3.2.GA</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<version>1.0.0.Final</version>
-		</dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jpa_2.0_spec</artifactId>
+			<version>1.0</version>
+		</dependency>		 
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
@@ -332,8 +363,20 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>		
 		</plugins>
+        <pluginManagement>
+           <plugins>
+              <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-release-plugin</artifactId>
+                 <version>2.0</version>
+                 <configuration>
+                    <tagBase>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/tags</tagBase>
+                 </configuration>
+              </plugin>
+           </plugins>
+        </pluginManagement>		
 	</build>
 	<reporting>
 		<plugins>
@@ -428,19 +471,23 @@
 		<originalDataSetFile>../../src/test/data/sample-data.xml</originalDataSetFile>
 		<exportedDataSetFile>${project.build.directory}/dbunit/exported-dataset.xml</exportedDataSetFile>
 	</properties>
-	<repositories>
-		<repository>
-			<id>r.j.o-groups-public</id>
-			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
-		</repository>
-	</repositories>
-
 	<distributionManagement>
 		<site>
 			<id>nhind-site</id>
 			<name>NHIN Direct API publication site</name>
 			<url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-store/${project.version}</url>
 		</site>
+        <snapshotRepository>
+            <id>sonatype-snapshot</id>
+            <name>Sonatype OSS Maven SNAPSHOT Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </snapshotRepository>
+         <repository>
+            <id>sonatype-release</id>
+            <name>Sonatype OSS Maven Release Repositor</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </repository>		
 	</distributionManagement>
-
 </project>

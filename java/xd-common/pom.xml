@@ -9,8 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <description>Library for common XD* operations and objects</description>
     <inceptionYear>2010</inceptionYear>
-    <url>https://nhin-d.googlecode.com/hg/java/xd-common/</url>
-
+    <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xd-common/${project.version}</url>     
     <parent>
         <artifactId>nhind-java-reference-implementation</artifactId>
         <groupId>org.nhind</groupId>
@@ -22,21 +21,16 @@
         <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/xd-common
         </connection>
     </scm>
-
+    <licenses>
+       <license>
+          <name>New BSD License</name>
+          <url>http://nhindirect.org/BSDLicense</url>
+       </license>
+    </licenses>
     <issueManagement>
         <system>Google Code</system>
         <url>http://code.google.com/p/nhin-d/issues/list</url>
     </issueManagement>
-
-    <repositories>
-        <repository>
-            <url>http://download.java.net/maven/2</url>
-            <id>metro</id>
-            <layout>default</layout>
-            <name>Repository for library[metro]</name>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>org.nhind</groupId>
@@ -44,12 +38,6 @@
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>       
-        <dependency>
-            <groupId>com.sun.xml.ws</groupId>
-            <artifactId>webservices-rt</artifactId>
-            <version>1.4</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
@@ -197,12 +185,12 @@
                     </execution>
                 </executions>
                 <dependencies>
-                    <dependency>
-                        <groupId>javax.xml</groupId>
-                        <artifactId>webservices-api</artifactId>
-                        <version>1.4</version>
-                    </dependency>
-                </dependencies>
+					<dependency>
+						<groupId>javax.xml.ws</groupId>
+						<artifactId>jaxws-api</artifactId>
+						<version>2.1</version>
+					</dependency>               
+				 </dependencies>
                 <configuration>
                     <sourceDestDir>${project.build.directory}/generated-sources/jaxws-wsimport
                     </sourceDestDir>
@@ -243,6 +231,18 @@
                 </executions>
             </plugin>
         </plugins>
+        <pluginManagement>
+           <plugins>
+              <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-release-plugin</artifactId>
+                 <version>2.0</version>
+                 <configuration>
+                    <tagBase>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/tags</tagBase>
+                 </configuration>
+              </plugin>
+           </plugins>
+        </pluginManagement>		        
     </build>
 
     <reporting>
@@ -343,5 +343,17 @@
             <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xd-common/${project.version}
             </url>
         </site>
+        <snapshotRepository>
+            <id>sonatype-snapshot</id>
+            <name>Sonatype OSS Maven SNAPSHOT Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </snapshotRepository>
+         <repository>
+            <id>sonatype-release</id>
+            <name>Sonatype OSS Maven Release Repositor</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </repository>		        
     </distributionManagement>
 </project>
