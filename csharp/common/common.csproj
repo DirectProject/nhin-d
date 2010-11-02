@@ -62,6 +62,9 @@
     <Compile Include="Certificates\SystemX509Store.cs" />
     <Compile Include="Certificates\TrustAnchorResolver.cs" />
     <Compile Include="Certificates\UniformCertificateStore.cs" />
+    <Compile Include="Container\ConfigurationSectionBase.cs" />
+    <Compile Include="Container\IDependencyContainer.cs" />
+    <Compile Include="Container\IocContainerSection.cs" />
     <Compile Include="Container\SimpleContainerSection.cs" />
     <Compile Include="Container\IoC.cs" />
     <Compile Include="Container\SimpleDependencyResolver.cs" />
@@ -131,9 +134,7 @@
     <Compile Include="Mail\Notifications\ReportingUserAgent.cs" />
     <Compile Include="Mail\WrappedMessage.cs" />
     <Compile Include="Metadata\HL7Util.cs" />
-    <Compile Include="Metadata\Institution.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Metadata\Institution.cs" />
     <Compile Include="Metadata\PostalAddress.cs" />
     <Compile Include="Metadata\Author.cs" />
     <Compile Include="Metadata\CodedValue.cs" />
