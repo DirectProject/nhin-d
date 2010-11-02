@@ -53,18 +53,44 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Certificate_Add", Usage = CertificateAddUsage)]
         public void CertificateAdd(string[] args)
         {
-            string filePath = args.GetRequiredValue(0);
-            string password = args.GetOptionalValue(1, string.Empty);
-            
-            MemoryX509Store certStore = LoadCerts(filePath, password);            
-            PushCerts(certStore, false);
+            CertificateFileInfo certFileInfo = new CertificateFileInfo(0, args);            
+            MemoryX509Store certStore = certFileInfo.LoadCerts();
+            PushCerts(certStore, false, certFileInfo.Status);
         }
-
         private const string CertificateAddUsage
             = "Import a certificate from a file and push it into the store."
-              + CRLF + "    filepath [password]"
-              + CRLF + "\t filePath: path fo the certificate file. Can be .DER, .CER or .PFX"
-              + CRLF + "\t password: (optional) file password";
+              + CRLF + CertificateFileInfo.Usage;
+
+        /// <summary>
+        /// Import a certificate file and add it to the machine store
+        /// </summary>
+        [Command(Name = "Certificate_Add_Machine", Usage = CertificateAddMachineUsage)]
+        public void CertificateAddMachine(string[] args)
+        {
+            string storeName = args.GetRequiredValue(0).ToLower();
+            SystemX509Store store;
+            if (storeName == "public")
+            {
+                store = SystemX509Store.OpenExternalEdit();
+            }
+            else if (storeName == "private")
+            {
+                store = SystemX509Store.OpenPrivateEdit();
+            }
+            else
+            {
+                throw new ArgumentException(storeName);
+            }
+            
+            CertificateFileInfo certFileInfo = new CertificateFileInfo(1, args);
+            store.ImportKeyFile(certFileInfo.FilePath, certFileInfo.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+            store.Dispose();
+        }
+        
+        private const string CertificateAddMachineUsage
+            = "Import a certificate from a file and push it into the named local Machine store."
+              + CRLF + " storeName (Private | Public)\r\n"
+              + CRLF + CertificateFileInfo.Usage;
 
         /// <summary>
         /// Retrieve a certificate by its ID
@@ -305,7 +331,7 @@ namespace Health.Direct.Config.Console.Command
         //
         //---------------------------------------
         
-        void ExportCerts(IEnumerable<Certificate> certs, string filePath)
+        internal void ExportCerts(IEnumerable<Certificate> certs, string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
             {
@@ -319,7 +345,7 @@ namespace Health.Direct.Config.Console.Command
             }
         }
 
-        void ExportCerts(IEnumerable<Certificate> certs, TextWriter writer, bool isOutputFile)
+        internal void ExportCerts(IEnumerable<Certificate> certs, TextWriter writer, bool isOutputFile)
         {
             foreach (Certificate cert in certs)
             {
@@ -334,7 +360,7 @@ namespace Health.Direct.Config.Console.Command
             }
         }
 
-        void ExportCerts(IEnumerable<X509Certificate2> certs, string filePath)
+        internal void ExportCerts(IEnumerable<X509Certificate2> certs, string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
             {
@@ -348,7 +374,7 @@ namespace Health.Direct.Config.Console.Command
             }
         }
 
-        void ExportCerts(IEnumerable<X509Certificate2> certs, TextWriter writer, bool isOutputFile)
+        internal void ExportCerts(IEnumerable<X509Certificate2> certs, TextWriter writer, bool isOutputFile)
         {
             foreach (X509Certificate2 cert in certs)
             {
@@ -363,7 +389,7 @@ namespace Health.Direct.Config.Console.Command
             }
         }
         
-        void PushCerts(IEnumerable<X509Certificate2> certs, bool checkForDupes)
+        internal void PushCerts(IEnumerable<X509Certificate2> certs, bool checkForDupes, EntityStatus? status)
         {
             foreach (X509Certificate2 cert in certs)
             {
@@ -372,7 +398,12 @@ namespace Health.Direct.Config.Console.Command
                 {
                     if (!checkForDupes || !Client.Contains(cert))
                     {
-                        Client.AddCertificate(new Certificate(owner, cert));                    
+                        Certificate certEntry = new Certificate(owner, cert);
+                        if (status != null)
+                        {
+                            certEntry.Status = status.Value;
+                        }
+                        Client.AddCertificate(certEntry);                    
                         WriteLine("Added {0}", cert.Subject);
                     }
                     else
@@ -387,17 +418,6 @@ namespace Health.Direct.Config.Console.Command
                         WriteLine("Exists {0}", cert.Subject);
                     }
                 }
-            }
-        }
-
-        internal void PushCerts(IEnumerable<X509Certificate2> certs, bool checkForDupes, EntityStatus status)
-        {
-            PushCerts(certs, checkForDupes);
-            var owners = (from cert in certs
-                          select cert.ExtractEmailNameOrName()).Distinct();
-            foreach (string owner in owners)
-            {
-                Client.SetCertificateStatusForOwner(owner, EntityStatus.Enabled);
             }
         }
 
@@ -444,7 +464,8 @@ namespace Health.Direct.Config.Console.Command
               + CRLF + "\t [certData] [privatekey]"
               + CRLF + "\t certData: (True/False) Fetch certificate data"
               + CRLF + "\t privateKey: (True/False) Include private key";
-                
+
+
         void Print(Certificate[] certs)
         {
             if (certs == null || certs.Length == 0)
@@ -479,7 +500,7 @@ namespace Health.Direct.Config.Console.Command
                 
         internal void Print(X509Certificate2Collection certs)
         {
-            if (CollectionExtensions.IsNullOrEmpty(certs))
+            if (certs.IsNullOrEmpty())
             {
                 WriteLine("No certificates found");
                 return;
