@@ -33,6 +33,7 @@ namespace Health.Direct.Config.Console
         private AddressManagerClient m_addressClient;
         private CertificateStoreClient m_certificateClient;
         private AnchorStoreClient m_anchorClient;
+        private DnsRecordManagerClient m_dnsRecordClient;
         
         internal ConfigConsole(ConsoleSettings settings)
         {
@@ -47,6 +48,7 @@ namespace Health.Direct.Config.Console
             m_commands.Register(new AnchorCommands(this, () => m_anchorClient));
             m_commands.Register(new CertificateCommands(this, () => m_certificateClient));
             m_commands.Register(new DomainCommands(this, () => m_domainClient, () => m_addressClient));
+            m_commands.Register(new DnsRecordCommands(this, () => m_dnsRecordClient));
             m_commands.Register(new SettingsCommands(this));
             m_commands.Register(new TestCommands(this));
 
@@ -68,6 +70,7 @@ namespace Health.Direct.Config.Console
             m_domainClient = m_settings.DomainManager.CreateDomainManagerClient();
             m_addressClient = m_settings.AddressManager.CreateAddressManagerClient();
             m_certificateClient = m_settings.CertificateManager.CreateCertificateStoreClient();
+            m_dnsRecordClient = m_settings.DnsRecordManager.CreateDnsRecordManagerClient();
             m_anchorClient = m_settings.AnchorManager.CreateAnchorStoreClient();
         }
         
