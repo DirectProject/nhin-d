@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.IO;
 
 namespace Health.Direct.Config.Tools.Command
 {
@@ -48,10 +49,15 @@ namespace Health.Direct.Config.Tools.Command
             CommandUI.PrintUpperCase(this.Name);
             if (this.UsageFunctor != null)
             {
-                this.UsageFunctor();
+                Console.WriteLine(this.UsageFunctor());
             }
 
             Console.WriteLine();
+        }
+
+        internal void ShowCommand()
+        {
+            CommandUI.PrintUpperCase(this.Name);
         }
     }
 }
