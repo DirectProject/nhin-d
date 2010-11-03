@@ -21,6 +21,16 @@ namespace Health.Direct.Common.Certificates
         /// </summary>
         public CertificateResolverCollection()
         {
+            this.IgnoreExceptions = true;
+        }
+        
+        /// <summary>
+        /// Ignore any exceptions during certificate resolution - by moving onto the next resolver
+        /// </summary>
+        public bool IgnoreExceptions
+        {
+            get;
+            set;
         }
         
         /// <summary>
@@ -35,10 +45,20 @@ namespace Health.Direct.Common.Certificates
             X509Certificate2Collection matches = null;
             foreach(ICertificateResolver resolver in this)
             {
-                matches = resolver.GetCertificates(address);
-                if (!matches.IsNullOrEmpty())
+                try
                 {
-                    break;
+                    matches = resolver.GetCertificates(address);
+                    if (!matches.IsNullOrEmpty())
+                    {
+                        break;
+                    }
+                }
+                catch
+                {
+                    if (!this.IgnoreExceptions)
+                    {
+                        throw;
+                    }
                 }
             }
             
@@ -57,10 +77,20 @@ namespace Health.Direct.Common.Certificates
             X509Certificate2Collection matches = null;
             foreach (ICertificateResolver resolver in this)
             {
-                matches = resolver.GetCertificatesForDomain(domain);
-                if (!matches.IsNullOrEmpty())
+                try
                 {
-                    break;
+                    matches = resolver.GetCertificatesForDomain(domain);
+                    if (!matches.IsNullOrEmpty())
+                    {
+                        break;
+                    }
+                }
+                catch
+                {
+                    if (!this.IgnoreExceptions)
+                    {
+                        throw;
+                    }
                 }
             }
 

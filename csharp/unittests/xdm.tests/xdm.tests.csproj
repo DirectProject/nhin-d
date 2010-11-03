@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0211EBED-C527-42A9-B89B-E1D32A776837}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{2C3A196B-AA5A-4D35-8DE3-953F8DD3501F}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Health.Direct.Config.Console</RootNamespace>
-    <AssemblyName>ConfigConsole</AssemblyName>
+    <RootNamespace>Health.Direct.Xdm.Tests</RootNamespace>
+    <AssemblyName>Health.Direct.Xdm.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,62 +31,47 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ionic.Zip.Reduced, Version=1.9.1.5, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\DotNetZipLib\DotNetZip-Reduced-v1.9\Ionic.Zip.Reduced.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.ServiceModel">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="xunit, Version=1.6.1.1521, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\xunit\xunit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command\AddressCommands.cs" />
-    <Compile Include="Command\AnchorCommands.cs" />
-    <Compile Include="Command\CertificateCommands.cs" />
-    <Compile Include="Command\CertificateFileInfo.cs" />
-    <Compile Include="Command\CommandsBase.cs" />
-    <Compile Include="Command\DomainCommands.cs" />
-    <Compile Include="Command\SettingsCommands.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Command\TestCommands.cs" />
-    <Compile Include="ConsoleSettings.cs" />
-    <Compile Include="ConfigConsole.cs" />
+    <Compile Include="XdmZipFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ConfigConsoleSettings.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\common.csproj">
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\tools\toolutil\config.tools.csproj">
-      <Project>{D46A743B-E82F-45F7-87CB-29DBBFF9B9A0}</Project>
-      <Name>config.tools</Name>
+    <ProjectReference Include="..\..\xdm\xdm.csproj">
+      <Project>{57642FC6-9A0D-4667-858E-6936800A9701}</Project>
+      <Name>xdm</Name>
     </ProjectReference>
-    <ProjectReference Include="..\client\config.client.csproj">
-      <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
-      <Name>config.client</Name>
+    <ProjectReference Include="..\..\xd\xd.csproj">
+      <Project>{34C79F52-0820-4365-B7E8-9660163E7A21}</Project>
+      <Name>xd</Name>
     </ProjectReference>
-    <ProjectReference Include="..\store\config.store.csproj">
-      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
-      <Name>config.store</Name>
+    <ProjectReference Include="..\xdtests\xd.tests.csproj">
+      <Project>{C6AF9782-1F93-4B72-9281-754456D053A8}</Project>
+      <Name>xd.tests</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
