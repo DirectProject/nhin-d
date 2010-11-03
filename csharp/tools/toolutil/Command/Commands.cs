@@ -22,11 +22,6 @@ using System.Reflection;
 
 namespace Health.Direct.Config.Tools.Command
 {
-    public class CommandUsageAttribute : Attribute
-    {
-        public string Name { get; set; }
-    }
-
     /// <summary>
     /// For the EASY implementation of command line apps. Can't always do Powershell, or may not want to.
     /// 
@@ -145,8 +140,8 @@ namespace Health.Direct.Config.Tools.Command
             foreach (MethodInfo method in methods)
             {
                 DiscoverCommandMethod(method, instance);
-                //DiscoverUsageMethod(method);
-            }        
+                DiscoverUsageMethod(method, instance);
+            }
         }
 
         private void DiscoverCommandMethod(MethodInfo method, object instance)
@@ -167,7 +162,7 @@ namespace Health.Direct.Config.Tools.Command
             }
         }
 
-        private void DiscoverUsageMethod(MethodInfo method)
+        private void DiscoverUsageMethod(MethodInfo method, object instance)
         {
             object[] attributes = method.GetCustomAttributes(typeof (UsageAttribute), true);
             for (int i = 0; i < attributes.Length; i++ )
@@ -175,7 +170,7 @@ namespace Health.Direct.Config.Tools.Command
                 UsageAttribute attribute = (UsageAttribute) attributes[i];
                 if (!string.IsNullOrEmpty(attribute.Name))
                 {
-                    //this.SetUsage(attribute.Name, (Func<string>)Delegate.CreateDelegate(typeof(Func<string>), method));
+                    this.SetUsage(attribute.Name, (Func<string>)Delegate.CreateDelegate(typeof(Func<string>), instance, method));
                 }
             }
         }
@@ -395,6 +390,15 @@ namespace Health.Direct.Config.Tools.Command
         public void Quit(string[] args)
         {
             Exit(0);
+        }
+
+        [Command(Name = "Commands", Usage = "List the commands available")]
+        public void ListCommands(string[] args)
+        {
+            foreach (string name in this.CommandNames)
+            {
+                this.Bind(name).ShowCommand();
+            }
         }
 
         private const string ExitUsage
