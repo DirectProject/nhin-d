@@ -159,6 +159,7 @@
                      <goal>single</goal>
                   </goals>
                   <configuration>
+                     <appendAssemblyId>false</appendAssemblyId>
                      <descriptors>
                         <descriptor>src/descriptors/distribution.xml</descriptor>
                      </descriptors>

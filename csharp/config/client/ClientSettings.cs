@@ -187,6 +187,11 @@ namespace Health.Direct.Config.Client
         {
             return new AddressManagerClient(this.Binding, this.Endpoint);
         }
+
+        public DnsRecordManagerClient CreateDnsRecordManagerClient()
+        {
+            return new DnsRecordManagerClient(this.Binding, this.Endpoint);
+        }
         
         public CertificateStoreClient CreateCertificateStoreClient()
         {

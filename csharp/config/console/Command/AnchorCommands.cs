@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 using System.ServiceModel;
+
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client;
@@ -49,29 +50,19 @@ namespace Health.Direct.Config.Console.Command
         public void AnchorAdd(string[] args)
         {
             string owner = args.GetRequiredValue(0);
-            CertificateFileInfo certFileInfo = new CertificateFileInfo(1, args);                        
-            PushCerts(owner, certFileInfo.LoadCerts(),  false, certFileInfo.Status);
+            string filePath = args.GetRequiredValue(1);
+            string password = args.GetOptionalValue(2, string.Empty);
+            
+            PushCerts(owner, GetCommand<CertificateCommands>().LoadCerts(filePath, password), false);
         }
+
         private const string AnchorAddUsage
-            = "Import an anchor certificate from a file and push it into the config store."
+            = "Import an anchor certificate from a file and push it into the store."
               + CRLF + "The anchor is used for both incoming & outgoing trust."
-              + CRLF + "    owner options"
-              + CRLF + CertificateFileInfo.Usage;
-        
-        [Command(Name="Anchor_Add_Machine", Usage=AnchorAddMachineUsage)]
-        public void AnchorAddMachine(string[] args)
-        {
-            CertificateFileInfo certFileInfo = new CertificateFileInfo(0, args);
-            using(SystemX509Store store = SystemX509Store.OpenAnchorEdit())
-            {
-                store.ImportKeyFile(certFileInfo.FilePath, certFileInfo.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
-            }
-        }
-        private const string AnchorAddMachineUsage
-            = "Import an anchor certificate from a file and push it into the system store."
-              + CRLF + "The anchor is used for both incoming & outgoing trust."
-              + CRLF + "   options"
-              + CRLF + CertificateFileInfo.Usage;
+              + CRLF + "    owner filepath [password]"
+              + CRLF + "\t owner: Anchor owner"
+              + CRLF + "\t filePath: path fo the certificate file. Can be .DER, .CER or .PFX"
+              + CRLF + "\t password: (optional) file password";
         
         /// <summary>
         /// Retrieve an anchor by its ID
@@ -143,9 +134,10 @@ namespace Health.Direct.Config.Console.Command
 
             Client.SetAnchorStatusForOwner(owner, status);
         }
+
         private const string AnchorStatusSetUsage
             = "Set the status for ALL anchors for an owner."
-              + CRLF + "    owner status"
+              + CRLF + "    owner"
               + CRLF + "\t owner: Anchor owner"
               + CRLF + "\t status: " + EntityStatusString;
         
@@ -173,7 +165,7 @@ namespace Health.Direct.Config.Console.Command
             CertificateGetOptions options = GetCommand<CertificateCommands>().GetOptions(args, 1);
 
             Anchor[] anchors = Client.GetAnchorsForOwner(owner.Address, options);
-            if (anchors.IsNullOrEmpty())
+            if (ArrayExtensions.IsNullOrEmpty(anchors))
             {
                 anchors = Client.GetAnchorsForOwner(owner.Host, options);
             }
@@ -193,23 +185,13 @@ namespace Health.Direct.Config.Console.Command
         //---------------------------------------               
         internal void PushCerts(string owner, IEnumerable<X509Certificate2> certs, bool checkForDupes)
         {
-            this.PushCerts(owner, certs, checkForDupes, null);
-        }
-
-        internal void PushCerts(string owner, IEnumerable<X509Certificate2> certs, bool checkForDupes, EntityStatus? status)
-        {
             foreach (X509Certificate2 cert in certs)
             {
                 try
                 {
                     if (!checkForDupes || !Client.Contains(owner, cert))
                     {
-                        Anchor anchor = new Anchor(owner, cert, true, true);
-                        if (status != null)
-                        {
-                            anchor.Status = status.Value;
-                        }
-                        Client.AddAnchor(anchor);
+                        Client.AddAnchor(new Anchor(owner, cert, true, true));
                         WriteLine("Added {0}", cert.Subject);
                     }
                     else
@@ -229,6 +211,12 @@ namespace Health.Direct.Config.Console.Command
                     }                    
                 }
             }
+        }
+
+        internal void PushCerts(string owner, IEnumerable<X509Certificate2> certs, bool checkForDupes, EntityStatus status)
+        {
+            PushCerts(owner, certs, checkForDupes);
+            Client.SetAnchorStatusForOwner(owner, EntityStatus.Enabled);
         }
         
         void Print(Anchor[] anchors)

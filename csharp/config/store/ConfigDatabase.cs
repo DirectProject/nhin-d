@@ -26,8 +26,8 @@ namespace Health.Direct.Config.Store
         Table<Certificate> m_certs;
         Table<Anchor> m_anchors;
         Table<Domain> m_domains;
-        Table<MX> m_mxs;
         Table<Address> m_addresses;
+        Table<DnsRecord> m_dnsRecords;
         DbTransaction m_transaction;
                           
         public ConfigDatabase(string connectString)
@@ -48,18 +48,20 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        public Table<MX> MXs
+
+        public Table<DnsRecord> DnsRecords
         {
             get
             {
-                if (m_mxs == null)
+                if (m_dnsRecords == null)
                 {
-                    m_mxs = this.GetTable<MX>();
+                    m_dnsRecords = this.GetTable<DnsRecord>();
                 }
 
-                return m_mxs;
+                return m_dnsRecords;
             }
         }
+
 
         public Table<Address> Addresses
         {
