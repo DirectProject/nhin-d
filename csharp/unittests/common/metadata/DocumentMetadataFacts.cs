@@ -36,7 +36,7 @@ namespace Health.Direct.Common.Tests.Metadata
             m.SetDocument("abc");
             SHA1 sha = new SHA1CryptoServiceProvider();
             byte[] bytes = (new UTF8Encoding()).GetBytes("abc");
-            string hash = Convert.ToBase64String(sha.ComputeHash(bytes));
+            string hash = BitConverter.ToString(sha.ComputeHash(bytes)).Replace("-", "");
             Assert.Equal(hash, m.Hash);
         }
 
@@ -62,7 +62,7 @@ namespace Health.Direct.Common.Tests.Metadata
             DocumentMetadata m = new DocumentMetadata();
             SHA1 sha = new SHA1CryptoServiceProvider();
             byte[] bytes = (new UTF8Encoding()).GetBytes("abc");
-            string hash = Convert.ToBase64String(sha.ComputeHash(bytes));
+            string hash = BitConverter.ToString(sha.ComputeHash(bytes)).Replace("-", "");
             m.Hash = hash;
             m.SetDocument("abc");
             Assert.Equal(hash, m.Hash);
