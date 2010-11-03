@@ -39,7 +39,7 @@
     </scm> 
     <issueManagement>
        <system>Google Code</system>
-       <url>http://code.google.com/p/nhin-d/issues/list</url>
+       <url>http://code.google.com/p/nhin-d/issues/list</url>       
     </issueManagement>	
     <licenses>
        <license>
@@ -47,6 +47,13 @@
           <url>http://nhindirect.org/BSDLicense</url>
        </license>
     </licenses>  
+    <repositories>
+       <repository>
+          <id>sonatype-snapshot</id>
+          <name>Sonatype OSS Maven SNAPSHOT Repository</name>
+          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+       </repository>
+    </repositories>   
     <dependencies>   
 	   <dependency>
 	      <groupId>org.nhind</groupId>
