@@ -19,24 +19,29 @@ using System.Linq;
 using System.IO;
 
 using Xunit;
+using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.Config.Store.Tests
 {
     public class ConfigStoreTestBase 
     {
 
-        protected const string CONNSTR = @"Data Source=.\SQLEXPRESS;Initial Catalog=NHINDConfig;Integrated Security=SSPI;";
-        //protected const string CONNSTR = "Data Source=localhost;Initial Catalog=NHINDConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
+        //protected const string CONNSTR = @"Data Source=.\SQLEXPRESS;Initial Catalog=NHINDConfig;Integrated Security=SSPI;";
+        protected const string CONNSTR = "Data Source=localhost;Initial Catalog=NHINDConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
         protected const int MAXDOMAINCOUNT = 10; //---number should be <= .cer file count in metadata folder
         protected const int MAXSMTPCOUNT = 3;
         protected const int MAXADDRESSCOUNT = 3;
         protected const int MAXCERTPEROWNER = 3;  //---number cannot be greater than the certs per domain in metadata\cert folder (see pattern domain[x].test.com.[y] where min(max(y)) = this number)
+
         protected const int PREFERENCE = 2;
         protected const long STARTID = 1;
         private const string DOMAINNAMEPATTERN = "domain{0}.test.com";
         private const string ADDRESSPATTERN = "test@address{0}.domain{1}.com";
         private const string SMTPDOMAINNAMEPATTERN = "smtp{0}.domain{1}.test.com";
         private const string ADDRESSDISPLAYNAMEPATTERN = "domain[{0}] add[{1}]";
+        private string DNSRECORDSEPATH = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
+        protected Dictionary<string, DnsResponse> m_DomainResponses = null;
+
 
         // if true dump will be sent to the delegate specified by DumpLine
         private readonly bool m_dumpEnabled;
@@ -190,7 +195,6 @@ namespace Health.Direct.Config.Store.Tests
 
             }
         }
-        
 
         /// <summary>
         /// property to expose enumerable test certs extracted from pfx files in metadata\certs folder
@@ -248,6 +252,47 @@ namespace Health.Direct.Config.Store.Tests
                        
 
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets test dns record domain names that sync up with 
+        /// generated metadata dns response binary files in the 
+        /// related dns responses folder        
+        /// </summary>
+        /// <remarks>
+        /// Note that for each value listed below, there should be 
+        /// a CERT, MX, SOA and A record bin file
+        /// </remarks>
+        protected static IEnumerable<string> DnsRecordDomainNames
+        {
+            get
+            {
+                yield return "microsoft.com";
+                yield return "yahoo.com";
+                yield return "google.com";
+                yield return "apple.com";
+                yield return "bing.com";
+                yield return "epic.com";
+                yield return "cerner.com";
+                yield return "nhindirect.org";
+                yield return "ibm.com";
+            }
+        }
+
+        /// <summary>
+        /// Gets test dns record types that will be stored in the config store db      
+        /// </summary>
+        /// <remarks>
+        /// Note that only types that are currently supported should be included here
+        /// </remarks>
+        protected static IEnumerable<DnsStandard.RecordType> DnsRecordTypes
+        {
+            get
+            {
+                yield return DnsStandard.RecordType.MX;
+                yield return DnsStandard.RecordType.SOA;
+                yield return DnsStandard.RecordType.ANAME;
             }
         }
 
@@ -310,6 +355,74 @@ namespace Health.Direct.Config.Store.Tests
             return names;
         }
 
+        
+        /// <summary>
+        /// this method populates the DnsRecords table with viable DnsRecords stored in metadata
+        /// </summary>
+        /// <remarks>
+        /// Note that the related domains are pulled from the DnsRecodDomainNames per each possible DnsRecordType
+        /// These can be generated using the common.tests.DnsResponseToBinExample.cs test class, however
+        /// they must be copied to the metadata\dns responses folder in this project and marked as copy to output
+        /// directory, if newer
+        /// </remarks>
+        protected void InitDnsRecords()
+        {
+            List<string> domains = DnsRecordDomainNames.ToList<string>();
+            List<DnsStandard.RecordType> recTypes = DnsRecordTypes.ToList<DnsStandard.RecordType>();
+
+            DnsRecordManager mgr = new DnsRecordManager(new ConfigStore(CONNSTR));
+            mgr.RemoveAll();
+
+            //----------------------------------------------------------------------------------------------------
+            //---go through all domains and load up the corresponding record types
+            foreach (string domainName in domains)
+            {
+                mgr.Add(new DnsRecord(domainName
+                    , (int)DnsStandard.RecordType.MX
+                    , LoadAndVerifyDnsRecordFromBin<MXRecord>(Path.Combine(DNSRECORDSEPATH
+                        , string.Format("mx.{0}.bin", domainName)))
+                    , string.Format("some test notes for mx domain{0}", domainName)));
+
+                mgr.Add(new DnsRecord(domainName
+                    , (int)DnsStandard.RecordType.SOA
+                    , LoadAndVerifyDnsRecordFromBin<SOARecord>(Path.Combine(DNSRECORDSEPATH
+                        , string.Format("soa.{0}.bin", domainName)))
+                    , string.Format("some test notes for soa domain{0}", domainName)));
+
+                mgr.Add(new DnsRecord(domainName
+                    , (int)DnsStandard.RecordType.ANAME
+                    , LoadAndVerifyDnsRecordFromBin<AddressRecord>(Path.Combine(DNSRECORDSEPATH
+                        , string.Format("aname.{0}.bin", domainName)))
+                    , string.Format("some test notes for aname domain{0}", domainName)));
+
+            }
+        }
+
+        /// <summary>
+        /// loads and verifies the dnsrecords from the bin associated bin files, ensuring that the types
+        /// match up
+        /// </summary>
+        /// <typeparam name="T">Type of record that is expected</typeparam>
+        /// <param name="path">path to the bin file to be loaded</param>
+        /// <returns>bytes from the bin file</returns>
+        protected byte[] LoadAndVerifyDnsRecordFromBin<T>(string path)
+        {
+            byte[] bytes = null;
+
+            //----------------------------------------------------------------------------------------------------
+            //---read the stream from the bytes
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                //Console.WriteLine("checking [{0}]", path);
+                bytes = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
+                DnsBufferReader rdr = new DnsBufferReader(bytes, 0, bytes.Length);
+                DnsResourceRecord rec = DnsResourceRecord.Deserialize(ref rdr);
+                Assert.Equal(rec.GetType(), typeof(T));
+
+            }
+            return bytes;
+        }
+
         /// <summary>
         /// This method will clean, load and verify Domain records in the DB for testing purposes
         /// </summary>
@@ -348,46 +461,6 @@ namespace Health.Direct.Config.Store.Tests
                 Assert.NotNull(mgr.Get(val));
             }
 
-        }
-
-        /// <summary>
-        /// This method will clean, load and verify MX records in the DB for testing purposes
-        /// </summary>
-        protected void InitMXRecords()
-        {
-            this.InitMXRecords(new MXManager(new ConfigStore(CONNSTR))
-                               , new ConfigDatabase(CONNSTR));
-        }
-
-        /// <summary>
-        /// This method will clean, load and verify MX records in the DB for testing purposes
-        /// </summary>
-        /// <param name="mxmgr">MXManager instance used for controlling the MX records</param>
-        /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
-        /// <remarks>
-        /// this approach goes out to db each time it is called, however it ensures that clean records
-        /// are present for every test that is execute, if it is taking too long, simply cut down on the
-        /// number of items using the consts above
-        /// </remarks>
-        protected void InitMXRecords(MXManager mxmgr
-                                     , ConfigDatabase db)
-        {
-            
-            //----------------------------------------------------------------------------------------------------
-            //---init domain records as well we want them fresh too
-            InitDomainRecords(new DomainManager(new ConfigStore(CONNSTR)), db);
-            foreach (KeyValuePair<long, KeyValuePair<int, string>> kp in TestMXDomainNames)
-            {
-                mxmgr.Add(db, new MX(kp.Key, kp.Value.Value, kp.Value.Key));
-            }
-
-            //----------------------------------------------------------------------------------------------------
-            //---submit changes to db and verify existence of records
-            db.SubmitChanges();
-            foreach (KeyValuePair<long, KeyValuePair<int, string>> kp in TestMXDomainNames)
-            {
-                Assert.NotNull(mxmgr.Get(kp.Value.Value));
-            }
         }
 
         /// <summary>

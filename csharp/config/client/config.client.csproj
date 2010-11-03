@@ -136,10 +136,13 @@
     <None Include="Service References\CertificateService\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.DnsRecord.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.MX.datasource" />
     <None Include="Service References\CertificateService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+    <None Include="Service References\DomainManager\DomainManagerService4.xsd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
