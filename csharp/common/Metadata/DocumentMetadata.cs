@@ -60,7 +60,7 @@ namespace Health.Direct.Common.Metadata
         {
             SHA1 sha = new SHA1CryptoServiceProvider();
             
-            string h = BitConverter.ToString(sha.ComputeHash(DocumentBytes)).Replace("-", "");
+            string h = Convert.ToBase64String(sha.ComputeHash(DocumentBytes));
             if (Hash == null)
                 Hash = h;
             else if (Hash != h)

@@ -30,6 +30,7 @@ namespace Health.Direct.Config.Store
         const string Sql_SetStatusByDomain = "UPDATE Addresses set Status = {0}, UpdateDate={1} where DomainID = {2}";
         const string Sql_EnumDomainAddressFirst = "SELECT TOP ({0}) * from Addresses where DomainID = {1} order by EmailAddress asc";
         const string Sql_EnumDomainAddressNext = "SELECT TOP ({0}) * from Addresses where DomainID = {1} and EmailAddress > {2} order by EmailAddress asc";
+        const string Sql_SelectByDomainName = "SELECT TOP ({0}) * from Addresses a inner join Domains b on a.domainid = b.domainid where b.DomainName like {1} order by EmailAddress asc";
         const string Sql_EnumAddressFirst = "SELECT TOP ({0}) * from Addresses order by EmailAddress asc";
         const string Sql_EnumAddressNext = "SELECT TOP ({0}) * from Addresses where EmailAddress > {1} order by EmailAddress asc";
         const string Sql_TruncateAddresses = "truncate table Addresses";
@@ -143,6 +144,12 @@ namespace Health.Direct.Config.Store
         {
             return IDToAddress(table.GetDB(), addressID).FirstOrDefault();
         }
+        
+        public static IEnumerable<Address> ExecGetByDomainName(this Table<Address> table, string domainName, int maxResults)
+        {
+            return table.GetDB().ExecuteQuery<Address>(Sql_SelectByDomainName, maxResults, domainName);
+        }
+
         
         public static void ExecDelete(this Table<Address> table, string emailAddress)
         {

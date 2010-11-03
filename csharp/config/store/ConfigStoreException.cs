@@ -51,7 +51,9 @@ namespace Health.Direct.Config.Store
         AccountNameLength,
         InvalidMXSMTPName,
         MXSMTPNameLength,
-        InvalidMX
+        InvalidMX,
+        InvaildDnsRecord,
+        NotesLength
 
     }
 

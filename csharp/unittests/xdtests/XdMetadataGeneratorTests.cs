@@ -128,7 +128,7 @@ namespace Health.Direct.Xd.Tests
         [Fact]
         public void DocumentHasCorrectHash()
         {
-            Assert.Equal("09AA8C84097F63E900B8C3FDEDE24BE69EFEA6DC", TestDocXElement.SlotValue("hash"));
+            Assert.Equal("da39a3ee5e6b4b0d3255bfef95601890afd80709", TestDocXElement.SlotValue("hash"));
         }
 
         [Fact]

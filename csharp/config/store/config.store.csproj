@@ -64,13 +64,13 @@
     <Compile Include="ConfigStore.cs" />
     <Compile Include="ConfigDatabase.cs" />
     <Compile Include="ConfigStoreException.cs" />
+    <Compile Include="DnsRecord.cs" />
+    <Compile Include="DnsRecordManager.cs" />
+    <Compile Include="DnsRecordQueries.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="DomainManager.cs" />
     <Compile Include="DomainQueries.cs" />
     <Compile Include="EntityStatus.cs" />
-    <Compile Include="MX.cs" />
-    <Compile Include="MXManager.cs" />
-    <Compile Include="MXQueries.cs" />
     <Compile Include="Queries.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -31,6 +31,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Security, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\codeplex\Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Security.Cryptography, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\codeplex\Security.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="Security.Cryptography.Debug, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\codeplex\Security.Cryptography.Debug.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -119,28 +131,72 @@
     <None Include="DnsResolver\DnsTestCerts\umesh.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Metadata\dns responses\a.hvnhind.hsgincubator.com.bin" />
-    <None Include="Metadata\dns responses\a.nhind.hsgincubator.com.bin" />
-    <None Include="Metadata\dns responses\a.www.apple.com.bin" />
-    <None Include="Metadata\dns responses\a.www.bing.com.bin" />
-    <None Include="Metadata\dns responses\a.www.cerner.com.bin" />
-    <None Include="Metadata\dns responses\a.www.epic.com.bin" />
-    <None Include="Metadata\dns responses\a.www.google.com.bin" />
-    <None Include="Metadata\dns responses\a.www.ibm.com.bin" />
-    <None Include="Metadata\dns responses\a.www.microsoft.com.bin" />
-    <None Include="Metadata\dns responses\a.www.nhindirect.org.bin" />
-    <None Include="Metadata\dns responses\a.www.yahoo.com.bin" />
-    <None Include="Metadata\dns responses\mx.hvnhind.hsgincubator.com.bin" />
-    <None Include="Metadata\dns responses\mx.nhind.hsgincubator.com.bin" />
-    <None Include="Metadata\dns responses\mx.www.apple.com.bin" />
-    <None Include="Metadata\dns responses\mx.www.bing.com.bin" />
-    <None Include="Metadata\dns responses\mx.www.cerner.com.bin" />
-    <None Include="Metadata\dns responses\mx.www.epic.com.bin" />
-    <None Include="Metadata\dns responses\mx.www.google.com.bin" />
-    <None Include="Metadata\dns responses\mx.www.ibm.com.bin" />
-    <None Include="Metadata\dns responses\mx.www.microsoft.com.bin" />
-    <None Include="Metadata\dns responses\mx.www.nhindirect.org.bin" />
-    <None Include="Metadata\dns responses\mx.www.yahoo.com.bin" />
+    <None Include="Metadata\dns responses\a.hvnhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\a.nhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\a.www.apple.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\a.www.bing.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\a.www.cerner.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\a.www.epic.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\a.www.google.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\a.www.ibm.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\a.www.microsoft.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\a.www.nhindirect.org.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\a.www.yahoo.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\mx.hvnhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\mx.nhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\mx.www.apple.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\mx.www.bing.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\mx.www.cerner.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\mx.www.epic.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\mx.www.google.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\mx.www.ibm.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\mx.www.microsoft.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\mx.www.nhindirect.org.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Metadata\dns responses\mx.www.yahoo.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
