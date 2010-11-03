@@ -237,6 +237,50 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(MAXADDRESSCOUNT * MAXDOMAINCOUNT, mgr.Count());
         }
 
+
+        /// <summary>
+        ///A test for GetByDomainTest1
+        ///</summary>
+        [Fact]
+        public void GetByDomainTest1()
+        {
+            InitAddressRecords();
+            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            string domainName = BuildDomainName(1);
+            Address[] addrs = mgr.GetAllForDomain(domainName.ToUpper()
+                , int.MaxValue);
+            Assert.Equal(MAXADDRESSCOUNT, addrs.Length);
+            foreach (Address addr in addrs)
+            {
+                Assert.Equal(1, addr.DomainID);
+            }
+
+        }
+
+        /// <summary>
+        ///A test for GetByDomainTest
+        ///</summary>
+        [Fact]
+        public void GetByDomainTest()
+        {
+            InitAddressRecords();
+            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            {
+                InitAddressRecords();
+                AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+                string domainName = BuildDomainName(1);
+                Address[] addrs = mgr.GetAllForDomain(db
+                    , domainName.ToUpper()
+                    , int.MaxValue).ToArray();
+                Assert.Equal(MAXADDRESSCOUNT, addrs.Length);
+                foreach (Address addr in addrs)
+                {
+                    Assert.Equal(1, addr.DomainID);
+                }
+            }
+
+        }
+
         /// <summary>
         ///A test for Get
         ///</summary>

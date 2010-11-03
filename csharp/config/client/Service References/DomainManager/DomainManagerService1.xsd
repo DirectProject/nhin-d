@@ -2,6 +2,7 @@
 <xs:schema xmlns:tns="http://www.nhindirect.org/config/store/082010" elementFormDefault="qualified" targetNamespace="http://www.nhindirect.org/config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
   <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" />
   <xs:element name="AddAddresses">
     <xs:complexType>
       <xs:sequence>
@@ -257,6 +258,156 @@
       <xs:sequence>
         <xs:element minOccurs="0" name="EnumerateDomainsResult" nillable="true" type="tns:ArrayOfDomain" />
       </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddDnsRecords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="dnsRecords" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfDnsRecord">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DnsRecord" nillable="true" type="tns:DnsRecord" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDnsRecord" nillable="true" type="tns:ArrayOfDnsRecord" />
+  <xs:complexType name="DnsRecord">
+    <xs:sequence>
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="DomainName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Notes" nillable="true" type="xs:string" />
+      <xs:element name="RecordData" nillable="true" type="xs:base64Binary" />
+      <xs:element name="RecordID" type="xs:long" />
+      <xs:element name="TypeID" type="xs:int" />
+      <xs:element name="UpdateDate" type="xs:dateTime" />
+      <xs:element name="ValidEndDate" type="xs:dateTime" />
+      <xs:element name="ValidStartDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DnsRecord" nillable="true" type="tns:DnsRecord" />
+  <xs:element name="AddDnsRecordsResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddDnsRecord">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="record" nillable="true" type="tns:DnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddDnsRecordResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Count">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="recordType" nillable="true" type="q12:DnsStandard.RecordType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="CountResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLastDnsRecords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastRecordID" type="xs:long" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="typeID" type="q13:DnsStandard.RecordType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLastDnsRecordsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetLastDnsRecordsResult" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDnsRecord">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="recordID" type="xs:long" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDnsRecordResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetDnsRecordResult" nillable="true" type="tns:DnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDnsRecords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q14="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="recordIDs" nillable="true" type="q14:ArrayOflong" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDnsRecordsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetDnsRecordsResult" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveDnsRecord">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="dnsRecord" nillable="true" type="tns:DnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveDnsRecordResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveDnsRecordByID">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="recordID" type="xs:long" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveDnsRecordByIDResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateDnsRecord">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="dnsRecord" nillable="true" type="tns:DnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateDnsRecordResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateDnsRecords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="dnsRecords" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateDnsRecordsResponse">
+    <xs:complexType>
+      <xs:sequence />
     </xs:complexType>
   </xs:element>
 </xs:schema>
