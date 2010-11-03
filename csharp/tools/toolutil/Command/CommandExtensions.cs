@@ -42,7 +42,7 @@ namespace Health.Direct.Config.Tools.Command
             return args[indexAt];
         }
         
-        internal static bool IsNullOrEmpty(this Array args)
+        public static bool IsNullOrEmpty(this Array args)
         {
             return (args == null || args.Length == 0);
         }

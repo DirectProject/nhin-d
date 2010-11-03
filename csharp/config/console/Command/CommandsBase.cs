@@ -27,8 +27,8 @@ namespace Health.Direct.Config.Console.Command
             m_currentConsole = console;
         }
 
-        public const string CRLF = "\r\n";
-        public const string EntityStatusString = "New | Enabled | Disabled";
+        protected const string CRLF = "\r\n";
+        protected const string EntityStatusString = "New | Enabled | Disabled";
 
         protected ConfigConsole CurrentConsole
         {

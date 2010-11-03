@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "..\common\common.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config.store.tests", "..\unittests\configStoreTests\config.store.tests.csproj", "{DCFE1AA0-6302-4B5C-AC22-235E869EAAAC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnsResponder.winsrv", "..\windows services\dnsResponder.winsrv\dnsResponder.winsrv.csproj", "{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -367,6 +369,18 @@ Global
 		{DCFE1AA0-6302-4B5C-AC22-235E869EAAAC}.Release|Win32.Build.0 = Release|Any CPU
 		{DCFE1AA0-6302-4B5C-AC22-235E869EAAAC}.Release|x64.ActiveCfg = Release|Any CPU
 		{DCFE1AA0-6302-4B5C-AC22-235E869EAAAC}.Release|x64.Build.0 = Release|Any CPU
+		{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}.Release|Win32.ActiveCfg = Release|Any CPU
+		{EB8B7C8B-F699-45B3-81B0-A9AB5F1816F7}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

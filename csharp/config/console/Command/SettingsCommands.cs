@@ -32,6 +32,7 @@ namespace Health.Direct.Config.Console.Command
             WriteLine("DomainManager {0}", GetHost(CurrentConsole.Settings.DomainManager.Url));
             WriteLine("AddressManager {0}", GetHost(CurrentConsole.Settings.AddressManager.Url));
             WriteLine("CertificateManager {0}", GetHost(CurrentConsole.Settings.CertificateManager.Url));
+            WriteLine("DnsRecordManager {0}", GetHost(CurrentConsole.Settings.DnsRecordManager.Url));
             WriteLine("AnchorManager {0}", GetHost(CurrentConsole.Settings.AnchorManager.Url));
         }
 

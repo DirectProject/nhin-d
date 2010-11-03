@@ -62,7 +62,6 @@ namespace Health.Direct.Xd.Tests
                 if (m_docMeta == null)
                 {
                     m_docMeta = new DocumentMetadata();
-                    m_docMeta.SetDocument("Dear Dr. Smith\nYour patient is fine.\nDr. Jones");
                     m_docMeta.Author = new Author();
                     m_docMeta.Author.Person = new Person { First = "Tom", Last = "Jones", Degree = "M.D." };
                     m_docMeta.Author.Institutions.Add(new Institution("Direct U"));
@@ -74,6 +73,7 @@ namespace Health.Direct.Xd.Tests
                     evtCodes.Add(new CodedValue("foo", "bar", "test"));
                     m_docMeta.EventCodes = evtCodes;
                     m_docMeta.FormatCode = C80FormatCode.CareManagement.ToCodedValue();
+                    m_docMeta.Hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
                     m_docMeta.FacilityCode = C80FacilityCodes.PrivatePhysiciansGroupOffice.ToCodedValue();
                     m_docMeta.LanguageCode = "en-us";
                     m_docMeta.LegalAuthenticator = new Person { First = "Marcus", Last = "Welby", Degree = "M.D", Prefix = "Dr." };
@@ -82,6 +82,7 @@ namespace Health.Direct.Xd.Tests
                     m_docMeta.ServiceStart = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
                     m_docMeta.ServiceStop = new DateTime(2010, 01, 01, 05, 10, 00, DateTimeKind.Utc);
                     m_docMeta.PracticeSetting = C80ClinicalSpecialties.FamilyPractice.ToCodedValue();
+                    m_docMeta.Size = 1000;
                     m_docMeta.SourcePtId = new PatientID("XYZ", "PDQ", "foo");
                     m_docMeta.Patient = new Person
                                             {
