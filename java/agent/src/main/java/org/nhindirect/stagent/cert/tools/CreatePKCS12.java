@@ -232,7 +232,7 @@ public class CreatePKCS12
 			if (index > -1)
 				fileName = fileName.substring(0, index);
 			
-			fileName += ".pkcs12";
+			fileName += ".p12";
 			createFile = new File(fileName);
 		}		
 

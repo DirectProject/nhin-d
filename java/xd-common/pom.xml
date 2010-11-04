@@ -11,7 +11,7 @@
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xd-common/${project.version}</url>     
     <parent>
-        <artifactId>nhind-java-reference-implementation</artifactId>
+        <artifactId>parent</artifactId>
         <groupId>org.nhind</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>

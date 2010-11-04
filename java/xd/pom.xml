@@ -14,7 +14,7 @@
         <url>http://nhindirect.org</url>
     </organization>
     <parent>
-        <artifactId>nhind-java-reference-implementation</artifactId>
+        <artifactId>parent</artifactId>
         <groupId>org.nhind</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
