@@ -39,7 +39,18 @@ namespace Health.Direct.Config.Store.Tests
         private const string ADDRESSPATTERN = "test@address{0}.domain{1}.com";
         private const string SMTPDOMAINNAMEPATTERN = "smtp{0}.domain{1}.test.com";
         private const string ADDRESSDISPLAYNAMEPATTERN = "domain[{0}] add[{1}]";
-        private string DNSRECORDSEPATH = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
+#if DEBUG
+        private static string DNSRECORDSEPATH = @"..\..\..\..\bin\debug\metadata\DnsRecords";
+#else
+        //---assume release...
+        private static string DNSRECORDSEPATH = @"..\..\..\..\bin\release\metadata\DnsRecords";
+#endif
+#if DEBUG
+        private static string CERTSRECORDSPATH = @"..\..\..\..\bin\debug\metadata\certs";
+#else
+        //---assume release...
+        private static string CERTSRECORDSPATH = @"..\..\..\..\bin\release\metadata\certs";
+#endif
         protected Dictionary<string, DnsResponse> m_DomainResponses = null;
 
 
@@ -643,7 +654,10 @@ namespace Health.Direct.Config.Store.Tests
             {
                 throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
             }
-            string path = string.Format(@"metadata\certs\domain{0}.test.com.{1}.pfx", domainID, subId);
+            string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
+                , CERTSRECORDSPATH
+                , domainID
+                , subId);
             Anchor cert = null;
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
@@ -671,7 +685,10 @@ namespace Health.Direct.Config.Store.Tests
             {
                 throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
             }
-            string path = string.Format(@"metadata\certs\domain{0}.test.com.{1}.pfx", domainID,subId);
+            string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
+                , CERTSRECORDSPATH
+                , domainID
+                ,subId);
             Certificate cert = null;
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
@@ -699,7 +716,10 @@ namespace Health.Direct.Config.Store.Tests
             {
                 throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
             }
-            string path = string.Format(@"metadata\certs\domain{0}.test.com.{1}.pfx", domainID, subId);
+            string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
+                , CERTSRECORDSPATH
+                , domainID
+                , subId);
             return  new System.Security.Cryptography.X509Certificates.X509Certificate2(path, String.Empty);
         }
 
@@ -718,7 +738,10 @@ namespace Health.Direct.Config.Store.Tests
             {
                 throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
             }
-            string path = string.Format(@"metadata\certs\domain{0}.test.com.{1}.pfx", domainID, subId);
+            string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
+                , CERTSRECORDSPATH
+                , domainID
+                , subId);
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 return  new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);

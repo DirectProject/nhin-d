@@ -51,7 +51,7 @@ namespace Health.Direct.DnsResponder.Tests
             //---really only want to do this one time
             this.InitDnsRecords();
         }
-        
+
         [Theory]
         [PropertyData("DnsRecordDomainNamesTheoryData")]
         public void TestGetDomainANAME(string domainName){
