@@ -34,6 +34,9 @@ namespace Health.Direct.Config.Store
         
         public Address()
         {
+            this.CreateDate = DateTime.Now;
+            this.UpdateDate = this.CreateDate;
+            this.Status = EntityStatus.New;
         }
         
         public Address(long domainID, string address)
@@ -41,14 +44,12 @@ namespace Health.Direct.Config.Store
         {
         }
         
-        public Address(long domainID, string address, string displayName)
+        public Address(long domainID, string address, string displayName) 
+            : this()
         {
             this.DomainID = domainID;
             this.EmailAddress = address;
             this.DisplayName = displayName;
-            this.CreateDate = DateTime.Now;
-            this.UpdateDate = this.CreateDate;
-            this.Status = EntityStatus.New;
         }
         
         public Address(long domainID, MailAddress address)

@@ -27,6 +27,18 @@ namespace Health.Direct.Config.Service
     {        
         #region ICertificateStore
         
+        public Certificate AddCertificate(Certificate certificate)
+        {
+            try
+            {
+                return Store.Certificates.Add(certificate);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddCertificates", ex);
+            }
+        }
+
         public void AddCertificates(Certificate[] certificates)
         {
             if (certificates == null)
@@ -146,6 +158,18 @@ namespace Health.Direct.Config.Service
         
         #region IAnchorStore
         
+        public Anchor AddAnchor(Anchor anchor)
+        {
+            try
+            {
+                return Store.Anchors.Add(anchor);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddAnchors", ex);
+            }
+        }
+
         public void AddAnchors(Anchor[] anchors)
         {
             try

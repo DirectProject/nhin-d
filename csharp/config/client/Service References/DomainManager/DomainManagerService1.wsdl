@@ -9,6 +9,15 @@
       <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" />
     </xsd:schema>
   </wsdl:types>
+  <wsdl:message name="IAddressManager_AddAddress_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddAddress" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_AddAddress_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddAddressResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_AddAddress_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:message name="IAddressManager_AddAddresses_InputMessage">
     <wsdl:part name="parameters" element="tns:AddAddresses" />
   </wsdl:message>
@@ -115,6 +124,15 @@
     <wsdl:part name="parameters" element="tns:UpdateDomainResponse" />
   </wsdl:message>
   <wsdl:message name="IDomainManager_UpdateDomain_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetDomain_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDomain" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetDomain_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDomainResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetDomain_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
   <wsdl:message name="IDomainManager_GetDomainCount_InputMessage">
@@ -244,6 +262,11 @@
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
   <wsdl:portType name="IAddressManager">
+    <wsdl:operation name="AddAddress">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddress" message="tns:IAddressManager_AddAddress_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressResponse" message="tns:IAddressManager_AddAddress_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_AddAddress_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
     <wsdl:operation name="AddAddresses">
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddresses" message="tns:IAddressManager_AddAddresses_InputMessage" />
       <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressesResponse" message="tns:IAddressManager_AddAddresses_OutputMessage" />
@@ -305,6 +328,11 @@
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomain" message="tns:IDomainManager_UpdateDomain_InputMessage" />
       <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomainResponse" message="tns:IDomainManager_UpdateDomain_OutputMessage" />
       <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_UpdateDomain_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDomain">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomain" message="tns:IDomainManager_GetDomain_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainResponse" message="tns:IDomainManager_GetDomain_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_GetDomain_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetDomainCount">
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCount" message="tns:IDomainManager_GetDomainCount_InputMessage" />
