@@ -35,7 +35,8 @@ namespace Health.Direct.Common.Tests.Caching
     public class DnsResponseToBinExample
     {
         private readonly DnsClient m_client;
-        private readonly string m_apppath = string.Empty;
+        private static string DNSRECORDSEPATH = @"..\..\common.metadata\DnsRecords";
+        private static string DNSRESPONSEPATH = @"..\..\common.metadata\dnsresponses";
 
         const string PublicDns = "8.8.8.8";         // Google
 
@@ -106,7 +107,9 @@ namespace Health.Direct.Common.Tests.Caching
         public DnsResponseToBinExample(){
 		
             m_client = new DnsClient(PublicDns) {Timeout = TimeSpan.FromSeconds(10) };
-            m_apppath =Environment.CurrentDirectory + @"\metadata\dns responses";
+
+
+
         }
 
         [Theory]
@@ -126,7 +129,7 @@ namespace Health.Direct.Common.Tests.Caching
             DnsBuffer buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
             m_client.Resolve(DnsRequest.CreateA(domain)).Serialize(buff);
             byte[] bytes = buff.CreateReader().ReadBytes();
-            string path = Path.Combine(m_apppath, string.Format("aname.{0}.bin", domain)).Replace("www.","");
+            string path = Path.Combine(DNSRESPONSEPATH, string.Format("aname.{0}.bin", domain)).Replace("www.", "");
             Console.WriteLine("Creating {0}", path);
             using (FileStream s = new FileStream(path,FileMode.OpenOrCreate)){
                 s.Write(bytes
@@ -154,7 +157,7 @@ namespace Health.Direct.Common.Tests.Caching
             DnsBuffer buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
             m_client.Resolve(DnsRequest.CreateSOA(domain)).Serialize(buff);
             byte[] bytes = buff.CreateReader().ReadBytes();
-            string path = Path.Combine(m_apppath, string.Format("soa.{0}.bin", domain)).Replace("www.", "");
+            string path = Path.Combine(DNSRESPONSEPATH, string.Format("soa.{0}.bin", domain)).Replace("www.", "");
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -184,7 +187,7 @@ namespace Health.Direct.Common.Tests.Caching
             DnsBuffer buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
             m_client.Resolve(DnsRequest.CreateMX(domain)).Serialize(buff);
             byte[] bytes = buff.CreateReader().ReadBytes();
-            string path = Path.Combine(m_apppath, string.Format("mx.{0}.bin", domain)).Replace("www.", "");
+            string path = Path.Combine(DNSRESPONSEPATH, string.Format("mx.{0}.bin", domain)).Replace("www.", "");
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -213,7 +216,7 @@ namespace Health.Direct.Common.Tests.Caching
             DnsBuffer buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
             m_client.Resolve(DnsRequest.CreateCERT(domain)).Serialize(buff);
             byte[] bytes = buff.CreateReader().ReadBytes();
-            string path = Path.Combine(m_apppath, string.Format("cert.{0}.bin", domain)).Replace("www.", "");
+            string path = Path.Combine(DNSRESPONSEPATH, string.Format("cert.{0}.bin", domain)).Replace("www.", "");
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -245,7 +248,7 @@ namespace Health.Direct.Common.Tests.Caching
             arec.TTL = 1000;
             arec.Serialize(buff);
 
-            string path = Path.Combine(m_apppath, string.Format("aname.{0}.bin", domain));
+            string path = Path.Combine(DNSRECORDSEPATH, string.Format("aname.{0}.bin", domain));
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -282,7 +285,7 @@ namespace Health.Direct.Common.Tests.Caching
             buff = new DnsBuffer();
             soa.Serialize(buff);
 
-            path = Path.Combine(m_apppath, string.Format("soa.{0}.bin", domain));
+            path = Path.Combine(DNSRECORDSEPATH, string.Format("soa.{0}.bin", domain));
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -320,7 +323,7 @@ namespace Health.Direct.Common.Tests.Caching
             buff = new DnsBuffer();
             mx.Serialize(buff);
 
-            path = Path.Combine(m_apppath, string.Format("mx.{0}.bin", domain));
+            path = Path.Combine(DNSRECORDSEPATH, string.Format("mx.{0}.bin", domain));
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -356,7 +359,7 @@ namespace Health.Direct.Common.Tests.Caching
             buff = new DnsBuffer();
             cert.Serialize(buff);
 
-            path = Path.Combine(m_apppath, string.Format("cert.{0}.bin", domain));
+            path = Path.Combine(DNSRECORDSEPATH, string.Format("cert.{0}.bin", domain));
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))

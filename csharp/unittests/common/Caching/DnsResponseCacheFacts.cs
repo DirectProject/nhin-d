@@ -29,7 +29,13 @@ namespace Health.Direct.Common.Tests.Caching
         // set this to true if dump statements are needed for debugging purposes
         private const bool DumpIsEnabled = false;
 
-        private static readonly string m_filePath = Environment.CurrentDirectory + @"\metadata\dns responses";
+
+#if DEBUG
+        private static readonly string m_filePath = @"..\..\bin\debug\metadata\dnsresponses";
+#else
+        private static readonly string m_filePath = @"..\..\bin\release\metadata\dnsresponses";
+#endif
+
         private int m_basettl = 10;
         private DnsResponseCache m_drrc;
         private List<DnsResponse> m_responses;
@@ -51,13 +57,12 @@ namespace Health.Direct.Common.Tests.Caching
         {
             get
             {
-                yield return "dns.hsgincubator.com";
-                yield return "hvnhind.hsgincubator.com";
-                yield return "nhind.hsgincubator.com";
-                yield return "www.apple.com";
-                yield return "www.google.com";
-                yield return "www.microsoft.com";
-                yield return "www.yahoo.com";
+                yield return "aname.hvnhind.hsgincubator.com";
+                yield return "aname.nhind.hsgincubator.com";
+                yield return "aname.apple.com";
+                yield return "aname.google.com";
+                yield return "aname.microsoft.com";
+                yield return "aname.yahoo.com";
             }
         }
 
@@ -88,7 +93,7 @@ namespace Health.Direct.Common.Tests.Caching
                 }
 
                 // ensure that the qusetion QName matches the name of the mocked entry
-                Assert.Equal(s.ToLower(), dr.Question.Domain.ToLower());
+                Assert.True(dr.Question.Domain.ToLower().Contains(s.ToLower().Replace("aname.","")));
             }
         }
 
