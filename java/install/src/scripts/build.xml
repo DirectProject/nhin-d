@@ -33,10 +33,7 @@
 	<property name="build.dir" value="${install.root.dir}/build"></property>
 	<property name="build.download.dir" value="${build.dir}/download"></property>
 	<property name="apache.james.binary.url" value="http://ftp.wayne.edu/apache//james/server/apache-james-2.3.2.zip"></property>
-	<property name="metro.download.url" value="https://metro.dev.java.net/2.0.1/metro-2_0_1.zip"></property>
 	<property name="apache.james.binary.zip" value="${build.download.dir}/apache-james-2.3.2.zip"></property>
-	<property name="metro.download.zip" value="${build.download.dir}/metro-2_0_1.zip"></property>
-	<property name="metro.stage.dir" value="${build.dir}/metro"></property>
 
 	<property name="james.stage.dir" value="${env.DIRECT_INSTALL_DIR}/james-2.3.2"></property>
 	<property name="james.stage.apps.dir" value="${james.stage.dir}/apps/james"></property>
@@ -79,8 +76,6 @@
 	<property name="lib.commons-lang" value="${maven.repo}/commons-lang/commons-lang/2.5/commons-lang-2.5.jar"></property>
 	<property name="lib.mail" value="${maven.repo}/javax/mail/mail/1.4.1/mail-1.4.1.jar"></property>
 	<property name="lib.guice" value="${maven.repo}/com/google/inject/guice/2.0/guice-2.0.jar"></property>
-	<property name="lib.metro.src" value="${install.root.dir}/build/metro/lib//webservices-rt.jar"></property>
-	<property name="lib.metro.dst" value="${james.stage.apps.SAR-INF.lib.dir}/webservices-rt-2.0.1.jar"></property>
 
 	<!-- Support libraries (DNS) -->
 	<property name="lib.jcs" value="${maven.repo}/org/apache/jcs/jcs/1.3/jcs-1.3.jar"></property>
@@ -165,21 +160,15 @@
 		<available file="${apache.james.binary.zip}" property="apache.james.download.exists"></available>
 		<antcall target="get-james"></antcall>
 		
-		<!-- get metro -->
-		<available file="${metro.download.zip}" property="metro.download.exists"></available>
-		<antcall target="get-metro"></antcall>
-		
 		<!-- get the jetty binary install package -->
 		<available file="${jetty.binary.zip}" property="jetty.download.exists"></available>
 		<antcall target="get-jetty"></antcall>
 		
 		<!-- unpack -->
 		<delete dir="${james.stage.dir}"></delete>
-		<delete dir="${metro.stage.dir}"></delete>
 		<delete dir="${jetty.stage.dir}"></delete>
 		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${apache.james.binary.zip}"></unzip>
 		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${jetty.binary.zip}"></unzip>
-		<unzip dest="${build.dir}" src="${metro.download.zip}"></unzip>
 		
 		<!-- configure james -->
 		<antcall target="configure"></antcall>
@@ -201,23 +190,6 @@
 	<target name="get-james-with-curl" if="curl.command.path" unless="apache.james.download.exists">
 	  	<exec dir="${build.download.dir}" executable="${curl.command.path}" failonerror="true" errorproperty="curl.james.erroroutput">
 	  		<arg line="-o ${apache.james.binary.zip} ${apache.james.binary.url}"></arg>
-	  	</exec>
-	</target>
-
-	<!-- get metro -->
-	<target name="get-metro" depends="get-metro-with-wget,get-metro-with-curl" unless="metro.download.exists"></target>
-
-	<!-- get metro with wget -->
-	<target name="get-metro-with-wget" if="wget.command.path" unless="metro.download.exists">
-	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true" errorproperty="wget.metro.erroroutput">
-	  		<arg line="--no-check-certificate -q ${metro.download.url}"></arg>
-	  	</exec>
-	</target>
-	
-	<!-- get metro with curl -->
-	<target name="get-metro-with-curl" if="curl.command.path" unless="metro.download.exists">
-	  	<exec dir="${build.download.dir}" executable="${curl.command.path}" failonerror="true" errorproperty="curl.metro.erroroutput">
-	  		<arg line="-o ${metro.download.zip} ${metro.download.url}"></arg>
 	  	</exec>
 	</target>
 
@@ -262,7 +234,6 @@
 		<copy file="${lib.commons-logging}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.guice}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.mail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
-		<copy file="${lib.metro.src}" tofile="${lib.metro.dst}"></copy>
 		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
@@ -296,6 +267,8 @@
 		<copy file="${src}/scripts/config.xml" tofile="${james.stage.config}" overwrite="true"></copy>
 
 		<copy file="${src}/scripts/setdomain.sh" todir="${james.stage.dir}/bin" overwrite="true"></copy>
+		<copy file="${src}/scripts/set-domain.xml" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
+		<copy file="${src}/scripts/set-domain.xsl" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
 
 		<!-- clean up work files -->
 		<delete file="${james.stage.config.new}" failonerror="false"></delete>
@@ -330,7 +303,6 @@
 	<target name="clean" depends="init" description="clean up">
 	    <!-- Delete the ${build} directory tree -->
 	    <delete dir="${build.dir}/download"></delete>
-	    <delete dir="${build.dir}/metro"></delete>
 	</target>
 	
 </project>
