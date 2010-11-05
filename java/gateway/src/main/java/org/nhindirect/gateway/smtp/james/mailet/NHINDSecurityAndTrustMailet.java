@@ -23,6 +23,7 @@ package org.nhindirect.gateway.smtp.james.mailet;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.mail.Address;
@@ -192,6 +193,22 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			mail.setState(Mail.GHOST);
 		}
 		
+		// remove reject recipients from the RCTP headers
+		if (result.getProcessedMessage().getRejectedRecipients() != null && 
+				result.getProcessedMessage().getRejectedRecipients().size() > 0 && mail.getRecipients() != null &&
+				mail.getRecipients().size() > 0)
+		{
+			Collection<MailAddress> newRCPTList = new ArrayList<MailAddress>();
+			for (MailAddress rctpAdd : (Collection<MailAddress>)mail.getRecipients())
+			{
+				if (!isRcptRejected(rctpAdd, result.getProcessedMessage().getRejectedRecipients()))
+				{
+					newRCPTList.add(rctpAdd);
+				}
+			}
+			
+			mail.setRecipients(newRCPTList);
+		}
 		
 		/*
 		 * Handle sending MDN messages
@@ -240,5 +257,19 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		}
 		else
 			return null;
+	}
+	
+	/*
+	 * Determine if the recipient has been rejected
+	 * 
+	 * @param rejectedRecips
+	 */
+	private boolean isRcptRejected(MailAddress rctpAdd, NHINDAddressCollection rejectedRecips)
+	{
+		for (NHINDAddress rejectedRecip : rejectedRecips)
+			if (rejectedRecip.getAddress().equals(rctpAdd.toInternetAddress().toString()))
+				return true;
+		
+		return false;
 	}
 }
