@@ -50,7 +50,26 @@ namespace Health.Direct.Config.Console.Command
             string path = args.GetOptionalValue(0, Directory.GetCurrentDirectory());
             EnsureStandardCertsInService(path);
         }
+        
+        [Command(Name = "Test_Stores_Ensure", Usage="Ensures all standard machine stores are created")]
+        public void EnsureMachineStores(string[] args)
+        {
+            SystemX509Store store = null;
 
+            using (store = SystemX509Store.OpenPrivateEdit())
+            {
+                WriteLine("Created Private Store");
+            }
+            using (store = SystemX509Store.OpenExternalEdit())
+            {
+                WriteLine("Created Public Store");
+            }
+            using (store = SystemX509Store.OpenAnchorEdit())
+            {
+                WriteLine("Created Anchor Store");
+            }
+        }
+        
         static string MakeCertificatesPath(string basePath, string agentFolder)
         {
             return Path.Combine(basePath, Path.Combine("Certificates", agentFolder));
