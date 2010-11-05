@@ -20,7 +20,7 @@ using Health.Direct.Config.Store;
 
 namespace Health.Direct.Config.Service
 {
-    public class DomainManagerService : ConfigServiceBase, IDomainManager, IAddressManager, IMXManager
+    public class DomainManagerService : ConfigServiceBase, IDomainManager, IAddressManager, IDnsRecordManager
     {
         #region IDomainManager Members
 
@@ -234,79 +234,58 @@ namespace Health.Direct.Config.Service
 
         #endregion
 
-        #region IMXManager Members
+        #region IDnsRecordManager Members
 
-        public void AddMX(MX mx)
+        public void AddDnsRecords(DnsRecord[] dnsRecords)
         {
-            try
-            {
-                Store.MXs.Add(mx);
-            }
-            catch (Exception ex)
-            {
-                throw CreateFault("AddMX", ex);
-            }
+            Store.DnsRecords.Add(dnsRecords);
         }
 
-        public int GetMXCount(long domainID)
+        public void AddDnsRecord(DnsRecord record)
         {
-            try
-            {
-                return Store.MXs.Count(domainID);
-            }
-            catch (Exception ex)
-            {
-                throw CreateFault("GetMXCount", ex);
-            }
+            Store.DnsRecords.Add(record);
         }
 
-        public void UpdateMX(MX mx)
+        public int Count(Health.Direct.Common.DnsResolver.DnsStandard.RecordType? recordType)
         {
-            try
-            {
-                Store.MXs.Update(mx);
-            }
-            catch (Exception ex)
-            {
-                throw CreateFault("UpdateMX", ex);
-            }
+            return Store.DnsRecords.Count(recordType);
         }
 
-
-        public MX[] GetMXs(string[] mxNames, Int16? preference)
+        public DnsRecord[] GetLastDnsRecords(long lastRecordID, int maxResults, Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
         {
-            try
-            {
-                return Store.MXs.Get(mxNames, preference);
-            }
-            catch (Exception ex)
-            {
-                throw CreateFault("GetMXs", ex);
-            }
+            return  Store.DnsRecords.Get(lastRecordID
+                , maxResults
+                , typeID);
         }
 
-        public void RemoveMX(string name)
+        public DnsRecord GetDnsRecord(long recordID)
         {
-            try
-            {
-                Store.MXs.Remove(name);
-            }
-            catch (Exception ex)
-            {
-                throw CreateFault("RemoveMX", ex);
-            }
+            return  Store.DnsRecords.Get(recordID);
         }
 
-        public MX[] EnumerateMXs(string lastMXName, int maxResults)
+        public DnsRecord[] GetDnsRecords(long[] recordIDs)
         {
-            try
-            {
-                return Store.MXs.Get(lastMXName, maxResults);
-            }
-            catch (Exception ex)
-            {
-                throw CreateFault("EnumerateMXs", ex);
-            }
+            return Store.DnsRecords.Get(recordIDs);
+        }
+
+        public void RemoveDnsRecord(DnsRecord dnsRecord)
+        {
+            Store.DnsRecords.Remove(dnsRecord);
+        }
+
+        public void RemoveDnsRecordByID(long recordID)
+        {
+            Store.DnsRecords.Remove(recordID);
+        }
+
+        public void UpdateDnsRecord(DnsRecord dnsRecord)
+        {
+            Store.DnsRecords.Remove(dnsRecord);
+        }
+
+        public void UpdateDnsRecords(System.Collections.Generic.IEnumerable<DnsRecord> dnsRecords)
+        {
+            Store.DnsRecords.Update(dnsRecords);
         }
 
         #endregion

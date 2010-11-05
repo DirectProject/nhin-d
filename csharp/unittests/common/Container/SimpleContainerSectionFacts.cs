@@ -58,8 +58,7 @@ namespace Health.Direct.Common.Tests.Container
         [Fact]
         public void RegisterContainerWithSection()
         {
-            var section = LoadSection();
-            var foo = new SimpleDependencyResolver().RegisterConfig(section).Resolve<IFoo>();
+            var foo = new SimpleDependencyResolver().RegisterFromConfig().Resolve<IFoo>();
             Assert.NotNull(foo);
             Assert.IsType<Foo>(foo);
         }
@@ -67,24 +66,21 @@ namespace Health.Direct.Common.Tests.Container
         [Fact]
         public void LifetimeSingleton()
         {
-            var container = new SimpleDependencyResolver().RegisterConfig(LoadSection());
-            var foo = container.Resolve<IFoo>();
+            var foo = IoC.Resolve<IFoo>();
             Assert.NotNull(foo);
 
-            var foo2 = container.Resolve<IFoo>();
-
+            var foo2 = IoC.Resolve<IFoo>();
             Assert.Same(foo, foo2);
         }
 
         [Fact]
         public void LifetimeTransient()
         {
-            var container = new SimpleDependencyResolver().RegisterConfig(LoadSection());
+            var container = new SimpleDependencyResolver().RegisterFromConfig();
             var bar = container.Resolve<IBar>();
             Assert.NotNull(bar);
 
             var bar2 = container.Resolve<IBar>();
-
             Assert.NotSame(bar, bar2);
         }
     }

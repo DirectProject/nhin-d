@@ -14,5 +14,9 @@ namespace Health.Direct.Xd
         /// An entity (Association, DocumentEntry, SubmissionSet) is missing the id attribute
         /// </summary>
         MissingId,
+        /// <summary>
+        /// A document does not have a binary representation
+        /// </summary>
+        MissingDocumentBytes
     }
 }

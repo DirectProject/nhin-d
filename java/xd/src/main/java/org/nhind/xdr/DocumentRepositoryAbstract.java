@@ -204,7 +204,9 @@ public abstract class DocumentRepositoryAbstract
             // Send to XD endpoints
             for (String reqEndpoint : getResolver().getXdEndpoints(forwards)) 
             {
-                String to = StringUtils.remove(reqEndpoint, "?wsdl");
+                String endpointUrl = getResolver().resolve(reqEndpoint);
+                
+                String to = StringUtils.remove(endpointUrl, "?wsdl");
 
                 Long threadId = new Long(Thread.currentThread().getId());
                 LOGGER.info("THREAD ID " + threadId);
@@ -238,7 +240,7 @@ public abstract class DocumentRepositoryAbstract
                 SOAPBinding binding = (SOAPBinding) bp.getBinding();
                 binding.setMTOMEnabled(true);
 
-                bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, reqEndpoint);
+                bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointUrl);
 
                 RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(prdst);
                 String test = rrt.getStatus();
@@ -329,15 +331,32 @@ public abstract class DocumentRepositoryAbstract
         if (resolver == null)
         {
             String configService = null;
-            try{
+            
+            try
+            {
                 configService = getServletContext().getInitParameter(PARAM_CONFIG_SERVICE);
-            }catch(Exception x){
-                
             }
+            catch (Exception x)
+            {
+                // eat it
+            }
+            
             if (StringUtils.isNotBlank(configService))
-                resolver = new RoutingResolverImpl(configService);
+            {
+                try
+                {
+                    resolver = new RoutingResolverImpl(configService);
+                }
+                catch (Exception e)
+                {
+                    LOGGER.warning("Unable to create resolver from URL, falling back to default");
+                    resolver = new RoutingResolverImpl();
+                }
+            }
             else
+            {
                 resolver = new RoutingResolverImpl();
+            }
         }
 
         return resolver;

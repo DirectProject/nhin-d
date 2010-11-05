@@ -109,6 +109,10 @@ namespace Health.Direct.Common.DnsResolver
             this.DomainName = domainName;
             this.ResponsibleName = responsibleName;
             this.SerialNumber = serialNumber;
+            this.Refresh = refresh;
+            this.Retry = retry;
+            this.Expire = expire;
+            this.Minimum = minimum;
         }
         
         /// <summary>

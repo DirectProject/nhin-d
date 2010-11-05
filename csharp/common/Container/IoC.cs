@@ -15,6 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
+using Health.Direct.Common.Diagnostics;
+
 namespace Health.Direct.Common.Container
 {
     ///<summary>
@@ -47,6 +49,29 @@ namespace Health.Direct.Common.Container
         }
 
         ///<summary>
+        /// Initialize the global inversion of control reference with the <paramref name="sectionName"/>.
+        /// <see cref="IoC"/> allows us to drop in a different inversion of control container
+        /// that will vary between different companies' implementations of the gateway and agent.
+        ///</summary>
+        ///<param name="sectionName">The container to use as the resolver</param>
+        ///<returns>Returns a reference to the resolver so it can be used in method chaining.</returns>
+        ///<exception cref="ArgumentNullException">Throw if <paramref name="sectionName"/> was null</exception>
+        public static IDependencyResolver Initialize(string sectionName)
+        {
+            try
+            {
+                IocContainerSection section = IocContainerSection.Load(sectionName);
+                IDependencyContainer container = section.CreateContainer();
+                return container.RegisterFromConfig();
+            }
+            catch (Exception ex)
+            {
+                EventLogHelper.WriteError("While initializing container", ex.ToString());
+                throw;
+            }
+        }
+
+        ///<summary>
         /// Returns an instance of type <typeparamref name="T"/>.
         ///</summary>
         ///<typeparam name="T"></typeparam>
@@ -56,7 +81,12 @@ namespace Health.Direct.Common.Container
         {
             if (m_resolver == null)
             {
-                throw new InvalidOperationException("Resolve was called before Initialize");
+                m_resolver = Initialize("ioc");
+
+                if (m_resolver == null)
+                {
+                    throw new InvalidOperationException("Resolve was called before Initialize");
+                }
             }
 
             return m_resolver.Resolve<T>();

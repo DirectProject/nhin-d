@@ -37,8 +37,8 @@ namespace Health.Direct.Tools.Agent
         }
         const string ExportDnsUsage =
             "Export the given certificate file to Zone file format\r\n"
-         + "    inputFile\r\n"
-         + "    outputFile\r\n";
+         + "    inputFile"
+         + "    outputFile";
         
         
         //---------------------------------------
@@ -81,7 +81,7 @@ namespace Health.Direct.Tools.Agent
             }
         }
 
-        [Command(Name="Cert_Dump", Usage=CertDumpUsage)]
+        [Command(Name="Cert_Dump")]
         public void Dump(string[] args)
         {
             string path = args.GetRequiredValue(0);
@@ -95,9 +95,6 @@ namespace Health.Direct.Tools.Agent
                 this.WriteExtension(extension);
             }
         }
-        const string CertDumpUsage = 
-            "Print out details about the given certificate.\r\n"
-        +   "    certificateFilePath"    ;
         
         void WriteExtension(X509Extension extension)
         {

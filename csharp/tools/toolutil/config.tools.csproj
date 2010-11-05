@@ -51,6 +51,7 @@
     <Compile Include="Command\Commands.cs" />
     <Compile Include="Command\CommandUI.cs" />
     <Compile Include="Command\NamedArguments.cs" />
+    <Compile Include="Command\UsageAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
