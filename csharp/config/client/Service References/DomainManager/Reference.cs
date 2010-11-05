@@ -15,6 +15,11 @@ namespace Health.Direct.Config.Client.DomainManager {
     [System.ServiceModel.ServiceContractAttribute(Namespace="http://www.nhindirect.org/config/store/082010", ConfigurationName="DomainManager.IAddressManager")]
     public interface IAddressManager {
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddress", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressConfigSto" +
+            "reFaultFault", Name="ConfigStoreFault")]
+        Health.Direct.Config.Store.Address AddAddress(Health.Direct.Config.Store.Address address);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressesRespons" +
             "e")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressesConfigS" +
@@ -106,6 +111,10 @@ namespace Health.Direct.Config.Client.DomainManager {
                 base(binding, remoteAddress) {
         }
         
+        public Health.Direct.Config.Store.Address AddAddress(Health.Direct.Config.Store.Address address) {
+            return base.Channel.AddAddress(address);
+        }
+        
         public void AddAddresses(Health.Direct.Config.Store.Address[] addresses) {
             base.Channel.AddAddresses(addresses);
         }
@@ -154,13 +163,18 @@ namespace Health.Direct.Config.Client.DomainManager {
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/AddDomain", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/AddDomainResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/AddDomainConfigStore" +
             "FaultFault", Name="ConfigStoreFault")]
-        void AddDomain(Health.Direct.Config.Store.Domain domain);
+        Health.Direct.Config.Store.Domain AddDomain(Health.Direct.Config.Store.Domain domain);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomain", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomainResponse" +
             "")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomainConfigSt" +
             "oreFaultFault", Name="ConfigStoreFault")]
         void UpdateDomain(Health.Direct.Config.Store.Domain domain);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomain", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainConfigStore" +
+            "FaultFault", Name="ConfigStoreFault")]
+        Health.Direct.Config.Store.Domain GetDomain(long id);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCount", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCountRespon" +
             "se")]
@@ -213,12 +227,16 @@ namespace Health.Direct.Config.Client.DomainManager {
                 base(binding, remoteAddress) {
         }
         
-        public void AddDomain(Health.Direct.Config.Store.Domain domain) {
-            base.Channel.AddDomain(domain);
+        public Health.Direct.Config.Store.Domain AddDomain(Health.Direct.Config.Store.Domain domain) {
+            return base.Channel.AddDomain(domain);
         }
         
         public void UpdateDomain(Health.Direct.Config.Store.Domain domain) {
             base.Channel.UpdateDomain(domain);
+        }
+        
+        public Health.Direct.Config.Store.Domain GetDomain(long id) {
+            return base.Channel.GetDomain(id);
         }
         
         public int GetDomainCount() {
