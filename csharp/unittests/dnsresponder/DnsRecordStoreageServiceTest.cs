@@ -107,6 +107,7 @@ namespace Health.Direct.DnsResponder.Tests
             
         }
 
+        /*
         /// <summary>
         /// Runs a live test against the dnsResponder service to see if service will actually resolve results for MX quesions
         /// </summary>
@@ -159,5 +160,6 @@ namespace Health.Direct.DnsResponder.Tests
             Assert.Equal(domain
                 , lst[0].Name);
         }
+        */
     }
 }
