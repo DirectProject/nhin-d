@@ -24,6 +24,10 @@ namespace Health.Direct.Config.Service
     {
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
+        Anchor AddAnchor(Anchor anchor);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
         void AddAnchors(Anchor[] anchors);
 
         [OperationContract]

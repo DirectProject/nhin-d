@@ -24,11 +24,11 @@ namespace Health.Direct.Config.Service
     {
         #region IDomainManager Members
 
-        public void AddDomain(Domain domain)
+        public Domain AddDomain(Domain domain)
         {
             try
             {
-                Store.Domains.Add(domain);
+                return Store.Domains.Add(domain);
             }
             catch (Exception ex)
             {
@@ -57,6 +57,18 @@ namespace Health.Direct.Config.Service
             catch (Exception ex)
             {
                 throw CreateFault("GetDomainCount", ex);
+            }
+        }
+
+        public Domain GetDomain(long id)
+        {
+            try
+            {
+                return Store.Domains.Get(id);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetDomain", ex);
             }
         }
 
@@ -99,6 +111,18 @@ namespace Health.Direct.Config.Service
         #endregion
 
         #region IAddressManager Members
+
+        public Address AddAddress(Address address)
+        {
+            try
+            {
+                return Store.Addresses.Add(address);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddAddress", ex);
+            }
+        }
 
         public void AddAddresses(Address[] addresses)
         {

@@ -38,15 +38,15 @@ namespace Health.Direct.Config.Client
                                                                  IncludePrivateKey = false
                                                              };
         
-        public static void AddCertificate(this CertificateStoreClient client, Certificate cert)
-        {
-            if (cert == null)
-            {
-                throw new ArgumentNullException("cert");  
-            }
+        //public static void AddCertificate(this CertificateStoreClient client, Certificate cert)
+        //{
+        //    if (cert == null)
+        //    {
+        //        throw new ArgumentNullException("cert");  
+        //    }
             
-            client.AddCertificates(new Certificate[] {cert});
-        }
+        //    client.AddCertificates(new Certificate[] {cert});
+        //}
 
         public static bool Contains(this CertificateStoreClient client, X509Certificate2 certificate)
         {
