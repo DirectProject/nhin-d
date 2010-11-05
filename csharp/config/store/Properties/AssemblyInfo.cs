@@ -37,4 +37,4 @@ using System.Runtime.InteropServices;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DeleteMeUnitTests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Health.Direct.Config.Store.Tests")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("TestProject1")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Health.Direct.DnsResponder.Tests")]

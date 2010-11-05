@@ -15,10 +15,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Xml.Serialization;
+using System.Xml;
 using System.ServiceModel;
+using System.Configuration;
 
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Common;
 
 namespace Health.Direct.Config.Client
 {
@@ -33,13 +36,9 @@ namespace Health.Direct.Config.Client
     /// 
     /// </summary>
     [XmlType]
-    public class ClientSettings
+    public class ClientSettings :  ConfigurationSection
     {
         int m_maxReceivedMessageSize = int.MaxValue;   // No limits by default
-        string m_url;
-        bool m_secure;
-        int m_receiveTimeout = -1;
-        int m_sendTimeout = -1;
         EndpointAddress m_endpoint;
         BasicHttpBinding m_binding;
         
@@ -47,11 +46,12 @@ namespace Health.Direct.Config.Client
         /// The Service Url
         /// </summary>
         [XmlElement]
+        [ConfigurationProperty("Url", DefaultValue="undefined", IsRequired = true)]
         public string Url
         {
             get
             {
-                return m_url;
+                return (string)this["Url"];
             }            
             set
             {
@@ -59,18 +59,19 @@ namespace Health.Direct.Config.Client
                 {
                     throw new ArgumentException("value was null or empty", "value");
                 }
-                m_url = value;
-                m_endpoint = new EndpointAddress(m_url);
+                this["Url"] = value;
+                m_endpoint = new EndpointAddress(value);
                 m_binding = null;
             }
         }
         
         [XmlElement]
+        [ConfigurationProperty("MaxReceivedMessageSize", DefaultValue=int.MaxValue, IsRequired=false)]
         public int MaxReceivedMessageSize
         {
             get
             {
-                return m_maxReceivedMessageSize;
+                return (int)this["MaxReceivedMessageSize"];
             }
             set
             {
@@ -78,46 +79,50 @@ namespace Health.Direct.Config.Client
                 {
                     throw new ArgumentException("value was less than 1", "value");
                 }
+                this["MaxReceivedMessageSize"] = value;
                 m_maxReceivedMessageSize = value;
             }
         }
         
-        [XmlElement]        
+        [XmlElement]
+        [ConfigurationProperty("Secure", DefaultValue = false, IsRequired = false)]
         public bool Secure
         {
             get
             {
-                return m_secure;
+                return (bool)this["Secure"];
             }
             set
             {
-                m_secure = value;
+                this["Secure"] = value;
             }
         }
         
         [XmlElement("ReceiveTimeout")]
+        [ConfigurationProperty("ReceiveTimeout", DefaultValue = -1, IsRequired = false)]
         public int ReceiveTimeoutSeconds
         {
             get
             {
-                return m_receiveTimeout;
+                return (int)this["ReceiveTimeout"];
             }
             set
             {
-                m_receiveTimeout = value;
+                this["ReceiveTimeout"] = value;
             }
         }
 
         [XmlElement("SendTimeout")]
+        [ConfigurationProperty("SendTimeout", DefaultValue = -1, IsRequired = false)]
         public int SendTimeoutSeconds
         {
             get
             {
-                return m_sendTimeout;
+                return (int)this["SendTimeout"];
             }
             set
             {
-                m_sendTimeout = value;
+                this["SendTimeoutSeconds"] = value;
             }
         }
         
@@ -167,14 +172,14 @@ namespace Health.Direct.Config.Client
                 return;
             }
             
-            m_binding = BindingFactory.CreateBasic(m_maxReceivedMessageSize, m_secure);
-            if (m_receiveTimeout > 0)
+            m_binding = BindingFactory.CreateBasic(m_maxReceivedMessageSize, this.Secure);
+            if (this.ReceiveTimeoutSeconds > 0)
             {
-                m_binding.ReceiveTimeout = TimeSpan.FromSeconds(m_receiveTimeout);
+                m_binding.ReceiveTimeout = TimeSpan.FromSeconds(this.ReceiveTimeoutSeconds);
             }
-            if (m_sendTimeout > 0)
+            if (this.SendTimeoutSeconds > 0)
             {
-                m_binding.SendTimeout = TimeSpan.FromSeconds(m_sendTimeout);
+                m_binding.SendTimeout = TimeSpan.FromSeconds(this.SendTimeoutSeconds);
             }
         }        
         
@@ -203,4 +208,5 @@ namespace Health.Direct.Config.Client
             return new AnchorStoreClient(this.Binding, this.Endpoint);
         }
     }
+
 }

@@ -122,7 +122,56 @@ namespace Health.Direct.Config.Store
                
             }
         }
-        
+
+
+        public DnsRecord[] Get(string domainName)
+        {
+            if (domainName==null || domainName == string.Empty)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
+            }
+
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db
+                    , domainName).ToArray();
+
+            }
+        }
+
+
+        public DnsRecord[] Get(ConfigDatabase db
+            , string domainName)
+        {
+            return db.DnsRecords.Get(domainName
+                , null).ToArray();
+        }
+
+        public DnsRecord[] Get(string domainName
+            , Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
+        {
+            if (domainName == null || domainName == string.Empty)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
+            }
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db
+                    , domainName
+                    , typeID).ToArray();
+
+            }
+        }
+
+
+        public DnsRecord[] Get(ConfigDatabase db
+            , string domainName
+            , Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
+        {
+            return db.DnsRecords.Get(domainName
+                , (int)typeID).ToArray();
+        }
+
         public DnsRecord[] Get(long lastRecordID
             , int maxResults
             , Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)

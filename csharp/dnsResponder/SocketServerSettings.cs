@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Chris Lomonico  chris.lomonico@surescripts.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -16,20 +17,17 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Net.Sockets;
 using System.Xml.Serialization;
+using System.Configuration;
 
 namespace Health.Direct.DnsResponder
 {
-    public class SocketServerSettings
+    public class SocketServerSettings : ConfigurationElement
     {
         public const short DefaultMaxConnectionBacklog = 64;
         public const short DefaultMaxActiveRequests = 64;
         public const short DefaultMaxOutstandingAccepts = 16;
         public const short DefaultReadBufferSize = 1024;
         
-        short m_maxOutstandingAccepts = DefaultMaxOutstandingAccepts;
-        short m_maxConnectionBacklog = DefaultMaxConnectionBacklog;
-        short m_maxActiveRequests = DefaultMaxActiveRequests;
-        short m_readBufferSize = DefaultReadBufferSize;
         
         public SocketServerSettings()
         {
@@ -40,11 +38,12 @@ namespace Health.Direct.DnsResponder
         /// does not become a bottleneck
         /// </summary>
         [XmlElement]
+        [ConfigurationProperty("MaxOutstandingAccepts", DefaultValue = DefaultMaxOutstandingAccepts, IsRequired = false)]
         public short MaxOutstandingAccepts
         {
             get
             {
-                return m_maxOutstandingAccepts;
+                return (short)this["MaxOutstandingAccepts"];
             }
             set
             {
@@ -52,8 +51,8 @@ namespace Health.Direct.DnsResponder
                 {
                     throw new ArgumentException();
                 }
-                
-                m_maxOutstandingAccepts = value;
+
+                this["MaxOutstandingAccepts"] = value;
             }
         }
         
@@ -63,11 +62,12 @@ namespace Health.Direct.DnsResponder
         /// constrain the # based on OS restrictions. 
         /// </summary>
         [XmlElement]
+        [ConfigurationProperty("MaxConnectionBacklog", DefaultValue = DefaultMaxConnectionBacklog, IsRequired = false)]
         public short MaxConnectionBacklog
         {
             get
             {
-                return m_maxConnectionBacklog;
+                return (short)this["MaxConnectionBacklog"];
             }
             set
             {
@@ -75,8 +75,7 @@ namespace Health.Direct.DnsResponder
                 {
                     throw new ArgumentException();
                 }
-
-                m_maxConnectionBacklog = value;
+                this["MaxConnectionBacklog"] = value;
             }
         }
 
@@ -84,11 +83,12 @@ namespace Health.Direct.DnsResponder
         /// Max requests you simultaneously want to handle. The socket server will automatically impose this limit
         /// </summary>
         [XmlElement]
+        [ConfigurationProperty("MaxActiveRequests", DefaultValue = DefaultMaxActiveRequests, IsRequired = false)]
         public short MaxActiveRequests
         {
             get
             {
-                return m_maxActiveRequests;
+                return (short)this["MaxActiveRequests"];
             }
             set
             {
@@ -97,16 +97,17 @@ namespace Health.Direct.DnsResponder
                     throw new ArgumentException();
                 }
 
-                m_maxActiveRequests = value;
+                this["MaxActiveRequests"] = value ;
             }
         }
         
         [XmlElement]
+        [ConfigurationProperty("ReadBufferSize", DefaultValue = DefaultReadBufferSize, IsRequired = false)]
         public short ReadBufferSize
         {
             get
             {
-                return m_readBufferSize;
+                return (short)this["ReadBufferSize"];
             }
             set
             {
@@ -114,8 +115,8 @@ namespace Health.Direct.DnsResponder
                 {
                     throw new ArgumentException();
                 }
-                
-                m_readBufferSize = value;
+
+                this["ReadBufferSize"] = value;
             }
         }
         
@@ -151,7 +152,7 @@ namespace Health.Direct.DnsResponder
         {
             get
             {
-                return (m_maxActiveRequests > 0 && m_maxActiveRequests < short.MaxValue);
+                return (this.MaxActiveRequests > 0 && MaxActiveRequests < short.MaxValue);
             }
         }
         
@@ -160,22 +161,22 @@ namespace Health.Direct.DnsResponder
         //                                
         public virtual void Validate()
         {
-            if (m_maxOutstandingAccepts <= 0)
+            if (this.MaxOutstandingAccepts <= 0)
             {
                 throw new ArgumentException("MaxOutstandingAccepts");
             }
             
-            if (m_maxConnectionBacklog <= 0)
+            if (this.MaxConnectionBacklog <= 0)
             {
                 throw new ArgumentException("MaxPendingConnections");
             }
-            
-            if (m_maxActiveRequests <= 0)
+
+            if (this.MaxActiveRequests <= 0)
             {
                 throw new ArgumentException("MaxActiveRequests");
             }
             
-            if (m_readBufferSize <= 0)
+            if (this.ReadBufferSize <= 0)
             {
                 throw new ArgumentException("ReadBufferSize");
             }
@@ -197,7 +198,7 @@ namespace Health.Direct.DnsResponder
         {
             if (this.IsThrottled)
             {
-                return new WorkThrottle(m_maxActiveRequests);
+                return new WorkThrottle(this.MaxActiveRequests);
             }
             
             return new NullThrottle();
@@ -205,7 +206,7 @@ namespace Health.Direct.DnsResponder
         
         internal IWorkLoadThrottle CreateAcceptThrottle()
         {
-            return new WorkThrottle(m_maxOutstandingAccepts);
+            return new WorkThrottle(this.MaxOutstandingAccepts);
         }
         
     }

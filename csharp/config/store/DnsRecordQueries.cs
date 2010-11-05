@@ -56,6 +56,31 @@ namespace Health.Direct.Config.Store
             return (ConfigDatabase)table.Context;
         }
 
+        public static IEnumerable<DnsRecord> Get(this Table<DnsRecord> table
+            , string domainName
+            , int? typeID)
+        {
+            IEnumerable<DnsRecord> var = null;
+            if (typeID.HasValue)
+            {
+             var = (from dnsrecords in table.GetDB().DnsRecords
+                        where dnsrecords.TypeID == typeID.Value
+                        && domainName.ToLower().Equals(dnsrecords.DomainName.ToLower())
+                        select dnsrecords);
+
+                return var;
+            }
+            var = (from 
+                       dnsrecords in table.GetDB().DnsRecords
+                   where
+                        domainName.ToLower().Equals(dnsrecords.DomainName.ToLower())
+                   select 
+                        dnsrecords);
+
+            return var;
+        }
+
+
         public static DnsRecord Get(this Table<DnsRecord> table, string domainName)
         {
             return DnsRecord(table.GetDB(), domainName).SingleOrDefault();
@@ -63,9 +88,16 @@ namespace Health.Direct.Config.Store
         
         public static int GetCount(this Table<DnsRecord> table, int? typeID)
         {
+            if (typeID.HasValue)
+            {
+                return (from dnsrecords in table.GetDB().DnsRecords
+                        where dnsrecords.TypeID == typeID.Value
+                        select dnsrecords.RecordID).Count();
+
+            }
             return (from dnsrecords in table.GetDB().DnsRecords
-                    where (!typeID.HasValue || dnsrecords.TypeID == typeID.Value)
                     select dnsrecords.RecordID).Count();
+
         }
         
         public static IQueryable<DnsRecord> Get(this Table<DnsRecord> table

@@ -288,6 +288,18 @@ namespace Health.Direct.Config.Service
             Store.DnsRecords.Update(dnsRecords);
         }
 
+        public DnsRecord[] GetMatchingDnsRecords(string domainName)
+        {
+            return Store.DnsRecords.Get(domainName);
+        }
+
+        public DnsRecord[] GetMatchingDnsRecordsByType(string domainName
+            , Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
+        {
+            return Store.DnsRecords.Get(domainName
+                , typeID);
+        }
+
         #endregion
     }
 }
