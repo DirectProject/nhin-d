@@ -34,6 +34,32 @@ namespace Health.Direct.Config.Store.Tests
             ConfigStore actual = mgr.Store;
             Assert.Equal(mgr.Store, actual);
         }
+
+        [Fact()]
+        public void GetTest10()
+        {
+            InitDnsRecords();
+
+            DnsRecordManager mgr = new DnsRecordManager(new ConfigStore(CONNSTR));
+            DnsRecord[] recs = mgr.Get("microsoft.com");
+            Assert.Equal(3, recs.Length);
+            recs = mgr.Get("microsoft11.com");
+            Assert.Equal(0, recs.Length);
+
+            recs = mgr.Get("microsoft.com"
+                , Health.Direct.Common.DnsResolver.DnsStandard.RecordType.AAAA);
+            Assert.Equal(0, recs.Length);
+            recs = mgr.Get("microsoft.com"
+                , Health.Direct.Common.DnsResolver.DnsStandard.RecordType.SOA);
+            Assert.Equal(1, recs.Length);
+            recs = mgr.Get("microsoft.com"
+                , Health.Direct.Common.DnsResolver.DnsStandard.RecordType.MX);
+            Assert.Equal(1, recs.Length);
+            recs = mgr.Get("microsoft.com"
+                , Health.Direct.Common.DnsResolver.DnsStandard.RecordType.ANAME);
+            Assert.Equal(1, recs.Length);
+
+        }
         /*
         /// <summary>
         ///A test for Update

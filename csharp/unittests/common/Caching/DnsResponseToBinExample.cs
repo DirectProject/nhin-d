@@ -270,8 +270,8 @@ namespace Health.Direct.Common.Tests.Caching
             Console.WriteLine(arec.TTL);
             Console.WriteLine(arec.Name);
             //----------------------------------------------------------------------------------------------------------------
-            SOARecord soa = new SOARecord("soa"
-                , domain
+            SOARecord soa = new SOARecord(domain
+                , domain + ".dom"
                 , "somebody"
                 , 1
                 , 2

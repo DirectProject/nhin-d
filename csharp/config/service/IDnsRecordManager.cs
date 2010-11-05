@@ -51,6 +51,17 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
+        DnsRecord[] GetMatchingDnsRecords(string domainName);
+
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        DnsRecord[] GetMatchingDnsRecordsByType(string domainName
+            , Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID);
+
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
         void RemoveDnsRecord(DnsRecord dnsRecord);
 
         [OperationContract]

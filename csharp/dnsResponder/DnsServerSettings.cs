@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Chris Lomonico  chris.lomonico@surescripts.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -16,52 +17,49 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Net;
 using System.Xml.Serialization;
+using System.Configuration;
 
 using Health.Direct.Common.DnsResolver;
 
-namespace Health.Direct.DnsResponder
+namespace Health.Direct.DnsResponder 
 {
-    public class DnsServerSettings
+    public class DnsServerSettings : ConfigurationSection
     {
         public const short DefaultMaxRequestSize = 1024 * 16;
         public const byte DefaultMaxQuestionCount = 1;
         
-        IPAddress m_address;
         IPEndPoint m_endpoint;
-        int m_port = DnsStandard.DnsPort;
-        SocketServerSettings m_tcpServerSettings;
-        SocketServerSettings m_udpServerSettings;
-        short m_maxRequestSize = DefaultMaxRequestSize;
-        byte m_maxQuestionCount = DefaultMaxQuestionCount;
         
         public DnsServerSettings()
         {
         }
         
         [XmlElement]
+        [ConfigurationProperty("Address", DefaultValue = "0.0.0.0", IsRequired = true)]
         public string Address
         {
             get
             {
-                return (m_address != null) ? m_address.ToString() : null;
+                return (this["Address"] != null) ? (string)this["Address"] : null; 
             }
             set
             {
-                m_address = IPAddress.Parse(value);
+                this["Address"] = value;
                 m_endpoint = null;
             }
         }
         
         [XmlElement]
+        [ConfigurationProperty("Port", DefaultValue = DnsStandard.DnsPort, IsRequired = false)]
         public int Port
         {
             get
             {
-                return m_port;
+                return (int)this["Port"];
             }
             set
             {
-                m_port = value;
+                this["Port"] = value;
                 m_endpoint = null;
             }
         }
@@ -73,23 +71,25 @@ namespace Health.Direct.DnsResponder
             {
                 if (m_endpoint == null)
                 {
-                    m_endpoint = new IPEndPoint(m_address, m_port);
+                    m_endpoint = new IPEndPoint(IPAddress.Parse(this.Address), this.Port);
                 }
                 
                 return m_endpoint;
             }
         }
         
-        [XmlElement]        
+        [XmlElement]
+        [ConfigurationProperty("TcpServerSettings", IsRequired = false)]
         public SocketServerSettings TcpServerSettings
         {
             get
             {
-                if (m_tcpServerSettings == null)
+
+                if (this["TcpServerSettings"] == null)
                 {
-                    m_tcpServerSettings = new SocketServerSettings();
+                    this["TcpServerSettings"] = new SocketServerSettings();
                 }
-                return m_tcpServerSettings;
+                return (SocketServerSettings)this["TcpServerSettings"];
             }
             set
             {
@@ -97,21 +97,23 @@ namespace Health.Direct.DnsResponder
                 {
                     throw new ArgumentNullException();
                 }
-                
-                m_tcpServerSettings = value;
+
+                this["TcpServerSettings"] = value;
             }
         }
 
         [XmlElement]
+        [ConfigurationProperty("UdpServerSettings", IsRequired = false)]
         public SocketServerSettings UdpServerSettings
         {
             get
             {
-                if (m_udpServerSettings == null)
+
+                if (this["UdpServerSettings"] == null)
                 {
-                    m_udpServerSettings = new SocketServerSettings();
+                    this["UdpServerSettings"] = new SocketServerSettings();
                 }
-                return m_udpServerSettings;
+                return (SocketServerSettings)this["UdpServerSettings"];
             }
             set
             {
@@ -120,44 +122,47 @@ namespace Health.Direct.DnsResponder
                     throw new ArgumentNullException();
                 }
 
-                m_udpServerSettings = value;
+                this["UdpServerSettings"] = value;
             }
+
         }            
 
         [XmlElement]
+        [ConfigurationProperty("MaxQuestionCount", DefaultValue = DefaultMaxQuestionCount, IsRequired = false)]
         public byte MaxQuestionCount
         {
             get
             {
-                return m_maxQuestionCount;
+                return (byte)this["MaxQuestionCount"];
             }
             set
             {
-                m_maxQuestionCount = value;
+                this["MaxQuestionCount"] = value;
             }
         }
         
         [XmlElement]
+        [ConfigurationProperty("MaxRequestSize", DefaultValue = DefaultMaxRequestSize, IsRequired = false)]
         public short MaxRequestSize
         {
             get
             {
-                return m_maxRequestSize;
+                return (short)this["MaxRequestSize"];
             }
             set
             {
-                m_maxRequestSize = value;
+                this["MaxRequestSize"] = value;
             }
         }
                         
         public void Validate()
         {
             this.TcpServerSettings.Validate();
-            if (m_maxQuestionCount <= 0)
+            if (this.MaxQuestionCount <= 0)
             {
                 throw new ArgumentException("MaxQuestionCount");
             }            
-            if (m_maxRequestSize <= 0)
+            if (this.MaxRequestSize <= 0)
             {
                 throw new ArgumentException("MaxRequestSize");
             }
