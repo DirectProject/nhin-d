@@ -39,12 +39,13 @@ namespace Health.Direct.Config.Store
         }
         
         
-        public void Add(Anchor anchor)
+        public Anchor Add(Anchor anchor)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
                 this.Add(db, anchor);
                 db.SubmitChanges();
+                return anchor;
             }
         }
 

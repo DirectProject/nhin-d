@@ -24,6 +24,10 @@ namespace Health.Direct.Config.Service
     {
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
+        Address AddAddress(Address address);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
         void AddAddresses(Address[] addresses);
 
         [OperationContract]

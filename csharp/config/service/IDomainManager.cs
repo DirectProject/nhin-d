@@ -24,11 +24,15 @@ namespace Health.Direct.Config.Service
     {
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void AddDomain(Domain domain);
+        Domain AddDomain(Domain domain);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
         void UpdateDomain(Domain domain);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Domain GetDomain(long id);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]

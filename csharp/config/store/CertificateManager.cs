@@ -40,12 +40,13 @@ namespace Health.Direct.Config.Store
             }
         }
                 
-        public void Add(Certificate cert)
+        public Certificate Add(Certificate cert)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
                 this.Add(db, cert);
                 db.SubmitChanges();
+                return cert;
             }                        
         }
 

@@ -27,7 +27,7 @@ namespace Health.Direct.Config.Store
     /// </summary>
     public class AddressManager : IEnumerable<Address>
     {
-        ConfigStore m_store;
+        readonly ConfigStore m_store;
         
         internal AddressManager(ConfigStore store)
         {
@@ -67,6 +67,7 @@ namespace Health.Direct.Config.Store
         /// </remarks>
         /// <param name="mailAddress">Mail address object</param>
         /// <param name="status">entity status</param>
+        /// <param name="addressType"></param>
         public void Add(MailAddress mailAddress, EntityStatus status, string addressType)
         {
             if (mailAddress == null)
@@ -93,6 +94,7 @@ namespace Health.Direct.Config.Store
         /// <param name="db">db context</param>
         /// <param name="mailAddress">Mail address object</param>
         /// <param name="status">entity status</param>
+        /// <param name="addressType"></param>
         public void Add(ConfigDatabase db, MailAddress mailAddress, EntityStatus status, string addressType)
         {
             if (db == null)
@@ -110,9 +112,7 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
             }
 
-            Address address = new Address(domain.ID, mailAddress);
-            address.Type = addressType;
-            address.Status = status;
+            Address address = new Address(domain.ID, mailAddress) {Type = addressType, Status = status};
 
             this.Add(db, address);
         }
@@ -121,12 +121,13 @@ namespace Health.Direct.Config.Store
         /// Add an address to the store
         /// </summary>
         /// <param name="address">address object</param>        
-        public void Add(Address address)
+        public Address Add(Address address)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
                 this.Add(db, address);
                 db.SubmitChanges();
+                return address;
             }
         }
         

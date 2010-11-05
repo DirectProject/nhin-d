@@ -42,6 +42,8 @@
       <xs:enumeration value="InvalidMXSMTPName" />
       <xs:enumeration value="MXSMTPNameLength" />
       <xs:enumeration value="InvalidMX" />
+      <xs:enumeration value="InvaildDnsRecord" />
+      <xs:enumeration value="NotesLength" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />
