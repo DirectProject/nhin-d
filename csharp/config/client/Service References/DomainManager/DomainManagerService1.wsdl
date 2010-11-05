@@ -6,6 +6,7 @@
       <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
       <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
       <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="IAddressManager_AddAddresses_InputMessage">
@@ -152,6 +153,96 @@
   <wsdl:message name="IDomainManager_EnumerateDomains_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_AddDnsRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddDnsRecords" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_AddDnsRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddDnsRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_AddDnsRecords_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_AddDnsRecord_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddDnsRecord" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_AddDnsRecord_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddDnsRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_AddDnsRecord_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_Count_InputMessage">
+    <wsdl:part name="parameters" element="tns:Count" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_Count_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CountResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_Count_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetLastDnsRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetLastDnsRecords" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetLastDnsRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetLastDnsRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetLastDnsRecords_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetDnsRecord_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDnsRecord" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetDnsRecord_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDnsRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetDnsRecord_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetDnsRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDnsRecords" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetDnsRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDnsRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetDnsRecords_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_RemoveDnsRecord_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDnsRecord" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_RemoveDnsRecord_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDnsRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_RemoveDnsRecord_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_RemoveDnsRecordByID_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDnsRecordByID" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_RemoveDnsRecordByID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDnsRecordByIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_RemoveDnsRecordByID_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_UpdateDnsRecord_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateDnsRecord" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_UpdateDnsRecord_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateDnsRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_UpdateDnsRecord_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_UpdateDnsRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateDnsRecords" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_UpdateDnsRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateDnsRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_UpdateDnsRecords_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:portType name="IAddressManager">
     <wsdl:operation name="AddAddresses">
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddresses" message="tns:IAddressManager_AddAddresses_InputMessage" />
@@ -234,6 +325,58 @@
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/EnumerateDomains" message="tns:IDomainManager_EnumerateDomains_InputMessage" />
       <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/EnumerateDomainsResponse" message="tns:IDomainManager_EnumerateDomains_OutputMessage" />
       <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDomainManager/EnumerateDomainsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_EnumerateDomains_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="IDnsRecordManager">
+    <wsdl:operation name="AddDnsRecords">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecords" message="tns:IDnsRecordManager_AddDnsRecords_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecordsResponse" message="tns:IDnsRecordManager_AddDnsRecords_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_AddDnsRecords_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddDnsRecord">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecord" message="tns:IDnsRecordManager_AddDnsRecord_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecordResponse" message="tns:IDnsRecordManager_AddDnsRecord_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecordConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_AddDnsRecord_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Count">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/Count" message="tns:IDnsRecordManager_Count_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/CountResponse" message="tns:IDnsRecordManager_Count_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/CountConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_Count_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLastDnsRecords">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetLastDnsRecords" message="tns:IDnsRecordManager_GetLastDnsRecords_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetLastDnsRecordsResponse" message="tns:IDnsRecordManager_GetLastDnsRecords_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetLastDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_GetLastDnsRecords_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDnsRecord">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecord" message="tns:IDnsRecordManager_GetDnsRecord_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecordResponse" message="tns:IDnsRecordManager_GetDnsRecord_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecordConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_GetDnsRecord_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDnsRecords">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecords" message="tns:IDnsRecordManager_GetDnsRecords_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecordsResponse" message="tns:IDnsRecordManager_GetDnsRecords_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_GetDnsRecords_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveDnsRecord">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecord" message="tns:IDnsRecordManager_RemoveDnsRecord_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecordResponse" message="tns:IDnsRecordManager_RemoveDnsRecord_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecordConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_RemoveDnsRecord_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveDnsRecordByID">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecordByID" message="tns:IDnsRecordManager_RemoveDnsRecordByID_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecordByIDResponse" message="tns:IDnsRecordManager_RemoveDnsRecordByID_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecordByIDConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_RemoveDnsRecordByID_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateDnsRecord">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecord" message="tns:IDnsRecordManager_UpdateDnsRecord_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecordResponse" message="tns:IDnsRecordManager_UpdateDnsRecord_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecordConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_UpdateDnsRecord_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateDnsRecords">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecords" message="tns:IDnsRecordManager_UpdateDnsRecords_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecordsResponse" message="tns:IDnsRecordManager_UpdateDnsRecords_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_UpdateDnsRecords_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
   </wsdl:portType>
 </wsdl:definitions>

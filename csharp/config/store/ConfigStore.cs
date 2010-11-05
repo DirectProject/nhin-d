@@ -27,9 +27,9 @@ namespace Health.Direct.Config.Store
         TimeSpan m_timeout;
         DomainManager m_domains;
         AddressManager m_addresses;
-        MXManager m_mxs;
         CertificateManager m_certificates;
         AnchorManager m_anchors;
+        DnsRecordManager m_dnsRecords;
         
         public ConfigStore(string connectString)
             : this(connectString, DefaultTimeout)
@@ -53,7 +53,7 @@ namespace Health.Direct.Config.Store
             m_addresses = new AddressManager(this);
             m_certificates = new CertificateManager(this);
             m_anchors = new AnchorManager(this);
-            m_mxs = new MXManager(this);
+            m_dnsRecords = new DnsRecordManager(this);
         }
 
         public TimeSpan Timeout
@@ -112,11 +112,11 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        public MXManager MXs
+        public DnsRecordManager DnsRecords
         {
             get
             {
-                return m_mxs;
+                return m_dnsRecords;
             }
         }
                 

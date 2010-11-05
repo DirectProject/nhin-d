@@ -46,7 +46,12 @@
     <!-- Uncomment if using 'file' audit method -->
     <context-param>
         <param-name>auditFile</param-name>
-        <param-value>C:\\testfiles\auditlog.txt</param-value>
+        <param-value>/tmp/auditlog.txt</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>configService</param-name>
+        <param-value>http://localhost:8081/config-service/ConfigurationService</param-value>
     </context-param>
 
     <!-- Uncomment if using 'syslog' audit method -->

@@ -21,7 +21,7 @@ namespace Health.Direct.Common.Container
 {
     ///<summary>
     /// This section can be used to move the configuration of the container to the configuration
-    /// file. This section can be passed to the <see cref="SimpleDependencyResolver.RegisterConfig"/> method
+    /// file. This section can be passed to the <see cref="IDependencyContainer.RegisterFromConfig"/> method
     /// to register all of the types with the container.
     ///</summary>
     /// <example>
@@ -36,7 +36,7 @@ namespace Health.Direct.Common.Container
     ///     &lt;/components&gt;
     ///   &lt;/container&gt;
     /// </example>
-    public class SimpleContainerSection : ConfigurationSection
+    public class SimpleContainerSection : ConfigurationSectionBase<SimpleContainerSection>
     {
         ///<summary>
         /// The list of components that are registered with the container.
@@ -49,16 +49,6 @@ namespace Health.Direct.Common.Container
             {
                 return (SimpleComponentElementCollection) this["components"];
             }
-        }
-
-        ///<summary>
-        /// Load a specifically named <paramref name="sectionName"/> from the <see cref="ConfigurationManager"/>
-        ///</summary>
-        ///<param name="sectionName">The section name to load.</param>
-        ///<returns>A reference to self</returns>
-        public static SimpleContainerSection Load(string sectionName)
-        {
-            return (SimpleContainerSection) ConfigurationManager.GetSection(sectionName);
         }
     }
 

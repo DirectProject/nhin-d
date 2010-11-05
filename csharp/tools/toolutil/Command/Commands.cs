@@ -22,20 +22,16 @@ using System.Reflection;
 
 namespace Health.Direct.Config.Tools.Command
 {
-    public class CommandUsageAttribute : Attribute
-    {
-        public string Name { get; set; }
-    }
-
     /// <summary>
     /// For the EASY implementation of command line apps. Can't always do Powershell, or may not want to.
     /// 
     /// 1. Create a class. This class will handle commands.
     /// 2. Create a handler method for each of your commands. 
     ///   - Use the <see cref="CommandAttribute"/> to mark up your method
-    ///   - The handler MUST have the signature Action<string[]>
+    ///   - The handler MUST have the signature Action&lt;string[]&gt;
     /// 3. Optionally, provide usage information for your command. 
     ///    - Use the Usage property of the <see cref="CommandAttribute.Usage"/>
+    ///    - Use the <see cref="UsageAttribute"/> to mark a handler with the signature of Action&lt;string&gt;
     /// 4. You can create multiple classes, each with multiple commands. 
     /// 5. In the Main method for your class, create a new instance of the Commands object (see below).
     /// 6. Register each of your classes with the Commands object   
@@ -132,13 +128,10 @@ namespace Health.Direct.Config.Tools.Command
                                    
             Type type = instance.GetType();
             MethodInfo[] methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.InvokeMethod);
-            if (methods == null)
-            {
-                return;
-            }
 
             m_instances.Add(instance);
             m_typeLookup.Add(instance.GetType(), instance);
+
             this.DiscoverCommandMethods(methods, instance);
         }
         
@@ -146,28 +139,42 @@ namespace Health.Direct.Config.Tools.Command
         {
             foreach (MethodInfo method in methods)
             {
-                object[] attributes = method.GetCustomAttributes(typeof (CommandAttribute), true);
-                for (int i = 0; i < attributes.Length; i++ )
-                {
-                    CommandAttribute attribute = (CommandAttribute) attributes[i];
-                    if (!string.IsNullOrEmpty(attribute.Name))
-                    {
-                        this.SetEval(attribute.Name, (Action<string[]>)Delegate.CreateDelegate(typeof(Action<string[]>), instance, method));
+                DiscoverCommandMethod(method, instance);
+                DiscoverUsageMethod(method, instance);
+            }
+        }
 
-                        if (!string.IsNullOrEmpty(attribute.Usage))
-                        {
-                            string usage = attribute.Usage;
-                            if (usage.Contains("{0}") && attribute.UsageParam != null)
-                            {
-                                usage = string.Format(usage, attribute.UsageParam);
-                            }
-                            this.SetUsage(attribute.Name, () => Console.WriteLine(usage));
-                        }
+        private void DiscoverCommandMethod(MethodInfo method, object instance)
+        {
+            object[] attributes = method.GetCustomAttributes(typeof (CommandAttribute), true);
+            for (int i = 0; i < attributes.Length; i++ )
+            {
+                CommandAttribute attribute = (CommandAttribute) attributes[i];
+                if (!string.IsNullOrEmpty(attribute.Name))
+                {
+                    this.SetEval(attribute.Name, (Action<string[]>)Delegate.CreateDelegate(typeof(Action<string[]>), instance, method));
+
+                    if (!string.IsNullOrEmpty(attribute.Usage))
+                    {
+                        this.SetUsage(attribute.Name, () => attribute.Usage);
                     }
                 }
-            }        
-        }    
-        
+            }
+        }
+
+        private void DiscoverUsageMethod(MethodInfo method, object instance)
+        {
+            object[] attributes = method.GetCustomAttributes(typeof (UsageAttribute), true);
+            for (int i = 0; i < attributes.Length; i++ )
+            {
+                UsageAttribute attribute = (UsageAttribute) attributes[i];
+                if (!string.IsNullOrEmpty(attribute.Name))
+                {
+                    this.SetUsage(attribute.Name, (Func<string>)Delegate.CreateDelegate(typeof(Func<string>), instance, method));
+                }
+            }
+        }
+
         public void RunInteractive()
         {            
             CommandUI.PrintHeading(m_appName);
@@ -345,9 +352,9 @@ namespace Health.Direct.Config.Tools.Command
             this.Ensure(name).Eval = eval;
         }
 
-        void SetUsage(string name, Action usage)
+        void SetUsage(string name, Func<string> usageFunctor)
         {
-            this.Ensure(name).Usage = usage;
+            this.Ensure(name).UsageFunctor = usageFunctor;
         }
 
         CommandDef Ensure(string name)
@@ -383,6 +390,15 @@ namespace Health.Direct.Config.Tools.Command
         public void Quit(string[] args)
         {
             Exit(0);
+        }
+
+        [Command(Name = "Commands", Usage = "List the commands available")]
+        public void ListCommands(string[] args)
+        {
+            foreach (string name in this.CommandNames)
+            {
+                this.Bind(name).ShowCommand();
+            }
         }
 
         private const string ExitUsage

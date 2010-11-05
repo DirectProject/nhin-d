@@ -233,6 +233,29 @@ namespace Health.Direct.Config.Store
                 return db.Addresses.GetCount(domainID);
             }            
         }
+
+        public Address[] GetAllForDomain(string domainName
+                        , int maxResults)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.GetAllForDomain(db
+                                , domainName
+                                , maxResults).ToArray();
+            }
+        }
+
+        public IEnumerable<Address> GetAllForDomain(ConfigDatabase db
+                                   , string domainName
+                                   , int maxResults)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+
+            return db.Addresses.ExecGetByDomainName(domainName, maxResults);
+        }
                
         public Address Get(string emailAddress)
         {

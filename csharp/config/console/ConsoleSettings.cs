@@ -60,6 +60,13 @@ namespace Health.Direct.Config.Console
             set;
         }
 
+        [XmlElement]
+        public ClientSettings DnsRecordManager
+        {
+            get;
+            set;
+        }
+
         public void SetHost(string host, int port)
         {
             this.DomainManager.SetHost(host, port);
