@@ -16,7 +16,7 @@
     <%= Html.ActionLink("Return to domains", "Index", "Domains") %>
     <br />
     
-    <%= Html.ActionLink("Add Address", "Add", new { domainID = ((Domain)ViewData["Domain"]).ID })%>
+    <%= Html.ActionLink("Add Address", "Add", new { domainID = ((Domain)ViewData["Domain"]).ID }, new { @class = "action" })%>
     <br />
     <br />
 

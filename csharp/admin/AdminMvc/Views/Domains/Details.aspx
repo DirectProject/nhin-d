@@ -9,6 +9,9 @@
 
     <h2>Details</h2>
 
+    <%= Html.ActionLink("Return to domains", "Index") %>
+    <br />
+    
     <div class="display-label">Domain Name</div>
     <div class="display-field"><%= Model.Name %></div>
 
@@ -23,10 +26,10 @@
 
     <br class="clear" />
     
-    <% if (Model.Status == EntityStatus.Enabled) { %> <%= Html.ActionLink("[Disable]", "Disable", new { id = Model.ID })%><% } %>
+    <% if (Model.Status == EntityStatus.Enabled) { %> <%= Html.ActionLink("Disable", "Disable", new { id = Model.ID }, new {@class = "action"})%><% } %>
     &nbsp;
-    <% if (Model.Status != EntityStatus.Enabled) { %> <%= Html.ActionLink("[Enable]", "Enable", new { id=Model.ID}) %><% } %>
+    <% if (Model.Status != EntityStatus.Enabled) { %> <%= Html.ActionLink("Enable", "Enable", new { id = Model.ID }, new { @class = "action" })%><% } %>
     &nbsp;
-    <%= Html.ActionLink("[Delete]", "Delete", new { id=Model.ID}) %>
+    <%= Html.ActionLink("Delete", "Delete", new { id = Model.ID }, new { @class = "action" })%>
 
 </asp:Content>

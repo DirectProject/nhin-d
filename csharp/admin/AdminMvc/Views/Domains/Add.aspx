@@ -8,18 +8,19 @@
 
     <h2>Add Domain</h2>
 
-    <%= Html.ValidationSummary("Please correct the errors and try again.") %>
+    <%= Html.ValidationSummary("Please correct the errors and try again.", new {@class = "ui-state-error", style="padding: 0.5em"}) %>
 
     <% using (Html.BeginForm()) { %> 
     
-        <fieldset>
-            <p>
-                <%= Html.LabelFor(m => m.Name) %>
-                <%= Html.TextBoxFor(m => m.Name) %>
-                <%= Html.ValidationMessageFor(m => m.Name, "*") %>
-            </p>
+        <fieldset class="ui-widget-content">
+            <span class="display-label"><%= Html.LabelFor(m => m.Name) %></span>
+            <span class="display-field"><%= Html.TextBoxFor(m => m.Name) %></span>
+            <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.Name, "*", new {@class = "ui-state-error-text"}) %></span>
+            <br class="clear" />
+            
             <p>
                 <input type="submit" value="Save" />
+                <%= Html.ActionLink("Cancel", "Index") %>
             </p>
         </fieldset>
     

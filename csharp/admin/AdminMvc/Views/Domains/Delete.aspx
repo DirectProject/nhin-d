@@ -15,6 +15,8 @@
         
         <% using (Html.BeginForm()) { %> 
             <input name="confirmButton" type="submit" value="Delete" />
+            <a href='<%= ViewData["ReturnUrl"] %>'>Cancel</a>
+            <br />
         <% }%>
         
     </div>

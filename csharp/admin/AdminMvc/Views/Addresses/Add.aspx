@@ -8,26 +8,26 @@
 
     <h2>Add Address</h2>
 
-    <%= Html.ValidationSummary("Please correct the errors and try again.") %>
+    <%= Html.ValidationSummary("Please correct the errors and try again.", new { @class = "ui-state-error", style = "padding: 0.5em" })%>
 
     <% using (Html.BeginForm()) { %> 
     
-        <fieldset>
-            <p>
-                <%= Html.LabelFor(m => m.EmailAddress) %>
-                <%= Html.TextBoxFor(m => m.EmailAddress) %>
-                <%= Html.ValidationMessageFor(m => m.EmailAddress, "*") %>
-            </p>
-            <p>
-                <%= Html.LabelFor(m => m.DisplayName) %>
-                <%= Html.TextBoxFor(m => m.DisplayName) %>
-                <%= Html.ValidationMessageFor(m => m.DisplayName, "*") %>
-            </p>
-            <p>
-                <%= Html.LabelFor(m => m.Type) %>
-                <%= Html.TextBoxFor(m => m.Type) %>
-                <%= Html.ValidationMessageFor(m => m.Type, "*") %>
-            </p>
+        <fieldset class="ui-widget-content">
+            <span class="display-label"><%= Html.LabelFor(m => m.EmailAddress) %></span>
+            <span class="display-field"><%= Html.TextBoxFor(m => m.EmailAddress) %></span>
+            <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.EmailAddress, "*", new { @class = "ui-state-error-text" })%></span>
+            <br class="clear" />
+
+            <span class="display-label"><%= Html.LabelFor(m => m.DisplayName) %></span>
+            <span class="display-field"><%= Html.TextBoxFor(m => m.DisplayName) %></span>
+            <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.DisplayName, "*", new { @class = "ui-state-error-text" })%></span>
+            <br class="clear" />
+
+            <span class="display-label"><%= Html.LabelFor(m => m.Type) %></span>
+            <span class="display-field"><%= Html.TextBoxFor(m => m.Type) %></span>
+            <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.Type, "*", new { @class = "ui-state-error-text" })%></span>
+            <br class="clear" />
+            
             <p>
                 <%= Html.HiddenFor(m => m.DomainID) %>
                 <input type="submit" value="Save" />

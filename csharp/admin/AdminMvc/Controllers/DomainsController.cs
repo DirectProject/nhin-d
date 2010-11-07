@@ -48,6 +48,7 @@ namespace AdminMvc.Controllers
             var domain = Repository.Get(id);
             if (domain == null) return View("NotFound");
 
+            ViewData["ReturnUrl"] = Request.UrlReferrer.PathAndQuery;
             return View(domain);
         }
         
