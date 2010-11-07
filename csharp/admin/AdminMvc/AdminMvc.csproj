@@ -132,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\dev.client.config" />
+    <Content Include="Content\logo.png" />
     <Content Include="Views\Addresses\Add.aspx" />
     <Content Include="Views\Addresses\Show.aspx" />
     <Content Include="Views\Addresses\Delete.aspx" />
