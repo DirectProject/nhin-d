@@ -42,16 +42,16 @@
 	<property name="james.stage.config.new" value="${james.stage.apps.dir}/SAR-INF/config-new.xml"></property>
 	<property name="james.stage.apps.SAR-INF.lib.dir" value="${james.stage.apps.dir}/SAR-INF/lib"></property>
 	<property name="james.stage.apps.james.sar.path" value="${james.stage.dir}/apps/james.sar"></property>
+	
+	<property name="tomcat.binary.url" value="http://mirrors.ibiblio.org/pub/mirrors/apache/tomcat/tomcat-6/v6.0.29/bin/apache-tomcat-6.0.29.tar.gz"></property>
+	<property name="tomcat.binary.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar.gz"></property>
+	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-6.0.29"></property>
+	<property name="tomcat.webapp.dir" value="${tomcat.stage.dir}/webapps"></property>
+	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
+	<property name="tomcat.stage.config.save" value="${tomcat.stage.config}.save"></property>
+	<property name="tomcat.stage.config.new" value="${tomcat.stage.config}.new"></property>
 
-	<!-- Jetty properties -->
-	<property name="jetty.binary.url" value="http://dist.codehaus.org/jetty/jetty-6.1.26/jetty-6.1.26RC0.zip"></property>
-	<property name="jetty.binary.zip" value="${build.download.dir}/jetty-6.1.26RC0.zip"></property>
-	<property name="jetty.stage.dir" value="${env.DIRECT_INSTALL_DIR}/jetty-6.1.26RC0"></property>
-	<property name="jetty.webapp.dir" value="${jetty.stage.dir}/webapps"></property>
-	<property name="jetty.stage.config" value="${jetty.stage.dir}/etc/jetty.xml"></property>
-	<property name="jetty.stage.config.save" value="${jetty.stage.config}.save"></property>
-	<property name="jetty.stage.config.new" value="${jetty.stage.config}.new"></property>
-
+	<!-- Maven repository -->
 	<property name="maven.repo" value="${env.HOME}/.m2/repository"></property>
 	
 	<!-- Config server files -->
@@ -93,15 +93,15 @@
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
-	<property name="lib.agent" value="${agent.dir}/target/nhinAgent-1.0-SNAPSHOT.jar"></property>
-	<property name="lib.gateway" value="${gateway.dir}/target/nhin-d-gateways-1.0-SNAPSHOT.jar"></property>
+	<property name="lib.agent" value="${agent.dir}/target/agent-1.0-SNAPSHOT.jar"></property>
+	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.0-SNAPSHOT.jar"></property>
 	<property name="lib.xdmail" value="${xdmail.dir}/target/xdmail-1.0-SNAPSHOT.jar"></property>
 	
 	<!-- Stylesheet to edit the config file -->
 	<property name="edit.config.stylesheet" value="${src}/scripts/edit-config.xsl"></property>
 
-	<!-- Stylesheet to edit jetty.xml -->
-	<property name="edit.jetty.stylesheet" value="${src}/scripts/edit-jetty.xsl"></property>
+	<!-- Stylesheet to edit server.xml for tomcat configuration -->
+	<property name="edit.tomcat.stylesheet" value="${src}/scripts/edit-tomcat.xsl"></property>
 
 	<target name="windows-specific" if="is.windows">
 		<echo message="src is ${src}"></echo>
@@ -160,15 +160,24 @@
 		<available file="${apache.james.binary.zip}" property="apache.james.download.exists"></available>
 		<antcall target="get-james"></antcall>
 		
-		<!-- get the jetty binary install package -->
-		<available file="${jetty.binary.zip}" property="jetty.download.exists"></available>
-		<antcall target="get-jetty"></antcall>
+		<!-- get the tomcat binary install package -->
+		<available file="${tomcat.binary.pkg}" property="tomcat.download.exists"></available>
+		<antcall target="get-tomcat"></antcall>
 		
 		<!-- unpack -->
 		<delete dir="${james.stage.dir}"></delete>
-		<delete dir="${jetty.stage.dir}"></delete>
+		<delete dir="${tomcat.stage.dir}"></delete>
+
+		<!-- unpack james -->
 		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${apache.james.binary.zip}"></unzip>
-		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${jetty.binary.zip}"></unzip>
+
+		<!-- unpack tomcat -->
+		<exec executable="which" outputproperty="tar.command.path" resultproperty="tar.command.result" failonerror="true">
+			<arg line="tar"></arg>
+		</exec>
+		<exec executable="${tar.command.path}" failonerror="true" dir="${env.DIRECT_INSTALL_DIR}">
+			<arg line="xvzf ${tomcat.binary.pkg}" />
+		</exec>
 		
 		<!-- configure james -->
 		<antcall target="configure"></antcall>
@@ -193,24 +202,24 @@
 	  	</exec>
 	</target>
 
-	<!-- get jetty -->
-	<target name="get-jetty" depends="get-jetty-with-wget, get-jetty-with-curl" unless="jetty.download.exists"></target>
+	<!-- get tomcat -->
+	<target name="get-tomcat" depends="get-tomcat-with-wget, get-tomcat-with-curl" unless="tomcat.download.exists"></target>
 
-	<!-- get jetty with wget -->
-	<target name="get-jetty-with-wget" if="wget.command.path" unless="jetty.download.exists">
-	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true" errorproperty="wget.jetty.erroroutput">
-	  		<arg line="--no-check-certificate -q ${jetty.binary.url}"></arg>
+	<!-- get tomcat with wget -->
+	<target name="get-tomcat-with-wget" if="wget.command.path" unless="tomcat.download.exists">
+	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true" errorproperty="wget.tomcat.erroroutput">
+	  		<arg line="--no-check-certificate -q ${tomcat.binary.url}"></arg>
 	  	</exec>
 	</target>
 	
-	<!-- get jetty with curl -->
-	<target name="get-jetty-with-curl" if="curl.command.path" unless="jetty.download.exists">
-	  	<exec dir="${build.download.dir}" executable="${curl.command.path}" failonerror="true" errorproperty="curl.jetty.erroroutput">
-	  		<arg line="-o ${jetty.binary.zip} ${jetty.binary.url}"></arg>
+	<!-- get tomcat with curl -->
+	<target name="get-tomcat-with-curl" if="curl.command.path" unless="tomcat.download.exists">
+	  	<exec dir="${build.download.dir}" executable="${curl.command.path}" failonerror="true" errorproperty="curl.tomcat.erroroutput">
+	  		<arg line="-o ${tomcat.binary.pkg} ${tomcat.binary.url}"></arg>
 	  	</exec>
 	</target>
 
-	<target name="configure" depends="configure-james,configure-jetty"></target>
+	<target name="configure" depends="configure-james,configure-tomcat"></target>
 
 	<target name="configure-james">
 		<!-- expand the sar file in apps -->
@@ -275,7 +284,7 @@
 		
 	</target>
 
-	<target name="configure-jetty">
+	<target name="configure-tomcat">
 		<property name="config.service.orig.war" value="config-service-1.0-SNAPSHOT.war"></property>
 		<property name="config.service.dest.war" value="config-service.war"></property>
 		<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
@@ -283,13 +292,23 @@
 		<property name="config.ui.dest.war" value="config-ui.war"></property>
 
 		<!-- Copy war files -->
-		<copy file="${config.service.dir}/${config.service.orig.war}" tofile="${jetty.webapp.dir}/${config.service.dest.war}"></copy>
-		<copy file="${config.ui.dir}/${config.ui.orig.war}" tofile="${jetty.webapp.dir}/${config.ui.dest.war}"></copy>
+		<copy file="${config.service.dir}/${config.service.orig.war}" tofile="${tomcat.webapp.dir}/${config.service.dest.war}"></copy>
+		<copy file="${config.ui.dir}/${config.ui.orig.war}" tofile="${tomcat.webapp.dir}/${config.ui.dest.war}"></copy>
 
-		<!-- edit the jetty.xml file -->
+		<!-- edit the tomcat server.xml file -->
 		<!-- TODO mark :) .. for now just overwrite with custom version -->
-		<copy file="${jetty.stage.config}" tofile="${jetty.stage.config.save}" overwrite="true"></copy>
-		<copy file="${src}/scripts/jetty.xml" tofile="${jetty.stage.config}" overwrite="true"></copy>
+<!--
+		<copy file="${tomcat.stage.config}" tofile="${tomcat.stage.config.save}" overwrite="true"></copy>
+		<copy file="${src}/scripts/tomcat.xml" tofile="${tomcat.stage.config}" overwrite="true"></copy>
+-->
+		
+		<xslt style="${edit.tomcat.stylesheet}" in="${tomcat.stage.config}" out="${tomcat.stage.config.new}">
+		    <param name="port" expression="8081"></param>
+		</xslt>
+		<copy file="${tomcat.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
+		<copy file="${tomcat.stage.config.new}" tofile="${tomcat.stage.config}" overwrite="true"></copy>
+		<delete file="${tomcat.stage.config.new}" />
+	
 	</target>
 
 	<!-- make shell files executable -->
