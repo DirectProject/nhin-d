@@ -220,8 +220,27 @@ public class DirectDocument
          */
         public Metadata(File file)
         {
-            // TODO add a mime.types file
-            this.mimeType = new MimetypesFileTypeMap().getContentType(file);
+            MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
+            
+            mimetypesFileTypeMap.addMimeTypes("application/msword doc dot wiz rtf");
+            mimetypesFileTypeMap.addMimeTypes("application/pdf pdf");
+            mimetypesFileTypeMap.addMimeTypes("application/postscript ai eps ps");
+            mimetypesFileTypeMap.addMimeTypes("application/vnd.ms-excel xls xlw xla xlc xlm xlt");
+            mimetypesFileTypeMap.addMimeTypes("application/vnd.ms-powerpoint ppt pps pot");
+            mimetypesFileTypeMap.addMimeTypes("application/x-javascript js");
+            mimetypesFileTypeMap.addMimeTypes("application/x-asap asp");
+            mimetypesFileTypeMap.addMimeTypes("application/x-latex latex");
+            mimetypesFileTypeMap.addMimeTypes("application/x-tar tar");
+            mimetypesFileTypeMap.addMimeTypes("application/x-texinfo texinfo texi");
+            mimetypesFileTypeMap.addMimeTypes("application/zip zip");
+            mimetypesFileTypeMap.addMimeTypes("text/css css");
+            mimetypesFileTypeMap.addMimeTypes("text/html htm html");
+            mimetypesFileTypeMap.addMimeTypes("text/plain txt");
+            mimetypesFileTypeMap.addMimeTypes("text/richtext rtx");
+            mimetypesFileTypeMap.addMimeTypes("text/xml xml");
+            
+            // Best guess at MIME type from list above
+            this.mimeType = mimetypesFileTypeMap.getContentType(file);
         }
 
         /**
