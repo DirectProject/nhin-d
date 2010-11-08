@@ -158,7 +158,7 @@ public class DirectDocument
         private List<String> authorInstitution = new ArrayList<String>();
         private String authorRole;
         private String authorSpecialty;
-
+        
         private String classCode;
         private String classCode_localized;
 
@@ -191,6 +191,7 @@ public class DirectDocument
         private List<String> ss_authorInstitution = new ArrayList<String>();
         private String ss_authorRole;
         private String ss_authorSpecialty;
+        private String ss_authorTelecommunication;
 
         private String contentTypeCode;
         private String contentTypeCode_localized;
@@ -395,6 +396,9 @@ public class DirectDocument
             return eot;
         }
 
+        /*
+         * Generate the Submission Set
+         */
         private RegistryPackageType generateRegistryPackageType()
         {
             RegistryPackageType rpt = new RegistryPackageType();
@@ -419,6 +423,7 @@ public class DirectDocument
             addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_INSTITUTION, ss_authorInstitution));
             addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_ROLE, ss_authorRole));
             addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_SPECIALTY, ss_authorSpecialty));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_TELECOMMUNICATION, ss_authorTelecommunication));
 
             rpt.getClassification().add(authorClassification);
 
@@ -898,6 +903,11 @@ public class DirectDocument
                                 {
                                     if (slotNotEmpty(slot))
                                         ss_authorSpecialty = slot.getValueList().getValue().get(0);
+                                }
+                                else if (SlotType1Enum.AUTHOR_TELECOMMUNICATION.matches(slot.getName()))
+                                {
+                                    if (slotNotEmpty(slot))
+                                        ss_authorTelecommunication = slot.getValueList().getValue().get(0);
                                 }
                             }
                         }
@@ -1750,6 +1760,23 @@ public class DirectDocument
             ss_authorSpecialty = ssAuthorSpecialty;
         }
 
+        /**
+         * @return the ss_authorTelecommunication
+         */
+        public String getSs_authorTelecommunication()
+        {
+            return ss_authorTelecommunication;
+        }
+
+        /**
+         * @param ssAuthorTelecommunication
+         *            the ss_authorTelecommunication to set
+         */
+        public void setSs_authorTelecommunication(String ssAuthorTelecommunication)
+        {
+            ss_authorTelecommunication = ssAuthorTelecommunication;
+        }
+        
         /**
          * @return the contentTypeCode
          */

@@ -47,6 +47,7 @@ public enum SlotType1Enum
     AUTHOR_INSTITUTION("authorInstitution"),
     AUTHOR_ROLE("authorRole"),
     AUTHOR_SPECIALTY("authorSpecialty"),
+    AUTHOR_TELECOMMUNICATION("authorTelecommunication"),
     CODING_SCHEME("codingScheme"),
     SUBMISSION_TIME("submissionTime"),
     INTENDED_RECIPIENT("intendedRecipient"),

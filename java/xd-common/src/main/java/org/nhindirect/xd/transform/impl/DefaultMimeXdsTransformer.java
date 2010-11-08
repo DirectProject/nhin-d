@@ -105,9 +105,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.nhindirect.transform.MimeXdsTransformer#transform(javax.mail.internet
-     * .MimeMessage)
+     * @see org.nhindirect.transform.MimeXdsTransformer#transform(javax.mail.internet.MimeMessage)
      */
     @Override
     public List<ProvideAndRegisterDocumentSetRequestType> transform(MimeMessage mimeMessage)
