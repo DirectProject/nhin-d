@@ -112,6 +112,9 @@ namespace Health.Direct.Common.Tests.Caching
 
         }
 
+        //---these "tests" are purely examples of how to create mock responses, they are commented out as they alter the file system 
+        //---(see the paths above).  Alter and use as needed
+        /*
         [Theory]
         [InlineData("www.microsoft.com")]
         [InlineData("www.yahoo.com")]
@@ -422,7 +425,7 @@ namespace Health.Direct.Common.Tests.Caching
                 }
             }
         }
-
+        */
 
     }
 }
