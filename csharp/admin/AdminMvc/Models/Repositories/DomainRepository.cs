@@ -1,12 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
 
-namespace AdminMvc.Models
+namespace AdminMvc.Models.Repositories
 {
-    public class DomainRepository : Repository<Domain>
+    public interface IDomainRepository : IRepository<Domain>
+    {
+        Domain GetByDomainName(string domainName);
+    }
+
+    public class DomainRepository : IDomainRepository
     {
         private readonly DomainManagerClient m_client;
 
@@ -17,27 +21,29 @@ namespace AdminMvc.Models
 
         protected DomainManagerClient Client { get { return m_client; } }
         
-        public override IQueryable<Domain> FindAll()
+        public IQueryable<Domain> FindAll()
         {
             return Client.EnumerateDomains(null, int.MaxValue).AsQueryable();
         }
 
-        public override Domain Add(Domain domain)
+        public Domain Add(Domain domain)
         {
             return Client.AddDomain(domain);
         }
 
-        public override void Update(Domain domain)
+        public void Update(Domain domain)
         {
             Client.UpdateDomain(domain);
         }
 
-        public override void Delete(Domain domain)
+        public void Delete(Domain domain)
         {
+            // TODO: this should be moved to the server-side implementation to hide this detail from the client
+            new AddressManagerClient().RemoveDomainAddresses(domain.ID);
             Client.RemoveDomain(domain.Name);
         }
 
-        public override Domain Get(long id)
+        public Domain Get(long id)
         {
             return Client.GetDomain(id);
         }

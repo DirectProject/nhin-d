@@ -1,22 +1,24 @@
 using System.Web.Mvc;
 
-using MvcContrib.Pagination;
+using AdminMvc.Models.Repositories;
 
-using AdminMvc.Models;
+using AutoMapper;
+
+using MvcContrib.Pagination;
 
 namespace AdminMvc.Controllers
 {
     public class ControllerBase<T,TRepository> : Controller
         where T : class
-        where TRepository : Repository<T>, new() 
+        where TRepository : IRepository<T>
     {
         protected const int DefaultPageSize = 10;
 
         private readonly TRepository m_repository;
 
-        protected ControllerBase()
+        protected ControllerBase(TRepository repository)
         {
-            m_repository = new TRepository();
+            m_repository = repository;
         }
 
         protected TRepository Repository
@@ -30,7 +32,7 @@ namespace AdminMvc.Controllers
             return View(paginatedItems);
         }
 
-        public ActionResult Details(long id)
+        public virtual ActionResult Details(long id)
         {
             var item = Repository.Get(id);
 

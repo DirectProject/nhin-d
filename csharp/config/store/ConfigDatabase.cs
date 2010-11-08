@@ -20,7 +20,7 @@ using System.Data.Linq.Mapping;
 
 namespace Health.Direct.Config.Store
 {
-    [Database(Name="NHINDConfig")]
+    [Database(Name="DirectConfig")]
     public class ConfigDatabase : DataContext
     {
         Table<Certificate> m_certs;

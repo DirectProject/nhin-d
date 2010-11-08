@@ -2,6 +2,7 @@ using System.Linq;
 using System.Web.Mvc;
 
 using AdminMvc.Models;
+using AdminMvc.Models.Repositories;
 
 using Health.Direct.Config.Store;
 
@@ -9,8 +10,12 @@ using MvcContrib.Pagination;
 
 namespace AdminMvc.Controllers
 {
-    public class AddressesController : ControllerBase<Address, AddressRepository>
+    public class AddressesController : ControllerBase<Address, IAddressRepository>
     {
+        public AddressesController(IAddressRepository repository) : base(repository)
+        {
+        }
+
         public ActionResult Show(long domainID, int? page)
         {
             ViewData["Domain"] = new DomainRepository().Get(domainID);

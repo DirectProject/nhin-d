@@ -31,6 +31,22 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=2.3.2.632, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\autofac\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.Web, Version=2.3.2.632, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\autofac\Autofac.Integration.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.Web.Mvc, Version=2.3.2.632, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\autofac\Autofac.Integration.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\automapper\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="MvcContrib, Version=2.0.96.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\external\mvcContrib\MvcContrib.dll</HintPath>
@@ -81,14 +97,16 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ModelProfiles.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\AddressModel.cs" />
-    <Compile Include="Models\AddressRepository.cs" />
-    <Compile Include="Models\AnchorRepository.cs" />
-    <Compile Include="Models\CertificateRepository.cs" />
     <Compile Include="Models\DomainModel.cs" />
-    <Compile Include="Models\DomainRepository.cs" />
-    <Compile Include="Models\Repository.cs" />
+    <Compile Include="Models\Repositories\AddressRepository.cs" />
+    <Compile Include="Models\Repositories\AnchorRepository.cs" />
+    <Compile Include="Models\Repositories\CertificateRepository.cs" />
+    <Compile Include="Models\Repositories\DomainRepository.cs" />
+    <Compile Include="Models\Repositories\Repository.cs" />
+    <Compile Include="Models\Repositories\RepositoryModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -147,9 +165,6 @@
     <Content Include="Views\Certificates\NotFound.aspx" />
     <Content Include="Views\Certificates\Show.aspx" />
     <Content Include="Views\Domains\Add.aspx" />
-    <Content Include="Views\Domains\Delete.aspx" />
-    <Content Include="Views\Domains\Deleted.aspx" />
-    <Content Include="Views\Domains\Details.aspx" />
     <Content Include="Views\Domains\Index.aspx" />
   </ItemGroup>
   <ItemGroup>
