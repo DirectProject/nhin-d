@@ -17,13 +17,13 @@
     <developers>
         <developer>
             <name>Pat Pyette</name>
-            <email>ppyette@Tinpriva.com</email>
+            <email>ppyette@inpriva.com</email>
             <roles>
                 <role>owner</role>
             </roles>
         </developer> 
         <developer>
-            <name>Pat Pyette</name>
+            <name>Greg Meyer</name>
             <id>GM2552</id>
             <email>gm2552@cerner.com</email>                                        
         </developer>  
