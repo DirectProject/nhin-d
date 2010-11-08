@@ -1,4 +1,4 @@
-﻿USE [NHINDConfig]
+﻿USE [DirectConfig]
 GO
 /****** Object:  Table [dbo].[Domains]    Script Date: 11/03/2010 09:41:47 ******/
 SET ANSI_NULLS ON
