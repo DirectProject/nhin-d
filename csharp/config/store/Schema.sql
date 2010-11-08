@@ -103,28 +103,7 @@ CREATE TABLE [dbo].[Anchors](
 GO
 SET ANSI_PADDING OFF
 GO
-/****** Object:  Table [dbo].[MXs]    Script Date: 11/03/2010 09:41:47 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-SET ANSI_PADDING ON
-GO
-CREATE TABLE [dbo].[MXs](
-	[SMTPDomainName] [varchar](255) NOT NULL,
-	[MXID] [bigint] IDENTITY(1,1) NOT NULL,
-	[DomainID] [bigint] NOT NULL,
-	[Preference] [int] NOT NULL,
-	[CreateDate] [datetime] NOT NULL,
-	[UpdateDate] [datetime] NOT NULL,
- CONSTRAINT [PK_MXs] PRIMARY KEY CLUSTERED 
-(
-	[SMTPDomainName] ASC
-)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-SET ANSI_PADDING OFF
-GO
+
 /****** Object:  Table [dbo].[Addresses]    Script Date: 11/03/2010 09:41:47 ******/
 SET ANSI_NULLS ON
 GO
@@ -191,21 +170,11 @@ GO
 /****** Object:  Default [DF_Domains_Status]    Script Date: 11/03/2010 09:41:47 ******/
 ALTER TABLE [dbo].[Domains] ADD  CONSTRAINT [DF_Domains_Status]  DEFAULT ((0)) FOR [Status]
 GO
-/****** Object:  Default [DF_MXs_SMTPDomainName]    Script Date: 11/03/2010 09:41:47 ******/
-ALTER TABLE [dbo].[MXs] ADD  CONSTRAINT [DF_MXs_SMTPDomainName]  DEFAULT ('') FOR [SMTPDomainName]
-GO
-/****** Object:  Default [DF_MXs_Preference]    Script Date: 11/03/2010 09:41:47 ******/
-ALTER TABLE [dbo].[MXs] ADD  CONSTRAINT [DF_MXs_Preference]  DEFAULT ((0)) FOR [Preference]
-GO
+
 /****** Object:  ForeignKey [FK_Addresses_DomainID]    Script Date: 11/03/2010 09:41:47 ******/
 ALTER TABLE [dbo].[Addresses]  WITH CHECK ADD  CONSTRAINT [FK_Addresses_DomainID] FOREIGN KEY([DomainID])
 REFERENCES [dbo].[Domains] ([DomainID])
 GO
 ALTER TABLE [dbo].[Addresses] CHECK CONSTRAINT [FK_Addresses_DomainID]
 GO
-/****** Object:  ForeignKey [FK_MXs_DomainID]    Script Date: 11/03/2010 09:41:47 ******/
-ALTER TABLE [dbo].[MXs]  WITH CHECK ADD  CONSTRAINT [FK_MXs_DomainID] FOREIGN KEY([DomainID])
-REFERENCES [dbo].[Domains] ([DomainID])
-GO
-ALTER TABLE [dbo].[MXs] CHECK CONSTRAINT [FK_MXs_DomainID]
-GO
+
