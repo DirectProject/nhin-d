@@ -3,9 +3,13 @@ using System.Linq;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;
 
-namespace AdminMvc.Models
+namespace AdminMvc.Models.Repositories
 {
-    public class AnchorRepository : Repository<Anchor>
+    public interface IAnchorRepository : IRepository<Anchor>
+    {
+    }
+
+    public class AnchorRepository : IAnchorRepository
     {
         private readonly AnchorStoreClient m_client;
 
@@ -16,7 +20,7 @@ namespace AdminMvc.Models
 
         protected AnchorStoreClient Client { get { return m_client; } }
         
-        public override IQueryable<Anchor> FindAll()
+        public IQueryable<Anchor> FindAll()
         {
             return Client.EnumerateAnchors(0, int.MaxValue, null).AsQueryable();
         }
@@ -33,23 +37,23 @@ namespace AdminMvc.Models
         //            });
         //}
 
-        public override Anchor Add(Anchor anchor)
+        public Anchor Add(Anchor anchor)
         {
             return Client.AddAnchor(anchor);
         }
 
-        public override void Delete(Anchor anchor)
+        public void Delete(Anchor anchor)
         {
             Client.RemoveAnchors(new[] {anchor.ID});
         }
 
-        public override void Update(Anchor anchor)
+        public void Update(Anchor anchor)
         {
             Delete(anchor);
             Add(anchor);
         }
 
-        public override Anchor Get(long id)
+        public Anchor Get(long id)
         {
             return Client.GetAnchors(new[] {id}, null).SingleOrDefault();
         }

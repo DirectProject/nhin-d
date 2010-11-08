@@ -3,9 +3,14 @@ using System.Linq;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
 
-namespace AdminMvc.Models
+namespace AdminMvc.Models.Repositories
 {
-    public class AddressRepository : Repository<Address>
+    public interface IAddressRepository : IRepository<Address>
+    {
+        Address Add(AddressModel model);
+    }
+
+    public class AddressRepository : IAddressRepository
     {
         private readonly AddressManagerClient m_client;
 
@@ -16,7 +21,7 @@ namespace AdminMvc.Models
 
         protected AddressManagerClient Client { get { return m_client; } }
         
-        public override IQueryable<Address> FindAll()
+        public IQueryable<Address> FindAll()
         {
             return Client.EnumerateAddresses(null, int.MaxValue).AsQueryable();
         }
@@ -33,22 +38,22 @@ namespace AdminMvc.Models
                     });
         }
 
-        public override Address Add(Address address)
+        public Address Add(Address address)
         {
             return Client.AddAddress(address);
         }
 
-        public override void Update(Address address)
+        public void Update(Address address)
         {
             Client.UpdateAddresses(new[] {address});
         }
 
-        public override void Delete(Address address)
+        public void Delete(Address address)
         {
             Client.RemoveAddresses(new[]{address.EmailAddress});
         }
 
-        public override Address Get(long id)
+        public Address Get(long id)
         {
             return Client.GetAddressesByID(new[] {id}, null).FirstOrDefault();
         }
