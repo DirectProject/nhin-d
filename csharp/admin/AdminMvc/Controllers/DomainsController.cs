@@ -1,13 +1,22 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 
 using AdminMvc.Models;
+using AdminMvc.Models.Repositories;
+
+using AutoMapper;
 
 using Health.Direct.Config.Store;
 
 namespace AdminMvc.Controllers
 {
-    public class DomainsController : ControllerBase<Domain, DomainRepository>
+    public class DomainsController : ControllerBase<Domain, IDomainRepository>
     {
+        public DomainsController(IDomainRepository repository)
+            : base(repository)
+        {
+        }
+
         public ActionResult Addresses(long id)
         {
             return RedirectToAction("Show", "Addresses", new {domainID = id});
@@ -31,36 +40,34 @@ namespace AdminMvc.Controllers
         [HttpPost]
         public ActionResult Add(FormCollection formValues)
         {
-            var domain = new DomainModel();
+            // pick up the default values from the real model
+            var model = Mapper.Map<Domain,DomainModel>(new Domain());
 
-            if (TryUpdateModel(domain))
+            if (TryUpdateModel(model))
             {
-                var newDomain = Repository.Add(new Domain(domain.Name));
-
-                return RedirectToAction("Details", new {id = newDomain.ID});
+                Repository.Add(Mapper.Map<DomainModel,Domain>(model));
+                return RedirectToAction("Index");
             }
 
-            return View(domain);
+            return View(model);
         }
 
-        public ActionResult Delete(long id)
-        {
-            var domain = Repository.Get(id);
-            if (domain == null) return View("NotFound");
-
-            ViewData["ReturnUrl"] = Request.UrlReferrer.PathAndQuery;
-            return View(domain);
-        }
-        
         [HttpPost]
-        public ActionResult Delete(long id, string confirmButton)
+        public string Delete(long id)
         {
-            var domain = Repository.Get(id);
-            if (domain == null) return View("NotFound");
+            try
+            {
+                var domain = Repository.Get(id);
+                if (domain == null) return "NotFound";
 
-            Repository.Delete(domain);
+                Repository.Delete(domain);
 
-            return View("Deleted");
+                return Boolean.TrueString;
+            }
+            catch (Exception ex)
+            {
+                return ex.GetBaseException().Message;
+            }
         }
 
         public ActionResult Disable(long id)
@@ -81,7 +88,16 @@ namespace AdminMvc.Controllers
             domain.Status = status;
             Repository.Update(domain);
 
-            return View("Details", domain);
+            return Json(Mapper.Map<Domain, DomainModel>(domain), "text/json");
+            //return RedirectToAction("Index");
+        }
+
+        public override ActionResult Details(long id)
+        {
+            var domain = Repository.Get(id);
+            if (domain == null) return View("NotFound");
+
+            return Json(Mapper.Map<Domain, DomainModel>(domain), "text/json", JsonRequestBehavior.AllowGet);
         }
     }
 }

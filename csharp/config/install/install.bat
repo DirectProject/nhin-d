@@ -3,7 +3,7 @@
 
 setlocal
 
-set destbin=C:\inetpub\nhindConfigService
+set destbin=C:\inetpub\ConfigService
 set configFile=%~f1
 if "%configFile%"=="" set configFile=web.config
 
