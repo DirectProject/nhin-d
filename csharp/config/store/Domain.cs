@@ -30,14 +30,14 @@ namespace Health.Direct.Config.Store
         
         public Domain()
         {
-        }
-        
-        public Domain(string name)
-        {
-            this.Name = name;
             this.CreateDate = DateTime.Now;
             this.UpdateDate = this.CreateDate;
             this.Status = EntityStatus.New;
+        }
+        
+        public Domain(string name) : this()
+        {
+            this.Name = name;
         }
            
         [Column(Name="DomainID", IsPrimaryKey=true, IsDbGenerated=true, UpdateCheck = UpdateCheck.Never)]
