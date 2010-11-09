@@ -4,13 +4,15 @@ using System.Web.Mvc;
 using AdminMvc.Models;
 using AdminMvc.Models.Repositories;
 
+using AutoMapper;
+
 using Health.Direct.Config.Store;
 
 using MvcContrib.Pagination;
 
 namespace AdminMvc.Controllers
 {
-    public class AddressesController : ControllerBase<Address, IAddressRepository>
+    public class AddressesController : ControllerBase<Address, AddressModel, IAddressRepository>
     {
         public AddressesController(IAddressRepository repository) : base(repository)
         {
@@ -39,7 +41,7 @@ namespace AdminMvc.Controllers
 
             if (TryUpdateModel(address))
             {
-                var newAddress = Repository.Add(address);
+                var newAddress = Repository.Add(Mapper.Map<AddressModel, Address>(address));
 
                 return RedirectToAction("Details", new { id = newAddress.ID });
             }

@@ -105,7 +105,11 @@
     <Compile Include="Models\Repositories\AnchorRepository.cs" />
     <Compile Include="Models\Repositories\CertificateRepository.cs" />
     <Compile Include="Models\Repositories\DomainRepository.cs" />
-    <Compile Include="Models\Repositories\Repository.cs" />
+    <Compile Include="Models\Repositories\IAddressRepository.cs" />
+    <Compile Include="Models\Repositories\IAnchorRepository.cs" />
+    <Compile Include="Models\Repositories\ICertificateRepository.cs" />
+    <Compile Include="Models\Repositories\IDomainRepository.cs" />
+    <Compile Include="Models\Repositories\IRepository.cs" />
     <Compile Include="Models\Repositories\RepositoryModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -114,20 +118,6 @@
     <Content Include="Views\Domains\NotFound.aspx" />
     <Content Include="Web.config" />
     <Content Include="Content\Site.css" />
-    <Content Include="Scripts\jquery-1.4.1.js" />
-    <Content Include="Scripts\jquery-1.4.1.min.js" />
-    <Content Include="Scripts\jquery-1.4.1-vsdoc.js" />
-    <Content Include="Scripts\jquery-1.4.1.min-vsdoc.js" />
-    <Content Include="Scripts\jquery.validate.js" />
-    <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery.validate.min-vsdoc.js" />
-    <Content Include="Scripts\MicrosoftAjax.js" />
-    <Content Include="Scripts\MicrosoftAjax.debug.js" />
-    <Content Include="Scripts\MicrosoftMvcAjax.js" />
-    <Content Include="Scripts\MicrosoftMvcAjax.debug.js" />
-    <Content Include="Scripts\MicrosoftMvcValidation.js" />
-    <Content Include="Scripts\MicrosoftMvcValidation.debug.js" />
     <Content Include="Views\Account\ChangePassword.aspx" />
     <Content Include="Views\Account\ChangePasswordSuccess.aspx" />
     <Content Include="Views\Account\LogOn.aspx" />
@@ -165,6 +155,8 @@
     <Content Include="Views\Certificates\NotFound.aspx" />
     <Content Include="Views\Certificates\Show.aspx" />
     <Content Include="Views\Domains\Add.aspx" />
+    <Content Include="Views\Domains\DomainDetailsDialog.ascx" />
+    <Content Include="Views\Domains\DomainList.ascx" />
     <Content Include="Views\Domains\Index.aspx" />
   </ItemGroup>
   <ItemGroup>

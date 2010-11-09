@@ -5,10 +5,6 @@ using Health.Direct.Config.Store;
 
 namespace AdminMvc.Models.Repositories
 {
-    public interface ICertificateRepository : IRepository<Certificate>
-    {
-    }
-
     public class CertificateRepository : ICertificateRepository
     {
         private readonly CertificateStoreClient m_client;

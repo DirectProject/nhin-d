@@ -5,10 +5,6 @@ using Health.Direct.Config.Store;
 
 namespace AdminMvc.Models.Repositories
 {
-    public interface IAnchorRepository : IRepository<Anchor>
-    {
-    }
-
     public class AnchorRepository : IAnchorRepository
     {
         private readonly AnchorStoreClient m_client;
