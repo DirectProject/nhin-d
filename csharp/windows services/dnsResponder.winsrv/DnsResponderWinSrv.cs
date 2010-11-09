@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.ServiceProcess;
-using System.Text;
 using System.Configuration;
+using System.ServiceProcess;
+using Config=System.Configuration;
 
-using Health.Direct.DnsResponder;
-using Health.Direct.Config.Store;
 using Health.Direct.Config.Client;
-using Health.Direct.Common;
+
+using ClientSettingsSection=Health.Direct.Config.Client.ClientSettingsSection;
 
 namespace Health.Direct.DnsResponder.WinSrv
 {
@@ -35,8 +29,8 @@ namespace Health.Direct.DnsResponder.WinSrv
 
             //----------------------------------------------------------------------------------------------------
             //---load the settings from the related sections in app.config
-            ClientSettings certServiceSettings = (ClientSettings)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsRecordManagerServiceSettings");
-            ClientSettings dnsRecordServiceSettings = (ClientSettings)ConfigurationManager.GetSection("ServiceSettingsGroup/CertificateManagerServiceSettings");
+            ClientSettings certServiceSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsRecordManagerServiceSettings")).AsClientSettings();
+            ClientSettings dnsRecordServiceSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/CertificateManagerServiceSettings")).AsClientSettings();
             DnsServerSettings dnsServerSettings = (DnsServerSettings)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsServerSettings");
 
             m_store = new DnsRecordStorageService(dnsRecordServiceSettings, certServiceSettings);

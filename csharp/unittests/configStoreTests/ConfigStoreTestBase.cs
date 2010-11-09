@@ -26,7 +26,7 @@ namespace Health.Direct.Config.Store.Tests
     public class ConfigStoreTestBase 
     {
 
-        protected const string CONNSTR = @"Data Source=.\SQLEXPRESS;Initial Catalog=NHINDConfig;Integrated Security=SSPI;";
+        protected const string CONNSTR = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
         //protected const string CONNSTR = "Data Source=localhost;Initial Catalog=NHINDConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
         protected const int MAXDOMAINCOUNT = 10; //---number should be <= .cer file count in metadata folder
         protected const int MAXSMTPCOUNT = 3;

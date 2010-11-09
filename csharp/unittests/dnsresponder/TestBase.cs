@@ -15,8 +15,8 @@ namespace Health.Direct.DnsResponder.Tests
 {
     class TestBase
     {
-        protected const string CONNSTR = @"Data Source=.\SQLEXPRESS;Initial Catalog=NHINDConfig;Integrated Security=SSPI;";
-        //protected const string CONNSTR = "Data Source=localhost;Initial Catalog=NHINDConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
+        protected const string CONNSTR = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+        //protected const string CONNSTR = "Data Source=localhost;Initial Catalog=DirectConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
 
         private string DNSRECORDSEPATH = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
 
