@@ -4,10 +4,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title><asp:ContentPlaceHolder ID="TitleContent" runat="server" /></title>
-    <link href="../../Content/Site.css" rel="stylesheet" type="text/css" />   
     <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/themes/redmond/jquery-ui.css" rel="stylesheet" type="text/css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js" type="text/javascript" language="javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js" type="text/javascript" language="javascript"></script>
+    <script src="../../Scripts/Common.js" type="text/javascript" language="javascript"></script>
+    <link href="../../Content/Site.css" rel="stylesheet" type="text/css" />   
     <script type="text/javascript" language="javascript">
         $(function() {
             $('#switcher').themeswitcher();
@@ -42,16 +43,62 @@
     </div>
 
     <script type="text/javascript" language="javascript">
-        $.fn.disable = function() {
-            return this.each(function() {
-                if (this.disabled == null) {
-                    this.disabled = true;
-                }
-            });
-        }
         $(function() {
             $(':submit,a.action').button();
         });
+        $('table.grid tbody tr').hover(
+                function() { $(this).addClass('ui-state-highlight'); },
+                function() { $(this).removeClass('ui-state-highlight'); }
+                )
+                .dblclick(function(event) {
+                    showDetailsDialog(event, $('a.view-details', this));
+                });
+        function confirmDelete(event, dialog, link, message, objectName) {
+            event.preventDefault();
+            dialog.html('<p>' + message + '</p>');
+            dialog.dialog({
+                title: 'Confirmation',
+                resizable: false,
+                modal: true,
+                buttons: {
+                    "Delete": function() {
+                        $.post(link[0].href, function(data) {
+                            if (data == '<%= Boolean.TrueString %>') {
+                                link.closest('tr').hide('fast');
+                            } else if (data == 'NotFound') {
+                                alert(objectName + ' was not found.');
+                            } else {
+                                alert('An error occurred - ' + data);
+                            }
+                        });
+                        $(this).dialog("close");
+                    },
+                    "Cancel": function() { $(this).dialog("close"); }
+                }
+            });
+        }
+        function enableDisableDomain(event) {
+            event.preventDefault();
+            var link = $(this);
+            $.post(link[0].href, function(data) {
+                adjustStatusForRow(link.closest('tr'), data);
+            });
+        }
+        function adjustStatusForRow(row, data) {
+            var status = data.Status;
+            var oldActionString = status == 'Enabled' ? 'Enable' : 'Disable'
+            var newActionString = status == 'Enabled' ? 'Disable' : 'Enable'
+
+            $('td.status', row).text(status);
+
+            var actionCell = $('td a.enable-disable-action', row);
+            actionCell.text(newActionString);
+            var href = actionCell.attr('href');
+            actionCell.attr('href', href.replace(oldActionString, newActionString));
+        }
+        function endsWith(str, suffix) {
+            return str.indexOf(suffix, str.length - suffix.length) !== -1;
+        }
     </script>
 </body>
 </html>

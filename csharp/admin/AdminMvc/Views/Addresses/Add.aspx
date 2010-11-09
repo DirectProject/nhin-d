@@ -31,7 +31,7 @@
             <p>
                 <%= Html.HiddenFor(m => m.DomainID) %>
                 <input type="submit" value="Save" />
-                <%= Html.ActionLink("Cancel", "Show", new {domainID = Model.DomainID}) %>
+                <%= Html.ActionLink("Cancel", "Index", new {domainID = Model.DomainID}) %>
             </p>
         </fieldset>
     
