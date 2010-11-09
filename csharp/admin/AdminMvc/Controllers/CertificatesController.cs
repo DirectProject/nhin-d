@@ -10,13 +10,18 @@ using MvcContrib.Pagination;
 
 namespace AdminMvc.Controllers
 {
-    public class CertificatesController : ControllerBase<Certificate, ICertificateRepository>
+    public class CertificatesController : ControllerBase<Certificate, Certificate, ICertificateRepository>
     {
         public CertificatesController(ICertificateRepository repository) : base(repository)
         {
         }
 
-        public ActionResult Show(long domainID, int? page)
+        protected override void SetStatus(Certificate item, EntityStatus status)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ActionResult Index(long domainID, int? page)
         {
             var domain = new DomainRepository().Get(domainID);
             if (domain == null) return View("NotFound");
