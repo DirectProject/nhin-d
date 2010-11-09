@@ -18,17 +18,14 @@ namespace AdminMvc.Models
 
         protected override void Configure()
         {
+            CreateBidirectionalMap<Address, AddressModel>();
+            CreateBidirectionalMap<Anchor, AnchorModel>();
             CreateBidirectionalMap<Domain, DomainModel>();
-            Mapper.CreateMap<string, DateTime>().ConvertUsing(new DateTimeTypeConverter());
             Mapper.CreateMap<string, EntityStatus>().ConvertUsing(new EntityStatusTypeConverter());
         }
 
         private void CreateBidirectionalMap<TSource,TDestination>()
         {
-            ForSourceType<DateTime>()
-                .AddFormatExpression(context =>
-                ((DateTime)context.SourceValue).ToString());
-
             ForSourceType<EntityStatus>()
                 .AddFormatExpression(context =>
                 ((EntityStatus)context.SourceValue).ToString());
@@ -43,14 +40,6 @@ namespace AdminMvc.Models
         public EntityStatus Convert(ResolutionContext context)
         {
             return (EntityStatus) Enum.Parse(typeof(EntityStatus), (string)context.SourceValue, true);
-        }
-    }
-
-    public class DateTimeTypeConverter : ITypeConverter<string, DateTime>
-    {
-        public DateTime Convert(ResolutionContext context)
-        {
-            return System.Convert.ToDateTime((string)context.SourceValue);
         }
     }
 }

@@ -97,6 +97,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AnchorModel.cs" />
+    <Compile Include="Common\Formatter.cs" />
     <Compile Include="Models\ModelProfiles.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\AddressModel.cs" />
@@ -112,6 +114,7 @@
     <Compile Include="Models\Repositories\IRepository.cs" />
     <Compile Include="Models\Repositories\RepositoryModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Common\HtmlHelperExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
@@ -141,16 +144,15 @@
   <ItemGroup>
     <Content Include="Config\dev.client.config" />
     <Content Include="Content\logo.png" />
+    <Content Include="Scripts\Common.js" />
     <Content Include="Views\Addresses\Add.aspx" />
-    <Content Include="Views\Addresses\Show.aspx" />
-    <Content Include="Views\Addresses\Delete.aspx" />
-    <Content Include="Views\Addresses\Deleted.aspx" />
-    <Content Include="Views\Addresses\Details.aspx" />
+    <Content Include="Views\Addresses\AddressDetailsDialog.ascx" />
+    <Content Include="Views\Addresses\AddressList.ascx" />
     <Content Include="Views\Addresses\Index.aspx" />
     <Content Include="Views\Addresses\NotFound.aspx" />
+    <Content Include="Views\Anchors\AnchorList.ascx" />
+    <Content Include="Views\Shared\NotFound.aspx" />
     <Content Include="Views\Anchors\Index.aspx" />
-    <Content Include="Views\Anchors\NotFound.aspx" />
-    <Content Include="Views\Anchors\Show.aspx" />
     <Content Include="Views\Certificates\Index.aspx" />
     <Content Include="Views\Certificates\NotFound.aspx" />
     <Content Include="Views\Certificates\Show.aspx" />
@@ -177,7 +179,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>53536</DevelopmentServerPort>
+          <DevelopmentServerPort>57108</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

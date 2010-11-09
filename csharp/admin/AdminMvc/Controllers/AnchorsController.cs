@@ -2,7 +2,10 @@ using System;
 using System.Linq;
 using System.Web.Mvc;
 
+using AdminMvc.Models;
 using AdminMvc.Models.Repositories;
+
+using AutoMapper;
 
 using Health.Direct.Config.Store;
 
@@ -16,18 +19,31 @@ namespace AdminMvc.Controllers
         {
         }
 
-        public ActionResult Show(long domainID, int? page)
+        protected override void SetStatus(Anchor item, EntityStatus status)
+        {
+            item.Status = status;
+        }
+
+        public ActionResult Index(long domainID, int? page)
         {
             var domain = new DomainRepository().Get(domainID);
-            if (domain == null) return View("NotFound");
+            if (domain == null) return View("NotFound", "Shared", "Anchor");
 
-            ViewData["Domain"] = domain;
+            ViewData["Domain"] = Mapper.Map<Domain, DomainModel>(domain);
 
             return View(
                 (from anchor in Repository.FindAll()
                  where anchor.Owner.Equals(domain.Name, StringComparison.OrdinalIgnoreCase)
-                 select anchor)
+                 select Mapper.Map<Anchor,AnchorModel>(anchor))
                     .AsPagination(page ?? 1, DefaultPageSize));
+        }
+
+        public ActionResult Details(string owner, string thumbprint)
+        {
+            var anchor = Repository.Get(owner, thumbprint);
+            if (anchor == null) return View("NotFound");
+
+            return Json(Mapper.Map<Anchor, AnchorModel>(anchor), "text/json", JsonRequestBehavior.AllowGet);
         }
 
         //public ActionResult Add(long domainID)
@@ -67,27 +83,6 @@ namespace AdminMvc.Controllers
         //    Repository.Delete(address);
 
         //    return View("Deleted", address);
-        //}
-
-        //public ActionResult Disable(long id)
-        //{
-        //    return EnableDisable(id, EntityStatus.Disabled);
-        //}
-
-        //public ActionResult Enable(long id)
-        //{
-        //    return EnableDisable(id, EntityStatus.Enabled);
-        //}
-
-        //private ActionResult EnableDisable(long id, EntityStatus status)
-        //{
-        //    var address = Repository.Get(id);
-        //    if (address == null) return View("NotFound");
-
-        //    address.Status = status;
-        //    Repository.Update(address);
-
-        //    return View("Details", address);
         //}
     }
 }
