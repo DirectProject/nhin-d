@@ -487,7 +487,7 @@
     <site>
       <id>nhind-site</id>
       <name>NHIN Direct API publication site</name>
-      <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-store/${project.version}</url>
+      <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/agent/${project.version}</url>
     </site>
     <snapshotRepository>
         <id>sonatype-snapshot</id>

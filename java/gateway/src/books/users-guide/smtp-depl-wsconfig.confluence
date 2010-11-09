@@ -44,7 +44,7 @@ Each domain must have at least one outgoing and incoming trust anchors.  Anchors
 *Anchor Store Settings*
 
 ||Setting||Description||
-|AnchorStoreType|The storage type of the anchor store.  Valid types: \\ \\WS: Anchors are stored in the configuration service.\\LDAP: Anchors are stored in an LDAP server.\\KEYSTORE: Anchors are stored in a local keystore file.|
+|AnchorStoreType|The storage type of the anchor store.  Valid types: \\ \\WS (default): Anchors are stored in the configuration service.\\LDAP: Anchors are stored in an LDAP server.\\KEYSTORE: Anchors are stored in a local keystore file.|
 |AnchorResolverType|The type of the anchor resolver.  Valid types:\\Uniform: All domains use the same anchors for all addresses.\\Multidomain: Each domain defines its own discrete set of trust anchors.|
 |AnchorKeyStoreFile|For keystore store types, the name of the file that contains the certificates. This can be just a file name, a fully qualified path, or a relative path.|
 |AnchorKeyStoreFilePass|For keystore store types, an optional password used to encrypt the file.|
@@ -65,7 +65,7 @@ Anchors stored in the configuration service are added and maintained in the _Anc
 
 !images/WSConfigAddAnchor.png!
 
-The owner field is domain name that trusts the anchor and the certificate field is the file location of the DER encoded certificate file that represents the trust anchor.  Incoming and outgoing indicates if the trust anchor should be used for incoming or outgoing anchors.  Clicking _Add Anchor_ will add the anchor to domain indicated by the owner field and upload the anchor to the configuration service.
+The certificate field is the file location of the DER encoded certificate file that represents the trust anchor.  Incoming and outgoing indicates if the trust anchor should be used for incoming or outgoing anchors.  Clicking _Add Anchor_ will add the anchor to domain indicated by the owner field and upload the anchor to the configuration service.
 
 *Non Web Service Anchor Storage*
 
@@ -93,7 +93,7 @@ Similar to anchors, public certificates can be retrieved from different source m
 *Public Certificate Store Settings*
 
 ||Setting||Description||
-|PublicStoreType|The storage type of the public certificate store.  Valid types: \\ \\DNS: Certificates are resolved using DNS.\\KEYSTORE: Certificates are stored in a local keystore file.|
+|PublicStoreType|The storage type of the public certificate store.  Valid types: \\ \\DNS (default): Certificates are resolved using DNS.\\KEYSTORE: Certificates are stored in a local keystore file.  \\WS: Public certificates are stored in the configuration service. \\ \\In some cases, multiple store types may be necessary to resolve a public certificate.  For example some HISPs use DNS to distributed public CERT while others may use out of band processes and require a HISP to manually import the CERT(s) into the storage medium.  Multiple store types are separated by a comma (,).|
 |PublicStoreFile|For keystore store types, the name of the file that contains the certificates. This can be just a file name, a fully qualified path, or a relative path.|
 |PublicStoreFilePass|For keystore store types, an optional password used to encrypt the file.|
 |PublicStorePrivKeyPass|For keystore store types, an optional password used to encrypt private keys.|
@@ -102,10 +102,10 @@ h2. PrivateCertStore
 
 The private certificate storage medium is configured in the settings page of the configuration UI.
 
-*Public Certificate Store Settings*
+*Private Certificate Store Settings*
 
 ||Setting||Description||
-|PrivateStoreType|The storage type of the private certificate store.   Valid types: \\ \\WS: Certificates are stored in the configuration service.\\LDAP: Certificates are stored in an LDAP server.\\KEYSTORE: Certificates are stored in a local keystore file.|
+|PrivateStoreType|The storage type of the private certificate store.   Valid types: \\ \\WS (default): Certificates are stored in the configuration service.\\LDAP: Certificates are stored in an LDAP server.\\KEYSTORE: Certificates are stored in a local keystore file.|
 |PrivateStoreFile|For keystore store types, the name of the file that contains the certificates. This can be just a file name, a fully qualified path, or a relative path.|
 |PrivateStoreFilePass|For keystore store types, an optional password used to encrypt the file.|
 |PrivateStorePrivKeyPass|For keystore store types, an optional password used to encrypt private keys.|
@@ -120,13 +120,13 @@ The private certificate storage medium is configured in the settings page of the
 |PrivateStoreLDAPCertPassphrase|For LDAP store types and pkcs12 files, the pass phrase used to encrypt the certificate.|
 
 
-*Web Service Private Certificate Storage*
+*Web Service Private/Public Certificate Storage*
 
 Private certificates stored in the configuration service are added and maintained in the _Certificates_ tab of the configuration service domain page.
 
 !images/WSConfigAddCertificate.png!
 
-The owner field is the email address of the destination represented by the certificate and the certificate field is the file location of the DER encoded certificate file that represents the private certificate.  Clicking _Add Certificate_ will add the private certificate to the configuration service.
+The certificate field is the file location of the DER encoded certificate file that represents the private or public certificate.  *NOTE* The owner is automatically populated by the service when the certificate is added.  Clicking _Add Certificate_ will add the private certificate to the configuration service.
 
 *NOTE:* Private certificate files should be pkcs12 encoded files with no encryption on both the file and private key stored in the file.  Although pkcs12 files can be created from open source tools such as openssl, the Java Reference implementation agent module contains a tool for creating pkcs12 files in the expected format from DER encoded X509 certificates and pkcs8 DER encoded private key files.
 
