@@ -21,6 +21,17 @@ To run:
 
 Windows
 ================================================================================
+Windows install requires several standalone unix utilities for Windows. These can be found in the following project:
+
+	http://sourceforge.net/projects/unxutils/
+
+Once installed, set the following environment variables, modifying the path to point to the location where the unix
+utilities were installed.  In the example below, the unix utilities were install in C:\UNXUTILS
+
+	SET WGET_PATH=C:\unxutils\usr\local\wbin\wget.exe
+	SET TAR_PATH=C:\unxutils\usr\local\wbin\tar.exe
+	SET GUNZIP_PATH=C:\unxutils\usr\local\wbin\gunzip.exe
+
 To install Direct, change directories to the install area:
 
   PUSHD C:\nhin-d\java\install
