@@ -44,7 +44,7 @@
 	<property name="james.stage.apps.james.sar.path" value="${james.stage.dir}/apps/james.sar"></property>
 	
 	<property name="tomcat.binary.url" value="http://mirrors.ibiblio.org/pub/mirrors/apache/tomcat/tomcat-6/v6.0.29/bin/apache-tomcat-6.0.29.tar.gz"></property>
-	<property name="tomcat.binary.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar.gz"></property>
+	<property name="tomcat.binary.compressed.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar.gz"></property>
 	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-6.0.29"></property>
 	<property name="tomcat.webapp.dir" value="${tomcat.stage.dir}/webapps"></property>
 	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
@@ -103,13 +103,39 @@
 	<!-- Stylesheet to edit server.xml for tomcat configuration -->
 	<property name="edit.tomcat.stylesheet" value="${src}/scripts/edit-tomcat.xsl"></property>
 
-	<target name="windows-specific" if="is.windows">
-		<echo message="src is ${src}"></echo>
-		<property name="wget.command.path" value="${resources.dir}/wget.exe"></property>
+	<target name="fail-if-no-gunzip">
+		<fail unless="env.GUNZIP_PATH" message="Environment variable GUNZIP_PATH is not set"></fail>
 	</target>
 	
+	<target name="fail-if-no-tar">
+		<fail unless="env.TAR_PATH" message="Environment variable TAR_PATH is not set"></fail>
+	</target>
+	
+	<target name="fail-if-no-wget">
+		<fail unless="env.WGET_PATH" message="Environment variable WGET_PATH is not set"></fail>
+	</target>
+	
+	<target name="windows-specific" if="is.windows">
+		<echo message="src is ${src}"></echo>
+		<antcall target="fail-if-no-wget"></antcall>
+		<antcall target="fail-if-no-tar"></antcall>
+		<antcall target="fail-if-no-gunzip"></antcall>
+		<property name="wget.command.path" value="${env.WGET_PATH}"></property>
+		<property name="wget.command.options" value="" />
+		<property name="tar.command.path" value="${env.TAR_PATH}"></property>
+		<property name="gunzip.command.path" value="${env.GUNZIP_PATH}"></property>
+		<property name="tomcat.tar.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar"></property>
+		<property name="tomcat.binary.pkg" value="${tomcat.tar.pkg}" />
+		<property name="tar.command.options" value="xvf" />
+	</target>
+
 	<target name="unix-specific" if="is.unix">
-		<property name="wget.command.path" value="/usr/bin/wget"></property>
+		<property name="wget.command.path" value="/usr/bin/wget" />
+		<property name="wget.command.options" value="--no-check-certificate -q" />
+		<exec executable="which" outputproperty="tar.command.path" resultproperty="tar.command.result" failonerror="true">
+			<arg line="tar"></arg>
+		</exec>
+		<property name="tar.command.options" value="xvzf" />
 	</target>
 	
 	<target name="mac-specific" if="is.mac">
@@ -172,11 +198,8 @@
 		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${apache.james.binary.zip}"></unzip>
 
 		<!-- unpack tomcat -->
-		<exec executable="which" outputproperty="tar.command.path" resultproperty="tar.command.result" failonerror="true">
-			<arg line="tar"></arg>
-		</exec>
 		<exec executable="${tar.command.path}" failonerror="true" dir="${env.DIRECT_INSTALL_DIR}">
-			<arg line="xvzf ${tomcat.binary.pkg}" />
+			<arg line="${tar.command.options} ${tomcat.binary.pkg}" />
 		</exec>
 		
 		<!-- configure james -->
@@ -191,7 +214,7 @@
 	<!-- get james with wget -->
 	<target name="get-james-with-wget" if="wget.command.path" unless="apache.james.download.exists">
 	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true" errorproperty="wget.james.erroroutput">
-	  		<arg line="--no-check-certificate -q ${apache.james.binary.url}"></arg>
+	  		<arg line="${wget.command.options} ${apache.james.binary.url}"></arg>
 	  	</exec>
 	</target>
 	
@@ -202,13 +225,20 @@
 	  	</exec>
 	</target>
 
+	<!-- Windows tar is simplistic and doesn't support compressed archives; therefore, we must uncompress the tar file in an extra step -->
+	<target name="expand-tomcat-for-windows" if="is.windows">
+		<exec executable="${gunzip.command.path}" failonerror="true" output="${tomcat.tar.pkg}">
+			<arg line="-c ${tomcat.binary.compressed.pkg}" />
+		</exec>
+	</target>
+	
 	<!-- get tomcat -->
-	<target name="get-tomcat" depends="get-tomcat-with-wget, get-tomcat-with-curl" unless="tomcat.download.exists"></target>
+	<target name="get-tomcat" depends="get-tomcat-with-wget, get-tomcat-with-curl, expand-tomcat-for-windows" unless="tomcat.download.exists"></target>
 
 	<!-- get tomcat with wget -->
 	<target name="get-tomcat-with-wget" if="wget.command.path" unless="tomcat.download.exists">
 	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true" errorproperty="wget.tomcat.erroroutput">
-	  		<arg line="--no-check-certificate -q ${tomcat.binary.url}"></arg>
+	  		<arg line="${wget.command.options} ${tomcat.binary.url}"></arg>
 	  	</exec>
 	</target>
 	
