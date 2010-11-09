@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Web.Mvc;
 
 using AdminMvc.Models.Repositories;
@@ -8,8 +9,7 @@ using MvcContrib.Pagination;
 
 namespace AdminMvc.Controllers
 {
-    public class ControllerBase<T,TRepository> : Controller
-        where T : class
+    public class ControllerBase<T,TModel,TRepository> : Controller
         where TRepository : IRepository<T>
     {
         protected const int DefaultPageSize = 10;
@@ -28,7 +28,10 @@ namespace AdminMvc.Controllers
 
         public ActionResult Index(int? page)
         {
-            var paginatedItems = Repository.FindAll().AsPagination(page ?? 1, DefaultPageSize);
+            var paginatedItems = (from item in Repository.FindAll()
+                        select Mapper.Map<T, TModel>(item))
+                        .AsPagination(page ?? 1, DefaultPageSize);
+
             return View(paginatedItems);
         }
 

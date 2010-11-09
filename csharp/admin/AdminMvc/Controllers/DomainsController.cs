@@ -10,7 +10,7 @@ using Health.Direct.Config.Store;
 
 namespace AdminMvc.Controllers
 {
-    public class DomainsController : ControllerBase<Domain, IDomainRepository>
+    public class DomainsController : ControllerBase<Domain, DomainModel, IDomainRepository>
     {
         public DomainsController(IDomainRepository repository)
             : base(repository)
@@ -89,7 +89,6 @@ namespace AdminMvc.Controllers
             Repository.Update(domain);
 
             return Json(Mapper.Map<Domain, DomainModel>(domain), "text/json");
-            //return RedirectToAction("Index");
         }
 
         public override ActionResult Details(long id)

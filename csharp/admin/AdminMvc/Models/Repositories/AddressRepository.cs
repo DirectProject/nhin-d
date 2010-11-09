@@ -5,11 +5,6 @@ using Health.Direct.Config.Store;
 
 namespace AdminMvc.Models.Repositories
 {
-    public interface IAddressRepository : IRepository<Address>
-    {
-        Address Add(AddressModel model);
-    }
-
     public class AddressRepository : IAddressRepository
     {
         private readonly AddressManagerClient m_client;
@@ -24,18 +19,6 @@ namespace AdminMvc.Models.Repositories
         public IQueryable<Address> FindAll()
         {
             return Client.EnumerateAddresses(null, int.MaxValue).AsQueryable();
-        }
-
-        public Address Add(AddressModel model)
-        {
-            return Client.AddAddress(
-                new Address
-                    {
-                        DisplayName = model.DisplayName,
-                        DomainID = model.DomainID,
-                        EmailAddress = model.EmailAddress,
-                        Type = model.Type
-                    });
         }
 
         public Address Add(Address address)

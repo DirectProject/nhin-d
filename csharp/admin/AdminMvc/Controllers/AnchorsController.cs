@@ -10,7 +10,7 @@ using MvcContrib.Pagination;
 
 namespace AdminMvc.Controllers
 {
-    public class AnchorsController : ControllerBase<Anchor, IAnchorRepository>
+    public class AnchorsController : ControllerBase<Anchor, Anchor, IAnchorRepository>
     {
         public AnchorsController(IAnchorRepository repository) : base(repository)
         {

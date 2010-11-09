@@ -10,7 +10,7 @@ using MvcContrib.Pagination;
 
 namespace AdminMvc.Controllers
 {
-    public class CertificatesController : ControllerBase<Certificate, ICertificateRepository>
+    public class CertificatesController : ControllerBase<Certificate, Certificate, ICertificateRepository>
     {
         public CertificatesController(ICertificateRepository repository) : base(repository)
         {
