@@ -8,8 +8,6 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-    <h2>Domains</h2>
-
     <div class="action-bar">
         <%= Html.ActionLink("Add Domain", "Add", null, new { @class = "action ui-priority-primary"})%>
     </div>
