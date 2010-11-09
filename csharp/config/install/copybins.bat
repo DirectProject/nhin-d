@@ -46,7 +46,7 @@ set /P backup=Backup Current? [Y/N  Return: N]
 if "%backup%"=="" set backup=N
 
 set /P dest=Destination Path [Return: default]
-if "%dest%"=="" set dest=C:\inetpub\nhindConfigService
+if "%dest%"=="" set dest=C:\inetpub\ConfigService
 
 set /P configFileName=Config File Name? [Return: default]
 if "%configFileName%"=="" set configFileName=web.config

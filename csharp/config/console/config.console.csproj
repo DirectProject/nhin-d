@@ -52,6 +52,7 @@
     <Compile Include="Command\AddressCommands.cs" />
     <Compile Include="Command\AnchorCommands.cs" />
     <Compile Include="Command\CertificateCommands.cs" />
+    <Compile Include="Command\CertificateFileInfo.cs" />
     <Compile Include="Command\CommandsBase.cs" />
     <Compile Include="Command\DnsRecordCommands.cs" />
     <Compile Include="Command\DomainCommands.cs" />

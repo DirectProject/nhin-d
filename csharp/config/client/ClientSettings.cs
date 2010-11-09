@@ -15,13 +15,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Xml.Serialization;
-using System.Xml;
 using System.ServiceModel;
-using System.Configuration;
 
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Client.DomainManager;
-using Health.Direct.Common;
 
 namespace Health.Direct.Config.Client
 {
@@ -36,42 +33,44 @@ namespace Health.Direct.Config.Client
     /// 
     /// </summary>
     [XmlType]
-    public class ClientSettings :  ConfigurationSection
+    public class ClientSettings
     {
         int m_maxReceivedMessageSize = int.MaxValue;   // No limits by default
+        string m_url;
+        bool m_secure;
+        int m_receiveTimeout = -1;
+        int m_sendTimeout = -1;
         EndpointAddress m_endpoint;
         BasicHttpBinding m_binding;
-        
+
         /// <summary>
         /// The Service Url
         /// </summary>
         [XmlElement]
-        [ConfigurationProperty("Url", DefaultValue="undefined", IsRequired = true)]
         public string Url
         {
             get
             {
-                return (string)this["Url"];
-            }            
+                return m_url;
+            }
             set
             {
                 if (string.IsNullOrEmpty(value))
                 {
                     throw new ArgumentException("value was null or empty", "value");
                 }
-                this["Url"] = value;
-                m_endpoint = new EndpointAddress(value);
+                m_url = value;
+                m_endpoint = new EndpointAddress(m_url);
                 m_binding = null;
             }
         }
-        
+
         [XmlElement]
-        [ConfigurationProperty("MaxReceivedMessageSize", DefaultValue=int.MaxValue, IsRequired=false)]
         public int MaxReceivedMessageSize
         {
             get
             {
-                return (int)this["MaxReceivedMessageSize"];
+                return m_maxReceivedMessageSize;
             }
             set
             {
@@ -79,62 +78,58 @@ namespace Health.Direct.Config.Client
                 {
                     throw new ArgumentException("value was less than 1", "value");
                 }
-                this["MaxReceivedMessageSize"] = value;
                 m_maxReceivedMessageSize = value;
             }
         }
-        
+
         [XmlElement]
-        [ConfigurationProperty("Secure", DefaultValue = false, IsRequired = false)]
         public bool Secure
         {
             get
             {
-                return (bool)this["Secure"];
+                return m_secure;
             }
             set
             {
-                this["Secure"] = value;
+                m_secure = value;
             }
         }
-        
+
         [XmlElement("ReceiveTimeout")]
-        [ConfigurationProperty("ReceiveTimeout", DefaultValue = -1, IsRequired = false)]
         public int ReceiveTimeoutSeconds
         {
             get
             {
-                return (int)this["ReceiveTimeout"];
+                return m_receiveTimeout;
             }
             set
             {
-                this["ReceiveTimeout"] = value;
+                m_receiveTimeout = value;
             }
         }
 
         [XmlElement("SendTimeout")]
-        [ConfigurationProperty("SendTimeout", DefaultValue = -1, IsRequired = false)]
         public int SendTimeoutSeconds
         {
             get
             {
-                return (int)this["SendTimeout"];
+                return m_sendTimeout;
             }
             set
             {
-                this["SendTimeoutSeconds"] = value;
+                m_sendTimeout = value;
             }
         }
-        
+
         [XmlIgnore]
         public EndpointAddress Endpoint
         {
             get
             {
                 return m_endpoint;
-            }            
+            }
         }
-        
+
         [XmlIgnore]
         public BasicHttpBinding Binding
         {
@@ -144,7 +139,7 @@ namespace Health.Direct.Config.Client
                 return m_binding;
             }
         }
-        
+
         public void SetHost(string host, int port)
         {
             Uri current = new Uri(this.Url);
@@ -156,7 +151,7 @@ namespace Health.Direct.Config.Client
             }
             this.Url = builder.ToString();
         }
-                
+
         public void Validate()
         {
             if (string.IsNullOrEmpty(this.Url))
@@ -164,30 +159,30 @@ namespace Health.Direct.Config.Client
                 throw new ArgumentException("Invalid ServiceUrl");
             }
         }
-        
+
         void EnsureBinding()
         {
             if (m_binding != null)
             {
                 return;
             }
-            
-            m_binding = BindingFactory.CreateBasic(m_maxReceivedMessageSize, this.Secure);
-            if (this.ReceiveTimeoutSeconds > 0)
+
+            m_binding = BindingFactory.CreateBasic(m_maxReceivedMessageSize, m_secure);
+            if (m_receiveTimeout > 0)
             {
-                m_binding.ReceiveTimeout = TimeSpan.FromSeconds(this.ReceiveTimeoutSeconds);
+                m_binding.ReceiveTimeout = TimeSpan.FromSeconds(m_receiveTimeout);
             }
-            if (this.SendTimeoutSeconds > 0)
+            if (m_sendTimeout > 0)
             {
-                m_binding.SendTimeout = TimeSpan.FromSeconds(this.SendTimeoutSeconds);
+                m_binding.SendTimeout = TimeSpan.FromSeconds(m_sendTimeout);
             }
-        }        
-        
+        }
+
         public DomainManagerClient CreateDomainManagerClient()
         {
             return new DomainManagerClient(this.Binding, this.Endpoint);
         }
-        
+
         public AddressManagerClient CreateAddressManagerClient()
         {
             return new AddressManagerClient(this.Binding, this.Endpoint);
@@ -197,16 +192,15 @@ namespace Health.Direct.Config.Client
         {
             return new DnsRecordManagerClient(this.Binding, this.Endpoint);
         }
-        
+
         public CertificateStoreClient CreateCertificateStoreClient()
         {
             return new CertificateStoreClient(this.Binding, this.Endpoint);
         }
-        
+
         public AnchorStoreClient CreateAnchorStoreClient()
         {
             return new AnchorStoreClient(this.Binding, this.Endpoint);
         }
     }
-
 }
