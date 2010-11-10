@@ -15,7 +15,8 @@
 </div>
 
 <script type="text/javascript" language="javascript">
-    function showDetailsDialog(event,link) {
+    var dateTimeFormatString = '<%= ViewData["DateTimeFormat"] %>';
+    function showDetailsDialog(event, link) {
         event.preventDefault();
         clearDialog($('#domain-dialog'));
         $.getJSON(link.attr('href'), function(data) { showDialog($('#domain-dialog'), data); });
@@ -28,7 +29,6 @@
             width: 500
         });
     }
-    var dateTimeFormatString = '<%= ViewData["DateTimeFormat"] %>';
     function clearDialog(dialog) {
         $('div.display-field', dialog).text('');
     }

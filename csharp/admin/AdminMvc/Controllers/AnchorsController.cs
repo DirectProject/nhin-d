@@ -24,18 +24,22 @@ namespace AdminMvc.Controllers
             item.Status = status;
         }
 
-        public ActionResult Index(long domainID, int? page)
+        public ActionResult Index(long? domainID, int? page)
         {
-            var domain = new DomainRepository().Get(domainID);
-            if (domain == null) return View("NotFound", "Shared", "Anchor");
+            ViewData["DateTimeFormat"] = "M/d/yyyy h:mm:ss tt";
 
-            ViewData["Domain"] = Mapper.Map<Domain, DomainModel>(domain);
+            Func<Anchor, bool> filter = anchor => true;
+            if (domainID.HasValue)
+            {
+                var domain = Mapper.Map<Domain, DomainModel>(new DomainRepository().Get(domainID.Value));
+                ViewData["Domain"] = domain;
+                filter = anchor => anchor.Owner.Equals(domain.Name, StringComparison.OrdinalIgnoreCase);
+            }
 
-            return View(
-                (from anchor in Repository.FindAll()
-                 where anchor.Owner.Equals(domain.Name, StringComparison.OrdinalIgnoreCase)
-                 select Mapper.Map<Anchor,AnchorModel>(anchor))
-                    .AsPagination(page ?? 1, DefaultPageSize));
+            return View(Repository.FindAll()
+                            .Where(filter)
+                            .Select(anchor => Mapper.Map<Anchor, AnchorModel>(anchor))
+                            .AsPagination(page ?? 1, DefaultPageSize));
         }
 
         public ActionResult Details(string owner, string thumbprint)

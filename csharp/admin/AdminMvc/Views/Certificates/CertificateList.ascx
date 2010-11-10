@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<AnchorModel>>" %>
+﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<CertificateModel>>" %>
 <%@ Import Namespace="AdminMvc.Common"%>
 <%@ Import Namespace="MvcContrib.UI.Grid"%>
 <%@ Import Namespace="MvcContrib.UI.Pager"%>
@@ -17,8 +17,6 @@
                 column.For(a => Html.Span(Formatter.Format(a.CreateDate), new { title = a.CreateDate.ToString() })).Named("Created On");
                 column.For(a => Html.Span(Formatter.Format(a.ValidStartDate), new { title = a.ValidStartDate.ToString() })).Named("Valid From");
                 column.For(a => Html.Span(Formatter.Format(a.ValidEndDate), new { title = a.ValidEndDate.ToString() })).Named("Valid Until");
-                column.For(a => a.ForIncoming).Named("Incoming");
-                column.For(a => a.ForOutgoing).Named("Outgoing");
                 column.For(d => Html.ActionLink("View", "Details", new { d.Owner, d.Thumbprint }, new { @class = "view-details" }));
                 column.For(d => d.IsEnabled
                                     ? Html.ActionLink("Disable", "Disable", new { d.Owner, d.Thumbprint }, new { @class = "enable-disable-action" })
@@ -34,7 +32,7 @@
     $(function() {
         $('a.delete-action')
             .button({ icons: { primary: "ui-icon-trash" }, text: false })
-            .click(function(event) { confirmDelete(event, $('#confirm-dialog'), $(this), 'Are you sure want to delete this anchor?', 'Anchor') });
+            .click(function(event) { confirmDelete(event, $('#confirm-dialog'), $(this), 'Are you sure want to delete this certificate?', 'Certificate') });
 
         $('a.enable-disable-action').click(enableDisableDomain);
         $('a.view-details').click(function(event) {

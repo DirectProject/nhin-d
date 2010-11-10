@@ -1,4 +1,5 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<AddressModel>>" %>
+<%@ Import Namespace="AdminMvc.Common"%>
 <%@ Import Namespace="MvcContrib.UI.Grid"%>
 <%@ Import Namespace="MvcContrib.UI.Pager"%>
 <%@ Import Namespace="MvcContrib.Pagination"%>
@@ -10,11 +11,12 @@
     .Columns(
         column =>
             {
+                column.For(a => a.DomainID).Visible(ViewData["Domain"] == null).Named("Domain ID");
                 column.For(a => a.EmailAddress);
                 column.For(a => a.DisplayName);
                 column.For(a => a.Status).Attributes(@class => "status");
-                column.For(a => a.CreateDate);
-                column.For(a => a.UpdateDate);
+                column.For(d => Html.Span(Formatter.Format(d.CreateDate), new { title = d.CreateDate.ToString() })).Named("Created On");
+                column.For(d => Html.Span(Formatter.Format(d.UpdateDate), new { title = d.UpdateDate.ToString() })).Named("Updated On");
                 column.For(a => Html.ActionLink("View", "Details", new { id = a.ID }, new { @class = "view-details" }));
                 column.For(a => a.IsEnabled
                                     ? Html.ActionLink("Disable", "Disable", new { id = a.ID }, new { @class = "enable-disable-action" })

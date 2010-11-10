@@ -24,7 +24,8 @@
 </div>
 
 <script type="text/javascript" language="javascript">
-    function showDetailsDialog(event,link) {
+    var dateTimeFormatString = '<%= ViewData["DateTimeFormat"] %>';
+    function showDetailsDialog(event, link) {
         event.preventDefault();
         clearDialog($('#address-dialog'));
         $.get(link.attr('href'), function(data) { showDialog($('#address-dialog'), data); });
@@ -46,7 +47,7 @@
         $('#display-name', dialog).text(data.DisplayName);
         $('#type', dialog).text(data.Type);
         $('#status', dialog).text(data.Status);
-        $('#created', dialog).text(data.CreateDate);
-        $('#updated', dialog).text(data.UpdateDate);
+        $('#created', dialog).text(data.CreateDate.parseJSONDate().format(dateTimeFormatString));
+        $('#updated', dialog).text(data.UpdateDate.parseJSONDate().format(dateTimeFormatString));
     }
 </script>

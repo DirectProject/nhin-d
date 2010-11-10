@@ -2,7 +2,10 @@ using System;
 using System.Linq;
 using System.Web.Mvc;
 
+using AdminMvc.Models;
 using AdminMvc.Models.Repositories;
+
+using AutoMapper;
 
 using Health.Direct.Config.Store;
 
@@ -18,21 +21,25 @@ namespace AdminMvc.Controllers
 
         protected override void SetStatus(Certificate item, EntityStatus status)
         {
-            throw new NotImplementedException();
+            item.Status = status;
         }
 
-        public ActionResult Index(long domainID, int? page)
+        public ActionResult Index(long? domainID, int? page)
         {
-            var domain = new DomainRepository().Get(domainID);
-            if (domain == null) return View("NotFound");
+            ViewData["DateTimeFormat"] = "M/d/yyyy h:mm:ss tt";
 
-            ViewData["Domain"] = domain;
+            Func<Certificate, bool> filter = certificate => true;
+            if (domainID.HasValue)
+            {
+                var domain = Mapper.Map<Domain, DomainModel>(new DomainRepository().Get(domainID.Value));
+                ViewData["Domain"] = domain;
+                filter = certificate => certificate.Owner.Equals(domain.Name, StringComparison.OrdinalIgnoreCase);
+            }
 
-            return View(
-                (from certificate in Repository.FindAll()
-                 where certificate.Owner.Equals(domain.Name, StringComparison.OrdinalIgnoreCase)
-                 select certificate)
-                    .AsPagination(page ?? 1, DefaultPageSize));
+            return View(Repository.FindAll()
+                            .Where(filter)
+                            .Select(certificate => Mapper.Map<Certificate, CertificateModel>(certificate))
+                            .AsPagination(page ?? 1, DefaultPageSize));
         }
 
         //public ActionResult Add(long domainID)

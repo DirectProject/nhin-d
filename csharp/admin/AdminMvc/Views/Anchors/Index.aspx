@@ -11,15 +11,18 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-    <h2>Anchors for <%= ((DomainModel)ViewData["Domain"]).Name %></h2>
-
-    <%= Html.ActionLink("Return to domains", "Index", "Domains") %>
-    <br />
-    
-    <div class="action-bar">
+    <% if (ViewData["Domain"] != null) { %>
+    <div class="ui-widget" style="margin-bottom: 1em; float: left;">
+        <div class="ui-state-highlight" style="padding: .3em .7em; font-size: .8em; width: auto;">
+            <span style="float: left; padding-right: .5em;">Displaying '<%= ((DomainModel)ViewData["Domain"]).Name%>'</span>
+            <a href="/Anchors" title="Click to show all anchors"><span class="ui-icon ui-icon-close"></span></a>
+        </div>
+    </div>
+    <div class="action-bar clear">
         <%= Html.ActionLink("Add Anchor", "Add", new { domainID = ((DomainModel)ViewData["Domain"]).ID }, new { @class = "action ui-priority-primary" })%>
     </div>
-
+    <% } %>
+    
     <%= Html.Partial("AnchorList", Model) %>
 
 </asp:Content>

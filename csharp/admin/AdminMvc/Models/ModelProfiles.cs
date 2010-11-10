@@ -20,6 +20,7 @@ namespace AdminMvc.Models
         {
             CreateBidirectionalMap<Address, AddressModel>();
             CreateBidirectionalMap<Anchor, AnchorModel>();
+            CreateBidirectionalMap<Certificate, CertificateModel>();
             CreateBidirectionalMap<Domain, DomainModel>();
             Mapper.CreateMap<string, EntityStatus>().ConvertUsing(new EntityStatusTypeConverter());
         }
