@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>config</artifactId>
 		<groupId>org.nhind</groupId>
-		<version>1.0</version>
+		<version>1.1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.nhind</groupId>
 	<artifactId>config-service</artifactId>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>NHIN-Direct Configuration Service</name>
 	<description>NHIN-Direct Configuration Web Services</description>
@@ -161,7 +161,7 @@
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>config-store</artifactId>
-			<version>1.0</version>
+			<version>1.1-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 			<exclusions>
@@ -174,7 +174,7 @@
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>config-service-jar</artifactId>
-			<version>1.0</version>
+			<version>1.1-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -297,7 +297,7 @@
 			<dependency>
 				<groupId>org.nhind</groupId>
 				<artifactId>config-store</artifactId>
-				<version>1.0</version>
+				<version>1.1-SNAPSHOT</version>
 				<type>jar</type>
 				<scope>compile</scope>
 			</dependency>
