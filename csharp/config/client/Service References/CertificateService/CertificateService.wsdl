@@ -211,6 +211,18 @@
         <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="SetAnchorStatus">
+      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
     <wsdl:operation name="SetAnchorStatusForOwner">
       <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwner" style="document" />
       <wsdl:input>
