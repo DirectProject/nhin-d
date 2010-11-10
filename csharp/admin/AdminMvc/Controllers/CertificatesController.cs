@@ -1,0 +1,102 @@
+using System;
+using System.Linq;
+using System.Web.Mvc;
+
+using AdminMvc.Models;
+using AdminMvc.Models.Repositories;
+
+using AutoMapper;
+
+using Health.Direct.Config.Store;
+
+using MvcContrib.Pagination;
+
+namespace AdminMvc.Controllers
+{
+    public class CertificatesController : ControllerBase<Certificate, CertificateModel, ICertificateRepository>
+    {
+        public CertificatesController(ICertificateRepository repository) : base(repository)
+        {
+        }
+
+        protected override void SetStatus(Certificate item, EntityStatus status)
+        {
+            item.Status = status;
+        }
+
+        public ActionResult Index(long? domainID, int? page)
+        {
+            ViewData["DateTimeFormat"] = "M/d/yyyy h:mm:ss tt";
+
+            Func<Certificate, bool> filter = certificate => true;
+            if (domainID.HasValue)
+            {
+                var domain = Mapper.Map<Domain, DomainModel>(new DomainRepository().Get(domainID.Value));
+                ViewData["Domain"] = domain;
+                filter = certificate => certificate.Owner.Equals(domain.Name, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return View(Repository.FindAll()
+                            .Where(filter)
+                            .Select(certificate => Mapper.Map<Certificate, CertificateModel>(certificate))
+                            .AsPagination(page ?? 1, DefaultPageSize));
+        }
+
+        public ActionResult Details(long id)
+        {
+            var certificate = Repository.Get(id);
+            if (certificate == null) return View("NotFound");
+
+            return Json(Mapper.Map<Certificate, CertificateModel>(certificate), "text/json", JsonRequestBehavior.AllowGet);
+        }
+
+        //public ActionResult Add(long domainID)
+        //{
+        //    return View(new AddressModel {DomainID = domainID});
+        //}
+
+        //[HttpPost]
+        //public ActionResult Add(FormCollection formValues)
+        //{
+        //    var address = new AddressModel();
+
+        //    if (TryUpdateModel(address))
+        //    {
+        //        var newAddress = Repository.Add(address);
+
+        //        return RedirectToAction("Details", new { id = newAddress.ID });
+        //    }
+
+        //    return View(address);
+        //}
+
+        //public ActionResult Delete(long id)
+        //{
+        //    var address = Repository.Get(id);
+        //    if (address == null) return View("NotFound");
+
+        //    return View(address);
+        //}
+
+        //[HttpPost]
+        //public ActionResult Delete(long id, string confirmButton)
+        //{
+        //    var address = Repository.Get(id);
+        //    if (address == null) return View("NotFound");
+
+        //    Repository.Delete(address);
+
+        //    return View("Deleted", address);
+        //}
+
+        protected override ActionResult EnableDisable(long id, EntityStatus status)
+        {
+            var certificate = Repository.Get(id);
+            if (certificate == null) return View("NotFound");
+
+            certificate = Repository.ChangeStatus(certificate, status);
+
+            return Json(Mapper.Map<Certificate, CertificateModel>(certificate), "text/json");
+        }
+    }
+}
