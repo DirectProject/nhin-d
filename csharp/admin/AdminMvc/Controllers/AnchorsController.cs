@@ -42,9 +42,9 @@ namespace AdminMvc.Controllers
                             .AsPagination(page ?? 1, DefaultPageSize));
         }
 
-        public ActionResult Details(string owner, string thumbprint)
+        public ActionResult Details(long id)
         {
-            var anchor = Repository.Get(owner, thumbprint);
+            var anchor = Repository.Get(id);
             if (anchor == null) return View("NotFound");
 
             return Json(Mapper.Map<Anchor, AnchorModel>(anchor), "text/json", JsonRequestBehavior.AllowGet);
@@ -88,5 +88,15 @@ namespace AdminMvc.Controllers
 
         //    return View("Deleted", address);
         //}
+
+        protected override ActionResult EnableDisable(long id, EntityStatus status)
+        {
+            var anchor = Repository.Get(id);
+            if (anchor == null) return View("NotFound");
+
+            anchor = Repository.ChangeStatus(anchor, status);
+
+            return Json(Mapper.Map<Anchor, AnchorModel>(anchor), "text/json");
+        }
     }
 }

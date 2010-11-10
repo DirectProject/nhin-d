@@ -1,4 +1,11 @@
-﻿a
+﻿body
+{
+    padding: 0;
+    font-family: Verdana, Arial, Sans-Serif;
+    font-size: 12px;
+}
+
+a
 {
     text-decoration: none;
 }

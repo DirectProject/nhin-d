@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using Health.Direct.Config.Client.CertificateService;
@@ -35,8 +34,7 @@ namespace AdminMvc.Models.Repositories
 
         public void Update(Anchor anchor)
         {
-            Delete(anchor);
-            Add(anchor);
+            throw new NotSupportedException("Updating anchors not supported");
         }
 
         public Anchor Get(long id)
@@ -44,11 +42,11 @@ namespace AdminMvc.Models.Repositories
             return Client.GetAnchors(new[] {id}, null).SingleOrDefault();
         }
 
-        public Anchor Get(string owner, string thumbprint)
+        public Anchor ChangeStatus(Anchor anchor, EntityStatus status)
         {
-            return (from anchor in Client.GetAnchorsForOwner(owner, null)
-                    where anchor.Thumbprint == thumbprint
-                    select anchor).SingleOrDefault();
+            Client.SetAnchorStatus(new[] { anchor.ID }, status);
+            anchor.Status = status;
+            return anchor;
         }
     }
 }
