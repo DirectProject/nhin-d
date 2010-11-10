@@ -20,7 +20,7 @@ namespace Health.Direct.DnsResponder.WinSrv
             if (Environment.UserInteractive)
             {
                 srv.StartService(args);
-                Console.WriteLine("DnsResponderWinSrv running, press any key to stop...");
+                Console.WriteLine("DnsResponderWinSrv running, press Enter key to stop...");
                 Console.Read();
                 srv.Stop();
             }

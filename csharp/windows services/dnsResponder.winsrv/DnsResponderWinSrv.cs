@@ -25,19 +25,19 @@ namespace Health.Direct.DnsResponder.WinSrv
         /// method to initialize fields utilized by the service
         /// </summary>
         protected void InitializeService()
-        {
 
+        {
             //----------------------------------------------------------------------------------------------------
             //---load the settings from the related sections in app.config
-            ClientSettings certServiceSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsRecordManagerServiceSettings")).AsClientSettings();
-            ClientSettings dnsRecordServiceSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/CertificateManagerServiceSettings")).AsClientSettings();
-            DnsServerSettings dnsServerSettings = (DnsServerSettings)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsServerSettings");
+            ClientSettings dnsRecordServiceSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsRecordManagerServiceSettings")).AsClientSettings();
+            ClientSettings certServiceSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/CertificateManagerServiceSettings")).AsClientSettings();
+            DnsServerSettings dnsServerSettings = ((DnsServerSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsServerSettings")).AsDnsServerSettings();
 
             m_store = new DnsRecordStorageService(dnsRecordServiceSettings, certServiceSettings);
 
             //----------------------------------------------------------------------------------------------------
             //---create the DNS Server instance
-            DnsServer dnsServer = new DnsServer(m_store
+            m_dnsServer = new DnsServer(m_store
                 , dnsServerSettings);
 
             //----------------------------------------------------------------------------------------------------

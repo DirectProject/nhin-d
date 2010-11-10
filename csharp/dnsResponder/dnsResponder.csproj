@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="DnsRecordStorageService .cs" />
     <Compile Include="DnsRecordTable.cs" />
+    <Compile Include="DnsServerSettingsSection.cs" />
     <Compile Include="DnsUdpContext.cs" />
     <Compile Include="MemoryStore.cs" />
     <Compile Include="ProxyStore.cs">
@@ -74,6 +75,7 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="SocketServer.cs" />
+    <Compile Include="SocketServerSettingsElement.cs" />
     <Compile Include="SynchronizedObjectPool.cs" />
     <Compile Include="TcpContext.cs" />
     <Compile Include="UdpServer.cs" />
