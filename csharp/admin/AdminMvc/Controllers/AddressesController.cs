@@ -24,15 +24,22 @@ namespace AdminMvc.Controllers
             item.Status = status;
         }
 
-        public ActionResult Index(long domainID, int? page)
+        public ActionResult Index(long? domainID, int? page)
         {
-            ViewData["Domain"] = Mapper.Map<Domain,DomainModel>(new DomainRepository().Get(domainID));
+            ViewData["DateTimeFormat"] = "M/d/yyyy h:mm:ss tt";
 
-            return View(
-                (from address in Repository.FindAll()
-                 where address.DomainID == domainID
-                 select Mapper.Map<Address,AddressModel>(address))
-                    .AsPagination(page ?? 1, DefaultPageSize));
+            Func<Address, bool> filter = address => true;
+            if (domainID.HasValue)
+            {
+                var domain = Mapper.Map<Domain, DomainModel>(new DomainRepository().Get(domainID.Value));
+                ViewData["Domain"] = domain;
+                filter = address => address.DomainID == domain.ID;
+            }
+
+            return View(Repository.FindAll()
+                            .Where(filter)
+                            .Select(address => Mapper.Map<Address, AddressModel>(address))
+                            .AsPagination(page ?? 1, DefaultPageSize));
         }
 
         public ActionResult Add(long domainID)

@@ -1,4 +1,5 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage<IEnumerable<Health.Direct.Config.Store.Certificate>>" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage<IEnumerable<CertificateModel>>" %>
+<%@ Import Namespace="AdminMvc.Models"%>
 <%@ Import Namespace="MvcContrib.UI.Pager"%>
 <%@ Import Namespace="MvcContrib.Pagination"%>
 <%@ Import Namespace="MvcContrib.UI.Grid"%>
@@ -10,20 +11,18 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-    <h2>Certificates</h2>
-
-    <%= Html.Grid(Model)
-        .Columns(
-            column =>
-                {
-                    column.For(d => d.Owner);
-                    column.For(d => d.Thumbprint);
-                    column.For(d => d.CreateDate);
-                    column.For(d => d.ValidStartDate);
-                    column.For(d => d.ValidEndDate);
-                    column.For(d => d.HasData);
-                    column.For(d => d.Status);
-                })%>
-    <%= Html.Pager((IPagination)Model) %>
+    <% if (ViewData["Domain"] != null) { %>
+    <div class="ui-widget" style="margin-bottom: 1em; float: left;">
+        <div class="ui-state-highlight" style="padding: .3em .7em; font-size: .8em; width: auto;">
+            <span style="float: left; padding-right: .5em;">Displaying '<%= ((DomainModel)ViewData["Domain"]).Name%>'</span>
+            <a href="/Certificates" title="Click to show all certificates"><span class="ui-icon ui-icon-close"></span></a>
+        </div>
+    </div>
+    <div class="action-bar clear">
+        <%= Html.ActionLink("Add Certificate", "Add", new { domainID = ((DomainModel)ViewData["Domain"]).ID }, new { @class = "action ui-priority-primary" })%>
+    </div>
+    <% } %>
+    
+    <%= Html.Partial("CertificateList", Model) %>
 
 </asp:Content>
