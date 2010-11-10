@@ -54,9 +54,9 @@ namespace Health.Direct.Config.Console.Command
         }
         private const string AnchorAddUsage
             = "Import an anchor certificate from a file and push it into the config store."
-              + CRLF + "The anchor is used for both incoming & outgoing trust."
-              + CRLF + "    owner options"
-              + CRLF + CertificateFileInfo.Usage;
+              + Constants.CRLF + "The anchor is used for both incoming & outgoing trust."
+              + Constants.CRLF + "    owner options"
+              + Constants.CRLF + CertificateFileInfo.Usage;
         
         [Command(Name="Anchor_Add_Machine", Usage=AnchorAddMachineUsage)]
         public void AnchorAddMachine(string[] args)
@@ -69,9 +69,9 @@ namespace Health.Direct.Config.Console.Command
         }
         private const string AnchorAddMachineUsage
             = "Import an anchor certificate from a file and push it into the system store."
-              + CRLF + "The anchor is used for both incoming & outgoing trust."
-              + CRLF + "   options"
-              + CRLF + CertificateFileInfo.Usage;
+              + Constants.CRLF + "The anchor is used for both incoming & outgoing trust."
+              + Constants.CRLF + "   options"
+              + Constants.CRLF + CertificateFileInfo.Usage;
         
         /// <summary>
         /// Retrieve an anchor by its ID
@@ -88,8 +88,8 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AnchorByIDGetUsage
             = "Get an anchor by its id."
-              + CRLF + "    anchorID [options]"
-              + CRLF + CertificateCommands.PrintOptionsUsage;
+              + Constants.CRLF + "    anchorID [options]"
+              + Constants.CRLF + CertificateCommands.PrintOptionsUsage;
         
         
         /// <summary>
@@ -107,9 +107,9 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AnchorsGetUsage
             = "Get all anchors for an owner."
-              + CRLF + "  owner [options]"
-              + CRLF + "\t owner: Anchor owner"
-              + CRLF + CertificateCommands.PrintOptionsUsage;
+              + Constants.CRLF + "  owner [options]"
+              + Constants.CRLF + "\t owner: Anchor owner"
+              + Constants.CRLF + CertificateCommands.PrintOptionsUsage;
         
         /// <summary>
         /// List ALL anchors
@@ -130,7 +130,7 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AnchorsListUsage
             = "List all anchors"
-            + CRLF + CertificateCommands.PrintOptionsUsage;
+            + Constants.CRLF + CertificateCommands.PrintOptionsUsage;
         
         /// <summary>
         /// Set the status of all anchors for an owner
@@ -145,9 +145,9 @@ namespace Health.Direct.Config.Console.Command
         }
         private const string AnchorStatusSetUsage
             = "Set the status for ALL anchors for an owner."
-              + CRLF + "    owner status"
-              + CRLF + "\t owner: Anchor owner"
-              + CRLF + "\t status: " + EntityStatusString;
+              + Constants.CRLF + "    owner status"
+              + Constants.CRLF + "\t owner: Anchor owner"
+              + Constants.CRLF + "\t status: " + Constants.EntityStatusString;
         
         /// <summary>
         /// Remove an anchor
@@ -161,7 +161,7 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AnchorRemoveUsage
             = "Remove anchors with given ID"
-              + CRLF + "    anchorID";
+              + Constants.CRLF + "    anchorID";
         
         /// <summary>
         /// Mirrors what the production gateway would do
@@ -182,9 +182,9 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AnchorResolveUsage
             = "Resolves anchors for an owner - like the Smtp Gateway would."
-              + CRLF + "    owner [options]"
-              + CRLF + "\t owner: Anchor owner"
-              + CRLF + CertificateCommands.PrintOptionsUsage;
+              + Constants.CRLF + "    owner [options]"
+              + Constants.CRLF + "\t owner: Anchor owner"
+              + Constants.CRLF + CertificateCommands.PrintOptionsUsage;
 
         //---------------------------------------
         //
