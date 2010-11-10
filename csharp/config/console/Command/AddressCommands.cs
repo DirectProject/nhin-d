@@ -71,10 +71,10 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AddressAddUsage
             = "Add a new email address. The address domain must already exist."
-              + CRLF + "    emailAddress [addressType] [displayName]"
-              + CRLF + "\t emailAddress: valid email address. Verifies that the domain already exists."
-              + CRLF + "\t addressType: (optional) such as XDR. Used for routing. default:SMTP"
-              + CRLF + "\t displayName: (optional)";
+              + Constants.CRLF + "    emailAddress [addressType] [displayName]"
+              + Constants.CRLF + "\t emailAddress: valid email address. Verifies that the domain already exists."
+              + Constants.CRLF + "\t addressType: (optional) such as XDR. Used for routing. default:SMTP"
+              + Constants.CRLF + "\t displayName: (optional)";
 
         /// <summary>
         /// Set the display name for an address
@@ -98,9 +98,9 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AddressDisplayNameSetUsage
             = "Set the display name for the given address"
-              + CRLF + "    emailAddress displayname"
-              + CRLF + "\t emailAddress: existing email address."
-              + CRLF + "\t displayname: new display name.";
+              + Constants.CRLF + "    emailAddress displayname"
+              + Constants.CRLF + "\t emailAddress: existing email address."
+              + Constants.CRLF + "\t displayname: new display name.";
         
         /// <summary>
         /// Retrieve an existing address
@@ -116,7 +116,7 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AddressGetUsage
             = "Retrieve an existing address."
-              + CRLF + "    emailAddress";
+              + Constants.CRLF + "    emailAddress";
         
         /// <summary>
         /// Remove an existing email address
@@ -131,7 +131,7 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AddressRemoveUsage
             = "Remove an existing address."
-              + CRLF + "    emailAddress";
+              + Constants.CRLF + "    emailAddress";
         
         /// <summary>
         /// List all email addresses in a domain
@@ -150,9 +150,9 @@ namespace Health.Direct.Config.Console.Command
         {
             return string.Format(
                 "List addresses for a domain."
-                + CRLF + "   domainName [chunkSize]"
-                + CRLF + "\t domainName: list addresses for this domain"
-                + CRLF +
+                + Constants.CRLF + "   domainName [chunkSize]"
+                + Constants.CRLF + "\t domainName: list addresses for this domain"
+                + Constants.CRLF +
                 "\t chunkSize: (optional) Number of addresses to download from service at a time. Default is {0}",
                 DefaultChunkSize);
         }
@@ -170,8 +170,8 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AddressListAllUsage
             = "List all addresses."
-            + CRLF + "    [chunkSize]"
-            + CRLF + "\tchunkSize: Number of addresses to download from service at a time.";
+            + Constants.CRLF + "    [chunkSize]"
+            + Constants.CRLF + "\tchunkSize: Number of addresses to download from service at a time.";
         
         /// <summary>
         /// Set the status of a specific email address
@@ -195,9 +195,9 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AddressStatusSetUsage
             = "Set the status of an address"
-              + CRLF + "    emailAddress status"
-              + CRLF + "\t emailAddress: set the status of this address"
-              + CRLF + "\t status: New | Enabled | Disabled";
+              + Constants.CRLF + "    emailAddress status"
+              + Constants.CRLF + "\t emailAddress: set the status of this address"
+              + Constants.CRLF + "\t status: New | Enabled | Disabled";
         
         /// <summary>
         /// Return # of addresses in a domain
@@ -211,7 +211,7 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AddressCountUsage
             = "Retrieve # of addresses in given domain."
-            + CRLF + "  domainName";
+            + Constants.CRLF + "  domainName";
 
         //---------------------------------------
         //
