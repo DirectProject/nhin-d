@@ -161,6 +161,15 @@
   <wsdl:message name="IAnchorStore_GetOutgoingAnchors_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="IAnchorStore_SetAnchorStatus_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetAnchorStatus" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_SetAnchorStatus_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetAnchorStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_SetAnchorStatus_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:message name="IAnchorStore_SetAnchorStatusForOwner_InputMessage">
     <wsdl:part name="parameters" element="tns:SetAnchorStatusForOwner" />
   </wsdl:message>
@@ -284,6 +293,11 @@
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetOutgoingAnchors" message="tns:IAnchorStore_GetOutgoingAnchors_InputMessage" />
       <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetOutgoingAnchorsResponse" message="tns:IAnchorStore_GetOutgoingAnchors_OutputMessage" />
       <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetOutgoingAnchorsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_GetOutgoingAnchors_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetAnchorStatus">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatus" message="tns:IAnchorStore_SetAnchorStatus_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusResponse" message="tns:IAnchorStore_SetAnchorStatus_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_SetAnchorStatus_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="SetAnchorStatusForOwner">
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwner" message="tns:IAnchorStore_SetAnchorStatusForOwner_InputMessage" />
