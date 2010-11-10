@@ -13,7 +13,7 @@ using MvcContrib.Pagination;
 
 namespace AdminMvc.Controllers
 {
-    public class CertificatesController : ControllerBase<Certificate, Certificate, ICertificateRepository>
+    public class CertificatesController : ControllerBase<Certificate, CertificateModel, ICertificateRepository>
     {
         public CertificatesController(ICertificateRepository repository) : base(repository)
         {
@@ -40,6 +40,14 @@ namespace AdminMvc.Controllers
                             .Where(filter)
                             .Select(certificate => Mapper.Map<Certificate, CertificateModel>(certificate))
                             .AsPagination(page ?? 1, DefaultPageSize));
+        }
+
+        public ActionResult Details(long id)
+        {
+            var certificate = Repository.Get(id);
+            if (certificate == null) return View("NotFound");
+
+            return Json(Mapper.Map<Certificate, CertificateModel>(certificate), "text/json", JsonRequestBehavior.AllowGet);
         }
 
         //public ActionResult Add(long domainID)
@@ -81,25 +89,14 @@ namespace AdminMvc.Controllers
         //    return View("Deleted", address);
         //}
 
-        //public ActionResult Disable(long id)
-        //{
-        //    return EnableDisable(id, EntityStatus.Disabled);
-        //}
+        protected override ActionResult EnableDisable(long id, EntityStatus status)
+        {
+            var certificate = Repository.Get(id);
+            if (certificate == null) return View("NotFound");
 
-        //public ActionResult Enable(long id)
-        //{
-        //    return EnableDisable(id, EntityStatus.Enabled);
-        //}
+            certificate = Repository.ChangeStatus(certificate, status);
 
-        //private ActionResult EnableDisable(long id, EntityStatus status)
-        //{
-        //    var address = Repository.Get(id);
-        //    if (address == null) return View("NotFound");
-
-        //    address.Status = status;
-        //    Repository.Update(address);
-
-        //    return View("Details", address);
-        //}
+            return Json(Mapper.Map<Certificate, CertificateModel>(certificate), "text/json");
+        }
     }
 }

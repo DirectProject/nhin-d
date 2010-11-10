@@ -153,6 +153,7 @@
     <Content Include="Views\Addresses\NotFound.aspx" />
     <Content Include="Views\Anchors\AnchorList.ascx" />
     <Content Include="Views\Certificates\CertificateList.ascx" />
+    <Content Include="Views\Certificates\CertificateDetailsDialog.ascx" />
     <Content Include="Views\Shared\NotFound.aspx" />
     <Content Include="Views\Anchors\Index.aspx" />
     <Content Include="Views\Certificates\Index.aspx" />

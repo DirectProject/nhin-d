@@ -23,6 +23,7 @@
     </div>
     <% } %>
     
-    <%= Html.Partial("CertificateList", Model) %>
+    <%= Html.Partial("CertificateList", Model, ViewData) %>
+    <%= Html.Partial("CertificateDetailsDialog") %>
 
 </asp:Content>

@@ -83,7 +83,7 @@
                 }
             });
         }
-        function enableDisableDomain(event) {
+        function changeAndUpdateStatus(event) {
             event.preventDefault();
             var link = $(this);
             $.post(link[0].href, function(data) {

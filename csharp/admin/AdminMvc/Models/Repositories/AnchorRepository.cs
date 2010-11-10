@@ -33,13 +33,6 @@ namespace AdminMvc.Models.Repositories
             Client.RemoveAnchors(new[] {anchor.ID});
         }
 
-        public Anchor Get(string owner, string thumbprint)
-        {
-            return (from anchor in Client.GetAnchorsForOwner(owner, null)
-                                     where anchor.Thumbprint == thumbprint
-                                     select anchor).SingleOrDefault();
-        }
-
         public void Update(Anchor anchor)
         {
             Delete(anchor);
@@ -49,6 +42,13 @@ namespace AdminMvc.Models.Repositories
         public Anchor Get(long id)
         {
             return Client.GetAnchors(new[] {id}, null).SingleOrDefault();
+        }
+
+        public Anchor Get(string owner, string thumbprint)
+        {
+            return (from anchor in Client.GetAnchorsForOwner(owner, null)
+                    where anchor.Thumbprint == thumbprint
+                    select anchor).SingleOrDefault();
         }
     }
 }

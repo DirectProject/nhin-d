@@ -36,7 +36,7 @@
             .button({ icons: { primary: "ui-icon-trash" }, text: false })
             .click(function(event) { confirmDelete(event, $('#confirm-dialog'), $(this), 'Are you sure want to delete this anchor?', 'Anchor') });
 
-        $('a.enable-disable-action').click(enableDisableDomain);
+        $('a.enable-disable-action').click(changeAndUpdateStatus);
         $('a.view-details').click(function(event) {
             showDetailsDialog(event, $(this));
         });
