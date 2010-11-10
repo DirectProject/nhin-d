@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>gateway</artifactId>    
     <name>NHIN Direct Agent Gateways.</name>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <description>NHIN Direct security agent gateways and bridges.</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/gateway/${project.version}</url>        
@@ -42,25 +42,25 @@
   <parent>
     <groupId>org.nhind</groupId>  
     <artifactId>parent</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
   </parent>     
   <dependencies>   
 	    <dependency>
 	        <groupId>org.nhind</groupId>
 	        <artifactId>agent</artifactId>
-	        <version>1.0</version>
+	        <version>1.1-SNAPSHOT</version>
 	        <scope>compile</scope>
 	    </dependency> 
 	    <dependency>
 	        <groupId>org.nhind</groupId>
 	        <artifactId>config-service-client</artifactId>
-	        <version>1.0</version>
+	        <version>1.1-SNAPSHOT</version>
 	        <scope>compile</scope>
 	    </dependency>	    
 	    <dependency>
 	        <groupId>org.nhind</groupId>
 	        <artifactId>agent</artifactId>
-	        <version>1.0</version>
+	        <version>1.1-SNAPSHOT</version>
 	         <type>test-jar</type>
 	        <scope>test</scope>
 	    </dependency>  
