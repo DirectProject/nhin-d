@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 using Health.Direct.Config.Client.CertificateService;
@@ -21,18 +22,6 @@ namespace AdminMvc.Models.Repositories
             return Client.EnumerateCertificates(0, int.MaxValue, null).AsQueryable();
         }
 
-        //public Address Add(AddressModel model)
-        //{
-        //    return Client.AddAddress(
-        //        new Address
-        //            {
-        //                DisplayName = model.DisplayName,
-        //                DomainID = model.DomainID,
-        //                EmailAddress = model.EmailAddress,
-        //                Type = model.Type
-        //            });
-        //}
-
         public Certificate Add(Certificate certificate)
         {
             return Client.AddCertificate(certificate);
@@ -45,8 +34,14 @@ namespace AdminMvc.Models.Repositories
 
         public void Update(Certificate certificate)
         {
-            Delete(certificate);
-            Add(certificate);
+            throw new NotSupportedException("Updates are not supported on Certificates");
+        }
+
+        public Certificate ChangeStatus(Certificate certificate, EntityStatus status)
+        {
+            Client.SetCertificateStatus(new[] { certificate.ID}, status);
+            certificate.Status = status;
+            return certificate;
         }
 
         public Certificate Get(long id)
@@ -54,6 +49,13 @@ namespace AdminMvc.Models.Repositories
             // TODO: Replace with GetCertificateById()
             return (from certificate in FindAll()
                     where certificate.ID == id
+                    select certificate).SingleOrDefault();
+        }
+
+        public Certificate Get(string owner, string thumbprint)
+        {
+            return (from certificate in Client.GetCertificatesForOwner(owner, null)
+                    where certificate.Thumbprint == thumbprint
                     select certificate).SingleOrDefault();
         }
     }

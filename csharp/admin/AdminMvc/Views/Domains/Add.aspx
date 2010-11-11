@@ -14,7 +14,7 @@
     
         <fieldset class="ui-widget-content">
             <span class="display-label"><%= Html.LabelFor(m => m.Name) %></span>
-            <span class="display-field"><%= Html.TextBoxFor(m => m.Name) %></span>
+            <span class="display-field"><%= Html.TextBoxFor(m => m.Name, new { @class = "ui-widget-content" })%></span>
             <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.Name, "*", new {@class = "ui-state-error-text"}) %></span>
             <br class="clear" />
             

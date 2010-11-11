@@ -25,22 +25,6 @@
 
 <script type="text/javascript" language="javascript">
     var dateTimeFormatString = '<%= ViewData["DateTimeFormat"] %>';
-    function showDetailsDialog(event, link) {
-        event.preventDefault();
-        clearDialog($('#address-dialog'));
-        $.get(link.attr('href'), function(data) { showDialog($('#address-dialog'), data); });
-    }
-    function showDialog(dialog, data) {
-        updateDialog(dialog, data);
-        dialog.dialog({
-            title: 'Address Details',
-            modal: true,
-            width: 500
-        });
-    }
-    function clearDialog(dialog) {
-        $('div.display-field', dialog).text('');
-    }
     function updateDialog(dialog, data) {
         $('#domain-id', dialog).text(data.DomainID);
         $('#email-address', dialog).text(data.EmailAddress);

@@ -13,7 +13,7 @@ using MvcContrib.Pagination;
 
 namespace AdminMvc.Controllers
 {
-    public class CertificatesController : ControllerBase<Certificate, Certificate, ICertificateRepository>
+    public class CertificatesController : ControllerBase<Certificate, CertificateModel, ICertificateRepository>
     {
         public CertificatesController(ICertificateRepository repository) : base(repository)
         {
@@ -42,64 +42,47 @@ namespace AdminMvc.Controllers
                             .AsPagination(page ?? 1, DefaultPageSize));
         }
 
-        //public ActionResult Add(long domainID)
-        //{
-        //    return View(new AddressModel {DomainID = domainID});
-        //}
+        public ActionResult Details(long id)
+        {
+            var certificate = Repository.Get(id);
+            if (certificate == null) return View("NotFound");
 
-        //[HttpPost]
-        //public ActionResult Add(FormCollection formValues)
-        //{
-        //    var address = new AddressModel();
+            return Json(Mapper.Map<Certificate, CertificateModel>(certificate), "text/json", JsonRequestBehavior.AllowGet);
+        }
 
-        //    if (TryUpdateModel(address))
-        //    {
-        //        var newAddress = Repository.Add(address);
+        public ActionResult Add(string owner)
+        {
+            return View(new CertificateUploadModel {Owner = owner});
+        }
 
-        //        return RedirectToAction("Details", new { id = newAddress.ID });
-        //    }
+        [HttpPost]
+        public ActionResult Add(FormCollection formValues)
+        {
+            var model = new CertificateUploadModel();
 
-        //    return View(address);
-        //}
+            if (TryUpdateModel(model))
+            {
+                var bytes = GetFileFromRequest("certificateFile");
+                var cert = new Certificate(model.Owner, bytes, model.Password);
+                Repository.Add(cert);
 
-        //public ActionResult Delete(long id)
-        //{
-        //    var address = Repository.Get(id);
-        //    if (address == null) return View("NotFound");
+                var domain = new DomainRepository().GetByDomainName(model.Owner);
+                if (domain == null) return View("NotFound");
 
-        //    return View(address);
-        //}
+                return RedirectToAction("Index", new { domainID = domain.ID });
+            }
 
-        //[HttpPost]
-        //public ActionResult Delete(long id, string confirmButton)
-        //{
-        //    var address = Repository.Get(id);
-        //    if (address == null) return View("NotFound");
+            return View(model);
+        }
 
-        //    Repository.Delete(address);
+        protected override ActionResult EnableDisable(long id, EntityStatus status)
+        {
+            var certificate = Repository.Get(id);
+            if (certificate == null) return View("NotFound");
 
-        //    return View("Deleted", address);
-        //}
+            certificate = Repository.ChangeStatus(certificate, status);
 
-        //public ActionResult Disable(long id)
-        //{
-        //    return EnableDisable(id, EntityStatus.Disabled);
-        //}
-
-        //public ActionResult Enable(long id)
-        //{
-        //    return EnableDisable(id, EntityStatus.Enabled);
-        //}
-
-        //private ActionResult EnableDisable(long id, EntityStatus status)
-        //{
-        //    var address = Repository.Get(id);
-        //    if (address == null) return View("NotFound");
-
-        //    address.Status = status;
-        //    Repository.Update(address);
-
-        //    return View("Details", address);
-        //}
+            return Json(Mapper.Map<Certificate, CertificateModel>(certificate), "text/json");
+        }
     }
 }

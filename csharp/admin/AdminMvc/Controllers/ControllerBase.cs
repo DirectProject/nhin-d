@@ -45,18 +45,6 @@ namespace AdminMvc.Controllers
             return View(paginatedItems);
         }
 
-        public virtual ActionResult Details(long id)
-        {
-            var item = Repository.Get(id);
-
-            if (item == null)
-            {
-                return View("NotFound");
-            }
-
-            return View("Details", item);
-        }
-
         [HttpPost]
         public string Delete(long id)
         {
@@ -85,7 +73,7 @@ namespace AdminMvc.Controllers
             return EnableDisable(id, EntityStatus.Enabled);
         }
 
-        private ActionResult EnableDisable(long id, EntityStatus status)
+        protected virtual ActionResult EnableDisable(long id, EntityStatus status)
         {
             var item = Repository.Get(id);
             if (item == null) return View("NotFound");
@@ -94,6 +82,14 @@ namespace AdminMvc.Controllers
             Repository.Update(item);
 
             return Json(Mapper.Map<T, TModel>(item), "text/json");
+        }
+
+        protected byte[] GetFileFromRequest(string keyName)
+        {
+            var file = Request.Files.Get(keyName);
+            var bytes = new byte[file.ContentLength];
+            file.InputStream.Read(bytes, 0, file.ContentLength);
+            return bytes;
         }
     }
 }

@@ -170,7 +170,7 @@ public class DirectDocumentsTest extends TestCase
         documents.getDocuments().add(doc1);
         documents.getDocuments().add(doc2);
         
-        System.out.println(documents.toString());
+        System.out.println(documents.getSubmitObjectsRequestAsString());
     }
 
 }

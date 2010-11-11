@@ -1,11 +1,9 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 
 using Health.Direct.Config.Store;
 
 namespace AdminMvc.Models
 {
-    [MetadataType(typeof(CertificateModel_Validation))]
     public class CertificateModel
     {
         public long ID { get; set; }
@@ -27,9 +25,5 @@ namespace AdminMvc.Models
                 return Status == EntityStatus.Enabled.ToString();
             }
         }
-    }
-
-    public class CertificateModel_Validation
-    {
     }
 }
