@@ -17,17 +17,24 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Net.Sockets;
 using System.Xml.Serialization;
-using System.Configuration;
 
 namespace Health.Direct.DnsResponder
 {
-    public class SocketServerSettings : ConfigurationElement
+    public class SocketServerSettings 
     {
         public const short DefaultMaxConnectionBacklog = 64;
         public const short DefaultMaxActiveRequests = 64;
         public const short DefaultMaxOutstandingAccepts = 16;
         public const short DefaultReadBufferSize = 1024;
-        
+
+        short m_maxOutstandingAccepts = DefaultMaxOutstandingAccepts;
+        short m_maxConnectionBacklog = DefaultMaxConnectionBacklog;
+        short m_maxActiveRequests = DefaultMaxActiveRequests;
+        short m_readBufferSize = DefaultReadBufferSize;
+
+        int m_sendTimeout;
+        int m_receiveTimeout;
+        int m_socketClostTimeout;
         
         public SocketServerSettings()
         {
@@ -38,12 +45,11 @@ namespace Health.Direct.DnsResponder
         /// does not become a bottleneck
         /// </summary>
         [XmlElement]
-        [ConfigurationProperty("MaxOutstandingAccepts", DefaultValue = DefaultMaxOutstandingAccepts, IsRequired = false)]
         public short MaxOutstandingAccepts
         {
             get
             {
-                return (short)this["MaxOutstandingAccepts"];
+                return m_maxOutstandingAccepts;
             }
             set
             {
@@ -52,7 +58,7 @@ namespace Health.Direct.DnsResponder
                     throw new ArgumentException();
                 }
 
-                this["MaxOutstandingAccepts"] = value;
+                m_maxOutstandingAccepts = value;
             }
         }
         
@@ -62,12 +68,11 @@ namespace Health.Direct.DnsResponder
         /// constrain the # based on OS restrictions. 
         /// </summary>
         [XmlElement]
-        [ConfigurationProperty("MaxConnectionBacklog", DefaultValue = DefaultMaxConnectionBacklog, IsRequired = false)]
         public short MaxConnectionBacklog
         {
             get
             {
-                return (short)this["MaxConnectionBacklog"];
+                return m_maxConnectionBacklog;
             }
             set
             {
@@ -75,7 +80,7 @@ namespace Health.Direct.DnsResponder
                 {
                     throw new ArgumentException();
                 }
-                this["MaxConnectionBacklog"] = value;
+                m_maxConnectionBacklog = value;
             }
         }
 
@@ -83,12 +88,11 @@ namespace Health.Direct.DnsResponder
         /// Max requests you simultaneously want to handle. The socket server will automatically impose this limit
         /// </summary>
         [XmlElement]
-        [ConfigurationProperty("MaxActiveRequests", DefaultValue = DefaultMaxActiveRequests, IsRequired = false)]
         public short MaxActiveRequests
         {
             get
             {
-                return (short)this["MaxActiveRequests"];
+                return m_maxActiveRequests;
             }
             set
             {
@@ -97,17 +101,16 @@ namespace Health.Direct.DnsResponder
                     throw new ArgumentException();
                 }
 
-                this["MaxActiveRequests"] = value ;
+                m_maxActiveRequests = value ;
             }
         }
         
         [XmlElement]
-        [ConfigurationProperty("ReadBufferSize", DefaultValue = DefaultReadBufferSize, IsRequired = false)]
         public short ReadBufferSize
         {
             get
             {
-                return (short)this["ReadBufferSize"];
+                return m_readBufferSize;
             }
             set
             {
@@ -116,7 +119,7 @@ namespace Health.Direct.DnsResponder
                     throw new ArgumentException();
                 }
 
-                this["ReadBufferSize"] = value;
+                m_readBufferSize = value;
             }
         }
         
@@ -129,22 +132,40 @@ namespace Health.Direct.DnsResponder
         [XmlElement]
         public int SendTimeout
         {
-            get;
-            set;
+            get
+            {
+                return m_sendTimeout;
+            }
+            set
+            {
+                m_sendTimeout = value;
+            }
         }
 
         [XmlElement]
         public int ReceiveTimeout
         {
-            get;
-            set;
+            get
+            {
+                return m_receiveTimeout;
+            }
+            set
+            {
+                m_receiveTimeout = value;
+            }
         }
 
         [XmlElement]
         public int SocketCloseTimeout
         {
-            get;
-            set;
+            get
+            {
+                return m_socketClostTimeout;
+            }
+            set
+            {
+                m_socketClostTimeout = value;
+            }
         }
         
         [XmlIgnore]

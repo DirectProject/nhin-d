@@ -71,8 +71,12 @@ import org.nhindirect.xd.transform.util.XmlUtils;
 /**
  * Abstract representation of a document with supporting metadata.
  * 
+ * @deprecated Use DirectDocument2 and DirectDocuments - DirectDocument will
+ *             eventually be refactored to contain DirectDocument2 contents
+ * 
  * @author beau
  */
+@Deprecated
 public class DirectDocument
 {
     private String data;

@@ -23,43 +23,48 @@ using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.DnsResponder 
 {
-    public class DnsServerSettings : ConfigurationSection
+    public class DnsServerSettings
     {
         public const short DefaultMaxRequestSize = 1024 * 16;
         public const byte DefaultMaxQuestionCount = 1;
         
         IPEndPoint m_endpoint;
-        
+
+        string m_address = "0.0.0.0";
+        int m_port = DnsStandard.DnsPort;
+        SocketServerSettings m_tcpServerSettings = null;
+        SocketServerSettings m_udpServerSettings = null;
+        byte m_maxQuestionCount = DefaultMaxQuestionCount;
+        short m_maxRequestSize = DefaultMaxRequestSize;
+
         public DnsServerSettings()
         {
         }
         
         [XmlElement]
-        [ConfigurationProperty("Address", DefaultValue = "0.0.0.0", IsRequired = true)]
         public string Address
         {
             get
             {
-                return (this["Address"] != null) ? (string)this["Address"] : null; 
+                return (m_address != null) ? m_address : null; 
             }
             set
             {
-                this["Address"] = value;
+                m_address = value;
                 m_endpoint = null;
             }
         }
         
         [XmlElement]
-        [ConfigurationProperty("Port", DefaultValue = DnsStandard.DnsPort, IsRequired = false)]
         public int Port
         {
             get
             {
-                return (int)this["Port"];
+                return m_port;
             }
             set
             {
-                this["Port"] = value;
+                m_port = value;
                 m_endpoint = null;
             }
         }
@@ -85,11 +90,11 @@ namespace Health.Direct.DnsResponder
             get
             {
 
-                if (this["TcpServerSettings"] == null)
+                if (m_tcpServerSettings == null)
                 {
-                    this["TcpServerSettings"] = new SocketServerSettings();
+                    m_tcpServerSettings = new SocketServerSettings();
                 }
-                return (SocketServerSettings)this["TcpServerSettings"];
+                return m_tcpServerSettings;
             }
             set
             {
@@ -98,7 +103,7 @@ namespace Health.Direct.DnsResponder
                     throw new ArgumentNullException();
                 }
 
-                this["TcpServerSettings"] = value;
+                m_tcpServerSettings = value;
             }
         }
 
@@ -109,11 +114,11 @@ namespace Health.Direct.DnsResponder
             get
             {
 
-                if (this["UdpServerSettings"] == null)
+                if (m_udpServerSettings == null)
                 {
-                    this["UdpServerSettings"] = new SocketServerSettings();
+                    m_udpServerSettings = new SocketServerSettings();
                 }
-                return (SocketServerSettings)this["UdpServerSettings"];
+                return m_udpServerSettings;
             }
             set
             {
@@ -122,36 +127,34 @@ namespace Health.Direct.DnsResponder
                     throw new ArgumentNullException();
                 }
 
-                this["UdpServerSettings"] = value;
+                m_udpServerSettings = value;
             }
 
         }            
 
         [XmlElement]
-        [ConfigurationProperty("MaxQuestionCount", DefaultValue = DefaultMaxQuestionCount, IsRequired = false)]
         public byte MaxQuestionCount
         {
             get
             {
-                return (byte)this["MaxQuestionCount"];
+                return m_maxQuestionCount;
             }
             set
             {
-                this["MaxQuestionCount"] = value;
+                m_maxQuestionCount = value;
             }
         }
         
         [XmlElement]
-        [ConfigurationProperty("MaxRequestSize", DefaultValue = DefaultMaxRequestSize, IsRequired = false)]
         public short MaxRequestSize
         {
             get
             {
-                return (short)this["MaxRequestSize"];
+                return m_maxRequestSize;
             }
             set
             {
-                this["MaxRequestSize"] = value;
+                m_maxRequestSize = value;
             }
         }
                         

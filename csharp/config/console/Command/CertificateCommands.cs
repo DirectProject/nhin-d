@@ -21,6 +21,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 using System.ServiceModel;
 using System.Net;
+
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Common.Extensions;
@@ -53,13 +54,13 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Certificate_Add", Usage = CertificateAddUsage)]
         public void CertificateAdd(string[] args)
         {
-            CertificateFileInfo certFileInfo = new CertificateFileInfo(0, args);            
+            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(0, args);            
             MemoryX509Store certStore = certFileInfo.LoadCerts();
             PushCerts(certStore, false, certFileInfo.Status);
         }
         private const string CertificateAddUsage
             = "Import a certificate from a file and push it into the store."
-              + CRLF + CertificateFileInfo.Usage;
+              + Constants.CRLF + CertificateFileInfo.Usage;
 
         /// <summary>
         /// Import a certificate file and add it to the machine store
@@ -82,15 +83,16 @@ namespace Health.Direct.Config.Console.Command
                 throw new ArgumentException(storeName);
             }
             
-            CertificateFileInfo certFileInfo = new CertificateFileInfo(1, args);
+            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(1, args);
+
             store.ImportKeyFile(certFileInfo.FilePath, certFileInfo.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
             store.Dispose();
         }
-        
+
         private const string CertificateAddMachineUsage
             = "Import a certificate from a file and push it into the named local Machine store."
-              + CRLF + " storeName (Private | Public)\r\n"
-              + CRLF + CertificateFileInfo.Usage;
+              + Constants.CRLF + " storeName (Private | Public)\r\n"
+              + Constants.CRLF + CertificateFileInfo.Usage;
 
         /// <summary>
         /// Retrieve a certificate by its ID
@@ -106,9 +108,9 @@ namespace Health.Direct.Config.Console.Command
 
         private const string CertificateByIDGetUsage
             = "Retrieve a certificate by its id."
-              + CRLF + "    certificateID [options]"
-              + CRLF + "\t certificateID: "
-              + CRLF + PrintOptionsUsage;
+              + Constants.CRLF + "    certificateID [options]"
+              + Constants.CRLF + "\t certificateID: "
+              + Constants.CRLF + PrintOptionsUsage;
         
         /// <summary>
         /// Get all certificates for an owner
@@ -125,9 +127,9 @@ namespace Health.Direct.Config.Console.Command
 
         private const string CertificateGetUsage
             = "Retrieve all certificates for an owner."
-              + CRLF + "    owner [options]"
-              + CRLF + "\t owner: Certificate owner"
-              + CRLF + PrintOptionsUsage;
+              + Constants.CRLF + "    owner [options]"
+              + Constants.CRLF + "\t owner: Certificate owner"
+              + Constants.CRLF + PrintOptionsUsage;
         
         /// <summary>
         /// Set the status of a certificate
@@ -143,9 +145,9 @@ namespace Health.Direct.Config.Console.Command
 
         private const string CertificateStatusSetUsage
             = "Set the status for ALL certificates for an OWNER."
-            + CRLF + "     owner status"
-            + CRLF + "\t owner: Certificate owner"
-            + CRLF + "\t status: {0}" + EntityStatusString;
+            + Constants.CRLF + "     owner status"
+            + Constants.CRLF + "\t owner: Certificate owner"
+            + Constants.CRLF + "\t status: {0}" + Constants.EntityStatusString;
         
         /// <summary>
         /// Remove certificate
@@ -160,7 +162,7 @@ namespace Health.Direct.Config.Console.Command
 
         private const string CertificateRemoveUsage
             = "Remove certificate with given ID"
-              + CRLF + "    certificateID";
+              + Constants.CRLF + "    certificateID";
         
         /// <summary>
         /// Mirrors what the production gateway does
@@ -172,7 +174,7 @@ namespace Health.Direct.Config.Console.Command
             CertificateGetOptions options = GetOptions(args, 1);
 
             Certificate[] certs = Client.GetCertificatesForOwner(owner.Address, options);
-            if (ArrayExtensions.IsNullOrEmpty(certs))
+            if (certs.IsNullOrEmpty())
             {
                 certs = Client.GetCertificatesForOwner(owner.Host, options);
             }
@@ -181,9 +183,9 @@ namespace Health.Direct.Config.Console.Command
 
         private const string CertificateResolveUsage
             = "Resolves certificates for an owner - like the Smtp Gateway would."
-              + CRLF + "    owner [options]"
-              + CRLF + "\t owner: Certificate owner"
-              + CRLF + PrintOptionsUsage;
+              + Constants.CRLF + "    owner [options]"
+              + Constants.CRLF + "\t owner: Certificate owner"
+              + Constants.CRLF + PrintOptionsUsage;
         
         /// <summary>
         /// Export certs in zone file format
@@ -196,7 +198,7 @@ namespace Health.Direct.Config.Console.Command
             
             CertificateGetOptions options = new CertificateGetOptions { IncludeData = true, IncludePrivateKey = false};
             Certificate[] certs = Client.GetCertificatesForOwner(owner, options);
-            if (ArrayExtensions.IsNullOrEmpty(certs))
+            if (certs.IsNullOrEmpty())
             {
                 WriteLine("No certificates found");
                 return;
@@ -206,9 +208,9 @@ namespace Health.Direct.Config.Console.Command
 
         private const string CertificateExportUsage
             = "Export certificates for an owner in zone file format"
-              + CRLF + "    owner [outputFile]"
-              + CRLF + "\t owner: certificate owner"
-              + CRLF + "\t outputFile: (Optional) Export to file. Else write to Console";
+              + Constants.CRLF + "    owner [outputFile]"
+              + Constants.CRLF + "\t owner: certificate owner"
+              + Constants.CRLF + "\t outputFile: (Optional) Export to file. Else write to Console";
 
         /// <summary>
         /// Export all Enabled public certificates in zone file format
@@ -227,10 +229,10 @@ namespace Health.Direct.Config.Console.Command
 
         private const string CertificateExportAllUsage
             = "Export all enabled public certificates in zone file FORMAT"
-              + CRLF + "You can place this output directly into your zone file"
-              + CRLF + "     [outputFile] [chunkSize]"
-              + CRLF + "\t outputFile: (Optional) Export to file. Else write to Console"
-              + CRLF + "\t chunkSize: (Optional) Enumeration size. Default is 25";
+              + Constants.CRLF + "You can place this output directly into your zone file"
+              + Constants.CRLF + "     [outputFile] [chunkSize]"
+              + Constants.CRLF + "\t outputFile: (Optional) Export to file. Else write to Console"
+              + Constants.CRLF + "\t chunkSize: (Optional) Enumeration size. Default is 25";
         
         /// <summary>
         /// Export public certs for private keys in the machine store
@@ -249,9 +251,9 @@ namespace Health.Direct.Config.Console.Command
 
         private const string CertificateExportMachineUsage
             = "Exports public certificates for all certs in the given store"
-              + CRLF + "    [storeName] [outputFile]"
-              + CRLF + "\t storeName: (optional) Default is NHINDPrivate."
-              + CRLF + "\t outputFile: (optional) Export to file. Else write to Console";
+              + Constants.CRLF + "    [storeName] [outputFile]"
+              + Constants.CRLF + "\t storeName: (optional) Default is NHINDPrivate."
+              + Constants.CRLF + "\t outputFile: (optional) Export to file. Else write to Console";
 
 
         /// <summary>
@@ -461,9 +463,9 @@ namespace Health.Direct.Config.Console.Command
 
         internal const string PrintOptionsUsage
             = "\t options:"
-              + CRLF + "\t [certData] [privatekey]"
-              + CRLF + "\t certData: (True/False) Fetch certificate data"
-              + CRLF + "\t privateKey: (True/False) Include private key";
+              + Constants.CRLF + "\t [certData] [privatekey]"
+              + Constants.CRLF + "\t certData: (True/False) Fetch certificate data"
+              + Constants.CRLF + "\t privateKey: (True/False) Include private key";
 
 
         void Print(Certificate[] certs)

@@ -15,7 +15,7 @@ namespace Health.Direct.Config.Client.CertificateService {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "3.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="CertificateGetOptions", Namespace="http://www.nhindirect.org/config/store/082010")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="CertificateGetOptions", Namespace="urn:directproject:config/store/082010")]
     [System.SerializableAttribute()]
     public partial class CertificateGetOptions : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
         
@@ -91,73 +91,65 @@ namespace Health.Direct.Config.Client.CertificateService {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(Namespace="http://www.nhindirect.org/config/store/082010", ConfigurationName="CertificateService.ICertificateStore")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace="urn:directproject:config/store/082010", ConfigurationName="CertificateService.ICertificateStore")]
     public interface ICertificateStore {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificate", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificateRes" +
-            "ponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificateCon" +
-            "figStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificate", ReplyAction="urn:directproject:config/store/082010/ICertificateStore/AddCertificateResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificateConfigStore" +
+            "FaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Certificate AddCertificate(Health.Direct.Config.Store.Certificate certificate);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificates", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificatesRe" +
-            "sponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificatesCo" +
-            "nfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificates", ReplyAction="urn:directproject:config/store/082010/ICertificateStore/AddCertificatesResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificatesConfigStor" +
+            "eFaultFault", Name="ConfigStoreFault")]
         void AddCertificates(Health.Direct.Config.Store.Certificate[] certificates);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificate", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificateRes" +
-            "ponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificateCon" +
-            "figStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificate", ReplyAction="urn:directproject:config/store/082010/ICertificateStore/GetCertificateResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificateConfigStore" +
+            "FaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Certificate GetCertificate(string owner, string thumbprint, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificates", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificatesRe" +
-            "sponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificatesCo" +
-            "nfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificates", ReplyAction="urn:directproject:config/store/082010/ICertificateStore/GetCertificatesResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificatesConfigStor" +
+            "eFaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Certificate[] GetCertificates(long[] certificateIDs, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificatesFo" +
-            "rOwner", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificatesFo" +
-            "rOwnerResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificatesFo" +
-            "rOwnerConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificatesForOwner", ReplyAction="urn:directproject:config/store/082010/ICertificateStore/GetCertificatesForOwnerRe" +
+            "sponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificatesForOwnerCo" +
+            "nfigStoreFaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Certificate[] GetCertificatesForOwner(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/SetCertificateSta" +
-            "tus", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/SetCertificateSta" +
-            "tusResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/SetCertificateSta" +
-            "tusConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatus", ReplyAction="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatusRespo" +
+            "nse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatusConfi" +
+            "gStoreFaultFault", Name="ConfigStoreFault")]
         void SetCertificateStatus(long[] certificateIDs, Health.Direct.Config.Store.EntityStatus status);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/SetCertificateSta" +
-            "tusForOwner", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/SetCertificateSta" +
-            "tusForOwnerResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/SetCertificateSta" +
-            "tusForOwnerConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatusForOw" +
+            "ner", ReplyAction="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatusForOw" +
+            "nerResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatusForOw" +
+            "nerConfigStoreFaultFault", Name="ConfigStoreFault")]
         void SetCertificateStatusForOwner(string owner, Health.Direct.Config.Store.EntityStatus status);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/RemoveCertificate" +
-            "s", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/RemoveCertificate" +
-            "sResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/RemoveCertificate" +
-            "sConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificates", ReplyAction="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificatesRespons" +
+            "e")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificatesConfigS" +
+            "toreFaultFault", Name="ConfigStoreFault")]
         void RemoveCertificates(long[] certificateIDs);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/RemoveCertificate" +
-            "sForOwner", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/RemoveCertificate" +
-            "sForOwnerResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/RemoveCertificate" +
-            "sForOwnerConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificatesForOwne" +
+            "r", ReplyAction="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificatesForOwne" +
+            "rResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificatesForOwne" +
+            "rConfigStoreFaultFault", Name="ConfigStoreFault")]
         void RemoveCertificatesForOwner(string owner);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/EnumerateCertific" +
-            "ates", ReplyAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/EnumerateCertific" +
-            "atesResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/EnumerateCertific" +
-            "atesConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertificateStore/EnumerateCertificates", ReplyAction="urn:directproject:config/store/082010/ICertificateStore/EnumerateCertificatesResp" +
+            "onse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertificateStore/EnumerateCertificatesConf" +
+            "igStoreFaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Certificate[] EnumerateCertificates(long lastCertificateID, int maxResults, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
     }
     
@@ -230,69 +222,68 @@ namespace Health.Direct.Config.Client.CertificateService {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(Namespace="http://www.nhindirect.org/config/store/082010", ConfigurationName="CertificateService.IAnchorStore")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace="urn:directproject:config/store/082010", ConfigurationName="CertificateService.IAnchorStore")]
     public interface IAnchorStore {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchor", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchorResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchorConfigStoreFa" +
-            "ultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAnchorStore/AddAnchor", ReplyAction="urn:directproject:config/store/082010/IAnchorStore/AddAnchorResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAnchorStore/AddAnchorConfigStoreFaultFault" +
+            "", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Anchor AddAnchor(Health.Direct.Config.Store.Anchor anchor);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchorsResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchorsConfigStoreF" +
-            "aultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAnchorStore/AddAnchors", ReplyAction="urn:directproject:config/store/082010/IAnchorStore/AddAnchorsResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAnchorStore/AddAnchorsConfigStoreFaultFaul" +
+            "t", Name="ConfigStoreFault")]
         void AddAnchors(Health.Direct.Config.Store.Anchor[] anchors);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchor", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorConfigStoreFa" +
-            "ultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchor", ReplyAction="urn:directproject:config/store/082010/IAnchorStore/GetAnchorResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchorConfigStoreFaultFault" +
+            "", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Anchor GetAnchor(string owner, string thumbprint, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsConfigStoreF" +
-            "aultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchors", ReplyAction="urn:directproject:config/store/082010/IAnchorStore/GetAnchorsResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchorsConfigStoreFaultFaul" +
+            "t", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Anchor[] GetAnchors(long[] anchorIDs, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsForOwner", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsForOwnerResp" +
-            "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsForOwnerConf" +
-            "igStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchorsForOwner", ReplyAction="urn:directproject:config/store/082010/IAnchorStore/GetAnchorsForOwnerResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchorsForOwnerConfigStoreF" +
+            "aultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Anchor[] GetAnchorsForOwner(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetIncomingAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetIncomingAnchorsResp" +
-            "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetIncomingAnchorsConf" +
-            "igStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAnchorStore/GetIncomingAnchors", ReplyAction="urn:directproject:config/store/082010/IAnchorStore/GetIncomingAnchorsResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAnchorStore/GetIncomingAnchorsConfigStoreF" +
+            "aultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Anchor[] GetIncomingAnchors(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetOutgoingAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetOutgoingAnchorsResp" +
-            "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetOutgoingAnchorsConf" +
-            "igStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAnchorStore/GetOutgoingAnchors", ReplyAction="urn:directproject:config/store/082010/IAnchorStore/GetOutgoingAnchorsResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAnchorStore/GetOutgoingAnchorsConfigStoreF" +
+            "aultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Anchor[] GetOutgoingAnchors(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwne" +
-            "r", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwne" +
-            "rResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwne" +
-            "rConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatus", ReplyAction="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatusResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatusConfigStoreFaul" +
+            "tFault", Name="ConfigStoreFault")]
+        void SetAnchorStatus(long[] anchorIDs, Health.Direct.Config.Store.EntityStatus status);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatusForOwner", ReplyAction="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatusForOwnerRespons" +
+            "e")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatusForOwnerConfigS" +
+            "toreFaultFault", Name="ConfigStoreFault")]
         void SetAnchorStatusForOwner(string owner, Health.Direct.Config.Store.EntityStatus status);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/EnumerateAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/EnumerateAnchorsRespon" +
-            "se")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/EnumerateAnchorsConfig" +
-            "StoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAnchorStore/EnumerateAnchors", ReplyAction="urn:directproject:config/store/082010/IAnchorStore/EnumerateAnchorsResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAnchorStore/EnumerateAnchorsConfigStoreFau" +
+            "ltFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Anchor[] EnumerateAnchors(long lastAnchorID, int maxResults, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/RemoveAnchors", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/RemoveAnchorsResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/RemoveAnchorsConfigSto" +
-            "reFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchors", ReplyAction="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchorsResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchorsConfigStoreFaultF" +
+            "ault", Name="ConfigStoreFault")]
         void RemoveAnchors(long[] anchorIDs);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/RemoveAnchorsForOwner", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/RemoveAnchorsForOwnerR" +
-            "esponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/RemoveAnchorsForOwnerC" +
-            "onfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchorsForOwner", ReplyAction="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchorsForOwnerResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchorsForOwnerConfigSto" +
+            "reFaultFault", Name="ConfigStoreFault")]
         void RemoveAnchorsForOwner(string owner);
     }
     
@@ -349,6 +340,10 @@ namespace Health.Direct.Config.Client.CertificateService {
         
         public Health.Direct.Config.Store.Anchor[] GetOutgoingAnchors(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.GetOutgoingAnchors(owner, options);
+        }
+        
+        public void SetAnchorStatus(long[] anchorIDs, Health.Direct.Config.Store.EntityStatus status) {
+            base.Channel.SetAnchorStatus(anchorIDs, status);
         }
         
         public void SetAnchorStatusForOwner(string owner, Health.Direct.Config.Store.EntityStatus status) {

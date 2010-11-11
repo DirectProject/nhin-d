@@ -14,11 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Net.Mail;
 using System.IO;
 
-using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
 using Health.Direct.Config.Tools.Command;
@@ -33,94 +30,94 @@ namespace Health.Direct.Config.Console.Command
 
         private const string ImportMXUsage
             = "Import a new MX dns record from a binary file."
-              + CRLF + "    filepath "
-              + CRLF + "\t filePath: path fo the MX record binary file. Can have any (or no extension)";
+              + Constants.CRLF + "    filepath "
+              + Constants.CRLF + "\t filePath: path fo the MX record binary file. Can have any (or no extension)";
 
         private const string ImportSOAUsage
             = "Import a new SOA dns record from a binary file."
-              + CRLF + "    filepath "
-              + CRLF + "\t filePath: path fo the SOA record binary file. Can have any (or no extension)";
+              + Constants.CRLF + "    filepath "
+              + Constants.CRLF + "\t filePath: path fo the SOA record binary file. Can have any (or no extension)";
 
         private const string ImportAddressUsage
             = "Import a new A dns record from a binary file."
-              + CRLF + "    filepath "
-              + CRLF + "\t filePath: path fo the A record binary file. Can have any (or no extension)";
+              + Constants.CRLF + "    filepath "
+              + Constants.CRLF + "\t filePath: path fo the A record binary file. Can have any (or no extension)";
 
 
         private const string AddMXUsage
             = "Add a new MX dns record."
-              + CRLF + "  domainname exchange ttl [preference] [notes]"
-              + CRLF + "\t domainname: domain name for the record"
-              + CRLF + "\t exchange: smtp domain name for the record"
-              + CRLF + "\t ttl: time to live, 32bit int"
-              + CRLF + "\t [preference]: short value indicating preference of the record"
-              + CRLF + "\t [notes]: description for the record";
+              + Constants.CRLF + "  domainname exchange ttl [preference] [notes]"
+              + Constants.CRLF + "\t domainname: domain name for the record"
+              + Constants.CRLF + "\t exchange: smtp domain name for the record"
+              + Constants.CRLF + "\t ttl: time to live, 32bit int"
+              + Constants.CRLF + "\t [preference]: short value indicating preference of the record"
+              + Constants.CRLF + "\t [notes]: description for the record";
 
         private const string AddSOAUsage
             = "Add a new SOA dns record."
-              + CRLF + "  domainname primarysourcedomain responsibleemail serialnumber ttl [refresh] [retry] [expire] [minimum] [notes]"
-              + CRLF + "\t domainname: The domain name of the name server that was the primary source for this zone"
-              + CRLF + "\t responsibleemail: Email mailbox of the hostmaster"
-              + CRLF + "\t serialnumber: Version number of the original copy of the zone."
-              + CRLF + "\t ttl: time to live, 32bit int"
-              + CRLF + "\t [refresh]: Number of seconds before the zone should be refreshed."
-              + CRLF + "\t [retry]: Number of seconds before failed refresh should be retried."
-              + CRLF + "\t [expire]: Number of seconds before records should be expired if not refreshed"
-              + CRLF + "\t [minimum]: Minimum TTL for this zone."
-              + CRLF + "\t [notes]: description for the record";
+              + Constants.CRLF + "  domainname primarysourcedomain responsibleemail serialnumber ttl [refresh] [retry] [expire] [minimum] [notes]"
+              + Constants.CRLF + "\t domainname: The domain name of the name server that was the primary source for this zone"
+              + Constants.CRLF + "\t responsibleemail: Email mailbox of the hostmaster"
+              + Constants.CRLF + "\t serialnumber: Version number of the original copy of the zone."
+              + Constants.CRLF + "\t ttl: time to live, 32bit int"
+              + Constants.CRLF + "\t [refresh]: Number of seconds before the zone should be refreshed."
+              + Constants.CRLF + "\t [retry]: Number of seconds before failed refresh should be retried."
+              + Constants.CRLF + "\t [expire]: Number of seconds before records should be expired if not refreshed"
+              + Constants.CRLF + "\t [minimum]: Minimum TTL for this zone."
+              + Constants.CRLF + "\t [notes]: description for the record";
 
         private const string AddANAMEUsage
             = "Add a new ANAME dns record."
-              + CRLF + "  domainname ipaddress ttl [notes]"
-              + CRLF + "\t domainname: domain name for the record"
-              + CRLF + "\t ipaddress: IP address in dot notation"
-              + CRLF + "\t ttl: time to live, 32bit int"
-              + CRLF + "\t [notes]: description for the record";
+              + Constants.CRLF + "  domainname ipaddress ttl [notes]"
+              + Constants.CRLF + "\t domainname: domain name for the record"
+              + Constants.CRLF + "\t ipaddress: IP address in dot notation"
+              + Constants.CRLF + "\t ttl: time to live, 32bit int"
+              + Constants.CRLF + "\t [notes]: description for the record";
 
         private const string RemoveMXUsage
              = "Remove an existing MX record by ID."
-              + CRLF + "  recordid"
-              + CRLF + "\t recordid: record id to be removed from the database";
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be removed from the database";
 
 
         private const string RemoveSOAUsage
              = "Remove an existing SOA record by ID."
-              + CRLF + "  recordid"
-              + CRLF + "\t recordid: record id to be removed from the database";
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be removed from the database";
 
 
         private const string RemoveANAMEUsage
              = "Remove an existing ANAME record by ID."
-              + CRLF + "  recordid"
-              + CRLF + "\t recordid: record id to be removed from the database";
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be removed from the database";
 
 
         private const string GetMXUsage
              = "Gets an existing MX record by ID."
-              + CRLF + "  recordid"
-              + CRLF + "\t recordid: record id to be retrieved from the database";
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
 
 
         private const string GetSOAUsage
              = "Gets an existing SOA record by ID."
-              + CRLF + "  recordid"
-              + CRLF + "\t recordid: record id to be retrieved from the database";
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
 
 
         private const string GetANAMEUsage
              = "Gets an existing ANAME record by ID."
-              + CRLF + "  recordid"
-              + CRLF + "\t recordid: record id to be retrieved from the database";
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
 
         private const string UpdateMXUsage
             = "Update an existing MX dns record."
-              + CRLF + "  recordid domainname exchange ttl [preference] [notes]"
-              + CRLF + "\t recordid: id of the record to be update"
-              + CRLF + "\t domainname: new domain name for the record"
-              + CRLF + "\t exchange: new smtp domain name for the record"
-              + CRLF + "\t ttl: new time to live, 32bit int"
-              + CRLF + "\t [preference]: new short value indicating preference of the record"
-              + CRLF + "\t [notes]: new description for the record";
+              + Constants.CRLF + "  recordid domainname exchange ttl [preference] [notes]"
+              + Constants.CRLF + "\t recordid: id of the record to be update"
+              + Constants.CRLF + "\t domainname: new domain name for the record"
+              + Constants.CRLF + "\t exchange: new smtp domain name for the record"
+              + Constants.CRLF + "\t ttl: new time to live, 32bit int"
+              + Constants.CRLF + "\t [preference]: new short value indicating preference of the record"
+              + Constants.CRLF + "\t [notes]: new description for the record";
 
         #endregion
 

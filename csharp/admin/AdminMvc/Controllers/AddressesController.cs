@@ -1,8 +1,11 @@
+using System;
 using System.Linq;
 using System.Web.Mvc;
 
 using AdminMvc.Models;
 using AdminMvc.Models.Repositories;
+
+using AutoMapper;
 
 using Health.Direct.Config.Store;
 
@@ -10,21 +13,33 @@ using MvcContrib.Pagination;
 
 namespace AdminMvc.Controllers
 {
-    public class AddressesController : ControllerBase<Address, IAddressRepository>
+    public class AddressesController : ControllerBase<Address, AddressModel, IAddressRepository>
     {
         public AddressesController(IAddressRepository repository) : base(repository)
         {
         }
 
-        public ActionResult Show(long domainID, int? page)
+        protected override void SetStatus(Address item, EntityStatus status)
         {
-            ViewData["Domain"] = new DomainRepository().Get(domainID);
+            item.Status = status;
+        }
 
-            return View(
-                (from address in Repository.FindAll()
-                 where address.DomainID == domainID
-                 select address)
-                    .AsPagination(page ?? 1, DefaultPageSize));
+        public ActionResult Index(long? domainID, int? page)
+        {
+            ViewData["DateTimeFormat"] = "M/d/yyyy h:mm:ss tt";
+
+            Func<Address, bool> filter = address => true;
+            if (domainID.HasValue)
+            {
+                var domain = Mapper.Map<Domain, DomainModel>(new DomainRepository().Get(domainID.Value));
+                ViewData["Domain"] = domain;
+                filter = address => address.DomainID == domain.ID;
+            }
+
+            return View(Repository.FindAll()
+                            .Where(filter)
+                            .Select(address => Mapper.Map<Address, AddressModel>(address))
+                            .AsPagination(page ?? 1, DefaultPageSize));
         }
 
         public ActionResult Add(long domainID)
@@ -35,56 +50,23 @@ namespace AdminMvc.Controllers
         [HttpPost]
         public ActionResult Add(FormCollection formValues)
         {
-            var address = new AddressModel();
+            var model = Mapper.Map<Address, AddressModel>(new Address());
 
-            if (TryUpdateModel(address))
+            if (TryUpdateModel(model))
             {
-                var newAddress = Repository.Add(address);
-
-                return RedirectToAction("Details", new { id = newAddress.ID });
+                Repository.Add(Mapper.Map<AddressModel, Address>(model));
+                return RedirectToAction("Index", new { domainID = model.DomainID });
             }
 
-            return View(address);
+            return View(model);
         }
 
-        public ActionResult Delete(long id)
+        public ActionResult Details(long id)
         {
             var address = Repository.Get(id);
             if (address == null) return View("NotFound");
 
-            return View(address);
-        }
-
-        [HttpPost]
-        public ActionResult Delete(long id, string confirmButton)
-        {
-            var address = Repository.Get(id);
-            if (address == null) return View("NotFound");
-
-            Repository.Delete(address);
-
-            return View("Deleted", address);
-        }
-
-        public ActionResult Disable(long id)
-        {
-            return EnableDisable(id, EntityStatus.Disabled);
-        }
-
-        public ActionResult Enable(long id)
-        {
-            return EnableDisable(id, EntityStatus.Enabled);
-        }
-
-        private ActionResult EnableDisable(long id, EntityStatus status)
-        {
-            var address = Repository.Get(id);
-            if (address == null) return View("NotFound");
-
-            address.Status = status;
-            Repository.Update(address);
-
-            return View("Details", address);
+            return Json(Mapper.Map<Address, AddressModel>(address), "text/json", JsonRequestBehavior.AllowGet);
         }
     }
 }

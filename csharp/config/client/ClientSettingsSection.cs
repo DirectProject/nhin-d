@@ -13,6 +13,12 @@ namespace Health.Direct.Config.Client
 
         public ClientSettings AsClientSettings()
         {
+            m_settings.Url = this.Url;
+            m_settings.MaxReceivedMessageSize = this.MaxReceivedMessageSize;
+            m_settings.Secure = this.Secure;
+            m_settings.ReceiveTimeoutSeconds = this.ReceiveTimeoutSeconds;
+            m_settings.SendTimeoutSeconds = this.SendTimeoutSeconds;
+
             return m_settings;
         }
 
@@ -26,7 +32,6 @@ namespace Health.Direct.Config.Client
             set
             {
                 this["Url"] = value;
-                m_settings.Url = value;
             }
         }
 
@@ -40,7 +45,6 @@ namespace Health.Direct.Config.Client
             set
             {
                 this["MaxReceivedMessageSize"] = value;
-                m_settings.MaxReceivedMessageSize = value;
             }
         }
 
@@ -54,7 +58,6 @@ namespace Health.Direct.Config.Client
             set
             {
                 this["Secure"] = value;
-                m_settings.Secure = value;
             }
         }
 
@@ -68,7 +71,6 @@ namespace Health.Direct.Config.Client
             set
             {
                 this["ReceiveTimeout"] = value;
-                m_settings.ReceiveTimeoutSeconds = value;
             }
         }
 
@@ -82,7 +84,6 @@ namespace Health.Direct.Config.Client
             set
             {
                 this["SendTimeoutSeconds"] = value;
-                m_settings.SendTimeoutSeconds = value;
             }
         }
     }

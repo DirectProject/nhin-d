@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 using Health.Direct.Config.Store;
@@ -9,8 +10,8 @@ namespace AdminMvc.Models
     {
         public long ID { get; set; }
         public string Name { get; set; }
-        public string CreateDate { get; set; }
-        public string UpdateDate { get; set; }
+        public DateTime CreateDate { get; set; }
+        public DateTime UpdateDate { get; set; }
         public string Status { get; set; }
 
         public bool IsEnabled

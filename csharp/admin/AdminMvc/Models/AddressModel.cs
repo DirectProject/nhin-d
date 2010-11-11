@@ -1,15 +1,30 @@
+using System;
 using System.ComponentModel.DataAnnotations;
+
+using Health.Direct.Config.Store;
 
 namespace AdminMvc.Models
 {
     [MetadataType(typeof(AddressModel_Validation))]
     public class AddressModel
     {
+        public long ID { get; set; }
         public long DomainID { get; set; }
 
         public string EmailAddress { get; set; }
         public string DisplayName { get; set; }
         public string Type { get; set; }
+        public string Status { get; set; }
+        public DateTime CreateDate { get; set; }
+        public DateTime UpdateDate { get; set; }
+
+        public bool IsEnabled
+        {
+            get
+            {
+                return Status == EntityStatus.Enabled.ToString();
+            }
+        }
     }
 
     public class AddressModel_Validation

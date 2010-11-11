@@ -76,9 +76,9 @@ namespace Health.Direct.Config.Console.Command
         
         private const string DomainAddUsage
             = "Add a new domain."
-            + CRLF + "    domainName [status]"
-            + CRLF + "\t domainName: New domain name"
-            + CRLF + "\t status " + EntityStatusString;
+            + Constants.CRLF + "    domainName [status]"
+            + Constants.CRLF + "\t domainName: New domain name"
+            + Constants.CRLF + "\t status " + Constants.EntityStatusString;
         
         /// <summary>
         /// Retrieve a domain
@@ -92,7 +92,7 @@ namespace Health.Direct.Config.Console.Command
 
         private const string DomainGetUsage
             = "Retrieve information for an existing domain."
-              + CRLF + "    domainName";
+              + Constants.CRLF + "    domainName";
         
         /// <summary>
         /// How many domains exist? 
@@ -119,9 +119,9 @@ namespace Health.Direct.Config.Console.Command
 
         private const string DomainStatusSetUsage
             = "Change a domain's status"
-              + CRLF + "    domainName status"
-              + CRLF + "\t domainName: Set status for this domain"
-              + CRLF + "\t status: " + EntityStatusString;
+              + Constants.CRLF + "    domainName status"
+              + Constants.CRLF + "\t domainName: Set status for this domain"
+              + Constants.CRLF + "\t status: " + Constants.EntityStatusString;
         
         /// <summary>
         /// Set the status for all addresses in a domain
@@ -138,9 +138,9 @@ namespace Health.Direct.Config.Console.Command
 
         private const string DomainAddressStatusSetUsage
             = "Set the status of all addresses in this domain"
-              + CRLF + "    domainName status"
-              + CRLF + "\t domainName: Set status for this domain"
-              + CRLF + "\t status: " + EntityStatusString;
+              + Constants.CRLF + "    domainName status"
+              + Constants.CRLF + "\t domainName: Set status for this domain"
+              + Constants.CRLF + "\t status: " + Constants.EntityStatusString;
         
         // We think this is no longer needed. Remove when confirmed
         /*
@@ -190,8 +190,8 @@ namespace Health.Direct.Config.Console.Command
 
         private const string DomainRemoveUsage
             = "Remove a domain."
-              + CRLF + "    domainName"
-              + CRLF + "\t domainName: remove this domain";
+              + Constants.CRLF + "    domainName"
+              + Constants.CRLF + "\t domainName: remove this domain";
 
         [Command(Name = "Domain_List", Usage = "List all domains")]
         public void DomainList(string[] args)

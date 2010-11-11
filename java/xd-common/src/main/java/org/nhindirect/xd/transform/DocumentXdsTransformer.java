@@ -41,6 +41,7 @@ import org.nhindirect.xd.transform.exception.TransformationException;
  * 
  * @author beau
  */
+@Deprecated
 public interface DocumentXdsTransformer
 {
     /**
