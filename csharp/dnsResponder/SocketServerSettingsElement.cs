@@ -3,7 +3,6 @@
  All rights reserved.
 
  Authors:
-    Umesh Madan     umeshma@microsoft.com
     Chris Lomonico  chris.lomonico@surescripts.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,40 +15,40 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Net.Sockets;
-using System.Xml.Serialization;
+using System.Configuration;
 
 namespace Health.Direct.DnsResponder
 {
-    public class SocketServerSettings 
+    public class SocketServerSettingsElement : ConfigurationElement
     {
-        public const short DefaultMaxConnectionBacklog = 64;
-        public const short DefaultMaxActiveRequests = 64;
-        public const short DefaultMaxOutstandingAccepts = 16;
-        public const short DefaultReadBufferSize = 1024;
 
-        short m_maxOutstandingAccepts = DefaultMaxOutstandingAccepts;
-        short m_maxConnectionBacklog = DefaultMaxConnectionBacklog;
-        short m_maxActiveRequests = DefaultMaxActiveRequests;
-        short m_readBufferSize = DefaultReadBufferSize;
-
-        int m_sendTimeout;
-        int m_receiveTimeout;
-        int m_socketClostTimeout;
-        
-        public SocketServerSettings()
+        public SocketServerSettingsElement()
         {
         }
-        
+
+        public SocketServerSettings AsSocketServerSettings()
+        {
+            SocketServerSettings settings = new SocketServerSettings();
+            settings.MaxOutstandingAccepts = this.MaxOutstandingAccepts;
+            settings.MaxConnectionBacklog = this.MaxConnectionBacklog;
+            settings.MaxActiveRequests = this.MaxActiveRequests;
+            settings.ReadBufferSize = this.ReadBufferSize;
+            settings.SendTimeout = this.SendTimeout;
+            settings.ReceiveTimeout = this.ReceiveTimeout;
+            settings.SocketCloseTimeout = this.SocketCloseTimeout;
+            return settings;
+        }
+
         /// <summary>
         /// Have these many asynchronous "Accept" or Receive calls already in place, so that actual request/connect acceptance 
         /// does not become a bottleneck
         /// </summary>
-        [XmlElement]
+        [ConfigurationProperty("MaxOutstandingAccepts", DefaultValue = SocketServerSettings.DefaultMaxOutstandingAccepts, IsRequired = false)]
         public short MaxOutstandingAccepts
         {
             get
             {
-                return m_maxOutstandingAccepts;
+                return (short)this["MaxOutstandingAccepts"];
             }
             set
             {
@@ -58,21 +57,21 @@ namespace Health.Direct.DnsResponder
                     throw new ArgumentException();
                 }
 
-                m_maxOutstandingAccepts = value;
+                this["MaxOutstandingAccepts"] = value;
             }
         }
-        
+
         /// <summary>
         /// Connections not already accepted are Queued automatically by Winsock until they can be accepted by Winsock
         /// Set this to some reasonable limit between 20-200. Note: if you specify too high a number, .NET will automatically
         /// constrain the # based on OS restrictions. 
         /// </summary>
-        [XmlElement]
+        [ConfigurationProperty("MaxConnectionBacklog", DefaultValue = SocketServerSettings.DefaultMaxConnectionBacklog, IsRequired = false)]
         public short MaxConnectionBacklog
         {
             get
             {
-                return m_maxConnectionBacklog;
+                return (short)this["MaxConnectionBacklog"];
             }
             set
             {
@@ -80,19 +79,19 @@ namespace Health.Direct.DnsResponder
                 {
                     throw new ArgumentException();
                 }
-                m_maxConnectionBacklog = value;
+                this["MaxConnectionBacklog"] = value;
             }
         }
 
         /// <summary>
         /// Max requests you simultaneously want to handle. The socket server will automatically impose this limit
         /// </summary>
-        [XmlElement]
+        [ConfigurationProperty("MaxActiveRequests", DefaultValue = SocketServerSettings.DefaultMaxActiveRequests, IsRequired = false)]
         public short MaxActiveRequests
         {
             get
             {
-                return m_maxActiveRequests;
+                return (short)this["MaxActiveRequests"];
             }
             set
             {
@@ -101,16 +100,16 @@ namespace Health.Direct.DnsResponder
                     throw new ArgumentException();
                 }
 
-                m_maxActiveRequests = value ;
+                this["MaxActiveRequests"] = value;
             }
         }
-        
-        [XmlElement]
+
+        [ConfigurationProperty("ReadBufferSize", DefaultValue = SocketServerSettings.DefaultReadBufferSize, IsRequired = false)]
         public short ReadBufferSize
         {
             get
             {
-                return m_readBufferSize;
+                return (short)this["ReadBufferSize"];
             }
             set
             {
@@ -119,116 +118,53 @@ namespace Health.Direct.DnsResponder
                     throw new ArgumentException();
                 }
 
-                m_readBufferSize = value;
+                this["ReadBufferSize"] = value;
             }
         }
-        
+
         //--------------------------------------
         //
         // Self explanatory Socket Timeouts
         //
         //--------------------------------------
-        
-        [XmlElement]
+        [ConfigurationProperty("SendTimeout",  IsRequired = false)]
         public int SendTimeout
         {
             get
             {
-                return m_sendTimeout;
+                return (int)this["SendTimeout"];
             }
             set
             {
-                m_sendTimeout = value;
+                this["SendTimeout"] = value;
             }
         }
 
-        [XmlElement]
+        [ConfigurationProperty("ReceiveTimeout",  IsRequired = false)]
         public int ReceiveTimeout
         {
             get
             {
-                return m_receiveTimeout;
+                return (int)this["ReceiveTimeout"];
             }
             set
             {
-                m_receiveTimeout = value;
+                this["ReceiveTimeout"] = value;
             }
         }
 
-        [XmlElement]
+        [ConfigurationProperty("SocketCloseTimeout", IsRequired = false)]
         public int SocketCloseTimeout
         {
             get
             {
-                return m_socketClostTimeout;
+                return (int)this["SocketCloseTimeout"];
             }
             set
             {
-                m_socketClostTimeout = value;
-            }
-        }
-        
-        [XmlIgnore]
-        internal bool IsThrottled
-        {
-            get
-            {
-                return (this.MaxActiveRequests > 0 && MaxActiveRequests < short.MaxValue);
-            }
-        }
-        
-        //
-        // Validation Etc
-        //                                
-        public virtual void Validate()
-        {
-            if (this.MaxOutstandingAccepts <= 0)
-            {
-                throw new ArgumentException("MaxOutstandingAccepts");
-            }
-            
-            if (this.MaxConnectionBacklog <= 0)
-            {
-                throw new ArgumentException("MaxPendingConnections");
-            }
-
-            if (this.MaxActiveRequests <= 0)
-            {
-                throw new ArgumentException("MaxActiveRequests");
-            }
-            
-            if (this.ReadBufferSize <= 0)
-            {
-                throw new ArgumentException("ReadBufferSize");
+                this["SocketCloseTimeout"] = value;
             }
         }
 
-        internal void ConfigureSocket(Socket socket)
-        {
-            if (this.ReceiveTimeout > 0)
-            {
-                socket.SetReceiveTimeout(this.ReceiveTimeout);
-            }
-            if (this.SendTimeout > 0)
-            {
-                socket.SetSendTimeout(this.SendTimeout);
-            }
-        }
-        
-        internal IWorkLoadThrottle CreateRequestThrottle()
-        {
-            if (this.IsThrottled)
-            {
-                return new WorkThrottle(this.MaxActiveRequests);
-            }
-            
-            return new NullThrottle();
-        } 
-        
-        internal IWorkLoadThrottle CreateAcceptThrottle()
-        {
-            return new WorkThrottle(this.MaxOutstandingAccepts);
-        }
-        
     }
 }

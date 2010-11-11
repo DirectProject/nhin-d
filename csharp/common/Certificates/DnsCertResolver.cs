@@ -37,6 +37,7 @@ namespace Health.Direct.Common.Certificates
         IPAddress m_serverIP;
         string m_fallbackDomain = string.Empty;
         bool m_cacheEnabled = false;
+        bool m_useRootForCertResolve = false;
         TimeSpan m_timeout;
         int m_maxRetries = 1;
         

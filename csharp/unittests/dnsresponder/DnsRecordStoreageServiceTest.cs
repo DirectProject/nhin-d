@@ -12,7 +12,7 @@ using Xunit.Extensions;
 namespace Health.Direct.DnsResponder.Tests
 {
     class DnsRecordStoreageServiceTest : TestBase
-    {
+    {        /*
         DnsRecordStorageService m_store;
 
         public DnsRecordStorageService Store
@@ -69,7 +69,7 @@ namespace Health.Direct.DnsResponder.Tests
                 , dr.AnswerRecords[0].Type);
         }
 
-
+        
         [Theory]
         [PropertyData("DnsRecordDomainNamesTheoryData")]
         public void TestGetDomainMX(string domainName)
@@ -107,59 +107,60 @@ namespace Health.Direct.DnsResponder.Tests
             
         }
 
-        /*
-        /// <summary>
-        /// Runs a live test against the dnsResponder service to see if service will actually resolve results for MX quesions
-        /// </summary>
-        /// <remarks>In order to run this you need to have the dnsResponder service running (which can run in debug mode)
-        /// and records in the database must be populated (runs in constructor)</remarks>
-        [Theory]
-        [PropertyData("DnsRecordDomainNamesTheoryData")]
-        public void TestDnsResolveMX(string domain)
-        {
-            DnsClient client = new DnsClient("127.0.0.1", 5353);
-            Dump(string.Format("attempting to resolve MX from dns server for {0}", domain));
-            List<MXRecord> lst = client.ResolveMX(domain).ToList();
-            Assert.Equal(1,lst.Count);
-            Assert.Equal(domain
-                , lst[0].Name);
-        }
+
+/// <summary>
+/// Runs a live test against the dnsResponder service to see if service will actually resolve results for MX quesions
+/// </summary>
+/// <remarks>In order to run this you need to have the dnsResponder service running (which can run in debug mode)
+/// and records in the database must be populated (runs in constructor)</remarks>
+[Theory]
+[PropertyData("DnsRecordDomainNamesTheoryData")]
+public void TestDnsResolveMX(string domain)
+{
+    DnsClient client = new DnsClient("127.0.0.1", 5353);
+    client.Timeout = TimeSpan.FromSeconds(60);
+    Dump(string.Format("attempting to resolve MX from dns server for {0}", domain));
+    List<MXRecord> lst = client.ResolveMX(domain).ToList();
+    Assert.Equal(1,lst.Count);
+    Assert.Equal(domain
+        , lst[0].Name);
+}
 
 
-        /// <summary>
-        /// Runs a live test against the dnsResponder service to see if service will actually resolve results for ANAME quesions
-        /// </summary>
-        /// <remarks>In order to run this you need to have the dnsResponder service running (which can run in debug mode)
-        /// and records in the database must be populated (runs in constructor)</remarks>
-        [Theory]
-        [PropertyData("DnsRecordDomainNamesTheoryData")]
-        public void TestDnsResolveANAME(string domain)
-        {
-            DnsClient client = new DnsClient("127.0.0.1", 5353);
-            Dump(string.Format("attempting to resolve ANAME from dns server for {0}", domain));
-            List<AddressRecord> lst = client.ResolveA(domain).ToList();
-            Assert.Equal(1, lst.Count);
-            Assert.Equal(domain
-                , lst[0].Name);
-        }
+/// <summary>
+/// Runs a live test against the dnsResponder service to see if service will actually resolve results for ANAME quesions
+/// </summary>
+/// <remarks>In order to run this you need to have the dnsResponder service running (which can run in debug mode)
+/// and records in the database must be populated (runs in constructor)</remarks>
+[Theory]
+[PropertyData("DnsRecordDomainNamesTheoryData")]
+public void TestDnsResolveANAME(string domain)
+{
+    DnsClient client = new DnsClient("127.0.0.1", 5353);
+    Dump(string.Format("attempting to resolve ANAME from dns server for {0}", domain));
+    List<AddressRecord> lst = client.ResolveA(domain).ToList();
+    Assert.Equal(1, lst.Count);
+    Assert.Equal(domain
+        , lst[0].Name);
+}
 
 
-        /// <summary>
-        /// Runs a live test against the dnsResponder service to see if service will actually resolve results for SOA quesions
-        /// </summary>
-        /// <remarks>In order to run this you need to have the dnsResponder service running (which can run in debug mode)
-        /// and records in the database must be populated (runs in constructor)</remarks>
-        [Theory]
-        [PropertyData("DnsRecordDomainNamesTheoryData")]
-        public void TestDnsResolveSOA(string domain)
-        {
-            DnsClient client = new DnsClient("127.0.0.1", 5353);
-            Dump(string.Format("attempting to resolve SOA from dns server for {0}", domain));
-            List<SOARecord> lst = client.ResolveSOA(domain).ToList();
-            Assert.Equal(1, lst.Count);
-            Assert.Equal(domain
-                , lst[0].Name);
-        }
-        */
+/// <summary>
+/// Runs a live test against the dnsResponder service to see if service will actually resolve results for SOA quesions
+/// </summary>
+/// <remarks>In order to run this you need to have the dnsResponder service running (which can run in debug mode)
+/// and records in the database must be populated (runs in constructor)</remarks>
+[Theory]
+[PropertyData("DnsRecordDomainNamesTheoryData")]
+public void TestDnsResolveSOA(string domain)
+{
+    DnsClient client = new DnsClient("127.0.0.1", 5353);
+    Dump(string.Format("attempting to resolve SOA from dns server for {0}", domain));
+    List<SOARecord> lst = client.ResolveSOA(domain).ToList();
+    Assert.Equal(1, lst.Count);
+    Assert.Equal(domain
+        , lst[0].Name);
+}
+*/
     }
 }

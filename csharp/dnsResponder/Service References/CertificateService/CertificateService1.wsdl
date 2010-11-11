@@ -8,6 +8,15 @@
       <xsd:import schemaLocation="http://localhost:6692/CertificateService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
     </xsd:schema>
   </wsdl:types>
+  <wsdl:message name="ICertificateStore_AddCertificate_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddCertificate" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_AddCertificate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddCertificateResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_AddCertificate_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:message name="ICertificateStore_AddCertificates_InputMessage">
     <wsdl:part name="parameters" element="tns:AddCertificates" />
   </wsdl:message>
@@ -87,6 +96,15 @@
     <wsdl:part name="parameters" element="tns:EnumerateCertificatesResponse" />
   </wsdl:message>
   <wsdl:message name="ICertificateStore_EnumerateCertificates_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_AddAnchor_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddAnchor" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_AddAnchor_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddAnchorResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_AddAnchor_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
   <wsdl:message name="IAnchorStore_AddAnchors_InputMessage">
@@ -180,6 +198,11 @@
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
   <wsdl:portType name="ICertificateStore">
+    <wsdl:operation name="AddCertificate">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificate" message="tns:ICertificateStore_AddCertificate_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificateResponse" message="tns:ICertificateStore_AddCertificate_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificateConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_AddCertificate_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
     <wsdl:operation name="AddCertificates">
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificates" message="tns:ICertificateStore_AddCertificates_InputMessage" />
       <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificatesResponse" message="tns:ICertificateStore_AddCertificates_OutputMessage" />
@@ -227,6 +250,11 @@
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:portType name="IAnchorStore">
+    <wsdl:operation name="AddAnchor">
+      <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchor" message="tns:IAnchorStore_AddAnchor_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchorResponse" message="tns:IAnchorStore_AddAnchor_OutputMessage" />
+      <wsdl:fault wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchorConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_AddAnchor_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
     <wsdl:operation name="AddAnchors">
       <wsdl:input wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchors" message="tns:IAnchorStore_AddAnchors_InputMessage" />
       <wsdl:output wsaw:Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchorsResponse" message="tns:IAnchorStore_AddAnchors_OutputMessage" />
