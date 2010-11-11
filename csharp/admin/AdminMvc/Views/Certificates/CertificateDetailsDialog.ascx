@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
-<%@ Import Namespace="AdminMvc.Models"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Models"%>
 
 <div id="certificate-dialog" style="display: none;">
     <div class="display-label">Owner</div>

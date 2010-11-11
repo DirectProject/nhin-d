@@ -1,9 +1,9 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<CertificateModel>>" %>
-<%@ Import Namespace="AdminMvc.Common"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Common"%>
 <%@ Import Namespace="MvcContrib.UI.Grid"%>
 <%@ Import Namespace="MvcContrib.UI.Pager"%>
 <%@ Import Namespace="MvcContrib.Pagination"%>
-<%@ Import Namespace="AdminMvc.Models"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Models"%>
 
 <%= Html.Grid(Model)
         .Attributes(@class => "grid ui-widget ui-widget-content")

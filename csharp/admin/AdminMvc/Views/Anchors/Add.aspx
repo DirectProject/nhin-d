@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage<AnchorUploadModel>" %>
-<%@ Import Namespace="AdminMvc.Models"%>
-<%@ Import Namespace="AdminMvc.Common"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Models"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Common"%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="TitleContent" runat="server">
 	Add Certificate

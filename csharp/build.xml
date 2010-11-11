@@ -90,7 +90,7 @@
 	</Target>
 
 	<Target Name="build-installer" DependsOnTargets="build-gateway32;build-gateway64">		
-		<Exec Command='"C:\Program Files (x86)\inno setup 5\iscc.exe" /Q installer\DirectGateway.iss' 
+		<Exec Command='"C:\Program Files (x86)\inno setup 5\iscc.exe" /Q installer\DirectGateway.iss /Version=1.0.0.0' 
 			Condition="Exists('C:\Program Files (x86)\inno setup 5\iscc.exe')" />
 		<Exec Command='"C:\Program Files\inno setup 5\iscc.exe" /Q installer\DirectGateway.iss' 
 			Condition="Exists('C:\Program Files\inno setup 5\iscc.exe')" />

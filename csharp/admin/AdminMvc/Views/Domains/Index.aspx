@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage<IEnumerable<DomainModel>>" %>
-<%@ Import Namespace="AdminMvc.Models"%>
-<%@ Import Namespace="AdminMvc.Controllers"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Models"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Controllers"%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="TitleContent" runat="server">
 	Domains

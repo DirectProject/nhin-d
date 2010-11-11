@@ -2,6 +2,7 @@
 
 [assembly: AssemblyCompany("Direct Project")]
 [assembly: AssemblyCopyright("Copyright 2010 © Direct Project")]
+[assembly: AssemblyProduct("Direct Project")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
