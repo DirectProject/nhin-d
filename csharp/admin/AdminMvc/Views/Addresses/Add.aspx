@@ -14,24 +14,24 @@
     
         <fieldset class="ui-widget-content">
             <span class="display-label"><%= Html.LabelFor(m => m.EmailAddress) %></span>
-            <span class="display-field"><%= Html.TextBoxFor(m => m.EmailAddress) %></span>
+            <span class="display-field"><%= Html.TextBoxFor(m => m.EmailAddress, new {@class="ui-widget-content"}) %></span>
             <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.EmailAddress, "*", new { @class = "ui-state-error-text" })%></span>
             <br class="clear" />
 
             <span class="display-label"><%= Html.LabelFor(m => m.DisplayName) %></span>
-            <span class="display-field"><%= Html.TextBoxFor(m => m.DisplayName) %></span>
+            <span class="display-field"><%= Html.TextBoxFor(m => m.DisplayName, new { @class = "ui-widget-content" })%></span>
             <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.DisplayName, "*", new { @class = "ui-state-error-text" })%></span>
             <br class="clear" />
 
             <span class="display-label"><%= Html.LabelFor(m => m.Type) %></span>
-            <span class="display-field"><%= Html.TextBoxFor(m => m.Type) %></span>
+            <span class="display-field"><%= Html.TextBoxFor(m => m.Type, new { @class = "ui-widget-content" })%></span>
             <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.Type, "*", new { @class = "ui-state-error-text" })%></span>
             <br class="clear" />
             
             <p>
                 <%= Html.HiddenFor(m => m.DomainID) %>
                 <input type="submit" value="Save" />
-                <%= Html.ActionLink("Cancel", "Show", new {domainID = Model.DomainID}) %>
+                <%= Html.ActionLink("Cancel", "Index", new {domainID = Model.DomainID}) %>
             </p>
         </fieldset>
     

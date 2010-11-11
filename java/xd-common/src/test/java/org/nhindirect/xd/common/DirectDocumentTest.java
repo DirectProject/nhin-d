@@ -38,8 +38,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
 
-import sun.awt.SunHints.Value;
-
 /**
  * Unit tests for the DirectDocument class.
  * 

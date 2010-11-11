@@ -1,14 +1,18 @@
+using System;
+using System.Linq;
 using System.Web.Mvc;
 
 using AdminMvc.Models.Repositories;
 
 using AutoMapper;
 
+using Health.Direct.Config.Store;
+
 using MvcContrib.Pagination;
 
 namespace AdminMvc.Controllers
 {
-    public class ControllerBase<T,TRepository> : Controller
+    public abstract class ControllerBase<T,TModel,TRepository> : Controller
         where T : class
         where TRepository : IRepository<T>
     {
@@ -26,22 +30,66 @@ namespace AdminMvc.Controllers
             get { return m_repository; }
         }
 
-        public ActionResult Index(int? page)
+        protected abstract void SetStatus(T item, EntityStatus status);
+
+        protected ActionResult IndexBase(int? page)
         {
-            var paginatedItems = Repository.FindAll().AsPagination(page ?? 1, DefaultPageSize);
+            ViewData["DateTimeFormat"] = "M/d/yyyy h:mm:ss tt";
+
+            new DateTime().ToString("");
+
+            var paginatedItems = (from item in Repository.FindAll()
+                        select Mapper.Map<T, TModel>(item))
+                        .AsPagination(page ?? 1, DefaultPageSize);
+
             return View(paginatedItems);
         }
 
-        public virtual ActionResult Details(long id)
+        [HttpPost]
+        public string Delete(long id)
+        {
+            try
+            {
+                var item = Repository.Get(id);
+                if (item == null) return "NotFound";
+
+                Repository.Delete(item);
+
+                return Boolean.TrueString;
+            }
+            catch (Exception ex)
+            {
+                return ex.GetBaseException().Message;
+            }
+        }
+
+        public ActionResult Disable(long id)
+        {
+            return EnableDisable(id, EntityStatus.Disabled);
+        }
+
+        public ActionResult Enable(long id)
+        {
+            return EnableDisable(id, EntityStatus.Enabled);
+        }
+
+        protected virtual ActionResult EnableDisable(long id, EntityStatus status)
         {
             var item = Repository.Get(id);
+            if (item == null) return View("NotFound");
 
-            if (item == null)
-            {
-                return View("NotFound");
-            }
+            SetStatus(item, status);
+            Repository.Update(item);
 
-            return View("Details", item);
+            return Json(Mapper.Map<T, TModel>(item), "text/json");
+        }
+
+        protected byte[] GetFileFromRequest(string keyName)
+        {
+            var file = Request.Files.Get(keyName);
+            var bytes = new byte[file.ContentLength];
+            file.InputStream.Read(bytes, 0, file.ContentLength);
+            return bytes;
         }
     }
 }

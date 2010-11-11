@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:i0="http://www.nhindirect.org/config/store/082010" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="http://tempuri.org/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" name="DomainManagerService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:import namespace="http://www.nhindirect.org/config/store/082010" location="http://localhost:6692/DomainManagerService.svc?wsdl=wsdl0" />
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:i0="urn:directproject:config/store/082010" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="http://tempuri.org/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" name="DomainManagerService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:import namespace="urn:directproject:config/store/082010" location="http://localhost:6692/DomainManagerService.svc?wsdl=wsdl0" />
   <wsdl:types />
   <wsdl:binding name="BasicHttpBinding_IAddressManager" type="i0:IAddressManager">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="AddAddress">
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAddressManager/AddAddress" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
     <wsdl:operation name="AddAddresses">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddresses" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAddressManager/AddAddresses" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -17,7 +29,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="UpdateAddresses">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/UpdateAddresses" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAddressManager/UpdateAddresses" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -29,7 +41,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetAddresses">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddresses" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAddressManager/GetAddresses" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -41,7 +53,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetAddressesByID">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByID" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAddressManager/GetAddressesByID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -53,7 +65,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="RemoveAddresses">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddresses" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAddressManager/RemoveAddresses" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -65,7 +77,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="RemoveDomainAddresses">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveDomainAddresses" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAddressManager/RemoveDomainAddresses" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -77,7 +89,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="SetDomainAddressesStatus">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesStatus" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAddressManager/SetDomainAddressesStatus" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -89,7 +101,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetAddressCount">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressCount" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAddressManager/GetAddressCount" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -101,7 +113,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="EnumerateDomainAddresses">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddresses" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAddressManager/EnumerateDomainAddresses" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -113,7 +125,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="EnumerateAddresses">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateAddresses" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAddressManager/EnumerateAddresses" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -128,7 +140,7 @@
   <wsdl:binding name="BasicHttpBinding_IDomainManager" type="i0:IDomainManager">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="AddDomain">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDomainManager/AddDomain" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDomainManager/AddDomain" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -140,7 +152,19 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="UpdateDomain">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomain" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDomainManager/UpdateDomain" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetDomain">
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDomainManager/GetDomain" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -152,7 +176,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetDomainCount">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCount" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDomainManager/GetDomainCount" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -164,7 +188,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetDomains">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomains" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDomainManager/GetDomains" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -176,7 +200,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="RemoveDomain">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDomainManager/RemoveDomain" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDomainManager/RemoveDomain" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -188,7 +212,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="EnumerateDomains">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDomainManager/EnumerateDomains" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDomainManager/EnumerateDomains" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -203,7 +227,7 @@
   <wsdl:binding name="BasicHttpBinding_IDnsRecordManager" type="i0:IDnsRecordManager">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="AddDnsRecords">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecords" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecords" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -215,7 +239,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="AddDnsRecord">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecord" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecord" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -227,7 +251,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="Count">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/Count" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/Count" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -239,7 +263,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetLastDnsRecords">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetLastDnsRecords" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/GetLastDnsRecords" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -251,7 +275,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetDnsRecord">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecord" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecord" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -263,7 +287,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetDnsRecords">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecords" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecords" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -275,7 +299,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetMatchingDnsRecords">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetMatchingDnsRecords" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecords" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -287,7 +311,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetMatchingDnsRecordsByType">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetMatchingDnsRecordsByType" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecordsByType" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -299,7 +323,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="RemoveDnsRecord">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecord" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecord" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -311,7 +335,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="RemoveDnsRecordByID">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecordByID" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecordByID" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -323,7 +347,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="UpdateDnsRecord">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecord" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecord" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -335,7 +359,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="UpdateDnsRecords">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecords" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecords" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

@@ -4,6 +4,7 @@ using System.ServiceProcess;
 using Config=System.Configuration;
 
 using Health.Direct.Config.Client;
+using Health.Direct.Common.Diagnostics;
 
 using ClientSettingsSection=Health.Direct.Config.Client.ClientSettingsSection;
 
@@ -15,29 +16,73 @@ namespace Health.Direct.DnsResponder.WinSrv
         protected DnsResponderUDP m_dnsResponderUDP = null;
         protected DnsServer m_dnsServer = null;
         protected DnsRecordStorageService m_store = null;
+        private readonly ILogger m_logger;
 
         public DnsResponderWinSrv()
         {
+
             InitializeComponent();
+            try
+            {
+                m_logger = Log.For(this);
+            }
+            catch (Exception ex)
+            {
+                WriteToEventLog(ex);
+                throw;
+            }
+        }
+
+
+        private ILogger Logger
+        {
+            get { return m_logger; }
+        }
+
+
+        private static void WriteToEventLog(Exception ex)
+        {
+            const string source = "Health.Direct.DnsResponder.WinSrv";
+
+            EventLogHelper.WriteError(source, ex.Message);
+            EventLogHelper.WriteError(source, ex.GetBaseException().ToString());
+        }
+
+
+
+        private static void WriteToEventLogWarn(string message)
+        {
+            const string source = "Health.Direct.DnsResponder.WinSrv";
+
+            EventLogHelper.WriteWarning(source, message);
+        }
+
+        private static void WriteToEventLogInfo(string message)
+        {
+            const string source = "Health.Direct.DnsResponder.WinSrv";
+
+            EventLogHelper.WriteInformation(source, message);
         }
 
         /// <summary>
         /// method to initialize fields utilized by the service
         /// </summary>
         protected void InitializeService()
+
         {
+            WriteToEventLogInfo("Service is being initialized");
 
             //----------------------------------------------------------------------------------------------------
             //---load the settings from the related sections in app.config
-            ClientSettings certServiceSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsRecordManagerServiceSettings")).AsClientSettings();
-            ClientSettings dnsRecordServiceSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/CertificateManagerServiceSettings")).AsClientSettings();
-            DnsServerSettings dnsServerSettings = (DnsServerSettings)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsServerSettings");
+            ClientSettings dnsRecordServiceSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsRecordManagerServiceSettings")).AsClientSettings();
+            ClientSettings certServiceSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/CertificateManagerServiceSettings")).AsClientSettings();
+            DnsServerSettings dnsServerSettings = ((DnsServerSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsServerSettings")).AsDnsServerSettings();
 
             m_store = new DnsRecordStorageService(dnsRecordServiceSettings, certServiceSettings);
 
             //----------------------------------------------------------------------------------------------------
             //---create the DNS Server instance
-            DnsServer dnsServer = new DnsServer(m_store
+            m_dnsServer = new DnsServer(m_store
                 , dnsServerSettings);
 
             //----------------------------------------------------------------------------------------------------
@@ -46,7 +91,7 @@ namespace Health.Direct.DnsResponder.WinSrv
             m_dnsResponderUDP = new DnsResponderUDP(m_dnsServer);
             m_dnsServer.UDPResponder.Server.Error += UDPServer_Error;
             m_dnsServer.TCPResponder.Server.Error += TCPServer_Error;
-
+            WriteToEventLogInfo("Service has been fully initialized");
         }
 
         public void StartService(string[] args)
@@ -76,16 +121,12 @@ namespace Health.Direct.DnsResponder.WinSrv
 
         void TCPServer_Error(Exception ex)
         {
-            //----------------------------------------------------------------------------------------------------
-            //---TODO: incorp logging here
-            Console.WriteLine("TCP ERROR {0}", ex);
+            WriteToEventLog(ex);
         }
 
         void UDPServer_Error(Exception ex)
         {
-            //----------------------------------------------------------------------------------------------------
-            //---TODO: incorp logging here
-            Console.WriteLine("UDP ERROR {0}", ex);
+            WriteToEventLog(ex);
         }
     }
 }

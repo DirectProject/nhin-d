@@ -12,75 +12,65 @@ namespace Health.Direct.Config.Client.DomainManager {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(Namespace="http://www.nhindirect.org/config/store/082010", ConfigurationName="DomainManager.IAddressManager")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace="urn:directproject:config/store/082010", ConfigurationName="DomainManager.IAddressManager")]
     public interface IAddressManager {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddress", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressConfigSto" +
-            "reFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/AddAddress", ReplyAction="urn:directproject:config/store/082010/IAddressManager/AddAddressResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/AddAddressConfigStoreFaultF" +
+            "ault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Address AddAddress(Health.Direct.Config.Store.Address address);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressesRespons" +
-            "e")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/AddAddressesConfigS" +
-            "toreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/AddAddresses", ReplyAction="urn:directproject:config/store/082010/IAddressManager/AddAddressesResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/AddAddressesConfigStoreFaul" +
+            "tFault", Name="ConfigStoreFault")]
         void AddAddresses(Health.Direct.Config.Store.Address[] addresses);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/UpdateAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/UpdateAddressesResp" +
-            "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/UpdateAddressesConf" +
-            "igStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/UpdateAddresses", ReplyAction="urn:directproject:config/store/082010/IAddressManager/UpdateAddressesResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/UpdateAddressesConfigStoreF" +
+            "aultFault", Name="ConfigStoreFault")]
         void UpdateAddresses(Health.Direct.Config.Store.Address[] address);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesRespons" +
-            "e")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesConfigS" +
-            "toreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/GetAddresses", ReplyAction="urn:directproject:config/store/082010/IAddressManager/GetAddressesResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesConfigStoreFaul" +
+            "tFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Address[] GetAddresses(string[] emailAddresses, System.Nullable<Health.Direct.Config.Store.EntityStatus> status);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByID", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByIDRes" +
-            "ponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressesByIDCon" +
-            "figStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesByID", ReplyAction="urn:directproject:config/store/082010/IAddressManager/GetAddressesByIDResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesByIDConfigStore" +
+            "FaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Address[] GetAddressesByID(long[] addressIDs, System.Nullable<Health.Direct.Config.Store.EntityStatus> status);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddressesResp" +
-            "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveAddressesConf" +
-            "igStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/RemoveAddresses", ReplyAction="urn:directproject:config/store/082010/IAddressManager/RemoveAddressesResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/RemoveAddressesConfigStoreF" +
+            "aultFault", Name="ConfigStoreFault")]
         void RemoveAddresses(string[] emailAddresses);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveDomainAddress" +
-            "es", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveDomainAddress" +
-            "esResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/RemoveDomainAddress" +
-            "esConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/RemoveDomainAddresses", ReplyAction="urn:directproject:config/store/082010/IAddressManager/RemoveDomainAddressesRespon" +
+            "se")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/RemoveDomainAddressesConfig" +
+            "StoreFaultFault", Name="ConfigStoreFault")]
         void RemoveDomainAddresses(long domainID);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesS" +
-            "tatus", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesS" +
-            "tatusResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/SetDomainAddressesS" +
-            "tatusConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/SetDomainAddressesStatus", ReplyAction="urn:directproject:config/store/082010/IAddressManager/SetDomainAddressesStatusRes" +
+            "ponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/SetDomainAddressesStatusCon" +
+            "figStoreFaultFault", Name="ConfigStoreFault")]
         void SetDomainAddressesStatus(long domainID, Health.Direct.Config.Store.EntityStatus status);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressCount", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressCountResp" +
-            "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/GetAddressCountConf" +
-            "igStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/GetAddressCount", ReplyAction="urn:directproject:config/store/082010/IAddressManager/GetAddressCountResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/GetAddressCountConfigStoreF" +
+            "aultFault", Name="ConfigStoreFault")]
         int GetAddressCount(string domainName);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddr" +
-            "esses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddr" +
-            "essesResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateDomainAddr" +
-            "essesConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/EnumerateDomainAddresses", ReplyAction="urn:directproject:config/store/082010/IAddressManager/EnumerateDomainAddressesRes" +
+            "ponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/EnumerateDomainAddressesCon" +
+            "figStoreFaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Address[] EnumerateDomainAddresses(string domainName, string lastAddress, int maxResults);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateAddresses", ReplyAction="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateAddressesR" +
-            "esponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAddressManager/EnumerateAddressesC" +
-            "onfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/EnumerateAddresses", ReplyAction="urn:directproject:config/store/082010/IAddressManager/EnumerateAddressesResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/EnumerateAddressesConfigSto" +
+            "reFaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Address[] EnumerateAddresses(string lastAddress, int maxResults);
     }
     
@@ -157,46 +147,42 @@ namespace Health.Direct.Config.Client.DomainManager {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(Namespace="http://www.nhindirect.org/config/store/082010", ConfigurationName="DomainManager.IDomainManager")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace="urn:directproject:config/store/082010", ConfigurationName="DomainManager.IDomainManager")]
     public interface IDomainManager {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/AddDomain", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/AddDomainResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/AddDomainConfigStore" +
-            "FaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDomainManager/AddDomain", ReplyAction="urn:directproject:config/store/082010/IDomainManager/AddDomainResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDomainManager/AddDomainConfigStoreFaultFau" +
+            "lt", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Domain AddDomain(Health.Direct.Config.Store.Domain domain);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomain", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomainResponse" +
-            "")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/UpdateDomainConfigSt" +
-            "oreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDomainManager/UpdateDomain", ReplyAction="urn:directproject:config/store/082010/IDomainManager/UpdateDomainResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDomainManager/UpdateDomainConfigStoreFault" +
+            "Fault", Name="ConfigStoreFault")]
         void UpdateDomain(Health.Direct.Config.Store.Domain domain);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomain", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainConfigStore" +
-            "FaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDomainManager/GetDomain", ReplyAction="urn:directproject:config/store/082010/IDomainManager/GetDomainResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDomainManager/GetDomainConfigStoreFaultFau" +
+            "lt", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Domain GetDomain(long id);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCount", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCountRespon" +
-            "se")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainCountConfig" +
-            "StoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDomainManager/GetDomainCount", ReplyAction="urn:directproject:config/store/082010/IDomainManager/GetDomainCountResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDomainManager/GetDomainCountConfigStoreFau" +
+            "ltFault", Name="ConfigStoreFault")]
         int GetDomainCount();
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomains", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainsResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/GetDomainsConfigStor" +
-            "eFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDomainManager/GetDomains", ReplyAction="urn:directproject:config/store/082010/IDomainManager/GetDomainsResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDomainManager/GetDomainsConfigStoreFaultFa" +
+            "ult", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Domain[] GetDomains(string[] domainNames, System.Nullable<Health.Direct.Config.Store.EntityStatus> status);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/RemoveDomain", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/RemoveDomainResponse" +
-            "")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/RemoveDomainConfigSt" +
-            "oreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDomainManager/RemoveDomain", ReplyAction="urn:directproject:config/store/082010/IDomainManager/RemoveDomainResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDomainManager/RemoveDomainConfigStoreFault" +
+            "Fault", Name="ConfigStoreFault")]
         void RemoveDomain(string domainName);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDomainManager/EnumerateDomains", ReplyAction="http://www.nhindirect.org/config/store/082010/IDomainManager/EnumerateDomainsResp" +
-            "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDomainManager/EnumerateDomainsConf" +
-            "igStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDomainManager/EnumerateDomains", ReplyAction="urn:directproject:config/store/082010/IDomainManager/EnumerateDomainsResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDomainManager/EnumerateDomainsConfigStoreF" +
+            "aultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Domain[] EnumerateDomains(string lastDomainName, int maxResults);
     }
     
@@ -257,82 +243,72 @@ namespace Health.Direct.Config.Client.DomainManager {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(Namespace="http://www.nhindirect.org/config/store/082010", ConfigurationName="DomainManager.IDnsRecordManager")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace="urn:directproject:config/store/082010", ConfigurationName="DomainManager.IDnsRecordManager")]
     public interface IDnsRecordManager {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecords", ReplyAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecordsResp" +
-            "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecordsConf" +
-            "igStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecords", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecordsResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecordsConfigStoreF" +
+            "aultFault", Name="ConfigStoreFault")]
         void AddDnsRecords(Health.Direct.Config.Store.DnsRecord[] dnsRecords);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecord", ReplyAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecordRespo" +
-            "nse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/AddDnsRecordConfi" +
-            "gStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecord", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecordResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecordConfigStoreFa" +
+            "ultFault", Name="ConfigStoreFault")]
         void AddDnsRecord(Health.Direct.Config.Store.DnsRecord record);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/Count", ReplyAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/CountResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/CountConfigStoreF" +
-            "aultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/Count", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/CountResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/CountConfigStoreFaultFaul" +
+            "t", Name="ConfigStoreFault")]
         int Count(System.Nullable<Health.Direct.Common.DnsResolver.DnsStandard.RecordType> recordType);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetLastDnsRecords" +
-            "", ReplyAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetLastDnsRecords" +
-            "Response")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetLastDnsRecords" +
-            "ConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/GetLastDnsRecords", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/GetLastDnsRecordsResponse" +
+            "")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/GetLastDnsRecordsConfigSt" +
+            "oreFaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.DnsRecord[] GetLastDnsRecords(long lastRecordID, int maxResults, Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecord", ReplyAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecordRespo" +
-            "nse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecordConfi" +
-            "gStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecord", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecordResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecordConfigStoreFa" +
+            "ultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.DnsRecord GetDnsRecord(long recordID);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecords", ReplyAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecordsResp" +
-            "onse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetDnsRecordsConf" +
-            "igStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecords", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecordsResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecordsConfigStoreF" +
+            "aultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.DnsRecord[] GetDnsRecords(long[] recordIDs);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetMatchingDnsRec" +
-            "ords", ReplyAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetMatchingDnsRec" +
-            "ordsResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetMatchingDnsRec" +
-            "ordsConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecords", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecordsResp" +
+            "onse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecordsConf" +
+            "igStoreFaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.DnsRecord[] GetMatchingDnsRecords(string domainName);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetMatchingDnsRec" +
-            "ordsByType", ReplyAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetMatchingDnsRec" +
-            "ordsByTypeResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/GetMatchingDnsRec" +
-            "ordsByTypeConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecordsByTy" +
+            "pe", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecordsByTy" +
+            "peResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecordsByTy" +
+            "peConfigStoreFaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.DnsRecord[] GetMatchingDnsRecordsByType(string domainName, Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecord", ReplyAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecordRe" +
-            "sponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecordCo" +
-            "nfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecord", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecordResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecordConfigStor" +
+            "eFaultFault", Name="ConfigStoreFault")]
         void RemoveDnsRecord(Health.Direct.Config.Store.DnsRecord dnsRecord);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecordBy" +
-            "ID", ReplyAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecordBy" +
-            "IDResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/RemoveDnsRecordBy" +
-            "IDConfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecordByID", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecordByIDRespon" +
+            "se")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecordByIDConfig" +
+            "StoreFaultFault", Name="ConfigStoreFault")]
         void RemoveDnsRecordByID(long recordID);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecord", ReplyAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecordRe" +
-            "sponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecordCo" +
-            "nfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecord", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecordResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecordConfigStor" +
+            "eFaultFault", Name="ConfigStoreFault")]
         void UpdateDnsRecord(Health.Direct.Config.Store.DnsRecord dnsRecord);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecords", ReplyAction="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecordsR" +
-            "esponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IDnsRecordManager/UpdateDnsRecordsC" +
-            "onfigStoreFaultFault", Name="ConfigStoreFault")]
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecords", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecordsResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecordsConfigSto" +
+            "reFaultFault", Name="ConfigStoreFault")]
         void UpdateDnsRecords(Health.Direct.Config.Store.DnsRecord[] dnsRecords);
     }
     

@@ -1,4 +1,5 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage<IEnumerable<Health.Direct.Config.Store.Certificate>>" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage<IEnumerable<CertificateModel>>" %>
+<%@ Import Namespace="AdminMvc.Models"%>
 <%@ Import Namespace="MvcContrib.UI.Pager"%>
 <%@ Import Namespace="MvcContrib.Pagination"%>
 <%@ Import Namespace="MvcContrib.UI.Grid"%>
@@ -10,20 +11,16 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-    <h2>Certificates</h2>
-
-    <%= Html.Grid(Model)
-        .Columns(
-            column =>
-                {
-                    column.For(d => d.Owner);
-                    column.For(d => d.Thumbprint);
-                    column.For(d => d.CreateDate);
-                    column.For(d => d.ValidStartDate);
-                    column.For(d => d.ValidEndDate);
-                    column.For(d => d.HasData);
-                    column.For(d => d.Status);
-                })%>
-    <%= Html.Pager((IPagination)Model) %>
+    <% if (ViewData["Domain"] != null) { %>
+        <%= Html.Partial("FilterReminder", "certificates") %>
+        <div class="action-bar clear">
+            <%= Html.ActionLink("Add Certificate", "Add", new { owner = ((DomainModel)ViewData["Domain"]).Name }, new { @class = "action ui-priority-primary" })%>
+        </div>
+    <% } else { %>
+        <%= Html.Partial("AllItemsReminder", "certificates") %>
+    <% } %>
+    
+    <%= Html.Partial("CertificateList", Model, ViewData) %>
+    <%= Html.Partial("CertificateDetailsDialog") %>
 
 </asp:Content>

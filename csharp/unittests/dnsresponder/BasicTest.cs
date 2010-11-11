@@ -26,13 +26,17 @@ namespace Health.Direct.DnsResponder.Tests
 {
     public class BasicTest : Tester
     {        
+        private const bool UseUdp = true;
+        private const bool UseTcp = false;
+
         public static IEnumerable<object[]> Domains
         {
             get
             {
                 foreach(string domain in TestStore.Default.Domains)
                 {
-                    yield return new[] {domain};
+                    yield return new object[] {domain, UseUdp};
+                    yield return new object[] {domain, UseTcp};
                 }
             }
         }
@@ -41,61 +45,45 @@ namespace Health.Direct.DnsResponder.Tests
         {
             get
             {
-                yield return new[] {"adljflakd"};
-                yield return new[] {"lasdkjfal"};
+                yield return new object[] {"adljflakd", UseUdp };
+                yield return new object[] { "lasdkjfal", UseUdp };
+                yield return new object[] {"adljflakd", UseTcp };
+                yield return new object[] { "lasdkjfal", UseTcp };
             }
         }
         
         [Theory]
         [PropertyData("Domains")]
-        public void TestUdpLookupA(string domain)
+        public void TestLookupA(string domain, bool useUDP)
         {
-            TestSuccess(domain, true);
+            TestSuccess(domain, useUDP);
         }
 
         [Theory]
-        [PropertyData("Domains")]
-        public void TestTcpLookupA(string domain)
-        {
-            TestSuccess(domain, false);
-        }
-        
-        //[Theory]
         [PropertyData("UnknownDomains")]
-        public void TestFailureUdp(string domain)
+        public void TestFailure(string domain, bool useUDP)
         {
-            IEnumerable<AddressRecord> matches = ResolveA(TestServer.Default, domain, true);
+            IEnumerable<AddressRecord> matches = ResolveA(TestServer.Default, domain, useUDP);
             Assert.True(matches == null || matches.Count() == 0);
         }
 
-        //[Theory]
-        [PropertyData("UnknownDomains")]
-        public void TestFailureTcp(string domain)
-        {
-            IEnumerable<AddressRecord> matches = ResolveA(TestServer.Default, domain, false);
-            Assert.True(matches == null || matches.Count() == 0);
-        }
-        
         const int MultithreadThreadCount = 4;
         const int MultithreadRepeat = 250;
-        [Fact]
-        public void TestMultithreadUdp()
+
+        [Theory]
+        [InlineData(UseUdp)]
+        [InlineData(UseTcp)]
+        public void TestMultithread(bool useUDP)
         {
-            TestThreads(MultithreadThreadCount, true, TimeSpan.FromMilliseconds(5000));
+            TestThreads(MultithreadThreadCount, useUDP, TimeSpan.FromMilliseconds(5000));
         }
 
-        [Fact]
-        public void TestMultithreadTcp()
-        {
-            TestThreads(MultithreadThreadCount, false, TimeSpan.FromMilliseconds(5000));
-        }
-        
-        void TestThreads(int threadCount, bool udp, TimeSpan timeout)
+        static void TestThreads(int threadCount, bool udp, TimeSpan timeout)
         {
             TestThreads(threadCount, udp, Repeater(TestStore.Default.Domains, MultithreadRepeat), TestStore.Default.Count * MultithreadRepeat, timeout);
         }
-                
-        void TestThreads(int threadCount, bool udp, IEnumerable<string> domains, int expectedSuccess, TimeSpan timeout)
+
+        static void TestThreads(int threadCount, bool udp, IEnumerable<string> domains, int expectedSuccess, TimeSpan timeout)
         {
             TestThread[] threads = new TestThread[threadCount];
             for (int i = 0; i < threads.Length; ++i)
@@ -116,18 +104,13 @@ namespace Health.Direct.DnsResponder.Tests
                 Assert.True(threads[i].Success == expectedSuccess);
             }            
         }
-        
-        void TestSuccess(string domain, bool useUDP)
-        {
-            TestSuccess(TestServer.Default, TestStore.Default, domain, false);
-        }
-        
-        void TestSuccess(TestServer server, TestStore store, string domain, bool useUDP)
-        {
-            IEnumerable<AddressRecord> matches = Tester.ResolveA(server, domain, useUDP);
-            IEnumerable<DnsResourceRecord> expectedMatches = store.Store.Records[domain, DnsStandard.RecordType.ANAME];
 
-            Assert.True(Tester.Equals<AddressRecord>(matches, expectedMatches));
+        static void TestSuccess(string domain, bool useUDP)
+        {
+            IEnumerable<AddressRecord> matches = ResolveA(TestServer.Default, domain, useUDP);
+            IEnumerable<DnsResourceRecord> expectedMatches = TestStore.Default.Store.Records[domain, DnsStandard.RecordType.ANAME];
+
+            Assert.True(Equals(matches, expectedMatches));
         }
     }
 }

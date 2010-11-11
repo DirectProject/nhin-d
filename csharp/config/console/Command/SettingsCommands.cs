@@ -48,8 +48,8 @@ namespace Health.Direct.Config.Console.Command
 
         private const string SettingsHostSetUsage
             = "Specify the host name and (optionally) the port on which the config service is running"
-              + CRLF + "    host [port]"
-              + CRLF + "E.g. foomachine OR foomachine 83";
+              + Constants.CRLF + "    host [port]"
+              + Constants.CRLF + "E.g. foomachine OR foomachine 83";
 
         static string GetHost(string url)
         {

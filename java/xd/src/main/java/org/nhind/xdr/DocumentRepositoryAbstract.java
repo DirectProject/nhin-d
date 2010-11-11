@@ -58,10 +58,12 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.nhind.xdm.MailClient;
 import org.nhind.xdm.impl.SmtpMailClient;
-import org.nhindirect.xd.common.DirectDocument;
+import org.nhindirect.xd.common.DirectDocuments;
 import org.nhindirect.xd.common.DirectMessage;
 import org.nhindirect.xd.routing.RoutingResolver;
 import org.nhindirect.xd.routing.impl.RoutingResolverImpl;
+import org.nhindirect.xd.transform.XdsDirectDocumentsTransformer;
+import org.nhindirect.xd.transform.impl.DefaultXdsDirectDocumentsTransformer;
 
 import com.gsihealth.auditclient.AuditMessageGenerator;
 import com.gsihealth.auditclient.type.AuditMethodEnum;
@@ -103,6 +105,8 @@ public abstract class DocumentRepositoryAbstract
     private AuditMessageGenerator auditMessageGenerator = null;
     
     private MailClient mailClient = null;
+    
+    private XdsDirectDocumentsTransformer xdsDirectDocumentsTransformer = new DefaultXdsDirectDocumentsTransformer();
 
     private static final Logger LOGGER = Logger.getLogger(DocumentRepositoryAbstract.class.getPackage().getName());
 
@@ -147,13 +151,11 @@ public abstract class DocumentRepositoryAbstract
             @SuppressWarnings("unused")
             InitialContext ctx = new InitialContext();
 
-            // Get metadata
-            DirectDocument.Metadata metadata = new DirectDocument.Metadata();
-            metadata.setValues(prdst.getSubmitObjectsRequest());
-
+            DirectDocuments documents = xdsDirectDocumentsTransformer.transform(prdst);
+            
             // Get endpoints
             List<String> forwards = new ArrayList<String>();
-            for (String recipient : metadata.getSs_intendedRecipient()) 
+            for (String recipient : documents.getSubmissionSet().getIntendedRecipient()) 
             {
                 String address = StringUtils.remove(recipient, "|");
                 forwards.add(StringUtils.splitPreserveAllTokens(address, "^")[0]);
@@ -170,15 +172,9 @@ public abstract class DocumentRepositoryAbstract
             if (getResolver().hasSmtpEndpoints(forwards)) 
             {
                 // Get a reply address
-                replyEmail = metadata.getAuthorPerson();
+                replyEmail = documents.getSubmissionSet().getAuthorPerson();
                 replyEmail = StringUtils.splitPreserveAllTokens(replyEmail, "^")[0];
                 replyEmail = StringUtils.contains(replyEmail, "@") ? replyEmail : "nhindirect@nhindirect.org";
-
-                // Get a suffix
-                suffix = StringUtils.contains(metadata.getMimeType(), "pdf") ? "pdf" : "xml"; // FIXME
-
-                // Get document
-                byte[] docs = getDocs(prdst);
 
                 LOGGER.info("SENDING EMAIL TO " + getResolver().getSmtpEndpoints(forwards) + " with message id "
                         + messageId);
@@ -187,14 +183,7 @@ public abstract class DocumentRepositoryAbstract
                 DirectMessage message = new DirectMessage(replyEmail, getResolver().getSmtpEndpoints(forwards));
                 message.setSubject("data");
                 message.setBody("data attached");
-
-                // Construct document wrapper
-                DirectDocument document = new DirectDocument();
-                document.setData(new String(docs));
-                document.getMetadata().setValues(prdst.getSubmitObjectsRequest());
-
-                // Add document to message
-                message.addDocument(document);
+                message.setDirectDocuments(documents);
 
                 // Send mail
                 MailClient mailClient = getMailClient();
@@ -299,31 +288,6 @@ public abstract class DocumentRepositoryAbstract
             ex.printStackTrace();
         }
         return rrt;
-    }
-
-    /**
-     * Extract the documents from the XDR message.
-     * 
-     * @param prdst
-     *            The XDR message
-     * @return the raw documents from the XDR message
-     */
-    private byte[] getDocs(ProvideAndRegisterDocumentSetRequestType prdst) {
-        List<Document> documents = prdst.getDocument();
-
-        byte[] ret = null;
-        try {
-            for (ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document doc : documents) {
-                DataHandler dh = doc.getValue();
-                ByteArrayOutputStream buffOS = new ByteArrayOutputStream();
-                dh.writeTo(buffOS);
-                ret = buffOS.toByteArray();
-
-            }
-        } catch (Exception x) {
-            x.printStackTrace();
-        }
-        return ret;
     }
 
     private RoutingResolver getResolver()

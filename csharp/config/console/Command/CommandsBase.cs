@@ -11,10 +11,13 @@ Redistributions of source code must retain the above copyright notice, this list
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- `
+
 */
 
 using System;
+
+using Health.Direct.Config.Store;
+using Health.Direct.Config.Tools.Command;
 
 namespace Health.Direct.Config.Console.Command
 {
@@ -26,9 +29,6 @@ namespace Health.Direct.Config.Console.Command
         {
             m_currentConsole = console;
         }
-
-        public const string CRLF = "\r\n";
-        public const string EntityStatusString = "New | Enabled | Disabled";
 
         protected ConfigConsole CurrentConsole
         {
@@ -67,6 +67,19 @@ namespace Health.Direct.Config.Console.Command
             {
                 return m_clientResolver();
             }
+        }
+
+        protected static CertificateFileInfo CreateCertificateInfoFromArgs(int firstArg, string[] args)
+        {
+            string filePath = args.GetRequiredValue(firstArg);
+            string password = args.GetOptionalValue(firstArg + 1, string.Empty);
+            if (!string.IsNullOrEmpty(password) && password.Equals("null", StringComparison.OrdinalIgnoreCase))
+            {
+                password = string.Empty;
+            }
+
+            EntityStatus status = args.GetOptionalEnum(firstArg + 2, EntityStatus.New);
+            return new CertificateFileInfo(filePath, password, status);
         }
     }
 }

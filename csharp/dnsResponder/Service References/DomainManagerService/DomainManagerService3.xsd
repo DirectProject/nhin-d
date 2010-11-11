@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:tns="http://www.nhindirect.org/config/store/082010" elementFormDefault="qualified" targetNamespace="http://www.nhindirect.org/config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:tns="urn:directproject:config/store/082010" elementFormDefault="qualified" targetNamespace="urn:directproject:config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
   <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
   <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" />
-  <xs:element name="AddAddresses">
+  <xs:element name="AddAddress">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="addresses" nillable="true" type="tns:ArrayOfAddress" />
+        <xs:element minOccurs="0" name="address" nillable="true" type="tns:Address" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:complexType name="ArrayOfAddress">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="Address" nillable="true" type="tns:Address" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfAddress" nillable="true" type="tns:ArrayOfAddress" />
   <xs:complexType name="Address">
     <xs:sequence>
       <xs:element name="CreateDate" type="xs:dateTime" />
@@ -29,9 +23,11 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="Address" nillable="true" type="tns:Address" />
-  <xs:element name="AddAddressesResponse">
+  <xs:element name="AddAddressResponse">
     <xs:complexType>
-      <xs:sequence />
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddAddressResult" nillable="true" type="tns:Address" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:complexType name="ConfigStoreFault">
@@ -41,6 +37,24 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="ConfigStoreFault" nillable="true" type="tns:ConfigStoreFault" />
+  <xs:element name="AddAddresses">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="addresses" nillable="true" type="tns:ArrayOfAddress" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfAddress">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Address" nillable="true" type="tns:Address" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAddress" nillable="true" type="tns:ArrayOfAddress" />
+  <xs:element name="AddAddressesResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
   <xs:element name="UpdateAddresses">
     <xs:complexType>
       <xs:sequence>
@@ -185,7 +199,9 @@
   <xs:element name="Domain" nillable="true" type="tns:Domain" />
   <xs:element name="AddDomainResponse">
     <xs:complexType>
-      <xs:sequence />
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddDomainResult" nillable="true" type="tns:Domain" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="UpdateDomain">
@@ -198,6 +214,20 @@
   <xs:element name="UpdateDomainResponse">
     <xs:complexType>
       <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDomain">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="id" type="xs:long" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDomainResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetDomainResult" nillable="true" type="tns:Domain" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetDomainCount">

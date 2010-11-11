@@ -28,8 +28,7 @@
 
 package org.nhindirect.xdm;
 
-import java.io.File;
-import java.util.Arrays;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -49,9 +48,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.nhindirect.xd.common.DirectDocument;
-import org.nhindirect.xd.transform.DocumentXdmTransformer;
-import org.nhindirect.xd.transform.impl.DocumentXdmTransformerImpl;
+import org.nhindirect.xd.common.DirectDocuments;
 
 /**
  * This class handles the packaging and sending of XDM data over SMTP.
@@ -70,8 +67,6 @@ public class XDMMailClient
     private String smtpAuthUser;
     private String smtpAuthPwd;
 
-    private DocumentXdmTransformer transformer = new DocumentXdmTransformerImpl();
-
     @SuppressWarnings("unused")
     private static final Logger LOGGER = Logger.getLogger(XDMMailClient.class.getPackage().getName());
 
@@ -82,24 +77,19 @@ public class XDMMailClient
         this.smtpAuthPwd = smtpAuthPwd;
     }
 
-    public void sendMail(String from, Collection<String> recipients, Collection<DirectDocument> documents, String body,
+    public void sendMail(String from, Collection<String> recipients, DirectDocuments documents, String body,
             String suffix) throws MessagingException
     {
         String messageId = UUID.randomUUID().toString();
 
-        for (DirectDocument d : documents)
-        {
-            List<String> docs = Arrays.asList(d.getData());
-            sendMail(messageId, from, (List<String>) recipients, d.getMetadata().toString(), body, docs, suffix);
-        }
-
+        sendMail(messageId, from, (List<String>) recipients, body, documents, suffix);
     }
 
-    public void sendMail(String from, List<String> recipients, String meta, String body, List<String> docs,
-            String suffix) throws MessagingException
+    public void sendMail(String from, List<String> recipients, String body, DirectDocuments documents, String suffix)
+            throws MessagingException
     {
         String messageId = UUID.randomUUID().toString();
-        sendMail(messageId, from, recipients, meta, body, docs, suffix);
+        sendMail(messageId, from, recipients, body, documents, suffix);
     }
 
     /**
@@ -125,8 +115,8 @@ public class XDMMailClient
      *            mail message.
      * @throws MessagingException
      */
-    public void sendMail(String messageId, String from, List<String> recipients, String meta, String body,
-            List<String> docs, String suffix) throws MessagingException
+    public void sendMail(String messageId, String from, List<String> recipients, String body,
+            DirectDocuments documents, String suffix) throws MessagingException
     {
         boolean debug = false;
         java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
@@ -166,16 +156,14 @@ public class XDMMailClient
         mainBody.setDataHandler(new DataHandler(body, "text/plain"));
         mailBody.addBodyPart(mainBody);
 
-        mimeAttach = new MimeBodyPart();
-
         try
         {
-            File zipout = transformer.transform(docs, suffix, meta.getBytes(), messageId);
-            mimeAttach.attachFile(zipout);
+            mimeAttach = new MimeBodyPart();
+            mimeAttach.attachFile(documents.toXdmPackage(messageId).toFile());
         }
-        catch (Exception x)
+        catch (IOException e)
         {
-            x.printStackTrace();
+            throw new MessagingException("Unable to create/attach xdm file", e);
         }
 
         mailBody.addBodyPart(mimeAttach);
