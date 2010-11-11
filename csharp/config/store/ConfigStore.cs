@@ -20,7 +20,6 @@ namespace Health.Direct.Config.Store
     public class ConfigStore
     {
         public const string Namespace = "urn:directproject:config/store/082010";
-            //"http://www.nhindirect.org/config/store/082010";
 
         public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
         
