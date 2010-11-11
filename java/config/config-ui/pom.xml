@@ -8,7 +8,11 @@
   <name>NHIN Direct Java Configuration UI</name>
   <description>NHIN Direct Java Configuration UI</description>
   <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-ui/${project.version}</url>   
-
+	<parent>
+		<artifactId>config</artifactId>
+		<groupId>org.nhind</groupId>
+		<version>1.0</version>
+	</parent>
 	<scm>
 		<url>https://nhin-d.googlecode.com/hg/java/config/config-ui</url>
 		<connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/config/config-ui</connection>
@@ -111,7 +115,7 @@
     <dependency>
     	<groupId>org.nhind</groupId>
     	<artifactId>config-store</artifactId>
-    	<version>1.0-SNAPSHOT</version>
+    	<version>1.0</version>
     	<type>jar</type>
     	<scope>compile</scope>
     	<exclusions>
@@ -128,7 +132,7 @@
     <dependency>
     	<groupId>org.nhind</groupId>
     	<artifactId>config-service-jar</artifactId>
-    	<version>1.0-SNAPSHOT</version>
+    	<version>1.0</version>
     	<type>jar</type>
     	<scope>compile</scope>
     	<exclusions>
