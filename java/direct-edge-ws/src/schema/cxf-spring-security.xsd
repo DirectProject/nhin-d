@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements. See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership. The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License. You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            xmlns="http://cxf.apache.org/spring-security"
+            targetNamespace="http://cxf.apache.org/spring-security" 
+            elementFormDefault="qualified">
+    <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"/>
+    
+    <xsd:element name="basic-auth-interceptor">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType"/>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="server-password-callback-handler">
+        <xsd:annotation>
+            <xsd:documentation>
+                Password callback handler suitable for use with org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType">
+                    <xsd:attribute name="nestExceptions" type="xsd:boolean">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Specifies whether AuthenticationExceptions should be nested in the exceptions thrown by the callback handler.
+                                When enabled, error messages from the AuthenticationExceptions will appear in the SOAP fault returned to the
+                                client. This should be used with care since it may disclose too much information to the client.
+                             </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                    <xsd:attribute name="logExceptions" type="xsd:boolean">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Specifies whether AuthenticationExceptions should be logged. When enabled, AuthenticationExceptions will
+                                be logged at level WARN. This is especially useful if nestExceptions is false.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="spring-security-context-feature">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType"/>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="generic-username-password-interceptor">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType">
+                    <xsd:attribute name="usernameHeader" type="xsd:string" use="required"/>
+                    <xsd:attribute name="passwordHeader" type="xsd:string" use="required"/>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="soap-authentication-interceptor">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType">
+                    <xsd:attribute name="authenticationRequired" type="xsd:boolean" default="true"/>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="cxf-security-context-provider-interceptor">
+        <xsd:annotation>
+            <xsd:documentation>
+                This interceptor builds an org.apache.cxf.security.SecurityContext object from an
+                an authenticated Authentication object found in the current Exchange and adds it
+                to the current message. Authorities in the Authentication object are mapped
+                one-to-one to roles in the SecurityContext.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType"/>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="spring-security-context-consumer-interceptor">
+        <xsd:annotation>
+            <xsd:documentation>
+                This interceptor gets the Authentication object from the current
+                org.springframework.security.context.SecurityContext stored by SecurityContextHolder
+                and adds it to the current Exchange.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType"/>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
