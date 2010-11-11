@@ -1,5 +1,4 @@
 ﻿<ConsoleSettings>
-  <!--
   <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
@@ -15,8 +14,8 @@
   <AnchorManager>
     <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
   </AnchorManager>
-  -->
-<DomainManager>
+  <!--
+  <DomainManager>
     <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
   </DomainManager>
   <AddressManager>
@@ -31,5 +30,5 @@
   <AnchorManager>
     <Url>http://localhost:6692/CertificateService.svc/Anchors</Url>
   </AnchorManager>
-  
+  -->
 </ConsoleSettings>
