@@ -65,6 +65,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AgentDiagnostics.cs" />
     <Compile Include="AgentSetup.cs" />
     <Compile Include="CDOSmtpMessage.cs" />
