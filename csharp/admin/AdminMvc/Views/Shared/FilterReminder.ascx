@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<string>" %>
-<%@ Import Namespace="AdminMvc.Models"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Models"%>
 
 <div class="ui-widget" style="margin-bottom: 1em; float: left;">
     <div class="ui-state-highlight" style="padding: .3em .7em;">

@@ -1,6 +1,6 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<DomainModel>>" %>
-<%@ Import Namespace="AdminMvc.Common"%>
-<%@ Import Namespace="AdminMvc.Models"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Common"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Models"%>
 <%@ Import Namespace="MvcContrib.UI.Pager"%>
 <%@ Import Namespace="MvcContrib.Pagination"%>
 <%@ Import Namespace="MvcContrib.UI.Grid"%>
