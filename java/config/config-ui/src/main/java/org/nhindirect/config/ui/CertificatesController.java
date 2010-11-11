@@ -22,10 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -34,30 +31,19 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.service.CertificateService;
-import org.nhindirect.config.service.ConfigurationService;
 import org.nhindirect.config.service.ConfigurationServiceException;
-import org.nhindirect.config.service.SettingService;
 import org.nhindirect.config.service.impl.CertificateGetOptions;
-import org.nhindirect.config.store.Anchor;
 import org.nhindirect.config.store.Certificate;
-import org.nhindirect.config.store.Domain;
-import org.nhindirect.config.store.Setting;
 import org.nhindirect.config.store.EntityStatus;
-import org.nhindirect.config.ui.form.AddressForm;
-import org.nhindirect.config.ui.form.AnchorForm;
 import org.nhindirect.config.ui.form.CertificateForm;
-import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.form.LoginForm;
-import org.nhindirect.config.ui.form.DomainForm;
-import org.nhindirect.config.ui.form.SettingsForm;
 import org.nhindirect.config.ui.form.SearchDomainForm;
+import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
-import org.nhindirect.config.ui.flash.FlashMap.Message;
-import org.nhindirect.config.ui.flash.FlashMap.MessageType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -79,6 +65,7 @@ public class CertificatesController {
 		if (log.isDebugEnabled()) log.debug("ConfigurationController initialized");
 	}
 	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/addcertificate", method = RequestMethod.POST)
 	public ModelAndView addCertificate (
 								@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
@@ -91,83 +78,79 @@ public class CertificatesController {
 		ModelAndView mav = new ModelAndView(); 
 		String strid = "";
 		if (log.isDebugEnabled()) log.debug("Enter domain/addcertificate");
-		if (isLoggedIn(session)) {
-			if(actionPath.equalsIgnoreCase("cancel")){
-				if (log.isDebugEnabled()) log.debug("trying to cancel from saveupdate");
-				SearchDomainForm form2 = (SearchDomainForm) session
-						.getAttribute("searchDomainForm");
-				model.addAttribute(form2 != null ? form2 : new SearchDomainForm());
-				model.addAttribute("ajaxRequest", AjaxUtils
-						.isAjaxRequest(requestedWith));
-
-				mav.setViewName("main");
-				mav.addObject("statusList", EntityStatus.getEntityStatusList());
-				return mav;
-			}
-			if(actionPath.equalsIgnoreCase("newcertificate")){
-				strid = ""+certificateForm.getId();
-				// insert the new address into the Domain list of Addresses
-				EntityStatus estatus = certificateForm.getStatus();
-				if (log.isDebugEnabled()) log.debug("beginning to evaluate filedata");		
-				try{
-					if (!certificateForm.getFileData().isEmpty()) {
-						byte[] bytes = certificateForm.getFileData().getBytes();
-						String owner = "";
-						Certificate cert = new Certificate();
-						cert.setData(bytes);
-						cert.setOwner(owner);
-						cert.setStatus(certificateForm.getStatus());
-
-						ArrayList<Certificate> certlist = new ArrayList<Certificate>();
-						certlist.add(cert);
-						certService.addCertificates(certlist);
-						// store the bytes somewhere
-						if (log.isDebugEnabled()) log.debug("store the certificate into database");
-					} else {
-						if (log.isDebugEnabled()) log.debug("DO NOT store the certificate into database BECAUSE THERE IS NO FILE");
-					}
-
-				} catch (ConfigurationServiceException ed) {
-					if (log.isDebugEnabled())
-						log.error(ed);
-				} catch (Exception e) {
-					if (log.isDebugEnabled()) log.error(e);
-					e.printStackTrace();
-				}
-				// certificate form and result
-				try {
-					Collection<Certificate> certs = certService.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
-					model.addAttribute("certificatesResults", certs);
-					 
-					CertificateForm cform = new CertificateForm();
-					cform.setId(0);
-					model.addAttribute("certificateForm",cform);
-					
-				} catch (ConfigurationServiceException e1) {
-					e1.printStackTrace();
-				}
-				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-				SimpleForm simple = new SimpleForm();
-				simple.setId(Long.parseLong(strid));
-				model.addAttribute("simpleForm",simple);
-	
-				mav.setViewName("certificates"); 
-				// the Form's default button action
-				String action = "Update";
-
-				model.addAttribute("action", action);
-				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 		
-				mav.addObject("statusList", EntityStatus.getEntityStatusList());
+		if(actionPath.equalsIgnoreCase("cancel")){
+			if (log.isDebugEnabled()) log.debug("trying to cancel from saveupdate");
+			SearchDomainForm form2 = (SearchDomainForm) session
+					.getAttribute("searchDomainForm");
+			model.addAttribute(form2 != null ? form2 : new SearchDomainForm());
+			model.addAttribute("ajaxRequest", AjaxUtils
+					.isAjaxRequest(requestedWith));
+
+			mav.setViewName("main");
+			mav.addObject("statusList", EntityStatus.getEntityStatusList());
+			return mav;
+		}
+		if(actionPath.equalsIgnoreCase("newcertificate")){
+			strid = ""+certificateForm.getId();
+			// insert the new address into the Domain list of Addresses
+			EntityStatus estatus = certificateForm.getStatus();
+			if (log.isDebugEnabled()) log.debug("beginning to evaluate filedata");		
+			try{
+				if (!certificateForm.getFileData().isEmpty()) {
+					byte[] bytes = certificateForm.getFileData().getBytes();
+					String owner = "";
+					Certificate cert = new Certificate();
+					cert.setData(bytes);
+					cert.setOwner(owner);
+					cert.setStatus(certificateForm.getStatus());
+
+					ArrayList<Certificate> certlist = new ArrayList<Certificate>();
+					certlist.add(cert);
+					certService.addCertificates(certlist);
+					// store the bytes somewhere
+					if (log.isDebugEnabled()) log.debug("store the certificate into database");
+				} else {
+					if (log.isDebugEnabled()) log.debug("DO NOT store the certificate into database BECAUSE THERE IS NO FILE");
+				}
+
+			} catch (ConfigurationServiceException ed) {
+				if (log.isDebugEnabled())
+					log.error(ed);
+			} catch (Exception e) {
+				if (log.isDebugEnabled()) log.error(e);
+				e.printStackTrace();
 			}
-		}else{
-			model.addAttribute(new LoginForm());
-			mav.setViewName("login");
-			mav.setView(new RedirectView("/config-ui/config/login", false));
+			// certificate form and result
+			try {
+				Collection<Certificate> certs = certService.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
+				model.addAttribute("certificatesResults", certs);
+				 
+				CertificateForm cform = new CertificateForm();
+				cform.setId(0);
+				model.addAttribute("certificateForm",cform);
+				
+			} catch (ConfigurationServiceException e1) {
+				e1.printStackTrace();
+			}
+			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+			SimpleForm simple = new SimpleForm();
+			simple.setId(Long.parseLong(strid));
+			model.addAttribute("simpleForm",simple);
+
+			mav.setViewName("certificates"); 
+			// the Form's default button action
+			String action = "Update";
+
+			model.addAttribute("action", action);
+			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+	
+			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		}
 		return mav;
 	}			
 	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/removecertifcates", method = RequestMethod.POST)
 	public ModelAndView removeCertificates (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
@@ -181,84 +164,72 @@ public class CertificatesController {
 		if(simpleForm.getRemove() != null){
 			if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
 		}
-		if (isLoggedIn(session)) {
-			String strid = ""+simpleForm.getId();
-			if (certService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deletecertificate") && simpleForm.getRemove() != null) {
-				int cnt = simpleForm.getRemove().size();
-				if (log.isDebugEnabled()) log.debug("removing certificates");
-				try{
-					// get list of certificates for this domain
-					Collection<Certificate> certs = certService.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
-					ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
-					// now iterate over each one and remove the appropriate ones
-					for (int x = 0; x < cnt; x++) {
-						String removeid = simpleForm.getRemove().get(x);
-						for (Iterator iter = certs.iterator(); iter.hasNext();) {
-							   Certificate t = (Certificate) iter.next();
-							   //rest of the code block removed
-					    	if(t.getId() == Long.parseLong(removeid)){
-						    	if (log.isDebugEnabled()){
-						    		log.debug(" ");
-						    		log.debug("domain address id: " + t.getId());
-						    		log.debug(" ");
-						    	}
-						    	// create a collection of matching anchor ids
-						    	certtoberemovedlist.add(t.getId());
-						    	break;
+		
+		if (certService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deletecertificate") && simpleForm.getRemove() != null) {
+			int cnt = simpleForm.getRemove().size();
+			if (log.isDebugEnabled()) log.debug("removing certificates");
+			try{
+				// get list of certificates for this domain
+				Collection<Certificate> certs = certService.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
+				ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
+				// now iterate over each one and remove the appropriate ones
+				for (int x = 0; x < cnt; x++) {
+					String removeid = simpleForm.getRemove().get(x);
+					for (Iterator iter = certs.iterator(); iter.hasNext();) {
+						   Certificate t = (Certificate) iter.next();
+						   //rest of the code block removed
+				    	if(t.getId() == Long.parseLong(removeid)){
+					    	if (log.isDebugEnabled()){
+					    		log.debug(" ");
+					    		log.debug("domain address id: " + t.getId());
+					    		log.debug(" ");
 					    	}
-						}			
-					}
-					// with the collection of anchor ids now remove them from the anchorService
-					if (log.isDebugEnabled()) log.debug(" Trying to remove certificates from database");
-					certService.removeCertificates(certtoberemovedlist);
-		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update certificates");
-				} catch (ConfigurationServiceException e) {
-					if (log.isDebugEnabled())
-						log.error(e);
+					    	// create a collection of matching anchor ids
+					    	certtoberemovedlist.add(t.getId());
+					    	break;
+				    	}
+					}			
 				}
-			}
-			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-			// BEGIN: temporary code for mocking purposes
-			CertificateForm cform = new CertificateForm();
-			cform.setId(0);
-			model.addAttribute("certificateForm",cform);
-			
-			mav.setViewName("certificates"); 
-			// the Form's default button action
-			String action = "Update";
-			model.addAttribute("action", action);
-			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-			mav.addObject("action", action);
-	
-			Collection<Certificate> certlist = null;
-			try {
-				certlist = certService.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
+				// with the collection of anchor ids now remove them from the anchorService
+				if (log.isDebugEnabled()) log.debug(" Trying to remove certificates from database");
+				certService.removeCertificates(certtoberemovedlist);
+	    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update certificates");
 			} catch (ConfigurationServiceException e) {
-				e.printStackTrace();
+				if (log.isDebugEnabled())
+					log.error(e);
 			}
-			
-			model.addAttribute("certificatesResults", certlist);
-			// END: temporary code for mocking purposes			
-			mav.addObject("statusList", EntityStatus.getEntityStatusList());
-		}else{
-			model.addAttribute(new LoginForm());
-			mav.setViewName("login");
-			mav.setView(new RedirectView("/config-ui/config/login", false));
 		}
+		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+		// BEGIN: temporary code for mocking purposes
+		CertificateForm cform = new CertificateForm();
+		cform.setId(0);
+		model.addAttribute("certificateForm",cform);
+		
+		mav.setViewName("certificates"); 
+		// the Form's default button action
+		String action = "Update";
+		model.addAttribute("action", action);
+		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+		mav.addObject("action", action);
+
+		Collection<Certificate> certlist = null;
+		try {
+			certlist = certService.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
+		} catch (ConfigurationServiceException e) {
+			e.printStackTrace();
+		}
+		
+		model.addAttribute("certificatesResults", certlist);
+		// END: temporary code for mocking purposes			
+		mav.addObject("statusList", EntityStatus.getEntityStatusList());
+
 		model.addAttribute("simpleForm",simpleForm);
 		String strid = ""+simpleForm.getId();
 		if (log.isDebugEnabled()) log.debug(" the value of id of simpleform is: "+strid);
 		
 		return mav;
 	}		
-		
-	private boolean isLoggedIn(HttpSession session) {
-		Boolean result = (Boolean)session.getAttribute("authComplete");
-		if (result == null) {
-			result = new Boolean(false);
-		}
-		return result.booleanValue();
-	}
+
 		
 	
 	/**
