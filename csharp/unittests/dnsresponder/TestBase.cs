@@ -2,23 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Text;
 
 using Health.Direct.Common.DnsResolver;
-using Health.Direct.DnsResponder;
 using Health.Direct.Config.Store;
 
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.DnsResponder.Tests
 {
     class TestBase
     {
-        protected const string CONNSTR = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
-        //protected const string CONNSTR = "Data Source=localhost;Initial Catalog=DirectConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
+        protected const string ConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+        //protected const string ConnectionString = "Data Source=localhost;Initial Catalog=DirectConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
 
-        private string DNSRECORDSEPATH = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
+        private readonly string DnsRecordsPath = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
 
 
         // if true dump will be sent to the delegate specified by DumpLine
@@ -170,7 +167,7 @@ namespace Health.Direct.DnsResponder.Tests
         /// this method populates the DnsRecords table with viable DnsRecords stored in metadata
         /// </summary>
         /// <remarks>
-        /// Note that the related domains are pulled from the DnsRecodDomainNames per each possible DnsRecordType
+        /// Related domains are pulled from the DnsRecodDomainNames per each possible DnsRecordType.
         /// These can be generated using the common.tests.DnsResponseToBinExample.cs test class, however
         /// they must be copied to the metadata\dns responses folder in this project and marked as copy to output
         /// directory, if newer
@@ -180,7 +177,7 @@ namespace Health.Direct.DnsResponder.Tests
             List<string> domains = DnsRecordDomainNames.ToList<string>();
             List<DnsStandard.RecordType> recTypes = DnsRecordTypes.ToList<DnsStandard.RecordType>();
 
-            DnsRecordManager mgr = new DnsRecordManager(new ConfigStore(CONNSTR));
+            DnsRecordManager mgr = new DnsRecordManager(new ConfigStore(ConnectionString));
             mgr.RemoveAll();
 
             //----------------------------------------------------------------------------------------------------
@@ -189,19 +186,19 @@ namespace Health.Direct.DnsResponder.Tests
             {
                 mgr.Add(new DnsRecord(domainName
                     , (int)DnsStandard.RecordType.MX
-                    , LoadAndVerifyDnsRecordFromBin<MXRecord>(Path.Combine(DNSRECORDSEPATH
+                    , LoadAndVerifyDnsRecordFromBin<MXRecord>(Path.Combine(DnsRecordsPath
                         , string.Format("mx.{0}.bin", domainName)))
                     , string.Format("some test notes for mx domain{0}", domainName)));
 
                 mgr.Add(new DnsRecord(domainName
                     , (int)DnsStandard.RecordType.SOA
-                    , LoadAndVerifyDnsRecordFromBin<SOARecord>(Path.Combine(DNSRECORDSEPATH
+                    , LoadAndVerifyDnsRecordFromBin<SOARecord>(Path.Combine(DnsRecordsPath
                         , string.Format("soa.{0}.bin", domainName)))
                     , string.Format("some test notes for soa domain{0}", domainName)));
 
                 mgr.Add(new DnsRecord(domainName
                     , (int)DnsStandard.RecordType.ANAME
-                    , LoadAndVerifyDnsRecordFromBin<AddressRecord>(Path.Combine(DNSRECORDSEPATH
+                    , LoadAndVerifyDnsRecordFromBin<AddressRecord>(Path.Combine(DnsRecordsPath
                         , string.Format("aname.{0}.bin", domainName)))
                     , string.Format("some test notes for aname domain{0}", domainName)));
 
