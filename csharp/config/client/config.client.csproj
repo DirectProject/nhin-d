@@ -58,6 +58,7 @@
     <Compile Include="BindingFactory.cs" />
     <Compile Include="CertificateExtensions.cs" />
     <Compile Include="ClientSettingsSection.cs" />
+    <Compile Include="DnsRecordManagerExtensions.cs" />
     <Compile Include="DomainManagerExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service References\CertificateService\Reference.cs">

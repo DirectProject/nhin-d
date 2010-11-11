@@ -64,16 +64,6 @@
     <Compile Include="ProxyStore.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Service References\CertificateService\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
-    <Compile Include="Service References\DomainManagerService\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
     <Compile Include="SocketServer.cs" />
     <Compile Include="SocketServerSettingsElement.cs" />
     <Compile Include="SynchronizedObjectPool.cs" />
@@ -103,74 +93,16 @@
       <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
       <Name>config.client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\config\store\config.store.csproj">
+      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
+      <Name>config.store</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Service References\DomainManagerService\DomainManagerService.xsd" />
-    <None Include="Service References\DomainManagerService\DomainManagerService1.xsd" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Service References\CertificateService\" />
-    <WCFMetadataStorage Include="Service References\DomainManagerService\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\DomainManagerService\DomainManagerService.disco" />
-    <None Include="Service References\DomainManagerService\DomainManagerService.wsdl" />
-    <None Include="Service References\DomainManagerService\DomainManagerService1.wsdl" />
-    <None Include="Service References\DomainManagerService\DomainManagerService2.xsd" />
-    <None Include="Service References\DomainManagerService\DomainManagerService3.xsd" />
-    <None Include="Service References\DomainManagerService\DomainManagerService4.xsd" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\DomainManagerService\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\DomainManagerService\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\CertificateService\CertificateService.wsdl" />
-    <None Include="Service References\CertificateService\CertificateService.xsd" />
-    <None Include="Service References\CertificateService\CertificateService1.wsdl" />
-    <None Include="Service References\DomainManagerService\Health.Direct.DnsResponder.DomainManagerService.Address.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\DomainManagerService\Health.Direct.DnsResponder.DomainManagerService.DnsRecord.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\DomainManagerService\Health.Direct.DnsResponder.DomainManagerService.Domain.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\DomainManagerService\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\CertificateService\CertificateService.disco" />
-    <None Include="Service References\CertificateService\CertificateService1.xsd" />
-    <None Include="Service References\CertificateService\CertificateService2.xsd" />
-    <None Include="Service References\CertificateService\CertificateService3.xsd" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\CertificateService\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\CertificateService\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\CertificateService\Health.Direct.DnsResponder.CertificateService.Anchor.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\CertificateService\Health.Direct.DnsResponder.CertificateService.Certificate.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\CertificateService\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
