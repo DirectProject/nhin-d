@@ -3,14 +3,18 @@ package org.nhindirect.xd.common;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -20,10 +24,12 @@ public class XdmPackage
     private DirectDocuments documents;
 
     // TODO: Need to figure out how to get suffix from a document
+    @Deprecated
     private static final String SUFFIX = ".xml";
 
     private static final int BUFFER = 2048;
     private static final String XDM_SUB_FOLDER = "SUBSET01/";
+    private static final String XDM_METADATA_FILE = "METADATA.xml";
     private static final Log LOGGER = LogFactory.getFactory().getInstance(XdmPackage.class);
 
     public XdmPackage()
@@ -57,16 +63,17 @@ public class XdmPackage
 
             for (DirectDocument2 document : documents.getDocuments())
             {
-                addEntry(zipOutputStream, document.getData(), XDM_SUB_FOLDER + document.getMetadata().getId() + SUFFIX);
+                if (document.getData() != null)
+                    addEntry(zipOutputStream, document.getData(), XDM_SUB_FOLDER + document.getMetadata().getId() + SUFFIX);
             }
 
-            addEntry(zipOutputStream, documents.getSubmitObjectsRequestAsString(), XDM_SUB_FOLDER + "METADATA.xml");
+            addEntry(zipOutputStream, documents.getSubmitObjectsRequestAsString(), XDM_SUB_FOLDER + XDM_METADATA_FILE);
 
             addEntry(zipOutputStream, getIndex(), "INDEX.htm");
 
             addEntry(zipOutputStream, getReadme(), "README.txt");
 
-            if (SUFFIX.equals("xml"))
+            if (SUFFIX.equals(".xml"))
             {
                 addEntry(zipOutputStream, getXsl(), XDM_SUB_FOLDER + "CCD.xsl");
             }
@@ -113,8 +120,11 @@ public class XdmPackage
 
             for (DirectDocument2 document : documents.getDocuments())
             {
-                String file = XDM_SUB_FOLDER + document.getMetadata().getId() + SUFFIX;
-                data += "<li><a href=\"" + file + "\">" + file + "</a> - " + document.getMetadata().getDescription() + "</li>";
+                if (document.getData() != null)
+                {
+                    String file = XDM_SUB_FOLDER + document.getMetadata().getId() + SUFFIX;
+                    data += "<li><a href=\"" + file + "\">" + file + "</a> - " + document.getMetadata().getDescription() + "</li>";
+                }
             }
             
             bytes = readFile("INDEX_tail.txt");
@@ -171,16 +181,138 @@ public class XdmPackage
 
     }
 
+    public static XdmPackage fromFile(File file) throws Exception
+    {
+        DirectDocuments documents = new DirectDocuments();
+        
+        ZipFile zipFile = new ZipFile(file, ZipFile.OPEN_READ);
+        
+        Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
+        ZipEntry zipEntry = null;
+
+        // load the ZIP archive into memory
+        while (zipEntries.hasMoreElements())
+        {
+            LOGGER.trace("Processing a ZipEntry");
+
+            zipEntry = zipEntries.nextElement();
+            String zname = zipEntry.getName();
+
+            if (!zipEntry.isDirectory())
+            {
+                String subsetDirspec = getSubmissionSetDirspec(zipEntry.getName());
+
+                // Read metadata
+                if (matchName(zname, subsetDirspec, XDM_METADATA_FILE))
+                {
+                    ByteArrayOutputStream byteArrayOutputStream = readData(zipFile, zipEntry);
+
+                    documents.setValues(byteArrayOutputStream.toString());
+                }
+                // Read data
+                else if (StringUtils.contains(subsetDirspec, StringUtils.remove(XDM_SUB_FOLDER, "/"))
+                        && !StringUtils.contains(zname, ".xsl") && !StringUtils.contains(zname, XDM_METADATA_FILE))
+                {
+                    ByteArrayOutputStream byteArrayOutputStream = readData(zipFile, zipEntry);
+
+                    DirectDocument2 document = new DirectDocument2();
+                    document.setData(byteArrayOutputStream.toString());
+
+                    documents.getDocuments().add(document);
+                }
+            }
+        }
+
+        zipFile.close();
+        
+        XdmPackage xdmPackage = new XdmPackage();
+        xdmPackage.setDocuments(documents);
+
+        return xdmPackage;
+    }
+    
+    /**
+     * Given a full ZipEntry filespec, extracts the name of the folder (if
+     * present) under the IHE_XDM root specified by IHE XDM.
+     * 
+     * @param zipEntryName
+     *            The ZIP entry name.
+     * @return the name of the folder.
+     */
+    private static String getSubmissionSetDirspec(String zipEntryName)
+    {
+        if (zipEntryName == null)
+            return null;
+
+        String[] components = zipEntryName.split("\\\\");
+        return components[0];
+    }
+
+    /**
+     * Determine whether a filename matches the subset directory and file name.
+     * 
+     * @param zname
+     *            The name to compare.
+     * @param subsetDirspec
+     *            The subset directory name.
+     * @param subsetFilespec
+     *            The subset file name.
+     * @return true if the names match, false otherwise.
+     */
+    private static boolean matchName(String zname, String subsetDirspec, String subsetFilespec)
+    {
+        String zipFilespec = subsetDirspec + "\\" + subsetFilespec.replace('/', '\\');
+        boolean ret = StringUtils.equalsIgnoreCase(zname, zipFilespec);
+
+        if (!ret)
+        {
+            zipFilespec = zipFilespec.replace('\\', '/');
+            ret = StringUtils.equalsIgnoreCase(zname, zipFilespec);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Read data the data of a zipEntry within a zipFile.
+     * 
+     * @param zipFile
+     *            The ZipFile object.
+     * @param zipEntry
+     *            The ZipEntry object.
+     * @return a ByteArrayOutputStream representing the data.
+     * @throws IOException
+     */
+    private static ByteArrayOutputStream readData(ZipFile zipFile, ZipEntry zipEntry) throws IOException
+    {
+        InputStream in = zipFile.getInputStream(zipEntry);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        int bytesRead = 0;
+        byte[] buffer = new byte[2048];
+
+        while ((bytesRead = in.read(buffer)) != -1)
+        {
+            baos.write(buffer, 0, bytesRead);
+        }
+
+        in.close();
+        
+        return baos;
+    }
+    
     /*
      * Read a file and return the bytes.
      */
-    private byte[] readFile(String filename) throws Exception
+    private byte[] readFile(String filename) throws IOException
     {
         byte[] bytes;
 
         InputStream is = this.getClass().getClassLoader().getResourceAsStream(filename);
         bytes = new byte[is.available()];
         is.read(bytes);
+        
+        is.close();
 
         return bytes;
     }
