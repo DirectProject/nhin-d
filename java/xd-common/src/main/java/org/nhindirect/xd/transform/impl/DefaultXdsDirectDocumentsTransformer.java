@@ -1,12 +1,13 @@
 package org.nhindirect.xd.transform.impl;
 
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.activation.DataHandler;
 
-import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
+import org.nhindirect.xd.common.DirectDocument2;
 import org.nhindirect.xd.common.DirectDocuments;
 import org.nhindirect.xd.common.exception.MetadataException;
 import org.nhindirect.xd.transform.XdsDirectDocumentsTransformer;
@@ -46,7 +47,16 @@ public class DefaultXdsDirectDocumentsTransformer implements XdsDirectDocumentsT
                 throw new TransformationException("Unable to complete transformation due to document IO error", e);
             }
 
-            documents.getDocumentByUniqueId(document.getId()).setData(new String(data));
+            DirectDocument2 doc = documents.getDocumentByUniqueId(document.getId());
+
+            if (doc != null)
+            {
+                doc.setData(new String(data));
+            }
+            else
+            {
+                documents.getDocumentById(document.getId()).setData(new String(data));
+            }
         }
         
         return documents;
