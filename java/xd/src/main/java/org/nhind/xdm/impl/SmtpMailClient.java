@@ -28,9 +28,8 @@
 
 package org.nhind.xdm.impl;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import javax.activation.DataHandler;
 import javax.mail.Authenticator;
@@ -47,7 +46,6 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.StringUtils;
 import org.nhind.xdm.MailClient;
-import org.nhindirect.xd.common.DirectDocument;
 import org.nhindirect.xd.common.DirectMessage;
 import org.nhindirect.xd.transform.DocumentXdmTransformer;
 import org.nhindirect.xd.transform.impl.DocumentXdmTransformerImpl;
@@ -125,22 +123,16 @@ public class SmtpMailClient implements MailClient
         mainBody.setDataHandler(new DataHandler(message.getBody(), "text/plain"));
         mailBody.addBodyPart(mainBody);
 
-        mimeAttach = new MimeBodyPart();
-
         try
         {
-            for (DirectDocument document : message.getDocuments())
-            {
-                File zipout = transformer.transform(document, suffix, messageId);
-                mimeAttach.attachFile(zipout);
-            }
-
+            mimeAttach = new MimeBodyPart();
+            mimeAttach.attachFile(message.getDirectDocuments().toXdmPackage(messageId).toFile());
         }
-        catch (Exception x)
+        catch (IOException e)
         {
-            x.printStackTrace();
+            throw new MessagingException("Unable to create/attach xdm zip file", e);
         }
-
+        
         mailBody.addBodyPart(mimeAttach);
 
         mmessage.setContent(mailBody);
