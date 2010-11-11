@@ -65,7 +65,7 @@
 	      <groupId>org.nhind</groupId>
 	      <artifactId>config-ui</artifactId>
 	      <type>war</type>
-	      <version>1.0</version>
+	      <version>1.0-SNAPSHOT</version>
 	   </dependency>  	         
 	   <dependency>
 	      <groupId>org.nhind</groupId>
