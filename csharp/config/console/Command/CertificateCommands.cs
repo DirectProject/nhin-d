@@ -54,7 +54,7 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Certificate_Add", Usage = CertificateAddUsage)]
         public void CertificateAdd(string[] args)
         {
-            CertificateFileInfo certFileInfo = new CertificateFileInfo(0, args);            
+            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(0, args);            
             MemoryX509Store certStore = certFileInfo.LoadCerts();
             PushCerts(certStore, false, certFileInfo.Status);
         }
@@ -83,11 +83,12 @@ namespace Health.Direct.Config.Console.Command
                 throw new ArgumentException(storeName);
             }
             
-            CertificateFileInfo certFileInfo = new CertificateFileInfo(1, args);
+            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(1, args);
+
             store.ImportKeyFile(certFileInfo.FilePath, certFileInfo.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
             store.Dispose();
         }
-        
+
         private const string CertificateAddMachineUsage
             = "Import a certificate from a file and push it into the named local Machine store."
               + Constants.CRLF + " storeName (Private | Public)\r\n"

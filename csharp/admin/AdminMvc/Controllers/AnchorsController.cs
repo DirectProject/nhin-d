@@ -13,7 +13,7 @@ using MvcContrib.Pagination;
 
 namespace AdminMvc.Controllers
 {
-    public class AnchorsController : ControllerBase<Anchor, Anchor, IAnchorRepository>
+    public class AnchorsController : ControllerBase<Anchor, AnchorModel, IAnchorRepository>
     {
         public AnchorsController(IAnchorRepository repository) : base(repository)
         {
@@ -42,51 +42,51 @@ namespace AdminMvc.Controllers
                             .AsPagination(page ?? 1, DefaultPageSize));
         }
 
-        public ActionResult Details(string owner, string thumbprint)
+        public ActionResult Details(long id)
         {
-            var anchor = Repository.Get(owner, thumbprint);
+            var anchor = Repository.Get(id);
             if (anchor == null) return View("NotFound");
 
             return Json(Mapper.Map<Anchor, AnchorModel>(anchor), "text/json", JsonRequestBehavior.AllowGet);
         }
 
-        //public ActionResult Add(long domainID)
-        //{
-        //    return View(new AddressModel {DomainID = domainID});
-        //}
+        public ActionResult Add(string owner)
+        {
+            return View(new AnchorUploadModel { Owner = owner });
+        }
 
-        //[HttpPost]
-        //public ActionResult Add(FormCollection formValues)
-        //{
-        //    var address = new AddressModel();
+        [HttpPost]
+        public ActionResult Add(FormCollection formValues)
+        {
+            var model = new AnchorUploadModel();
 
-        //    if (TryUpdateModel(address))
-        //    {
-        //        var newAddress = Repository.Add(address);
+            if (TryUpdateModel(model))
+            {
+                var bytes = GetFileFromRequest("certificateFile");
+                var anchor = new Anchor(model.Owner, bytes, model.Password)
+                                 {
+                                     ForIncoming = (model.Purpose & PurposeType.Incoming) == PurposeType.Incoming,
+                                     ForOutgoing = (model.Purpose & PurposeType.Outgoing) == PurposeType.Outgoing
+                                 };
+                Repository.Add(anchor);
 
-        //        return RedirectToAction("Details", new { id = newAddress.ID });
-        //    }
+                var domain = new DomainRepository().GetByDomainName(model.Owner);
+                if (domain == null) return View("NotFound");
 
-        //    return View(address);
-        //}
+                return RedirectToAction("Index", new { domainID = domain.ID });
+            }
 
-        //public ActionResult Delete(long id)
-        //{
-        //    var address = Repository.Get(id);
-        //    if (address == null) return View("NotFound");
+            return View(model);
+        }
 
-        //    return View(address);
-        //}
+        protected override ActionResult EnableDisable(long id, EntityStatus status)
+        {
+            var anchor = Repository.Get(id);
+            if (anchor == null) return View("NotFound");
 
-        //[HttpPost]
-        //public ActionResult Delete(long id, string confirmButton)
-        //{
-        //    var address = Repository.Get(id);
-        //    if (address == null) return View("NotFound");
+            anchor = Repository.ChangeStatus(anchor, status);
 
-        //    Repository.Delete(address);
-
-        //    return View("Deleted", address);
-        //}
+            return Json(Mapper.Map<Anchor, AnchorModel>(anchor), "text/json");
+        }
     }
 }

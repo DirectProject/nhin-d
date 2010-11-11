@@ -62,7 +62,7 @@ namespace AdminMvc.Controllers
             return View(model);
         }
 
-        public override ActionResult Details(long id)
+        public ActionResult Details(long id)
         {
             var domain = Repository.Get(id);
             if (domain == null) return View("NotFound");
