@@ -283,6 +283,14 @@ public class DirectDocuments
 
         return request;
     }
+    
+    public XdmPackage toXdmPackage(String messageId)
+    {
+        XdmPackage xdmPackage = new XdmPackage(messageId);
+        xdmPackage.setDocuments(this);
+        
+        return xdmPackage;
+    }
 
     /**
      * Representation of a Submission Set element.
