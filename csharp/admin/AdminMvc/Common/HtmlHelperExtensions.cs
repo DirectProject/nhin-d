@@ -39,5 +39,20 @@ namespace AdminMvc.Common
             builder.MergeAttributes(new RouteValueDictionary(htmlAttributes));
             return MvcHtmlString.Create(builder.ToString(TagRenderMode.Normal));
         }
+
+        public static MvcHtmlString File(this HtmlHelper html, string name)
+        {
+            return File(html, name, null);
+        }
+
+        public static MvcHtmlString File(this HtmlHelper html, string name, object htmlAttributes)
+        {
+            var builder = new TagBuilder("input");
+            builder.MergeAttributes(new RouteValueDictionary(htmlAttributes));
+            builder.MergeAttribute("name", name, true);
+            builder.MergeAttribute("type", "file");
+            builder.MergeAttribute("id", name, false);
+            return MvcHtmlString.Create(builder.ToString(TagRenderMode.SelfClosing));
+        }
     }
 }

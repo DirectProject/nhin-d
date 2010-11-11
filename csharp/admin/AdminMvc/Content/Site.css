@@ -15,6 +15,16 @@ a:hover
     text-decoration: underline;
 }
 
+a.ui-state-disabled:hover
+{
+    text-decoration: none;
+}
+
+div.info-flash a
+{
+    text-decoration: underline !important;
+}
+
 .border-none
 {
     border: none !important;
@@ -34,17 +44,17 @@ fieldset p
     margin: 2px 12px 10px 10px;
 }
 
-input[type="text"] 
-{
-    width: 200px;
-    border: 1px solid #CCC;
-}
-
+input[type="text"],
 input[type="password"] 
 {
     width: 200px;
-    border: 1px solid #CCC;
 }
+
+input[type="file"]
+{
+    width: 400px;
+}
+
 
 /* TABLE
 ----------------------------------------------------------*/
@@ -58,7 +68,6 @@ table.ui-widget
 {
     border-style: solid;
     border-width: 1px;
-    font-size: 0.9em;
 }
 
 table td 
@@ -126,7 +135,7 @@ table th
 .editor-field
 {
     font-weight: bold;
-    width: 100px;
+    width: 125px;
     text-align: right;
     float: left;
     clear: both;

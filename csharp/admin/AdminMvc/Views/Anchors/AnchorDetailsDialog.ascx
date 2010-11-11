@@ -1,7 +1,7 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
 <%@ Import Namespace="AdminMvc.Models"%>
 
-<div id="certificate-dialog" style="display: none;">
+<div id="anchor-dialog" style="display: none;">
     <div class="display-label">Owner</div>
     <div id="owner" class="display-field"></div>
 
@@ -19,6 +19,12 @@
     
     <div class="display-label">Valid Until</div>
     <div id="valid-end-date" class="display-field"></div>
+
+    <div class="display-label">For Incoming</div>
+    <div id="for-incoming" class="display-field"></div>
+
+    <div class="display-label">For Outgoing</div>
+    <div id="for-outgoing" class="display-field"></div>
 </div>
 
 <script type="text/javascript" language="javascript">
@@ -30,5 +36,7 @@
         $('#created', dialog).text(data.CreateDate.parseJSONDate().format(dateTimeFormatString));
         $('#valid-start-date', dialog).text(data.ValidStartDate.parseJSONDate().format(dateTimeFormatString));
         $('#valid-end-date', dialog).text(data.ValidEndDate.parseJSONDate().format(dateTimeFormatString));
+        $('#for-incoming', dialog).text(data.ForIncoming);
+        $('#for-outgoing', dialog).text(data.ForOutgoing);
     }
 </script>
