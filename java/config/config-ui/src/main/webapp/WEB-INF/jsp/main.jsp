@@ -21,7 +21,7 @@ $(document).ready(function()
     <%@ include file="/WEB-INF/jsp/header.jsp" %>
 	<fieldset>
     <img src="/resources/images/logo.png">
-	<center><h3>NHIN Direct Java Reference Implememtation - Manage Domains</h3></center>
+	<center><h3>NHIN Direct Java Reference Implementation - Manage Domains</h3></center>
 	</fieldset>
 	<fieldset>
 	<spring:url value="/config/main/search" var="formUrl"/>

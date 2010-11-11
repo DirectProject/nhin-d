@@ -9,6 +9,11 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
+    <div id="form">
+    <fieldset>
+    <img src="/resources/images/logo.png">
+    <center><h3>NHIN Direct Java Reference Implementation - Manage Public and Private Certificates</h3></center>
+    </fieldset>
 <c:choose>
 	<c:when test='${empty action || action == "Add" }'>
 	</c:when>

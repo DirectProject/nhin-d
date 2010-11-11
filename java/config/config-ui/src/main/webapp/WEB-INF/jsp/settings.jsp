@@ -2,13 +2,18 @@
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head>
-<%@ include file="/WEB-INF/jsp/include.jsp"%>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title><fmt:message key="domain.title" /></title>
-</head>
-<body>
-<%@ include file="/WEB-INF/jsp/header.jsp"%>
+    <head>
+    <%@ include file="/WEB-INF/jsp/include.jsp"%>
+    <META  http-equiv="Content-Type"  content="text/html;charset=UTF-8">
+    <title><fmt:message key="settings.title" /></title>
+    </head>
+    <body>
+    <%@ include file="/WEB-INF/jsp/header.jsp" %>
+    <div id="form">
+    <fieldset>
+    <img src="/resources/images/logo.png">
+    <center><h3>NHIN Direct Java Reference Implementation - Manage Agent Settings</h3></center>
+    </fieldset>
 <fieldset style="width: 100%;" title="Setting">
 	<spring:url	value="/config/settings/addsetting" var="formUrladdsetting" /> 
 	<form:form	modelAttribute="settingsForm" action="${fn:escapeXml(formUrladdsetting)}" cssClass="cleanform" method="POST">
@@ -22,7 +27,7 @@
 			<th><form:input path="key" /></th>
 		</tr>
 		<tr>
-			<th><form:label path="value">value:
+			<th><form:label path="value">Value:
 							            <form:errors path="value" cssClass="error" />
 			</form:label></th>
 			<th><form:input path="value" /></th>
@@ -78,6 +83,7 @@
 		Selected</button>
 	</form:form>
 </fieldset>
+</div>
 </c:if>
 </body>
 </html>

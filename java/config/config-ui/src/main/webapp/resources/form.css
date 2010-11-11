@@ -116,3 +116,7 @@
 	font-weight:bold;
 	font-size:0.8em
 }
+
+.error {    
+    color:red;
+}
