@@ -61,7 +61,7 @@ namespace AdminMvc.Controllers
             return View(model);
         }
 
-        public override ActionResult Details(long id)
+        public ActionResult Details(long id)
         {
             var address = Repository.Get(id);
             if (address == null) return View("NotFound");

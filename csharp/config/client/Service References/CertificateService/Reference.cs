@@ -271,6 +271,12 @@ namespace Health.Direct.Config.Client.CertificateService {
             "igStoreFaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Anchor[] GetOutgoingAnchors(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatus", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusRespons" +
+            "e")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusConfigS" +
+            "toreFaultFault", Name="ConfigStoreFault")]
+        void SetAnchorStatus(long[] anchorIDs, Health.Direct.Config.Store.EntityStatus status);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwne" +
             "r", ReplyAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwne" +
             "rResponse")]
@@ -349,6 +355,10 @@ namespace Health.Direct.Config.Client.CertificateService {
         
         public Health.Direct.Config.Store.Anchor[] GetOutgoingAnchors(string owner, Health.Direct.Config.Client.CertificateService.CertificateGetOptions options) {
             return base.Channel.GetOutgoingAnchors(owner, options);
+        }
+        
+        public void SetAnchorStatus(long[] anchorIDs, Health.Direct.Config.Store.EntityStatus status) {
+            base.Channel.SetAnchorStatus(anchorIDs, status);
         }
         
         public void SetAnchorStatusForOwner(string owner, Health.Direct.Config.Store.EntityStatus status) {

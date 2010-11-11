@@ -189,6 +189,16 @@ namespace Health.Direct.Config.Store
             }
         }
 
+        public void SetStatus(ConfigDatabase db, long anchorID, EntityStatus status)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+
+            db.Anchors.ExecUpdateStatus(anchorID, status);
+        }
+
         public Anchor Get(string owner, string thumbprint)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
@@ -216,9 +226,33 @@ namespace Health.Direct.Config.Store
 
         public void SetStatus(string owner, EntityStatus status)
         {
+            if (string.IsNullOrEmpty(owner))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+            }
+
             using (ConfigDatabase db = this.Store.CreateContext())
             {
                 this.SetStatus(db, owner, status);
+            }
+        }
+
+        public void SetStatus(long[] anchorIDs, EntityStatus status)
+        {
+            if (anchorIDs.IsNullOrEmpty())
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+            }
+
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                //
+                // Todo: optimize this by using an 'in' query.. 
+                //
+                for (int i = 0; i < anchorIDs.Length; ++i)
+                {
+                    this.SetStatus(db, anchorIDs[i], status);
+                }
                 //db.SubmitChanges(); // Not needed, since we do a direct update
             }
         }

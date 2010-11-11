@@ -16,22 +16,6 @@
 
 <script type="text/javascript" language="javascript">
     var dateTimeFormatString = '<%= ViewData["DateTimeFormat"] %>';
-    function showDetailsDialog(event, link) {
-        event.preventDefault();
-        clearDialog($('#domain-dialog'));
-        $.getJSON(link.attr('href'), function(data) { showDialog($('#domain-dialog'), data); });
-    }
-    function showDialog(dialog, data) {
-        updateDialog(dialog, data);
-        dialog.dialog({
-            title: 'Domain Details',
-            modal: true,
-            width: 500
-        });
-    }
-    function clearDialog(dialog) {
-        $('div.display-field', dialog).text('');
-    }
     function updateDialog(dialog, data) {
         $('#domain-name', dialog).text(data.Name);
         $('#status', dialog).text(data.Status);

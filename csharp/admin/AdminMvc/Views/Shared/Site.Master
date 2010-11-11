@@ -1,23 +1,23 @@
-﻿<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage" %>
+﻿<%@ Import Namespace="AdminMvc.Common"%>
+<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>The Direct Project Console - <asp:ContentPlaceHolder ID="TitleContent" runat="server" /></title>
-    <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/themes/redmond/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <%= Html.JQueryUITheme("redmond") %>
+    <link href="../../Content/Site.css" rel="stylesheet" type="text/css" />
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js" type="text/javascript" language="javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js" type="text/javascript" language="javascript"></script>
     <script src="../../Scripts/Common.js" type="text/javascript" language="javascript"></script>
-    <link href="../../Content/Site.css" rel="stylesheet" type="text/css" />   
     <script type="text/javascript" language="javascript">
-        $(function() {
-            $('#switcher').themeswitcher();
-        });
+        $(function() { $('#switcher').themeswitcher({ expires: 30, path: '/' }); });
     </script>
 </head>
 
-<body>
-    <div class="ui-widget-content border-none">
+<body class="ui-widget-content">
+    <div>
 
         <div class="ui-widget-header border-none">
             <span id="title">
@@ -51,20 +51,23 @@
         $(function() {
             $(':submit,a.action').button();
             $('div.ui-tabs #tab-' + controllerName).addClass('ui-tabs-selected ui-state-active');
-        });
-        $('table.grid tbody tr').hover(
+            $('a.enable-disable-action').click(changeAndUpdateStatus);
+            $('table.grid tbody tr').hover(
                 function() { $(this).addClass('ui-state-highlight'); },
                 function() { $(this).removeClass('ui-state-highlight'); }
                 )
                 .dblclick(function(event) {
-                    showDetailsDialog(event, $('a.view-details', this));
+                    $('a.view-details', this).click();
                 });
+            $('#close-flash').click(function() { $('div.info-flash').hide(); });
+        });
         function confirmDelete(event, dialog, link, message, objectName) {
             event.preventDefault();
             dialog.html('<p>' + message + '</p>');
             dialog.dialog({
                 title: 'Confirmation',
                 resizable: false,
+                width: 500,
                 modal: true,
                 buttons: {
                     "Delete": function() {
@@ -83,14 +86,17 @@
                 }
             });
         }
-        function enableDisableDomain(event) {
+        function changeAndUpdateStatus(event) {
             event.preventDefault();
             var link = $(this);
+            link.text(link.text().replace(/le$/, 'ling...')).attr('disabled', true).addClass('ui-state-disabled');
             $.post(link[0].href, function(data) {
-                adjustStatusForRow(link.closest('tr'), data);
+                adjustStatusForRow(link, data);
             });
         }
-        function adjustStatusForRow(row, data) {
+        function adjustStatusForRow(link, data) {
+            link.attr('disabled', false).removeClass('ui-state-disabled');
+            var row = link.closest('tr');
             var status = data.Status;
             var oldActionString = status == 'Enabled' ? 'Enable' : 'Disable'
             var newActionString = status == 'Enabled' ? 'Disable' : 'Enable'
@@ -104,6 +110,22 @@
         }
         function endsWith(str, suffix) {
             return str.indexOf(suffix, str.length - suffix.length) !== -1;
+        }
+        function showDetailsDialog(dialog, event, link, title) {
+            event.preventDefault();
+            clearDialog();
+            $.get(link.attr('href'), function(data) { updateAndShowDialog(dialog, data, title); });
+        }
+        function updateAndShowDialog(dialog, data, title) {
+            updateDialog(dialog, data);
+            dialog.dialog({
+                title: title,
+                modal: true,
+                width: 500
+            });
+        }
+        function clearDialog(dialog) {
+            $('div.display-field', dialog).text('');
         }
     </script>
 </body>
