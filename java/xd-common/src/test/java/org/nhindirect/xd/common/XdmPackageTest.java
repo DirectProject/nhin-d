@@ -1,6 +1,7 @@
 package org.nhindirect.xd.common;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
@@ -12,6 +13,7 @@ import org.nhindirect.xd.common.type.FormatCodeEnum;
 import org.nhindirect.xd.common.type.HealthcareFacilityTypeCodeEnum;
 import org.nhindirect.xd.common.type.LoincEnum;
 import org.nhindirect.xd.common.type.PracticeSettingCodeEnum;
+import org.nhindirect.xd.transform.impl.DefaultXdmXdsTransformerTest;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
 
 public class XdmPackageTest extends TestCase
@@ -108,5 +110,16 @@ public class XdmPackageTest extends TestCase
         
         File f = xdmPackage.toFile();
         System.out.println(f.getAbsolutePath());
+    }
+    
+    public void testFromFile() throws Exception
+    {
+        URL url = DefaultXdmXdsTransformerTest.class.getClassLoader().getResource("samplexdm.zip");
+        File file = new File(url.getPath());
+        
+        XdmPackage xdmPackage = XdmPackage.fromFile(file);
+
+        File f2 = xdmPackage.toFile();
+        System.out.println(f2.getAbsolutePath());
     }
 }
