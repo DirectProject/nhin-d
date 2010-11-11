@@ -423,14 +423,17 @@
 	                <outputEncoding>UTF-8</outputEncoding>
 	                <type>date</type>
 	            </configuration>
-	        </plugin>			
+	        </plugin>	
+	        <!-- 		
 	        <plugin>
 	            <groupId>org.codehaus.mojo</groupId>
 	            <artifactId>clirr-maven-plugin</artifactId>
 	            <configuration>
 	                <minSeverity>info</minSeverity>
+	                <failOnError>false</failOnError>
 	            </configuration>
-	        </plugin> 
+	        </plugin>
+	         --> 
 	        <plugin>
 	            <groupId>org.codehaus.mojo</groupId> 
 	            <artifactId>findbugs-maven-plugin</artifactId>
