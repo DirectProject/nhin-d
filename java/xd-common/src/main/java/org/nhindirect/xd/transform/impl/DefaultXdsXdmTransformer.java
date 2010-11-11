@@ -30,10 +30,15 @@ package org.nhindirect.xd.transform.impl;
 
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 
-import javax.naming.OperationNotSupportedException;
+import javax.activation.DataHandler;
 
+import org.nhindirect.xd.common.DirectDocuments;
+import org.nhindirect.xd.common.XdmPackage;
+import org.nhindirect.xd.common.exception.MetadataException;
 import org.nhindirect.xd.transform.XdsXdmTransformer;
 import org.nhindirect.xd.transform.exception.TransformationException;
 
@@ -55,8 +60,41 @@ public class DefaultXdsXdmTransformer implements XdsXdmTransformer
     public File transform(ProvideAndRegisterDocumentSetRequestType provideAndRegisterDocumentSetRequestType)
             throws TransformationException
     {
-        OperationNotSupportedException e = new OperationNotSupportedException("This method has not been implemented");
-        throw new TransformationException("Unable to complete transformation.", e);
+
+        DirectDocuments documents = new DirectDocuments();
+
+        try
+        {
+            documents.setValues(provideAndRegisterDocumentSetRequestType.getSubmitObjectsRequest());
+        }
+        catch (MetadataException e)
+        {
+            throw new TransformationException("Unable to complete transformation due to metadata error", e);
+        }
+
+        for (ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document document : provideAndRegisterDocumentSetRequestType.getDocument())
+        {
+            byte[] data = null;
+
+            try
+            {
+                DataHandler dataHandler = document.getValue();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                dataHandler.writeTo(outputStream);
+                data = outputStream.toByteArray();
+            }
+            catch (IOException e)
+            {
+                throw new TransformationException("Unable to complete transformation due to document IO error", e);
+            }
+
+            documents.getDocumentByUniqueId(document.getId()).setData(new String(data));
+        }
+
+        XdmPackage xdmPackage = new XdmPackage();
+        xdmPackage.setDocuments(documents);
+
+        return xdmPackage.toFile();
     }
 
 }

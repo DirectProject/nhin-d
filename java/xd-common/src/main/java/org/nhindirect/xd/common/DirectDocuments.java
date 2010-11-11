@@ -32,13 +32,19 @@ import static org.nhindirect.xd.common.DirectDocumentUtils.addSlot;
 import static org.nhindirect.xd.common.DirectDocumentUtils.makeInternationalStringType;
 import static org.nhindirect.xd.common.DirectDocumentUtils.makeSlot;
 import static org.nhindirect.xd.common.DirectDocumentUtils.slotNotEmpty;
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.mail.util.ByteArrayDataSource;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
@@ -209,7 +215,11 @@ public class DirectDocuments
             {
                 // Empty in example
             }
-            else if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.AssociationType1)
+        }
+        
+        for (JAXBElement<? extends IdentifiableType> element : elements)
+        {
+            if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.AssociationType1)
             {
                 AssociationType1 at = (AssociationType1) element.getValue();
 
@@ -225,7 +235,7 @@ public class DirectDocuments
         }
     }
 
-    private DirectDocument2 getDocumentById(String targetObject)
+    public DirectDocument2 getDocumentById(String targetObject)
     {
         for (DirectDocument2 document : documents)
         {
@@ -235,11 +245,43 @@ public class DirectDocuments
 
         return null;
     }
+    
+    public DirectDocument2 getDocumentByUniqueId(String uniqueId)
+    {
+        for (DirectDocument2 document : documents)
+        {
+            if (document.getMetadata().getUniqueId().equals(uniqueId))
+                return document;
+        }
+        
+        return null;
+    }
 
     public String getSubmitObjectsRequestAsString()
     {
         QName qname = new QName(SubmitObjectsRequestEnum.SUBMIT_OBJECTS_REQUEST.getNamespaceUri(), SubmitObjectsRequestEnum.SUBMIT_OBJECTS_REQUEST.getName());
         return XmlUtils.marshal(qname, getSubmitObjectsRequest(), ihe.iti.xds_b._2007.ObjectFactory.class);
+    }
+    
+    public ProvideAndRegisterDocumentSetRequestType toProvideAndRegisterDocumentSetRequestType() throws IOException
+    {
+        ProvideAndRegisterDocumentSetRequestType request = new ProvideAndRegisterDocumentSetRequestType();
+
+        request.setSubmitObjectsRequest(this.getSubmitObjectsRequest());
+
+        for (DirectDocument2 document : documents)
+        {
+            DataSource source = new ByteArrayDataSource(document.getData(), document.getMetadata().getMimeType());
+            DataHandler dhnew = new DataHandler(source);
+
+            Document pdoc = new Document();
+            pdoc.setValue(dhnew);
+            pdoc.setId(document.getMetadata().getUniqueId());
+            
+            request.getDocument().add(pdoc);
+        }
+
+        return request;
     }
 
     /**
@@ -363,8 +405,8 @@ public class DirectDocuments
         {
             AssociationType1 at = new AssociationType1();
 
-            at.setSourceObject(documentId);
-            at.setTargetObject(id);
+            at.setSourceObject(id);
+            at.setTargetObject(documentId);
             at.setId(AssociationType1Enum.HAS_MEMBER.getAssociationId());
             at.setAssociationType(AssociationType1Enum.HAS_MEMBER.getAssociationType());
 

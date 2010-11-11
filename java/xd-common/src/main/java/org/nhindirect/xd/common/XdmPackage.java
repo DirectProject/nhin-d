@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -25,6 +26,11 @@ public class XdmPackage
     private static final String XDM_SUB_FOLDER = "SUBSET01/";
     private static final Log LOGGER = LogFactory.getFactory().getInstance(XdmPackage.class);
 
+    public XdmPackage()
+    {
+        this(UUID.randomUUID().toString());
+    }
+    
     public XdmPackage(String messageId)
     {
         this.messageId = messageId;
