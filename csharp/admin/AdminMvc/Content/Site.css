@@ -1,0 +1,171 @@
+﻿body
+{
+    padding: 0;
+    font-family: Verdana, Arial, Sans-Serif;
+    font-size: 12px;
+}
+
+a
+{
+    text-decoration: none;
+}
+
+a:hover
+{
+    text-decoration: underline;
+}
+
+a.ui-state-disabled:hover
+{
+    text-decoration: none;
+}
+
+div.info-flash a
+{
+    text-decoration: underline !important;
+}
+
+.border-none
+{
+    border: none !important;
+}
+
+/* FORM LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+
+fieldset 
+{
+    margin: 1em 0;
+    padding: 1em;
+}
+
+fieldset p 
+{
+    margin: 2px 12px 10px 10px;
+}
+
+input[type="text"],
+input[type="password"] 
+{
+    width: 200px;
+}
+
+input[type="file"]
+{
+    width: 400px;
+}
+
+
+/* TABLE
+----------------------------------------------------------*/
+
+table 
+{
+  border-collapse: collapse;
+}
+
+table.ui-widget
+{
+    border-style: solid;
+    border-width: 1px;
+}
+
+table td 
+{
+  padding: 2px 5px;
+}
+
+table th
+{
+  padding: 6px 5px;
+  text-align: left;
+}
+
+/* MISC  
+----------------------------------------------------------*/
+.clear
+{
+    clear: both;
+}
+
+.error
+{
+    color:Red;
+}
+
+#menucontainer
+{
+    margin-top:50px;
+}
+
+/* Styles for validation helpers
+-----------------------------------------------------------*/
+.field-validation-valid
+{
+    display: none;
+}
+
+.input-validation-error
+{
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}
+
+.validation-summary-errors
+{
+    font-weight: bold;
+}
+
+.validation-summary-valid
+{
+    display: none;
+}
+
+/* Styles for editor and display helpers
+----------------------------------------------------------*/
+.display-label,
+.editor-label,
+.display-field,
+.editor-field
+{
+    margin: 0.5em 0;
+}
+
+.display-label,
+.editor-field
+{
+    font-weight: bold;
+    width: 125px;
+    text-align: right;
+    float: left;
+    clear: both;
+}
+
+.display-field,
+.editor-field
+{
+    float: left;
+    margin-left: 1.0em;
+}    
+
+.editor-validator
+{
+    float: left;
+    margin-left: 0.5em;
+}
+
+.text-box
+{
+    width: 30em;
+}
+
+.action-bar
+{
+    padding: 0 0 1em 0;
+}
+
+.toolbar-button
+{
+    font-size: 0.5em;
+    margin: 3px 0;
+}

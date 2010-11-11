@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="fc44a79e-525c-4213-afc8-08f48eb98fad" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:6692/DomainManagerService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="DomainManagerService.xsd" MetadataType="Schema" ID="ade4bcc5-826a-4b3f-ba95-d5e8f821b021" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?xsd=xsd3" />
+    <MetadataFile FileName="DomainManagerService1.xsd" MetadataType="Schema" ID="678dc3f9-42a6-42b7-83d0-7fddaa1bfbca" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?xsd=xsd4" />
+    <MetadataFile FileName="DomainManagerService.disco" MetadataType="Disco" ID="ce9766ef-de43-4fc6-8f7d-a24f7218e15e" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?disco" />
+    <MetadataFile FileName="DomainManagerService.wsdl" MetadataType="Wsdl" ID="5a3d8a32-7bea-4cfd-a344-ca749a8d221f" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?wsdl=wsdl0" />
+    <MetadataFile FileName="DomainManagerService2.xsd" MetadataType="Schema" ID="5873d43c-6f3f-48a9-aef7-59cab7fa399d" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?xsd=xsd1" />
+    <MetadataFile FileName="DomainManagerService3.xsd" MetadataType="Schema" ID="e00286f0-1ab5-4cf1-a01c-e19c4ea9e387" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?xsd=xsd0" />
+    <MetadataFile FileName="DomainManagerService1.wsdl" MetadataType="Wsdl" ID="234fdfa4-675e-475a-a69a-de60e6d0bd74" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?wsdl" />
+    <MetadataFile FileName="DomainManagerService4.xsd" MetadataType="Schema" ID="8397967f-acfa-4149-b7b4-5c81b656387e" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?xsd=xsd2" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>
