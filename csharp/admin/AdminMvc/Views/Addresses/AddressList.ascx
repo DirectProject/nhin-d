@@ -6,8 +6,8 @@
 <%@ Import Namespace="AdminMvc.Models"%>
 
 <%= Html.Grid(Model)
-    .Attributes(new Dictionary<string, object>{{"class", "grid ui-widget ui-widget-content"}})
-    .HeaderRowAttributes(new Dictionary<string, object>{{"class", "ui-widget-header"}})
+    .Attributes(@class => "grid ui-widget ui-widget-content")
+    .HeaderRowAttributes(new Dictionary<string, object> { { "class", "ui-widget-header" } })
     .Columns(
         column =>
             {
@@ -34,9 +34,8 @@
             .button({ icons: { primary: "ui-icon-trash" }, text: false })
             .click(function(event) { confirmDelete(event, $('#confirm-dialog'), $(this), 'Are you sure want to delete this address?', 'Address') });
 
-        $('a.enable-disable-action').click(changeAndUpdateStatus);
         $('a.view-details').click(function(event) {
-            showDetailsDialog(event, $(this));
+            showDetailsDialog($('#address-dialog'), event, $(this), 'Address Details');
         });
     });
 </script>

@@ -83,5 +83,13 @@ namespace AdminMvc.Controllers
 
             return Json(Mapper.Map<T, TModel>(item), "text/json");
         }
+
+        protected byte[] GetFileFromRequest(string keyName)
+        {
+            var file = Request.Files.Get(keyName);
+            var bytes = new byte[file.ContentLength];
+            file.InputStream.Read(bytes, 0, file.ContentLength);
+            return bytes;
+        }
     }
 }

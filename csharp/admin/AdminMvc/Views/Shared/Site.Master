@@ -51,20 +51,23 @@
         $(function() {
             $(':submit,a.action').button();
             $('div.ui-tabs #tab-' + controllerName).addClass('ui-tabs-selected ui-state-active');
-        });
-        $('table.grid tbody tr').hover(
+            $('a.enable-disable-action').click(changeAndUpdateStatus);
+            $('table.grid tbody tr').hover(
                 function() { $(this).addClass('ui-state-highlight'); },
                 function() { $(this).removeClass('ui-state-highlight'); }
                 )
                 .dblclick(function(event) {
-                    showDetailsDialog(event, $('a.view-details', this));
+                    $('a.view-details', this).click();
                 });
+            $('#close-flash').click(function() { $('div.info-flash').hide(); });
+        });
         function confirmDelete(event, dialog, link, message, objectName) {
             event.preventDefault();
             dialog.html('<p>' + message + '</p>');
             dialog.dialog({
                 title: 'Confirmation',
                 resizable: false,
+                width: 500,
                 modal: true,
                 buttons: {
                     "Delete": function() {
@@ -86,11 +89,14 @@
         function changeAndUpdateStatus(event) {
             event.preventDefault();
             var link = $(this);
+            link.text(link.text().replace(/le$/, 'ling...')).attr('disabled', true).addClass('ui-state-disabled');
             $.post(link[0].href, function(data) {
-                adjustStatusForRow(link.closest('tr'), data);
+                adjustStatusForRow(link, data);
             });
         }
-        function adjustStatusForRow(row, data) {
+        function adjustStatusForRow(link, data) {
+            link.attr('disabled', false).removeClass('ui-state-disabled');
+            var row = link.closest('tr');
             var status = data.Status;
             var oldActionString = status == 'Enabled' ? 'Enable' : 'Disable'
             var newActionString = status == 'Enabled' ? 'Disable' : 'Enable'
@@ -104,6 +110,22 @@
         }
         function endsWith(str, suffix) {
             return str.indexOf(suffix, str.length - suffix.length) !== -1;
+        }
+        function showDetailsDialog(dialog, event, link, title) {
+            event.preventDefault();
+            clearDialog();
+            $.get(link.attr('href'), function(data) { updateAndShowDialog(dialog, data, title); });
+        }
+        function updateAndShowDialog(dialog, data, title) {
+            updateDialog(dialog, data);
+            dialog.dialog({
+                title: title,
+                modal: true,
+                width: 500
+            });
+        }
+        function clearDialog(dialog) {
+            $('div.display-field', dialog).text('');
         }
     </script>
 </body>
