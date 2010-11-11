@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:i0="http://www.nhindirect.org/config/store/082010" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="http://tempuri.org/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" name="CertificateService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:import namespace="http://www.nhindirect.org/config/store/082010" location="http://localhost:6692/CertificateService.svc?wsdl=wsdl0" />
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:i0="urn:directproject:config/store/082010" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="http://tempuri.org/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" name="CertificateService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:import namespace="urn:directproject:config/store/082010" location="http://localhost:6692/CertificateService.svc?wsdl=wsdl0" />
   <wsdl:types />
   <wsdl:binding name="BasicHttpBinding_ICertificateStore" type="i0:ICertificateStore">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="AddCertificate">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificate" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertificateStore/AddCertificate" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -17,7 +17,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="AddCertificates">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/AddCertificates" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertificateStore/AddCertificates" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -29,7 +29,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetCertificate">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificate" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertificateStore/GetCertificate" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -41,7 +41,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetCertificates">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificates" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertificateStore/GetCertificates" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -53,7 +53,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetCertificatesForOwner">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/GetCertificatesForOwner" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertificateStore/GetCertificatesForOwner" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -65,7 +65,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="SetCertificateStatus">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/SetCertificateStatus" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatus" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -77,7 +77,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="SetCertificateStatusForOwner">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/SetCertificateStatusForOwner" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatusForOwner" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -89,7 +89,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="RemoveCertificates">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/RemoveCertificates" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificates" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -101,7 +101,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="RemoveCertificatesForOwner">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/RemoveCertificatesForOwner" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificatesForOwner" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -113,7 +113,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="EnumerateCertificates">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/ICertificateStore/EnumerateCertificates" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertificateStore/EnumerateCertificates" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -128,7 +128,7 @@
   <wsdl:binding name="BasicHttpBinding_IAnchorStore" type="i0:IAnchorStore">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="AddAnchor">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchor" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAnchorStore/AddAnchor" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -140,7 +140,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="AddAnchors">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/AddAnchors" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAnchorStore/AddAnchors" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -152,7 +152,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetAnchor">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchor" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAnchorStore/GetAnchor" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -164,7 +164,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetAnchors">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchors" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAnchorStore/GetAnchors" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -176,7 +176,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetAnchorsForOwner">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetAnchorsForOwner" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAnchorStore/GetAnchorsForOwner" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -188,7 +188,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetIncomingAnchors">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetIncomingAnchors" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAnchorStore/GetIncomingAnchors" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -200,7 +200,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="GetOutgoingAnchors">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/GetOutgoingAnchors" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAnchorStore/GetOutgoingAnchors" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -212,7 +212,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="SetAnchorStatus">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatus" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatus" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -224,7 +224,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="SetAnchorStatusForOwner">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/SetAnchorStatusForOwner" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatusForOwner" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -236,7 +236,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="EnumerateAnchors">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/EnumerateAnchors" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAnchorStore/EnumerateAnchors" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -248,7 +248,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="RemoveAnchors">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/RemoveAnchors" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchors" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -260,7 +260,7 @@
       </wsdl:fault>
     </wsdl:operation>
     <wsdl:operation name="RemoveAnchorsForOwner">
-      <soap:operation soapAction="http://www.nhindirect.org/config/store/082010/IAnchorStore/RemoveAnchorsForOwner" style="document" />
+      <soap:operation soapAction="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchorsForOwner" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
