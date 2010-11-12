@@ -182,6 +182,9 @@ public class DirectDocument2
 
         private String patientId;
         private String uniqueId;
+        
+        private String hash;
+        private String size;
 
         private String submissionSetStatus;
 
@@ -244,6 +247,8 @@ public class DirectDocument2
             addSlot(slots, makeSlot(SlotType1Enum.SERVICE_STOP_TIME, serviceStopTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStopTime) : null));
             addSlot(slots, makeSlot(SlotType1Enum.SOURCE_PATIENT_ID, sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg() + "&ISO"));
             addSlot(slots, makeSlot(SlotType1Enum.SOURCE_PATIENT_INFO, sourcePatient));
+            addSlot(slots, makeSlot(SlotType1Enum.HASH, hash));
+            addSlot(slots, makeSlot(SlotType1Enum.SIZE, size));
 
             eot.setName(makeInternationalStringType(classCode_localized));
             eot.setDescription(makeInternationalStringType(description));
@@ -509,6 +514,16 @@ public class DirectDocument2
                             }
                         }
                     }
+                }
+                else if (SlotType1Enum.HASH.matches(slot.getName()))
+                {
+                    if (slotNotEmpty(slot))
+                        hash = slot.getValueList().getValue().get(0);
+                }
+                else if (SlotType1Enum.SIZE.matches(slot.getName()))
+                {
+                    if (slotNotEmpty(slot))
+                        size = slot.getValueList().getValue().get(0);
                 }
             }
 
@@ -1223,6 +1238,40 @@ public class DirectDocument2
         public void setSubmissionSetStatus(String submissionSetStatus)
         {
             this.submissionSetStatus = submissionSetStatus;
+        }
+
+        /**
+         * @return the hash
+         */
+        public String getHash()
+        {
+            return hash;
+        }
+
+        /**
+         * @param hash
+         *            the hash to set
+         */
+        public void setHash(String hash)
+        {
+            this.hash = hash;
+        }
+
+        /**
+         * @return the size
+         */
+        public String getSize()
+        {
+            return size;
+        }
+
+        /**
+         * @param size
+         *            the size to set
+         */
+        public void setSize(String size)
+        {
+            this.size = size;
         }
     }
 }
