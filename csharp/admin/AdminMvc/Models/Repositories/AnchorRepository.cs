@@ -23,14 +23,14 @@ namespace Health.Direct.Admin.Console.Models.Repositories
 {
     public class AnchorRepository : IAnchorRepository
     {
-        private readonly AnchorStoreClient m_client;
+        private readonly IAnchorStore m_client;
 
-        public AnchorRepository()
+        public AnchorRepository(IAnchorStore client)
         {
-            m_client = new AnchorStoreClient();
+            m_client = client;
         }
 
-        protected AnchorStoreClient Client { get { return m_client; } }
+        protected IAnchorStore Client { get { return m_client; } }
         
         public IQueryable<Anchor> FindAll()
         {

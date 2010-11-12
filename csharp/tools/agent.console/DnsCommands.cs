@@ -23,6 +23,7 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Common.Certificates;
+using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
 
 namespace Health.Direct.Tools.Agent
@@ -98,12 +99,12 @@ namespace Health.Direct.Tools.Agent
                 File.WriteAllBytes(outputFile, bytes);   
             }
         }
-        
-        const string ResolveCertUsage =
-              "Resolve certificates for an address or domain using Dns\r\n"
-            + "   domain or email-address\r\n"
-            + "   outputFile: (optional)\r\n"
-            + "   server : (optional)\r\n";
+
+        private const string ResolveCertUsage =
+            "Resolve certificates for an address or domain using Dns"
+            + Constants.CRLF + "   domain or email-address"
+            + Constants.CRLF + "   outputFile: (optional)"
+            + Constants.CRLF + "   server : (optional)";
         
         [Command(Name="Dns_ResolveMx", Usage=ResolveMxUsage)]
         public void ResolveMX(string[] args)
@@ -124,9 +125,9 @@ namespace Health.Direct.Tools.Agent
                 }
             }
         }
-        
-        const string ResolveMxUsage = 
-                "Resolve MX records for the given email domain\r\n"
-            +   "    email domain";
+
+        private const string ResolveMxUsage =
+            "Resolve MX records for the given email domain"
+            + Constants.CRLF + "    email domain";
     }
 }

@@ -18,6 +18,7 @@
                 column.For(d => Html.Span(Formatter.Format(d.CreateDate), new { title = d.CreateDate.ToString() })).Named("Created On");
                 column.For(d => Html.Span(Formatter.Format(d.UpdateDate), new { title = d.UpdateDate.ToString() })).Named("Updated On");
                 column.For(a => Html.ActionLink("View", "Details", new { id = a.ID }, new { @class = "view-details" }));
+                column.For(a => Html.ActionLink("Edit", "Edit", new { id = a.ID }));
                 column.For(a => a.IsEnabled
                                     ? Html.ActionLink("Disable", "Disable", new { id = a.ID }, new { @class = "enable-disable-action" })
                                     : Html.ActionLink("Enable", "Enable", new { id = a.ID }, new { @class = "enable-disable-action" }));

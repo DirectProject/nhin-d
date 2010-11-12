@@ -18,6 +18,7 @@ using System.Security.Cryptography.X509Certificates;
 
 using Health.Direct.Config.Store;
 using Health.Direct.Common.Certificates;
+using Health.Direct.Config.Tools;
 
 namespace Health.Direct.Config.Console.Command
 {

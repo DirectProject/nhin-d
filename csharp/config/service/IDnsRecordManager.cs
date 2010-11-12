@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System.ServiceModel;
 
+using Health.Direct.Common.DnsResolver;
 using Health.Direct.Config.Store;
 
 namespace Health.Direct.Config.Service
@@ -28,17 +29,17 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void AddDnsRecord(DnsRecord record);
+        DnsRecord AddDnsRecord(DnsRecord record);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        int Count(Health.Direct.Common.DnsResolver.DnsStandard.RecordType? recordType);
+        int Count(DnsStandard.RecordType? recordType);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
         DnsRecord[] GetLastDnsRecords(long lastRecordID
             , int maxResults
-            , Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID);
+            , DnsStandard.RecordType typeID);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
@@ -56,7 +57,7 @@ namespace Health.Direct.Config.Service
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
         DnsRecord[] GetMatchingDnsRecordsByType(string domainName
-            , Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID);
+            , DnsStandard.RecordType typeID);
 
 
         [OperationContract]
@@ -74,5 +75,9 @@ namespace Health.Direct.Config.Service
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
         void UpdateDnsRecords(System.Collections.Generic.IEnumerable<DnsRecord> dnsRecords);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults, DnsStandard.RecordType type);
     }
 }

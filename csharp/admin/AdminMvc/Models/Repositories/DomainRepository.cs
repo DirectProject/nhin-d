@@ -22,14 +22,14 @@ namespace Health.Direct.Admin.Console.Models.Repositories
 {
     public class DomainRepository : IDomainRepository
     {
-        private readonly DomainManagerClient m_client;
+        private readonly IDomainManager m_client;
 
-        public DomainRepository()
+        public DomainRepository(IDomainManager client)
         {
-            m_client = new DomainManagerClient();
+            m_client = client;
         }
 
-        protected DomainManagerClient Client { get { return m_client; } }
+        protected IDomainManager Client { get { return m_client; } }
         
         public IQueryable<Domain> FindAll()
         {

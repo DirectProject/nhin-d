@@ -61,5 +61,4 @@ goto :EOF
 :Done
 endlocal
 popd
-if "%DEBUGINSTALLER%" == "1" pause
 exit /b %ERRORLEVEL%

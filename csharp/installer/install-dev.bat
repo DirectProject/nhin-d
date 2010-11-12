@@ -1,11 +1,11 @@
 @echo Installing the windows service
-sc create DirectDnsResponderSvc binPath= "%~dp0\DirectDnsResponderSvc.exe" obj= "NT AUTHORITY\NetworkService" start= auto DisplayName= "Direct DNS Responder Service"
+sc create DirectDnsResponderSvc binPath= "%~1\DirectDnsResponderSvc.exe" obj= "NT AUTHORITY\NetworkService" start= auto DisplayName= "Direct DNS Responder Service"
 sc description DirectDnsResponderSvc "The Direct DNS Responder Service"
 
 @echo Setting up virtual directories
-%windir%\system32\inetsrv\appcmd add app /site.name:"Default Web Site" /path:/ConfigService /physicalPath:"{app}\ConfigService"
+%windir%\system32\inetsrv\appcmd add app /site.name:"Default Web Site" /path:/ConfigService /physicalPath:"%~1\ConfigService"
 
-install.bat DevAgentWithServiceConfig.xml nocopy
+call install.bat DevAgentWithServiceConfig.xml nocopy
 
 @rem todo: look for a better way to handle this
 eventcreate /ID 1 /L APPLICATION /T INFORMATION /SO Health.Direct.MessageSink /D "Direct Project - MessageSink Source"

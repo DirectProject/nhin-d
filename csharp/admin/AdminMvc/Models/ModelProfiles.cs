@@ -36,6 +36,7 @@ namespace Health.Direct.Admin.Console.Models
             CreateBidirectionalMap<Address, AddressModel>();
             CreateBidirectionalMap<Anchor, AnchorModel>();
             CreateBidirectionalMap<Certificate, CertificateModel>();
+            CreateBidirectionalMap<DnsRecord, DnsRecordModel>();
             CreateBidirectionalMap<Domain, DomainModel>();
             Mapper.CreateMap<string, EntityStatus>().ConvertUsing(new EntityStatusTypeConverter());
         }

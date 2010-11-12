@@ -279,6 +279,15 @@
   <wsdl:message name="IDnsRecordManager_UpdateDnsRecords_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_EnumerateDnsRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateDnsRecords" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_EnumerateDnsRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateDnsRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_EnumerateDnsRecords_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:portType name="IAddressManager">
     <wsdl:operation name="AddAddress">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/AddAddress" message="tns:IAddressManager_AddAddress_InputMessage" />
@@ -433,6 +442,11 @@
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecords" message="tns:IDnsRecordManager_UpdateDnsRecords_InputMessage" />
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecordsResponse" message="tns:IDnsRecordManager_UpdateDnsRecords_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_UpdateDnsRecords_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateDnsRecords">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecords" message="tns:IDnsRecordManager_EnumerateDnsRecords_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsResponse" message="tns:IDnsRecordManager_EnumerateDnsRecords_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_EnumerateDnsRecords_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
   </wsdl:portType>
 </wsdl:definitions>

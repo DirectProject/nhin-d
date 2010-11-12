@@ -329,7 +329,9 @@
   </xs:element>
   <xs:element name="AddDnsRecordResponse">
     <xs:complexType>
-      <xs:sequence />
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddDnsRecordResult" nillable="true" type="tns:DnsRecord" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="Count">
@@ -465,6 +467,22 @@
   <xs:element name="UpdateDnsRecordsResponse">
     <xs:complexType>
       <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateDnsRecords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastID" type="xs:long" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+        <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="type" type="q16:DnsStandard.RecordType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateDnsRecordsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateDnsRecordsResult" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
 </xs:schema>
