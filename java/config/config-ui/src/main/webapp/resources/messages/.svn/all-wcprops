@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/spring-samples/!svn/ver/578/mvc-showcase/src/main/webapp/resources/messages
+END
+warning.png
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/spring-samples/!svn/ver/578/mvc-showcase/src/main/webapp/resources/messages/warning.png
+END
+success.png
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/spring-samples/!svn/ver/578/mvc-showcase/src/main/webapp/resources/messages/success.png
+END
+error.png
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/spring-samples/!svn/ver/578/mvc-showcase/src/main/webapp/resources/messages/error.png
+END
+info.png
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/spring-samples/!svn/ver/578/mvc-showcase/src/main/webapp/resources/messages/info.png
+END
+messages.css
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/spring-samples/!svn/ver/578/mvc-showcase/src/main/webapp/resources/messages/messages.css
+END
