@@ -136,6 +136,7 @@
 			<arg line="tar"></arg>
 		</exec>
 		<property name="tar.command.options" value="xvzf" />
+		<property name="tomcat.binary.pkg" value="${tomcat.binary.compressed.pkg}" />
 	</target>
 	
 	<target name="mac-specific" if="is.mac">
