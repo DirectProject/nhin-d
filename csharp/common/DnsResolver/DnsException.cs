@@ -76,7 +76,7 @@ namespace Health.Direct.Common.DnsResolver
         /// </summary>
         public override string ToString()
         {
-            return string.Format("ERROR={0}\r\n{1}", m_responseCode, base.ToString());
+            return string.Format("ERROR={0}{1}{2}", m_responseCode, Environment.NewLine, base.ToString());
         }
     }
 }

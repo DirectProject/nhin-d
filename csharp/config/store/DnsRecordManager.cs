@@ -17,15 +17,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
-using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.Config.Store
 {
     public class DnsRecordManager 
     {
-        ConfigStore m_store;
+        readonly ConfigStore m_store;
 
         internal DnsRecordManager(ConfigStore store)
         {
@@ -88,7 +86,6 @@ namespace Health.Direct.Config.Store
             {
                 db.DnsRecords.InsertOnSubmit(dnsRecord);
             }
-            
         }
 
         public DnsRecord Get(long recordID)
@@ -126,7 +123,7 @@ namespace Health.Direct.Config.Store
 
         public DnsRecord[] Get(string domainName)
         {
-            if (domainName==null || domainName == string.Empty)
+            if (string.IsNullOrEmpty(domainName))
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
             }
@@ -148,9 +145,9 @@ namespace Health.Direct.Config.Store
         }
 
         public DnsRecord[] Get(string domainName
-            , Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
+            , Common.DnsResolver.DnsStandard.RecordType typeID)
         {
-            if (domainName == null || domainName == string.Empty)
+            if (string.IsNullOrEmpty(domainName))
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
             }
@@ -166,7 +163,7 @@ namespace Health.Direct.Config.Store
 
         public DnsRecord[] Get(ConfigDatabase db
             , string domainName
-            , Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
+            , Common.DnsResolver.DnsStandard.RecordType typeID)
         {
             return db.DnsRecords.Get(domainName
                 , (int)typeID).ToArray();
@@ -174,7 +171,7 @@ namespace Health.Direct.Config.Store
 
         public DnsRecord[] Get(long lastRecordID
             , int maxResults
-            , Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
+            , Common.DnsResolver.DnsStandard.RecordType typeID)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
@@ -188,7 +185,7 @@ namespace Health.Direct.Config.Store
         public IEnumerable<DnsRecord> Get(ConfigDatabase db
             , long lastRecordID
             , int maxResults
-            , Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
+            , Common.DnsResolver.DnsStandard.RecordType typeID)
         {
             return db.DnsRecords.Get(lastRecordID
                 , maxResults
@@ -198,7 +195,7 @@ namespace Health.Direct.Config.Store
         /// <summary>
         /// simple method to remove an dns record by ID 
         /// </summary>
-        /// <param name="DnsRecord">DnsRecord instance to be removed</param>
+        /// <param name="dnsRecord">DnsRecord instance to be removed</param>
         public void Remove(DnsRecord dnsRecord)
         {
             using (ConfigDatabase db = Store.CreateContext())
@@ -212,7 +209,7 @@ namespace Health.Direct.Config.Store
         /// simple method to remove an dns record by ID 
         /// </summary>
         /// <param name="db">database context to use</param>
-        /// <param name="DnsRecord">DnsRecord instance to be removed</param>
+        /// <param name="dnsRecord">DnsRecord instance to be removed</param>
         public void Remove(ConfigDatabase db
             , DnsRecord dnsRecord)
         {
@@ -222,7 +219,7 @@ namespace Health.Direct.Config.Store
         /// <summary>
         /// simple method to remove an dns record by ID 
         /// </summary>
-        /// <param name="domainId">long holding the id of the record to be deleted</param>
+        /// <param name="recordID">long holding the id of the record to be deleted</param>
         public void Remove(long recordID)
         {
             using (ConfigDatabase db = Store.CreateContext())
@@ -236,7 +233,7 @@ namespace Health.Direct.Config.Store
         /// simple method to remove an dns record by ID 
         /// </summary>
         /// <param name="db">database context to use</param>
-        /// <param name="domainId">long holding the id of the record to be deleted</param>
+        /// <param name="recordID">long holding the id of the record to be deleted</param>
         public void Remove(ConfigDatabase db
             , long recordID)
         {
@@ -308,14 +305,12 @@ namespace Health.Direct.Config.Store
             update.ApplyChanges(dnsRecord);
         }
 
-        public int Count(Health.Direct.Common.DnsResolver.DnsStandard.RecordType? recordType)
+        public int Count(Common.DnsResolver.DnsStandard.RecordType? recordType)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
                 return db.DnsRecords.GetCount((int?)recordType.Value);
-
             }
         }
-
     }
 }

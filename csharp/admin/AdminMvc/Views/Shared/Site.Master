@@ -38,6 +38,7 @@
                 <li id="tab-addresses" class="ui-state-default"><%= Html.ActionLink("Addresses", "Index", "Addresses")%></li>
                 <li id="tab-anchors" class="ui-state-default"><%= Html.ActionLink("Anchors", "Index", "Anchors")%></li>
                 <li id="tab-certificates" class="ui-state-default"><%= Html.ActionLink("Certificates", "Index", "Certificates")%></li>
+                <li id="tab-dnsrecords" class="ui-state-default"><%= Html.ActionLink("DNS Records", "Index", "DnsRecords")%></li>
                 <!-- <li id="tab-users" class="ui-state-default"><%= Html.ActionLink("Users", "Index", "Users")%></li> -->
             </ul>
         </div>

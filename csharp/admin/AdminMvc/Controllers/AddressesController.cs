@@ -30,8 +30,11 @@ namespace Health.Direct.Admin.Console.Controllers
 {
     public class AddressesController : ControllerBase<Address, AddressModel, IAddressRepository>
     {
-        public AddressesController(IAddressRepository repository) : base(repository)
+        private readonly IDomainRepository m_domainRepository;
+
+        public AddressesController(IAddressRepository repository, IDomainRepository domainRepository) : base(repository)
         {
+            m_domainRepository = domainRepository;
         }
 
         protected override void SetStatus(Address item, EntityStatus status)
@@ -46,7 +49,7 @@ namespace Health.Direct.Admin.Console.Controllers
             Func<Address, bool> filter = address => true;
             if (domainID.HasValue)
             {
-                var domain = Mapper.Map<Domain, DomainModel>(new DomainRepository().Get(domainID.Value));
+                var domain = Mapper.Map<Domain, DomainModel>(m_domainRepository.Get(domainID.Value));
                 ViewData["Domain"] = domain;
                 filter = address => address.DomainID == domain.ID;
             }
@@ -82,6 +85,35 @@ namespace Health.Direct.Admin.Console.Controllers
             if (address == null) return View("NotFound");
 
             return Json(Mapper.Map<Address, AddressModel>(address), "text/json", JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult Edit(long id)
+        {
+            var address = Repository.Get(id);
+            if (address == null) return View("NotFound");
+
+            return View(Mapper.Map<Address,AddressModel>(address));
+        }
+
+        [HttpPost]
+        public ActionResult Edit(FormCollection formValues)
+        {
+            long id;
+            long.TryParse(formValues["id"], out id);
+
+            var address = Repository.Get(id);
+            if (address == null) return View("NotFound");
+
+            var model = Mapper.Map<Address, AddressModel>(address);
+
+            if (TryUpdateModel(model))
+            {
+                address.DisplayName = model.DisplayName;
+                Repository.Update(address);
+                return RedirectToAction("Index", new { domainID = address.DomainID });
+            }
+
+            return View(model);
         }
     }
 }

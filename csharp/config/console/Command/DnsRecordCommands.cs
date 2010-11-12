@@ -16,8 +16,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.IO;
 
+using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
 using Health.Direct.Common.DnsResolver;
 
@@ -352,7 +354,7 @@ namespace Health.Direct.Config.Console.Command
                 return;
             }
 
-            if (dr.RecordData == null || dr.RecordData.Length.Equals(0))
+            if (dr.RecordData.IsNullOrEmpty())
             {
                 CommandUI.Print(new Exception("empty record data found for matchng record, please update or delete data"));
                 return;
@@ -394,7 +396,7 @@ namespace Health.Direct.Config.Console.Command
                 return;
             }
 
-            if (dr.RecordData == null || dr.RecordData.Length.Equals(0))
+            if (dr.RecordData.IsNullOrEmpty())
             {
                 CommandUI.Print(new Exception("empty record data found for matchng record, please update or delete data"));
                 return;
@@ -437,7 +439,7 @@ namespace Health.Direct.Config.Console.Command
                 return;
             }
 
-            if(dr.RecordData == null || dr.RecordData.Length.Equals(0)){
+            if(dr.RecordData.IsNullOrEmpty()){
                 CommandUI.Print(new Exception("empty record data found for matchng record, please update or delete data"));
                 return;
             }

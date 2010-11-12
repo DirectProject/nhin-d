@@ -25,48 +25,33 @@ namespace Health.Direct.Config.Store
     [DataContract(Namespace = ConfigStore.Namespace)]
     public class DnsRecord 
     {
-
         public const int MaxNotesLength = 255;
         public const int MaxDomainNameLength = 255;
 
-        int m_typeID = 0;
-         byte[] m_data;
-         long m_recordID = -1;
-         string m_domainName = String.Empty;
-         string m_notes = String.Empty;
+        string m_domainName = String.Empty;
+        string m_notes = String.Empty;
 
-         public DnsRecord()
-         {
-             this.CreateDate = DateTime.Now;
-             this.UpdateDate = this.CreateDate;
-         }
-
-         public DnsRecord(string domainName
-             , int typeID
-             , byte[] recordData
-             , string notes) 
-         {
-             this.DomainName = domainName;
-             this.TypeID = typeID;
-             this.RecordData = recordData;
-             this.CreateDate = DateTime.Now;
-             this.UpdateDate = this.CreateDate;
-             this.Notes = notes;
-         }
-
-        [Column(Name = "RecordID", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
-        [DataMember(IsRequired = true)]
-        public long RecordID
+        public DnsRecord()
         {
-            get
-            {
-                return m_recordID;
-            }
-            set
-            {
-                m_recordID = value;
-            }
+            RecordID = -1;
+            this.CreateDate = DateTime.Now;
+            this.UpdateDate = this.CreateDate;
         }
+
+        public DnsRecord(string domainName
+            , int typeID
+            , byte[] recordData
+            , string notes)
+            : this()
+        {
+            this.DomainName = domainName;
+            this.TypeID = typeID;
+            this.RecordData = recordData;
+            this.Notes = notes;
+        }
+
+        [Column(Name = "RecordID", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never), DataMember(IsRequired = true)]
+        public long RecordID { get; set; }
 
         [Column(Name = "DomainName", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
@@ -113,52 +98,22 @@ namespace Health.Direct.Config.Store
 
         [Column(Name = "TypeID", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
-        public int TypeID
-        {
-            get
-            {
-                return m_typeID;
-            }
-            set
-            {
-                m_typeID = value;
-            }
-        }
+        public int TypeID { get; set; }
 
-        [Column(Name = "RecordData", DbType = "varbinary(MAX)", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
-        [DataMember(IsRequired = true)]
-        public byte[] RecordData
-        {
-            get
-            {
-                return m_data;
-            }
-            set
-            {
-                m_data = value;
-            }
-        }
+        [Column(Name = "RecordData", DbType = "varbinary(MAX)", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged), DataMember(IsRequired = true)]
+        public byte[] RecordData { get; set; }
 
         [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
-        public DateTime CreateDate
-        {
-            get;
-            set;
-        }
+        public DateTime CreateDate { get; set; }
 
         [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         [DataMember(IsRequired = true)]
-        public DateTime UpdateDate
-        {
-            get;
-            set;
-        }
-
+        public DateTime UpdateDate { get; set; }
 
         public void ValidateHasData()
         {
-            if (m_data.IsNullOrEmpty())
+            if (RecordData.IsNullOrEmpty())
             {
                 throw new ConfigStoreException(ConfigStoreError.MissingCertificateData);
             }
@@ -171,6 +126,7 @@ namespace Health.Direct.Config.Store
             this.CreateDate = source.CreateDate;
             this.TypeID = source.TypeID;
         }
+
         /// <summary>
         /// Only copy those fields that are allowed to change in updates
         /// </summary>

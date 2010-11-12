@@ -254,7 +254,7 @@ namespace Health.Direct.Config.Client.DomainManager {
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecord", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecordResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecordConfigStoreFa" +
             "ultFault", Name="ConfigStoreFault")]
-        void AddDnsRecord(Health.Direct.Config.Store.DnsRecord record);
+        Health.Direct.Config.Store.DnsRecord AddDnsRecord(Health.Direct.Config.Store.DnsRecord record);
         
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/Count", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/CountResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/CountConfigStoreFaultFaul" +
@@ -310,6 +310,12 @@ namespace Health.Direct.Config.Client.DomainManager {
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecordsConfigSto" +
             "reFaultFault", Name="ConfigStoreFault")]
         void UpdateDnsRecords(Health.Direct.Config.Store.DnsRecord[] dnsRecords);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecords", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsRespon" +
+            "se")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsConfig" +
+            "StoreFaultFault", Name="ConfigStoreFault")]
+        Health.Direct.Config.Store.DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults, Health.Direct.Common.DnsResolver.DnsStandard.RecordType type);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
@@ -343,8 +349,8 @@ namespace Health.Direct.Config.Client.DomainManager {
             base.Channel.AddDnsRecords(dnsRecords);
         }
         
-        public void AddDnsRecord(Health.Direct.Config.Store.DnsRecord record) {
-            base.Channel.AddDnsRecord(record);
+        public Health.Direct.Config.Store.DnsRecord AddDnsRecord(Health.Direct.Config.Store.DnsRecord record) {
+            return base.Channel.AddDnsRecord(record);
         }
         
         public int Count(System.Nullable<Health.Direct.Common.DnsResolver.DnsStandard.RecordType> recordType) {
@@ -385,6 +391,10 @@ namespace Health.Direct.Config.Client.DomainManager {
         
         public void UpdateDnsRecords(Health.Direct.Config.Store.DnsRecord[] dnsRecords) {
             base.Channel.UpdateDnsRecords(dnsRecords);
+        }
+        
+        public Health.Direct.Config.Store.DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults, Health.Direct.Common.DnsResolver.DnsStandard.RecordType type) {
+            return base.Channel.EnumerateDnsRecords(lastID, maxResults, type);
         }
     }
 }

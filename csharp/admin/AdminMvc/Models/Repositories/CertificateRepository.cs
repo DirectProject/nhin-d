@@ -23,14 +23,14 @@ namespace Health.Direct.Admin.Console.Models.Repositories
 {
     public class CertificateRepository : ICertificateRepository
     {
-        private readonly CertificateStoreClient m_client;
+        private readonly ICertificateStore m_client;
 
-        public CertificateRepository()
+        public CertificateRepository(ICertificateStore client)
         {
-            m_client = new CertificateStoreClient();
+            m_client = client;
         }
 
-        protected CertificateStoreClient Client { get { return m_client; } }
+        protected ICertificateStore Client { get { return m_client; } }
         
         public IQueryable<Certificate> FindAll()
         {

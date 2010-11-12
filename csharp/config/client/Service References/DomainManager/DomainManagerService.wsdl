@@ -370,6 +370,18 @@
         <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="EnumerateDnsRecords">
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecords" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="DomainManagerService">
     <wsdl:port name="BasicHttpBinding_IAddressManager" binding="tns:BasicHttpBinding_IAddressManager">

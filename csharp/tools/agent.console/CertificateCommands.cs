@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Agent;
 using Health.Direct.Common.Certificates;
+using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
 using Health.Direct.Common.DnsResolver;
 
@@ -24,7 +23,7 @@ namespace Health.Direct.Tools.Agent
             validator.IsTrustedCertificate(cert, anchors);
         }
 
-        [Command(Name = "Cert_ExportDns")]
+        [Command(Name = "Cert_ExportDns", Usage = ExportDnsUsage)]
         public void Export(string[] args)
         {
             IOFiles ioFiles = new IOFiles(args);
@@ -35,11 +34,11 @@ namespace Health.Direct.Tools.Agent
             X509Certificate2 cert = new X509Certificate2(ioFiles.InputFile);
             this.ExportCert(cert, ioFiles.OutputFile);
         }
-        const string ExportDnsUsage =
-            "Export the given certificate file to Zone file format\r\n"
-         + "    inputFile"
-         + "    outputFile";
-        
+
+        private const string ExportDnsUsage =
+            "Export the given certificate file to Zone file format"
+            + Constants.CRLF + "    inputFile"
+            + Constants.CRLF + "    outputFile";
         
         //---------------------------------------
         //
@@ -56,7 +55,7 @@ namespace Health.Direct.Tools.Agent
         {
             if (string.IsNullOrEmpty(filePath))
             {
-                ExportCerts(certs, System.Console.Out, false);
+                ExportCerts(certs, Console.Out, false);
                 return;
             }
 

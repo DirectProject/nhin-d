@@ -30,8 +30,11 @@ namespace Health.Direct.Admin.Console.Controllers
 {
     public class AnchorsController : ControllerBase<Anchor, AnchorModel, IAnchorRepository>
     {
-        public AnchorsController(IAnchorRepository repository) : base(repository)
+        private readonly IDomainRepository m_domainRepository;
+
+        public AnchorsController(IAnchorRepository repository, IDomainRepository domainRepository) : base(repository)
         {
+            m_domainRepository = domainRepository;
         }
 
         protected override void SetStatus(Anchor item, EntityStatus status)
@@ -46,7 +49,7 @@ namespace Health.Direct.Admin.Console.Controllers
             Func<Anchor, bool> filter = anchor => true;
             if (domainID.HasValue)
             {
-                var domain = Mapper.Map<Domain, DomainModel>(new DomainRepository().Get(domainID.Value));
+                var domain = Mapper.Map<Domain, DomainModel>(m_domainRepository.Get(domainID.Value));
                 ViewData["Domain"] = domain;
                 filter = anchor => anchor.Owner.Equals(domain.Name, StringComparison.OrdinalIgnoreCase);
             }
@@ -85,7 +88,7 @@ namespace Health.Direct.Admin.Console.Controllers
                                  };
                 Repository.Add(anchor);
 
-                var domain = new DomainRepository().GetByDomainName(model.Owner);
+                var domain = m_domainRepository.GetByDomainName(model.Owner);
                 if (domain == null) return View("NotFound");
 
                 return RedirectToAction("Index", new { domainID = domain.ID });

@@ -30,7 +30,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 ;Name: development; Description: "Development Install";
 
 [Files]
-Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Excludes: "*tests.dll*"; Flags: ignoreversion;
+Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Excludes: "security*.dll xunit*.dll *tests.dll*"; Flags: ignoreversion;
 Source: "..\bin\debug\Win32\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX86;
 Source: "..\bin\debug\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64;
 Source: "..\bin\debug\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion;
@@ -68,7 +68,7 @@ Name: "{group}\{cm:UninstallProgram,Direct Gateway}"; Filename: "{uninstallexe}"
 [Run]
 Filename: "{app}\Libraries\vcredist.exe"; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked;
 Filename: "{app}\SQL\createdatabase.bat"; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: postinstall runascurrentuser unchecked;
-Filename: "{app}\install-dev.bat"; Description: "Install Gateway (DEVELOPMENT VERSION)"; Flags: postinstall runascurrentuser unchecked;
+Filename: "{app}\install-dev.bat"; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; Flags: postinstall runascurrentuser unchecked;
 
 [UninstallRun]
 Filename: "{app}\unregisterGateway.bat"; Flags: shellexec runascurrentuser;

@@ -81,6 +81,11 @@ table th
   text-align: left;
 }
 
+tr.ui-state-highlight
+{
+    border-style: none !important;
+}
+
 /* MISC  
 ----------------------------------------------------------*/
 .clear

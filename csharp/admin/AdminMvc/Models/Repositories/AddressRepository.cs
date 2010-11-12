@@ -22,14 +22,14 @@ namespace Health.Direct.Admin.Console.Models.Repositories
 {
     public class AddressRepository : IAddressRepository
     {
-        private readonly AddressManagerClient m_client;
+        private readonly IAddressManager m_client;
 
-        public AddressRepository()
+        public AddressRepository(IAddressManager client)
         {
-            m_client = new AddressManagerClient();
+            m_client = client;
         }
 
-        protected AddressManagerClient Client { get { return m_client; } }
+        protected IAddressManager Client { get { return m_client; } }
         
         public IQueryable<Address> FindAll()
         {
