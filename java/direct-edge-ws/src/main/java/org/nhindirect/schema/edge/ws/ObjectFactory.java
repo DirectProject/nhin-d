@@ -37,19 +37,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AddressType }
+     * Create an instance of {@link ServiceInvocationFault }
      * 
      */
-    public AddressType createAddressType() {
-        return new AddressType();
-    }
-
-    /**
-     * Create an instance of {@link SendResponseType }
-     * 
-     */
-    public SendResponseType createSendResponseType() {
-        return new SendResponseType();
+    public ServiceInvocationFault createServiceInvocationFault() {
+        return new ServiceInvocationFault();
     }
 
     /**
@@ -61,43 +53,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link HeadType }
-     * 
-     */
-    public HeadType createHeadType() {
-        return new HeadType();
-    }
-
-    /**
-     * Create an instance of {@link AttachmentType }
-     * 
-     */
-    public AttachmentType createAttachmentType() {
-        return new AttachmentType();
-    }
-
-    /**
-     * Create an instance of {@link ServiceInvocationFault }
-     * 
-     */
-    public ServiceInvocationFault createServiceInvocationFault() {
-        return new ServiceInvocationFault();
-    }
-
-    /**
      * Create an instance of {@link EmailType }
      * 
      */
     public EmailType createEmailType() {
         return new EmailType();
-    }
-
-    /**
-     * Create an instance of {@link BodyType }
-     * 
-     */
-    public BodyType createBodyType() {
-        return new BodyType();
     }
 
     /**
@@ -114,6 +74,46 @@ public class ObjectFactory {
      */
     public StatusRefType createStatusRefType() {
         return new StatusRefType();
+    }
+
+    /**
+     * Create an instance of {@link SendResponseType }
+     * 
+     */
+    public SendResponseType createSendResponseType() {
+        return new SendResponseType();
+    }
+
+    /**
+     * Create an instance of {@link AttachmentType }
+     * 
+     */
+    public AttachmentType createAttachmentType() {
+        return new AttachmentType();
+    }
+
+    /**
+     * Create an instance of {@link HeadType }
+     * 
+     */
+    public HeadType createHeadType() {
+        return new HeadType();
+    }
+
+    /**
+     * Create an instance of {@link BodyType }
+     * 
+     */
+    public BodyType createBodyType() {
+        return new BodyType();
+    }
+
+    /**
+     * Create an instance of {@link AddressType }
+     * 
+     */
+    public AddressType createAddressType() {
+        return new AddressType();
     }
 
     /**

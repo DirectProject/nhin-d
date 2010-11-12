@@ -31,7 +31,6 @@ namespace Health.Direct.DnsResponder
         protected ClientSettings m_dnsRecordManagerServiceSettings = null;
         protected ClientSettings m_certificateManagerServiceSettings = null;
 
-
         /// <summary>
         /// If this gateway is configured to interact with a DomainManager web Service. 
         /// </summary>
@@ -83,12 +82,13 @@ namespace Health.Direct.DnsResponder
                     ProcessSOAQuestion(response);
                     break;
                 case DnsStandard.RecordType.CERT:
-                    throw new NotImplementedException();
+                    ProcessCERTQuestion(response);
+                    break;
                 default:
                     return response;
             }
             return response;
-                                    
+
         }
 
         #endregion
@@ -117,24 +117,9 @@ namespace Health.Direct.DnsResponder
         /// have any corresponding answer records populated upon return</param>
         protected void ProcessANAMEQuestion(DnsResponse response)
         {
-            using (DomainManagerService.DnsRecordManagerClient dnsClient = new Health.Direct.DnsResponder.DomainManagerService.DnsRecordManagerClient(
-                this.DomainManagerServiceSettings.Binding
-                , this.DomainManagerServiceSettings.Endpoint))
+            using (Direct.Config.Client.DomainManager.DnsRecordManagerClient client = m_dnsRecordManagerServiceSettings.CreateDnsRecordManagerClient())
             {
-
-                DomainManagerService.DnsRecord[] records = dnsClient.GetMatchingDnsRecordsByType(response.Question.Domain
-                    , DnsStandard.RecordType.ANAME);
-                foreach (DomainManagerService.DnsRecord record in records)
-                {
-                    DnsBufferReader rdr = new DnsBufferReader(record.RecordData
-                        , 0
-                        , record.RecordData.Length);
-                    AddressRecord addressrec = AddressRecord.Deserialize(ref rdr) as AddressRecord;
-                    if (addressrec != null)
-                    {
-                        response.AnswerRecords.Add(addressrec);
-                    }
-                }
+                client.GetANAMEDnsRecords(response);
             }
         }
 
@@ -145,24 +130,9 @@ namespace Health.Direct.DnsResponder
         /// have any corresponding answer records populated upon return</param>
         protected void ProcessSOAQuestion(DnsResponse response)
         {
-            using (DomainManagerService.DnsRecordManagerClient dnsClient = new Health.Direct.DnsResponder.DomainManagerService.DnsRecordManagerClient(
-                this.DomainManagerServiceSettings.Binding
-                , this.DomainManagerServiceSettings.Endpoint))
+            using (Direct.Config.Client.DomainManager.DnsRecordManagerClient client = m_dnsRecordManagerServiceSettings.CreateDnsRecordManagerClient())
             {
-
-                DomainManagerService.DnsRecord[] records = dnsClient.GetMatchingDnsRecordsByType(response.Question.Domain
-                    , DnsStandard.RecordType.SOA);
-                foreach (DomainManagerService.DnsRecord record in records)
-                {
-                    DnsBufferReader rdr = new DnsBufferReader(record.RecordData
-                        , 0
-                        , record.RecordData.Length);
-                    SOARecord soarec = SOARecord.Deserialize(ref rdr) as SOARecord;
-                    if (soarec != null)
-                    {
-                        response.AnswerRecords.Add(soarec);
-                    }
-                }
+                client.GetSOADnsRecords(response);
             }
         }
 
@@ -173,27 +143,12 @@ namespace Health.Direct.DnsResponder
         /// have any corresponding answer records populated upon return</param>
         protected void ProcessMXQuestion(DnsResponse response)
         {
-            using (DomainManagerService.DnsRecordManagerClient dnsClient = new Health.Direct.DnsResponder.DomainManagerService.DnsRecordManagerClient(
-                this.DomainManagerServiceSettings.Binding
-                , this.DomainManagerServiceSettings.Endpoint))
+            using (Direct.Config.Client.DomainManager.DnsRecordManagerClient client = m_dnsRecordManagerServiceSettings.CreateDnsRecordManagerClient())
             {
-
-                DomainManagerService.DnsRecord[] records = dnsClient.GetMatchingDnsRecordsByType(response.Question.Domain
-                    , DnsStandard.RecordType.MX);
-                foreach (DomainManagerService.DnsRecord record in records)
-                {
-                    DnsBufferReader rdr = new DnsBufferReader(record.RecordData
-                        , 0
-                        , record.RecordData.Length);
-                    MXRecord mxrec = MXRecord.Deserialize(ref rdr) as MXRecord;
-                    if (mxrec != null)
-                    {
-                        response.AnswerRecords.Add(mxrec);
-                    }
-                }
+                client.GetMXDnsRecords(response);
             }
         }
-        
+
         /// <summary>
         /// processes a CERT Question, populated the response with any matching results pulled from the database store
         /// </summary>
@@ -201,21 +156,18 @@ namespace Health.Direct.DnsResponder
         /// have any corresponding answer records populated upon return</param>
         protected void ProcessCERTQuestion(DnsResponse response)
         {
-            using (CertificateService.CertificateStoreClient certClient= new Health.Direct.DnsResponder.CertificateService.CertificateStoreClient(
-                this.CertificateManagerServiceSettings.Binding
-                , this.CertificateManagerServiceSettings.Endpoint))
+
+            using (Direct.Config.Client.CertificateService.CertificateStoreClient client = m_certificateManagerServiceSettings.CreateCertificateStoreClient())
             {
                 Health.Direct.Config.Client.CertificateService.CertificateGetOptions options = new Health.Direct.Config.Client.CertificateService.CertificateGetOptions();
                 options.IncludeData = true;
-                options.IncludePrivateKey = false;
-
-                CertificateService.Certificate[]  certs = certClient.GetCertificatesForOwner(response.Question.Domain
-                    , options);
-                foreach (CertificateService.Certificate cert in certs)
+                Health.Direct.Config.Store.Certificate[] certs = client.GetCertificatesForOwner(response.Question.Domain);
+                foreach (Health.Direct.Config.Store.Certificate cert in certs)
                 {
                     response.AnswerRecords.Add(new CertRecord(new DnsX509Cert(cert.Data)));
                 }
             }
+
         }
     }
 

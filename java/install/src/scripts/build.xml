@@ -57,10 +57,10 @@
 	<!-- Config server files -->
 	<property name="config.root" value="${install.root.dir}/../config"></property>
 	<property name="config.service.dir" value="${config.root}/config-service/target"></property>
-	<property name="config.service.orig.war" value="config-service-1.0-SNAPSHOT.war"></property>
+	<property name="config.service.orig.war" value="config-service-1.1-SNAPSHOT.war"></property>
 	<property name="config.service.dest.war" value="config-service.war"></property>
 	<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
-	<property name="config.ui.orig.war" value="config-ui-1.0-SNAPSHOT.war"></property>
+	<property name="config.ui.orig.war" value="config-ui-1.1-SNAPSHOT.war"></property>
 	<property name="config.ui.dest.war" value="config-ui.war"></property>
 
 	<!-- Support libraries -->
@@ -87,14 +87,14 @@
 	<property name="lib.jaxrpc-api" value="${maven.repo}/javax/xml/jaxrpc-api/1.1/jaxrpc-api-1.1.jar"></property>
 	<property name="lib.commons-discovery" value="${maven.repo}/commons-discovery/commons-discovery/0.4/commons-discovery-0.4.jar"></property>
 	<property name="lib.axis" value="${maven.repo}/org/apache/axis/axis/1.4/axis-1.4.jar"></property>
-    <property name="lib.config.proxy" value="${config.root}/config-service-client/target/config-service-client-1.0-SNAPSHOT.jar"></property>
+    <property name="lib.config.proxy" value="${config.root}/config-service-client/target/config-service-client-1.1-SNAPSHOT.jar"></property>
 
 	<!-- Package libraries -->
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
-	<property name="lib.agent" value="${agent.dir}/target/agent-1.0-SNAPSHOT.jar"></property>
-	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.0-SNAPSHOT.jar"></property>
+	<property name="lib.agent" value="${agent.dir}/target/agent-1.1-SNAPSHOT.jar"></property>
+	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.1-SNAPSHOT.jar"></property>
 	<property name="lib.xdmail" value="${xdmail.dir}/target/xdmail-1.0-SNAPSHOT.jar"></property>
 	
 	<!-- Stylesheet to edit the config file -->
@@ -150,6 +150,14 @@
 			<arg line="curl"></arg>
 		</exec>
 		
+		<exec executable="which" outputproperty="tar.command.path" resultproperty="tar.command.result" failonerror="true">
+			<arg line="tar"></arg>
+		</exec>
+		<property name="tar.command.options" value="xvzf" />
+
+		<property name="tomcat.tar.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar"></property>
+		<property name="tomcat.binary.pkg" value="${tomcat.tar.pkg}" />
+
 		<!-- do we have a downloader? -->
 		<condition property="no.downloader">
 			<and>
