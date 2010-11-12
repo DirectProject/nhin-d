@@ -256,6 +256,17 @@ public class DirectDocuments
         
         return null;
     }
+    
+    public DirectDocument2 getDocumentByHash(String hash)
+    {
+        for (DirectDocument2 document : documents)
+        {
+            if (document.getMetadata().getHash().equals(hash))
+                return document;
+        }
+        
+        return null;        
+    }
 
     public String getSubmitObjectsRequestAsString()
     {
