@@ -70,6 +70,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.nhindirect.config.store.Certificate;
 
 @Controller
@@ -94,6 +96,7 @@ public class MainController {
 	/**
 	 * Execute the search and return the results
 	 */
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public ModelAndView search (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
@@ -106,7 +109,8 @@ public class MainController {
 		String message = "Search complete";
 		ModelAndView mav = new ModelAndView();
 		// check to see if new domain requested
-		if(isLoggedIn(session) && actionPath.equalsIgnoreCase("gotosettings")){
+		if (actionPath.equalsIgnoreCase("gotosettings"))
+		{
 			if (log.isDebugEnabled()) log.debug("trying to go to the settings page");
 			String action = "add";
 			model.addAttribute("action", action);
@@ -132,7 +136,9 @@ public class MainController {
 			// display settings.jsp
 			return mav;
 		}
-		if(isLoggedIn(session) && actionPath.equalsIgnoreCase("gotocertificates")){
+		
+		if (actionPath.equalsIgnoreCase("gotocertificates"))
+		{
 			if (log.isDebugEnabled()) log.debug("trying to go to the certificates page");
 			String action = "Update";
 			model.addAttribute("action", action);
@@ -159,7 +165,8 @@ public class MainController {
 			return mav;
 		}
 		
-		if(isLoggedIn(session) && actionPath.equalsIgnoreCase("newdomain")){
+		if (actionPath.equalsIgnoreCase("newdomain"))
+		{
 			if (log.isDebugEnabled()) log.debug("trying to go to the new domain page");
 			HashMap<String, String> msgs = new HashMap<String, String>();
 			mav.addObject("msgs", msgs);
@@ -191,37 +198,32 @@ public class MainController {
 			return mav;
 		}
 		
-		if (isLoggedIn(session)) {
-			SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
-			if (form == null) { 
-				form = new SearchDomainForm();
-			}
-			model.addAttribute(form);
-			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-			
-			String domain = form.getDomainName();
-			EntityStatus status = form.getStatus();
-			List<Domain> results = null;
-			if (dService != null) {
-				results = new ArrayList<Domain>(dService.searchDomain(domain, status));
-			}
-			if (AjaxUtils.isAjaxRequest(requestedWith)) {
-				// prepare model for rendering success message in this request
-				model.addAttribute("message", new Message(MessageType.success, message));
-				model.addAttribute("ajaxRequest", true);
-				model.addAttribute("searchResults", results);
-				return null;
-			}
-	
-			mav.setViewName("main");
-			mav.addObject("statusList", EntityStatus.getEntityStatusList());
-			mav.addObject("searchResults", results);
+
+		SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
+		if (form == null) { 
+			form = new SearchDomainForm();
 		}
-		else {
-			mav.setViewName("login");
-			mav.setView(new RedirectView("/config-ui/config/login", false));			
-		}
+		model.addAttribute(form);
+		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 		
+		String domain = form.getDomainName();
+		EntityStatus status = form.getStatus();
+		List<Domain> results = null;
+		if (dService != null) {
+			results = new ArrayList<Domain>(dService.searchDomain(domain, status));
+		}
+		if (AjaxUtils.isAjaxRequest(requestedWith)) {
+			// prepare model for rendering success message in this request
+			model.addAttribute("message", new Message(MessageType.success, message));
+			model.addAttribute("ajaxRequest", true);
+			model.addAttribute("searchResults", results);
+			return null;
+		}
+
+		mav.setViewName("main");
+		mav.addObject("statusList", EntityStatus.getEntityStatusList());
+		mav.addObject("searchResults", results);
+
 		if (log.isDebugEnabled()) log.debug("Exit");
 		return mav;
 	}
@@ -274,6 +276,7 @@ public class MainController {
 	 * Return the login page when requested
 	 * @return
 	 */
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView display(@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
                                 HttpSession session, 
@@ -281,18 +284,13 @@ public class MainController {
 		if (log.isDebugEnabled()) log.debug("Enter");
 		
 		ModelAndView mav = new ModelAndView(); 
-		if (isLoggedIn(session)) {
-			SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
-			model.addAttribute(form != null ? form : new SearchDomainForm());
-			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-	
-			mav.setViewName("main"); 
-			mav.addObject("statusList", EntityStatus.getEntityStatusList());
-		}
-		else {
-			mav.setViewName("login");
-			mav.setView(new RedirectView("/config-ui/config/login", false));
-		}
+		
+		SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
+		model.addAttribute(form != null ? form : new SearchDomainForm());
+		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+
+		mav.setViewName("main"); 
+		mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		
 		if (log.isDebugEnabled()) log.debug("Exit");
 		return mav;
@@ -306,36 +304,22 @@ public class MainController {
 	 * @param model
 	 * @return
 	 */
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/new", method=RequestMethod.GET)
 	public ModelAndView newDomain (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 							        HttpSession session, 
 							        Model model) {
 		if (log.isDebugEnabled()) log.debug("Enter");
 		ModelAndView mav = new ModelAndView(); 
-		if (isLoggedIn(session)) {
-			mav.setViewName("domain"); 
-			model.addAttribute(new DomainForm());
-			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-			mav.addObject("statusList", EntityStatus.getEntityStatusList());
-		}
-		else {
-			model.addAttribute(new LoginForm());
-			mav.setViewName("login");
-			mav.setView(new RedirectView("/config-ui/config/login", false));
-		}
+
+		mav.setViewName("domain"); 
+		model.addAttribute(new DomainForm());
+		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+		mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		
 		if (log.isDebugEnabled()) log.debug("Exit");
 		return mav;
 	}
-	
-	private boolean isLoggedIn(HttpSession session) {
-		Boolean result = (Boolean)session.getAttribute("authComplete");
-		if (result == null) {
-			result = new Boolean(false);
-		}
-		return result.booleanValue();
-	}
-		
 	
 	/**
 	 * Handle exceptions as gracefully as possible

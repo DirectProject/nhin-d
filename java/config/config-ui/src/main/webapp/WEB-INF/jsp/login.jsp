@@ -13,17 +13,33 @@
 	    <fieldset class="formInfo">
 	       <h2>NHIN Direct Java Reference Implememtation - Login</h2>
 	    </fieldset>
+	    <c:set var="isErr" value="${login_error}"/>
+	    <c:if test="${param.login_error == 1}">
+		    <div class="error">
+		       <p class="error">Invalid user name or password supplied</p>
+		    </div>
+	    </c:if>
+	    <c:if test="${((param.logout == y) && (param.login_error != 1))}">
+	        <div class="info">
+	           <p>Successfully logged out</p>
+	        </div>
+        </c:if>
 	    <fieldset>
-			<form:form id="loginForm" action="login" cssClass="cleanform" commandName="loginForm" method="PUT">
+			<form:form id="loginForm" action="j_spring_security_check" cssClass="cleanform" method="PUT">
 			   <p>Please enter your userid and password to continue.</p>  
-			   <form:label path="userid">Userid:</form:label> 
-			   <form:input path="userid" /> <form:errors path="userid" cssClass="error" />
-                           <br />
-			   <form:label path="password">Password:</form:label>
-			   <form:password path="password"/><form:errors path="password" cssClass="error" />
+			   <table border="0">
+			     <tr>
+			         <td align="right">Userid:</td>
+			         <td><input type="text" name="j_username"/></td>
+			     </tr>
+			     <tr>
+			         <td align="right">Password:</td>
+			         <td><input type="password" name="j_password"/></td>
+			     </tr>
+			   </table>
 			   <p>
 			       <button type="submit">Submit</button>
-			   </p>
+			   </p>	  
 			</form:form>
 		</fieldset>
 	</div>

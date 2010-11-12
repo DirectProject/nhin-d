@@ -37,8 +37,8 @@ import javax.xml.bind.annotation.XmlType;
 public class StatusResponseType {
 
     @XmlElements({
-        @XmlElement(name = "Status", type = StatusType.class),
-        @XmlElement(name = "Message-ID", type = String.class)
+        @XmlElement(name = "Message-ID", type = String.class),
+        @XmlElement(name = "Status", type = StatusType.class)
     })
     protected List<Object> messageIDAndStatus;
 
@@ -60,8 +60,8 @@ public class StatusResponseType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link StatusType }
      * {@link String }
+     * {@link StatusType }
      * 
      * 
      */

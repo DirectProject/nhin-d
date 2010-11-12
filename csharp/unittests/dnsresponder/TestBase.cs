@@ -15,8 +15,8 @@ namespace Health.Direct.DnsResponder.Tests
         protected const string ConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
         //protected const string ConnectionString = "Data Source=localhost;Initial Catalog=DirectConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
 
-        private readonly string DnsRecordsPath = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
-
+        private readonly static string DnsRecordsPath = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
+        private readonly static string CertRecordsPath = Environment.CurrentDirectory + "\\metadata\\certs";
 
         // if true dump will be sent to the delegate specified by DumpLine
         private readonly bool m_dumpEnabled;
@@ -144,6 +144,42 @@ namespace Health.Direct.DnsResponder.Tests
             }
         }
 
+        /// <summary>
+        /// Gets test cert file names that sync up with 
+        /// generated metadata cert binary files in the 
+        /// related cert folder        
+        /// </summary>
+        protected static IEnumerable<string> CertFiles
+        {
+            get
+            {
+                //----------------------------------------------------------------------------------------------------
+                //---get the file names in the certs folder path
+                foreach (string name in System.IO.Directory.GetFiles(CertRecordsPath))
+                {
+                    yield return name.ToLower();
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Gets test cert file names that sync up with 
+        /// generated metadata cert binary files in the 
+        /// related cert folder        
+        /// </summary>
+        protected static IEnumerable<string> CertOwners
+        {
+            get
+            {
+                //----------------------------------------------------------------------------------------------------
+                //---get the file names in the certs folder path
+                foreach (string name in System.IO.Directory.GetFiles(CertRecordsPath))
+                {
+                    yield return name.ToLower().Replace(CertRecordsPath.ToLower(),"").Replace(".pfx","").Replace(@"\","");
+                }
+            }
+        }
 
 
         /// <summary>
@@ -228,6 +264,45 @@ namespace Health.Direct.DnsResponder.Tests
 
             }
             return bytes;
+        }
+
+
+        /// <summary>
+        /// will populate database with cert records from metadata project; cleans db prior to ensure fresh results
+        /// </summary>
+        protected void InitCertRecords()
+        {
+            List<string> certs = CertFiles.ToList<string>();
+            CertificateManager mgr = new CertificateManager(new ConfigStore(ConnectionString));
+            mgr.RemoveAll();
+            foreach (string s in certs)
+            {
+                mgr.Add(LoadAndVerifyCertFromFile(s));
+            }
+        }
+
+        /// <summary>
+        /// loads and verifies the cert records from the files, ensuring that the types
+        /// match up
+        /// </summary>
+        /// <typeparam name="T">Type of record that is expected</typeparam>
+        /// <param name="path">path to the bin file to be loaded</param>
+        /// <returns>bytes from the bin file</returns>
+        protected Certificate LoadAndVerifyCertFromFile(string path)
+        {
+            byte[] bytes = null;
+
+            //----------------------------------------------------------------------------------------------------
+            //---read the stream from the bytes
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                //Console.WriteLine("checking [{0}]", path);
+                bytes = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
+                System.Security.Cryptography.X509Certificates.X509Certificate2 x509 = new System.Security.Cryptography.X509Certificates.X509Certificate2(bytes);
+                x509.PrivateKey = null;
+                return new Certificate(x509.FriendlyName
+                    , x509);
+            }
         }
     }
 }

@@ -53,6 +53,7 @@ import org.nhindirect.config.ui.form.SearchDomainForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
 import org.nhindirect.config.ui.flash.FlashMap.Message;
 import org.nhindirect.config.ui.flash.FlashMap.MessageType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
@@ -78,6 +79,7 @@ public class SettingsController {
 		if (log.isDebugEnabled()) log.debug("ConfigurationController initialized");
 	}
 	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/addsetting", method = RequestMethod.POST)
 	public ModelAndView addSetting (
 								@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
@@ -92,58 +94,55 @@ public class SettingsController {
 		String key = "";
 		String value = "";
 		if (log.isDebugEnabled()) log.debug("Enter domain/addsetting");
-		if (isLoggedIn(session)) {
-			if(actionPath.equalsIgnoreCase("cancel")){
-				if (log.isDebugEnabled()) log.debug("trying to cancel from saveupdate");
-				SearchDomainForm form2 = (SearchDomainForm) session
-						.getAttribute("searchDomainForm");
-				model.addAttribute(form2 != null ? form2 : new SearchDomainForm());
-				model.addAttribute("ajaxRequest", AjaxUtils
-						.isAjaxRequest(requestedWith));
-
-				mav.setViewName("main");
-				mav.addObject("statusList", EntityStatus.getEntityStatusList());
-				return mav;
-			}
-			if(actionPath.equalsIgnoreCase("newsetting")){
-				if (log.isDebugEnabled()) log.debug("trying to get/set settings");
-				strid = ""+settingsForm.getId();
-				key = ""+settingsForm.getKey();
-				value = ""+settingsForm.getValue();
-				try {
-					if (log.isDebugEnabled()) log.debug("trying set settings services");
-					setService.addSetting(key, value);
-					if (log.isDebugEnabled()) log.debug("PAST trying set settings services");
-				} catch (ConfigurationServiceException e) {
-					e.printStackTrace();
-				}
-				
-				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-				SimpleForm simple = new SimpleForm();
-				simple.setId(Long.parseLong(strid));
-				model.addAttribute("simpleForm",simple);
-	
-				try {
-					model.addAttribute("settingsResults", setService.getAllSettings());
-				} catch (ConfigurationServiceException e) {
-					e.printStackTrace();
-				}
-				mav.setViewName("settings"); 
-				// the Form's default button action
-				String action = "Update";
-				model.addAttribute("settingsForm", settingsForm);
-				model.addAttribute("action", action);
-				model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 		
-			}
-		}else{
-			model.addAttribute(new LoginForm());
-			mav.setViewName("login");
-			mav.setView(new RedirectView("/config-ui/config/login", false));
+		if(actionPath.equalsIgnoreCase("cancel")){
+			if (log.isDebugEnabled()) log.debug("trying to cancel from saveupdate");
+			SearchDomainForm form2 = (SearchDomainForm) session
+					.getAttribute("searchDomainForm");
+			model.addAttribute(form2 != null ? form2 : new SearchDomainForm());
+			model.addAttribute("ajaxRequest", AjaxUtils
+					.isAjaxRequest(requestedWith));
+
+			mav.setViewName("main");
+			mav.addObject("statusList", EntityStatus.getEntityStatusList());
+			return mav;
 		}
+		if(actionPath.equalsIgnoreCase("newsetting")){
+			if (log.isDebugEnabled()) log.debug("trying to get/set settings");
+			strid = ""+settingsForm.getId();
+			key = ""+settingsForm.getKey();
+			value = ""+settingsForm.getValue();
+			try {
+				if (log.isDebugEnabled()) log.debug("trying set settings services");
+				setService.addSetting(key, value);
+				if (log.isDebugEnabled()) log.debug("PAST trying set settings services");
+			} catch (ConfigurationServiceException e) {
+				e.printStackTrace();
+			}
+			
+			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+			SimpleForm simple = new SimpleForm();
+			simple.setId(Long.parseLong(strid));
+			model.addAttribute("simpleForm",simple);
+
+			try {
+				model.addAttribute("settingsResults", setService.getAllSettings());
+			} catch (ConfigurationServiceException e) {
+				e.printStackTrace();
+			}
+			mav.setViewName("settings"); 
+			// the Form's default button action
+			String action = "Update";
+			model.addAttribute("settingsForm", settingsForm);
+			model.addAttribute("action", action);
+			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+	
+		}
+		
 		return mav;
 	}			
 	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/removesettings", method = RequestMethod.POST)
 	public ModelAndView removeAnchors (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
@@ -157,49 +156,35 @@ public class SettingsController {
 		if(simpleForm.getRemove() != null){
 			if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
 		}
-		if (isLoggedIn(session)) {
-			String strid = ""+simpleForm.getId();
-			if (setService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("delete") && simpleForm.getRemove() != null) {
-				int cnt = simpleForm.getRemove().size();
-				try{
-					Collection<String> settingstoberemovedlist = simpleForm.getRemove();
-					if (log.isDebugEnabled()) log.debug(" Trying to remove settings from database");
-					setService.deleteSetting(settingstoberemovedlist);
-		    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to remove settings");
-				} catch (ConfigurationServiceException e) {
-					if (log.isDebugEnabled())
-						log.error(e);
-				}
-			}
-			try {
-				model.addAttribute("settingsResults", setService.getAllSettings());
-			} catch (ConfigurationServiceException e) {
-				e.printStackTrace();
-			}
-			mav.setViewName("settings"); 
-			String action = "Update";
-			model.addAttribute("settingsForm", new SettingsForm());
-			model.addAttribute("action", action);
-			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-		}else{
-			model.addAttribute(new LoginForm());
-			mav.setViewName("login");
-			mav.setView(new RedirectView("/config-ui/config/login", false));
-		}
-		model.addAttribute("simpleForm",simpleForm);
+		
 		String strid = ""+simpleForm.getId();
+		if (setService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("delete") && simpleForm.getRemove() != null) {
+			int cnt = simpleForm.getRemove().size();
+			try{
+				Collection<String> settingstoberemovedlist = simpleForm.getRemove();
+				if (log.isDebugEnabled()) log.debug(" Trying to remove settings from database");
+				setService.deleteSetting(settingstoberemovedlist);
+	    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to remove settings");
+			} catch (ConfigurationServiceException e) {
+				if (log.isDebugEnabled())
+					log.error(e);
+			}
+		}
+		try {
+			model.addAttribute("settingsResults", setService.getAllSettings());
+		} catch (ConfigurationServiceException e) {
+			e.printStackTrace();
+		}
+		mav.setViewName("settings"); 
+		String action = "Update";
+		model.addAttribute("settingsForm", new SettingsForm());
+		model.addAttribute("action", action);
+		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+		model.addAttribute("simpleForm",simpleForm);
+		strid = ""+simpleForm.getId();
 		
 		return mav;
 	}			
-		
-		
-	private boolean isLoggedIn(HttpSession session) {
-		Boolean result = (Boolean)session.getAttribute("authComplete");
-		if (result == null) {
-			result = new Boolean(false);
-		}
-		return result.booleanValue();
-	}
 		
 	
 	/**
