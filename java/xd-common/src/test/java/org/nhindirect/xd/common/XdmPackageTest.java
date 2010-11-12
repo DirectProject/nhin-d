@@ -114,7 +114,7 @@ public class XdmPackageTest extends TestCase
     
     public void testFromFile() throws Exception
     {
-        URL url = DefaultXdmXdsTransformerTest.class.getClassLoader().getResource("samplexdm.zip");
+        URL url = XdmPackageTest.class.getClassLoader().getResource("samplexdm.zip");
         File file = new File(url.getPath());
         
         XdmPackage xdmPackage = XdmPackage.fromFile(file);
