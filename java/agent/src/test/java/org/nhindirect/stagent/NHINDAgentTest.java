@@ -13,6 +13,7 @@ import javax.mail.Header;
 import javax.mail.internet.MimeMessage;
 
 import org.nhindirect.stagent.DefaultNHINDAgent;
+import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.mail.MimeStandard;
@@ -141,7 +142,56 @@ public class NHINDAgentTest extends TestCase
 		processedPart = new String(oStream.toByteArray(), "ASCII");
 		
 		
-		//assertTrue(processedPart.compareTo(originalPart) == 0);		
+		
+		// do an MDN response message
+		
+		
+		agent =  TestUtils.getStockAgent(Arrays.asList(new String[]{"cerner.com"})); 
+		
+		testMessage = TestUtils.readResource("MDNResponse.txt");
+		originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
+		
+		SMIMEenvMessage = agent.processOutgoing(testMessage);
+
+		
+		assertNotNull(SMIMEenvMessage);
+		assertTrue(SMIMEenvMessage.getMessage().toString().length() > 0);
+
+		
+		// verify the message
+		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"starugh-stateline.com"})); 
+		strippedAndVerifiesMessage = agent.processIncoming(SMIMEenvMessage);
+		
+		
+		assertNotNull(strippedAndVerifiesMessage);
+		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);
+		
+		processedMsg = new MimeMessage(null, new ByteArrayInputStream(strippedAndVerifiesMessage.
+				getMessage().toString().getBytes("ASCII")));
+		
+		assertNotNull(processedMsg);
+		
+		// can't do a direct compare on headers because the processing may strip some of the recipients
+		assertTrue(processedMsg.getContentType().compareTo(originalMsg.getContentType()) == 0);
+				
+		// get the message data and compare
+		oStream = new ByteArrayOutputStream();
+		buffer = new byte[1024];
+		 count = 0;
+		inStream = originalMsg.getInputStream();
+		while ((count = inStream.read(buffer)) > -1)
+			oStream.write(buffer, 0, count);
+		
+		originalPart = new String(oStream.toByteArray(), "ASCII");
+		
+		oStream = new ByteArrayOutputStream();
+		count = 0;
+		inStream = processedMsg.getInputStream();
+		while ((count = inStream.read(buffer)) > -1)
+			oStream.write(buffer, 0, count);
+		
+		processedPart = new String(oStream.toByteArray(), "ASCII");
+				
 	}
 	
 	
