@@ -11,19 +11,20 @@
 	<%@ include file="/WEB-INF/jsp/header.jsp" %>
 	<div id="form">
 	    <fieldset class="formInfo">
-	       <h2>NHIN Direct Java Reference Implememtation - Login</h2>
+	      <h3>NHIN Direct Java Reference Implementation - Login</h3>
 	    </fieldset>
-	    <c:set var="isErr" value="${login_error}"/>
 	    <c:if test="${param.login_error == 1}">
 		    <div class="error">
 		       <p class="error">Invalid user name or password supplied</p>
 		    </div>
 	    </c:if>
-	    <c:if test="${((param.logout == y) && (param.login_error != 1))}">
+	    <!-- 
+	    <c:if test="${((param.logout == 1) && (param.login_error != 1))}">
 	        <div class="info">
 	           <p>Successfully logged out</p>
 	        </div>
         </c:if>
+          -->
 	    <fieldset>
 			<form:form id="loginForm" action="j_spring_security_check" cssClass="cleanform" method="PUT">
 			   <p>Please enter your userid and password to continue.</p>  

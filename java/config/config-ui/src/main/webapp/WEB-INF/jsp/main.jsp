@@ -6,22 +6,16 @@
 <%@ include file="/WEB-INF/jsp/include.jsp"%>
 <META  http-equiv="Content-Type"  content="text/html;charset=UTF-8">
 <title><fmt:message key="welcome.title" /></title>
-
-<script>
-$(document).ready(function() 
-	    { 
-	        $("#domainTable").tablesorter(); 
-	    } 
-	); 
-</script>
 </head>
 
 <body>
 <div id="form">
     <%@ include file="/WEB-INF/jsp/header.jsp" %>
 	<fieldset>
-    <img src="/resources/images/logo.png">
-	<center><h3>NHIN Direct Java Reference Implementation - Manage Domains</h3></center>
+	<h3>NHIN Direct Java Reference Implementation - Manage Domains</h3>
+	   <form action="<c:url value="/j_spring_security_logout"/>">
+	       <button style="float:right;" name="logoutBtn" id="logoutBtn" type="submit">Log out</button></td>
+	   </form>
 	</fieldset>
 	<fieldset>
 	<spring:url value="/config/main/search" var="formUrl"/>
@@ -48,9 +42,14 @@ $(document).ready(function()
 	</div>
 	<c:if test="${not empty searchResults}">
 	<div id="dynamic">
+	<script type="text/javascript">
+	jQuery(document).ready(function(){
+		jQuery("#domain-table").tablesorter(); 
+	     });
+    </script>
 		<spring:url value="/config/domain/remove" var="formUrlremove"/>
-	   <form:form modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST" >
-		<table class="tablesorter" id="domainTable">
+	    <form:form name="removeForm" modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST" >
+		<table class="tablesorter" id="domain-table">
 			<thead>
 				<tr>
 					<th>Name</th>
