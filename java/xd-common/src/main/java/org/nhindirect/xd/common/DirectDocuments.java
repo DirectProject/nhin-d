@@ -58,6 +58,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -239,7 +240,7 @@ public class DirectDocuments
     {
         for (DirectDocument2 document : documents)
         {
-            if (document.getMetadata().getId().equals(targetObject))
+            if (StringUtils.equalsIgnoreCase(document.getMetadata().getId(), targetObject))
                 return document;
         }
 
@@ -250,7 +251,7 @@ public class DirectDocuments
     {
         for (DirectDocument2 document : documents)
         {
-            if (document.getMetadata().getUniqueId().equals(uniqueId))
+            if (StringUtils.equalsIgnoreCase(document.getMetadata().getUniqueId(), uniqueId))
                 return document;
         }
         
@@ -261,11 +262,30 @@ public class DirectDocuments
     {
         for (DirectDocument2 document : documents)
         {
-            if (document.getMetadata().getHash().equals(hash))
+            if (StringUtils.equalsIgnoreCase(document.getMetadata().getHash(), hash))
                 return document;
         }
         
         return null;        
+    }
+    
+    public DirectDocument2 getDocument(String identifier)
+    {
+        DirectDocument2 document = null;
+        
+        document = getDocumentById(identifier);
+        if (document != null)
+            return document;
+
+        document = getDocumentByUniqueId(identifier);
+        if (document != null)
+            return document;
+        
+        document = getDocumentByHash(identifier);
+        if (document != null)
+            return document;
+        
+        return document;
     }
 
     public String getSubmitObjectsRequestAsString()
