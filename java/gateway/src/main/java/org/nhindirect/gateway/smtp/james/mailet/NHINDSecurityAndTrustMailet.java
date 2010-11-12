@@ -40,6 +40,7 @@ import org.nhindirect.gateway.smtp.MessageProcessResult;
 import org.nhindirect.gateway.smtp.SmtpAgent;
 import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.SmtpAgentFactory;
+import org.nhindirect.gateway.smtp.SmtpAgentSettings;
 import org.nhindirect.stagent.AddressSource;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
@@ -97,7 +98,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		{
 			LOGGER.error("Failed to create the SMTP agent: " + e.getMessage(), e);
 			throw new MessagingException("Failed to create the SMTP agent: " + e.getMessage(), e);
-		}
+		}		
 		
 		// this should never happen because an exception should be thrown by Guice or one of the providers, but check
 		// just in case...
@@ -117,8 +118,9 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	@SuppressWarnings("unchecked")
 	@Override
 	public void service(Mail mail) throws MessagingException 
-	{ 
+	{ 		
 		LOGGER.trace("Entering service(Mail mail)");
+		
 		
 		NHINDAddressCollection recipients = new NHINDAddressCollection();		
 		
@@ -147,6 +149,8 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		// get the sender
 		
 		NHINDAddress sender = new NHINDAddress(mail.getSender().toInternetAddress(), AddressSource.From);				
+		
+		LOGGER.info("Proccessing incoming message from sender " + mail.getSender().toInternetAddress());
 		
 		// process the message with the agent stack
 		LOGGER.trace("Calling agent.processMessage");
@@ -198,6 +202,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 				result.getProcessedMessage().getRejectedRecipients().size() > 0 && mail.getRecipients() != null &&
 				mail.getRecipients().size() > 0)
 		{
+			
 			Collection<MailAddress> newRCPTList = new ArrayList<MailAddress>();
 			for (MailAddress rctpAdd : (Collection<MailAddress>)mail.getRecipients())
 			{
@@ -216,6 +221,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		Collection<NotificationMessage> notifications = result.getNotificationMessages();
 		if (notifications != null && notifications.size() > 0)
 		{
+			LOGGER.info("MDN messages requested.  Sending MDN \"processed\" messages");
 			// create a message for each notification and put it on James "stack"
 			for (NotificationMessage message : notifications)
 			{

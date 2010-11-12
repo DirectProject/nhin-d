@@ -124,12 +124,12 @@ public class DefaultSmtpAgent implements SmtpAgent
 		catch (SmtpAgentException e)
 		{
 			// rethrow
-			LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress");
+			LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress", e);
 			throw e;
 		}
 		catch (Exception e)
 		{
-			LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress");
+			LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress", e);
 			throw new SmtpAgentException(SmtpAgentError.Unknown, e);
 		}
 		
