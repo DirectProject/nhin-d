@@ -5,14 +5,16 @@
 <head>
 <%@ include file="/WEB-INF/jsp/include.jsp"%>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title><fmt:message key="domain.title" /></title>
+<title><fmt:message key="certs.title" /></title>
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
     <div id="form">
     <fieldset>
-    <img src="/resources/images/logo.png">
-    <center><h3>NHIN Direct Java Reference Implementation - Manage Public and Private Certificates</h3></center>
+    <h3>NHIN Direct Java Reference Implementation - Manage Public and Private Certificates</h3>
+    <form action="<c:url value="/j_spring_security_logout"/>">
+           <button style="float:right;" name="logoutBtn" id="logoutBtn" type="submit">Log out</button></td>
+       </form>
     </fieldset>
 <c:choose>
 	<c:when test='${empty action || action == "Add" }'>
@@ -116,6 +118,7 @@
 		<button name="submitType" id="submitType" type="submit"
 			value="deletecertificate">Remove Selected</button>
 	</form:form></fieldset>
+	
 </c:if>
 </fieldset>
 </body>

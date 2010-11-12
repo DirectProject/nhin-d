@@ -26,7 +26,7 @@
                              login-processing-url="/config/j_spring_security_check" 
                              default-target-url="/config/main" 
                              authentication-failure-url="/config/login?login_error=1" />
-        <security:logout logout-success-url="/config/login"/> 
+        <security:logout invalidate-session="true" logout-success-url="/config/login?logout=1"/> 
     </security:http>  
     
     <security:authentication-manager alias="authenticationManager">
