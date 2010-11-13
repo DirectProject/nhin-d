@@ -12,10 +12,12 @@ namespace Health.Direct.DnsResponder.WinSrv
 {
     public partial class DnsResponderWinSrv : ServiceBase
     {
-        protected DnsResponderTCP m_dnsResponderTCP = null;
-        protected DnsResponderUDP m_dnsResponderUDP = null;
-        protected DnsServer m_dnsServer = null;
-        protected DnsRecordStorageService m_store = null;
+        const string EventLogSourceName = "Health.Direct.DnsResponder.WinSrv";
+
+        protected DnsResponderTCP m_dnsResponderTCP;
+        protected DnsResponderUDP m_dnsResponderUDP;
+        protected DnsServer m_dnsServer;
+        protected DnsRecordStorageService m_store;
         private readonly ILogger m_logger;
 
         public DnsResponderWinSrv()
@@ -42,26 +44,18 @@ namespace Health.Direct.DnsResponder.WinSrv
 
         private static void WriteToEventLog(Exception ex)
         {
-            const string source = "Health.Direct.DnsResponder.WinSrv";
-
-            EventLogHelper.WriteError(source, ex.Message);
-            EventLogHelper.WriteError(source, ex.GetBaseException().ToString());
+            EventLogHelper.WriteError(EventLogSourceName, ex.Message);
+            EventLogHelper.WriteError(EventLogSourceName, ex.GetBaseException().ToString());
         }
-
-
 
         private static void WriteToEventLogWarn(string message)
         {
-            const string source = "Health.Direct.DnsResponder.WinSrv";
-
-            EventLogHelper.WriteWarning(source, message);
+            EventLogHelper.WriteWarning(EventLogSourceName, message);
         }
 
         private static void WriteToEventLogInfo(string message)
         {
-            const string source = "Health.Direct.DnsResponder.WinSrv";
-
-            EventLogHelper.WriteInformation(source, message);
+            EventLogHelper.WriteInformation(EventLogSourceName, message);
         }
 
         /// <summary>
