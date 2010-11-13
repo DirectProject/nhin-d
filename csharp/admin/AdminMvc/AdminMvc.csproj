@@ -90,6 +90,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Common\DirectMembershipProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AddressesController.cs" />
     <Compile Include="Controllers\AnchorsController.cs" />
@@ -185,6 +186,9 @@
     <Content Include="Views\Domains\DomainDetailsDialog.ascx" />
     <Content Include="Views\Domains\DomainList.ascx" />
     <Content Include="Views\Domains\Index.aspx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\UnAuthSite.Master" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />

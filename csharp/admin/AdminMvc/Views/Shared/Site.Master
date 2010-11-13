@@ -20,9 +20,11 @@
     <div>
 
         <div class="ui-widget-header border-none">
-            <span id="title">
-                <img src="../../Content/logo.png" alt="logo" />
-            </span>
+            <a href="http://nhindirect.org"><img src="../../Content/logo.png" alt="Direct Project link" border="0" style="padding: 2px 5px;" /></a>
+            <ul style="float: right; font-size: 10px; height: 30px; line-height: 30px; font-weight: normal; margin-right: 30px;">
+                <li style="display: inline; margin: 0; padding: 0; text-transform: lowercase;"><%= HttpContext.Current.User.Identity.Name %></li>
+                <li style="border-left: solid 1px; padding-left: 10px; margin-left: 8px; display: inline;"><%= Html.ActionLink("Log Out", "LogOff", "Account") %></li>
+            </ul>
         </div>
 
         <div class="clear"></div>
@@ -32,14 +34,14 @@
         <br class="clear" />
 
         <div class="ui-tabs ui-widget ui-widget-content border-none">
-            <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header border-none">              
-                <li id="tab-home" class="ui-state-default"><%= Html.ActionLink("Home", "Index", "Home")%></li>
-                <li id="tab-domains" class="ui-state-default"><%= Html.ActionLink("Domains", "Index", "Domains")%></li>
-                <li id="tab-addresses" class="ui-state-default"><%= Html.ActionLink("Addresses", "Index", "Addresses")%></li>
-                <li id="tab-anchors" class="ui-state-default"><%= Html.ActionLink("Anchors", "Index", "Anchors")%></li>
-                <li id="tab-certificates" class="ui-state-default"><%= Html.ActionLink("Certificates", "Index", "Certificates")%></li>
-                <li id="tab-dnsrecords" class="ui-state-default"><%= Html.ActionLink("DNS Records", "Index", "DnsRecords")%></li>
-                <!-- <li id="tab-users" class="ui-state-default"><%= Html.ActionLink("Users", "Index", "Users")%></li> -->
+            <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header border-none ui-corner-all">
+                <li id="tab-home" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Home", "Index", "Home")%></li>
+                <li id="tab-domains" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Domains", "Index", "Domains")%></li>
+                <li id="tab-addresses" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Addresses", "Index", "Addresses")%></li>
+                <li id="tab-anchors" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Anchors", "Index", "Anchors")%></li>
+                <li id="tab-certificates" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Certificates", "Index", "Certificates")%></li>
+                <li id="tab-dnsrecords" class="ui-state-default ui-corner-top"><%= Html.ActionLink("DNS Records", "Index", "DnsRecords")%></li>
+                <!-- <li id="tab-users" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Users", "Index", "Users")%></li> -->
             </ul>
         </div>
         <div id="main" class="ui-tabs-panel ui-widget-content border-none" style="padding: 10px;">

@@ -60,6 +60,7 @@ namespace Health.Direct.Admin.Console.Controllers
             return View(paginatedItems);
         }
 
+        [Authorize]
         [HttpPost]
         public string Delete(long id)
         {
@@ -78,11 +79,13 @@ namespace Health.Direct.Admin.Console.Controllers
             }
         }
 
+        [Authorize]
         public ActionResult Disable(long id)
         {
             return EnableDisable(id, EntityStatus.Disabled);
         }
 
+        [Authorize]
         public ActionResult Enable(long id)
         {
             return EnableDisable(id, EntityStatus.Enabled);

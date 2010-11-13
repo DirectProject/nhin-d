@@ -36,21 +36,25 @@ namespace Health.Direct.Admin.Console.Controllers
             item.Status = status;
         }
 
+        [Authorize]
         public ActionResult Index(int? page)
         {
             return IndexBase(page);
         }
 
+        [Authorize]
         public ActionResult Addresses(long id)
         {
             return RedirectToAction("Index", "Addresses", new {domainID = id});
         }
 
+        [Authorize]
         public ActionResult Anchors(long id)
         {
             return RedirectToAction("Index", "Anchors", new {domainID = id});
         }
 
+        [Authorize]
         public ActionResult Certificates(long id)
         {
             return RedirectToAction("Index", "Certificates", new {domainID = id});
@@ -61,6 +65,7 @@ namespace Health.Direct.Admin.Console.Controllers
             return View(new DomainModel());
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult Add(FormCollection formValues)
         {
@@ -76,6 +81,7 @@ namespace Health.Direct.Admin.Console.Controllers
             return View(model);
         }
 
+        [Authorize]
         public ActionResult Details(long id)
         {
             var domain = Repository.Get(id);

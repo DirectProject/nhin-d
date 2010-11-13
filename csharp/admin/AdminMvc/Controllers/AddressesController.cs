@@ -42,6 +42,7 @@ namespace Health.Direct.Admin.Console.Controllers
             item.Status = status;
         }
 
+        [Authorize]
         public ActionResult Index(long? domainID, int? page)
         {
             ViewData["DateTimeFormat"] = "M/d/yyyy h:mm:ss tt";
@@ -60,11 +61,13 @@ namespace Health.Direct.Admin.Console.Controllers
                             .AsPagination(page ?? 1, DefaultPageSize));
         }
 
+        [Authorize]
         public ActionResult Add(long domainID)
         {
             return View(new AddressModel {DomainID = domainID});
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult Add(FormCollection formValues)
         {
@@ -79,6 +82,7 @@ namespace Health.Direct.Admin.Console.Controllers
             return View(model);
         }
 
+        [Authorize]
         public ActionResult Details(long id)
         {
             var address = Repository.Get(id);
@@ -87,6 +91,7 @@ namespace Health.Direct.Admin.Console.Controllers
             return Json(Mapper.Map<Address, AddressModel>(address), "text/json", JsonRequestBehavior.AllowGet);
         }
 
+        [Authorize]
         public ActionResult Edit(long id)
         {
             var address = Repository.Get(id);
@@ -95,6 +100,7 @@ namespace Health.Direct.Admin.Console.Controllers
             return View(Mapper.Map<Address,AddressModel>(address));
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult Edit(FormCollection formValues)
         {

@@ -32,11 +32,11 @@
             <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.PasswordConfirm, "*", new { @class = "ui-state-error-text" })%></span>
             <br class="clear" />
 
-            <p>
+            <div class="action-buttons">
                 <%= Html.HiddenFor(m => m.Owner) %>
                 <input type="submit" value="Save" />
                 <%= Html.ActionLink("Cancel", "Index", new { owner = Model.Owner })%>
-            </p>
+            </div>
         </fieldset>
     
     <% } %>

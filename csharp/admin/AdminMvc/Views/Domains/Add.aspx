@@ -18,10 +18,10 @@
             <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.Name, "*", new {@class = "ui-state-error-text"}) %></span>
             <br class="clear" />
             
-            <p>
+            <div class="action-buttons">
                 <input type="submit" value="Save" />
                 <%= Html.ActionLink("Cancel", "Index") %>
-            </p>
+            </div>
         </fieldset>
     
     <% } %>
