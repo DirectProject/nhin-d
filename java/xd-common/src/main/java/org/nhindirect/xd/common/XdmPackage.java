@@ -8,6 +8,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -190,7 +193,31 @@ public class XdmPackage
         Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
         ZipEntry zipEntry = null;
 
-        // load the ZIP archive into memory
+        // Load metadata
+        while (zipEntries.hasMoreElements())
+        {
+            LOGGER.info("Processing a ZipEntry");
+
+            zipEntry = zipEntries.nextElement();
+            String zname = zipEntry.getName();
+
+            if (!zipEntry.isDirectory())
+            {
+                String subsetDirspec = getSubmissionSetDirspec(zipEntry.getName());
+                
+                // Read metadata
+                if (matchName(zname, subsetDirspec, XDM_METADATA_FILE))
+                {
+                    ByteArrayOutputStream byteArrayOutputStream = readData(zipFile, zipEntry);
+
+                    documents.setValues(byteArrayOutputStream.toString());
+                }
+            }
+        }
+
+        zipEntries = zipFile.entries();
+        
+        // load data
         while (zipEntries.hasMoreElements())
         {
             LOGGER.trace("Processing a ZipEntry");
@@ -202,23 +229,25 @@ public class XdmPackage
             {
                 String subsetDirspec = getSubmissionSetDirspec(zipEntry.getName());
 
-                // Read metadata
-                if (matchName(zname, subsetDirspec, XDM_METADATA_FILE))
-                {
-                    ByteArrayOutputStream byteArrayOutputStream = readData(zipFile, zipEntry);
-
-                    documents.setValues(byteArrayOutputStream.toString());
-                }
                 // Read data
-                else if (StringUtils.contains(subsetDirspec, StringUtils.remove(XDM_SUB_FOLDER, "/"))
+                if (StringUtils.contains(subsetDirspec, StringUtils.remove(XDM_SUB_FOLDER, "/"))
                         && !StringUtils.contains(zname, ".xsl") && !StringUtils.contains(zname, XDM_METADATA_FILE))
                 {
                     ByteArrayOutputStream byteArrayOutputStream = readData(zipFile, zipEntry);
 
-                    DirectDocument2 document = new DirectDocument2();
-                    document.setData(byteArrayOutputStream.toString());
+                    String digest = getSha1Hash(byteArrayOutputStream.toString());
+                    System.out.println(digest);
+                    DirectDocument2 document = documents.getDocumentByHash(digest);
+                    
+                    if (document == null)
+                    {
+                        LOGGER.warn("Unable to find metadata for document by hash. Creating document with no supporting metadata.");
 
-                    documents.getDocuments().add(document);
+                        document = new DirectDocument2();
+                        documents.getDocuments().add(document);
+                    }
+
+                    document.setData(byteArrayOutputStream.toString());
                 }
             }
         }
@@ -244,7 +273,7 @@ public class XdmPackage
         if (zipEntryName == null)
             return null;
 
-        String[] components = zipEntryName.split("\\\\");
+        String[] components = StringUtils.split(zipEntryName, "\\/");
         return components[0];
     }
 
@@ -315,5 +344,20 @@ public class XdmPackage
         is.close();
 
         return bytes;
+    }
+    
+    private static String getSha1Hash(byte[] bytes) throws NoSuchAlgorithmException
+    {
+        return getSha1Hash(new String(bytes));
+    }
+    
+    private static String getSha1Hash(String string) throws NoSuchAlgorithmException
+    {
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+        messageDigest.update(string.getBytes(), 0, string.length());
+        byte[] sha1hash = messageDigest.digest();
+
+        BigInteger bigInt = new BigInteger(sha1hash);        
+        return bigInt.toString(16);
     }
 }

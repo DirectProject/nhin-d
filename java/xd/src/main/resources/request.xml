@@ -37,6 +37,11 @@
                         <rim:Value>PID-11|100 Main St^^Metropolis^Il^44130^USA</rim:Value>
                      </rim:ValueList>
                   </rim:Slot>
+                  <rim:Slot name="hash">
+                     <rim:ValueList>
+                        <rim:Value>2f016bdeba83855ec76bd1102d9da6a79590f1a9</rim:Value>
+                     </rim:ValueList>
+                  </rim:Slot>
                   <rim:Name>
                      <rim:LocalizedString value="Physical"/>
                   </rim:Name>
