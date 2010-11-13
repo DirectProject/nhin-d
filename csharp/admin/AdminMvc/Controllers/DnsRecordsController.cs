@@ -17,6 +17,7 @@ namespace Health.Direct.Admin.Console.Controllers
         {
         }
 
+        [Authorize]
         public ActionResult Index(int? page)
         {
             //ViewData["DateTimeFormat"] = "M/d/yyyy h:mm:ss tt";

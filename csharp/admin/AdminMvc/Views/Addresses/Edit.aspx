@@ -33,11 +33,11 @@
             <span class="display-field"><%= Html.DisplayFor(m => m.Status) %></span>
             <br class="clear" />
             
-            <p>
+            <div class="action-buttons">
                 <%= Html.HiddenFor(m => m.DomainID) %>
                 <input type="submit" value="Save" />
                 <%= Html.ActionLink("Cancel", "Index", new {domainID = Model.DomainID}) %>
-            </p>
+            </div>
         </fieldset>
     
     <% } %>

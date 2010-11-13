@@ -174,3 +174,8 @@ tr.ui-state-highlight
     font-size: 0.5em;
     margin: 3px 0;
 }
+
+.action-buttons
+{
+    margin: 10px 0 0 135px;
+}

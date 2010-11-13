@@ -42,6 +42,7 @@ namespace Health.Direct.Admin.Console.Controllers
             item.Status = status;
         }
 
+        [Authorize]
         public ActionResult Index(long? domainID, int? page)
         {
             ViewData["DateTimeFormat"] = "M/d/yyyy h:mm:ss tt";
@@ -60,6 +61,7 @@ namespace Health.Direct.Admin.Console.Controllers
                             .AsPagination(page ?? 1, DefaultPageSize));
         }
 
+        [Authorize]
         public ActionResult Details(long id)
         {
             var certificate = Repository.Get(id);
@@ -68,11 +70,13 @@ namespace Health.Direct.Admin.Console.Controllers
             return Json(Mapper.Map<Certificate, CertificateModel>(certificate), "text/json", JsonRequestBehavior.AllowGet);
         }
 
+        [Authorize]
         public ActionResult Add(string owner)
         {
             return View(new CertificateUploadModel {Owner = owner});
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult Add(FormCollection formValues)
         {
