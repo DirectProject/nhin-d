@@ -60,24 +60,24 @@ namespace Health.Direct.Config.Store
             , string domainName
             , int? typeID)
         {
-            IEnumerable<DnsRecord> var = null;
+            IEnumerable<DnsRecord> records = null;
             if (typeID.HasValue)
             {
-             var = (from dnsrecords in table.GetDB().DnsRecords
+                records = (from dnsrecords in table.GetDB().DnsRecords
                         where dnsrecords.TypeID == typeID.Value
                         && domainName.ToLower().Equals(dnsrecords.DomainName.ToLower())
                         select dnsrecords);
 
-                return var;
+                return records;
             }
-            var = (from 
+            records = (from 
                        dnsrecords in table.GetDB().DnsRecords
                    where
                         domainName.ToLower().Equals(dnsrecords.DomainName.ToLower())
                    select 
                         dnsrecords);
 
-            return var;
+            return records;
         }
 
 
