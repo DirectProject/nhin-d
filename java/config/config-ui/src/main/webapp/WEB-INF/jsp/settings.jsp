@@ -11,8 +11,10 @@
     <%@ include file="/WEB-INF/jsp/header.jsp" %>
     <div id="form">
     <fieldset>
-    <img src="/resources/images/logo.png">
-    <center><h3>NHIN Direct Java Reference Implementation - Manage Agent Settings</h3></center>
+    <h3>NHIN Direct Java Reference Implementation - Manage Agent Settings</h3>
+    <form action="<c:url value="/j_spring_security_logout"/>">
+           <button style="float:right;" name="logoutBtn" id="logoutBtn" type="submit">Log out</button></td>
+       </form>
     </fieldset>
 <fieldset style="width: 100%;" title="Setting">
 	<spring:url	value="/config/settings/addsetting" var="formUrladdsetting" /> 
