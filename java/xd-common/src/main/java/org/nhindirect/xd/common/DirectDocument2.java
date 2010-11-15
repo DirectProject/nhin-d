@@ -1286,7 +1286,7 @@ public class DirectDocument2
          */
         public void setSize(Long size)
         {
-            if (this.size != null && this.size != size)
+            if (this.size != null && !this.size.equals(size))
                 LOGGER.warn("Replacing existing size with new value");
             
             this.size = size;
