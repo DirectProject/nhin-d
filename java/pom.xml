@@ -25,10 +25,10 @@
         <module>./config</module>
         <module>./agent</module>
         <module>./gateway</module>
-        <!--  <module>./xd-common</module>
+        <module>./xd-common</module>
         <module>./xdmail</module>
         <module>./xd</module>
-        <module>./client</module>  -->
+        <module>./client</module>
   </modules>
     <developers>
         <developer>

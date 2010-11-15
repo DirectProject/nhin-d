@@ -20,6 +20,7 @@ using System.Net.Mail;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
 
 namespace Health.Direct.Config.Console.Command

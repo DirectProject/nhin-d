@@ -78,7 +78,7 @@ public class NotificationMessage extends Message
     	String boundary = type.getParameter("boundary");	
     	
     	headers.addHeader(MailStandard.Headers.ContentType, MDNStandard.MediaType.DispositionReport + 
-    			"; boundary=" + boundary);    	
+    			"; boundary=\"" + boundary + "\"");    	
     	
     	return headers;
 

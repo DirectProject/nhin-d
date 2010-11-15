@@ -30,8 +30,6 @@ package org.nhindirect.xd.common;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,12 +43,12 @@ public class DirectMessage
 {
     private String sender;
     private Collection<String> receivers;
-    private Collection<DirectDocument> documents;
+    private DirectDocuments directDocuments;
     private String body;
     private String subject;
 
     @SuppressWarnings("unused")
-    private static final Log LOGGER = LogFactory.getFactory().getInstance(DirectDocument.class);
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(DirectMessage.class);
 
     /**
      * Create a new DirectMessage object.
@@ -65,7 +63,7 @@ public class DirectMessage
         this.sender = sender;
         this.receivers = receivers;
 
-        this.documents = new HashSet<DirectDocument>();
+        this.directDocuments = new DirectDocuments();
     }
 
     /**
@@ -77,21 +75,22 @@ public class DirectMessage
     @Deprecated
     public void addDocument(String document)
     {
-        DirectDocument doc = new DirectDocument();
+        DirectDocument2 doc = new DirectDocument2();
         doc.setData(document);
 
-        documents.add(doc);
+        directDocuments.getDocuments().add(doc);
     }
 
     public void addDocument(File file) throws Exception
     {
-        DirectDocument document = new DirectDocument(file);
-        documents.add(document);
+        DirectDocument2 document = new DirectDocument2(file);
+
+        directDocuments.getDocuments().add(document);
     }
 
-    public void addDocument(DirectDocument document)
+    public void addDocument(DirectDocument2 document)
     {
-        documents.add(document);
+        directDocuments.getDocuments().add(document);
     }
 
     /**
@@ -137,16 +136,6 @@ public class DirectMessage
     }
 
     /**
-     * Get a read-only collection of documents.
-     * 
-     * @return a read-only collection of documents.
-     */
-    public Collection<DirectDocument> getDocuments()
-    {
-        return Collections.unmodifiableCollection(documents);
-    }
-
-    /**
      * Get the value of body.
      * 
      * @return the body.
@@ -186,6 +175,23 @@ public class DirectMessage
     public String getSubject()
     {
         return subject;
+    }
+
+    /**
+     * @return the directDocuments
+     */
+    public DirectDocuments getDirectDocuments()
+    {
+        return directDocuments;
+    }
+
+    /**
+     * @param directDocuments
+     *            the directDocuments to set
+     */
+    public void setDirectDocuments(DirectDocuments directDocuments)
+    {
+        this.directDocuments = directDocuments;
     }
 
 }

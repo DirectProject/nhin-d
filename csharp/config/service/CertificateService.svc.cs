@@ -244,6 +244,18 @@ namespace Health.Direct.Config.Service
             }
         }
 
+        public void SetAnchorStatus(long[] anchorIDs, EntityStatus status)
+        {
+            try
+            {
+                Store.Anchors.SetStatus(anchorIDs, status);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("SetAnchorStatusForOwner", ex);
+            }
+        }
+
         public void SetAnchorStatusForOwner(string owner, EntityStatus status)
         {
             try

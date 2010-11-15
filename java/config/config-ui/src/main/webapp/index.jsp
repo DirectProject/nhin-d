@@ -6,7 +6,7 @@
 <%@ include file="./WEB-INF/jsp/include.jsp" %>
 
 		<%-- Redirected because we can't set the welcome page to a virtual URL. --%>
-		<c:redirect url="config/login"/>
+		<c:redirect url="config/main"/>
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>NHIN Direct RI Java Configurtion UI - Welcome Page</title>

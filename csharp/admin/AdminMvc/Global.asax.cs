@@ -2,8 +2,8 @@
 using System.Web.Mvc;
 using System.Web.Routing;
 
-using AdminMvc.Models;
-using AdminMvc.Models.Repositories;
+using Health.Direct.Admin.Console.Models;
+using Health.Direct.Admin.Console.Models.Repositories;
 
 using Autofac;
 using Autofac.Integration.Web;
@@ -11,11 +11,8 @@ using Autofac.Integration.Web.Mvc;
 
 using AutoMapper;
 
-namespace AdminMvc
+namespace Health.Direct.Admin.Console
 {
-    // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
-    // visit http://go.microsoft.com/?LinkId=9394801
-
     public class MvcApplication : System.Web.HttpApplication, IContainerProviderAccessor
     {
         // Provider that holds the application container.
@@ -40,7 +37,7 @@ namespace AdminMvc
         private static void ConfigureAutoMapper()
         {
             Mapper.Initialize(x =>
-                x.AddProfile<ModelProfiles>());
+                              x.AddProfile<ModelProfiles>());
         }
 
         // Build up your application container and register your dependencies.
@@ -71,7 +68,7 @@ namespace AdminMvc
                 "Default", // Route name
                 "{controller}/{action}/{id}", // URL with parameters
                 new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
-            );
+                );
 
         }
     }

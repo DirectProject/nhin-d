@@ -710,7 +710,49 @@ public class DirectDocument2Test extends TestCase
 
         assertEquals("Output does not match expected", value, metadata.getUniqueId());
     }
-   
+
+    /**
+     * Test hash.
+     * 
+     * @throws Exception
+     */
+    public void testHash() throws Exception
+    {
+        DirectDocument2 document = new DirectDocument2();
+        DirectDocument2.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setHash(value);
+
+        ExtrinsicObjectType eot = metadata.generateExtrinsicObjectType();
+
+        metadata = new DirectDocument2.Metadata();
+        metadata.setValues(eot);
+
+        assertEquals("Output does not match expected", value, metadata.getHash());
+    }
+
+    /**
+     * Test size.
+     * 
+     * @throws Exception
+     */
+    public void testSize() throws Exception
+    {
+        DirectDocument2 document = new DirectDocument2();
+        DirectDocument2.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setSize(value);
+
+        ExtrinsicObjectType eot = metadata.generateExtrinsicObjectType();
+
+        metadata = new DirectDocument2.Metadata();
+        metadata.setValues(eot);
+
+        assertEquals("Output does not match expected", value, metadata.getSize());
+    }
+    
     /**
      * Generic setter test.
      */
@@ -747,6 +789,8 @@ public class DirectDocument2Test extends TestCase
         metadata.setLoinc_localized("25");
         metadata.setPatientId("26");
         metadata.setUniqueId("27");
+        metadata.setHash("28");
+        metadata.setSize("29");
 
         metadata.setSubmissionSetStatus("42");
 
@@ -781,7 +825,8 @@ public class DirectDocument2Test extends TestCase
         LOGGER.info("loinc_localized                        " + metadata.getLoinc_localized());
         LOGGER.info("patientId                              " + metadata.getPatientId());
         LOGGER.info("uniqueId                               " + metadata.getUniqueId());
-
+        LOGGER.info("hash                                   " + metadata.getHash());
+        LOGGER.info("size                                   " + metadata.getSize());
         LOGGER.info("submissionSetStatus                    " + metadata.getSubmissionSetStatus());
         
         LOGGER.info(metadata.toString());

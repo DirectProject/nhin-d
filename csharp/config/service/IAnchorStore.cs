@@ -52,6 +52,10 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
+        void SetAnchorStatus(long[] anchorIDs, EntityStatus status);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
         void SetAnchorStatusForOwner(string owner, EntityStatus status);
 
         [OperationContract]

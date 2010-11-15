@@ -38,6 +38,7 @@ import org.nhindirect.xd.common.DirectDocument;
  * 
  * @author beau
  */
+@Deprecated
 public interface DocumentXdmTransformer
 {
 

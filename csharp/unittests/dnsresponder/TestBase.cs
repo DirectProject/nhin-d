@@ -2,24 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Text;
 
 using Health.Direct.Common.DnsResolver;
-using Health.Direct.DnsResponder;
 using Health.Direct.Config.Store;
 
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.DnsResponder.Tests
 {
     class TestBase
     {
-        protected const string CONNSTR = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
-        //protected const string CONNSTR = "Data Source=localhost;Initial Catalog=DirectConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
+        protected const string ConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+        //protected const string ConnectionString = "Data Source=localhost;Initial Catalog=DirectConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
 
-        private string DNSRECORDSEPATH = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
-
+        private readonly static string DnsRecordsPath = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
+        private readonly static string CertRecordsPath = Environment.CurrentDirectory + "\\metadata\\certs";
 
         // if true dump will be sent to the delegate specified by DumpLine
         private readonly bool m_dumpEnabled;
@@ -147,6 +144,42 @@ namespace Health.Direct.DnsResponder.Tests
             }
         }
 
+        /// <summary>
+        /// Gets test cert file names that sync up with 
+        /// generated metadata cert binary files in the 
+        /// related cert folder        
+        /// </summary>
+        protected static IEnumerable<string> CertFiles
+        {
+            get
+            {
+                //----------------------------------------------------------------------------------------------------
+                //---get the file names in the certs folder path
+                foreach (string name in System.IO.Directory.GetFiles(CertRecordsPath))
+                {
+                    yield return name.ToLower();
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Gets test cert file names that sync up with 
+        /// generated metadata cert binary files in the 
+        /// related cert folder        
+        /// </summary>
+        protected static IEnumerable<string> CertOwners
+        {
+            get
+            {
+                //----------------------------------------------------------------------------------------------------
+                //---get the file names in the certs folder path
+                foreach (string name in System.IO.Directory.GetFiles(CertRecordsPath))
+                {
+                    yield return name.ToLower().Replace(CertRecordsPath.ToLower(),"").Replace(".pfx","").Replace(@"\","");
+                }
+            }
+        }
 
 
         /// <summary>
@@ -170,7 +203,7 @@ namespace Health.Direct.DnsResponder.Tests
         /// this method populates the DnsRecords table with viable DnsRecords stored in metadata
         /// </summary>
         /// <remarks>
-        /// Note that the related domains are pulled from the DnsRecodDomainNames per each possible DnsRecordType
+        /// Related domains are pulled from the DnsRecodDomainNames per each possible DnsRecordType.
         /// These can be generated using the common.tests.DnsResponseToBinExample.cs test class, however
         /// they must be copied to the metadata\dns responses folder in this project and marked as copy to output
         /// directory, if newer
@@ -180,7 +213,7 @@ namespace Health.Direct.DnsResponder.Tests
             List<string> domains = DnsRecordDomainNames.ToList<string>();
             List<DnsStandard.RecordType> recTypes = DnsRecordTypes.ToList<DnsStandard.RecordType>();
 
-            DnsRecordManager mgr = new DnsRecordManager(new ConfigStore(CONNSTR));
+            DnsRecordManager mgr = new DnsRecordManager(new ConfigStore(ConnectionString));
             mgr.RemoveAll();
 
             //----------------------------------------------------------------------------------------------------
@@ -189,19 +222,19 @@ namespace Health.Direct.DnsResponder.Tests
             {
                 mgr.Add(new DnsRecord(domainName
                     , (int)DnsStandard.RecordType.MX
-                    , LoadAndVerifyDnsRecordFromBin<MXRecord>(Path.Combine(DNSRECORDSEPATH
+                    , LoadAndVerifyDnsRecordFromBin<MXRecord>(Path.Combine(DnsRecordsPath
                         , string.Format("mx.{0}.bin", domainName)))
                     , string.Format("some test notes for mx domain{0}", domainName)));
 
                 mgr.Add(new DnsRecord(domainName
                     , (int)DnsStandard.RecordType.SOA
-                    , LoadAndVerifyDnsRecordFromBin<SOARecord>(Path.Combine(DNSRECORDSEPATH
+                    , LoadAndVerifyDnsRecordFromBin<SOARecord>(Path.Combine(DnsRecordsPath
                         , string.Format("soa.{0}.bin", domainName)))
                     , string.Format("some test notes for soa domain{0}", domainName)));
 
                 mgr.Add(new DnsRecord(domainName
                     , (int)DnsStandard.RecordType.ANAME
-                    , LoadAndVerifyDnsRecordFromBin<AddressRecord>(Path.Combine(DNSRECORDSEPATH
+                    , LoadAndVerifyDnsRecordFromBin<AddressRecord>(Path.Combine(DnsRecordsPath
                         , string.Format("aname.{0}.bin", domainName)))
                     , string.Format("some test notes for aname domain{0}", domainName)));
 
@@ -231,6 +264,45 @@ namespace Health.Direct.DnsResponder.Tests
 
             }
             return bytes;
+        }
+
+
+        /// <summary>
+        /// will populate database with cert records from metadata project; cleans db prior to ensure fresh results
+        /// </summary>
+        protected void InitCertRecords()
+        {
+            List<string> certs = CertFiles.ToList<string>();
+            CertificateManager mgr = new CertificateManager(new ConfigStore(ConnectionString));
+            mgr.RemoveAll();
+            foreach (string s in certs)
+            {
+                mgr.Add(LoadAndVerifyCertFromFile(s));
+            }
+        }
+
+        /// <summary>
+        /// loads and verifies the cert records from the files, ensuring that the types
+        /// match up
+        /// </summary>
+        /// <typeparam name="T">Type of record that is expected</typeparam>
+        /// <param name="path">path to the bin file to be loaded</param>
+        /// <returns>bytes from the bin file</returns>
+        protected Certificate LoadAndVerifyCertFromFile(string path)
+        {
+            byte[] bytes = null;
+
+            //----------------------------------------------------------------------------------------------------
+            //---read the stream from the bytes
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                //Console.WriteLine("checking [{0}]", path);
+                bytes = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
+                System.Security.Cryptography.X509Certificates.X509Certificate2 x509 = new System.Security.Cryptography.X509Certificates.X509Certificate2(bytes);
+                x509.PrivateKey = null;
+                return new Certificate(x509.FriendlyName
+                    , x509);
+            }
         }
     }
 }

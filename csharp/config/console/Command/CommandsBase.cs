@@ -16,6 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 
+using Health.Direct.Config.Store;
+using Health.Direct.Config.Tools.Command;
+
 namespace Health.Direct.Config.Console.Command
 {
     public class CommandsBase
@@ -64,6 +67,19 @@ namespace Health.Direct.Config.Console.Command
             {
                 return m_clientResolver();
             }
+        }
+
+        protected static CertificateFileInfo CreateCertificateInfoFromArgs(int firstArg, string[] args)
+        {
+            string filePath = args.GetRequiredValue(firstArg);
+            string password = args.GetOptionalValue(firstArg + 1, string.Empty);
+            if (!string.IsNullOrEmpty(password) && password.Equals("null", StringComparison.OrdinalIgnoreCase))
+            {
+                password = string.Empty;
+            }
+
+            EntityStatus status = args.GetOptionalEnum(firstArg + 2, EntityStatus.New);
+            return new CertificateFileInfo(filePath, password, status);
         }
     }
 }

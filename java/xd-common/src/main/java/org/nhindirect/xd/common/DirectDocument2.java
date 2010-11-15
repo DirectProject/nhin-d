@@ -35,6 +35,9 @@ import static org.nhindirect.xd.common.DirectDocumentUtils.slotNotEmpty;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -137,6 +140,8 @@ public class DirectDocument2
     public void setData(String data)
     {
         this.data = data;
+        
+        this.metadata.setHash(getSha1Hash(data));
     }
 
     /**
@@ -182,6 +187,9 @@ public class DirectDocument2
 
         private String patientId;
         private String uniqueId;
+        
+        private String hash;
+        private String size;
 
         private String submissionSetStatus;
 
@@ -244,6 +252,8 @@ public class DirectDocument2
             addSlot(slots, makeSlot(SlotType1Enum.SERVICE_STOP_TIME, serviceStopTime != null ? (new SimpleDateFormat("yyyyMMddHHmm")).format(serviceStopTime) : null));
             addSlot(slots, makeSlot(SlotType1Enum.SOURCE_PATIENT_ID, sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg() + "&ISO"));
             addSlot(slots, makeSlot(SlotType1Enum.SOURCE_PATIENT_INFO, sourcePatient));
+            addSlot(slots, makeSlot(SlotType1Enum.HASH, hash));
+            addSlot(slots, makeSlot(SlotType1Enum.SIZE, size));
 
             eot.setName(makeInternationalStringType(classCode_localized));
             eot.setDescription(makeInternationalStringType(description));
@@ -509,6 +519,16 @@ public class DirectDocument2
                             }
                         }
                     }
+                }
+                else if (SlotType1Enum.HASH.matches(slot.getName()))
+                {
+                    if (slotNotEmpty(slot))
+                        hash = slot.getValueList().getValue().get(0);
+                }
+                else if (SlotType1Enum.SIZE.matches(slot.getName()))
+                {
+                    if (slotNotEmpty(slot))
+                        size = slot.getValueList().getValue().get(0);
                 }
             }
 
@@ -1224,5 +1244,82 @@ public class DirectDocument2
         {
             this.submissionSetStatus = submissionSetStatus;
         }
+
+        /**
+         * @return the hash
+         */
+        public String getHash()
+        {
+            return hash;
+        }
+
+        /**
+         * @param hash
+         *            the hash to set
+         */
+        public void setHash(String hash)
+        {
+            if (StringUtils.isNotEmpty(this.hash) && !StringUtils.equalsIgnoreCase(this.hash, hash))
+                LOGGER.warn("Replacing existing value with new value");
+            
+            this.hash = hash;
+        }
+
+        /**
+         * @return the size
+         */
+        public String getSize()
+        {
+            return size;
+        }
+
+        /**
+         * @param size
+         *            the size to set
+         */
+        public void setSize(String size)
+        {
+            this.size = size;
+        }
+    }
+    
+    /**
+     * Calculate the SHA-1 hash for the provided array of bytes.
+     * 
+     * @param bytes
+     *            Bytes from which to calculate the SHA-1 hash.
+     * @return the SHA-1 hash or null if unable to calculate.
+     */
+    public static String getSha1Hash(byte[] bytes)
+    {
+        return getSha1Hash(new String(bytes));
+    }
+
+    /**
+     * Calculate the SHA-1 hash for the provided string.
+     * 
+     * @param string
+     *            The string from which to calculate the SHA-1 hash.
+     * @return the SHA-1 hash or null if unable to calculate.
+     */
+    public static String getSha1Hash(String string)
+    {
+        MessageDigest messageDigest = null;
+
+        try
+        {
+            messageDigest = MessageDigest.getInstance("SHA-1");
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            LOGGER.error("Unable to calculate hash, returning null.", e);
+            return null;
+        }
+        
+        messageDigest.update(string.getBytes(), 0, string.length());
+        byte[] sha1hash = messageDigest.digest();
+
+        BigInteger bigInt = new BigInteger(sha1hash);
+        return bigInt.toString(16);
     }
 }

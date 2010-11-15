@@ -1,12 +1,42 @@
+@echo off
 setlocal
-set server=%~1
-set databasename=%~2
+title Create Database for the Configuration Service
+
 set schemafile=%~3
 set userfile=%~4
 set dbuser="IIS AppPool\DefaultAppPool"
 
-sqlcmd -S "%server%" -E -Q "CREATE DATABASE %databasename%"
-sqlcmd -S "%server%" -E -i "%schemafile%"
-sqlcmd -S "%server%" -E -i "%userfile%" -v DBUSER = %dbuser%
+call :initialize %~1 %~2
+call :create_database
+goto :finished
 
+:initialize
+set /p server=Server and instance name (DEFAULT '%~1')?
+if "%server%"=="" set server=%~1
+
+set /p sqluser=Username to connect (DEFAULT use trusted connection)?
+if "%sqluser%" NEQ "" set /p sqlpass=Password for '%sqluser%' (DEFAULT use trusted connection)?
+if "%sqlpass%"=="" set credentials=-E
+if "%credentials%"=="" set credentials=-U %sqluser% -P %sqlpass%
+
+set /p databasename=Database name (DEFAULT '%~2')?
+if "%databasename%"=="" set databasename=%~2
+goto :eof
+
+:create_database
+@echo on
+sqlcmd -S "%server%" %credentials% -Q "CREATE DATABASE [%databasename%]"
+sqlcmd -S "%server%" %credentials% -i "%schemafile%"
+@if ERRORLEVEL 1 goto :error
+sqlcmd -S "%server%" %credentials% -i "%userfile%" -v DBUSER = %dbuser%
+@if ERRORLEVEL 1 goto :error
+@echo off
+goto :eof
+
+:error
+@echo An error occurred while creating the database.
+@pause
+goto :eof
+
+:finished
 if "%DEBUGINSTALLER%" == "1" pause

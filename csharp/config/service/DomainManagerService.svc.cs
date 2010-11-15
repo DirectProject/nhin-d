@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
+using Health.Direct.Common.DnsResolver;
 using Health.Direct.Config.Store;
 
 namespace Health.Direct.Config.Service
@@ -265,17 +266,18 @@ namespace Health.Direct.Config.Service
             Store.DnsRecords.Add(dnsRecords);
         }
 
-        public void AddDnsRecord(DnsRecord record)
+        public DnsRecord AddDnsRecord(DnsRecord record)
         {
             Store.DnsRecords.Add(record);
+            return record;
         }
 
-        public int Count(Health.Direct.Common.DnsResolver.DnsStandard.RecordType? recordType)
+        public int Count(DnsStandard.RecordType? recordType)
         {
             return Store.DnsRecords.Count(recordType);
         }
 
-        public DnsRecord[] GetLastDnsRecords(long lastRecordID, int maxResults, Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
+        public DnsRecord[] GetLastDnsRecords(long lastRecordID, int maxResults, DnsStandard.RecordType typeID)
         {
             return  Store.DnsRecords.Get(lastRecordID
                 , maxResults
@@ -318,10 +320,22 @@ namespace Health.Direct.Config.Service
         }
 
         public DnsRecord[] GetMatchingDnsRecordsByType(string domainName
-            , Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
+            , DnsStandard.RecordType typeID)
         {
             return Store.DnsRecords.Get(domainName
                 , typeID);
+        }
+
+        public DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults, DnsStandard.RecordType type)
+        {
+            try
+            {
+                return Store.DnsRecords.Get(lastID, maxResults, type);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("EnumerateDnsRecords", ex);
+            }
         }
 
         #endregion
