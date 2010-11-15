@@ -28,6 +28,7 @@ using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
 
 namespace Health.Direct.Config.Console.Command
@@ -54,7 +55,7 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Certificate_Add", Usage = CertificateAddUsage)]
         public void CertificateAdd(string[] args)
         {
-            CertificateFileInfo certFileInfo = new CertificateFileInfo(0, args);            
+            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(0, args);            
             MemoryX509Store certStore = certFileInfo.LoadCerts();
             PushCerts(certStore, false, certFileInfo.Status);
         }
@@ -68,29 +69,37 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Certificate_Add_Machine", Usage = CertificateAddMachineUsage)]
         public void CertificateAddMachine(string[] args)
         {
-            string storeName = args.GetRequiredValue(0).ToLower();
-            SystemX509Store store;
-            if (storeName == "public")
+            using (SystemX509Store store = OpenStore(args.GetRequiredValue(0)))
             {
-                store = SystemX509Store.OpenExternalEdit();
+                CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(1, args);
+
+                store.ImportKeyFile(certFileInfo.FilePath, certFileInfo.Password,
+                                    X509KeyStorageFlags.MachineKeySet
+                                    | X509KeyStorageFlags.Exportable
+                                    | X509KeyStorageFlags.PersistKeySet);
             }
-            else if (storeName == "private")
-            {
-                store = SystemX509Store.OpenPrivateEdit();
-            }
-            else
-            {
-                throw new ArgumentException(storeName);
-            }
-            
-            CertificateFileInfo certFileInfo = new CertificateFileInfo(1, args);
-            store.ImportKeyFile(certFileInfo.FilePath, certFileInfo.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
-            store.Dispose();
         }
-        
+
+        private static SystemX509Store OpenStore(string storeName)
+        {
+            SystemX509Store store;
+            switch (storeName.ToLower())
+            {
+                case "public":
+                    store = SystemX509Store.OpenExternalEdit();
+                    break;
+                case "private":
+                    store = SystemX509Store.OpenPrivateEdit();
+                    break;
+                default:
+                    throw new ArgumentException(storeName);
+            }
+            return store;
+        }
+
         private const string CertificateAddMachineUsage
             = "Import a certificate from a file and push it into the named local Machine store."
-              + Constants.CRLF + " storeName (Private | Public)\r\n"
+              + Constants.CRLF + " storeName (Private | Public)"
               + Constants.CRLF + CertificateFileInfo.Usage;
 
         /// <summary>
@@ -283,10 +292,10 @@ namespace Health.Direct.Config.Console.Command
             ExportCerts(certs, outputFile);
         }
         const string CertificateExportFromFileUsage =
-                "Exports public certificates in given file or folder in zone file format\r\n"
-              + "    [fileName or folderPath] [outputFile]\r\n"
-              + "    fileName or foldrePath: If file, exports file. If folder, exports all certificates in folder\r\n"
-              + "    outputFile: (optional) Export to this file. Else write to Console\r\n";
+                "Exports public certificates in given file or folder in zone file format"
+              + Constants.CRLF + "    [fileName or folderPath] [outputFile]"
+              + Constants.CRLF + "    fileName or foldrePath: If file, exports file. If folder, exports all certificates in folder"
+              + Constants.CRLF + "    outputFile: (optional) Export to this file. Else write to Console";
         
         /// <summary>
         /// Resolves certificates for a domain or email address using Dns
@@ -308,6 +317,7 @@ namespace Health.Direct.Config.Console.Command
             catch
             {
             }
+
             X509Certificate2Collection certs;
             if (address != null)
             {
@@ -321,10 +331,11 @@ namespace Health.Direct.Config.Console.Command
 
             Print(certs);
         }
-        const string CertificateDnsResolveUsage =
-              "Resolve certificates for an address or domain using Dns\r\n"
-            + "   domain or address\r\n"
-            + "   server : (optional)\r\n";
+
+        private const string CertificateDnsResolveUsage =
+            "Resolve certificates for an address or domain using Dns"
+            + Constants.CRLF + "   domain or address"
+            + Constants.CRLF + "   server : (optional)";
         
         //---------------------------------------
         //

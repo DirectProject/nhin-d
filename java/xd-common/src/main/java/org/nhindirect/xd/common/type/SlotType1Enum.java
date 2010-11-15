@@ -51,7 +51,9 @@ public enum SlotType1Enum
     CODING_SCHEME("codingScheme"),
     SUBMISSION_TIME("submissionTime"),
     INTENDED_RECIPIENT("intendedRecipient"),
-    SUBMISSION_SET_STATUS("SubmissionSetStatus");
+    SUBMISSION_SET_STATUS("SubmissionSetStatus"),
+    HASH("hash"),
+    SIZE("size");
 
     private String name;
 

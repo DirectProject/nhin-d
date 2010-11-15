@@ -32,8 +32,9 @@ import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
 import java.io.File;
 
-import javax.naming.OperationNotSupportedException;
-
+import org.nhindirect.xd.common.DirectDocuments;
+import org.nhindirect.xd.common.XdmPackage;
+import org.nhindirect.xd.transform.XdsDirectDocumentsTransformer;
 import org.nhindirect.xd.transform.XdsXdmTransformer;
 import org.nhindirect.xd.transform.exception.TransformationException;
 
@@ -45,6 +46,7 @@ import org.nhindirect.xd.transform.exception.TransformationException;
  */
 public class DefaultXdsXdmTransformer implements XdsXdmTransformer
 {
+    private XdsDirectDocumentsTransformer xdsDirectDocumentsTransformer = new DefaultXdsDirectDocumentsTransformer();
 
     /*
      * (non-Javadoc)
@@ -55,8 +57,12 @@ public class DefaultXdsXdmTransformer implements XdsXdmTransformer
     public File transform(ProvideAndRegisterDocumentSetRequestType provideAndRegisterDocumentSetRequestType)
             throws TransformationException
     {
-        OperationNotSupportedException e = new OperationNotSupportedException("This method has not been implemented");
-        throw new TransformationException("Unable to complete transformation.", e);
+        DirectDocuments documents = xdsDirectDocumentsTransformer.transform(provideAndRegisterDocumentSetRequestType);
+
+        XdmPackage xdmPackage = new XdmPackage();
+        xdmPackage.setDocuments(documents);
+
+        return xdmPackage.toFile();
     }
 
 }

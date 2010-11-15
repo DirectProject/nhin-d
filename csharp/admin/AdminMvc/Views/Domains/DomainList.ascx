@@ -1,13 +1,13 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<DomainModel>>" %>
-<%@ Import Namespace="AdminMvc.Common"%>
-<%@ Import Namespace="AdminMvc.Models"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Common"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Models"%>
 <%@ Import Namespace="MvcContrib.UI.Pager"%>
 <%@ Import Namespace="MvcContrib.Pagination"%>
 <%@ Import Namespace="MvcContrib.UI.Grid"%>
 
 <%= Html.Grid(Model)
-    .Attributes(new Dictionary<string, object>{{"class", "grid ui-widget ui-widget-content"}})
-    .HeaderRowAttributes(new Dictionary<string, object>{{"class", "ui-widget-header"}})
+    .Attributes(@class => "grid ui-widget ui-widget-content")
+    .HeaderRowAttributes(new Dictionary<string, object> { { "class", "ui-widget-header" } })
     .Columns(
         column =>
             {
@@ -35,9 +35,8 @@
             .button({ icons: { primary: "ui-icon-trash" }, text: false })
             .click(function(event) { confirmDelete(event, $('#confirm-dialog'), $(this), 'Are you sure want to delete this domain?', 'Domain') });
 
-        $('a.enable-disable-action').click(enableDisableDomain);
         $('a.view-details').click(function(event) {
-            showDetailsDialog(event, $(this));
+            showDetailsDialog($('#domain-dialog'), event, $(this), 'Domain Details');
         });
     });
 </script>

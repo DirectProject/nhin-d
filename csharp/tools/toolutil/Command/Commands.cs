@@ -60,8 +60,6 @@ namespace Health.Direct.Config.Tools.Command
      */
     public class Commands
     {
-        private const string CRLF = "\r\n";
-
         static string[] EmptyArgs = new string[0];
 
         readonly string m_appName;
@@ -445,11 +443,11 @@ namespace Health.Direct.Config.Tools.Command
 
         private const string HelpUsage
             = "Show help"
-              + CRLF + "help ['all' | name]"
-              + CRLF + "   all: All commands"
-              + CRLF + "   name: This command name or names with this PREFIX"
-              + CRLF + CRLF + "search [pattern]"
-              + CRLF + SearchUsage;
+              + Constants.CRLF + "help ['all' | name]"
+              + Constants.CRLF + "   all: All commands"
+              + Constants.CRLF + "   name: This command name or names with this PREFIX"
+              + Constants.CRLF + Constants.CRLF + "search [pattern]"
+              + Constants.CRLF + SearchUsage;
         
         /// <summary>
         /// Search for a command containing the given pattern
@@ -474,8 +472,8 @@ namespace Health.Direct.Config.Tools.Command
 
         private const string SearchUsage
             = "Search for commands matching the given wildcard pattern"
-              + CRLF + "    pattern"
-              + CRLF + "\t pattern: (optional) pattern, containing '*' wildcards";
+              + Constants.CRLF + "    pattern"
+              + Constants.CRLF + "\t pattern: (optional) pattern, containing '*' wildcards";
 
         /// <summary>
         /// Run commands in a batch
@@ -510,8 +508,8 @@ namespace Health.Direct.Config.Tools.Command
 
         private const string BatchUsage
             = "Run a series of commands from a file"
-              + CRLF + "Each command is on its own line. Comments begin with //"
-              + CRLF + "   filepath [echo command (default true)]";
+              + Constants.CRLF + "Each command is on its own line. Comments begin with //"
+              + Constants.CRLF + "   filepath [echo command (default true)]";
 
         [Command(Name = "Echo", Usage = "Echo the args to the console")]
         public void Echo(string[] args)

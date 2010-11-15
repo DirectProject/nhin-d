@@ -18,11 +18,13 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 using System.ServiceModel;
+
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
 
 namespace Health.Direct.Config.Console.Command
@@ -49,9 +51,10 @@ namespace Health.Direct.Config.Console.Command
         public void AnchorAdd(string[] args)
         {
             string owner = args.GetRequiredValue(0);
-            CertificateFileInfo certFileInfo = new CertificateFileInfo(1, args);                        
+            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(1, args);                        
             PushCerts(owner, certFileInfo.LoadCerts(),  false, certFileInfo.Status);
         }
+
         private const string AnchorAddUsage
             = "Import an anchor certificate from a file and push it into the config store."
               + Constants.CRLF + "The anchor is used for both incoming & outgoing trust."
@@ -61,7 +64,7 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name="Anchor_Add_Machine", Usage=AnchorAddMachineUsage)]
         public void AnchorAddMachine(string[] args)
         {
-            CertificateFileInfo certFileInfo = new CertificateFileInfo(0, args);
+            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(0, args);
             using(SystemX509Store store = SystemX509Store.OpenAnchorEdit())
             {
                 store.ImportKeyFile(certFileInfo.FilePath, certFileInfo.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);

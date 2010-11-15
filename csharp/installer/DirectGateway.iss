@@ -8,7 +8,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.0
+AppVerName=Direct Project .NET Gateway 1.0.0.1
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -17,23 +17,24 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct Gateway
+OutputBaseFilename=DirectGateway-1.0.0.1-NET35
 Compression=lzma
 SolidCompression=yes
+VersionInfoVersion=1.0.0.1
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 ;[Components]
 ;Name: core; Description: "Core Components";
-;Name: configservice; Description: "Configuration Service";
+;Name: development; Description: "Development Install";
 
 [Files]
-Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Excludes: "xunit*.dll,*tests.dll"; Flags: ignoreversion;
+Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Excludes: "security*.dll,xunit*.dll,*tests.dll*"; Flags: ignoreversion;
 Source: "..\bin\debug\Win32\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX86;
 Source: "..\bin\debug\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64;
-Source: "..\bin\debug\*.config"; DestDir: "{app}"; Flags: ignoreversion;
-Source: "..\bin\debug\*.exe"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "..\bin\debug\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Flags: ignoreversion;
+Source: "..\bin\debug\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion;
 Source: "..\bin\debug\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs;
 Source: "..\bin\debug\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: ignoreversion;
 
@@ -45,20 +46,17 @@ Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags
 Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion;
 
-Source: "..\gateway\devInstall\install.bat"; DestDir: "{app}"; Flags: ignoreversion;
-Source: "..\gateway\devInstall\*.xml"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "..\gateway\devInstall\DevAgentWithServiceConfig.xml"; DestDir: "{app}\DevAgentConfig.xml"; Flags: ignoreversion;
 Source: "..\gateway\devInstall\setupdomains.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\gateway\devInstall\simple.eml"; DestDir: "{app}\Samples"; Flags: ignoreversion;
 
 Source: "..\external\microsoft\vcredist\vcredist_x86.exe"; DestDir: "{app}\Libraries"; DestName: "vcredist.exe"; Flags: ignoreversion recursesubdirs; Check: IsX86;
 Source: "..\external\microsoft\vcredist\vcredist_x64.exe"; DestDir: "{app}\Libraries"; DestName: "vcredist.exe"; Flags: ignoreversion recursesubdirs; Check: IsX64 or IsIA64;
 
-Source: "createdatabase.bat"; DestDir: "{app}\SQL"; Flags: ignoreversion;
+Source: "*.bat"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "event-sources.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion;
 Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion;
-
-Source: "createconfigsvc.bat"; DestDir: "{app}"; Flags: ignoreversion;
-Source: "configconsole.bat"; DestDir: "{app}"; Flags: ignoreversion;
 
 [Icons]
 Name: "{group}\Config Console"; Filename: "{app}\ConfigConsole.exe"; WorkingDir: "{app}";
@@ -67,10 +65,8 @@ Name: "{group}\{cm:UninstallProgram,Direct Gateway}"; Filename: "{uninstallexe}"
 
 [Run]
 Filename: "{app}\Libraries\vcredist.exe"; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked;
-Filename: "{app}\SQL\createdatabase.bat"; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: postinstall runascurrentuser unchecked;
-Filename: "{app}\createconfigsvc.bat"; Parameters: """{app}\ConfigService"""; Description: Create Config Service; Flags: postinstall runascurrentuser unchecked;
-Filename: "{app}\install.bat"; Parameters: """{app}\DevAgentWithServiceConfig.xml"" nocopy"; Description: "Register Direct Gateway"; Flags: postinstall runascurrentuser unchecked;
-Filename: "{app}\configConsole.bat"; WorkingDir: "{app}"; Parameters: "batch setupdomains.txt"; Description: "Install Certs in Configuration Service"; Flags: postinstall runascurrentuser unchecked;
+Filename: "{app}\createdatabase.bat"; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: postinstall runascurrentuser unchecked;
+Filename: "{app}\install-dev.bat"; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked;
 
 [UninstallRun]
 Filename: "{app}\unregisterGateway.bat"; Flags: shellexec runascurrentuser;

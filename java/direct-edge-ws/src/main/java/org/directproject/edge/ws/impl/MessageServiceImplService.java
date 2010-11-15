@@ -393,11 +393,6 @@ public class MessageServiceImplService implements NhindirectWSEdgePort, Initiali
                 imapProps.put("mail.imap.starttls.enable", true);
                 imapProps.put("mail.imaps.starttls.enable", true);
             }
-        
-         // java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-
-         // TODO - Remove after testing
-            System.setProperty("javax.net.debug", "ssl,handshake");  
         }
     }
 

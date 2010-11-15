@@ -31,9 +31,6 @@ package org.nhindirect.xdclient;
 import ihe.iti.xds_b._2007.DocumentRepositoryPortType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
@@ -41,10 +38,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.xd.common.DirectDocument;
-import org.nhindirect.xd.transform.DocumentXdsTransformer;
-import org.nhindirect.xd.transform.exception.TransformationException;
-import org.nhindirect.xd.transform.impl.DocumentXdsTransformerImpl;
+import org.nhindirect.xd.common.DirectDocuments;
 
 /**
  * Document repository class for handling XDS webservice calls.
@@ -60,50 +54,23 @@ public class XDClient
 
     private static final Log LOGGER = LogFactory.getFactory().getInstance(XDClient.class);
 
-    public void send(String endpoint, Collection<DirectDocument> documents) throws Exception
+    public void send(String endpoint, DirectDocuments documents) throws Exception
     {
-        DocumentXdsTransformer transformer = new DocumentXdsTransformerImpl();
+        ProvideAndRegisterDocumentSetRequestType request = documents.toProvideAndRegisterDocumentSetRequestType();
 
-        List<ProvideAndRegisterDocumentSetRequestType> requests = new ArrayList<ProvideAndRegisterDocumentSetRequestType>();
+        String response;
 
-        // Create a ProvideAndRegisterDocumentSetRequestType for each document
-        for (DirectDocument doc : documents)
+        try
         {
-            ProvideAndRegisterDocumentSetRequestType request;
-
-            try
-            {
-                request = transformer.transform(doc.getData(), doc.getMetadata().toString());
-                requests.add(request);
-            }
-            catch (TransformationException e)
-            {
-                LOGGER.error(
-                        "Unable to transform document/metadata into a ProvideAndRegisterDocumentSetRequstType object.",
-                        e);
-                throw new TransformationException(
-                        "Unable to transform document/metadata into a ProvideAndRegisterDocumentSetRequstType object.",
-                        e);
-            }
+            response = forward(endpoint, request);
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Unable to send message " + this.messageId, e);
         }
 
-        // Send each request
-        for (ProvideAndRegisterDocumentSetRequestType request : requests)
-        {
-            String response;
-
-            try
-            {
-                response = forward(endpoint, request);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Unable to send message " + this.messageId, e);
-            }
-
-            if (StringUtils.contains(response, "Failure"))
-                LOGGER.warn("Endpoint returned a failure for message " + this.messageId);
-        }
+        if (StringUtils.contains(response, "Failure"))
+            LOGGER.warn("Endpoint returned a failure for message " + this.messageId);
     }
 
     private String forward(String endpoint, ProvideAndRegisterDocumentSetRequestType request) throws Exception

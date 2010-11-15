@@ -122,11 +122,13 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
 <div id="form">
 <fieldset>
-<center>
-<h3>NHIN Direct Java Reference Implememtation - Add/Update a Domain</h3>
-</center>
+<h3>NHIN Direct Java Reference Implementation - Manage Domains</h3>
+   <form action="<c:url value="/j_spring_security_logout"/>">
+           <button style="float:right;" name="logoutBtn" id="logoutBtn" type="submit">Log out</button></td>
+       </form>
 </fieldset>
-<spring:url value="/config/domain/saveupdate" var="formUrl" /> <form:form
+<spring:url value="/config/domain/saveupdate" var="formUrl" /> 
+  <form:form
 	id="domainForm" action="${fn:escapeXml(formUrl)}" cssClass="cleanform"
 	commandName="domainForm" method="POST">
 	<div class=error"><form:errors path="*" cssClass="error" /></div>

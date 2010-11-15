@@ -51,6 +51,7 @@ import org.nhindirect.xd.transform.DocumentXdmTransformer;
  * 
  * @author Vince
  */
+@Deprecated
 public class DocumentXdmTransformerImpl implements DocumentXdmTransformer
 {
     private static final int BUFFER = 2048;

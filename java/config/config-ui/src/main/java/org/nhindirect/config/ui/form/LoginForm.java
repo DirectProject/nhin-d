@@ -25,26 +25,26 @@ import javax.validation.constraints.Size;
 
 public class LoginForm {
 	
-	private String userid   = "";
-	private String password = "";
+	private String j_userid   = "";
+	private String j_password = "";
 	private String domain   = "";
 	
     @NotNull
     @Size(min=1, max=16)
 	public String getUserid() {
-		return userid;
+		return j_userid;
 	}
 	public void setUserid(String userid) {
-		this.userid = userid;
+		this.j_userid = userid;
 	}
 	
     @NotNull
     @Size(min=1, max=16)
 	public String getPassword() {
-		return password;
+		return j_password;
 	}
 	public void setPassword(String password) {
-		this.password = password;
+		this.j_password = password;
 	}
 	
 	public String getDomain() {

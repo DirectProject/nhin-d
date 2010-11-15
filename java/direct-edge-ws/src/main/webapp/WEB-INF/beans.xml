@@ -8,19 +8,11 @@
 	  http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
 	  http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
 	  http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
-<!--     
-	<import resource="classpath:META-INF/cxf/cxf.xml" />	
-	<import resource="classpath:META-INF/cxf/cxf-extension-http-jetty.xml" />
-	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
-	<import resource="classpath:META-INF/cxf/cxf-extension-http-binding.xml" />
-	<import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
-
    
-    
-    <beans:bean id="passwordEncoderBean" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
-        <beans:constructor-arg value="256" />
-    </beans:bean>
--->
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
     <security:authentication-manager alias="authenticationManager">
     <!-- 
         To change IdP just change the authentication-provider
@@ -54,12 +46,12 @@
     <bean id="outboundLoggingInterceptor" class="org.apache.cxf.interceptor.LoggingOutInterceptor"/>
 
     <cxf:bus name="CxfMsgBus" >
-        <cxf:inInterceptors>
+        <cxf:inFaultInterceptors>
             <ref bean="inboundLoggingInterceptor"/>
-        </cxf:inInterceptors>
-        <cxf:outInterceptors>
+        </cxf:inFaultInterceptors>
+        <cxf:outFaultInterceptors>
             <ref bean="outboundLoggingInterceptor"/>
-        </cxf:outInterceptors>
+        </cxf:outFaultInterceptors>
     </cxf:bus>
 
 	<!-- WS-Security is set to use UsernameToken.  PasswordText is used as this is expected
@@ -70,13 +62,14 @@
 	     invoked with a -Djavax.net.ssl.trustStore=<trustStoreURI> -Djavax.net.ssl.trustStorePassword=<pwd>
 	 -->	
 	<jaxws:endpoint id="nhindirectWSEdgePort"
-					address="http://localhost:8080/directEdge/MessageService">
+                    address="http://localhost:9090/directEdge/MessageService">
 	    <jaxws:implementor>
 	       <bean id="WSEdgeService" class="org.directproject.edge.ws.impl.MessageServiceImplService">
 		        <property name="smtpHost" value="mail.hin1.us"/>
 		        <property name="imapHost" value="mail.hin1.us"/>
 		        <property name="smtpPort" value="465"/>
 		        <property name="imapPort" value="993"/>
+		       
 		        <!-- Acceptable values for useTLS: "NONE" "SOCKET", "STARTTLS" or can be removed if not needed -->
 		        <property name="useTLSforSMTP" value="SOCKET"/>
 		        <property name="useTLSforIMAP" value="STARTTLS"/>  

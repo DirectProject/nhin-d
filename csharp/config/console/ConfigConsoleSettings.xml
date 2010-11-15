@@ -14,4 +14,5 @@
   <AnchorManager>
     <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
   </AnchorManager>  
+
 </ConsoleSettings>

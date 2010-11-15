@@ -75,7 +75,7 @@ public class NHINDClientImpl implements NHINDClient
 
             try
             {
-                xmc.sendMail(message.getSender(), endpoints, message.getDocuments(), message.getBody(), "xml");
+                xmc.sendMail(message.getSender(), endpoints, message.getDirectDocuments(), message.getBody(), "xml");
             }
             catch (MessagingException e)
             {
@@ -92,7 +92,7 @@ public class NHINDClientImpl implements NHINDClient
 
                 try
                 {
-                    xdc.send(endpoint, message.getDocuments());
+                    xdc.send(endpoint, message.getDirectDocuments());
                 }
                 catch (Exception e)
                 {

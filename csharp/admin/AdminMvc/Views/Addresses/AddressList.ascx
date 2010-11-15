@@ -1,13 +1,13 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<AddressModel>>" %>
-<%@ Import Namespace="AdminMvc.Common"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Common"%>
 <%@ Import Namespace="MvcContrib.UI.Grid"%>
 <%@ Import Namespace="MvcContrib.UI.Pager"%>
 <%@ Import Namespace="MvcContrib.Pagination"%>
-<%@ Import Namespace="AdminMvc.Models"%>
+<%@ Import Namespace="Health.Direct.Admin.Console.Models"%>
 
 <%= Html.Grid(Model)
-    .Attributes(new Dictionary<string, object>{{"class", "grid ui-widget ui-widget-content"}})
-    .HeaderRowAttributes(new Dictionary<string, object>{{"class", "ui-widget-header"}})
+    .Attributes(@class => "grid ui-widget ui-widget-content")
+    .HeaderRowAttributes(new Dictionary<string, object> { { "class", "ui-widget-header" } })
     .Columns(
         column =>
             {
@@ -18,6 +18,7 @@
                 column.For(d => Html.Span(Formatter.Format(d.CreateDate), new { title = d.CreateDate.ToString() })).Named("Created On");
                 column.For(d => Html.Span(Formatter.Format(d.UpdateDate), new { title = d.UpdateDate.ToString() })).Named("Updated On");
                 column.For(a => Html.ActionLink("View", "Details", new { id = a.ID }, new { @class = "view-details" }));
+                column.For(a => Html.ActionLink("Edit", "Edit", new { id = a.ID }));
                 column.For(a => a.IsEnabled
                                     ? Html.ActionLink("Disable", "Disable", new { id = a.ID }, new { @class = "enable-disable-action" })
                                     : Html.ActionLink("Enable", "Enable", new { id = a.ID }, new { @class = "enable-disable-action" }));
@@ -34,9 +35,8 @@
             .button({ icons: { primary: "ui-icon-trash" }, text: false })
             .click(function(event) { confirmDelete(event, $('#confirm-dialog'), $(this), 'Are you sure want to delete this address?', 'Address') });
 
-        $('a.enable-disable-action').click(enableDisableDomain);
         $('a.view-details').click(function(event) {
-            showDetailsDialog(event, $(this));
+            showDetailsDialog($('#address-dialog'), event, $(this), 'Address Details');
         });
     });
 </script>
