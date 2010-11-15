@@ -28,14 +28,17 @@
 
 package org.nhindirect.xd.common;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
-
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
@@ -742,7 +745,7 @@ public class DirectDocument2Test extends TestCase
         DirectDocument2 document = new DirectDocument2();
         DirectDocument2.Metadata metadata = document.getMetadata();
 
-        String value = "input";
+        Long value = 11L;
         metadata.setSize(value);
 
         ExtrinsicObjectType eot = metadata.generateExtrinsicObjectType();
@@ -790,7 +793,7 @@ public class DirectDocument2Test extends TestCase
         metadata.setPatientId("26");
         metadata.setUniqueId("27");
         metadata.setHash("28");
-        metadata.setSize("29");
+        metadata.setSize(Long.valueOf("29"));
 
         metadata.setSubmissionSetStatus("42");
 
