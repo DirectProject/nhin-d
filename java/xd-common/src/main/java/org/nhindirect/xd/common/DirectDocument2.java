@@ -35,6 +35,9 @@ import static org.nhindirect.xd.common.DirectDocumentUtils.slotNotEmpty;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -137,6 +140,8 @@ public class DirectDocument2
     public void setData(String data)
     {
         this.data = data;
+        
+        this.metadata.setHash(getSha1Hash(data));
     }
 
     /**
@@ -1254,6 +1259,9 @@ public class DirectDocument2
          */
         public void setHash(String hash)
         {
+            if (StringUtils.isNotEmpty(this.hash) && !StringUtils.equalsIgnoreCase(this.hash, hash))
+                LOGGER.warn("Replacing existing value with new value");
+            
             this.hash = hash;
         }
 
@@ -1273,5 +1281,45 @@ public class DirectDocument2
         {
             this.size = size;
         }
+    }
+    
+    /**
+     * Calculate the SHA-1 hash for the provided array of bytes.
+     * 
+     * @param bytes
+     *            Bytes from which to calculate the SHA-1 hash.
+     * @return the SHA-1 hash or null if unable to calculate.
+     */
+    public static String getSha1Hash(byte[] bytes)
+    {
+        return getSha1Hash(new String(bytes));
+    }
+
+    /**
+     * Calculate the SHA-1 hash for the provided string.
+     * 
+     * @param string
+     *            The string from which to calculate the SHA-1 hash.
+     * @return the SHA-1 hash or null if unable to calculate.
+     */
+    public static String getSha1Hash(String string)
+    {
+        MessageDigest messageDigest = null;
+
+        try
+        {
+            messageDigest = MessageDigest.getInstance("SHA-1");
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            LOGGER.error("Unable to calculate hash, returning null.", e);
+            return null;
+        }
+        
+        messageDigest.update(string.getBytes(), 0, string.length());
+        byte[] sha1hash = messageDigest.digest();
+
+        BigInteger bigInt = new BigInteger(sha1hash);
+        return bigInt.toString(16);
     }
 }
