@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AnchorDaoTest
 {
-	private static final String derbyHomeLoc = "/src/test/resources/data";	
+	private static final String derbyHomeLoc = "/target/data";	
 	
 	private static final String certBasePath = "src/test/resources/certs/"; 
 	
