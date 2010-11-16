@@ -223,7 +223,7 @@ namespace Health.Direct.Config.Tools.Command
                 return;
             }
             
-            string commandName = input[0];
+            string commandName = input.First();
             CommandDef cmd = this[commandName];
             if (cmd == null)
             {
@@ -233,25 +233,16 @@ namespace Health.Direct.Config.Tools.Command
                 return;
             }
             
-            string[] args = EmptyArgs;            
-            if (input.Length > 1)
-            {
-                args = new string[input.Length - 1];
-                Array.Copy(input, 1, args, 0, input.Length - 1);
-            }
-            
             try
             {
-                cmd.Eval(args);
-                return;
+                cmd.Eval((input.Select(arg => arg)).Skip(1).ToArray());
             }
             catch(Exception ex)
             {
                 this.HandleError(ex);
+                CommandUI.PrintSectionBreak();
+                cmd.ShowUsage();
             }
-            
-            CommandUI.PrintSectionBreak();
-            cmd.ShowUsage();            
         }
         
         public void ShowUsage(string cmdName)
@@ -334,15 +325,12 @@ namespace Health.Direct.Config.Tools.Command
             {
                 return;
             }
-            
-            m_commandNames = new string[m_commands.Values.Count];
-            int i = 0;
-            foreach (CommandDef command in m_commands.Values)
-            {
-                m_commandNames[i++] = command.Name;
-            }
 
-            Array.Sort(m_commandNames);
+            m_commandNames = (from cmd in m_commands.Values
+                              let name = cmd.Name
+                              orderby name
+                              select name)
+                .ToArray();
         }
         
         void SetEval(string name, Action<string[]> eval)

@@ -21,8 +21,12 @@ using Xunit.Extensions;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    class AnchorManagerFacts : ConfigStoreTestBase
+    class AnchorManagerFacts : ConfigStoreTestBase 
     {
+        private static AnchorManager CreateManager()
+        {
+            return new AnchorManager(CreateConfigStore());
+        }
 
         /// <summary>
         /// property to expose enumerable testing Anchor certificate instances
@@ -74,11 +78,9 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void StoreTest()
         {
-            ConfigStore store = new ConfigStore(CONNSTR);
-            AnchorManager mgr = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager mgr = CreateManager();
             ConfigStore actual = mgr.Store;
             Assert.Equal(mgr.Store, actual);
-
         }
 
         /// <summary>
@@ -88,13 +90,13 @@ namespace Health.Direct.Config.Store.Tests
         public void SetStatusTest1()
         {
             InitAnchorRecords();
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 foreach (string domain in TestDomainNames)
                 {
 
                     string subject = "CN=" + domain;
-                    AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+                    AnchorManager target = CreateManager();
                     Anchor[] actual = target.Get(subject);
                     Dump(string.Format("SetStatusTest1 Subject[{0}] which has [{1}] related certs."
                                        , subject
@@ -131,7 +133,7 @@ namespace Health.Direct.Config.Store.Tests
             foreach (string domain in TestDomainNames)
             {
                 string subject = "CN=" + domain;
-                AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+                AnchorManager target = CreateManager();
                 Anchor[] actual = target.Get(subject);
                 Dump(string.Format("SetStatusTest1 Subject[{0}] which has [{1}] related certs."
                                    , subject
@@ -164,9 +166,9 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveAllTest1()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 target.RemoveAll(db);
             }
@@ -181,7 +183,7 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveAllTest()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
 
             target.RemoveAll();
@@ -197,9 +199,9 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveTest5()
         {
             InitAnchorRecords();
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
-                AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+                AnchorManager target = CreateManager();
                 Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
                 long[] certificateIDs = new long[] { 1, 2, 3, 4, 5, 6, 7 };
                 target.Remove(db, certificateIDs);
@@ -215,7 +217,7 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveTest4()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
             long[] certificateIDs = new long[] { 1, 2, 3, 4, 5, 6, 7 };
             target.Remove(certificateIDs);
@@ -230,7 +232,7 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveTest3()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
             string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             target.Remove(ownerName);
@@ -244,10 +246,10 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void RemoveTest2()
         {
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 InitAnchorRecords();
-                AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+                AnchorManager target = CreateManager();
                 Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
                 string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
                 target.Remove(db,ownerName);
@@ -263,7 +265,7 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveTest1()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             List<Anchor> certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
             string owner = certs[0].Owner;
             string thumbprint = certs[0].Thumbprint;
@@ -280,9 +282,9 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveTest()
         {
             InitAnchorRecords();
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
-                AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+                AnchorManager target = CreateManager();
                 List<Anchor> certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
                 string owner = certs[0].Owner;
                 string thumbprint = certs[0].Thumbprint;
@@ -299,7 +301,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetOutgoingTest1()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             target.SetStatus(ownerName, EntityStatus.Enabled);
             Anchor[] actual = target.GetOutgoing(ownerName, null);
@@ -317,7 +319,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetOutgoingTest()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             Anchor[] actual = target.GetOutgoing(ownerName);
             Assert.Equal(MAXCERTPEROWNER, actual.Length);
@@ -335,7 +337,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetIncomingTest1()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             target.SetStatus(ownerName, EntityStatus.Enabled);
             Anchor[] actual = target.GetIncoming(ownerName, null);
@@ -354,7 +356,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetIncomingTest()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             Anchor[] actual = target.GetIncoming(ownerName);
             Assert.Equal(MAXCERTPEROWNER, actual.Length);
@@ -371,11 +373,11 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest6()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            AnchorManager target = CreateManager();
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
-                long lastCertID = 0;
-                int maxResults = MAXCERTPEROWNER * MAXDOMAINCOUNT + 1;
+                const long lastCertID = 0;
+                const int maxResults = MAXCERTPEROWNER * MAXDOMAINCOUNT + 1;
                 IEnumerable<Anchor> actual = target.Get(db, lastCertID, maxResults);
                 Assert.Equal(MAXCERTPEROWNER * MAXDOMAINCOUNT, actual.Count());
             }
@@ -389,9 +391,9 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest5()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
-            long lastCertID = 0;
-            int maxResults = MAXCERTPEROWNER * MAXDOMAINCOUNT + 1;
+            AnchorManager target = CreateManager();
+            const long lastCertID = 0;
+            const int maxResults = MAXCERTPEROWNER * MAXDOMAINCOUNT + 1;
             IEnumerable<Anchor> actual = target.Get(lastCertID, maxResults);
             Assert.Equal(MAXCERTPEROWNER * MAXDOMAINCOUNT, actual.Count());
             
@@ -404,7 +406,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest4()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             long[] certIDs = new long[] { 1, 2, 3, 4, 5, 6, 7 };
             Anchor[] actual = target.Get(certIDs);
             Assert.Equal(certIDs.Length, actual.Length);
@@ -422,7 +424,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest3()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             string owner = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             Anchor[] actual = target.Get(owner).ToArray();
             Assert.Equal(MAXCERTPEROWNER, actual.Count());
@@ -440,7 +442,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest2()
         {
             InitAnchorRecords();
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             List<Anchor> certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
             string owner = certs[GetRndCertID()].Owner;
             string thumbprint = certs[GetRndCertID()].Thumbprint;
@@ -458,9 +460,9 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest1()
         {
             InitAnchorRecords();
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
-                AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+                AnchorManager target = CreateManager();
                 List<Anchor> certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
                 string owner = certs[GetRndCertID()].Owner;
                 string thumbprint = certs[GetRndCertID()].Thumbprint;
@@ -478,10 +480,9 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest()
         {
             InitAnchorRecords();
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
-
-                AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+                AnchorManager target = CreateManager();
                 string owner = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
                 Anchor[] actual = target.Get(db,owner).ToArray();
                 Assert.Equal(MAXCERTPEROWNER, actual.Count());
@@ -499,7 +500,7 @@ namespace Health.Direct.Config.Store.Tests
         [PropertyData("TestAnchors")]
         public void AddTest2(Anchor anc)
         {
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             target.RemoveAll();
             target.Add(anc);
             Anchor certNew = target.Get(anc.Owner, anc.Thumbprint); //---should always be 1 (table was truncated above);
@@ -515,7 +516,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void AddTest1()
         {
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
+            AnchorManager target = CreateManager();
             target.RemoveAll();
             List<Anchor> certs = GetCleanEnumerable<Anchor>(TestAnchors);
             target.Add(certs);
@@ -530,8 +531,8 @@ namespace Health.Direct.Config.Store.Tests
         [PropertyData("TestAnchors")]
         public void AddTest(Anchor anc)
         {
-            AnchorManager target = new AnchorManager(new ConfigStore(CONNSTR));
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            AnchorManager target = CreateManager();
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 target.RemoveAll();
                 target.Add(db,anc);

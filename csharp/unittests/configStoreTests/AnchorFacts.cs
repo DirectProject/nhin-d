@@ -106,7 +106,7 @@ namespace Health.Direct.Config.Store.Tests
         public void ThumbprintTest()
         {
             Anchor target = new Anchor();
-            string expected = "somethumbprintteststring";
+            const string expected = "somethumbprintteststring";
             target.Thumbprint = expected;
             string actual = target.Thumbprint;
             Assert.Equal(expected, actual);
@@ -120,7 +120,7 @@ namespace Health.Direct.Config.Store.Tests
         public void StatusTest()
         {
             Anchor target = new Anchor();
-            EntityStatus expected = EntityStatus.New;
+            const EntityStatus expected = EntityStatus.New;
             target.Status = expected;
             EntityStatus actual = target.Status;
             Assert.Equal(expected, actual);
@@ -134,7 +134,7 @@ namespace Health.Direct.Config.Store.Tests
         public void OwnerTest()
         {
             Anchor target = new Anchor();
-            string expected = "somevalidownerstring";
+            const string expected = "somevalidownerstring";
             target.Owner = expected;
             string actual = target.Owner;
             Assert.Equal(expected, actual);
@@ -148,7 +148,7 @@ namespace Health.Direct.Config.Store.Tests
         public void IDTest()
         {
             Anchor target = new Anchor();
-            long expected = (long)(new Random().Next(1, MAXCERTPEROWNER * MAXDOMAINCOUNT));
+            long expected = new Random().Next(1, MAXCERTPEROWNER * MAXDOMAINCOUNT);
             target.ID = expected;
             long actual = target.ID;
             Assert.Equal(expected, actual);

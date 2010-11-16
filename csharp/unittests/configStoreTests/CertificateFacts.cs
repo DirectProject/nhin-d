@@ -104,7 +104,7 @@ namespace Health.Direct.Config.Store.Tests
         public void ThumbprintTest()
         {
             Certificate target = new Certificate(); 
-            string expected = "somethumbprintteststring";
+            const string expected = "somethumbprintteststring";
             target.Thumbprint = expected;
             string actual = target.Thumbprint;
             Assert.Equal(expected, actual);
@@ -118,7 +118,7 @@ namespace Health.Direct.Config.Store.Tests
         public void StatusTest()
         {
             Certificate target = new Certificate();
-            EntityStatus expected = EntityStatus.New;
+            const EntityStatus expected = EntityStatus.New;
             target.Status = expected;
             EntityStatus actual = target.Status;
             Assert.Equal(expected, actual);
@@ -132,7 +132,7 @@ namespace Health.Direct.Config.Store.Tests
         public void OwnerTest()
         {
             Certificate target = new Certificate();
-            string expected = "somevalidownerstring";
+            const string expected = "somevalidownerstring";
             target.Owner = expected;
             string actual = target.Owner;
             Assert.Equal(expected, actual);
@@ -146,7 +146,7 @@ namespace Health.Direct.Config.Store.Tests
         public void IDTest()
         {
             Certificate target = new Certificate();
-            long expected = (long)(new Random().Next(1, MAXCERTPEROWNER * MAXDOMAINCOUNT));
+            long expected = new Random().Next(1, MAXCERTPEROWNER * MAXDOMAINCOUNT);
             target.ID = expected;
             long actual = target.ID;
             Assert.Equal(expected, actual);

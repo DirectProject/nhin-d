@@ -56,6 +56,9 @@
     </Compile>
     <Compile Include="AddressManager.cs" />
     <Compile Include="AddressQueries.cs" />
+    <Compile Include="Administrator.cs" />
+    <Compile Include="AdministratorManager.cs" />
+    <Compile Include="AdministratorQueries.cs" />
     <Compile Include="AnchorManager.cs" />
     <Compile Include="AnchorQueries.cs" />
     <Compile Include="AnchorResolver.cs" />
@@ -67,6 +70,7 @@
     <Compile Include="ConfigStore.cs" />
     <Compile Include="ConfigDatabase.cs" />
     <Compile Include="ConfigStoreException.cs" />
+    <Compile Include="DateTimeHelper.cs" />
     <Compile Include="DnsRecord.cs" />
     <Compile Include="DnsRecordManager.cs" />
     <Compile Include="DnsRecordQueries.cs" />

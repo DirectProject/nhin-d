@@ -102,8 +102,8 @@ namespace Health.Direct.Config.Tools.Command
             return (T) Enum.Parse(typeof(T), value, true);
         }
         
-        static char[] Whitespace = new char[] { ' ', '\t', '\r', '\n' };
-        static char[] Quotes = new char[] { '"' };
+        static readonly char[] Whitespace = new[] { ' ', '\t', '\r', '\n' };
+        static readonly char[] Quotes = new[] { '"' };
         
         /// <summary>
         /// Parse the string as though it was a command line, handling quoted arguments correctly.
