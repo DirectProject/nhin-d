@@ -22,14 +22,15 @@ namespace Health.Direct.Config.Store
         public const string Namespace = "urn:directproject:config/store/082010";
 
         public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
-        
-        string m_connectString;
+
+        readonly string m_connectString;
         TimeSpan m_timeout;
-        DomainManager m_domains;
-        AddressManager m_addresses;
-        CertificateManager m_certificates;
-        AnchorManager m_anchors;
-        DnsRecordManager m_dnsRecords;
+        readonly DomainManager m_domains;
+        readonly AddressManager m_addresses;
+        readonly CertificateManager m_certificates;
+        readonly AnchorManager m_anchors;
+        readonly DnsRecordManager m_dnsRecords;
+        readonly AdministratorManager m_administrators;
         
         public ConfigStore(string connectString)
             : this(connectString, DefaultTimeout)
@@ -54,6 +55,7 @@ namespace Health.Direct.Config.Store
             m_certificates = new CertificateManager(this);
             m_anchors = new AnchorManager(this);
             m_dnsRecords = new DnsRecordManager(this);
+            m_administrators = new AdministratorManager(this);
         }
 
         public TimeSpan Timeout
@@ -119,20 +121,27 @@ namespace Health.Direct.Config.Store
                 return m_dnsRecords;
             }
         }
+
+        public AdministratorManager Administrators
+        {
+            get
+            {
+                return m_administrators;
+            }
+        }
                 
         public ConfigDatabase CreateContext()
         {
-            ConfigDatabase db = new ConfigDatabase(m_connectString);
-            db.CommandTimeout = this.TimeoutSeconds;
-            return db;
+            return new ConfigDatabase(m_connectString) {CommandTimeout = this.TimeoutSeconds};
         }
 
         public ConfigDatabase CreateReadContext()
         {
-            ConfigDatabase db = new ConfigDatabase(m_connectString);
-            db.CommandTimeout = this.TimeoutSeconds;
-            db.ObjectTrackingEnabled = false;            
-            return db;
+            return new ConfigDatabase(m_connectString)
+                       {
+                           CommandTimeout = this.TimeoutSeconds,
+                           ObjectTrackingEnabled = false
+                       };
         }
     }
 }

@@ -138,7 +138,7 @@ namespace Health.Direct.Config.Store
             , long recordID){
                 table.Context.ExecuteCommand(Sql_UpdateDnsRecord
                     , recordData
-                    , DateTime.Now
+                    , DateTimeHelper.Now
                     , recordID);
         }
     }

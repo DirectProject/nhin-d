@@ -34,7 +34,7 @@ namespace Health.Direct.Config.Store
         public DnsRecord()
         {
             RecordID = -1;
-            this.CreateDate = DateTime.Now;
+            this.CreateDate = DateTimeHelper.Now;
             this.UpdateDate = this.CreateDate;
         }
 
@@ -138,7 +138,7 @@ namespace Health.Direct.Config.Store
             }
             this.RecordData = source.RecordData;
             this.Notes = source.Notes;
-            this.UpdateDate = DateTime.Now;
+            this.UpdateDate = DateTimeHelper.Now;
         }
     }
 }

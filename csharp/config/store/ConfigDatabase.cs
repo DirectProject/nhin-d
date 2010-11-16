@@ -24,6 +24,7 @@ namespace Health.Direct.Config.Store
     public class ConfigDatabase : DataContext
     {
         Table<Certificate> m_certs;
+        Table<Administrator> m_administrators;
         Table<Anchor> m_anchors;
         Table<Domain> m_domains;
         Table<Address> m_addresses;
@@ -35,19 +36,56 @@ namespace Health.Direct.Config.Store
         {
         }
 
-        public Table<Domain> Domains
+        public Table<Address> Addresses
         {
             get
             {
-                if (m_domains == null)
+                if (m_addresses == null)
                 {
-                    m_domains = this.GetTable<Domain>();
+                    m_addresses = this.GetTable<Address>();
                 }
 
-                return m_domains;
+                return m_addresses;
             }
         }
 
+        public Table<Administrator> Administrators
+        {
+            get
+            {
+                if (m_administrators == null)
+                {
+                    m_administrators = this.GetTable<Administrator>();
+                }
+
+                return m_administrators;
+            }
+        }
+
+        public Table<Anchor> Anchors
+        {
+            get
+            {
+                if (m_anchors == null)
+                {
+                    m_anchors = this.GetTable<Anchor>();
+                }
+
+                return m_anchors;
+            }
+        }
+        public Table<Certificate> Certificates
+        {
+            get
+            {
+                if (m_certs == null)
+                {
+                    m_certs = this.GetTable<Certificate>();
+                }
+
+                return m_certs;
+            }
+        }
 
         public Table<DnsRecord> DnsRecords
         {
@@ -62,43 +100,16 @@ namespace Health.Direct.Config.Store
             }
         }
 
-
-        public Table<Address> Addresses
+        public Table<Domain> Domains
         {
             get
             {
-                if (m_addresses == null)
+                if (m_domains == null)
                 {
-                    m_addresses = this.GetTable<Address>();
+                    m_domains = this.GetTable<Domain>();
                 }
 
-                return m_addresses;
-            }
-        }
-        
-        public Table<Certificate> Certificates
-        {
-            get
-            {
-                if (m_certs == null)
-                {
-                    m_certs = this.GetTable<Certificate>();
-                }
-                
-                return m_certs;
-            }
-        }
-        
-        public Table<Anchor> Anchors
-        {
-            get
-            {
-                if (m_anchors == null)
-                {
-                    m_anchors = this.GetTable<Anchor>();
-                }
-                
-                return m_anchors;
+                return m_domains;
             }
         }
 

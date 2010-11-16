@@ -213,7 +213,7 @@ namespace Health.Direct.Config.Store
             // We always store the certificate as PFX
             //
             this.Data = certificate.Export(X509ContentType.Pfx);
-            this.CreateDate = DateTime.Now;
+            this.CreateDate = DateTimeHelper.Now;
             this.ValidStartDate = certificate.NotBefore;
             this.ValidEndDate = certificate.NotAfter;
         }

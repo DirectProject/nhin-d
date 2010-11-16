@@ -56,7 +56,7 @@ namespace Health.Direct.Config.Store
             this.Owner = owner;
             this.Thumbprint = certificate.Thumbprint;
             this.Data = certificate.RawData;
-            this.CreateDate = DateTime.Now;
+            this.CreateDate = DateTimeHelper.Now;
             this.ValidStartDate = certificate.NotBefore;
             this.ValidEndDate = certificate.NotAfter;
             this.ForIncoming = forIncoming;
