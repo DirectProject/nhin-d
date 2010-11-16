@@ -30,7 +30,7 @@ namespace Health.Direct.Config.Store
         
         public Domain()
         {
-            this.CreateDate = DateTime.Now;
+            this.CreateDate = DateTimeHelper.Now;
             this.UpdateDate = this.CreateDate;
             this.Status = EntityStatus.New;
         }
@@ -116,7 +116,7 @@ namespace Health.Direct.Config.Store
         {
             this.PostmasterID = source.PostmasterID;
             this.Status = source.Status;
-            this.UpdateDate = DateTime.Now;
+            this.UpdateDate = DateTimeHelper.Now;
         }
         
         public bool IsValidEmailDomain()
