@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DomainDaoTest  {
 	
-	public static final String derbyHomeLoc = "/src/test/resources/data";	
+	public static final String derbyHomeLoc = "/target/data";	
 	
 	static
 	{
