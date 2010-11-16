@@ -11,15 +11,11 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-    <% if (ViewData["Domain"] != null) { %>
-        <%= Html.Partial("FilterReminder", "anchors") %>
-        <div class="action-bar clear">
-            <%= Html.ActionLink("Add Anchor", "Add", new { owner = ((DomainModel)ViewData["Domain"]).Name }, new { @class = "action ui-priority-primary" })%>
-        </div>
-    <% } else { %>
-        <%= Html.Partial("AllItemsReminder", "anchors") %>
-    <% } %>
-    
+    <%= Html.Partial(ViewData["Domain"] == null? "AllItemsReminder" : "FilterReminder", "anchors")%>
+    <div class="action-bar clear">
+        <%= Html.ActionLink("Add Anchor", "Add", new { domainID = ((DomainModel)ViewData["Domain"] ?? new DomainModel()).ID }, new { @class = "action ui-priority-primary" })%>
+    </div>
+   
     <%= Html.Partial("AnchorList", Model, ViewData) %>
     <%= Html.Partial("AnchorDetailsDialog") %>
 
