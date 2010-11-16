@@ -258,6 +258,7 @@ namespace Health.Direct.Config.Console.Command
             CommandUI.Print("ValidEnd", cert.ValidEndDate);
             CommandUI.Print("ForIncoming", cert.ForIncoming);
             CommandUI.Print("ForOutgoing", cert.ForOutgoing);
+            CommandUI.Print("Status", cert.Status);
             
             if (cert.HasData)
             {

@@ -13,7 +13,7 @@ call :MakeCert %1 %2 %3
 goto :Done
 
 :MakeCert
-makecert -pe -n "CN=%cn%" -ss my -sr LocalMachine -a sha1 -sky signature -in "%ca%" -is MY -cy end -ir LocalMachine %3\%1.cer 
+makecert -pe -n "CN=%cn%" -ss my -sr LocalMachine -a sha1 -sky signature -in "%ca%" -is MY -cy end -ir LocalMachine %3\%cn%.cer 
 goto :EOF
 
 :Usage
