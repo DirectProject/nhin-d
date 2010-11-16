@@ -25,8 +25,7 @@ public class ClientProxyEndToEndTest
 	@AfterClass
 	public static void tearDownClass() throws Exception
 	{
-		
-		ConfigServiceRunner.shutDownConfigService();
+
 	}
 	
 	private void cleanDomains() throws Exception

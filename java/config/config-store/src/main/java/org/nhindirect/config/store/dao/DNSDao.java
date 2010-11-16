@@ -23,7 +23,7 @@ import org.nhindirect.config.store.DNSRecord;
 /**
  * DAO interface for DNS records
  * @author Greg Meyer
- *
+ * @since 1.1
  */
 public interface DNSDao
 {
@@ -36,7 +36,7 @@ public interface DNSDao
 	/**
 	 * Gets DNS records by record name.
 	 * @param name The record name.
-	 * @return An array of records matching the name and of any type.
+	 * @return A collection of records matching the name and of any type.
 	 */
 	public Collection<DNSRecord> get(String name);
 	
@@ -44,21 +44,21 @@ public interface DNSDao
 	 * Gets DNS records by record name and a specific record type.
 	 * @param name The record name.
 	 * @param type The record type to search for.
-	 * @return An array of records matching the name and record type.
+	 * @return A collection of records matching the name and record type.
 	 */
 	public Collection<DNSRecord> get(String name, int type);
 	
 	/**
-	 * Gets all DNS records or a given type.
+	 * Gets all DNS records or a given type.  Using type ANY will return all records in the store.
 	 * @param type The record type to search for.
-	 * @return An array of records matching the record type.
+	 * @return A collection of records matching the record type.
 	 */
 	public Collection<DNSRecord> get(int type);
 	
 	/**
-	 * Gets DNS records by the internal record id.
+	 * Gets DNS records by the internal record ids.
 	 * @param recordIds Array of record ids to search for.
-	 * @return An array of records matching the record ids.
+	 * @return A collection of records matching the record ids.
 	 */
 	public Collection<DNSRecord> get(long[] recordIds);
 	
@@ -83,7 +83,7 @@ public interface DNSDao
 	
 	/**
 	 * Removes DNS records by existing internal record ids.
-	 * @param recordId The internal record ids to delete.
+	 * @param recordIds The internal record ids to delete.
 	 */	
 	public void remove(long[] recordIds);
 	

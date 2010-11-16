@@ -22,7 +22,7 @@ public class ConfigurationServiceImplServiceLocator extends org.apache.axis.clie
     }
 
     // Use to get a proxy class for ConfigurationServiceImplPort
-    private java.lang.String ConfigurationServiceImplPort_address = "http://localhost:8080/config/ConfigurationService";
+    private java.lang.String ConfigurationServiceImplPort_address = "http://localhost:8081/config-service/ConfigurationService";
 
     public java.lang.String getConfigurationServiceImplPortAddress() {
         return ConfigurationServiceImplPort_address;
