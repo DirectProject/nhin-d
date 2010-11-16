@@ -33,18 +33,17 @@ namespace Health.Direct.Config.Console.Command
         private const string ImportMXUsage
             = "Import a new MX dns record from a binary file."
               + Constants.CRLF + "    filepath "
-              + Constants.CRLF + "\t filePath: path fo the MX record binary file. Can have any (or no extension)";
+              + Constants.CRLF + "\t filePath: path to the MX record binary file. Can have any (or no extension)";
 
         private const string ImportSOAUsage
             = "Import a new SOA dns record from a binary file."
               + Constants.CRLF + "    filepath "
-              + Constants.CRLF + "\t filePath: path fo the SOA record binary file. Can have any (or no extension)";
+              + Constants.CRLF + "\t filePath: path to the SOA record binary file. Can have any (or no extension)";
 
         private const string ImportAddressUsage
             = "Import a new A dns record from a binary file."
               + Constants.CRLF + "    filepath "
-              + Constants.CRLF + "\t filePath: path fo the A record binary file. Can have any (or no extension)";
-
+              + Constants.CRLF + "\t filePath: path to the A record binary file. Can have any (or no extension)";
 
         private const string AddMXUsage
             = "Add a new MX dns record."
@@ -111,15 +110,15 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + "  recordid"
               + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
 
-        private const string UpdateMXUsage
-            = "Update an existing MX dns record."
-              + Constants.CRLF + "  recordid domainname exchange ttl [preference] [notes]"
-              + Constants.CRLF + "\t recordid: id of the record to be update"
-              + Constants.CRLF + "\t domainname: new domain name for the record"
-              + Constants.CRLF + "\t exchange: new smtp domain name for the record"
-              + Constants.CRLF + "\t ttl: new time to live, 32bit int"
-              + Constants.CRLF + "\t [preference]: new short value indicating preference of the record"
-              + Constants.CRLF + "\t [notes]: new description for the record";
+        //private const string UpdateMXUsage
+        //    = "Update an existing MX dns record."
+        //      + Constants.CRLF + "  recordid domainname exchange ttl [preference] [notes]"
+        //      + Constants.CRLF + "\t recordid: id of the record to be update"
+        //      + Constants.CRLF + "\t domainname: new domain name for the record"
+        //      + Constants.CRLF + "\t exchange: new smtp domain name for the record"
+        //      + Constants.CRLF + "\t ttl: new time to live, 32bit int"
+        //      + Constants.CRLF + "\t [preference]: new short value indicating preference of the record"
+        //      + Constants.CRLF + "\t [notes]: new description for the record";
 
         #endregion
 
@@ -138,7 +137,7 @@ namespace Health.Direct.Config.Console.Command
         /// <returns>bytes from the bin file</returns>
         protected T LoadAndVerifyDnsRecordFromBin<T>(string path) where T : DnsResourceRecord
         {
-            T record = null;
+            T record;
             //----------------------------------------------------------------------------------------------------
             //---read the stream from the bytes
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -146,7 +145,7 @@ namespace Health.Direct.Config.Console.Command
                 byte[] bytes = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
                 DnsBufferReader rdr = new DnsBufferReader(bytes, 0, bytes.Length);
                 record = DnsResourceRecord.Deserialize(ref rdr) as T;
-                if (record.GetType() != typeof(T))
+                if (record == null)
                 {
                     throw new TypeLoadException("unexpected type encountered in file");
                 }
@@ -175,8 +174,7 @@ namespace Health.Direct.Config.Console.Command
         protected void ImportRecord<T>(string path
             , int typeID) where T : DnsResourceRecord
         {
-            DnsRecord dnsRecord = new DnsRecord();
-            dnsRecord.TypeID = typeID;
+            DnsRecord dnsRecord = new DnsRecord {TypeID = typeID};
             T record = this.LoadAndVerifyDnsRecordFromBin<T>(path);
             dnsRecord.RecordData = GetBytesFromRecord(record);
             dnsRecord.DomainName = record.Name;
@@ -189,12 +187,9 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Dns_MX_Import", Usage = ImportMXUsage)]
         public void MXImport(string[] args)
         {
-            DnsRecord rec = new DnsRecord();
-
             string path = args.GetRequiredValue(0);
             this.ImportRecord<MXRecord>(path
                 , (int)DnsStandard.RecordType.MX);
-
         }
 
         /// <summary>
@@ -203,12 +198,9 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Dns_SOA_Import", Usage = ImportSOAUsage)]
         public void SOAImport(string[] args)
         {
-            DnsRecord rec = new DnsRecord();
-
             string path = args.GetRequiredValue(0);
             this.ImportRecord<SOARecord>(path
                 , (int)DnsStandard.RecordType.SOA);
-
         }
 
         /// <summary>
@@ -217,12 +209,9 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Dns_ANAME_Import", Usage = ImportAddressUsage)]
         public void ImportAddress(string[] args)
         {
-            DnsRecord rec = new DnsRecord();
-
             string path = args.GetRequiredValue(0);
             this.ImportRecord<AddressRecord>(path
                 , (int)DnsStandard.RecordType.ANAME);
-
         }       
 
         /// <summary>
@@ -240,12 +229,13 @@ namespace Health.Direct.Config.Console.Command
  
             MXRecord record = new MXRecord(domainName
                 , exchange
-                , pref);
-            record.TTL = ttl;
+                , pref) {TTL = ttl};
+
             DnsRecord dns = new DnsRecord(domainName
                 , (int)DnsStandard.RecordType.MX
                 , this.GetBytesFromRecord(record)
                 , notes);
+
             Client.AddDnsRecord(dns);
         }
 
@@ -262,10 +252,10 @@ namespace Health.Direct.Config.Console.Command
             int serialNumber = args.GetRequiredValue<int>(3);
             int ttl = args.GetRequiredValue<int>(4);
 
-            int refresh = args.GetOptionalValue<int>(5,0);
-            int retry = args.GetOptionalValue<int>(6,0);
-            int expire = args.GetOptionalValue<int>(7,0);
-            int minimum = args.GetOptionalValue<int>(8,0);
+            int refresh = args.GetOptionalValue(5,0);
+            int retry = args.GetOptionalValue(6,0);
+            int expire = args.GetOptionalValue(7,0);
+            int minimum = args.GetOptionalValue(8,0);
             string notes = args.GetOptionalValue(9,string.Empty);
 
             SOARecord record = new SOARecord(domainName
@@ -275,12 +265,13 @@ namespace Health.Direct.Config.Console.Command
                , refresh
                , retry
                , expire
-               , minimum);
-            record.TTL = ttl;
+               , minimum) {TTL = ttl};
+
             DnsRecord dns = new DnsRecord(domainName
                 , (int)DnsStandard.RecordType.SOA
                 , this.GetBytesFromRecord(record)
                 , notes);
+
             Client.AddDnsRecord(dns);
         }
 
@@ -297,12 +288,13 @@ namespace Health.Direct.Config.Console.Command
             string notes = args.GetOptionalValue(3, string.Empty);
 
             AddressRecord record = new AddressRecord(domainName
-               , ipAddress);
-            record.TTL = ttl;
+               , ipAddress) {TTL = ttl};
+
             DnsRecord dns = new DnsRecord(domainName
                 , (int)DnsStandard.RecordType.ANAME
                 , this.GetBytesFromRecord(record)
                 , notes);
+
             Client.AddDnsRecord(dns);
         }
 
@@ -363,6 +355,7 @@ namespace Health.Direct.Config.Console.Command
             DnsBufferReader dbr = new DnsBufferReader(dr.RecordData
                 , 0
                 , dr.RecordData.Length);
+
             MXRecord ar = DnsResourceRecord.Deserialize(ref dbr) as MXRecord;
             if (ar == null)
             {
@@ -371,6 +364,7 @@ namespace Health.Direct.Config.Console.Command
                     , ((DnsStandard.RecordType)dr.TypeID))));
                 return;
             }
+
             CommandUI.Print("DomainName", ar.Name);
             CommandUI.Print("Exchange", ar.Exchange);
             CommandUI.Print("Preference", ar.Preference);
@@ -447,6 +441,7 @@ namespace Health.Direct.Config.Console.Command
             DnsBufferReader dbr = new DnsBufferReader(dr.RecordData
                 ,0
                 ,dr.RecordData.Length);
+
             AddressRecord ar = DnsResourceRecord.Deserialize(ref dbr) as AddressRecord;
             if (ar == null)
             {
@@ -455,14 +450,13 @@ namespace Health.Direct.Config.Console.Command
                     ,((DnsStandard.RecordType)dr.TypeID))));
                 return;
             }
+
             CommandUI.Print("DomainName", ar.Name);
             CommandUI.Print("IP Address", ar.IPAddress);
             CommandUI.Print("TTL", ar.TTL);
             CommandUI.Print("CreateDate", dr.CreateDate);
             CommandUI.Print("UpdateDate", dr.UpdateDate);
             CommandUI.Print("Notes", dr.Notes);
-                
-
         }
 
         /*

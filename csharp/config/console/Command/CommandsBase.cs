@@ -55,10 +55,10 @@ namespace Health.Direct.Config.Console.Command
     {
         private readonly Func<T> m_clientResolver;
 
-        internal CommandsBase(ConfigConsole console, Func<T> clientReosolver)
+        internal CommandsBase(ConfigConsole console, Func<T> clientResolver)
             : base(console)
         {
-            m_clientResolver = clientReosolver;
+            m_clientResolver = clientResolver;
         }
 
         protected T Client

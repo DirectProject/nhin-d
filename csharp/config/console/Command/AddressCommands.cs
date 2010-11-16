@@ -63,10 +63,17 @@ namespace Health.Direct.Config.Console.Command
             else
             {
                 Domain domain = GetCommand<DomainCommands>().DomainGet(address.Host);
-                Address newAddress = new Address(domain.ID, address.Address, displayName) {Type = addressType};
+                if (domain == null)
+                {
+                    WriteLine("Domain does not exist {0}", address.Host);
+                }
+                else
+                {
+                    Address newAddress = new Address(domain.ID, address.Address, displayName) { Type = addressType };
 
-                Client.AddAddress(newAddress);
-                WriteLine("Added {0}", address);
+                    Client.AddAddress(newAddress);
+                    WriteLine("Added {0}", address);
+                }
             }
         }
 
