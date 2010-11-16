@@ -17,7 +17,13 @@
         <fieldset class="ui-widget-content">
         
             <span class="display-label">Owner</span>
-            <span class="display-field"><%= Html.DisplayFor(m => m.Owner) %></span>
+            <span class="display-field">
+            <% if (string.IsNullOrEmpty(Model.Owner)) { %>
+                <%= Html.EditorFor(m => m.Owner)%>
+            <% } else { %>
+                <%= Html.DisplayFor(m => m.Owner)%>
+            <% } %>
+            </span>
             <br class="clear" />
 
             <span class="display-label"><%= Html.LabelFor(m => m.Purpose) %></span>

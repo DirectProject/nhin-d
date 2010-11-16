@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Linq;
+using System.Net.Mail;
 using System.Web.Mvc;
 
 using Health.Direct.Admin.Console.Models;
@@ -48,7 +49,7 @@ namespace Health.Direct.Admin.Console.Controllers
             ViewData["DateTimeFormat"] = "M/d/yyyy h:mm:ss tt";
 
             Func<Address, bool> filter = address => true;
-            if (domainID.HasValue)
+            if (domainID.HasValue && domainID.Value > 0)
             {
                 var domain = Mapper.Map<Domain, DomainModel>(m_domainRepository.Get(domainID.Value));
                 ViewData["Domain"] = domain;
@@ -73,13 +74,29 @@ namespace Health.Direct.Admin.Console.Controllers
         {
             var model = Mapper.Map<Address, AddressModel>(new Address());
 
-            if (TryUpdateModel(model))
+            if (LocalTryUpdateModel(model))
             {
-                Repository.Add(Mapper.Map<AddressModel, Address>(model));
-                return RedirectToAction("Index", new { domainID = model.DomainID });
+                var address = Mapper.Map<AddressModel, Address>(model);
+                Repository.Add(address);
+                return RedirectToAction("Index", new { domainID = address.DomainID });
             }
 
             return View(model);
+        }
+
+        private bool LocalTryUpdateModel(AddressModel model)
+        {
+            if (!TryUpdateModel(model)) return false;
+
+            var domain = m_domainRepository.GetByDomainName(new MailAddress(model.EmailAddress).Host);
+            if (domain == null)
+            {
+                ModelState.AddModelError("EmailAddress", "Domain does not exist for email address");
+                return false;
+            }
+
+            model.DomainID = domain.ID;
+            return true;
         }
 
         [Authorize]

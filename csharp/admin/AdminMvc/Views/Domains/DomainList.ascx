@@ -10,20 +10,20 @@
     .HeaderRowAttributes(new Dictionary<string, object> { { "class", "ui-widget-header" } })
     .Columns(
         column =>
-            {
-                column.For(d => d.Name);
-                column.For(d => d.Status).Attributes(@class => "status");
-                column.For(d => Html.Span(Formatter.Format(d.CreateDate), new { title = d.CreateDate.ToString() })).Named("Created On");
-                column.For(d => Html.Span(Formatter.Format(d.UpdateDate), new { title = d.UpdateDate.ToString() })).Named("Updated On");
-                column.For(d => Html.ActionLink("View", "Details", new {id = d.ID}, new { @class = "view-details"}));
-                column.For(d => Html.ActionLink("Addresses", "Addresses", new { id = d.ID }));
-                column.For(d => Html.ActionLink("Anchors", "Anchors", new { id = d.ID }));
-                column.For(d => Html.ActionLink("Certificates", "Certificates", new { id = d.ID }));
-                column.For(d => d.IsEnabled
-                                    ? Html.ActionLink("Disable", "Disable", new {id = d.ID}, new {@class = "enable-disable-action"})
-                                    : Html.ActionLink("Enable", "Enable", new { id = d.ID }, new { @class = "enable-disable-action" }));
-                column.For(d => Html.ActionLink("Delete", "Delete", new { id = d.ID }, new { @class = "toolbar-button delete-action" }));
-            })%>
+        {
+            column.For(d => d.Name);
+            column.For(d => d.Status).Attributes(@class => "status");
+            column.For(d => Html.Span(Formatter.Format(d.CreateDate), new { title = d.CreateDate.ToString() })).Named("Created On");
+            column.For(d => Html.Span(Formatter.Format(d.UpdateDate), new { title = d.UpdateDate.ToString() })).Named("Updated On");
+            column.For(d => Html.ActionLink("View", "Details", new {id = d.ID}, new { @class = "view-details"}));
+            column.For(d => Html.ActionLink("Addresses", "Addresses", new { id = d.ID }));
+            column.For(d => Html.ActionLink("Anchors", "Anchors", new { id = d.ID }));
+            column.For(d => Html.ActionLink("Certificates", "Certificates", new { id = d.ID }));
+            column.For(d => d.IsEnabled
+                                ? Html.ActionLink("Disable", "Disable", new {id = d.ID}, new {@class = "enable-disable-action"})
+                                : Html.ActionLink("Enable", "Enable", new { id = d.ID }, new { @class = "enable-disable-action" }));
+            column.For(d => Html.ActionLink("Delete", "Delete", new { id = d.ID }, new { @class = "toolbar-button delete-action" }));
+        })%>
             
 <%= Html.Pager((IPagination)Model) %>
 

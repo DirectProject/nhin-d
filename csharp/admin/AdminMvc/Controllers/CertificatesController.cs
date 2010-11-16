@@ -71,9 +71,10 @@ namespace Health.Direct.Admin.Console.Controllers
         }
 
         [Authorize]
-        public ActionResult Add(string owner)
+        public ActionResult Add(long domainID)
         {
-            return View(new CertificateUploadModel {Owner = owner});
+            var domain = m_domainRepository.Get(domainID);
+            return View(new CertificateUploadModel {Owner = domain != null? domain.Name : null});
         }
 
         [Authorize]

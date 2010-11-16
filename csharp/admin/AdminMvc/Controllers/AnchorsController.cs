@@ -71,9 +71,9 @@ namespace Health.Direct.Admin.Console.Controllers
         }
 
         [Authorize]
-        public ActionResult Add(string owner)
+        public ActionResult Add(DomainModel domain)
         {
-            return View(new AnchorUploadModel { Owner = owner });
+            return View(new AnchorUploadModel { Owner = (domain != null)? domain.Name : null });
         }
 
         [Authorize]
