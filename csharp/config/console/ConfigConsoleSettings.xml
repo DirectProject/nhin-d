@@ -13,7 +13,7 @@
   </CertificateManager>
   <AnchorManager>
     <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
-  </AnchorManager>
+  </AnchorManager>  
   <!--
   <DomainManager>
     <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
