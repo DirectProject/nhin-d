@@ -30,6 +30,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.bouncycastle.util.Arrays;
+import org.nhindirect.config.store.util.DNSRecordUtils;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
@@ -41,6 +42,7 @@ import org.xbill.DNS.Section;
  * DNS record type.
  * 
  * @author Greg Meyer
+ * @since 1.1
  */
 public class DNSRecord 
 {
@@ -201,17 +203,7 @@ public class DNSRecord
 	 */
 	public static DNSRecord fromWire(byte[] data) throws IOException
 	{
-		Record rec = Record.fromWire(data, Section.ANSWER);
-		
-		DNSRecord retVal = new DNSRecord();
-		
-		retVal.setDclass(rec.getDClass());
-		retVal.setName(rec.getName().toString());
-		retVal.setData(rec.rdataToWireCanonical());
-		retVal.setTtl(rec.getTTL());
-		retVal.setType(rec.getType());
-		
-		return retVal;
+		return DNSRecordUtils.fromWire(data);
 	}
 	
 	/**
@@ -222,10 +214,7 @@ public class DNSRecord
 	 */
 	public static byte[] toWire(DNSRecord rec) throws IOException
 	{
-		Record retVal = Record.newRecord(Name.fromString(rec.getName()), rec.getType(), rec.getDclass(), 
-				rec.getTtl(), rec.getData());
-		
-		return retVal.toWireCanonical();
+		return DNSRecordUtils.toWire(rec);
 	}
 	
 	/**

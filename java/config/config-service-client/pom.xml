@@ -112,7 +112,20 @@
                 <version>1.5.8</version>
                 <type>jar</type>
                 <scope>test</scope>
-        </dependency>    				
+        </dependency>  
+		<dependency>
+		    <groupId>dnsjava</groupId>
+		    <artifactId>dnsjava</artifactId>
+		    <version>2.0.8</version>	 
+            <scope>test</scope>		       
+		</dependency>	
+        <dependency>
+            <groupId>org.nhind</groupId>
+            <artifactId>config-store</artifactId>
+            <version>1.1-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>  						
 	</dependencies>
 	<build>
 		<pluginManagement>
@@ -162,7 +175,7 @@
 		                <artifactItem>
 		                  <groupId>org.nhind</groupId>
 		                  <artifactId>config-service</artifactId>
-		                  <version>1.0</version>
+		                  <version>1.1-SNAPSHOT</version>
 		                  <type>war</type>
 		                  <overWrite>true</overWrite>
 		                  <destFileName>config-service.war</destFileName>

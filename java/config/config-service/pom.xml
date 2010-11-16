@@ -280,7 +280,7 @@
 							<maxIdleTime>60000</maxIdleTime>                
 						</connector> 
 			        </connectors>
-			        <webApp>${basedir}/target/config-service-1.0-SNAPSHOT</webApp>
+			        <webApp>${basedir}/target/config-service-1.1-SNAPSHOT</webApp>
 			        <requestLog implementation="org.mortbay.jetty.NCSARequestLog">
 			            <filename>target/yyyy_mm_dd.request.log</filename>
 			            <retainDays>90</retainDays>

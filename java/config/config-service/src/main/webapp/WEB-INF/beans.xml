@@ -26,8 +26,9 @@
 				  <property name="domainSvc" ref="domainSvc"/>
 				  <property name="addressSvc" ref="addressSvc"/>
 				  <property name="anchorSvc" ref="anchorSvc"/>
-				  <property name="certSvc" ref="certSvc"></property>
-				  <property name="settingSvc" ref="settingSvc"></property>
+				  <property name="certSvc" ref="certSvc"/>
+				  <property name="settingSvc" ref="settingSvc"/>
+                  <property name="DNSSvc" ref="dnsSvc"/>
 			</bean>
 			
 		</jaxws:implementor>
@@ -52,6 +53,9 @@
 	<bean id="settingSvc" class="org.nhindirect.config.service.impl.SettingServiceImpl">
 	   <property name="dao" ref="settingDao"/>
 	</bean>
+	<bean id="dnsSvc" class="org.nhindirect.config.service.impl.DNSServiceImpl">
+	   <property name="dao" ref="dnsDao"/>
+	</bean>	
 
     <!--  DAO's -->
     <bean id="domainDao" class="org.nhindirect.config.store.dao.impl.DomainDaoImpl"/>
@@ -59,6 +63,7 @@
     <bean id="anchorDao" class="org.nhindirect.config.store.dao.impl.AnchorDaoImpl" />
     <bean id="certificateDao" class="org.nhindirect.config.store.dao.impl.CertificateDaoImpl"/>
     <bean id="settingDao" class="org.nhindirect.config.store.dao.impl.SettingDaoImpl"/> 
+    <bean id="dnsDao" class="org.nhindirect.config.store.dao.impl.DNSDaoImpl"/> 
     
 	<!-- Exception translation bean post processor -->
 	<bean

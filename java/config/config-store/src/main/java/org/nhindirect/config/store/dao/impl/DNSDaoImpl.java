@@ -40,7 +40,7 @@ import org.xbill.DNS.Type;
 /**
  * JPA implementation of the DNSDao interface.
  * @author Greg Meyer
- *
+ * @since 1.1
  */
 @Repository
 public class DNSDaoImpl implements DNSDao 

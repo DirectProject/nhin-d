@@ -34,12 +34,14 @@ import org.nhindirect.config.service.CertificateService;
 import org.nhindirect.config.service.ConfigurationFault;
 import org.nhindirect.config.service.ConfigurationService;
 import org.nhindirect.config.service.ConfigurationServiceException;
+import org.nhindirect.config.service.DNSService;
 import org.nhindirect.config.service.DomainService;
 import org.nhindirect.config.service.SettingService;
 
 import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.Anchor;
 import org.nhindirect.config.store.Certificate;
+import org.nhindirect.config.store.DNSRecord;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.store.Setting;
@@ -64,6 +66,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private AnchorService anchorSvc;
 
     private SettingService settingSvc;
+    
+    private DNSService dnsSvc;
     
     /**
      * Initialization method.
@@ -443,6 +447,26 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         this.anchorSvc = anchorSvc;
     }    
     
+    /**
+     * Get the DNSService object.
+     * 
+     * @return the DNSService object.
+     */
+    public DNSService getDNSSvc() {
+        return dnsSvc;
+    }
+
+    /**
+     * Set the DNSService object.
+     * 
+     * @param anchorSvc
+     *            The DNSService object.
+     */
+    @Autowired
+    public void setDNSSvc(DNSService dnsSvc) {
+        this.dnsSvc = dnsSvc;
+    }       
+    
     /*
      * (non-Javadoc)
      * 
@@ -623,5 +647,124 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 	public void deleteSetting(Collection<String> names) throws ConfigurationServiceException {
 		settingSvc.deleteSetting(names);
 		
-	}    
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void addDNS(Collection<DNSRecord> records)
+			throws ConfigurationServiceException 
+	{
+		dnsSvc.addDNS(records);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public Collection<DNSRecord> getDNSByName(String name)
+			throws ConfigurationServiceException 
+	{
+		return dnsSvc.getDNSByName(name);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public Collection<DNSRecord> getDNSByNameAndType(String name, int type)
+			throws ConfigurationServiceException 
+	{
+		return dnsSvc.getDNSByNameAndType(name, type);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public DNSRecord getDNSByRecordId(long recordId)
+			throws ConfigurationServiceException 
+	{
+		return dnsSvc.getDNSByRecordId(recordId);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public Collection<DNSRecord> getDNSByRecordIds(long[] recordIds)
+			throws ConfigurationServiceException 
+	{
+		return dnsSvc.getDNSByRecordIds(recordIds);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public Collection<DNSRecord> getDNSByType(int type)
+			throws ConfigurationServiceException 
+	{
+		return dnsSvc.getDNSByType(type);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public int getDNSCount() throws ConfigurationServiceException 
+	{
+		return dnsSvc.getDNSCount();
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void removeDNS(Collection<DNSRecord> records)
+			throws ConfigurationServiceException 
+	{
+		dnsSvc.removeDNS(records);
+	}
+
+	@Override
+	public void removeDNSByRecordId(long recordId)
+			throws ConfigurationServiceException 
+	{
+		dnsSvc.removeDNSByRecordId(recordId);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void removeDNSByRecordIds(long[] recordIds)
+			throws ConfigurationServiceException 
+	{
+		dnsSvc.removeDNSByRecordIds(recordIds);
+		
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void updateDNS(long recordId, DNSRecord record)
+			throws ConfigurationServiceException 
+	{
+		dnsSvc.updateDNS(recordId, record);
+	}   
+	
+	
 }

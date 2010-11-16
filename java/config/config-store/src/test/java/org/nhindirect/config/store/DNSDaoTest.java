@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nhindirect.config.store.dao.DNSDao;
+import org.nhindirect.config.store.util.DNSRecordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -67,7 +68,7 @@ public class DNSDaoTest
 		return FileUtils.readFileToByteArray(fl);
 	}
 	
-	
+	/*
 	private DNSRecord createARecord(String name, String ip) throws Exception
 	{
 		if (!name.endsWith("."))
@@ -101,6 +102,7 @@ public class DNSDaoTest
 		
 		return DNSRecord.fromWire(rec.toWireCanonical());
 	}	
+	*/
 	
 	@Test
 	public void testCleanDatabase() throws Exception 
@@ -130,7 +132,7 @@ public class DNSDaoTest
 
     	X509Certificate cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(bais);
     	
-    	DNSRecord record1 = createCERTRecord("gm2552@securehealthemail.com", cert);
+    	DNSRecord record1 = DNSRecordUtils.createX509CERTRecord("gm2552@securehealthemail.com", 86400L, cert);
     	
     	dnsDao.add(Arrays.asList(record1));
     	Collection<DNSRecord> records = dnsDao.get(Type.CERT);
@@ -148,7 +150,7 @@ public class DNSDaoTest
 		testCleanDatabase();
 		
 		// Add 1 record
-		DNSRecord record = createARecord("example.domain.com", "127.0.0.1"); 
+		DNSRecord record = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1"); 
 		dnsDao.add(Arrays.asList(record));
 		
 		Collection<DNSRecord> records = dnsDao.get(record.getName());
@@ -166,9 +168,9 @@ public class DNSDaoTest
 		
 		testCleanDatabase();
 		
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1"); 
-		DNSRecord record2 = createARecord("example2.domain.com", "74.22.43.123"); 
-		DNSRecord record3 = createARecord("sample.domain.com", "81.142.48.20"); 
+		DNSRecord record1 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1"); 
+		DNSRecord record2 = DNSRecordUtils.createARecord("example2.domain.com", 86400L, "74.22.43.123"); 
+		DNSRecord record3 = DNSRecordUtils.createARecord("sample.domain.com", 86400L, "81.142.48.20"); 
 		
 		dnsDao.add(Arrays.asList(record1, record2, record3));
 		
@@ -216,7 +218,7 @@ public class DNSDaoTest
 		
 		testCleanDatabase();
 		
-		DNSRecord record = createARecord("example.domain.com", "127.0.0.1"); 
+		DNSRecord record = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1"); 
 		record.setType(Type.ANY);
 		
 		boolean exceptionOccured = false;
@@ -238,10 +240,10 @@ public class DNSDaoTest
 		
 		testCleanDatabase();
 		
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1"); 
+		DNSRecord record1 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1"); 
 		dnsDao.add(Arrays.asList(record1));
 		
-		DNSRecord record2 = createARecord("example.domain.com", "127.0.0.1");
+		DNSRecord record2 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1");
 		boolean exceptionOccured = false;
 		try
 		{	
@@ -261,12 +263,12 @@ public class DNSDaoTest
 		
 		testCleanDatabase();
 		
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1"); 
+		DNSRecord record1 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1"); 
 
 		
 		dnsDao.add(Arrays.asList(record1));
 		
-		DNSRecord record2 = createARecord("example.domain.com", "127.0.0.2"); 
+		DNSRecord record2 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.2"); 
 		dnsDao.add(Arrays.asList(record2));
 		/*
 		 * Get by name
@@ -286,9 +288,9 @@ public class DNSDaoTest
 		
 		testCleanDatabase();
 		
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1"); 
-		DNSRecord record2 = createARecord("example2.domain.com", "127.0.0.1"); 
-		DNSRecord record3 = createSRVRecord("_ldap_cerner._tcp.cerner.com", "example.domain.com", 3506); 
+		DNSRecord record1 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1"); 
+		DNSRecord record2 = DNSRecordUtils.createARecord("example2.domain.com", 86400L, "127.0.0.1"); 
+		DNSRecord record3 = DNSRecordUtils.createSRVRecord("_ldap_cerner._tcp.cerner.com", "example.domain.com", 86400L, 3506, 1, 1); 
 		dnsDao.add(Arrays.asList(record1, record2, record3));
 
 		/*
@@ -326,11 +328,11 @@ public class DNSDaoTest
 		
 		testCleanDatabase();
 		
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1");
-		DNSRecord record2 = createARecord("example.domain.com", "127.0.0.2"); 
-		DNSRecord record3 = createARecord("example2.domain.com", "127.0.0.3"); 
-		DNSRecord record4 = createSRVRecord("_ldap_cerner._tcp.cerner.com", "example.domain.com", 3506); 
-		DNSRecord record5 = createSRVRecord("_ldap_cerner._tcp.cerner.com", "example2.domain.com", 3506);
+		DNSRecord record1 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1");
+		DNSRecord record2 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.2"); 
+		DNSRecord record3 = DNSRecordUtils.createARecord("example2.domain.com", 86400L, "127.0.0.3"); 
+		DNSRecord record4 = DNSRecordUtils.createSRVRecord("_ldap_cerner._tcp.cerner.com", "example.domain.com", 86400L, 3506, 1, 1); 
+		DNSRecord record5 = DNSRecordUtils.createSRVRecord("_ldap_cerner._tcp.cerner.com", "example2.domain.com", 86400L, 3506, 1, 1);
 		dnsDao.add(Arrays.asList(record1, record2, record3, record4, record5));
 
 		Collection<DNSRecord> records = dnsDao.get(record1.getName());
@@ -364,11 +366,11 @@ public class DNSDaoTest
 		
 		testCleanDatabase();
 		
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1");
-		DNSRecord record2 = createARecord("example.domain.com", "127.0.0.2"); 
-		DNSRecord record3 = createARecord("example2.domain.com", "127.0.0.3"); 
-		DNSRecord record4 = createSRVRecord("_ldap_cerner._tcp.cerner.com", "example.domain.com", 3506); 
-		DNSRecord record5 = createSRVRecord("_ldap_cerner._tcp.cerner.com", "example2.domain.com", 3506);
+		DNSRecord record1 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1");
+		DNSRecord record2 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.2"); 
+		DNSRecord record3 = DNSRecordUtils.createARecord("example2.domain.com", 86400L, "127.0.0.3"); 
+		DNSRecord record4 = DNSRecordUtils.createSRVRecord("_ldap_cerner._tcp.cerner.com", "example.domain.com", 86400L, 3506, 1, 1); 
+		DNSRecord record5 = DNSRecordUtils.createSRVRecord("_ldap_cerner._tcp.cerner.com", "example2.domain.com", 86400L, 3506, 1, 1);
 		dnsDao.add(Arrays.asList(record1, record2, record3, record4, record5));
 
 		Collection<DNSRecord> records = dnsDao.get(record3.getName());
@@ -404,11 +406,11 @@ public class DNSDaoTest
 		assertEquals(0, dnsDao.count());
 		
 		// Add 5 record
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1");
-		DNSRecord record2 = createARecord("example.domain.com", "127.0.0.2"); 
-		DNSRecord record3 = createARecord("example2.domain.com", "127.0.0.3"); 
-		DNSRecord record4 = createSRVRecord("_ldap_cerner._tcp.cerner.com", "example.domain.com", 3506); 
-		DNSRecord record5 = createSRVRecord("_ldap_cerner._tcp.cerner.com", "example2.domain.com", 3506);
+		DNSRecord record1 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1");
+		DNSRecord record2 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.2"); 
+		DNSRecord record3 = DNSRecordUtils.createARecord("example2.domain.com", 86400L, "127.0.0.3"); 
+		DNSRecord record4 = DNSRecordUtils.createSRVRecord("_ldap_cerner._tcp.cerner.com", "example.domain.com", 86400L, 3506, 1, 1); 
+		DNSRecord record5 = DNSRecordUtils.createSRVRecord("_ldap_cerner._tcp.cerner.com", "example2.domain.com", 86400L, 3506, 1, 1);
 		dnsDao.add(Arrays.asList(record1, record2, record3, record4, record5));
 
 		assertEquals(5, dnsDao.count());
@@ -425,11 +427,11 @@ public class DNSDaoTest
 		assertEquals(0, dnsDao.count());
 		
 		// Add 5 record
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1");
-		DNSRecord record2 = createARecord("example.domain.com", "127.0.0.2"); 
-		DNSRecord record3 = createARecord("example2.domain.com", "127.0.0.3"); 
-		DNSRecord record4 = createSRVRecord("_ldap_cerner._tcp.cerner.com", "example.domain.com", 3506); 
-		DNSRecord record5 = createSRVRecord("_ldap_cerner._tcp.cerner.com", "example2.domain.com", 3506);
+		DNSRecord record1 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1");
+		DNSRecord record2 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.2"); 
+		DNSRecord record3 = DNSRecordUtils.createARecord("example2.domain.com", 86400L, "127.0.0.3"); 
+		DNSRecord record4 = DNSRecordUtils.createSRVRecord("_ldap_cerner._tcp.cerner.com", "example.domain.com", 86400L, 3506, 1, 1); 
+		DNSRecord record5 = DNSRecordUtils.createSRVRecord("_ldap_cerner._tcp.cerner.com", "example2.domain.com", 86400L, 3506, 1, 1);
 		dnsDao.add(Arrays.asList(record1, record2, record3, record4, record5));
 
 		assertEquals(5, dnsDao.count());
@@ -459,11 +461,11 @@ public class DNSDaoTest
 		assertEquals(0, dnsDao.count());
 		
 		// Add 5 record
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1");
-		DNSRecord record2 = createARecord("example.domain.com", "127.0.0.2"); 
-		DNSRecord record3 = createARecord("example2.domain.com", "127.0.0.3"); 
-		DNSRecord record4 = createSRVRecord("_ldap_cerner._tcp.cerner.com", "example.domain.com", 3506); 
-		DNSRecord record5 = createSRVRecord("_ldap_cerner._tcp.cerner.com", "example2.domain.com", 3506);
+		DNSRecord record1 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1");
+		DNSRecord record2 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.2"); 
+		DNSRecord record3 = DNSRecordUtils.createARecord("example2.domain.com", 86400L, "127.0.0.3"); 
+		DNSRecord record4 = DNSRecordUtils.createSRVRecord("_ldap_cerner._tcp.cerner.com", "example.domain.com", 86400L, 3506, 1, 1); 
+		DNSRecord record5 = DNSRecordUtils.createSRVRecord("_ldap_cerner._tcp.cerner.com", "example2.domain.com", 86400L, 3506, 1, 1);
 		dnsDao.add(Arrays.asList(record1, record2, record3, record4, record5));
 
 		assertEquals(5, dnsDao.count());
@@ -515,7 +517,7 @@ public class DNSDaoTest
 		
 		assertEquals(0, dnsDao.count());
 		
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1");
+		DNSRecord record1 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1");
 		
 		// should result in a functional no-op
 		dnsDao.remove(Arrays.asList(record1));
@@ -533,7 +535,7 @@ public class DNSDaoTest
 		assertEquals(0, dnsDao.count());
 		
 
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1");
+		DNSRecord record1 = DNSRecordUtils.createMXRecord("example.domain.com", "127.0.0.1", 86400L, 1);
 		dnsDao.add(Arrays.asList(record1));
 		
 		Collection<DNSRecord> records = dnsDao.get(Type.ANY);
@@ -560,7 +562,7 @@ public class DNSDaoTest
 		assertEquals(0, dnsDao.count());
 		
 
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1");
+		DNSRecord record1 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1");
 		boolean exceptionOccured = false;
 		try
 		{
@@ -583,7 +585,7 @@ public class DNSDaoTest
 		assertEquals(0, dnsDao.count());
 		
 
-		DNSRecord record1 = createARecord("example.domain.com", "127.0.0.1");
+		DNSRecord record1 = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1");
 		dnsDao.add(Arrays.asList(record1));
 		
 		Collection<DNSRecord> records = dnsDao.get(Type.ANY);

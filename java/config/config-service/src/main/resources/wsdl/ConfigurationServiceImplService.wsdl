@@ -475,6 +475,138 @@
         <soap:fault name="ConfigurationServiceException" use="literal"/>
       </fault>
     </operation>
+    <operation name="addDNS">
+      <soap:operation soapAction="urn:AddDNS"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getDNSByName">
+      <soap:operation soapAction="urn:GetDNSByName"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getDNSByNameAndType">
+      <soap:operation soapAction="urn:GetDNSByNameAndType"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getDNSByRecordId">
+      <soap:operation soapAction="urn:GetDNSByRecordId"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getDNSByRecordIds">
+      <soap:operation soapAction="urn:GetDNSByRecordIds"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getDNSByType">
+      <soap:operation soapAction="urn:GetDNSByType"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getDNSCount">
+      <soap:operation soapAction="urn:GetDNSCount"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="removeDNS">
+      <soap:operation soapAction="urn:RemoveDNS"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="removeDNSByRecordId">
+      <soap:operation soapAction="urn:RemoveDNSByRecordId"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="removeDNSByRecordIds">
+      <soap:operation soapAction="urn:RemoveDNSByRecordIds"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="updateDNS">
+      <soap:operation soapAction="urn:UpdateDNS"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
   </binding>
   <service name="ConfigurationServiceImplService">
     <port name="ConfigurationServiceImplPort" binding="tns:ConfigurationServiceImplPortBinding">

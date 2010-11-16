@@ -249,6 +249,72 @@
   <message name="deleteSettingResponse">
     <part name="parameters" element="tns:deleteSettingResponse"/>
   </message>
+  <message name="addDNS">
+    <part name="parameters" element="tns:addDNS"/>
+  </message>
+  <message name="addDNSResponse">
+    <part name="parameters" element="tns:addDNSResponse"/>
+  </message>
+  <message name="getDNSByName">
+    <part name="parameters" element="tns:getDNSByName"/>
+  </message>
+  <message name="getDNSByNameResponse">
+    <part name="parameters" element="tns:getDNSByNameResponse"/>
+  </message>
+  <message name="getDNSByNameAndType">
+    <part name="parameters" element="tns:getDNSByNameAndType"/>
+  </message>
+  <message name="getDNSByNameAndTypeResponse">
+    <part name="parameters" element="tns:getDNSByNameAndTypeResponse"/>
+  </message>
+  <message name="getDNSByRecordId">
+    <part name="parameters" element="tns:getDNSByRecordId"/>
+  </message>
+  <message name="getDNSByRecordIdResponse">
+    <part name="parameters" element="tns:getDNSByRecordIdResponse"/>
+  </message>
+  <message name="getDNSByRecordIds">
+    <part name="parameters" element="tns:getDNSByRecordIds"/>
+  </message>
+  <message name="getDNSByRecordIdsResponse">
+    <part name="parameters" element="tns:getDNSByRecordIdsResponse"/>
+  </message>
+  <message name="getDNSByType">
+    <part name="parameters" element="tns:getDNSByType"/>
+  </message>
+  <message name="getDNSByTypeResponse">
+    <part name="parameters" element="tns:getDNSByTypeResponse"/>
+  </message>
+  <message name="getDNSCount">
+    <part name="parameters" element="tns:getDNSCount"/>
+  </message>
+  <message name="getDNSCountResponse">
+    <part name="parameters" element="tns:getDNSCountResponse"/>
+  </message>
+  <message name="removeDNS">
+    <part name="parameters" element="tns:removeDNS"/>
+  </message>
+  <message name="removeDNSResponse">
+    <part name="parameters" element="tns:removeDNSResponse"/>
+  </message>
+  <message name="removeDNSByRecordId">
+    <part name="parameters" element="tns:removeDNSByRecordId"/>
+  </message>
+  <message name="removeDNSByRecordIdResponse">
+    <part name="parameters" element="tns:removeDNSByRecordIdResponse"/>
+  </message>
+  <message name="removeDNSByRecordIds">
+    <part name="parameters" element="tns:removeDNSByRecordIds"/>
+  </message>
+  <message name="removeDNSByRecordIdsResponse">
+    <part name="parameters" element="tns:removeDNSByRecordIdsResponse"/>
+  </message>
+  <message name="updateDNS">
+    <part name="parameters" element="tns:updateDNS"/>
+  </message>
+  <message name="updateDNSResponse">
+    <part name="parameters" element="tns:updateDNSResponse"/>
+  </message>
   <portType name="ConfigurationService">
     <operation name="getAddresss">
       <input message="tns:getAddresss"/>
@@ -445,6 +511,61 @@
     <operation name="deleteSetting">
       <input message="tns:deleteSetting"/>
       <output message="tns:deleteSettingResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="addDNS">
+      <input message="tns:addDNS"/>
+      <output message="tns:addDNSResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getDNSByName">
+      <input message="tns:getDNSByName"/>
+      <output message="tns:getDNSByNameResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getDNSByNameAndType">
+      <input message="tns:getDNSByNameAndType"/>
+      <output message="tns:getDNSByNameAndTypeResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getDNSByRecordId">
+      <input message="tns:getDNSByRecordId"/>
+      <output message="tns:getDNSByRecordIdResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getDNSByRecordIds">
+      <input message="tns:getDNSByRecordIds"/>
+      <output message="tns:getDNSByRecordIdsResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getDNSByType">
+      <input message="tns:getDNSByType"/>
+      <output message="tns:getDNSByTypeResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getDNSCount">
+      <input message="tns:getDNSCount"/>
+      <output message="tns:getDNSCountResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="removeDNS">
+      <input message="tns:removeDNS"/>
+      <output message="tns:removeDNSResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="removeDNSByRecordId">
+      <input message="tns:removeDNSByRecordId"/>
+      <output message="tns:removeDNSByRecordIdResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="removeDNSByRecordIds">
+      <input message="tns:removeDNSByRecordIds"/>
+      <output message="tns:removeDNSByRecordIdsResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="updateDNS">
+      <input message="tns:updateDNS"/>
+      <output message="tns:updateDNSResponse"/>
       <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
     </operation>
   </portType>
