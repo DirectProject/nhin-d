@@ -35,6 +35,9 @@ import static org.nhindirect.xd.common.DirectDocumentUtils.slotNotEmpty;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -137,6 +140,9 @@ public class DirectDocument2
     public void setData(String data)
     {
         this.data = data;
+        
+        this.metadata.setHash(getSha1Hash(data));
+        this.metadata.setSize(new Long(data.length()));
     }
 
     /**
@@ -184,7 +190,7 @@ public class DirectDocument2
         private String uniqueId;
         
         private String hash;
-        private String size;
+        private Long size;
 
         private String submissionSetStatus;
 
@@ -204,8 +210,10 @@ public class DirectDocument2
          * @param file
          *            A File object from which to extract metadata.
          */
-        public Metadata(File file)
+        public Metadata(File file) throws IOException
         {
+            super();
+            
             MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
             
             mimetypesFileTypeMap.addMimeTypes("application/msword doc dot wiz rtf");
@@ -227,6 +235,10 @@ public class DirectDocument2
             
             // Best guess at MIME type from list above
             this.mimeType = mimetypesFileTypeMap.getContentType(file);
+            
+            // File size and hash
+            this.size = file.length();
+            this.hash = getSha1Hash(FileUtils.readFileToString(file));
         }
 
         /**
@@ -248,7 +260,7 @@ public class DirectDocument2
             addSlot(slots, makeSlot(SlotType1Enum.SOURCE_PATIENT_ID, sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg() + "&ISO"));
             addSlot(slots, makeSlot(SlotType1Enum.SOURCE_PATIENT_INFO, sourcePatient));
             addSlot(slots, makeSlot(SlotType1Enum.HASH, hash));
-            addSlot(slots, makeSlot(SlotType1Enum.SIZE, size));
+            addSlot(slots, makeSlot(SlotType1Enum.SIZE, size == null ? null : String.valueOf(size)));
 
             eot.setName(makeInternationalStringType(classCode_localized));
             eot.setDescription(makeInternationalStringType(description));
@@ -256,6 +268,7 @@ public class DirectDocument2
             // author
             ClassificationType authorClassification = new ClassificationType();
             authorClassification.setClassifiedObject(id);
+            authorClassification.setNodeRepresentation(""); // required empty string
             authorClassification.setId(ClassificationTypeEnum.DOC_AUTHOR.getClassificationId());
             authorClassification.setClassificationScheme(ClassificationTypeEnum.DOC_AUTHOR.getClassificationScheme());
 
@@ -523,7 +536,7 @@ public class DirectDocument2
                 else if (SlotType1Enum.SIZE.matches(slot.getName()))
                 {
                     if (slotNotEmpty(slot))
-                        size = slot.getValueList().getValue().get(0);
+                        size = Long.valueOf(slot.getValueList().getValue().get(0));
                 }
             }
 
@@ -1254,13 +1267,16 @@ public class DirectDocument2
          */
         public void setHash(String hash)
         {
+            if (StringUtils.isNotEmpty(this.hash) && !StringUtils.equalsIgnoreCase(this.hash, hash))
+                LOGGER.warn("Replacing existing value with new value");
+            
             this.hash = hash;
         }
 
         /**
          * @return the size
          */
-        public String getSize()
+        public Long getSize()
         {
             return size;
         }
@@ -1269,9 +1285,52 @@ public class DirectDocument2
          * @param size
          *            the size to set
          */
-        public void setSize(String size)
+        public void setSize(Long size)
         {
+            if (this.size != null && !this.size.equals(size))
+                LOGGER.warn("Replacing existing size with new value");
+            
             this.size = size;
         }
+    }
+    
+    /**
+     * Calculate the SHA-1 hash for the provided array of bytes.
+     * 
+     * @param bytes
+     *            Bytes from which to calculate the SHA-1 hash.
+     * @return the SHA-1 hash or null if unable to calculate.
+     */
+    public static String getSha1Hash(byte[] bytes)
+    {
+        return getSha1Hash(new String(bytes));
+    }
+
+    /**
+     * Calculate the SHA-1 hash for the provided string.
+     * 
+     * @param string
+     *            The string from which to calculate the SHA-1 hash.
+     * @return the SHA-1 hash or null if unable to calculate.
+     */
+    public static String getSha1Hash(String string)
+    {
+        MessageDigest messageDigest = null;
+
+        try
+        {
+            messageDigest = MessageDigest.getInstance("SHA-1");
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            LOGGER.error("Unable to calculate hash, returning null.", e);
+            return null;
+        }
+        
+        messageDigest.update(string.getBytes(), 0, string.length());
+        byte[] sha1hash = messageDigest.digest();
+
+        BigInteger bigInt = new BigInteger(sha1hash);
+        return bigInt.toString(16);
     }
 }

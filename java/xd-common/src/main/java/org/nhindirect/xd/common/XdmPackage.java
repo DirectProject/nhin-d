@@ -8,9 +8,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -235,7 +232,7 @@ public class XdmPackage
                 {
                     ByteArrayOutputStream byteArrayOutputStream = readData(zipFile, zipEntry);
 
-                    String digest = getSha1Hash(byteArrayOutputStream.toString());
+                    String digest = DirectDocument2.getSha1Hash(byteArrayOutputStream.toString());
                     System.out.println(digest);
                     DirectDocument2 document = documents.getDocumentByHash(digest);
                     
@@ -345,19 +342,5 @@ public class XdmPackage
 
         return bytes;
     }
-    
-    private static String getSha1Hash(byte[] bytes) throws NoSuchAlgorithmException
-    {
-        return getSha1Hash(new String(bytes));
-    }
-    
-    private static String getSha1Hash(String string) throws NoSuchAlgorithmException
-    {
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
-        messageDigest.update(string.getBytes(), 0, string.length());
-        byte[] sha1hash = messageDigest.digest();
 
-        BigInteger bigInt = new BigInteger(sha1hash);        
-        return bigInt.toString(16);
-    }
 }

@@ -371,6 +371,7 @@ public class DirectDocuments
             // author
             ClassificationType authorClassification = new ClassificationType();
             authorClassification.setClassifiedObject(id);
+            authorClassification.setNodeRepresentation(""); // required empty string
             authorClassification.setId(ClassificationTypeEnum.SS_AUTHOR.getClassificationId());
             authorClassification.setClassificationScheme(ClassificationTypeEnum.SS_AUTHOR.getClassificationScheme());
 
