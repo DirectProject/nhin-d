@@ -32,14 +32,13 @@ namespace Health.Direct.Common.Certificates
     public class DnsCertResolver : ICertificateResolver
     {
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
-        DnsResponseCache m_cache = null;
-
-        IPAddress m_serverIP;
-        string m_fallbackDomain = string.Empty;
-        bool m_cacheEnabled = false;
-        bool m_useRootForCertResolve = false;
-        TimeSpan m_timeout;
-        int m_maxRetries = 1;
+        private readonly DnsResponseCache m_cache;
+        private readonly IPAddress m_serverIP;
+        private readonly string m_fallbackDomain = string.Empty;
+        private readonly bool m_cacheEnabled;
+        //bool m_useRootForCertResolve = false;
+        private readonly TimeSpan m_timeout;
+        private int m_maxRetries = 1;
         
         /// <summary>
         /// Create a DNS certificate resolver, using default timeout
@@ -183,11 +182,10 @@ namespace Health.Direct.Common.Certificates
         {
             using (DnsClient client = CreateDnsClient())
             {
-                X509Certificate2Collection certs = null;
                 //
                 // First, try to resolve the full email address directly
                 //                
-                certs = this.GetCertificates(client, address.Address);
+                X509Certificate2Collection certs = this.GetCertificates(client, address.Address);
                 if (certs.IsNullOrEmpty())
                 {
                     //
@@ -221,9 +219,7 @@ namespace Health.Direct.Common.Certificates
 
         X509Certificate2Collection GetCertificates(DnsClient client, string domain)
         {
-            X509Certificate2Collection certs = null;
-
-            certs = this.ResolveDomain(client, domain);
+            X509Certificate2Collection certs = this.ResolveDomain(client, domain);
             if (certs.IsNullOrEmpty() && this.HasFallbackDomain)
             {
                 certs = this.ResolveExtendedDomain(client, domain);
@@ -240,7 +236,7 @@ namespace Health.Direct.Common.Certificates
                 IEnumerable<CertRecord> records = client.ResolveCERT(name);
                 if (records != null)
                 {  
-                    return this.CollectCerts(null, records);
+                    return CollectCerts(null, records);
                 }
             }
             catch (DnsServerException dnsEx)
@@ -265,8 +261,8 @@ namespace Health.Direct.Common.Certificates
             string extendedName = m_fallbackDomain.ConstructEmailDnsDomainName(name);
             return this.ResolveDomain(client, extendedName);
         }
-        
-        X509Certificate2Collection CollectCerts(X509Certificate2Collection certs, IEnumerable<CertRecord> records)
+
+        static X509Certificate2Collection CollectCerts(X509Certificate2Collection certs, IEnumerable<CertRecord> records)
         {            
             foreach(CertRecord record in records)
             {
