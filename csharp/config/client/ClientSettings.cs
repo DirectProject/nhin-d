@@ -19,6 +19,7 @@ using System.ServiceModel;
 
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Client.RecordRetrieval;
 
 namespace Health.Direct.Config.Client
 {
@@ -201,6 +202,12 @@ namespace Health.Direct.Config.Client
         public AnchorStoreClient CreateAnchorStoreClient()
         {
             return new AnchorStoreClient(this.Binding, this.Endpoint);
+        }
+
+        public RecordRetrievalServiceClient CreateRecordRetrievalClient()
+        {
+            return new RecordRetrievalServiceClient(this.Binding
+                , this.Endpoint);
         }
     }
 }

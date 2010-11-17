@@ -18,19 +18,19 @@ using System.Collections.Generic;
 using System.Net.Mail;
 
 using Health.Direct.Common.Extensions;
-using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Client.RecordRetrieval;
 using Health.Direct.Config.Store;
 using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.Config.Client
 {
-    public static class DnsRecordManagerExtensions
+    public static class RecordRetrievalExtensions
     {
 
-        public static void GetANAMEDnsRecords(this DnsRecordManagerClient client
+        public static void GetANAMEDnsRecords(this RecordRetrievalServiceClient client
             , DnsResponse response)
         {
-            DnsRecord[] records = client.GetMatchingDnsRecordsByType(response.Question.Domain
+            DnsRecord[] records = client.GetMatchingDnsRecords(response.Question.Domain
                 , DnsStandard.RecordType.ANAME);
             foreach (DnsRecord record in records)
             {
@@ -46,10 +46,10 @@ namespace Health.Direct.Config.Client
 
         }
 
-        public static void GetMXDnsRecords(this DnsRecordManagerClient client
+        public static void GetMXDnsRecords(this RecordRetrievalServiceClient client
             , DnsResponse response)
         {
-            DnsRecord[] records = client.GetMatchingDnsRecordsByType(response.Question.Domain
+            DnsRecord[] records = client.GetMatchingDnsRecords(response.Question.Domain
                 , DnsStandard.RecordType.MX);
             foreach (DnsRecord record in records)
             {
@@ -65,10 +65,10 @@ namespace Health.Direct.Config.Client
         }
 
 
-        public static void GetSOADnsRecords(this DnsRecordManagerClient client
+        public static void GetSOADnsRecords(this RecordRetrievalServiceClient client
             , DnsResponse response)
         {
-            DnsRecord[] records = client.GetMatchingDnsRecordsByType(response.Question.Domain
+            DnsRecord[] records = client.GetMatchingDnsRecords(response.Question.Domain
                 , DnsStandard.RecordType.SOA);
             foreach (DnsRecord record in records)
             {
@@ -82,5 +82,14 @@ namespace Health.Direct.Config.Client
                 }
             }
         }
+
+        public static Certificate[] GetCertificatesForOwner(this RecordRetrievalServiceClient client, string owner)
+        {
+            CertificateGetOptions options = new CertificateGetOptions();
+            options.IncludeData = true;
+            return client.GetCertificatesForOwner(owner
+                , options);
+        }
+
     }
 }

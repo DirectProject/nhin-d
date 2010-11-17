@@ -31,6 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Health.Direct.Common, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Health.Direct.Config.Store, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -61,7 +63,7 @@
     <Compile Include="BindingFactory.cs" />
     <Compile Include="CertificateExtensions.cs" />
     <Compile Include="ClientSettingsSection.cs" />
-    <Compile Include="DnsRecordManagerExtensions.cs" />
+    <Compile Include="RecordRetrievalExtensions.cs" />
     <Compile Include="DomainManagerExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service References\CertificateService\Reference.cs">
@@ -70,6 +72,11 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="Service References\DomainManager\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\RecordRetrieval\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
@@ -102,6 +109,7 @@
   <ItemGroup>
     <WCFMetadataStorage Include="Service References\CertificateService\" />
     <WCFMetadataStorage Include="Service References\DomainManager\" />
+    <WCFMetadataStorage Include="Service References\RecordRetrieval\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Service References\DomainManager\DomainManagerService.wsdl" />
@@ -149,6 +157,27 @@
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
     <None Include="Service References\DomainManager\DomainManagerService4.xsd" />
+    <None Include="Service References\RecordRetrieval\RecordRetrievalService.wsdl" />
+    <None Include="Service References\RecordRetrieval\RecordRetrievalService.xsd" />
+    <None Include="Service References\RecordRetrieval\RecordRetrievalService1.xsd" />
+    <None Include="Service References\RecordRetrieval\RecordRetrievalService2.xsd" />
+    <None Include="Service References\RecordRetrieval\RecordRetrievalService3.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\RecordRetrieval\RecordRetrievalService.disco" />
+    <None Include="Service References\RecordRetrieval\RecordRetrievalService1.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\RecordRetrieval\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\RecordRetrieval\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\RecordRetrieval\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

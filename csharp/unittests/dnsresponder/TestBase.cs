@@ -12,6 +12,11 @@ namespace Health.Direct.DnsResponder.Tests
 {
     class TestBase
     {
+
+        ///TODO: incorporate  [xUnit.Extensions.AutoRollback] for autorollback
+        ///TODO: incorporate sample for executing database population one time...
+        
+
         protected const string ConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
         //protected const string ConnectionString = "Data Source=localhost;Initial Catalog=DirectConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
 
@@ -176,7 +181,7 @@ namespace Health.Direct.DnsResponder.Tests
                 //---get the file names in the certs folder path
                 foreach (string name in System.IO.Directory.GetFiles(CertRecordsPath))
                 {
-                    yield return name.ToLower().Replace(CertRecordsPath.ToLower(),"").Replace(".pfx","").Replace(@"\","");
+                    yield return name.ToLower().Substring(0,name.LastIndexOf(".com") + 4).Replace(CertRecordsPath.ToLower(),"").Replace(@"\","");
                 }
             }
         }

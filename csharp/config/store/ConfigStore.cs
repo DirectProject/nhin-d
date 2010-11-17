@@ -122,6 +122,7 @@ namespace Health.Direct.Config.Store
             }
         }
 
+
         public AdministratorManager Administrators
         {
             get

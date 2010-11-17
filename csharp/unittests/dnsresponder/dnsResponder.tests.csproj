@@ -84,6 +84,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="metadata\DnsRecords\aname.apple.com.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

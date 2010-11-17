@@ -68,11 +68,10 @@ namespace Health.Direct.DnsResponder.WinSrv
 
             //----------------------------------------------------------------------------------------------------
             //---load the settings from the related sections in app.config
-            ClientSettings dnsRecordServiceSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsRecordManagerServiceSettings")).AsClientSettings();
-            ClientSettings certServiceSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/CertificateManagerServiceSettings")).AsClientSettings();
+            ClientSettings recordRetrievalSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/RecordRetrievalServiceSettings")).AsClientSettings();
             DnsServerSettings dnsServerSettings = ((DnsServerSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsServerSettings")).AsDnsServerSettings();
 
-            m_store = new DnsRecordStorageService(dnsRecordServiceSettings, certServiceSettings);
+            m_store = new DnsRecordStorageService(recordRetrievalSettings);
 
             //----------------------------------------------------------------------------------------------------
             //---create the DNS Server instance
