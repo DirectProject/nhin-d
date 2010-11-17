@@ -25,6 +25,7 @@ package org.nhindirect.dns;
  * @author Umesh Madan
  * @author Chris Lomonico
  *
+ * @since 1.0
  */
 public class DNSServerSettings extends SocketServerSettings
 {
@@ -47,31 +48,57 @@ public class DNSServerSettings extends SocketServerSettings
 		maxRequestSize = DAFAULT_MAX_REQUEST_SIZE;
 	}
 
+	/**
+	 * Gets the IP port that the server will be listening on.  The default is 53.
+	 * @return The IP port that the server will be listening on.
+	 */
 	public int getPort() 
 	{
 		return port;
 	}
 
+	/**
+	 * Sets the IP port that the server will be listening on.
+	 * @param port The IP port that the server will be listening on.
+	 * 
+	 */
 	public void setPort(int port) 
 	{
 		this.port = port;
 	}
 
+	/**
+	 * Gets the IP4 addresses that the server will be bound to.  The string is comma delimited list of IP addresses.  The default is 0.0.0.0 
+	 * which means that the server will bind to add IP addresses available on the local machine.  
+	 * @return The IP4 addresses that the server will be bound to.
+	 */
 	public String getBindAddress() 
 	{
 		return bindAddress;
 	}
 
+	/**
+	 * Sets the IP4 addresses that the server will be bound to.
+	 * @param bindAddress The IP4 addresses that the server will be bound to.
+	 */
 	public void setBindAddress(String bindAddress) 
 	{
 		this.bindAddress = bindAddress;
 	}	
 	
+	/**
+	 * Gets the maximum size in bytes of a request.  The default size is 16K.
+	 * @return The maximum size in bytes of a request.
+	 */
 	public int getMaxRequestSize()
 	{
 		return maxRequestSize;
 	}
-	
+
+	/**
+	 * Sets the maximum size in bytes of a request.
+	 * @param maxRequestSize The maximum size in bytes of a request.
+	 */
 	public void setMaxRequestSize(int maxRequestSize)
 	{
 		this.maxRequestSize = maxRequestSize;

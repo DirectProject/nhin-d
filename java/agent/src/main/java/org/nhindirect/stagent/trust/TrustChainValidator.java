@@ -113,7 +113,7 @@ public class TrustChainValidator
         	// check for intermediates
         	if (certResolvers != null)
         	{
-        		Collection<X509Certificate> intermediatesCerts = resolveIntermediateIssuers(certificate);
+        		Collection<X509Certificate> intermediatesCerts = resolveIntermediateIssuers(certificate, anchors);
         		if (intermediatesCerts != null && intermediatesCerts.size() > 0)
         			certs.addAll(intermediatesCerts);
         	}
@@ -140,14 +140,14 @@ public class TrustChainValidator
     	return false;    	
     }     	
     
-    private Collection<X509Certificate> resolveIntermediateIssuers(X509Certificate certificate)
+    private Collection<X509Certificate> resolveIntermediateIssuers(X509Certificate certificate, Collection<X509Certificate> anchors)
     {
     	Collection<X509Certificate> issuers = new ArrayList<X509Certificate>();
-        resolveIntermediateIssuers(certificate, issuers);
+        resolveIntermediateIssuers(certificate, issuers, anchors);
         return issuers;
     }   
     
-    private void resolveIntermediateIssuers(X509Certificate certificate, /*in-out*/Collection<X509Certificate> issuers)
+    private void resolveIntermediateIssuers(X509Certificate certificate, /*in-out*/Collection<X509Certificate> issuers, Collection<X509Certificate> anchors)
     {
         if (certificate == null)
         {
@@ -158,7 +158,7 @@ public class TrustChainValidator
         	throw new IllegalArgumentException("Issuers collection cannot be null.");
         }
         
-        resolveIssuers(certificate, issuers, 0);
+        resolveIssuers(certificate, issuers, 0, anchors);
     }       
     
     private boolean isIssuerInCollection(Collection<X509Certificate> issuers, X509Certificate checkIssuer)
@@ -171,7 +171,17 @@ public class TrustChainValidator
     	return false;
     }
     
-    private void resolveIssuers(X509Certificate certificate, /*in-out*/Collection<X509Certificate> issuers, int chainLength)
+    private boolean isIssuerInAnchors(Collection<X509Certificate> anchors, X509Certificate checkIssuer)
+    {
+    	for (X509Certificate anchor : anchors)
+    	{
+    		if (Thumbprint.toThumbprint(anchor).equals(Thumbprint.toThumbprint(checkIssuer)))
+    			return true; // already found the certificate issuer... done
+    	}
+    	return false;
+    }
+    
+    private void resolveIssuers(X509Certificate certificate, /*in-out*/Collection<X509Certificate> issuers, int chainLength, Collection<X509Certificate> anchors)
     {
     	
     	X500Principal issuerPrin = certificate.getIssuerX500Principal();
@@ -225,12 +235,13 @@ public class TrustChainValidator
 		
 		for (X509Certificate issuerCert : issuerCerts)
 		{
-			if (issuerCert.getSubjectX500Principal().equals(issuerPrin) && !isIssuerInCollection(issuers, issuerCert))
+			if (issuerCert.getSubjectX500Principal().equals(issuerPrin) && !isIssuerInCollection(issuers, issuerCert)
+					&& !isIssuerInAnchors(anchors, issuerCert) /* if we hit an anchor then stop */)
 			{
 				issuers.add(issuerCert);
 				
 				// see if this issuer also has intermediate certs
-				resolveIssuers(issuerCert, issuers, chainLength + 1);
+				resolveIssuers(issuerCert, issuers, chainLength + 1, anchors);
 			}
 		}
     }

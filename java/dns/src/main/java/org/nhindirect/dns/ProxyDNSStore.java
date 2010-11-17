@@ -1,3 +1,20 @@
+/* 
+ Copyright (c) 2010, Direct Project
+ All rights reserved.
+
+ Authors:
+    Umesh Madan     umeshma@microsoft.com
+    Chris Lomonico  chris.lomonico@surescripts.com
+    Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.dns;
 
 import java.io.IOException;
@@ -9,9 +26,11 @@ import org.xbill.DNS.Message;
 import org.xbill.DNS.ResolverConfig;
 
 /**
- * Proxy DNS server that forwards all requests to another configured DNS server set. 
+ * Proxy DNS store that delegates all requests to another set of DNS servers.
+ * The store defaults to using port 53 and the machine's configured DNS servers.
  * @author Greg Meyer
  *
+ * @since 1.0
  */
 public class ProxyDNSStore implements DNSStore 
 {
@@ -20,22 +39,37 @@ public class ProxyDNSStore implements DNSStore
 	private final String[] servers;
 	private final int port;
 
+	/**
+	 * Creates a default proxy store.
+	 */
 	public ProxyDNSStore()
 	{
 		this(DEFAULT_RESOLVER_PORT);
 	}
 	
+	/**
+	 * Creates a proxy store delegating requests to the provided port.
+	 * @param port The IP port to use when calling the proxy DNS server.
+	 */
 	public ProxyDNSStore(int port)
 	{
 		this(null, DEFAULT_RESOLVER_PORT);
 	}
 
-	
+	/**
+	 * Creates a proxy using the the provided servers for delegating requests.
+	 * @param servers A collections of IP4 addresses (as strings) that the proxy will delegate request to.
+	 */
 	public ProxyDNSStore(Collection<String> servers)
 	{
 		this(servers, DEFAULT_RESOLVER_PORT);
 	}
 	
+	/**
+	 * Creates a proxy using the provided servers and port for delegating requests.
+	 * @param servers A collections of IP4 addresses (as strings) that the proxy will delegate request to.
+	 * @param port The IP port to use when calling the proxy DNS server.
+	 */
 	public ProxyDNSStore(Collection<String> servers, int port)
 	{
 		if (servers == null || servers.size() == 0)
@@ -59,7 +93,9 @@ public class ProxyDNSStore implements DNSStore
 		this.port = port;
 	}
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Message get(Message dnsMsg) throws DNSException
 	{
@@ -93,6 +129,9 @@ public class ProxyDNSStore implements DNSStore
 		return response;
 	}
 	
+	/*
+	 * Create the resolver that will do the DNS requests.
+	 */
 	private ExtendedResolver createExResolver(String[] servers, int port, int retries, int timeout)
 	{
 		ExtendedResolver retVal = null;
