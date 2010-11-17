@@ -15,7 +15,9 @@ import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
 import org.nhindirect.stagent.NHINDException;
+import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.X509CertificateEx;
+import org.nhindirect.stagent.cert.impl.UniformCertificateStore;
 
 public class TrustChainValidator_IntermidiateCert_Test extends TestCase
 {
@@ -120,6 +122,29 @@ public class TrustChainValidator_IntermidiateCert_Test extends TestCase
     	
     	assertTrue(isTrusted);
     }    
+    
+    
+    public void testValidateCertAgainstNonRootCA_CAInPublicResolver_OpenSSLCerts() throws Exception
+    {
+    	X509Certificate anchor = certFromData(getCertificateFileData("cert-b.der"));
+    	X509Certificate certToValidate = certFromData(getCertificateFileData("cert-a.der"));
+    	
+    	// uniform cert store that will just spit out whatever we put in it
+    	// will put the anchor in the public resolver... validator should hit it
+    	CertificateResolver publicResolver = new UniformCertificateStore(anchor);
+    	
+    	TrustChainValidator validator = new TrustChainValidator();
+    	validator.setCertificateResolver(Arrays.asList(publicResolver));
+    	
+    	boolean isTrusted = false;
+    	try
+    	{	
+    		isTrusted = validator.isTrusted(certToValidate, Arrays.asList(anchor));
+    	}
+    	catch (Exception e) {}
+    	
+    	assertTrue(isTrusted);
+    }  
     
     public void testValidateCertMissingIntermediateCert_OpenSSLCerts() throws Exception
     {
