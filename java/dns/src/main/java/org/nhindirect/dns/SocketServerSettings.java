@@ -18,11 +18,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 package org.nhindirect.dns;
 
 /**
- * Tuning parameters for the DNS server socket connections.
+ * Tuning parameters for the DNS server socket connections.  Tuning parameters are important to maximize the performance
+ * of the DNS server or to prevent the server machine from becoming over loaded.
  * 
  * @author Greg Meyer
  * @author Umesh Madan
  * @author Chris Lomonico
+ * 
+ * @since 1.0
  */
 public class SocketServerSettings 
 {
@@ -32,7 +35,7 @@ public class SocketServerSettings
     private static final int DEFAULT_MAX_OUTSTANDING_ACCEPTS = 16;
     private static final int DEFAULT_READ_BUFFER_SIZE = 1024;	
     private static final int DEFAULT_SEND_TIMEOUT = 5000;
-    private static final int DEFAULT_RECEIVE_TIMEOUT = 10000;
+    private static final int DEFAULT_RECEIVE_TIMEOUT = 50000;
     private static final int DEFAULT_SOCKET_CLOSE_TIMEOUT = 5000;
     
 	private int maxOutstandingAccepts;
@@ -57,71 +60,144 @@ public class SocketServerSettings
 		socketCloseTimeout = DEFAULT_SOCKET_CLOSE_TIMEOUT;
 	}
 
+	/**
+	 * Gets the maximum number of requests that can be accepted by the server, but not yet
+	 * committed to a processing thread.  Setting this value to high may result in DNS clients
+	 * timing out due to outstanding requests waiting to long for a processing thread.  The
+	 * default is 16 requests.
+	 * @return The maximum number of requests that can be excepted by the server, but not yet
+	 * committed to a processing thread.
+	 */
 	public int getMaxOutstandingAccepts() 
 	{
 		return maxOutstandingAccepts;
 	}
 
+	/**
+	 * Sets the maximum number of requests that can be accepted by the server, but not yet
+	 * committed to a processing thread.
+	 * @param maxOutstandingAccepts The maximum number of requests that can be accepted by the server, but not yet
+	 * committed to a processing thread.
+	 */
 	public void setMaxOutstandingAccepts(int maxOutstandingAccepts) 
 	{
 		this.maxOutstandingAccepts = maxOutstandingAccepts;
 	}
 
+	/**
+	 * Gets the maximum number of concurrent requests that can be processed by the server at any give time.  Setting this
+	 * value to high may result in overloading the system.  Setting this value to low can limit throughput.  The default
+	 * 64.
+	 * @return The maximum number of concurrent requests that can be processed by the server at any give time.
+	 */
 	public int getMaxActiveRequests() 
 	{
 		return maxActiveRequests;
 	}
 
+	/**
+	 * Sets the maximum number of concurrent requests that can be processed by the server at any give time.
+	 * @param maxActiveRequests The maximum number of concurrent requests that can be processed by the server at any give time.
+	 */
 	public void setMaxActiveRequests(int maxActiveRequests) 
 	{
 		this.maxActiveRequests = maxActiveRequests;
 	}
 
+	/**
+	 * Gets the maximum number of connections that are in the IP socket accept backlog.  Socket backlog is only relevant
+	 * for TCP session based connections.  Setting this value to high can overload the IP stack or result in DNS
+	 * client timeouts.  The default value is 64.
+	 *   
+	 * @return The maximum number of connections that are in the IP socket accept backlog.
+	 */
 	public int getMaxConnectionBacklog() 
 	{
 		return maxConnectionBacklog;
 	}
 
+	/**
+	 * Sets the maximum number of connections that are in the IP socket accept backlog.
+	 * @param maxConnectionBacklog The maximum number of connections that are in the IP socket accept backlog.
+	 */
 	public void setMaxConnectionBacklog(int maxConnectionBacklog)
 	{
 		this.maxConnectionBacklog = maxConnectionBacklog;
 	}
 
+	/**
+	 * Gets the maximum size request buffer size in bytes.  The default value is 1024 bytes.
+	 * @return The maximum size request buffer size in bytes.
+	 */
 	public int getReadBufferSize() 
 	{
 		return readBufferSize;
 	}
 
+	/**
+	 * Sets the maximum size request buffer size in bytes.
+	 * @param readBufferSize The maximum size request buffer size in bytes.
+	 */
 	public void setReadBufferSize(int readBufferSize) 
 	{
 		this.readBufferSize = readBufferSize;
 	}
 
+	/**
+	 * Gets the socket timeout in milliseconds for sending responses.  Setting this value to high can
+	 * result in performance degradation if multiple clients abandon their sessions.  Setting this value
+	 * to low can result in clients not receiving responses in high latency environments.  The default value is 
+	 * 5000 milliseconds.
+	 * @return  The socket timeout in milliseconds for sending responses
+	 */
 	public int getSendTimeout() 
 	{
 		return sendTimeout;
 	}
 
+    /**
+     * Sets the socket timeout in milliseconds for sending responses.
+     * @param sendTimeout Sets the socket timeout in milliseconds for sending responses.
+     */
 	public void setSendTimeout(int sendTimeout) 
 	{
 		this.sendTimeout = sendTimeout;
 	}
 
+	/**
+	 * Gets the socket timeout in milliseconds for receiving or reading request.  Setting this value to high can
+	 * result in performance degradation if multiple clients abandon their sessions.  Setting this value
+	 * to low can result in the server not fully reading request data in high latency environments.  The default value is 
+	 * 5000 milliseconds.
+	 * @return  The socket timeout in milliseconds for receiving or reading requests.
+	 */
 	public int getReceiveTimeout() 
 	{
 		return receiveTimeout;
 	}
 
+	/**
+	 * Sets the socket timeout in milliseconds for receiving or reading request.
+	 * @param receiveTimeout The socket timeout in milliseconds for receiving or reading request.
+	 */
 	public void setReceiveTimeout(int receiveTimeout)
 	{
 		this.receiveTimeout = receiveTimeout;
 	}
 
+	/**
+	 * Gets the timeout in milliseconds for closing a socket connection.  The default value is 5000 milliseconds.
+	 * @return The timeout in milliseconds for closing a socket connection.
+	 */
 	public int getSocketCloseTimeout()
 	{
 		return socketCloseTimeout;
 	}
 
+	/**
+	 * Sets the timeout in milliseconds for closing a socket connection.  The default value is 5000 milliseconds.
+	 * @param socketCloseTimeout The timeout in milliseconds for closing a socket connection.
+	 */
 	public void setSocketCloseTimeout(int socketCloseTimeout)
 	{
 		this.socketCloseTimeout = socketCloseTimeout;

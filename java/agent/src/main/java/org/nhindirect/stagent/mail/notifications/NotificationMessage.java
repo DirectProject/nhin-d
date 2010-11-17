@@ -125,8 +125,25 @@ public class NotificationMessage extends Message
 	            notification.setOriginalMessageId(originalMessageID);
 	        }
 	        
+	        String finalDest = NotificationHelper.getNotificationDestination(message);
+	        // remove any +s from the address
+	        
+	        if (finalDest.lastIndexOf("+") > -1 && finalDest.lastIndexOf("@") > -1)
+	        {
+	        	int startIndex = finalDest.indexOf("+");
+	        	int endIndex = finalDest.indexOf("@");
+	        	
+	        	finalDest = finalDest.substring(0, startIndex) + finalDest.substring(endIndex);
+	        }
+	        notification.setFinalRecipient(finalDest);
+	        
 	        notificationMessage = new NotificationMessage(notifyTo, notification);
 	        notificationMessage.setHeader(MailStandard.Headers.MessageID, UUID.randomUUID().toString());
+	        String subject = message.getHeader(MailStandard.Headers.Subject, ",");
+	        if (subject == null)
+	        	subject = "";
+
+	        notificationMessage.setHeader(MailStandard.Headers.Subject, "Processed: " + subject);
         }
         catch (MessagingException e) {/* no-op */}
         
