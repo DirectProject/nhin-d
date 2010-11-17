@@ -14,6 +14,8 @@ import org.nhind.config.DnsRecord;
 import org.nhindirect.dns.util.BaseTestPlan;
 import org.nhindirect.dns.util.ConfigServiceRunner;
 import org.nhindirect.dns.util.DNSRecordUtil;
+import org.xbill.DNS.Cache;
+import org.xbill.DNS.DClass;
 import org.xbill.DNS.ExtendedResolver;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Name;
@@ -76,6 +78,7 @@ public class DNSServer_Function_Test extends TestCase
 		{
 			Inet4Address.getLocalHost();
 			ExtendedResolver resolver = new ExtendedResolver(new String[] {"127.0.0.1", Inet4Address.getLocalHost().getHostAddress()});
+
 			resolver.setTCP(false);
 			resolver.setPort(port);
 			
@@ -85,7 +88,9 @@ public class DNSServer_Function_Test extends TestCase
 			for (Query query : queries)
 			{
 				Lookup lu = new Lookup(new Name(query.name), query.type);
-				lu.setResolver(resolver); // default retries is 3, limite to 2
+				Cache ch = lu.getDefaultCache(DClass.IN);
+				ch.clearCache();
+				lu.setResolver(resolver);
 								
 				Record[] retRecords = lu.run();
 				if (retRecords != null && retRecords.length > 0)
@@ -101,6 +106,10 @@ public class DNSServer_Function_Test extends TestCase
 			
 			if (rec != null && rec.length > 0)
 				proxy.removeDNS(rec);
+			
+			rec = proxy.getDNSByType(Type.ANY);
+			
+			assertNull(rec);
 		}
 		
 		protected abstract void addRecords() throws Exception;
@@ -178,4 +187,30 @@ public class DNSServer_Function_Test extends TestCase
 			}
 		}.perform();	
 	}
+	
+	public void testQueryARecords_AssertNoRecordsRetrieved() throws Exception 
+	{
+		new TestPlan()
+		{
+			protected void addRecords() throws Exception
+			{
+				// add no records
+								
+			}
+			
+			protected Collection<Query> getTestQueries() throws Exception
+			{
+				Collection<Query> queries = new ArrayList<Query>();
+				queries.add(new Query("example.domain.com", Type.A));
+				
+				return queries;
+			}
+			
+			protected void doAssertions(Collection<Record> records) throws Exception
+			{
+				assertNotNull(records);
+				assertEquals(0, records.size());
+			}
+		}.perform();	
+	}	
 }
