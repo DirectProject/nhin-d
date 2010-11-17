@@ -113,6 +113,11 @@ public class MDNStandard extends MailStandard
     	public static final String OriginalMessageID = "Original-Message-ID";
 
     	/**
+    	 * Final recipient field name.
+    	 */
+    	public static final String FinalRecipient = "Final-Recipient";    	
+    	
+    	/**
     	 * Failure field name, value is original failure text (e.g., exception)
     	 * <p>
     	 * RFC 3798, Failure, Error and Warning fields, 3.2.7
