@@ -1,7 +1,6 @@
 package org.nhind.config.client;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertNotNull;
 
 import org.junit.AfterClass;
@@ -9,7 +8,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.DnsRecord;
-import org.nhind.config.Domain;
 import org.nhindirect.config.store.DNSRecord;
 import org.nhindirect.config.store.util.DNSRecordUtils;
 import org.xbill.DNS.Type;
@@ -41,6 +39,8 @@ public class ClientProxyDNSTest
 	@Test
 	public void addDNSRecord() throws Exception
 	{
+		cleanDNSRecords();
+		
 		DNSRecord rec = DNSRecordUtils.createARecord("example.domain.com", 86400L, "127.0.0.1");
 		
 		DnsRecord recToAdd = new DnsRecord();
