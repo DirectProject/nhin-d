@@ -29,6 +29,7 @@
         <module>./xdmail</module>
         <module>./xd</module>
         <module>./client</module>
+        <module>./dns</module>
   </modules>
     <developers>
         <developer>
