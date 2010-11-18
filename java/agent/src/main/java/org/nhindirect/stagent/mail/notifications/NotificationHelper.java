@@ -179,12 +179,13 @@ public class NotificationHelper
             return null;
         }
         
+        notification.setFinalRecipient(from.getAddress());
         NotificationMessage notificationMessage = NotificationMessage.createNotificationFor(message, notification);
         if (notificationMessage != null)
         {
         	try
         	{
-        		notificationMessage.setFrom(from);
+        		notificationMessage.setFrom(from);        		
         	}
         	catch (MessagingException e) {/* no-op */}
         }
