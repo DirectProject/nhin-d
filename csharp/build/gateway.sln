@@ -61,7 +61,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common.metadata", "..\commo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "agent.console", "..\tools\agent.console\agent.console.csproj", "{15FD7BC1-F255-4B03-92A5-E28517A77D7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "admin.console", "..\admin\admin.console\admin.console.csproj", "{4DC85E94-4487-4ECB-9FD6-D280AC61DE03}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "admin.console", "..\tools\admin.console\admin.console.csproj", "{4DC85E94-4487-4ECB-9FD6-D280AC61DE03}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnsResponder.service", "..\dnsresponder.service\dnsResponder.service.csproj", "{553844CD-E4C3-46B3-85D4-20719095672E}"
 EndProject
