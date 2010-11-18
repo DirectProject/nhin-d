@@ -13,7 +13,7 @@ namespace Health.Direct.DnsResponder.Tests
 {
     class DnsRecordStoreageServiceTest : TestBase
     {   
-        /*
+
         DnsRecordStorageService m_store;
 
         public DnsRecordStorageService Store
@@ -51,18 +51,17 @@ namespace Health.Direct.DnsResponder.Tests
             m_store = new DnsRecordStorageService
                 (
                 new ClientSettings() {
-                                         Url = "http://localhost:6692/DomainManagerService.svc/DnsRecords"
-                                     },
-                new ClientSettings() {
-                    Url = "http://localhost:6692/CertificateService.svc/Certificates"
-                                     }
-
-                );
+                                         Url = "http://localhost:6693/RecordRetrievalService.svc/Records"
+                                     });
             //----------------------------------------------------------------------------------------------------
             //---really only want to do this one time
             this.InitDnsRecords();
         }
 
+        /*
+        //The next 3 tests need to be updated to work with the container implementation, for now use the 
+        //4 at the bottom to ensure that windows service for the dns responder works
+         
         [Theory]
         [PropertyData("DnsRecordDomainNamesTheoryData")]
         public void TestGetDomainANAME(string domainName){
@@ -117,8 +116,10 @@ namespace Health.Direct.DnsResponder.Tests
                 , dr.AnswerRecords[0].Type);
             
         }
+        */
 
-
+        /*
+        ///for these have the dns responder windows service up and running
         /// <summary>
         /// Runs a live test against the dnsResponder service to see if service will actually resolve results for MX quesions
         /// </summary>
@@ -186,9 +187,13 @@ namespace Health.Direct.DnsResponder.Tests
 
             DnsClient client = new DnsClient("127.0.0.1", 5353);
             client.Timeout = TimeSpan.FromSeconds(20);
-            Dump(string.Format("attempting to resolve cert from dns server for {0}", owner));
-            List<CertRecord> lst = client.ResolveCERT(owner).ToList();
-            Assert.Equal(1, lst.Count);
+            IEnumerable<CertRecord> lstenm = client.ResolveCERT(owner);
+            if (lstenm == null)
+            {
+                throw new Exception(string.Format("no data returned for {0}", owner));
+            }
+            List<CertRecord> lst = lstenm.ToList();
+            Assert.Equal(3, lst.Count());
             Assert.Equal(owner.Replace('@','.')
                 , lst[0].Name);
         }

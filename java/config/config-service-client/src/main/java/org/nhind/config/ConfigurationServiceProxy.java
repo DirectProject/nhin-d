@@ -56,6 +56,12 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     return configurationService.listCertificates(lastCertificateId, maxResutls, options);
   }
   
+  public org.nhind.config.DnsRecord[] getDNSByType(int type) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getDNSByType(type);
+  }
+  
   public org.nhind.config.Anchor[] getAnchors(long[] anchorId, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
@@ -86,16 +92,40 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     configurationService.addSetting(name, value);
   }
   
+  public org.nhind.config.DnsRecord[] getDNSByNameAndType(java.lang.String name, int type) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getDNSByNameAndType(name, type);
+  }
+  
   public void setCertificateStatusForOwner(java.lang.String owner, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
     configurationService.setCertificateStatusForOwner(owner, status);
   }
   
+  public void removeDNS(org.nhind.config.DnsRecord[] records) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.removeDNS(records);
+  }
+  
+  public org.nhind.config.DnsRecord[] getDNSByName(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getDNSByName(name);
+  }
+  
   public org.nhind.config.Anchor[] getOutgoingAnchors(java.lang.String owner, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
     return configurationService.getOutgoingAnchors(owner, options);
+  }
+  
+  public void removeDNSByRecordIds(java.lang.Long[] recordIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.removeDNSByRecordIds(recordIds);
   }
   
   public void updateDomain(org.nhind.config.Domain domain) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
@@ -146,16 +176,28 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     configurationService.deleteSetting(names);
   }
   
-  public boolean contains(org.nhind.config.Certificate cert) throws java.rmi.RemoteException{
+  public void updateDNS(long recordId, org.nhind.config.DnsRecord record) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
-    return configurationService.contains(cert);
+    configurationService.updateDNS(recordId, record);
   }
   
   public void setAnchorStatusForOwner(java.lang.String owner, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
     configurationService.setAnchorStatusForOwner(owner, status);
+  }
+  
+  public void addDNS(org.nhind.config.DnsRecord[] records) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.addDNS(records);
+  }
+  
+  public boolean contains(org.nhind.config.Certificate cert) throws java.rmi.RemoteException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.contains(cert);
   }
   
   public void removeCertificatesForOwner(java.lang.String owner) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
@@ -180,6 +222,12 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     if (configurationService == null)
       _initConfigurationServiceProxy();
     return configurationService.getAllSettings();
+  }
+  
+  public org.nhind.config.DnsRecord getDNSByRecordId(long recordId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getDNSByRecordId(recordId);
   }
   
   public int getAddressCount() throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
@@ -242,6 +290,12 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     return configurationService.searchDomain(name, status);
   }
   
+  public void removeDNSByRecordId(long recordId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.removeDNSByRecordId(recordId);
+  }
+  
   public org.nhind.config.Certificate[] getCertificatesForOwner(java.lang.String owner, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
@@ -272,10 +326,22 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     return configurationService.getDomainCount();
   }
   
+  public int getDNSCount() throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getDNSCount();
+  }
+  
   public void addCertificates(org.nhind.config.Certificate[] certs) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
     configurationService.addCertificates(certs);
+  }
+  
+  public org.nhind.config.DnsRecord[] getDNSByRecordIds(java.lang.Long[] recordIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getDNSByRecordIds(recordIds);
   }
   
   public org.nhind.config.Certificate getCertificate(java.lang.String owner, java.lang.String thumbprint, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{

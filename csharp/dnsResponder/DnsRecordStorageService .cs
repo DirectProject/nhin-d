@@ -28,28 +28,16 @@ namespace Health.Direct.DnsResponder
     public class DnsRecordStorageService : IDnsStore
     {
 
-        protected ClientSettings m_dnsRecordManagerServiceSettings = null;
-        protected ClientSettings m_certificateManagerServiceSettings = null;
+        protected ClientSettings m_recordRetrievalServiceSettings = null;
 
         /// <summary>
-        /// If this gateway is configured to interact with a DomainManager web Service. 
+        /// Endpoint/Binding specifications in ClientSettings format for the Record Retrieval Service
         /// </summary>
-        public ClientSettings DomainManagerServiceSettings
+        public ClientSettings RecordRetrievalServiceSettings
         {
             get
             {
-                return m_dnsRecordManagerServiceSettings;
-            }
-        }
-
-        /// <summary>
-        /// If this gateway is configured to interact with a DomainManager web Service. 
-        /// </summary>
-        public ClientSettings CertificateManagerServiceSettings
-        {
-            get
-            {
-                return m_certificateManagerServiceSettings;
+                return m_recordRetrievalServiceSettings;
             }
         }
 
@@ -96,18 +84,14 @@ namespace Health.Direct.DnsResponder
         /// <summary>
         /// complex ctor expecting service settings
         /// </summary>
-        /// <param name="domainManagerServiceSettings">ClientSettings for DnsRecordManager Service related data</param>
-        /// <param name="certificateManagerServiceSettings">ClientSettings for Cert  Service related data></param>
-        public DnsRecordStorageService(ClientSettings dnsRecordManagerServiceSettings
-            , ClientSettings certificateManagerServiceSettings)
+        /// <param name="domainManagerServiceSettings">ClientSettings for RecordRetrieval Service related data</param>
+        public DnsRecordStorageService(ClientSettings recordRetrievalServiceSettings)
         {
-            if (dnsRecordManagerServiceSettings == null || certificateManagerServiceSettings == null)
+            if (recordRetrievalServiceSettings == null)
             {
-                throw new ArgumentNullException("domainManagerServiceSettings and/or certificateManagerServiceSettings not supplied to constructor");
+                throw new ArgumentNullException("recordRetrievalServiceSettings not supplied to constructor");
             }
-            m_dnsRecordManagerServiceSettings = dnsRecordManagerServiceSettings;
-            m_certificateManagerServiceSettings = certificateManagerServiceSettings;
-
+            m_recordRetrievalServiceSettings = recordRetrievalServiceSettings;
         }
 
         /// <summary>
@@ -117,7 +101,7 @@ namespace Health.Direct.DnsResponder
         /// have any corresponding answer records populated upon return</param>
         protected void ProcessANAMEQuestion(DnsResponse response)
         {
-            using (Direct.Config.Client.DomainManager.DnsRecordManagerClient client = m_dnsRecordManagerServiceSettings.CreateDnsRecordManagerClient())
+            using (Direct.Config.Client.RecordRetrieval.RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
                 client.GetANAMEDnsRecords(response);
             }
@@ -130,7 +114,7 @@ namespace Health.Direct.DnsResponder
         /// have any corresponding answer records populated upon return</param>
         protected void ProcessSOAQuestion(DnsResponse response)
         {
-            using (Direct.Config.Client.DomainManager.DnsRecordManagerClient client = m_dnsRecordManagerServiceSettings.CreateDnsRecordManagerClient())
+            using (Direct.Config.Client.RecordRetrieval.RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
                 client.GetSOADnsRecords(response);
             }
@@ -143,7 +127,7 @@ namespace Health.Direct.DnsResponder
         /// have any corresponding answer records populated upon return</param>
         protected void ProcessMXQuestion(DnsResponse response)
         {
-            using (Direct.Config.Client.DomainManager.DnsRecordManagerClient client = m_dnsRecordManagerServiceSettings.CreateDnsRecordManagerClient())
+            using (Direct.Config.Client.RecordRetrieval.RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
                 client.GetMXDnsRecords(response);
             }
@@ -157,10 +141,8 @@ namespace Health.Direct.DnsResponder
         protected void ProcessCERTQuestion(DnsResponse response)
         {
 
-            using (Direct.Config.Client.CertificateService.CertificateStoreClient client = m_certificateManagerServiceSettings.CreateCertificateStoreClient())
+            using (Direct.Config.Client.RecordRetrieval.RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
-                Health.Direct.Config.Client.CertificateService.CertificateGetOptions options = new Health.Direct.Config.Client.CertificateService.CertificateGetOptions();
-                options.IncludeData = true;
                 Health.Direct.Config.Store.Certificate[] certs = client.GetCertificatesForOwner(response.Question.Domain);
                 foreach (Health.Direct.Config.Store.Certificate cert in certs)
                 {
