@@ -31,8 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Health.Direct.Common, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="Health.Direct.Config.Store, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -89,8 +87,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Service References\AuthManager\AuthManagerService.wsdl" />
-    <None Include="Service References\AuthManager\AuthManagerService.xsd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\common.csproj">
@@ -112,23 +108,6 @@
     <WCFMetadataStorage Include="Service References\RecordRetrieval\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\AuthManager\AuthManagerService.disco" />
-    <None Include="Service References\AuthManager\AuthManagerService1.wsdl" />
-    <None Include="Service References\AuthManager\AuthManagerService1.xsd" />
-    <None Include="Service References\AuthManager\AuthManagerService2.xsd" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\AuthManager\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\AuthManager\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Properties\DataSources\Health.Direct.Config.Store.Administrator.datasource" />
-    <None Include="Service References\AuthManager\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
     <None Include="Service References\CertificateService\CertificateService.wsdl" />
     <None Include="Service References\CertificateService\CertificateService.xsd" />
     <None Include="Service References\CertificateService\CertificateService1.wsdl" />
@@ -194,7 +173,28 @@
   <ItemGroup>
     <None Include="Properties\DataSources\Health.Direct.Config.Store.Address.datasource" />
     <None Include="Properties\DataSources\Health.Direct.Config.Store.Domain.datasource" />
+    <None Include="Service References\AuthManager\AuthManagerService.wsdl" />
+    <None Include="Service References\AuthManager\AuthManagerService.xsd" />
     <None Include="Service References\DomainManager\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\AuthManager\AuthManagerService.disco" />
+    <None Include="Service References\AuthManager\AuthManagerService1.wsdl" />
+    <None Include="Service References\AuthManager\AuthManagerService1.xsd" />
+    <None Include="Service References\AuthManager\AuthManagerService2.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\AuthManager\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\AuthManager\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Administrator.datasource" />
+    <None Include="Service References\AuthManager\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>

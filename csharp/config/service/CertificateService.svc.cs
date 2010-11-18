@@ -22,7 +22,7 @@ using Health.Direct.Config.Store;
 
 namespace Health.Direct.Config.Service
 {
-    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
+    //[AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class CertificateService : ConfigServiceBase, ICertificateStore, IAnchorStore
     {        
         #region ICertificateStore
