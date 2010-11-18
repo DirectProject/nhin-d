@@ -48,7 +48,7 @@ namespace Health.Direct.SmtpAgent
             IEnumerable<NotificationMessage> notifications = envelope.Message.CreateNotificationMessages(senders, this.CreateAck);
             foreach(NotificationMessage notification in notifications)
             {
-                string filePath = Path.Combine(pickupFolder, notification.IDValue + ".eml");
+                string filePath = Path.Combine(pickupFolder, Extensions.CreateUniqueFileName());
                 notification.Save(filePath);
             }
         }

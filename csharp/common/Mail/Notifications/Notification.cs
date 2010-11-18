@@ -15,8 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-
+using System.Net.Mail;
 using Health.Direct.Common.Mime;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Common.Mail.Notifications
 {
@@ -32,6 +33,8 @@ namespace Health.Direct.Common.Mail.Notifications
         ReportingUserAgent m_reportingAgent;
         MdnGateway m_gateway;
         Disposition m_disposition;
+        MailAddress m_finalRecipient;
+        HeaderCollection m_fields;
                 
         /// <summary>
         /// Initializes a new instance of the supplied notification type.
@@ -54,6 +57,8 @@ namespace Health.Direct.Common.Mail.Notifications
             
             m_notification = new MimeEntity();
             m_notification.ContentType = MDNStandard.MediaType.DispositionNotification;
+            
+            m_fields = new HeaderCollection();
             
             this.Disposition = disposition;
         }
@@ -96,7 +101,7 @@ namespace Health.Direct.Common.Mail.Notifications
             }
             set
             {
-                m_notification.Headers.SetValue(MDNStandard.Headers.ReportingAgent, (value != null) ? value.ToString() : null);                
+                m_fields.SetValue(MDNStandard.Fields.ReportingAgent, (value != null) ? value.ToString() : null);                
                 m_reportingAgent = value;
             }
         }
@@ -112,7 +117,7 @@ namespace Health.Direct.Common.Mail.Notifications
             }
             set
             {
-                m_notification.Headers.SetValue(MDNStandard.Headers.Gateway, (value != null) ? value.ToString() : null);
+                m_fields.SetValue(MDNStandard.Fields.Gateway, (value != null) ? value.ToString() : null);
                 m_gateway = value;                
             }
         }
@@ -124,11 +129,32 @@ namespace Health.Direct.Common.Mail.Notifications
         {
             get
             {
-                return m_notification.Headers.GetValue(MDNStandard.Headers.OriginalMessageID);
+                return m_fields.GetValue(MDNStandard.Fields.OriginalMessageID);
             }
             set
             {
-                m_notification.Headers.SetValue(MDNStandard.Headers.OriginalMessageID, value);
+                m_fields.SetValue(MDNStandard.Fields.OriginalMessageID, value);
+            }
+        }
+        
+        /// <summary>
+        /// The message's final recipient
+        /// </summary>
+        public MailAddress FinalRecipient
+        {
+            get
+            {
+                return m_finalRecipient;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+                
+                m_finalRecipient = value;
+                m_fields.SetValue(MDNStandard.Fields.FinalRecipient, string.Format("rfc822 ; {0}", m_finalRecipient.Address));
             }
         }
         
@@ -147,7 +173,7 @@ namespace Health.Direct.Common.Mail.Notifications
                 {
                     throw new ArgumentNullException("value");
                 }
-                m_notification.Headers.SetValue(MDNStandard.Headers.Disposition, value.ToString());
+                m_fields.SetValue(MDNStandard.Fields.Disposition, value.ToString());
                 m_disposition = value;
             }
         }
@@ -159,14 +185,21 @@ namespace Health.Direct.Common.Mail.Notifications
         {
             get
             {
-                return m_notification.Headers.GetValue(MDNStandard.Headers.Error);
+                return m_fields.GetValue(MDNStandard.Fields.Error);
             }
             set
             {
-                m_notification.Headers.SetValue(MDNStandard.Headers.Error, value);
+                m_fields.SetValue(MDNStandard.Fields.Error, value);
             }
         }
         
+        internal bool HasFinalRecipient
+        {
+            get
+            {
+                return (m_finalRecipient != null);
+            }
+        }
         /// <summary>
         /// The default explanation for notification.
         /// </summary>
@@ -182,6 +215,9 @@ namespace Health.Direct.Common.Mail.Notifications
             {
                 this.Explanation = string.Format(DefaultExplanation, m_disposition.Notification);
             }
+            
+            m_notification.Body = new Body(m_fields.ToString());
+            
             yield return m_explanation;
             yield return m_notification;
         }

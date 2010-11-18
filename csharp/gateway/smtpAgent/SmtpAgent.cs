@@ -47,7 +47,6 @@ namespace Health.Direct.SmtpAgent
 
         SmtpAgentSettings m_settings;
         DirectAgent m_agent;
-        DomainPostmasters m_postmasters;
         AgentDiagnostics m_diagnostics;
         MessageRouter m_router;
         ConfigService m_configService;
@@ -196,47 +195,11 @@ namespace Health.Direct.SmtpAgent
                                  configuredDomains.Length, m_settings.Domains.Length);
                     throw new SmtpAgentException(SmtpAgentError.ConfiguredDomainsMismatch);
                 }
-
-                this.InitPostmastersFromConfigService(configuredDomains);
             }
         }
         
         void InitDomains()
         {
-            using (new MethodTracer(Logger))
-            {
-                InitPostmasters();
-            }
-        }
-        
-        void InitPostmasters()
-        {
-            m_postmasters = new DomainPostmasters();
-            m_postmasters.Init(m_settings.Domains, m_settings.Postmasters);
-        }
-
-        void InitPostmastersFromConfigService(Domain[] domains)
-        {
-            if (!m_settings.HasAddressManager)
-            {
-                Logger.Info("Postmasters not loaded from config service");
-                return;
-            }
-        
-            Debug.Assert(m_postmasters != null);
-
-            using (new MethodTracer(Logger))
-            {
-                AddressManagerClient client = m_settings.AddressManager.CreateAddressManagerClient();
-                foreach (Domain domain in domains)
-                {
-                    Address address;
-                    if (domain.PostmasterID != null && (address = client.GetAddress(domain.PostmasterID.Value)) != null)
-                    {
-                        m_postmasters[domain.Name] = address.ToMailAddress();
-                    }
-                }
-            }
         }
         
         void InitFolders()
@@ -600,7 +563,7 @@ namespace Health.Direct.SmtpAgent
 
         protected virtual void SendNotifications(IncomingMessage envelope)
         {
-            if (!m_settings.InternalMessage.HasPickupFolder)
+            if (!m_settings.InternalMessage.HasPickupFolder || !m_settings.Notifications.AutoResponse)
             {
                 return;
             }
