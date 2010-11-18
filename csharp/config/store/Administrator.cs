@@ -1,8 +1,6 @@
 using System;
 using System.Data.Linq.Mapping;
 using System.Runtime.Serialization;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Health.Direct.Config.Store
 {
@@ -21,7 +19,7 @@ namespace Health.Direct.Config.Store
             : this()
         {
             Username = username;
-            PasswordHash = HashPassword(password);
+            PasswordHash = new PasswordHash(this, password);
         }
 
         public Administrator(Administrator that)
@@ -43,28 +41,17 @@ namespace Health.Direct.Config.Store
 
         public void SetPassword(string password)
         {
-            PasswordHash = HashPassword(password);
+            PasswordHash = new PasswordHash(this, password);
         }
 
         public bool CheckPassword(string password)
         {
-            if (string.IsNullOrEmpty(Username))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidUsername);
-            }
-
             if (string.IsNullOrEmpty(password))
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidPassword);
             }
 
-            return PasswordHash.Equals(HashPassword(password), StringComparison.Ordinal);
-        }
-
-        private string HashPassword(string password)
-        {
-            var source = Username.ToLower() + "|" + CreateDate.ToString("yyyyMMdd'T'HHmmss") + "|" + password;
-            return Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(source)));
+            return PasswordHash == new PasswordHash(this, password);
         }
 
         [Column(Name = "AdministratorID", IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
@@ -76,8 +63,20 @@ namespace Health.Direct.Config.Store
         public string Username { get; set; }
 
         [Column(Name = "PasswordHash", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        internal string PasswordHashDB { get; set; }
+
         [DataMember(IsRequired = true)]
-        public string PasswordHash { get; set; }
+        public PasswordHash PasswordHash
+        {
+            get
+            {
+                return new PasswordHash(PasswordHashDB);
+            }
+            set
+            {
+                PasswordHashDB = value != null ? value.HashedPassword : null;
+            }
+        }
 
         [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]

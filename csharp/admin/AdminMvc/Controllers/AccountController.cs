@@ -18,6 +18,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 
 using Health.Direct.Admin.Console.Models;
+using Health.Direct.Admin.Console.Models.Repositories;
 
 namespace Health.Direct.Admin.Console.Controllers
 {
@@ -25,9 +26,14 @@ namespace Health.Direct.Admin.Console.Controllers
     [HandleError]
     public class AccountController : Controller
     {
-
+        private readonly IAuthRepository m_repository;
         public IFormsAuthenticationService FormsService { get; set; }
         public IMembershipService MembershipService { get; set; }
+
+        public AccountController(IAuthRepository repository)
+        {
+            m_repository = repository;
+        }
 
         protected override void Initialize(RequestContext requestContext)
         {
@@ -36,10 +42,6 @@ namespace Health.Direct.Admin.Console.Controllers
 
             base.Initialize(requestContext);
         }
-
-        // **************************************
-        // URL: /Account/LogOn
-        // **************************************
 
         public ActionResult LogOn()
         {
@@ -51,7 +53,8 @@ namespace Health.Direct.Admin.Console.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (MembershipService.ValidateUser(model.UserName, model.Password))
+                if (MembershipService.ValidateUser(model.UserName, model.Password)
+                    && m_repository.IsEnabled(model.UserName))
                 {
                     FormsService.SignIn(model.UserName, model.RememberMe);
                     if (!String.IsNullOrEmpty(returnUrl))
@@ -73,40 +76,6 @@ namespace Health.Direct.Admin.Console.Controllers
         {
             FormsService.SignOut();
             return RedirectToAction("Index", "Home");
-        }
-
-        [Authorize]
-        public ActionResult ChangePassword()
-        {
-            ViewData["PasswordLength"] = MembershipService.MinPasswordLength;
-            return View();
-        }
-
-        [Authorize]
-        [HttpPost]
-        public ActionResult ChangePassword(ChangePasswordModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                if (MembershipService.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword))
-                {
-                    return RedirectToAction("ChangePasswordSuccess");
-                }
-                else
-                {
-                    ModelState.AddModelError("", "The current password is incorrect or the new password is invalid.");
-                }
-            }
-
-            // If we got this far, something failed, redisplay form
-            ViewData["PasswordLength"] = MembershipService.MinPasswordLength;
-            return View(model);
-        }
-
-        [Authorize]
-        public ActionResult ChangePasswordSuccess()
-        {
-            return View();
         }
     }
 }

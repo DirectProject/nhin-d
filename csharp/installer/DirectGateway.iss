@@ -54,12 +54,15 @@ Source: "..\external\microsoft\vcredist\vcredist_x86.exe"; DestDir: "{app}\Libra
 Source: "..\external\microsoft\vcredist\vcredist_x64.exe"; DestDir: "{app}\Libraries"; DestName: "vcredist.exe"; Flags: ignoreversion recursesubdirs; Check: IsX64 or IsIA64;
 
 Source: "*.bat"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "*.ps1"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "event-sources.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion;
 Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion;
 
 [Icons]
+Name: "{group}\Admin Console"; Filename: "{app}\AdminConsole.exe"; WorkingDir: "{app}";
 Name: "{group}\Config Console"; Filename: "{app}\ConfigConsole.exe"; WorkingDir: "{app}";
+Name: "{group}\Admin UI"; Filename: "http://localhost/AdminMvc/";
 Name: "{group}\Test Database"; Filename: "http://localhost/ConfigService/TestService.aspx";
 Name: "{group}\{cm:UninstallProgram,Direct Gateway}"; Filename: "{uninstallexe}";
 
@@ -69,7 +72,7 @@ Filename: "{app}\createdatabase.bat"; Parameters: ".\sqlexpress DirectConfig ""{
 Filename: "{app}\install-dev.bat"; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked;
 
 [UninstallRun]
-Filename: "{app}\unregisterGateway.bat"; Flags: shellexec runascurrentuser;
+Filename: "{app}\uninstall.bat"; Flags: runascurrentuser;
 
 [Code]
 function IsX64: Boolean;

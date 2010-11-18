@@ -105,6 +105,14 @@ namespace Health.Direct.Config.Store
             }
         }
 
+        //public bool CheckPasswordHash(string username, string passwordHash)
+        //{
+        //    using (ConfigDatabase db = this.Store.CreateContext())
+        //    {
+        //        return CheckPasswordHash(db, username, passwordHash);
+        //    }
+        //}
+
         private static void Add(ConfigDatabase db, Administrator administrator)
         {
             if (db == null)
@@ -177,5 +185,15 @@ namespace Health.Direct.Config.Store
             
             db.Administrators.ExecDelete(username);
         }
+
+        //private static bool CheckPasswordHash(ConfigDatabase db, string username, string passwordHash)
+        //{
+        //    if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(passwordHash))
+        //    {
+        //        return false;
+        //    }
+
+        //    return db.Administrators.CheckPasswordHash(username, passwordHash);
+        //}
     }
 }

@@ -25,8 +25,11 @@ goto :eof
 
 :create_database
 @echo on
+del /F/Q %databasename%.tmp %databasename%.sql
+echo USE [%databasename%] > %databasename%.tmp
+type %databasename%.tmp > %databasename%.sql & type "%schemafile%" >> %databasename%.sql
 sqlcmd -S "%server%" %credentials% -Q "CREATE DATABASE [%databasename%]"
-sqlcmd -S "%server%" %credentials% -i "%schemafile%"
+sqlcmd -S "%server%" %credentials% -i %databasename%.sql
 @if ERRORLEVEL 1 goto :error
 sqlcmd -S "%server%" %credentials% -i "%userfile%" -v DBUSER = %dbuser%
 @if ERRORLEVEL 1 goto :error
@@ -39,4 +42,5 @@ goto :eof
 goto :eof
 
 :finished
+del /F/Q %databasename%.tmp %databasename%.sql
 if "%DEBUGINSTALLER%" == "1" pause

@@ -114,11 +114,13 @@
     <Compile Include="Models\DomainModel.cs" />
     <Compile Include="Models\Repositories\AddressRepository.cs" />
     <Compile Include="Models\Repositories\AnchorRepository.cs" />
+    <Compile Include="Models\Repositories\AuthRepository.cs" />
     <Compile Include="Models\Repositories\CertificateRepository.cs" />
     <Compile Include="Models\Repositories\DnsRecordRepository.cs" />
     <Compile Include="Models\Repositories\DomainRepository.cs" />
     <Compile Include="Models\Repositories\IAddressRepository.cs" />
     <Compile Include="Models\Repositories\IAnchorRepository.cs" />
+    <Compile Include="Models\Repositories\IAuthRepository.cs" />
     <Compile Include="Models\Repositories\ICertificateRepository.cs" />
     <Compile Include="Models\Repositories\IDnsRecordRepository.cs" />
     <Compile Include="Models\Repositories\IDomainRepository.cs" />
@@ -132,10 +134,7 @@
     <Content Include="Views\Domains\NotFound.aspx" />
     <Content Include="Web.config" />
     <Content Include="Content\Site.css" />
-    <Content Include="Views\Account\ChangePassword.aspx" />
-    <Content Include="Views\Account\ChangePasswordSuccess.aspx" />
     <Content Include="Views\Account\LogOn.aspx" />
-    <Content Include="Views\Account\Register.aspx" />
     <Content Include="Views\Home\Index.aspx" />
     <Content Include="Views\Shared\Error.aspx" />
     <Content Include="Views\Shared\LogOnUserControl.ascx" />
@@ -178,7 +177,6 @@
     <Content Include="Views\DnsRecords\NotFound.aspx" />
     <Content Include="Views\Shared\AllItemsReminder.ascx" />
     <Content Include="Views\Shared\FilterReminder.ascx" />
-    <Content Include="Views\Shared\NotFound.aspx" />
     <Content Include="Views\Anchors\Index.aspx" />
     <Content Include="Views\Certificates\Index.aspx" />
     <Content Include="Views\Certificates\NotFound.aspx" />

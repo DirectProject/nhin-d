@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Web.Mvc;
 
 using Health.Direct.Admin.Console.Models;
@@ -83,20 +84,53 @@ namespace Health.Direct.Admin.Console.Controllers
         {
             var model = new CertificateUploadModel();
 
-            if (TryUpdateModel(model))
+            if (LocalTryUpdateModel(model))
             {
-                var bytes = GetFileFromRequest("certificateFile");
-                var cert = new Certificate(model.Owner, bytes, model.Password);
-                Repository.Add(cert);
+                byte[] bytes = GetFileFromRequest("certificateFile");
 
+                if (bytes.Length < 1)
+                {
+                    ModelState.AddModelError("certificateFile", "No file provided");
+                    return View(model);
+                }
+                
                 var domain = m_domainRepository.GetByDomainName(model.Owner);
                 if (domain == null) return View("NotFound");
 
-                return RedirectToAction("Index", new { domainID = domain.ID });
+                try
+                {
+                    var cert = new Certificate(model.Owner, bytes, model.Password);
+                    Repository.Add(cert);
+                }
+                catch (CryptographicException ex)
+                {
+                    ModelState.AddModelError("certificateFile",
+                                             "Invalid certificate file - " + ex.GetBaseException().Message);
+                    return View(model);
+                }
+
+                return RedirectToAction("Index", new {domainID = domain.ID});
             }
 
             return View(model);
         }
+
+        private bool LocalTryUpdateModel(CertificateUploadModel model)
+        {
+            if (!TryUpdateModel(model)) return false;
+
+            // TODO: should we also check the address table?
+            var domain = m_domainRepository.GetByDomainName(model.Owner);
+            if (domain == null)
+            {
+                model.Owner = "";
+                ModelState.AddModelError("Owner", "Domain does not exist");
+                return false;
+            }
+
+            return true;
+        }
+
 
         protected override ActionResult EnableDisable(long id, EntityStatus status)
         {

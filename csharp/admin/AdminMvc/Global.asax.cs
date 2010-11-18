@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Security;
 
 using Health.Direct.Admin.Console.Models;
 using Health.Direct.Admin.Console.Models.Repositories;
@@ -36,8 +37,7 @@ namespace Health.Direct.Admin.Console
 
         private static void ConfigureAutoMapper()
         {
-            Mapper.Initialize(x =>
-                              x.AddProfile<ModelProfiles>());
+            Mapper.Initialize(x => x.AddProfile<ModelProfiles>());
         }
 
         // Build up your application container and register your dependencies.
@@ -47,11 +47,17 @@ namespace Health.Direct.Admin.Console
             builder.RegisterModule(new RepositoryModule());
             builder.RegisterControllers(Assembly.GetExecutingAssembly());
 
+            builder.Register(c => Membership.Provider).ExternallyOwned();
+            var container = builder.Build();
+
             // Once you're done registering things, set the container
             // provider up with your registrations.
-            _containerProvider = new ContainerProvider(builder.Build());
+            _containerProvider = new ContainerProvider(container);
 
             ControllerBuilder.Current.SetControllerFactory(new AutofacControllerFactory(_containerProvider));
+
+            // inject properties into the Membership Provider
+            container.InjectUnsetProperties(Membership.Provider);
         }
 
         public static void RegisterRoutes(RouteCollection routes)
