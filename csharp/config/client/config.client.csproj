@@ -88,18 +88,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Properties\DataSources\Health.Direct.Config.Store.Anchor.datasource" />
-    <None Include="Properties\DataSources\Health.Direct.Config.Store.Certificate.datasource" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Properties\DataSources\Health.Direct.Config.Store.Address.datasource" />
-    <None Include="Properties\DataSources\Health.Direct.Config.Store.Domain.datasource" />
+    <None Include="Service References\AuthManager\AuthManagerService.wsdl" />
+    <None Include="Service References\AuthManager\AuthManagerService.xsd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\common.csproj">
@@ -112,36 +103,35 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
     <WCFMetadataStorage Include="Service References\AuthManager\" />
     <WCFMetadataStorage Include="Service References\CertificateService\" />
     <WCFMetadataStorage Include="Service References\DomainManager\" />
     <WCFMetadataStorage Include="Service References\RecordRetrieval\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\DomainManager\DomainManagerService.wsdl" />
-    <None Include="Service References\DomainManager\DomainManagerService.xsd" />
-    <None Include="Service References\DomainManager\DomainManagerService1.xsd" />
-    <None Include="Service References\DomainManager\DomainManagerService2.xsd" />
+    <None Include="Service References\AuthManager\AuthManagerService.disco" />
+    <None Include="Service References\AuthManager\AuthManagerService1.wsdl" />
+    <None Include="Service References\AuthManager\AuthManagerService1.xsd" />
+    <None Include="Service References\AuthManager\AuthManagerService2.xsd" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\DomainManager\DomainManagerService.disco" />
-    <None Include="Service References\DomainManager\DomainManagerService1.wsdl" />
-    <None Include="Service References\DomainManager\DomainManagerService3.xsd" />
+    <None Include="Service References\AuthManager\configuration91.svcinfo" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\DomainManager\configuration91.svcinfo" />
+    <None Include="Service References\AuthManager\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\DomainManager\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\CertificateService\CertificateService.wsdl" />
-    <None Include="Service References\CertificateService\CertificateService.xsd" />
-    <None Include="Service References\CertificateService\CertificateService1.wsdl" />
-    <None Include="Service References\DomainManager\Reference.svcmap">
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Administrator.datasource" />
+    <None Include="Service References\AuthManager\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+    <None Include="Service References\CertificateService\CertificateService.wsdl" />
+    <None Include="Service References\CertificateService\CertificateService.xsd" />
+    <None Include="Service References\CertificateService\CertificateService1.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Service References\CertificateService\CertificateService.disco" />
@@ -156,13 +146,12 @@
     <None Include="Service References\CertificateService\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\DataSources\Health.Direct.Config.Store.DnsRecord.datasource" />
-    <None Include="Properties\DataSources\Health.Direct.Config.Store.MX.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Anchor.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Certificate.datasource" />
     <None Include="Service References\CertificateService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
-    <None Include="Service References\DomainManager\DomainManagerService4.xsd" />
     <None Include="Service References\RecordRetrieval\RecordRetrievalService.wsdl" />
     <None Include="Service References\RecordRetrieval\RecordRetrievalService.xsd" />
     <None Include="Service References\RecordRetrieval\RecordRetrievalService1.xsd" />
@@ -172,22 +161,40 @@
   <ItemGroup>
     <None Include="Service References\RecordRetrieval\RecordRetrievalService.disco" />
     <None Include="Service References\RecordRetrieval\RecordRetrievalService1.wsdl" />
-    <None Include="Service References\AuthManager\AuthManagerService.xsd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Service References\RecordRetrieval\configuration91.svcinfo" />
-    <None Include="Service References\AuthManager\AuthManagerService1.wsdl" />
-    <None Include="Service References\AuthManager\AuthManagerService1.xsd" />
-    <None Include="Service References\AuthManager\AuthManagerService2.xsd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Service References\RecordRetrieval\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.DnsRecord.datasource" />
+    <None Include="Service References\DomainManager\DomainManagerService.xsd" />
+    <None Include="Service References\DomainManager\DomainManagerService1.xsd" />
     <None Include="Service References\RecordRetrieval\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Service References\AuthManager\Reference.svcmap">
+    <None Include="Service References\DomainManager\DomainManagerService.disco" />
+    <None Include="Service References\DomainManager\DomainManagerService.wsdl" />
+    <None Include="Service References\DomainManager\DomainManagerService1.wsdl" />
+    <None Include="Service References\DomainManager\DomainManagerService2.xsd" />
+    <None Include="Service References\DomainManager\DomainManagerService3.xsd" />
+    <None Include="Service References\DomainManager\DomainManagerService4.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\DomainManager\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\DomainManager\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Address.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Domain.datasource" />
+    <None Include="Service References\DomainManager\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
