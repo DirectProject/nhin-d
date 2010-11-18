@@ -131,21 +131,12 @@ namespace Health.Direct.Common.Mail.Notifications
             /// </summary>
             public const string DispositionNotification = "message/disposition-notification";
         }
-        //
-        // Fields
-        //
+
         /// <summary>
-        /// Standard header names for mail messages
+        /// Standard header names for mail messages and notifications
         /// </summary>
         public new class Headers : MailStandard.Headers
         {
-            /// <summary>
-            /// Disposition header field name
-            /// </summary>
-            /// <remarks>
-            /// RFC 3798, Disposition field, 3.2.6
-            /// </remarks>
-            public const string Disposition = "Disposition";
             /// <summary>
             /// Disposition-Notification-To header name
             /// </summary>
@@ -160,6 +151,14 @@ namespace Health.Direct.Common.Mail.Notifications
             /// RFC 3798, The Disposition-Notification-Options Header, 2.2
             /// </remarks>
             public const string DispositionNotificationOptions = "Disposition-Notification-Options";
+        }
+        
+        /// <summary>
+        /// Fields contained in Notification bodies. 
+        /// RFC 3798 Section 3.2
+        /// </summary>
+        public class Fields
+        {
             /// <summary>
             /// Reporting-UA field name (value is the Health Internet Addresa and software that triggered notification) 
             /// </summary>
@@ -175,12 +174,26 @@ namespace Health.Direct.Common.Mail.Notifications
             /// </remarks>
             public const string Gateway = "MDN-Gateway";
             /// <summary>
+            /// The Recipient for which this MDN is being sent
+            /// </summary>
+            /// <remarks>
+            /// RFC 3798, FinalRecipient field, 3.2.4
+            /// </remarks>
+            public const string FinalRecipient = "Final-Recipient";
+            /// <summary>
             /// Original-Message-ID field name (value is message for which notification is being sent)
             /// </summary>
             /// <remarks>
             /// RFC 3798, Original-Message-ID field, 3.2.5
             /// </remarks>
             public const string OriginalMessageID = "Original-Message-ID";
+            /// <summary>
+            /// Disposition header field name
+            /// </summary>
+            /// <remarks>
+            /// RFC 3798, Disposition field, 3.2.6
+            /// </remarks>
+            public const string Disposition = "Disposition";
             /// <summary>
             /// Failure field name, value is original failure text (e.g., exception)
             /// </summary>
@@ -203,7 +216,7 @@ namespace Health.Direct.Common.Mail.Notifications
             /// </remarks>
             public const string Warning = "Warning";
         }
-                
+        
         internal const string Action_Manual = "manual-action";
         internal const string Action_Automatic = "automatic-action";
         internal const string Send_Manual = "MDN-sent-manually";
