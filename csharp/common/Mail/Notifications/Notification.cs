@@ -154,7 +154,7 @@ namespace Health.Direct.Common.Mail.Notifications
                 }
                 
                 m_finalRecipient = value;
-                m_fields.SetValue(MDNStandard.Fields.FinalRecipient, string.Format("rfc822 ; {0}", m_finalRecipient.Address));
+                m_fields.SetValue(MDNStandard.Fields.FinalRecipient, string.Format("rfc822;{0}", m_finalRecipient.Address));
             }
         }
         
