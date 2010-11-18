@@ -88,11 +88,16 @@ namespace Health.Direct.Common.Tests.Mail
                                     
             Assert.True(notificationMessage.IsMultiPart);
             Assert.True(notificationMessage.ToValue == source.Headers.GetValue(MDNStandard.Headers.DispositionNotificationTo));
-                        
+            
+            Assert.True(!string.IsNullOrEmpty(notificationMessage.SubjectValue));
+                                    
             MimeEntity[] mdnEntities = notificationMessage.GetParts().ToArray();
             this.Verify(mdnEntities);
             
             this.VerifyProcessedNotification(mdnEntities[1], notification);
+            
+            HeaderCollection fields = this.GetNotificationFields(mdnEntities[1]);
+            Assert.NotNull(fields[MDNStandard.Fields.FinalRecipient]);
         }
         
         [Fact]
@@ -135,12 +140,28 @@ namespace Health.Direct.Common.Tests.Mail
             return notification;
         }
         
+        /// <summary>
+        /// Verify a "Processed message" MDN notification 
+        /// </summary>
         void VerifyProcessedNotification(MimeEntity notificationEntity, Notification notification)
         {
-            notificationEntity.HasHeader(MDNStandard.Headers.Disposition, notification.Disposition.ToString());
-            notificationEntity.HasHeader(MDNStandard.Headers.Gateway, "smtp;le gateway");
-            notificationEntity.HasHeader(MDNStandard.Headers.OriginalMessageID, OriginalID);
-            notificationEntity.HasHeader(MDNStandard.Headers.Error, ErrorMessage);
+            HeaderCollection fields = this.GetNotificationFields(notificationEntity);
+            Assert.NotEmpty(fields);
+
+            Assert.True(fields.HasHeader(MDNStandard.Fields.Disposition, notification.Disposition.ToString()));
+            Assert.True(fields.HasHeader(MDNStandard.Fields.Gateway, "smtp;gateway.example.com"));
+            Assert.True(fields.HasHeader(MDNStandard.Fields.OriginalMessageID, OriginalID));
+            Assert.True(fields.HasHeader(MDNStandard.Fields.Error, ErrorMessage));
+        }
+        
+        HeaderCollection GetNotificationFields(MimeEntity notificationEntity)
+        {
+            Body notificationBody = notificationEntity.Body;
+            Assert.NotNull(notificationBody);
+            
+            Assert.True(!string.IsNullOrEmpty(notificationBody.Text));
+            
+            return new HeaderCollection(MimeSerializer.Default.DeserializeHeaders(notificationBody.Text));
         }
     }
 }

@@ -121,13 +121,7 @@ namespace Health.Direct.Common.Mail.Notifications
                 return null;
             }
             
-            NotificationMessage notificationMessage = NotificationMessage.CreateNotificationFor(message, notification);
-            if (notificationMessage != null)
-            {
-                notificationMessage.FromValue = from.ToString();
-            }
-            
-            return notificationMessage;
+            return NotificationMessage.CreateNotificationFor(message, from, notification);
         }
         
         /// <summary>
