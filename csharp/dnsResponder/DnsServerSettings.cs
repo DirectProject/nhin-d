@@ -32,21 +32,17 @@ namespace Health.Direct.DnsResponder
 
         string m_address = "0.0.0.0";
         int m_port = DnsStandard.DnsPort;
-        SocketServerSettings m_tcpServerSettings = null;
-        SocketServerSettings m_udpServerSettings = null;
+        SocketServerSettings m_tcpServerSettings;
+        SocketServerSettings m_udpServerSettings;
         byte m_maxQuestionCount = DefaultMaxQuestionCount;
         short m_maxRequestSize = DefaultMaxRequestSize;
 
-        public DnsServerSettings()
-        {
-        }
-        
         [XmlElement]
         public string Address
         {
             get
             {
-                return (m_address != null) ? m_address : null; 
+                return m_address; 
             }
             set
             {

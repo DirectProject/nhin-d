@@ -199,7 +199,7 @@ namespace Health.Direct.DnsResponder
         {
             if (context == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("context");
             }
             
             try
