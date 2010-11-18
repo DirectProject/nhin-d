@@ -19,6 +19,7 @@ package org.nhindirect.config.store.util;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAKey;
 
 import org.nhindirect.config.store.ConfigurationStoreException;
 import org.nhindirect.config.store.DNSRecord;
@@ -28,6 +29,7 @@ import org.xbill.DNS.DClass;
 import org.xbill.DNS.MXRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.SOARecord;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.Section;
 
@@ -43,7 +45,7 @@ public class DNSRecordUtils
 	 * @param name The record name.  Generally a fully qualified domain name such as host.example.com.
 	 * @param ttl The time to live in seconds.
 	 * @param ip The ip4 address that the name will resolve.
-	 * @return A DNSRecord record representing an A type record.
+	 * @return A DNSRecord representing an A type record.
 	 * @throws ConfigurationStoreException
 	 */
 	public static DNSRecord createARecord(String name, long ttl, String ip) throws ConfigurationStoreException
@@ -71,7 +73,7 @@ public class DNSRecordUtils
 	 * @param port The port that the service is offered on.
 	 * @param priority The priority of the service.  Lower priorities are preferred.
 	 * @param weight A value used to select between services with the same priority.
-	 * @return A DNSRecord record representing an SRV type record.
+	 * @return A DNSRecord representing an SRV type record.
 	 * @throws ConfigurationStoreException
 	 */
 	public static DNSRecord createSRVRecord(String name, String target, long ttl, int port, int priority, int weight) throws ConfigurationStoreException
@@ -99,7 +101,7 @@ public class DNSRecordUtils
 	 * @param address The name or address corresponding to the certificate.
 	 * @param ttl The time to live in seconds.
 	 * @param cert The X509 public certificate to be stored with the name/address. 
-	 * @return A DNSRecord record representing a CERT type record.
+	 * @return A DNSRecord representing a CERT type record.
 	 * @throws ConfigurationStoreException
 	 */
 	public static DNSRecord createX509CERTRecord(String address, long ttl, X509Certificate cert) throws ConfigurationStoreException
@@ -109,7 +111,19 @@ public class DNSRecordUtils
 			
 		try
 		{
-			CERTRecord rec = new CERTRecord(Name.fromString(address), DClass.IN, ttl, CERTRecord.PKIX, 0, 0, cert.getEncoded());
+			int keyTag = 0;
+			if (cert.getPublicKey() instanceof RSAKey)
+			{
+				RSAKey key = (RSAKey)cert.getPublicKey();
+				byte[] modulus = key.getModulus().toByteArray();
+				
+				keyTag = (modulus[modulus.length - 2] << 8) & 0xFF00;
+				
+				keyTag |= modulus[modulus.length - 1] & 0xFF;				
+			}
+			
+			CERTRecord rec = new CERTRecord(Name.fromString(address), DClass.IN, ttl, CERTRecord.PKIX, keyTag, 
+					5 /*public key alg, RFC 4034*/, cert.getEncoded());
 		
 			return DNSRecord.fromWire(rec.toWireCanonical());
 		}
@@ -120,12 +134,12 @@ public class DNSRecordUtils
 	}		
 	
 	/**
-	 * Creates an MX CERT record.
+	 * Creates a DNS MX record.
 	 * @param name The email domain or host used to determine where email should be sent to.
 	 * @param target The host server that email should be sent to. 
 	 * @param ttl The time to live in seconds.
 	 * @param priority The priority of the target host.  Lower priorities are preferred.
-	 * @return A DNSRecord record representing an MX type record.
+	 * @return A DNSRecord representing an MX type record.
 	 * @throws ConfigurationStoreException
 	 */
 	public static DNSRecord createMXRecord(String name, String target, long ttl, int priority) throws ConfigurationStoreException
@@ -134,7 +148,7 @@ public class DNSRecordUtils
 			name = name + ".";
 		
 		if (!target.endsWith("."))
-			target = target + ".";;
+			target = target + ".";
 		
 		try
 		{
@@ -147,6 +161,44 @@ public class DNSRecordUtils
 			throw new ConfigurationStoreException("Failed to create DNS MX record: " + e.getMessage(), e);
 		}		
 	}	
+	
+	/**
+	 * Create a DNS SOA record.
+	 * @param name The root name of the zone.
+	 * @param ttl The time to live in seconds.
+	 * @param nameServer Name of the server that responds authoritatively to this zone.
+	 * @param hostMaster The email address of the administrator of the zone.  The @ symbol is replaced with a "."
+	 * @param serial The current serial number of record.
+	 * @param refresh The time in seconds the a slave server tries to refresh its information from the master.
+	 * @param retry The time in seconds that a slave server retires after a failed refresh.
+	 * @param expire Time in seconds when the zone data is not longer authoritative.
+	 * @param minumum See RFC 2308.
+	 * @return A DNSRecord representing an SOA record.
+	 */
+	public static DNSRecord createSOARecord(String name, long ttl, String nameServer, String hostMaster, 
+			int serial, long refresh, long retry, long expire, long minumum)
+	{
+		if (!name.endsWith("."))
+			name = name + ".";
+		
+		if (!nameServer.endsWith("."))
+			nameServer = nameServer + ".";		
+
+		if (!hostMaster.endsWith("."))
+			hostMaster = hostMaster + ".";	
+
+		try
+		{
+			SOARecord rec = new SOARecord(Name.fromString(name), DClass.IN, ttl, Name.fromString(nameServer),
+					Name.fromString(hostMaster), serial, refresh, retry, expire, minumum);
+			
+			return DNSRecord.fromWire(rec.toWireCanonical());
+		}
+		catch (Exception e)
+		{
+			throw new ConfigurationStoreException("Failed to create DNS MX record: " + e.getMessage(), e);
+		}		
+	}
 	
 	/**
 	 * Converts a DNS record to a raw wire transfer format.

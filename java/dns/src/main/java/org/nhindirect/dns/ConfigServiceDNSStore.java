@@ -17,13 +17,25 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 package org.nhindirect.dns;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Iterator;
+
+import java.security.KeyStore;
+import java.security.Security;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAKey;
 
 
 import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.DnsRecord;
+import org.nhind.config.Domain;
+import org.nhindirect.dns.annotation.ConfigServiceURL;
 import org.xbill.DNS.CERTRecord;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Flags;
@@ -37,6 +49,9 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
 import org.xbill.DNS.Type;
 
+
+import com.google.inject.Inject;
+
 /**
  * Implementation of the the {@link DNStore} interface that uses the Direct Project configuration web service to store 
  * DNS records.
@@ -45,6 +60,14 @@ import org.xbill.DNS.Type;
  */
 public class ConfigServiceDNSStore implements DNSStore 
 {
+	
+	private Collection<Domain> domains;
+	
+	
+	static
+	{
+		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+	}	
 
 	final ConfigurationServiceProxy proxy;
 	
@@ -52,9 +75,30 @@ public class ConfigServiceDNSStore implements DNSStore
 	 * Creates a store using the provided URL to lookup DNS records in the configuration service.
 	 * @param serviceURL The URL of the configuration service.
 	 */
-	public ConfigServiceDNSStore(URL serviceURL)
+	@Inject
+	public ConfigServiceDNSStore(@ConfigServiceURL URL serviceURL)
 	{
 		proxy = new ConfigurationServiceProxy(serviceURL.toString());
+		
+		// TODO: Do we really care at this point about configured domains
+		// There is not really any logic using it right now
+		/*
+		Domain[] lDomains = null;
+		try
+		{
+			lDomains = proxy.getDomains(null, null);
+		}
+		catch (Exception e)
+		{
+			throw new IllegalStateException("Cannot connect to configuration service.");
+		}
+		
+		if (lDomains == null || lDomains.length == 0)
+			throw new IllegalStateException("No domains have been configured.  " +
+					"At least one domain must be configured.");
+		
+		domains = Arrays.asList(lDomains);
+		*/
 	}
 	
 	/**
@@ -128,7 +172,9 @@ public class ConfigServiceDNSStore implements DNSStore
         			Iterator<Record> iter = certRecs.rrs();
         			while (iter.hasNext())
         				lookupRecords.addRR(iter.next());
-        		}        			
+        		}  
+        		
+        		break;
         	}
         	default:
         	{
@@ -221,14 +267,67 @@ public class ConfigServiceDNSStore implements DNSStore
 		}
 		
 		if (certs == null || certs.length == 0)
-			return null;	
+		{
+			// unless the call above was for an org level cert, it will probably always fail because the
+			// "name" parameter has had all instances of "@" replaced with ".".  The certificate service 
+			// stores owners using "@".
+			// This is horrible, but try hitting the cert service replacing each "." with "@" one by one.
+			// Start at the beginning of the address because this is more than likely where the "@" character
+			// will be.
+			int previousIndex = 0;
+			int replaceIndex = 0;
+			while ((replaceIndex = name.indexOf(".", previousIndex)) > -1)
+			{
+				char[] chars = name.toCharArray();
+				chars[replaceIndex] = '@';
+				try
+				{
+					certs = proxy.getCertificatesForOwner(String.copyValueOf(chars), null);
+				}
+				catch (Exception e)
+				{
+					throw new DNSException(DNSError.newError(Rcode.SERVFAIL), "DNS service proxy call for certificates failed: " + e.getMessage(), e);
+				}				
+				if (certs != null && certs.length > 0)
+					break;
 				
+				if (replaceIndex >= (name.length() - 1))
+					break;
+				
+				previousIndex = replaceIndex + 1;
+			}
+		}
+			
+		if (certs == null || certs.length == 0)
+			return null;
+		
+		if (!name.endsWith("."))
+			name += ".";
+		
 		RRset retVal = new RRset();		
 		try
 		{
 			for (Certificate cert : certs)
-				retVal.addRR(new CERTRecord(Name.fromString(name), DClass.IN, /*one day*/ 86400L, CERTRecord.PKIX, 0,
-						   0, cert.getData()));
+			{
+	
+				X509Certificate xCert = dataToCert(cert.getData());
+								
+				int keyTag = 0;
+				if (xCert.getPublicKey() instanceof RSAKey)
+				{
+					RSAKey key = (RSAKey)xCert.getPublicKey();
+					byte[] modulus = key.getModulus().toByteArray();
+					
+					keyTag = (modulus[modulus.length - 2] << 8) & 0xFF00;
+					
+					keyTag |= modulus[modulus.length - 1] & 0xFF;				
+				}
+				
+				CERTRecord rec = new CERTRecord(Name.fromString(name), DClass.IN, 86400L, CERTRecord.PKIX, keyTag, 
+						5 /*public key alg, RFC 4034*/, xCert.getEncoded());
+				
+				retVal.addRR(rec);
+			}
 		}		
 		catch (Exception e)
 		{
@@ -237,4 +336,77 @@ public class ConfigServiceDNSStore implements DNSStore
 		
 		return retVal;
 	}
+	
+	/*
+	 * It's possible we could be getting data from a p12 file which contains the private key.  This methods
+	 * ensures that both p12 and X509 formats are decoded properly and only public certificates are returned.
+	 */
+    private X509Certificate dataToCert(byte[] data) throws DNSException 
+    {
+    	ByteArrayInputStream bais = null;
+    	X509Certificate retVal = null;
+        try 
+        {
+            bais = new ByteArrayInputStream(data);
+            
+            // lets try this a as a PKCS12 data stream first
+            try
+            {
+            	KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+            	
+            	localKeyStore.load(bais, "".toCharArray());
+            	Enumeration<String> aliases = localKeyStore.aliases();
+
+
+        		// we are really expecting only one alias 
+        		if (aliases.hasMoreElements())        			
+        		{
+        			String alias = aliases.nextElement();
+        			retVal = (X509Certificate)localKeyStore.getCertificate(alias);
+        		}
+            }
+            catch (Exception e)
+            {
+            	// must not be a PKCS12 stream, go on to next step
+            }
+            finally
+            {
+				if (bais != null)
+				{
+					try
+					{
+						bais.close();
+						bais = null;
+					}
+					catch (IOException e) {/* no-op */}
+				}
+            }
+            
+            if (retVal == null)            	
+            {
+            	//try X509 certificate factory next       
+                bais = new ByteArrayInputStream(data);
+
+                retVal = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(bais);
+            }
+        } 
+        catch (Exception e) 
+        {
+            throw new DNSException("Data cannot be converted to a valid X.509 Certificate");
+        }
+		finally
+		{
+			if (bais != null)
+			{
+				try
+				{
+					bais.close();
+				}
+				catch (IOException e) {/* no-op */}
+			}
+		}     
+        
+        return retVal;
+    }
+    
 }
