@@ -1,12 +1,23 @@
-﻿using System;
-using System.Configuration;
+﻿/* 
+ Copyright (c) 2010, Direct Project
+ All rights reserved.
+
+ Authors:
+    Chris Lomonico
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+*/
+using System;
 using System.ServiceProcess;
-using Config=System.Configuration;
 
 using Health.Direct.Config.Client;
 using Health.Direct.Common.Diagnostics;
-
-using ClientSettingsSection=Health.Direct.Config.Client.ClientSettingsSection;
 
 namespace Health.Direct.DnsResponder.WinSrv
 {
@@ -14,16 +25,14 @@ namespace Health.Direct.DnsResponder.WinSrv
     {
         const string EventLogSourceName = "Health.Direct.DnsResponder.WinSrv";
 
-        protected DnsResponderTCP m_dnsResponderTCP;
-        protected DnsResponderUDP m_dnsResponderUDP;
-        protected DnsServer m_dnsServer;
-        protected DnsRecordStorageService m_store;
+        private DnsServer m_dnsServer;
+        private DnsRecordStorageService m_store;
         private readonly ILogger m_logger;
 
         public DnsResponderWinSrv()
         {
-
             InitializeComponent();
+
             try
             {
                 m_logger = Log.For(this);
@@ -35,12 +44,10 @@ namespace Health.Direct.DnsResponder.WinSrv
             }
         }
 
-
         private ILogger Logger
         {
             get { return m_logger; }
         }
-
 
         private static void WriteToEventLog(Exception ex)
         {
@@ -48,10 +55,10 @@ namespace Health.Direct.DnsResponder.WinSrv
             EventLogHelper.WriteError(EventLogSourceName, ex.GetBaseException().ToString());
         }
 
-        private static void WriteToEventLogWarn(string message)
-        {
-            EventLogHelper.WriteWarning(EventLogSourceName, message);
-        }
+        //private static void WriteToEventLogWarn(string message)
+        //{
+        //    EventLogHelper.WriteWarning(EventLogSourceName, message);
+        //}
 
         private static void WriteToEventLogInfo(string message)
         {
@@ -61,45 +68,34 @@ namespace Health.Direct.DnsResponder.WinSrv
         /// <summary>
         /// method to initialize fields utilized by the service
         /// </summary>
-        protected void InitializeService()
-
+        private void InitializeService()
         {
             WriteToEventLogInfo("Service is being initialized");
 
-            //----------------------------------------------------------------------------------------------------
-            //---load the settings from the related sections in app.config
-            ClientSettings recordRetrievalSettings = ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/RecordRetrievalServiceSettings")).AsClientSettings();
-            DnsServerSettings dnsServerSettings = ((DnsServerSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsServerSettings")).AsDnsServerSettings();
+            // load the settings from the related sections in app.config
+            ClientSettings recordRetrievalSettings = ClientSettingsSection.GetSection().AsClientSettings();
+            DnsServerSettings dnsServerSettings = DnsServerSettingsSection.GetSection().AsDnsServerSettings();
 
             m_store = new DnsRecordStorageService(recordRetrievalSettings);
 
-            //----------------------------------------------------------------------------------------------------
-            //---create the DNS Server instance
-            m_dnsServer = new DnsServer(m_store
-                , dnsServerSettings);
+            // create the DNS Server instance
+            m_dnsServer = new DnsServer(m_store, dnsServerSettings);
 
-            //----------------------------------------------------------------------------------------------------
-            //---init the tcp and udp responders
-            m_dnsResponderTCP = new DnsResponderTCP(m_dnsServer);
-            m_dnsResponderUDP = new DnsResponderUDP(m_dnsServer);
-            m_dnsServer.UDPResponder.Server.Error += UDPServer_Error;
-            m_dnsServer.TCPResponder.Server.Error += TCPServer_Error;
+            // setup the error listener
+            m_dnsServer.Error += Server_Error;
+
             WriteToEventLogInfo("Service has been fully initialized");
         }
 
         public void StartService(string[] args)
         {
             InitializeService();
-            m_dnsResponderTCP.Start();
-            m_dnsResponderUDP.Start();
+            m_dnsServer.Start();
         }
 
         public void StopService()
         {
-
-            m_dnsResponderTCP.Stop();
-            m_dnsResponderUDP.Stop();
-            
+            m_dnsServer.Stop();
         }
 
         protected override void OnStart(string[] args)
@@ -112,12 +108,7 @@ namespace Health.Direct.DnsResponder.WinSrv
             this.StopService();
         }
 
-        void TCPServer_Error(Exception ex)
-        {
-            WriteToEventLog(ex);
-        }
-
-        void UDPServer_Error(Exception ex)
+        static void Server_Error(Exception ex)
         {
             WriteToEventLog(ex);
         }

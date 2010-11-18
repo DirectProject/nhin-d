@@ -165,5 +165,9 @@ namespace Health.Direct.DnsResponder
             }
         }
 
+        public static DnsServerSettingsSection GetSection()
+        {
+            return ((DnsServerSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/DnsServerSettings"));
+        }
     }
 }

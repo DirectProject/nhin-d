@@ -1,3 +1,4 @@
+using System;
 using System.Configuration;
 
 namespace Health.Direct.Config.Client
@@ -35,7 +36,7 @@ namespace Health.Direct.Config.Client
             }
         }
 
-        [ConfigurationProperty("MaxReceivedMessageSize", DefaultValue = int.MaxValue, IsRequired = false)]
+        [ConfigurationProperty("MaxReceivedMessageSize", DefaultValue = Int32.MaxValue, IsRequired = false)]
         public int MaxReceivedMessageSize
         {
             get
@@ -85,6 +86,11 @@ namespace Health.Direct.Config.Client
             {
                 this["SendTimeoutSeconds"] = value;
             }
+        }
+
+        public static ClientSettingsSection GetSection()
+        {
+            return ((ClientSettingsSection)ConfigurationManager.GetSection("ServiceSettingsGroup/RecordRetrievalServiceSettings"));
         }
     }
 }

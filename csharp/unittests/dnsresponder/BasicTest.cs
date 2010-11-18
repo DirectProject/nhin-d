@@ -56,7 +56,9 @@ namespace Health.Direct.DnsResponder.Tests
         [PropertyData("Domains")]
         public void TestLookupA(string domain, bool useUDP)
         {
-            TestSuccess(domain, useUDP);
+            IEnumerable<AddressRecord> matches = ResolveA(TestServer.Default, domain, useUDP);
+            IEnumerable<DnsResourceRecord> expectedMatches = TestStore.Default.Store.Records[domain, DnsStandard.RecordType.ANAME];
+            Assert.True(Equals(matches, expectedMatches));
         }
 
         [Theory]
@@ -103,14 +105,6 @@ namespace Health.Direct.DnsResponder.Tests
                 Assert.True(threads[i].Failure == 0);
                 Assert.True(threads[i].Success == expectedSuccess);
             }            
-        }
-
-        static void TestSuccess(string domain, bool useUDP)
-        {
-            IEnumerable<AddressRecord> matches = ResolveA(TestServer.Default, domain, useUDP);
-            IEnumerable<DnsResourceRecord> expectedMatches = TestStore.Default.Store.Records[domain, DnsStandard.RecordType.ANAME];
-
-            Assert.True(Equals(matches, expectedMatches));
         }
     }
 }
