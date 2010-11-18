@@ -22,15 +22,19 @@ using Xunit.Extensions;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    public class AdministratorFacts : ConfigStoreTestBase, IDisposable
+    public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
     {
         private readonly ConfigDatabase m_database;
         private readonly AdministratorManager m_manager;
+        private readonly string m_username;
+        private readonly string m_password;
 
-        public AdministratorFacts()
+        public AdministratorManagerFacts()
         {
             m_database = CreateConfigDatabase();
             m_manager = new AdministratorManager(CreateConfigStore());
+            m_username = Guid.NewGuid().ToString("N");
+            m_password = "asdf1234";
         }
 
         public void Dispose()
@@ -38,15 +42,14 @@ namespace Health.Direct.Config.Store.Tests
             m_database.Dispose();
         }
 
-        [Fact]
-        [AutoRollback]
+        [Fact, AutoRollback]
         public Administrator Add()
         {
-            var origAdmin = new Administrator("admin", "admin");
+            var origAdmin = new Administrator(m_username, m_password);
             m_manager.Add(origAdmin);
             
             var admin = (from a in m_database.Administrators
-                         where a.Username == "admin"
+                         where a.Username == m_username
                          select a).SingleOrDefault();
 
             Assert.NotNull(admin);
@@ -55,13 +58,12 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(origAdmin.CreateDate, admin.CreateDate, new DbDateTimeComparer());
             Assert.Equal(origAdmin.UpdateDate, admin.UpdateDate, new DbDateTimeComparer());
             Assert.Equal(origAdmin.Status, admin.Status);
-            Assert.True(admin.CheckPassword("admin"));
+            Assert.True(admin.CheckPassword(m_password));
 
             return admin;
         }
 
-        [Fact]
-        [AutoRollback]
+        [Fact, AutoRollback]
         public void Update()
         {
             var origAdmin = Add();
@@ -71,7 +73,7 @@ namespace Health.Direct.Config.Store.Tests
             m_manager.Update(origAdmin);
 
             var admin = (from a in m_database.Administrators
-                         where a.Username == "admin"
+                         where a.Username == m_username
                          select a).SingleOrDefault();
 
             Assert.NotNull(admin);
@@ -83,47 +85,43 @@ namespace Health.Direct.Config.Store.Tests
             Assert.True(admin.CheckPassword("qwerty"));
         }
 
-        [Fact]
-        [AutoRollback]
+        [Fact, AutoRollback]
         public void GetByUsername()
         {
             Add();
 
-            var admin = m_manager.Get("admin");
+            var admin = m_manager.Get(m_username);
             Assert.NotNull(admin);
-            Assert.Equal("admin", admin.Username);
+            Assert.Equal(m_username, admin.Username);
             Assert.Equal(EntityStatus.New, admin.Status);
-            Assert.True(admin.CheckPassword("admin"));
+            Assert.True(admin.CheckPassword(m_password));
         }
 
-        [Fact]
-        [AutoRollback]
+        [Fact, AutoRollback]
         public void GetByID()
         {
             var added = Add();
 
             var admin = m_manager.Get(added.ID);
             Assert.NotNull(admin);
-            Assert.Equal("admin", admin.Username);
+            Assert.Equal(m_username, admin.Username);
         }
 
-        [Fact]
-        [AutoRollback]
+        [Fact, AutoRollback]
         public void Remove()
         {
             Add();
-            m_manager.Remove("admin");
-            Assert.Null(m_manager.Get("admin"));
+            m_manager.Remove(m_username);
+            Assert.Null(m_manager.Get(m_username));
         }
 
-        [Fact]
-        [AutoRollback]
+        [Fact, AutoRollback]
         public void SetStatus()
         {
             Add();
-            m_manager.SetStatus("admin", EntityStatus.Disabled);
+            m_manager.SetStatus(m_username, EntityStatus.Disabled);
 
-            var admin = m_manager.Get("admin");
+            var admin = m_manager.Get(m_username);
             Assert.NotNull(admin);
             Assert.Equal(EntityStatus.Disabled, admin.Status);
         }
@@ -132,13 +130,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             public bool Equals(DateTime x, DateTime y)
             {
-                return x.Year == y.Year
-                       && x.Month == y.Month
-                       && x.Day == y.Day
-                       && x.Hour == y.Hour
-                       && x.Minute == y.Minute
-                       && x.Second == y.Second
-                       && x.Millisecond/100 == y.Millisecond/100;
+                return x.ToString() == y.ToString();
             }
 
             public int GetHashCode(DateTime obj)

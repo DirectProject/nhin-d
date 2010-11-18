@@ -16,7 +16,7 @@ namespace Health.Direct.Config.Store
         static readonly Func<ConfigDatabase, string, int, IQueryable<Administrator>> AllAdministrators = CompiledQuery.Compile(
             (ConfigDatabase db, string lastUsername, int maxResults) =>
             (from administrator in db.Administrators
-             //where lastUsername.CompareTo(administrator.Username) > 0
+             where administrator.Username.CompareTo(lastUsername) > 0
              orderby administrator.Username
              select administrator).Take(maxResults)
             );
@@ -27,7 +27,14 @@ namespace Health.Direct.Config.Store
             where administrator.ID == administratorID
             select administrator
             );
-        
+
+        //static readonly Func<ConfigDatabase, string, string, IQueryable<Administrator>> CheckPassword = CompiledQuery.Compile(
+        //    (ConfigDatabase db, string username, string passwordHash) =>
+        //    from administrator in db.Administrators
+        //    where username == administrator.Username && passwordHash == administrator.PasswordHashDB
+        //    select administrator
+        //    );
+
         public static ConfigDatabase GetDB(this Table<Administrator> table)
         {
             return (ConfigDatabase)table.Context;
@@ -48,6 +55,11 @@ namespace Health.Direct.Config.Store
             return IDToAdministrator(GetDB(table), administratorID).SingleOrDefault();
         }
         
+        //public static bool CheckPasswordHash(this Table<Administrator> table, string username, string passwordHash)
+        //{
+        //    return CheckPassword(GetDB(table), username, passwordHash).Any();
+        //}
+
         public static void ExecDelete(this Table<Administrator> table, string username)
         {
             table.Context.ExecuteCommand("DELETE from Administrators where Username = {0}", username);

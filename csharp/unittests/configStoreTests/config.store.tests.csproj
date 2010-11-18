@@ -61,7 +61,7 @@
     </Compile>
     <Compile Include="AddressFacts.cs" />
     <Compile Include="AddressManagerFacts.cs" />
-    <Compile Include="AdministratorFacts.cs" />
+    <Compile Include="AdministratorManagerFacts.cs" />
     <Compile Include="AnchorFacts.cs" />
     <Compile Include="AnchorManagerFacts.cs" />
     <Compile Include="CertificateFacts.cs" />

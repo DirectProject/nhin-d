@@ -72,7 +72,6 @@ cscript /nologo smtpreg.vbs /remove %serviceInstance% onArrival %gatewayName%
 if %ERRORLEVEL% NEQ 0 goto :EOF
 goto :EOF
 
-
 @rem -------------------------------
 :PrintHeading
 shift
@@ -105,4 +104,4 @@ goto :Done
 @rem -------------------------------
 :Done
 endlocal
-exit /b %ERRORLEVEL%
+if ERRORLEVEL 1 exit /b %ERRORLEVEL%

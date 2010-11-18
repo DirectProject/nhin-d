@@ -61,6 +61,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AuthManagerService.svc" />
     <Content Include="DomainManagerService.svc" />
     <Content Include="CertificateService.svc" />
     <Content Include="TestService.aspx" />
@@ -70,8 +71,12 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AuthManagerService.svc.cs">
+      <DependentUpon>AuthManagerService.svc</DependentUpon>
+    </Compile>
     <Compile Include="CertificateGetOptions.cs" />
     <Compile Include="ConfigServiceBase.cs" />
+    <Compile Include="IAuthManager.cs" />
     <Compile Include="IDnsRecordManager.cs" />
     <Compile Include="DomainManagerService.svc.cs">
       <DependentUpon>DomainManagerService.svc</DependentUpon>
