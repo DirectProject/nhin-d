@@ -19,6 +19,8 @@ package org.nhindirect.dns;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Rcode;
@@ -31,6 +33,8 @@ import org.xbill.DNS.Rcode;
  */
 public abstract class DNSResponder 
 {
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(DNSResponder.class);
+	
 	protected DNSServerSettings settings;
 	protected DNSStore store;
 	
@@ -99,11 +103,13 @@ public abstract class DNSResponder
 			response = store.get(request);
             if (response == null || response.getHeader() == null || response.getHeader().getRcode() != Rcode.NOERROR)
             {
-                throw new DNSException(DNSError.newError(Rcode.NXDOMAIN), "DNS store lookup error");
+            	response = processError(request, DNSError.newError(Rcode.NXDOMAIN));	
             }   			
 		}
 		catch (DNSException e)
 		{
+
+			LOGGER.error("Error processing DNS request: " + e.getMessage(), e);
 			response = processError(request, e.getError());			
 		}
 		
