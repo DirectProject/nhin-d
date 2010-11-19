@@ -1,17 +1,21 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
 
 <div id="domain-dialog" style="display: none;">
-    <div class="display-label">Name</div>
-    <div id="domain-name" class="display-field"></div>
+    <span class="display-label">Name</span>
+    <span id="domain-name" class="display-field"></span>
+    <br class="clear" />
 
-    <div class="display-label">Status</div>
-    <div id="status" class="display-field"></div>
+    <span class="display-label">Status</span>
+    <span id="status" class="display-field"></span>
+    <br class="clear" />
     
-    <div class="display-label">Created</div>
-    <div id="created" class="display-field"></div>
+    <span class="display-label">Created</span>
+    <span id="created" class="display-field"></span>
+    <br class="clear" />
 
-    <div class="display-label">Updated</div>
-    <div id="updated" class="display-field"></div>
+    <span class="display-label">Updated</span>
+    <span id="updated" class="display-field"></span>
+    <br class="clear" />
 </div>
 
 <script type="text/javascript" language="javascript">

@@ -8,7 +8,7 @@
     <%= Html.JQueryUITheme("redmond") %>
     <link href="../../Content/Site.css" rel="stylesheet" type="text/css" />
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js" type="text/javascript" language="javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript" language="javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js" type="text/javascript" language="javascript"></script>
     <script src="../../Scripts/Common.js" type="text/javascript" language="javascript"></script>
     <script type="text/javascript" language="javascript">
@@ -52,7 +52,8 @@
     <script type="text/javascript" language="javascript">
         var controllerName = '<%= ViewContext.RouteData.Values["Controller"].ToString().ToLower() %>';
         $(function() {
-            $(':submit,a.action').button();
+            $(':submit').button().click(function() { $(this).button("disable"); $('form').submit(); });
+            $('a.action').button();
             $('div.ui-tabs #tab-' + controllerName).addClass('ui-tabs-selected ui-state-active');
             $('a.enable-disable-action').click(changeAndUpdateStatus);
             $('table.grid tbody tr').hover(
@@ -60,10 +61,24 @@
                 function() { $(this).removeClass('ui-state-highlight'); }
                 )
                 .dblclick(function(event) {
+                    event.preventDefault();
+                    clearSelection();
                     $('a.view-details', this).click();
                 });
             $('#close-flash').click(function() { $('div.info-flash').hide(); });
+
+            $(".input-validation-error").addClass("ui-state-error");
+            $(".field-validation-error").addClass("ui-state-error-text");
+            $("span.ui-state-error-text:contains('*')").html('<span class="ui-icon ui-icon-alert"></span>');
         });
+        function clearSelection() {
+            if (document.selection && document.selection.empty) {
+                document.selection.empty();
+            } else if (window.getSelection) {
+                var sel = window.getSelection();
+                sel.removeAllRanges();
+            }
+        }
         function confirmDelete(event, dialog, link, message, objectName) {
             event.preventDefault();
             dialog.html('<p>' + message + '</p>');
@@ -124,7 +139,7 @@
             dialog.dialog({
                 title: title,
                 modal: true,
-                width: 500
+                width: 550
             });
         }
         function clearDialog(dialog) {

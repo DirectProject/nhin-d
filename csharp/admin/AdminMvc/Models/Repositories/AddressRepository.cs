@@ -34,7 +34,7 @@ namespace Health.Direct.Admin.Console.Models.Repositories
 
         protected IAddressManager Client { get { return m_client; } }
         
-        public IQueryable<Address> FindAll()
+        public IQueryable<Address> Query()
         {
             return Client.EnumerateAddresses(null, int.MaxValue).AsQueryable();
         }

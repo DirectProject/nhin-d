@@ -99,6 +99,7 @@
     <Compile Include="Controllers\DnsRecordsController.cs" />
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Models\ResolveModel.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -112,6 +113,7 @@
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\AddressModel.cs" />
     <Compile Include="Models\DomainModel.cs" />
+    <Compile Include="Models\PropertiesMustMatchAttribute.cs" />
     <Compile Include="Models\Repositories\AddressRepository.cs" />
     <Compile Include="Models\Repositories\AnchorRepository.cs" />
     <Compile Include="Models\Repositories\AuthRepository.cs" />
@@ -186,6 +188,9 @@
     <Content Include="Views\Domains\Index.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Scripts\OwnerAutocomplete.js" />
+    <Content Include="Views\Certificates\Resolve.aspx" />
+    <Content Include="Views\Certificates\ResolveResult.aspx" />
     <Content Include="Views\Shared\UnAuthSite.Master" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

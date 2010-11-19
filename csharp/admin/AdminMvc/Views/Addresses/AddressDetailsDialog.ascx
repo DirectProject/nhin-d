@@ -1,26 +1,33 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
 
 <div id="address-dialog" style="display: none;">
-    <div class="display-label">Domain ID</div>
-    <div id="domain-id" class="display-field"></div>
+    <span class="display-label">Domain ID</span>
+    <span id="domain-id" class="display-field"></span>
+    <br class="clear" />
 
-    <div class="display-label">Email Address</div>
-    <div id="email-address" class="display-field"></div>
+    <span class="display-label">Email Address</span>
+    <span id="email-address" class="display-field"></span>
+    <br class="clear" />
 
-    <div class="display-label">Display Name</div>
-    <div id="display-name" class="display-field"></div>
+    <span class="display-label">Display Name</span>
+    <span id="display-name" class="display-field"></span>
+    <br class="clear" />
 
-    <div class="display-label">Type</div>
-    <div id="type" class="display-field"></div>
+    <span class="display-label">Type</span>
+    <span id="type" class="display-field"></span>
+    <br class="clear" />
 
-    <div class="display-label">Status</div>
-    <div id="status" class="display-field"></div>
+    <span class="display-label">Status</span>
+    <span id="status" class="display-field"></span>
+    <br class="clear" />
 
-    <div class="display-label">Created</div>
-    <div id="created" class="display-field"></div>
+    <span class="display-label">Created</span>
+    <span id="created" class="display-field"></span>
+    <br class="clear" />
 
-    <div class="display-label">Updated</div>
-    <div id="updated" class="display-field"></div>
+    <span class="display-label">Updated</span>
+    <span id="updated" class="display-field"></span>
+    <br class="clear" />
 </div>
 
 <script type="text/javascript" language="javascript">

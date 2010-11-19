@@ -32,7 +32,7 @@ namespace Health.Direct.Admin.Console.Models.Repositories
 
         protected IAnchorStore Client { get { return m_client; } }
         
-        public IQueryable<Anchor> FindAll()
+        public IQueryable<Anchor> Query()
         {
             return Client.EnumerateAnchors(0, int.MaxValue, null).AsQueryable();
         }

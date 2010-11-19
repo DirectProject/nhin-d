@@ -20,16 +20,35 @@ namespace Health.Direct.Admin.Console.Models
     [MetadataType(typeof(CertificateUploadModel_Validation))]
     public class CertificateUploadModel
     {
+        public CertificateUploadModel()
+            : this(null)
+        {
+        }
+
+        public CertificateUploadModel(DomainModel domain)
+        {
+            if (domain == null) return;
+
+            DomainID = domain.ID;
+            Owner = domain.Name;
+        }
+
+        public long DomainID { get; set; }
         public string Owner { get; set; }
         public string Password { get; set; }
         public string PasswordConfirm { get; set; }
     }
 
+    [PropertiesMustMatch("Password", "PasswordConfirm", ErrorMessage = "Password must match")]
     public class CertificateUploadModel_Validation
     {
         [Required]
         public string Owner { get; set; }
+
+        [Required]
         public string Password { get; set; }
+
+        [Required]
         public string PasswordConfirm { get; set; }
     }
 }

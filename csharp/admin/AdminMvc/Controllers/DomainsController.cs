@@ -13,6 +13,8 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System;
+using System.Linq;
 using System.Web.Mvc;
 
 using Health.Direct.Admin.Console.Models;
@@ -88,6 +90,20 @@ namespace Health.Direct.Admin.Console.Controllers
             if (domain == null) return View("NotFound");
 
             return Json(Mapper.Map<Domain, DomainModel>(domain), "text/json", JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize]
+        public JsonResult List(string q, int? max)
+        {
+            var query = (from d in Repository.Query()
+                         where d.Name.StartsWith(q, StringComparison.OrdinalIgnoreCase)
+                         select d.Name);
+            if (max.HasValue)
+            {
+                query = query.Take(max.Value);
+            }
+
+            return Json(query.ToList(), "text/json", JsonRequestBehavior.AllowGet);
         }
     }
 }

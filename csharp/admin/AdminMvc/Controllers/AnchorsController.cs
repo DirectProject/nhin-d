@@ -55,7 +55,7 @@ namespace Health.Direct.Admin.Console.Controllers
                 filter = anchor => anchor.Owner.Equals(domain.Name, StringComparison.OrdinalIgnoreCase);
             }
 
-            return View(Repository.FindAll()
+            return View(Repository.Query()
                             .Where(filter)
                             .Select(anchor => Mapper.Map<Anchor, AnchorModel>(anchor))
                             .AsPagination(page ?? 1, DefaultPageSize));

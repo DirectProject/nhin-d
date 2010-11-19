@@ -29,7 +29,8 @@
 
     <script type="text/javascript" language="javascript">
         $(function() {
-            $(':submit,a.action').button();
+            $(':submit').button().click(function() { $(this).button("disable"); $('form').submit(); });
+            $(".input-validation-error").addClass("ui-state-error");
         });
     </script>
 </body>

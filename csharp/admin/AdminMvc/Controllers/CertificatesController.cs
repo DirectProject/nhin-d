@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Web.Mvc;
@@ -49,14 +50,17 @@ namespace Health.Direct.Admin.Console.Controllers
             ViewData["DateTimeFormat"] = "M/d/yyyy h:mm:ss tt";
 
             Func<Certificate, bool> filter = certificate => true;
-            if (domainID.HasValue)
+            if (domainID.HasValue && domainID.Value > 0)
             {
                 var domain = Mapper.Map<Domain, DomainModel>(m_domainRepository.Get(domainID.Value));
-                ViewData["Domain"] = domain;
-                filter = certificate => certificate.Owner.Equals(domain.Name, StringComparison.OrdinalIgnoreCase);
+                if (domain != null)
+                {
+                    ViewData["Domain"] = domain;
+                    filter = certificate => certificate.Owner.Equals(domain.Name, StringComparison.OrdinalIgnoreCase);
+                }
             }
 
-            return View(Repository.FindAll()
+            return View(Repository.Query()
                             .Where(filter)
                             .Select(certificate => Mapper.Map<Certificate, CertificateModel>(certificate))
                             .AsPagination(page ?? 1, DefaultPageSize));
@@ -75,7 +79,7 @@ namespace Health.Direct.Admin.Console.Controllers
         public ActionResult Add(long domainID)
         {
             var domain = m_domainRepository.Get(domainID);
-            return View(new CertificateUploadModel {Owner = domain != null? domain.Name : null});
+            return View(new CertificateUploadModel(Mapper.Map<Domain,DomainModel>(domain)));
         }
 
         [Authorize]
@@ -115,6 +119,33 @@ namespace Health.Direct.Admin.Console.Controllers
             return View(model);
         }
 
+        public ActionResult Resolve(ResolveModel model)
+        {
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult Resolve(FormCollection formValues)
+        {
+            var model = new ResolveModel();
+
+            if (TryUpdateModel(model))
+            {
+                var certs = Repository.Resolve(model.Owner, model.ShowData);
+
+                if (certs.Count() > 0)
+                {
+                    return View("ResolveResult",
+                                Mapper.Map<IEnumerable<Certificate>, IEnumerable<CertificateModel>>(certs));
+                }
+                
+                ModelState.AddModelError("Owner", "No certificates found for this owner.");
+            }
+
+            return View(model);
+        }
+
         private bool LocalTryUpdateModel(CertificateUploadModel model)
         {
             if (!TryUpdateModel(model)) return false;
@@ -130,7 +161,6 @@ namespace Health.Direct.Admin.Console.Controllers
 
             return true;
         }
-
 
         protected override ActionResult EnableDisable(long id, EntityStatus status)
         {

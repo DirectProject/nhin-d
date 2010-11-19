@@ -17,7 +17,7 @@ namespace Health.Direct.Admin.Console.Models.Repositories
 
         protected IDnsRecordManager Client { get { return m_client; } }
         
-        public IQueryable<DnsRecord> FindAll()
+        public IQueryable<DnsRecord> Query()
         {
             return Client.EnumerateDnsRecords(0, int.MaxValue, DnsStandard.RecordType.MX).AsQueryable();
         }

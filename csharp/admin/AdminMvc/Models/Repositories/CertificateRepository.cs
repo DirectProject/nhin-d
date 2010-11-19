@@ -14,8 +14,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 
+using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;
 
@@ -32,7 +35,7 @@ namespace Health.Direct.Admin.Console.Models.Repositories
 
         protected ICertificateStore Client { get { return m_client; } }
         
-        public IQueryable<Certificate> FindAll()
+        public IQueryable<Certificate> Query()
         {
             return Client.EnumerateCertificates(0, int.MaxValue, null).AsQueryable();
         }
@@ -59,10 +62,25 @@ namespace Health.Direct.Admin.Console.Models.Repositories
             return certificate;
         }
 
+        public IEnumerable<Certificate> Resolve(string owner, bool showData)
+        {
+            MailAddress address = new MailAddress(owner);
+            var options = new CertificateGetOptions { IncludeData = showData };
+
+            Certificate[] certs = Client.GetCertificatesForOwner(address.Address, options);
+
+            if (certs.IsNullOrEmpty())
+            {
+                certs = Client.GetCertificatesForOwner(address.Host, options);
+            }
+
+            return certs;
+        }
+
         public Certificate Get(long id)
         {
             // TODO: Replace with GetCertificateById()
-            return (from certificate in FindAll()
+            return (from certificate in Query()
                     where certificate.ID == id
                     select certificate).SingleOrDefault();
         }
