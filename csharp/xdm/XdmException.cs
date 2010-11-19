@@ -20,18 +20,18 @@ using System.Text;
 
 using Health.Direct.Common;
 
-namespace Health.Direct.Xd
+namespace Health.Direct.Xdm
 {
     /// <summary>
-    /// Represents an exception in generating or consuming XD* Metadata
+    /// Represents an exception in generating or consuming XDM packages
     /// </summary>
-    public class XdMetadataException : DirectException<XdError>
+    public class XdmException : DirectException<XdmError>
     {
         /// <summary>
         /// Creates an exception with the specified error
         /// </summary>
-        /// <param name="error">The <see cref="XdError"/> that triggered this exception.</param>
-        public XdMetadataException(XdError error)
+        /// <param name="error">The <see cref="XdmError"/> that triggered this exception.</param>
+        public XdmException(XdmError error)
             : base(error)
         {
         }
@@ -39,9 +39,9 @@ namespace Health.Direct.Xd
         /// <summary>
         /// Creates an exception with the specified error and a custom message
         /// </summary>
-        /// <param name="error">The <see cref="XdError"/> that triggered this exception.</param>
+        /// <param name="error">The <see cref="XdmError"/> that triggered this exception.</param>
         /// <param name="message">The custom error message</param>
-        public XdMetadataException(XdError error, string message)
+        public XdmException(XdmError error, string message)
             : base(error, message)
         {
         }
@@ -49,9 +49,9 @@ namespace Health.Direct.Xd
         /// <summary>
         /// Creates an exception with the specified error, and a lower level exception
         /// </summary>
-        /// <param name="error">The <see cref="XdError"/> that triggered this exception.</param>
+        /// <param name="error">The <see cref="XdmError"/> that triggered this exception.</param>
         /// <param name="innerException">The lower level exception that triggered this exception</param>
-        public XdMetadataException(XdError error, Exception innerException)
+        public XdmException(XdmError error, Exception innerException)
             : base(error, innerException)
         {
         }
@@ -59,10 +59,10 @@ namespace Health.Direct.Xd
         /// <summary>
         /// Creates an exception with the specified error, a lower level exception, and a custom message
         /// </summary>
-        /// <param name="error">The <see cref="XdError"/> that triggered this exception.</param>
+        /// <param name="error">The <see cref="XdmError"/> that triggered this exception.</param>
         /// <param name="innerException">The lower level exception that triggered this exception</param>
         /// <param name="message">The custom error message</param>
-        public XdMetadataException(XdError error, string message, Exception innerException)
+        public XdmException(XdmError error, string message, Exception innerException)
             : base(error, message, innerException)
         {
         }
