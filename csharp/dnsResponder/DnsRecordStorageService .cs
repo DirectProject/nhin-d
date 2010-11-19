@@ -18,10 +18,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
-
 using Health.Direct.Common.DnsResolver;
+using Health.Direct.Config.Store;
 using Health.Direct.Config.Client;
-
+using Health.Direct.Config.Client.RecordRetrieval;
 
 namespace Health.Direct.DnsResponder
 {
@@ -101,7 +101,7 @@ namespace Health.Direct.DnsResponder
         /// have any corresponding answer records populated upon return</param>
         protected void ProcessANAMEQuestion(DnsResponse response)
         {
-            using (Direct.Config.Client.RecordRetrieval.RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
+            using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
                 client.GetANAMEDnsRecords(response);
             }
@@ -114,7 +114,7 @@ namespace Health.Direct.DnsResponder
         /// have any corresponding answer records populated upon return</param>
         protected void ProcessSOAQuestion(DnsResponse response)
         {
-            using (Direct.Config.Client.RecordRetrieval.RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
+            using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
                 client.GetSOADnsRecords(response);
             }
@@ -127,7 +127,7 @@ namespace Health.Direct.DnsResponder
         /// have any corresponding answer records populated upon return</param>
         protected void ProcessMXQuestion(DnsResponse response)
         {
-            using (Direct.Config.Client.RecordRetrieval.RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
+            using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
                 client.GetMXDnsRecords(response);
             }
@@ -140,16 +140,14 @@ namespace Health.Direct.DnsResponder
         /// have any corresponding answer records populated upon return</param>
         protected void ProcessCERTQuestion(DnsResponse response)
         {
-
-            using (Direct.Config.Client.RecordRetrieval.RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
+            using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
-                Health.Direct.Config.Store.Certificate[] certs = client.GetCertificatesForOwner(response.Question.Domain);
-                foreach (Health.Direct.Config.Store.Certificate cert in certs)
+                Certificate[] certs = client.GetCertificatesForOwner(response.Question.Domain);
+                foreach (Certificate cert in certs)
                 {
                     response.AnswerRecords.Add(new CertRecord(new DnsX509Cert(cert.Data)));
                 }
             }
-
         }
     }
 

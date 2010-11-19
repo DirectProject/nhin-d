@@ -103,8 +103,7 @@ namespace Health.Direct.Tools.Agent
         private const string ResolveCertUsage =
             "Resolve certificates for an address or domain using Dns"
             + Constants.CRLF + "   domain or email-address"
-            + Constants.CRLF + "   outputFile: (optional)"
-            + Constants.CRLF + "   server : (optional)";
+            + Constants.CRLF + "   outputFile: (optional)";
         
         [Command(Name="Dns_ResolveMx", Usage=ResolveMxUsage)]
         public void ResolveMX(string[] args)
