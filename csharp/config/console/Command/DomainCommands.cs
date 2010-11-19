@@ -233,7 +233,6 @@ namespace Health.Direct.Config.Console.Command
             CommandUI.Print("ID", domain.ID);
             CommandUI.Print("CreateDate", domain.CreateDate);
             CommandUI.Print("UpdateDate", domain.UpdateDate);
-            CommandUI.Print("PostmasterID", domain.PostmasterID);
             CommandUI.Print("Status", domain.Status);
         }
     }
