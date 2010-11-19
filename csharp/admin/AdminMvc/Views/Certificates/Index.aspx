@@ -14,6 +14,7 @@
     <%= Html.Partial(ViewData["Domain"] == null? "AllItemsReminder" : "FilterReminder", "certificates")%>
     <div class="action-bar clear">
         <%= Html.ActionLink("Add Certificate", "Add", new { domainID=((DomainModel)ViewData["Domain"] ?? new DomainModel()).ID }, new { @class = "action ui-priority-primary" })%>
+        <%= Html.ActionLink("Resolve", "Resolve", new { domainID=((DomainModel)ViewData["Domain"] ?? new DomainModel()).ID }, new { @class = "action ui-priority-secondary" })%>
     </div>
     
     <%= Html.Partial("CertificateList", Model, ViewData) %>

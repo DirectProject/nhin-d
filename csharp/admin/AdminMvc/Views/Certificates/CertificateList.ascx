@@ -11,17 +11,25 @@
         .Columns(
         column =>
             {
-                column.For(c => c.Owner).Visible(false);
-                column.For(c => c.Thumbprint);
+                column.For(c => c.Owner);
+                column.For(c => Html.P(c.Thumbprint, new {title = c.Thumbprint, @class = "thumbprint"}))
+                    .Named("Thumbprint");
                 column.For(c => c.Status).Attributes(@class => "status");
-                column.For(c => Html.Span(Formatter.Format(c.CreateDate), new { title = c.CreateDate.ToString() })).Named("Created On");
-                column.For(c => Html.Span(Formatter.Format(c.ValidStartDate), new { title = c.ValidStartDate.ToString() })).Named("Valid From");
-                column.For(c => Html.Span(Formatter.Format(c.ValidEndDate), new { title = c.ValidEndDate.ToString() })).Named("Valid Until");
-                column.For(c => Html.ActionLink("View", "Details", new { c.ID }, new { @class = "view-details" }));
+                column.For(c => Html.Span(Formatter.Format(c.CreateDate), new {title = c.CreateDate.ToString()}))
+                    .Named("Created On");
+                column.For(c => Html.Span(Formatter.Format(c.ValidStartDate), new {title = c.ValidStartDate.ToString()}))
+                    .Named("Valid From");
+                column.For(c => Html.Span(Formatter.Format(c.ValidEndDate), new {title = c.ValidEndDate.ToString()}))
+                    .Named("Valid Until");
+                column.For(c => Html.ActionLink("View", "Details", new {c.ID}, new {@class = "view-details"}));
                 column.For(c => c.IsEnabled
-                                    ? Html.ActionLink("Disable", "Disable", new { c.ID }, new { @class = "enable-disable-action" })
-                                    : Html.ActionLink("Enable", "Enable", new { c.ID }, new { @class = "enable-disable-action" }));
-                column.For(c => Html.ActionLink("Delete", "Delete", new { c.ID }, new { @class = "toolbar-button delete-action" }));
+                                    ? Html.ActionLink("Disable", "Disable", new {c.ID},
+                                                      new {@class = "enable-disable-action"})
+                                    : Html.ActionLink("Enable", "Enable", new {c.ID},
+                                                      new {@class = "enable-disable-action"}));
+
+                column.For(
+                    c => Html.ActionLink("Delete", "Delete", new {c.ID}, new {@class = "toolbar-button delete-action"}));
             })%>
 
 <%= Html.Pager((IPagination)Model) %>

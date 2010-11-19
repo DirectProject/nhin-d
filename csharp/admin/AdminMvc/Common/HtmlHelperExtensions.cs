@@ -55,6 +55,19 @@ namespace Health.Direct.Admin.Console.Common
             return MvcHtmlString.Create(builder.ToString(TagRenderMode.Normal));
         }
 
+        public static MvcHtmlString P(this HtmlHelper html, string text)
+        {
+            return P(html, text, null);
+        }
+
+        public static MvcHtmlString P(this HtmlHelper html, string text, object htmlAttributes)
+        {
+            var builder = new TagBuilder("p");
+            builder.SetInnerText(text);
+            builder.MergeAttributes(new RouteValueDictionary(htmlAttributes));
+            return MvcHtmlString.Create(builder.ToString(TagRenderMode.Normal));
+        }
+
         public static MvcHtmlString File(this HtmlHelper html, string name)
         {
             return File(html, name, null);

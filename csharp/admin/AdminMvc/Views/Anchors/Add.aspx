@@ -3,12 +3,12 @@
 <%@ Import Namespace="Health.Direct.Admin.Console.Common"%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="TitleContent" runat="server">
-	Add Certificate
+	Add Anchor
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-    <h2>Add Certificate</h2>
+    <h2>Add Anchor</h2>
 
     <%= Html.ValidationSummary("Please correct the errors and try again.", new { @class = "ui-state-error", style = "padding: 0.5em" })%>
 
@@ -16,14 +16,16 @@
     
         <fieldset class="ui-widget-content">
         
+            <%= Html.HiddenFor(m => m.DomainID) %>
+        
             <span class="display-label">Owner</span>
-            <span class="display-field">
-            <% if (string.IsNullOrEmpty(Model.Owner)) { %>
-                <%= Html.EditorFor(m => m.Owner)%>
+            
+            <% if (Model.DomainID == 0) { %>
+                <span class="display-field"><%= Html.EditorFor(m => m.Owner)%></span>
+                <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.Owner, "*", new { @class = "ui-state-error-text" })%></span>
             <% } else { %>
-                <%= Html.DisplayFor(m => m.Owner)%>
+                <span class="display-field"><%= Html.DisplayFor(m => m.Owner)%></span>
             <% } %>
-            </span>
             <br class="clear" />
 
             <span class="display-label"><%= Html.LabelFor(m => m.Purpose) %></span>
@@ -52,5 +54,7 @@
         </fieldset>
     
     <% } %>
+
+    <script type="text/javascript" language="javascript" src="../../Scripts/OwnerAutocomplete.js"></script>
 
 </asp:Content>

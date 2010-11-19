@@ -2,23 +2,29 @@
 <%@ Import Namespace="Health.Direct.Admin.Console.Models"%>
 
 <div id="certificate-dialog" style="display: none;">
-    <div class="display-label">Owner</div>
-    <div id="owner" class="display-field"></div>
+    <span class="display-label">Owner</span>
+    <span id="owner" class="display-field"></span>
+    <br class="clear" />
 
-    <div class="display-label">Thumbprint</div>
-    <div id="thumbprint" class="display-field"></div>
+    <span class="display-label">Thumbprint</span>
+    <span id="thumbprint" class="display-field"></span>
+    <br class="clear" />
     
-    <div class="display-label">Status</div>
-    <div id="status" class="display-field"></div>
+    <span class="display-label">Status</span>
+    <span id="status" class="display-field"></span>
+    <br class="clear" />
 
-    <div class="display-label">Created On</div>
-    <div id="created" class="display-field"></div>
+    <span class="display-label">Created On</span>
+    <span id="created" class="display-field"></span>
+    <br class="clear" />
 
-    <div class="display-label">Valid From</div>
-    <div id="valid-start-date" class="display-field"></div>
+    <span class="display-label">Valid From</span>
+    <span id="valid-start-date" class="display-field"></span>
+    <br class="clear" />
     
-    <div class="display-label">Valid Until</div>
-    <div id="valid-end-date" class="display-field"></div>
+    <span class="display-label">Valid Until</span>
+    <span id="valid-end-date" class="display-field"></span>
+    <br class="clear" />
 </div>
 
 <script type="text/javascript" language="javascript">

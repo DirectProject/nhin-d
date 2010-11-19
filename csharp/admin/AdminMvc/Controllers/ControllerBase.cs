@@ -53,7 +53,7 @@ namespace Health.Direct.Admin.Console.Controllers
 
             new DateTime().ToString("");
 
-            var paginatedItems = (from item in Repository.FindAll()
+            var paginatedItems = (from item in Repository.Query()
                         select Mapper.Map<T, TModel>(item))
                         .AsPagination(page ?? 1, DefaultPageSize);
 

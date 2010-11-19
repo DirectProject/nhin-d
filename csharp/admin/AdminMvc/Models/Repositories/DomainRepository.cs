@@ -31,7 +31,7 @@ namespace Health.Direct.Admin.Console.Models.Repositories
 
         protected IDomainManager Client { get { return m_client; } }
         
-        public IQueryable<Domain> FindAll()
+        public IQueryable<Domain> Query()
         {
             return Client.EnumerateDomains(null, int.MaxValue).AsQueryable();
         }

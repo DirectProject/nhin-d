@@ -16,10 +16,9 @@
                     <%= Html.LabelFor(m => m.UserName) %>
                 </div>
                 <div class="display-field">
-                    <%= Html.TextBoxFor(m => m.UserName) %>
-                    <%= Html.ValidationMessageFor(m => m.UserName, "*", new { @class = "ui-state-error-text" })%>
+                    <%= Html.EditorFor(m => m.UserName) %>
                     <br />
-                    <%= Html.ValidationMessageFor(m => m.Password, "Please enter your user name.", new { @class = "ui-state-error-text", style = "font-weight: bold; font-size: 0.9em;" })%>
+                    <%= Html.ValidationMessageFor(m => m.UserName, "Please enter your user name.", new { @class = "ui-state-error-text", style = "font-weight: bold; font-size: 0.9em;" })%>
                 </div>
                 <br class="clear" />
                 
@@ -28,7 +27,6 @@
                 </div>
                 <div class="display-field">
                     <%= Html.PasswordFor(m => m.Password) %>
-                    <%= Html.ValidationMessageFor(m => m.Password, "*", new {@class = "ui-state-error-text"}) %>
                     <br />
                     <%= Html.ValidationMessageFor(m => m.Password, "Please enter your password.", new { @class = "ui-state-error-text", style = "font-weight: bold; font-size: 0.9em;" })%>
                 </div>
@@ -36,7 +34,7 @@
                 
                 <div class="action-buttons">
                     <input type="submit" value="Log In" />
-                </p>
+                </div>
             </fieldset>
         </div>
     <% } %>

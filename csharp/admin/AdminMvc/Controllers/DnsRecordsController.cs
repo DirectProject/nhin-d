@@ -22,7 +22,7 @@ namespace Health.Direct.Admin.Console.Controllers
         {
             //ViewData["DateTimeFormat"] = "M/d/yyyy h:mm:ss tt";
 
-            return View(Repository.FindAll()
+            return View(Repository.Query()
                             .Select(record => Mapper.Map<DnsRecord, DnsRecordModel>(record))
                             .AsPagination(page ?? 1, DefaultPageSize));
         }

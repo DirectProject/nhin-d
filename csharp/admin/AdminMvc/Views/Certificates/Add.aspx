@@ -15,14 +15,17 @@
     
         <fieldset class="ui-widget-content">
         
+            <%= Html.HiddenFor(m => m.DomainID) %>
+        
             <span class="display-label">Owner</span>
-            <span class="display-field">
-            <% if (string.IsNullOrEmpty(Model.Owner)) { %>
-                <%= Html.EditorFor(m => m.Owner)%>
+            
+            <% if (Model.DomainID == 0) { %>
+                <span class="display-field"><%= Html.EditorFor(m => m.Owner)%></span>
+                <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.Owner, "*", new { @class = "ui-state-error-text" })%></span>
             <% } else { %>
-                <%= Html.DisplayFor(m => m.Owner)%>
+                <span class="display-field"><%= Html.DisplayFor(m => m.Owner)%></span>
             <% } %>
-            </span>
+            <br class="clear" />
         
             <span class="display-label">Certificate Path</span>
             <span class="display-field"><%= Html.File("certificateFile", new { @class = "ui-widget-content" })%></span>
@@ -33,18 +36,19 @@
             <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.Password, "*", new { @class = "ui-state-error-text" })%></span>
             <br class="clear" />
 
-            <span class="display-label"><%= Html.LabelFor(m => m.PasswordConfirm) %></span>
+            <span class="display-label">Password Confirm</span>
             <span class="display-field"><%= Html.PasswordFor(m => m.PasswordConfirm, new { @class = "ui-widget-content date-text" })%></span>
             <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.PasswordConfirm, "*", new { @class = "ui-state-error-text" })%></span>
             <br class="clear" />
 
             <div class="action-buttons">
-                <%= Html.HiddenFor(m => m.Owner) %>
                 <input type="submit" value="Save" />
-                <%= Html.ActionLink("Cancel", "Index", new { owner = Model.Owner })%>
+                <%= Html.ActionLink("Cancel", "Index", new { domainID = Model.DomainID })%>
             </div>
         </fieldset>
     
     <% } %>
+    
+    <script type="text/javascript" language="javascript" src="../../Scripts/OwnerAutocomplete.js"></script>
 
 </asp:Content>

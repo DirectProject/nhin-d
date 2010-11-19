@@ -56,7 +56,7 @@ namespace Health.Direct.Admin.Console.Controllers
                 filter = address => address.DomainID == domain.ID;
             }
 
-            return View(Repository.FindAll()
+            return View(Repository.Query()
                             .Where(filter)
                             .Select(address => Mapper.Map<Address, AddressModel>(address))
                             .AsPagination(page ?? 1, DefaultPageSize));
