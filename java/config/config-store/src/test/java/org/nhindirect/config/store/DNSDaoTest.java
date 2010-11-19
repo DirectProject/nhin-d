@@ -68,41 +68,6 @@ public class DNSDaoTest
 		return FileUtils.readFileToByteArray(fl);
 	}
 	
-	/*
-	private DNSRecord createARecord(String name, String ip) throws Exception
-	{
-		if (!name.endsWith("."))
-			name = name + ".";
-		
-		ARecord rec = new ARecord(Name.fromString(name), DClass.IN, 86400L, InetAddress.getByName(ip));
-		
-		return DNSRecord.fromWire(rec.toWireCanonical());
-	}
-	
-	private DNSRecord createSRVRecord(String name, String target, int port) throws Exception
-	{
-		if (!name.endsWith("."))
-			name = name + ".";
-		
-		if (!target.endsWith("."))
-			target = target + ".";
-
-		SRVRecord rec = new SRVRecord(Name.fromString(name), DClass.IN, 86400L, 1, 1, port, Name.fromString(target));
-		
-		return DNSRecord.fromWire(rec.toWireCanonical());
-	}
-	
-	private DNSRecord createCERTRecord(String address, X509Certificate cert) throws Exception
-	{
-		if (!address.endsWith("."))
-			address = address + ".";
-		
-		
-		CERTRecord rec = new CERTRecord(Name.fromString(address), DClass.IN, 86400L, CERTRecord.PKIX, 0, 0, cert.getEncoded());
-		
-		return DNSRecord.fromWire(rec.toWireCanonical());
-	}	
-	*/
 	
 	@Test
 	public void testCleanDatabase() throws Exception 

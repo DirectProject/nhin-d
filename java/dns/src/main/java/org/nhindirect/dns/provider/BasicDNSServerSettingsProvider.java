@@ -3,8 +3,6 @@
  All rights reserved.
 
  Authors:
-    Umesh Madan     umeshma@microsoft.com
-    Chris Lomonico  chris.lomonico@surescripts.com
     Greg Meyer      gm2552@cerner.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,29 +13,56 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.dns;
+package org.nhindirect.dns.provider;
 
-import org.xbill.DNS.Message;
 
-import com.google.inject.ImplementedBy;
+import org.nhindirect.dns.DNSServerSettings;
 
-/**
- * A DNSStore encapsulates the physical medium that stores DNS records such as a files, databases, or web services.  A store processes DNS requests,
- * executes the lookup or operational request (such as zone transfers) logic, and returns an appropriate response.
- * @author Greg Meyer
- * @author Umesh Madan
- * 
- * @since 1.0
+import com.google.inject.Provider;
+
+/** Guice provider for configuring a minimal set of DNSServer settings.
+ *  @author Greg Meyer
+ *
+ *  @since 1.0
  */
-@ImplementedBy(ConfigServiceDNSStore.class)
-public interface DNSStore 
+public class BasicDNSServerSettingsProvider implements Provider<DNSServerSettings>
 {
+	
+	private final String bindings;
+	private final int port;
+	
 	/**
-	 * Processes a lookup request for DNS records. 
-	 * @param dnsMsg The DSN request message.
-	 * @return The DNS response message.  Returns null for lookup requests if a matching record cannot be found.
-	 * @throws DNSException Thrown is the request fails due to sever failure such as illegal request parameters or
-	 * a failure accessing the physical record medium.
+	 * Creates a provider using the default DNS server settings.
 	 */
-	public Message get(Message dnsMsg) throws DNSException;
+	public BasicDNSServerSettingsProvider()
+	{
+		this(null, 0);
+	}
+	
+	/**
+	 * Creates a provider allowing the IP binding addresses and port to be overridden.
+	 * @param bindings A comma delimited list of IP binding addresses.
+	 * @param port The IP port that the server will use to listen for DNS requests.
+	 */
+	public BasicDNSServerSettingsProvider(String bindings, int port)
+	{
+		this.bindings = bindings;
+		this.port = port;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public DNSServerSettings get()
+	{ 
+		DNSServerSettings settings = new DNSServerSettings();
+		if (port > 0)
+			settings.setPort(port);
+		
+		if (bindings != null && !bindings.isEmpty())
+			settings.setBindAddress(bindings);
+		
+		return settings;
+	}
 }
