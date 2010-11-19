@@ -46,28 +46,15 @@
 		  <version>2.0</version>
 		</dependency>	  
 	    <dependency>
-	        <groupId>commons-codec</groupId>
-	        <artifactId>commons-codec</artifactId>
-	        <version>1.4</version>
-	        <scope>compile</scope>
-	    </dependency>   
-	    <dependency>
 	        <groupId>commons-logging</groupId>
 	        <artifactId>commons-logging</artifactId>
 	        <version>1.1.1</version>
-	        <scope>compile</scope>
 	    </dependency>	 
 	    <dependency>
 	    	<groupId>commons-io</groupId>
 	    	<artifactId>commons-io</artifactId>
 	    	<version>1.4</version>
-	    </dependency>	        
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4.1</version>
-	        <scope>compile</scope>			
-		</dependency>	     
+	    </dependency>	             
 	    <dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -84,11 +71,6 @@
 		    <artifactId>dnsjava</artifactId>
 		    <version>2.0.8</version>	    
 		</dependency>	
-		<dependency>
-		    <groupId>org.apache.jcs</groupId>
-		    <artifactId>jcs</artifactId>
-		    <version>1.3</version>	    
-		</dependency>
 		<dependency>
 		    <groupId>org.nhind</groupId>
 		    <artifactId>config-service-client</artifactId>
@@ -265,6 +247,87 @@
          </execution>
        </executions>
      </plugin>
+	      <plugin>
+	        <groupId>org.codehaus.mojo</groupId>
+	        <artifactId>appassembler-maven-plugin</artifactId>
+	        <version>1.1</version>        
+	        <configuration>
+	          <target>${project.build.directory}/appassembler</target>
+	          <repoPath>jsw/DirectDNSServer/lib</repoPath>
+	          <binFileExtensions>
+	             <linux>.sh</linux>
+	          </binFileExtensions>
+	          <repositoryName>jsw/DirectDNSServer/lib</repositoryName>
+	          <repositoryLayout>flat</repositoryLayout>
+	          <defaultJvmSettings>
+	            <initialMemorySize>256M</initialMemorySize>
+	            <maxMemorySize>1024M</maxMemorySize>
+	            <systemProperties>
+	              <systemProperty>java.security.policy=conf/policy.all</systemProperty>
+	              <systemProperty>com.sun.management.jmxremote</systemProperty>
+	              <systemProperty>com.sun.management.jmxremote.port=8999</systemProperty>
+	              <systemProperty>com.sun.management.jmxremote.authenticate=false</systemProperty>
+	              <systemProperty>com.sun.management.jmxremote.ssl=false</systemProperty>
+	            </systemProperties>
+	            <extraArguments>
+	              <extraArgument>-server</extraArgument>
+	            </extraArguments>
+	          </defaultJvmSettings>
+
+	                 
+	          <daemons>
+	            <daemon>
+	              <id>DirectDNSServer</id>
+	              <mainClass>org.nhindirect.dns.service.SimpleServiceRunner</mainClass>
+	              <commandLineArguments>
+	                <commandLineArgument>-p</commandLineArgument>
+	                <commandLineArgument>1024</commandLineArgument>
+	                <commandLineArgument>-b</commandLineArgument>
+	                <commandLineArgument>0.0.0.0</commandLineArgument>
+	                <commandLineArgument>-u</commandLineArgument>
+	                <commandLineArgument>http://localhost:8081/config-service/ConfigurationService</commandLineArgument>
+	              </commandLineArguments>
+	              <platforms>
+	                <platform>jsw</platform>
+	              </platforms>                          
+                  <generatorConfigurations>
+                        <generatorConfiguration>
+                            <generator>jsw</generator>                           
+                            <includes>
+                                <include>linux-x86-32</include>
+                                <include>linux-x86-64</include>
+                                <include>windows-x86-32</include>
+                                <include>solaris-x86-32</include>
+                                <include>macosx-universal-x86-32</include>
+                            </includes>
+                            <configuration>
+                                <property>
+                                    <name>set.default.REPO_DIR</name>
+                                    <value>lib</value>
+                                </property>   
+			                    <property>
+			                      <name>wrapper.logfile</name>
+			                      <value>logs/wrapper.log</value>
+			                    </property>                        
+                            </configuration>
+                        </generatorConfiguration>
+                    </generatorConfigurations>     
+                               
+	            </daemon>
+	          </daemons>
+	        </configuration>
+	        <executions>
+	          <execution>
+	            <id>generate-jsw-scripts</id>
+	            <phase>package</phase>
+	            <goals>
+	              <!--  <goal>assemble</goal>   -->
+	              <goal>generate-daemons</goal>
+                  <goal>create-repository</goal>	              
+	            </goals>
+	          </execution>
+	        </executions>
+	      </plugin>
         <!-- DOXIA does not yet copy resources to the generated-site or site location.  Bug
         DOXIA-355 was submitted in July of 09 and is listed to be resolved in DOXIA 1.2.
         This plugin a is work around for copying the resources from the book source to 
@@ -274,7 +337,21 @@
           <artifactId>maven-antrun-plugin</artifactId>
           <executions>
             <execution>
-              <id>book</id>
+              <id>create-logs</id>
+              <phase>package</phase>
+              <configuration>
+                <tasks>
+                  <copy todir="${project.build.directory}/appassembler/jsw/DirectDNSServer/logs">
+                    <fileset dir="${basedir}/src/logs/"/>
+                  </copy>                  
+                </tasks>
+              </configuration>
+              <goals>
+                <goal>run</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>books</id>
               <phase>pre-site</phase>
               <configuration>
                 <tasks>
@@ -289,7 +366,7 @@
               <goals>
                 <goal>run</goal>
               </goals>
-            </execution>
+            </execution>           
           </executions>
         </plugin>        
 	    <plugin>
@@ -329,7 +406,29 @@
                     <version>1.1.3</version>
                 </dependency>	
 			</dependencies>
-		</plugin>       
+		</plugin>   	
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.2</version>             
+            <executions>
+               <execution>           
+                  <phase>package</phase>
+                  <goals>
+                     <goal>single</goal>
+                  </goals>
+                  <configuration>
+                     <appendAssemblyId>false</appendAssemblyId>
+                     <includeModuleDirectory>false</includeModuleDirectory>
+                     <finalName>dnsServer-${project.version}</finalName>
+                     <finalname></finalname>
+                     <descriptors>
+                        <descriptor>src/descriptors/distribution.xml</descriptor>
+                     </descriptors>
+                  </configuration>                    
+               </execution>                
+            </executions>
+         </plugin>   			    
     </plugins>
     <pluginManagement>
        <plugins>

@@ -31,6 +31,8 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAKey;
 
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.DnsRecord;
@@ -60,6 +62,8 @@ import com.google.inject.Inject;
  */
 public class ConfigServiceDNSStore implements DNSStore 
 {
+	
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(ConfigServiceDNSStore.class);
 	
 	private Collection<Domain> domains;
 	
@@ -108,6 +112,8 @@ public class ConfigServiceDNSStore implements DNSStore
 	@Override
 	public Message get(Message request) throws DNSException
 	{
+		LOGGER.trace("get(Message) Entered");
+		
 		if (request == null)
 			throw new DNSException(DNSError.newError(Rcode.FORMERR));
 		
@@ -129,6 +135,15 @@ public class ConfigServiceDNSStore implements DNSStore
         Name name = queryRecord.getName();
     	int type = queryRecord.getType();
         
+    	if (LOGGER.isDebugEnabled())
+    	{
+    		StringBuilder builder = new StringBuilder("Recieved Query Request:");
+    		builder.append("\r\n\tName: " + name.toString());
+    		builder.append("\r\n\tType: " + type);
+    		builder.append("\r\n\tDClass: " + queryRecord.getDClass());
+    		LOGGER.debug(builder.toString());
+    	}
+    	
     	RRset lookupRecords = null;
         switch (question.getType())
         {
@@ -178,9 +193,14 @@ public class ConfigServiceDNSStore implements DNSStore
         	}
         	default:
         	{
-        		throw new DNSException(DNSError.newError(Rcode.NOTIMP)); 
+        		LOGGER.debug("Query Type " + type + " not implemented");
+        		throw new DNSException(DNSError.newError(Rcode.NOTIMP), "Query Type " + type + " not implemented"); 
         	}        	
         }
+        
+        
+    	LOGGER.debug("No records found.");
+     
         
         if (lookupRecords == null || lookupRecords.size() == 0)
         	return null;
@@ -198,6 +218,8 @@ public class ConfigServiceDNSStore implements DNSStore
 		while (iter.hasNext())
 			response.addRecord(iter.next(), Section.ANSWER);
     	
+		LOGGER.trace("get(Message) Exit");
+		
     	return response;
 	}
 

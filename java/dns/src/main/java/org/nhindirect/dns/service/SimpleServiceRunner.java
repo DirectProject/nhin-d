@@ -21,9 +21,11 @@ import java.net.Inet4Address;
 import java.net.URL;
 import java.security.Security;
 
-import org.nhindirect.dns.ConfigServiceDNSStore;
-import org.nhindirect.dns.DNSServer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nhindirect.dns.DNSException;
 import org.nhindirect.dns.DNSServerSettings;
+
 
 /**
  * Simple command line based application that launches the DNS server.  Use the -help runtime parameter
@@ -33,6 +35,8 @@ import org.nhindirect.dns.DNSServerSettings;
  */
 public class SimpleServiceRunner 
 {
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(SimpleServiceRunner.class);
+	
 	private static int port;
 	private static String bind;
 	private static URL servURL;
@@ -147,36 +151,29 @@ public class SimpleServiceRunner
 	 */
 	private static void startAndRun()
 	{
-		DNSServerSettings settings = new DNSServerSettings();
-		settings.setBindAddress(bind);
-		settings.setPort(port);
-		
 		StringBuffer buffer = new StringBuffer("Starting DNS server.  Settings:");
 		buffer.append("\r\n\tBind Addresses: ").append(bind);
 		buffer.append("\r\n\tListen Port: ").append(port);
 		buffer.append("\r\n\tService URL: ").append(servURL.toString());
+		LOGGER.info(buffer.toString() + "\n");
+
 		
-		System.out.println(buffer.toString() + "\n");
-		
-		DNSServer server;
-		
+		DNSServerService server = null;
 		try
 		{
-			ConfigServiceDNSStore store = new ConfigServiceDNSStore(servURL);
+			DNSServerSettings settings = new DNSServerSettings();
+			settings.setPort(port);
+			settings.setBindAddress(bind);
 			
-			server = new DNSServer(store, settings);
-			
-			server.start();
-			
+			server = new DNSServerService(servURL, settings);
 		}
-		catch (Exception e)
+		catch (DNSException e)
 		{
-			System.err.println("Error during server startup: " + e.getMessage());
-			e.printStackTrace();
+			LOGGER.error("Server failed to start: " + e.getMessage(), e);
 			return;
 		}
-		
-		System.out.println("\r\nServer running....  Press Enter or Return to stop.");
+				
+		LOGGER.info("\r\nServer running....  Press Enter or Return to stop.");
 		
 		InputStreamReader input = new InputStreamReader(System.in);
 		BufferedReader reader = new BufferedReader(input);
@@ -185,13 +182,13 @@ public class SimpleServiceRunner
 		{
 			reader.readLine();
 			
-			System.out.println("Shutting down server.  Wait 5 seconds for cleanup.");
+			LOGGER.info("Shutting down server.  Wait 5 seconds for cleanup.");
 			
-			server.stop();
+			server.stopService();
 		
 			Thread.sleep(5000);
 			
-			System.out.println("Server stopped");
+			LOGGER.info("Server stopped");
 		}
 		catch (Exception e)
 		{
