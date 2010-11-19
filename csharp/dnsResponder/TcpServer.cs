@@ -94,32 +94,39 @@ namespace Health.Direct.DnsResponder
 
         void AcceptConnection(object sender, SocketAsyncEventArgs args)
         {
-            Socket socket = args.AcceptSocket;
-            SocketError socketError = args.SocketError;
-                        
-            if (sender != null)
+            try
             {
-                //
-                // sender != null if call completed asynchronously. 
-                // Release the accept throttle so the listener thread can resume accepting connections
-                //
-                base.AcceptCompleted(args);
-            }
-            else
-            {
-                base.ReleaseAsyncArgs(args);
-            }
+                Socket socket = args.AcceptSocket;
+                SocketError socketError = args.SocketError;
+                            
+                if (sender != null)
+                {
+                    //
+                    // sender != null if call completed asynchronously. 
+                    // Release the accept throttle so the listener thread can resume accepting connections
+                    //
+                    base.AcceptCompleted(args);
+                }
+                else
+                {
+                    base.ReleaseAsyncArgs(args);
+                }
 
-            //
-            // If there was an error...
-            //
-            if (socket == null || socketError != SocketError.Success)
-            {
-                base.ProcessingComplete();
-                return;
+                //
+                // If there was an error...
+                //
+                if (socket == null || socketError != SocketError.Success)
+                {
+                    base.ProcessingComplete();
+                    return;
+                }
+        
+                this.AcceptConnection(socket);
             }
-    
-            this.AcceptConnection(socket);
+            catch(Exception ex)
+            {
+                this.NotifyError(ex);
+            }
         }
 
         void AcceptConnection(Socket socket)
@@ -140,6 +147,17 @@ namespace Health.Direct.DnsResponder
                 this.Dispatch(socket);
 
                 socket = null;
+            }
+            catch(SocketException)
+            {
+                //
+                // Eat these socket exceptions silently, as they happen all the time
+                // including when the client randomly closes the socket, etc..
+                //
+            }
+            catch(Exception ex)
+            {
+                this.NotifyError(ex);
             }
             finally
             {

@@ -26,11 +26,10 @@ namespace Health.Direct.DnsResponder.Service
     {
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        DnsRecord[] GetMatchingDnsRecords(string domainName
-             , DnsStandard.RecordType typeID);
+        DnsRecord[] GetMatchingDnsRecords(string domainName, DnsStandard.RecordType typeID);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        Certificate[] GetCertificatesForOwner(string owner, CertificateGetOptions options);
+        Certificate[] GetCertificatesForOwner(string domain);
     }
 }

@@ -9,86 +9,7 @@
 //------------------------------------------------------------------------------
 
 namespace Health.Direct.Config.Client.RecordRetrieval {
-    using System.Runtime.Serialization;
-    using System;
     
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "3.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="CertificateGetOptions", Namespace="urn:directproject:config/store/082010")]
-    [System.SerializableAttribute()]
-    public partial class CertificateGetOptions : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private bool IncludeDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private bool IncludePrivateKeyField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<Health.Direct.Config.Store.EntityStatus> StatusField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public bool IncludeData {
-            get {
-                return this.IncludeDataField;
-            }
-            set {
-                if ((this.IncludeDataField.Equals(value) != true)) {
-                    this.IncludeDataField = value;
-                    this.RaisePropertyChanged("IncludeData");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public bool IncludePrivateKey {
-            get {
-                return this.IncludePrivateKeyField;
-            }
-            set {
-                if ((this.IncludePrivateKeyField.Equals(value) != true)) {
-                    this.IncludePrivateKeyField = value;
-                    this.RaisePropertyChanged("IncludePrivateKey");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<Health.Direct.Config.Store.EntityStatus> Status {
-            get {
-                return this.StatusField;
-            }
-            set {
-                if ((this.StatusField.Equals(value) != true)) {
-                    this.StatusField = value;
-                    this.RaisePropertyChanged("Status");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(Namespace="urn:directproject:config/store/082010", ConfigurationName="RecordRetrieval.IRecordRetrievalService")]
@@ -106,7 +27,7 @@ namespace Health.Direct.Config.Client.RecordRetrieval {
             "wnerResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IRecordRetrievalService/GetCertificatesForO" +
             "wnerConfigStoreFaultFault", Name="ConfigStoreFault")]
-        Health.Direct.Config.Store.Certificate[] GetCertificatesForOwner(string owner, Health.Direct.Config.Client.RecordRetrieval.CertificateGetOptions options);
+        Health.Direct.Config.Store.Certificate[] GetCertificatesForOwner(string domain);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
@@ -140,8 +61,8 @@ namespace Health.Direct.Config.Client.RecordRetrieval {
             return base.Channel.GetMatchingDnsRecords(domainName, typeID);
         }
         
-        public Health.Direct.Config.Store.Certificate[] GetCertificatesForOwner(string owner, Health.Direct.Config.Client.RecordRetrieval.CertificateGetOptions options) {
-            return base.Channel.GetCertificatesForOwner(owner, options);
+        public Health.Direct.Config.Store.Certificate[] GetCertificatesForOwner(string domain) {
+            return base.Channel.GetCertificatesForOwner(domain);
         }
     }
 }

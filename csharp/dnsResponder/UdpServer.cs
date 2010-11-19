@@ -112,6 +112,13 @@ namespace Health.Direct.DnsResponder
                     }
                 }
             }
+            catch (SocketException)
+            {
+                //
+                // Eat socket exceptions silently, as they happen all the time - often when the other
+                // party does something abrupt
+                //
+            }
             catch(Exception ex)
             {
                 base.NotifyError(ex);

@@ -13,12 +13,13 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Health.Direct.Common.Container;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Config.Store;
 using Health.Direct.Diagnostics.NLog;
-
 namespace Health.Direct.DnsResponder.Service
 {
     public class Service
@@ -27,23 +28,47 @@ namespace Health.Direct.DnsResponder.Service
         
         public const string Namespace = ConfigStore.Namespace;
 
-        readonly ServiceSettings m_settings;
-        readonly ConfigStore m_store;
+        ServiceSettings m_settings;
+        ConfigStore m_store;
+        string[] m_domains;
+        string[] m_dottedDomains;
+        ILogger m_logger;
                 
         public Service()
         {   
             InitializeContainer();
 
-            ILogger logger = Log.For(this);
-
+            m_logger = Log.For(this);
             m_settings = new ServiceSettings();
-            logger.Info("Starting Service");
 
-            m_store = new ConfigStore(m_settings.StoreConnectString
-                , m_settings.QueryTimeout);
-            logger.Info("Service Started Successfully");
+            m_logger.Info("Starting Service");
+            
+            this.InitStore();
+            
+            m_logger.Info("Service Started Successfully");
         }
-
+        
+        void InitStore()
+        {
+            using(MethodTracer tracer = new MethodTracer(m_logger))
+            {
+                m_store = new ConfigStore(m_settings.StoreConnectString, m_settings.QueryTimeout);
+                this.LoadDomains();
+            }
+        }
+        
+        void LoadDomains()
+        {
+            using(MethodTracer tracer = new MethodTracer(m_logger))
+            {       
+                m_domains = (from domain in this.m_store.Domains
+                               select domain.Name).OrderByDescending<string, int>(x => x.Length).ToArray();
+                    
+                m_dottedDomains = (from domain in m_domains
+                                select '.' + domain).ToArray();
+            }
+        }
+        
         private static void InitializeContainer()
         {
             LogFileSettings settings = LogFileSection.GetAsSettings();
@@ -76,6 +101,22 @@ namespace Health.Direct.DnsResponder.Service
             get
             {
                 return m_store;
+            }
+        }
+        
+        public string[] Domains
+        {
+            get
+            {
+                return m_domains;
+            }
+        }
+        
+        public string[] DottedDomains
+        {
+            get
+            {
+                return m_dottedDomains;
             }
         }
     }
