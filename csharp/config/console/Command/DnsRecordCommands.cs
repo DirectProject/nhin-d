@@ -342,14 +342,12 @@ namespace Health.Direct.Config.Console.Command
             DnsRecord dr = Client.GetDnsRecord(recordID);
             if (dr == null)
             {
-                CommandUI.Print(new Exception("no record found matching id"));
-                return;
+                throw new Exception("no record found matching id");
             }
 
             if (dr.RecordData.IsNullOrEmpty())
             {
-                CommandUI.Print(new Exception("empty record data found for matchng record, please update or delete data"));
-                return;
+                throw new Exception("empty record data found for matchng record, please update or delete data");
             }
 
             DnsBufferReader dbr = new DnsBufferReader(dr.RecordData
@@ -359,10 +357,9 @@ namespace Health.Direct.Config.Console.Command
             MXRecord ar = DnsResourceRecord.Deserialize(ref dbr) as MXRecord;
             if (ar == null)
             {
-                CommandUI.Print(new Exception(string.Format(
+                throw new Exception(string.Format(
                     "returned record type does not match expected type, found [{0}], expected [MX]"
-                    , ((DnsStandard.RecordType)dr.TypeID))));
-                return;
+                    , ((DnsStandard.RecordType)dr.TypeID)));
             }
 
             CommandUI.Print("DomainName", ar.Name);
@@ -386,14 +383,12 @@ namespace Health.Direct.Config.Console.Command
             DnsRecord dr = Client.GetDnsRecord(recordID);
             if (dr == null)
             {
-                CommandUI.Print(new Exception("no record found matching id"));
-                return;
+                throw new Exception("no record found matching id");
             }
 
             if (dr.RecordData.IsNullOrEmpty())
             {
-                CommandUI.Print(new Exception("empty record data found for matchng record, please update or delete data"));
-                return;
+                throw new Exception("empty record data found for matchng record, please update or delete data");
             }
 
             DnsBufferReader dbr = new DnsBufferReader(dr.RecordData
@@ -402,10 +397,9 @@ namespace Health.Direct.Config.Console.Command
             SOARecord ar = DnsResourceRecord.Deserialize(ref dbr) as SOARecord;
             if (ar == null)
             {
-                CommandUI.Print(new Exception(string.Format(
+                throw new Exception(string.Format(
                     "returned record type does not match expected type, found [{0}], expected [SOA]"
-                    , ((DnsStandard.RecordType)dr.TypeID))));
-                return;
+                    , ((DnsStandard.RecordType)dr.TypeID)));
             }
             CommandUI.Print("DomainName", ar.Name);
             CommandUI.Print("primarySourceDomain", ar.DomainName);
@@ -429,13 +423,11 @@ namespace Health.Direct.Config.Console.Command
             long recordID = args.GetRequiredValue<long>(0);
             DnsRecord dr = Client.GetDnsRecord(recordID);
             if(dr == null){
-                CommandUI.Print(new Exception("no record found matching id"));
-                return;
+                throw new Exception("no record found matching id");
             }
 
             if(dr.RecordData.IsNullOrEmpty()){
-                CommandUI.Print(new Exception("empty record data found for matchng record, please update or delete data"));
-                return;
+                throw new Exception("empty record data found for matchng record, please update or delete data");
             }
 
             DnsBufferReader dbr = new DnsBufferReader(dr.RecordData
@@ -445,10 +437,9 @@ namespace Health.Direct.Config.Console.Command
             AddressRecord ar = DnsResourceRecord.Deserialize(ref dbr) as AddressRecord;
             if (ar == null)
             {
-                CommandUI.Print(new Exception(string.Format(
+                throw new Exception(string.Format(
                     "returned record type does not match expected type, found [{0}], expected [ANAME]"
-                    ,((DnsStandard.RecordType)dr.TypeID))));
-                return;
+                    ,((DnsStandard.RecordType)dr.TypeID)));
             }
 
             CommandUI.Print("DomainName", ar.Name);
