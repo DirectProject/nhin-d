@@ -82,14 +82,5 @@ namespace Health.Direct.Config.Client
                 }
             }
         }
-
-        public static Certificate[] GetCertificatesForOwner(this RecordRetrievalServiceClient client, string owner)
-        {
-            CertificateGetOptions options = new CertificateGetOptions();
-            options.IncludeData = true;
-            return client.GetCertificatesForOwner(owner
-                , options);
-        }
-
     }
 }

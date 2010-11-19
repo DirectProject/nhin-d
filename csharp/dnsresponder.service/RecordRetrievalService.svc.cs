@@ -19,10 +19,9 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
-
-
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Config.Store;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.DnsResponder.Service
 {
@@ -71,55 +70,91 @@ namespace Health.Direct.DnsResponder.Service
             return new FaultException<ConfigStoreFault>(fault, new FaultReason(fault.ToString()));
         }
 
-        #region IRecordRetrievalService Members
-
         public DnsRecord[] GetMatchingDnsRecords(string domainName, Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
         {
             return Store.DnsRecords.Get(domainName
                 , typeID);
         }
 
-        public Health.Direct.Config.Store.Certificate[] GetCertificatesForOwner(string owner, CertificateGetOptions options)
+        public Health.Direct.Config.Store.Certificate[] GetCertificatesForOwner(string domain)
         {
+            if (string.IsNullOrEmpty(domain))
+            {
+                return null;
+            }
+            
             try
             {
-                options = options ?? CertificateGetOptions.Default;
-                return this.ApplyGetOptions(Store.Certificates.Get(owner, options.Status), options);
+                if (this.IsExactDomain(domain))
+                {
+                    return FetchCertificates(domain);
+                }
+                
+                Certificate[] certs = null;
+                //
+                // Convert domain to email
+                //
+                string emailOwner = this.DomainToEmail(domain);
+                if (!string.IsNullOrEmpty(emailOwner))
+                {
+                    certs = FetchCertificates(emailOwner);
+                }
+                if (certs.IsNullOrEmpty())
+                {
+                    //
+                    // Could not find certs by email. Try the raw string as is
+                    //
+                    certs = FetchCertificates(domain);
+                }
+                
+                return certs;
             }
             catch (Exception ex)
             {
                 throw CreateFault("GetCertificatesForOwner", ex);
             }
         }
-
-        #endregion
-
-
-        Certificate[] ApplyGetOptions(Certificate[] certs, CertificateGetOptions options)
+        
+        Certificate[] FetchCertificates(string owner)
         {
-            if (certs == null)
+            Certificate[] certs = Store.Certificates.Get(owner, EntityStatus.Enabled);
+            if (certs != null)
             {
-                return null;
+                foreach (Certificate cert in certs)
+                {
+                    cert.ExcludePrivateKey();
+                }
             }
-
-            return (from cert in
-                        (from cert in certs
-                         where cert != null
-                         select ApplyGetOptions(cert, options)
-                        )
-                    where cert != null
-                    select cert).ToArray();
+            
+            return certs;
         }
-
-        Certificate ApplyGetOptions(Certificate cert, CertificateGetOptions options)
+                
+        bool IsExactDomain(string domain)
         {
-            if (options == null)
-            {
-                options = CertificateGetOptions.Default;
-            }
-
-            return options.ApplyTo(cert);
+            return Service.Current.Domains.Contains(domain, StringComparer.OrdinalIgnoreCase);
         }
-
+        
+        string DomainToEmail(string domain)
+        {
+            //
+            // Dotted domains are sorted by length
+            // The first match is the longest match & the right one
+            // We've prepended all domain names with '.'
+            //
+            string[] dottedDomains = Service.Current.DottedDomains;
+            for (int i = 0; i < dottedDomains.Length; ++i)
+            {
+                int pos = domain.IndexOf(dottedDomains[i]);
+                if (pos > 0) // only if there is at least one char in the mail address
+                {
+                    // There needs to be an API to do this!
+                    return domain.Substring(0, pos) + '@' + Service.Current.Domains[i];
+                }
+            }            
+            //
+            // Can't be one of ours. Do not respond
+            //   
+            return null;
+        }        
     }
 }
