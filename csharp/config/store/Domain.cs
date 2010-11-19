@@ -96,14 +96,6 @@ namespace Health.Direct.Config.Store
             set;
         }
 
-        [Column(Name = "PostmasterAddressID", CanBeNull = true, UpdateCheck = UpdateCheck.Never)]
-        [DataMember(IsRequired = false)]
-        public long? PostmasterID
-        {
-            get;
-            set;
-        }
-        
         internal void CopyFixed(Domain source)
         {
             this.ID = source.ID;
@@ -114,7 +106,6 @@ namespace Health.Direct.Config.Store
         
         internal void ApplyChanges(Domain source)
         {
-            this.PostmasterID = source.PostmasterID;
             this.Status = source.Status;
             this.UpdateDate = DateTimeHelper.Now;
         }

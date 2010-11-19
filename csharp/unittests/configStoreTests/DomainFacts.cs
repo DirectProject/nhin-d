@@ -49,20 +49,6 @@ namespace Health.Direct.Config.Store.Tests
         }
 
         /// <summary>
-        ///A test for PostmasterID
-        ///</summary>
-        [Fact]
-        public void PostmasterIDTest()
-        {
-            Domain target = new Domain(BuildDomainName(GetRndDomainID()));
-            long? expected = GetRndDomainID();
-            target.PostmasterID = expected;
-            long? actual = target.PostmasterID;
-            Assert.Equal(expected, actual);
-            
-        }
-
-        /// <summary>
         ///A test for Name
         ///</summary>
         [Fact]
@@ -149,12 +135,9 @@ namespace Health.Direct.Config.Store.Tests
         {
             Domain source = new Domain(BuildDomainName(GetRndDomainID()));
             Domain target = new Domain();
-            source.PostmasterID = 777;
             source.Status = EntityStatus.Disabled;
-            Assert.NotEqual(source.PostmasterID ,target.PostmasterID);
             Assert.NotEqual(source.Status, target.Status);
             target.ApplyChanges(source);
-            Assert.Equal(source.PostmasterID, target.PostmasterID);
             Assert.Equal(source.Status, target.Status);
         }
 
