@@ -60,7 +60,7 @@
 	<!-- Config server files -->
 	<property name="config.root" value="${config.root}/../config"></property>
 	<property name="config.service.dir" value="${config.root}/config-service/target"></property>
-	<property name="config.service.orig.war" value="config-service-1.0.war"></property>
+	<property name="config.service.orig.war" value="config-service-1.1-SNAPSHOT.war"></property>
 	<property name="config.service.dest.war" value="config-service.war"></property>
 	<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
 	<property name="config.ui.orig.war" value="config-ui-1.0-SNAPSHOT.war"></property>
@@ -96,8 +96,8 @@
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
-	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.0.jar"></property>
-	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-1.0.jar"></property>
+	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.1-SNAPSHOT.jar"></property>
+	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-1.1-SNAPSHOT.jar"></property>
 	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.0-SNAPSHOT.jar"></property>
 	
 	<!-- Stylesheet to edit the config file -->
@@ -276,7 +276,7 @@
 	</target>
 
 	<target name="configure-tomcat">
-		<property name="config.service.orig.war" value="config-service-1.0.war"></property>
+		<property name="config.service.orig.war" value="config-service-1.1-SNAPSHOT.war"></property>
 		<property name="config.service.dest.war" value="config-service.war"></property>
 		<property name="config.ui.orig.war" value="config-ui.war"></property>
 		<property name="config.ui.dest.war" value="config-ui.war"></property>
