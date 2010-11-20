@@ -18,16 +18,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-using Xunit;
 using Health.Direct.Common.DnsResolver;
+
+using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    public class ConfigStoreTestBase 
+    public class ConfigStoreTestBase
     {
+        private const string ConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+        //protected const string ConnectionString = "Data Source=localhost;Initial Catalog=NHINDConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
 
-        protected const string CONNSTR = @"Data Source=.\SQLEXPRESS;Initial Catalog=NHINDConfig;Integrated Security=SSPI;";
-        //protected const string CONNSTR = "Data Source=localhost;Initial Catalog=NHINDConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
         protected const int MAXDOMAINCOUNT = 10; //---number should be <= .cer file count in metadata folder
         protected const int MAXSMTPCOUNT = 3;
         protected const int MAXADDRESSCOUNT = 3;
@@ -39,8 +40,19 @@ namespace Health.Direct.Config.Store.Tests
         private const string ADDRESSPATTERN = "test@address{0}.domain{1}.com";
         private const string SMTPDOMAINNAMEPATTERN = "smtp{0}.domain{1}.test.com";
         private const string ADDRESSDISPLAYNAMEPATTERN = "domain[{0}] add[{1}]";
-        private string DNSRECORDSEPATH = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
-        protected Dictionary<string, DnsResponse> m_DomainResponses = null;
+#if DEBUG
+        private const string DNSRECORDSEPATH = @"..\..\..\..\bin\debug\metadata\DnsRecords";
+#else
+        //---assume release...
+        private static string DNSRECORDSEPATH = @"..\..\..\..\bin\release\metadata\DnsRecords";
+#endif
+#if DEBUG
+        private const string CERTSRECORDSPATH = @"..\..\..\..\bin\debug\metadata\certs";
+#else
+        //---assume release...
+        private static string CERTSRECORDSPATH = @"..\..\..\..\bin\release\metadata\certs";
+#endif
+        protected Dictionary<string, DnsResponse> m_DomainResponses;
 
 
         // if true dump will be sent to the delegate specified by DumpLine
@@ -261,7 +273,7 @@ namespace Health.Direct.Config.Store.Tests
         /// related dns responses folder        
         /// </summary>
         /// <remarks>
-        /// Note that for each value listed below, there should be 
+        /// For each value listed below, there should be 
         /// a CERT, MX, SOA and A record bin file
         /// </remarks>
         protected static IEnumerable<string> DnsRecordDomainNames
@@ -284,7 +296,7 @@ namespace Health.Direct.Config.Store.Tests
         /// Gets test dns record types that will be stored in the config store db      
         /// </summary>
         /// <remarks>
-        /// Note that only types that are currently supported should be included here
+        /// Only types that are currently supported should be included here
         /// </remarks>
         protected static IEnumerable<DnsStandard.RecordType> DnsRecordTypes
         {
@@ -360,17 +372,16 @@ namespace Health.Direct.Config.Store.Tests
         /// this method populates the DnsRecords table with viable DnsRecords stored in metadata
         /// </summary>
         /// <remarks>
-        /// Note that the related domains are pulled from the DnsRecodDomainNames per each possible DnsRecordType
+        /// The related domains are pulled from the DnsRecodDomainNames per each possible DnsRecordType
         /// These can be generated using the common.tests.DnsResponseToBinExample.cs test class, however
         /// they must be copied to the metadata\dns responses folder in this project and marked as copy to output
         /// directory, if newer
         /// </remarks>
         protected void InitDnsRecords()
         {
-            List<string> domains = DnsRecordDomainNames.ToList<string>();
-            List<DnsStandard.RecordType> recTypes = DnsRecordTypes.ToList<DnsStandard.RecordType>();
+            List<string> domains = DnsRecordDomainNames.ToList();
 
-            DnsRecordManager mgr = new DnsRecordManager(new ConfigStore(CONNSTR));
+            DnsRecordManager mgr = new DnsRecordManager(CreateConfigStore());
             mgr.RemoveAll();
 
             //----------------------------------------------------------------------------------------------------
@@ -407,7 +418,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <returns>bytes from the bin file</returns>
         protected byte[] LoadAndVerifyDnsRecordFromBin<T>(string path)
         {
-            byte[] bytes = null;
+            byte[] bytes;
 
             //----------------------------------------------------------------------------------------------------
             //---read the stream from the bytes
@@ -428,8 +439,8 @@ namespace Health.Direct.Config.Store.Tests
         /// </summary>
         protected void InitDomainRecords()
         {
-            this.InitDomainRecords(new DomainManager(new ConfigStore(CONNSTR))
-                                   , new ConfigDatabase(CONNSTR));
+            this.InitDomainRecords(new DomainManager(CreateConfigStore())
+                                   , new ConfigDatabase(ConnectionString));
         }
 
         /// <summary>
@@ -469,15 +480,15 @@ namespace Health.Direct.Config.Store.Tests
         /// </summary>
         protected void InitCertRecords()
         {
-            this.InitCertRecords(new CertificateManager(new ConfigStore(CONNSTR))
-                                 , new ConfigDatabase(CONNSTR));
+            this.InitCertRecords(new CertificateManager(CreateConfigStore())
+                                 , new ConfigDatabase(ConnectionString));
         }
 
         /// <summary>
         /// This method will clean, load and verify Certificate records based on the certs stored in the
         /// metadata\certs folder into the db for testing purposes
         /// </summary>
-        /// <param name="mxmgr">CertificateManager instance used for controlling the Certificate records</param>
+        /// <param name="mgr">CertificateManager instance used for controlling the Certificate records</param>
         /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
@@ -506,15 +517,15 @@ namespace Health.Direct.Config.Store.Tests
         /// </summary>
         protected void InitAnchorRecords()
         {
-            this.InitAnchorRecords(new AnchorManager(new ConfigStore(CONNSTR))
-                                   , new ConfigDatabase(CONNSTR));
+            this.InitAnchorRecords(new AnchorManager(CreateConfigStore())
+                                   , new ConfigDatabase(ConnectionString));
         }
 
         /// <summary>
         /// This method will clean, load and verify Anchor records based on the certs stored in the
         /// metadata\certs folder into the db for testing purposes
         /// </summary>
-        /// <param name="mxmgr">CertificateManager instance used for controlling the Certificate records</param>
+        /// <param name="mgr">CertificateManager instance used for controlling the Certificate records</param>
         /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
@@ -548,8 +559,8 @@ namespace Health.Direct.Config.Store.Tests
         /// </summary>
         protected void InitAddressRecords()
         {
-            this.InitAddressRecords(new AddressManager(new ConfigStore(CONNSTR))
-                                    , new ConfigDatabase(CONNSTR));
+            this.InitAddressRecords(new AddressManager(CreateConfigStore())
+                                    , new ConfigDatabase(ConnectionString));
         }
 
         /// <summary>
@@ -567,7 +578,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             //----------------------------------------------------------------------------------------------------
             //---init domain records as well we want them fresh too
-            InitDomainRecords(new DomainManager(new ConfigStore(CONNSTR)), db);
+            InitDomainRecords(new DomainManager(CreateConfigStore()), db);
             foreach (KeyValuePair<long, KeyValuePair<int, string>> kp in TestAddressNames)
             {
                 //----------------------------------------------------------------------------------------------------
@@ -632,6 +643,7 @@ namespace Health.Direct.Config.Store.Tests
         /// attempts to load up a Certificate instance from the metadata, testing pfx file associated with the domain
         /// </summary>
         /// <param name="domainID">long containing the id of the relative domain for which the pfx file is to be loaded</param>
+        /// <param name="subId"></param>
         /// <returns>Certificate instance populated with data from the related pfx file</returns>
         protected static Anchor GetAnchorFromTestCertPfx(long domainID, int subId)
         {
@@ -643,8 +655,11 @@ namespace Health.Direct.Config.Store.Tests
             {
                 throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
             }
-            string path = string.Format(@"metadata\certs\domain{0}.test.com.{1}.pfx", domainID, subId);
-            Anchor cert = null;
+            string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
+                , CERTSRECORDSPATH
+                , domainID
+                , subId);
+            Anchor cert;
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 cert = new Anchor(string.Format("CN=domain{0}.test.com", domainID)
@@ -660,6 +675,7 @@ namespace Health.Direct.Config.Store.Tests
         /// attempts to load up a Certificate instance from the metadata, testing pfx file associated with the domain
         /// </summary>
         /// <param name="domainID">long containing the id of the relative domain for which the pfx file is to be loaded</param>
+        /// <param name="subId"></param>
         /// <returns>Certificate instance populated with data from the related pfx file</returns>
         protected static Certificate GetCertificateFromTestCertPfx(long domainID, int subId)
         {
@@ -671,8 +687,11 @@ namespace Health.Direct.Config.Store.Tests
             {
                 throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
             }
-            string path = string.Format(@"metadata\certs\domain{0}.test.com.{1}.pfx", domainID,subId);
-            Certificate cert = null;
+            string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
+                , CERTSRECORDSPATH
+                , domainID
+                ,subId);
+            Certificate cert;
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 cert = new Certificate(string.Format("CN=domain{0}.test.com", domainID)
@@ -688,6 +707,7 @@ namespace Health.Direct.Config.Store.Tests
         /// attempts to load up a Certificate instance from the metadata, testing pfx file associated with the domain
         /// </summary>
         /// <param name="domainID">long containing the id of the relative domain for which the pfx file is to be loaded</param>
+        /// <param name="subId"></param>
         /// <returns>Certificate instance populated with data from the related pfx file</returns>
         protected static System.Security.Cryptography.X509Certificates.X509Certificate2 GetTestCertFromPfx(long domainID, int subId)
         {
@@ -699,7 +719,10 @@ namespace Health.Direct.Config.Store.Tests
             {
                 throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
             }
-            string path = string.Format(@"metadata\certs\domain{0}.test.com.{1}.pfx", domainID, subId);
+            string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
+                , CERTSRECORDSPATH
+                , domainID
+                , subId);
             return  new System.Security.Cryptography.X509Certificates.X509Certificate2(path, String.Empty);
         }
 
@@ -707,6 +730,7 @@ namespace Health.Direct.Config.Store.Tests
         /// attempts to load up a Certificate instance from the metadata, testing pfx file associated with the domain
         /// </summary>
         /// <param name="domainID">long containing the id of the relative domain for which the pfx file is to be loaded</param>
+        /// <param name="subId"></param>
         /// <returns>Certificate instance populated with data from the related pfx file</returns>
         protected static byte[] GetCertBytesTestCertPfx(long domainID, int subId)
         {
@@ -718,7 +742,10 @@ namespace Health.Direct.Config.Store.Tests
             {
                 throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
             }
-            string path = string.Format(@"metadata\certs\domain{0}.test.com.{1}.pfx", domainID, subId);
+            string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
+                , CERTSRECORDSPATH
+                , domainID
+                , subId);
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 return  new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
@@ -743,5 +770,14 @@ namespace Health.Direct.Config.Store.Tests
             return (new Random().Next(1, MAXDOMAINCOUNT));
         }
 
+        protected static ConfigStore CreateConfigStore()
+        {
+            return new ConfigStore(ConnectionString);
+        }
+
+        protected static ConfigDatabase CreateConfigDatabase()
+        {
+            return new ConfigDatabase(ConnectionString);
+        }
     }
 }

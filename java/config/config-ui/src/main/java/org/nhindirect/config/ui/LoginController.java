@@ -21,26 +21,14 @@ THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.config.store.EntityStatus;
-import org.nhindirect.config.ui.form.LoginForm;
-import org.nhindirect.config.ui.form.SearchDomainForm;
-import org.nhindirect.config.ui.util.AjaxUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -52,18 +40,22 @@ import org.springframework.web.servlet.ModelAndView;
 public class LoginController {
 	
 	private static final Log log = LogFactory.getLog(LoginController.class);
-	
-	@Autowired
-	private Validator validator;
 
 	public LoginController() {
 		if (log.isDebugEnabled()) log.debug("LoginController instantiated");
 	}
 	
+	@RequestMapping(method=RequestMethod.GET)
+    public ModelAndView login() {
+	    
+	    return new ModelAndView("login");
+    }
+	
 	/**
 	 * Return the login page when requested
 	 * @return
 	 */
+	/*
 	@RequestMapping(method = RequestMethod.GET) 
 	public ModelAndView login(@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 			                  HttpSession session, 
@@ -80,7 +72,7 @@ public class LoginController {
 		if (log.isDebugEnabled()) log.debug("Exit");
 		return mav;
 	}
-	
+	*/
 	/**
 	 * On a POST, validate the supplied credentials.  If the user is authenticated, 
 	 * then send them on to the main page.
@@ -88,6 +80,7 @@ public class LoginController {
 	 * @param password
 	 * @return
 	 */
+	/*
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView authenticate(@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 			                         @ModelAttribute("loginForm") LoginForm form, 
@@ -132,7 +125,7 @@ public class LoginController {
 		if (log.isDebugEnabled()) log.debug("Exit");
 		return mav;
 	}
-
+    */
 
 	/**
 	 * Handle exceptions as gracefully as possible
@@ -145,9 +138,6 @@ public class LoginController {
 		//TODO Actually do something useful
 		return ClassUtils.getShortName(ex.getClass());
 	}
-	
-	public void setValidator(Validator validator) {
-		this.validator = validator;
-	}
+
 
 }

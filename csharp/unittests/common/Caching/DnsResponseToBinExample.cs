@@ -14,28 +14,25 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
+using Health.Direct.Common.DnsResolver;
+
 using Security.Cryptography;
 using Security.Cryptography.X509Certificates;
-
-using Health.Direct.Common.DnsResolver;
 
 using Xunit;
 using Xunit.Extensions;
 
 namespace Health.Direct.Common.Tests.Caching
 {
-
-
     public class DnsResponseToBinExample
     {
         private readonly DnsClient m_client;
-        private readonly string m_apppath = string.Empty;
+        private const string DNSRECORDSEPATH = @"..\..\common.metadata\DnsRecords";
+        private const string DnsResponsePath = @"..\..\common.metadata\dnsresponses";
 
         const string PublicDns = "8.8.8.8";         // Google
 
@@ -70,8 +67,6 @@ namespace Health.Direct.Common.Tests.Caching
                 set { m_password = value; }
             }
 
-
-
             public CertData(string key
                 , string friendlyName
                 , string distinguishedName
@@ -81,7 +76,6 @@ namespace Health.Direct.Common.Tests.Caching
                 m_friendlyname = friendlyName;
                 m_distinguishedName = distinguishedName;
                 m_password = password;
-
             }
         }
 
@@ -106,10 +100,11 @@ namespace Health.Direct.Common.Tests.Caching
         public DnsResponseToBinExample(){
 		
             m_client = new DnsClient(PublicDns) {Timeout = TimeSpan.FromSeconds(10) };
-            m_apppath =Environment.CurrentDirectory + @"\metadata\dns responses";
         }
 
-        [Theory]
+        //---these "tests" are purely examples of how to create mock responses, they are skipped out as they alter the file system 
+        //---(see the paths above).  Alter and use as needed
+        [Theory(Skip = "Alters file system")]
         [InlineData("www.microsoft.com")]
         [InlineData("www.yahoo.com")]
         [InlineData("www.google.com")]
@@ -121,12 +116,12 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.epic.com")]
         [InlineData("www.cerner.com")]
         [InlineData("www.ibm.com")]
-        private void CreateAResponseDumps(string domain)
+        public void CreateAResponseDumps(string domain)
         {
             DnsBuffer buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
             m_client.Resolve(DnsRequest.CreateA(domain)).Serialize(buff);
             byte[] bytes = buff.CreateReader().ReadBytes();
-            string path = Path.Combine(m_apppath, string.Format("aname.{0}.bin", domain)).Replace("www.","");
+            string path = Path.Combine(DnsResponsePath, string.Format("aname.{0}.bin", domain)).Replace("www.", "");
             Console.WriteLine("Creating {0}", path);
             using (FileStream s = new FileStream(path,FileMode.OpenOrCreate)){
                 s.Write(bytes
@@ -137,7 +132,7 @@ namespace Health.Direct.Common.Tests.Caching
 
         }
 
-        [Theory]
+        [Theory(Skip = "Alters file system")]
         [InlineData("www.microsoft.com")]
         [InlineData("www.yahoo.com")]
         [InlineData("www.google.com")]
@@ -149,12 +144,12 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.epic.com")]
         [InlineData("www.cerner.com")]
         [InlineData("www.ibm.com")]
-        private void CreateSOAResponseDumps(string domain)
+        public void CreateSOAResponseDumps(string domain)
         {
             DnsBuffer buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
             m_client.Resolve(DnsRequest.CreateSOA(domain)).Serialize(buff);
             byte[] bytes = buff.CreateReader().ReadBytes();
-            string path = Path.Combine(m_apppath, string.Format("soa.{0}.bin", domain)).Replace("www.", "");
+            string path = Path.Combine(DnsResponsePath, string.Format("soa.{0}.bin", domain)).Replace("www.", "");
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -164,10 +159,9 @@ namespace Health.Direct.Common.Tests.Caching
                         , bytes.Length);
                 s.Close();
             }
-
         }
 
-        [Theory]
+        [Theory(Skip = "Alters file system")]
         [InlineData("www.microsoft.com")]
         [InlineData("www.yahoo.com")]
         [InlineData("www.google.com")]
@@ -179,12 +173,12 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.epic.com")]
         [InlineData("www.cerner.com")]
         [InlineData("www.ibm.com")]
-        private void CreateMXResponseDumps(string domain)
+        public void CreateMXResponseDumps(string domain)
         {
             DnsBuffer buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
             m_client.Resolve(DnsRequest.CreateMX(domain)).Serialize(buff);
             byte[] bytes = buff.CreateReader().ReadBytes();
-            string path = Path.Combine(m_apppath, string.Format("mx.{0}.bin", domain)).Replace("www.", "");
+            string path = Path.Combine(DnsResponsePath, string.Format("mx.{0}.bin", domain)).Replace("www.", "");
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -196,7 +190,7 @@ namespace Health.Direct.Common.Tests.Caching
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Alters file system")]
         [InlineData("www.microsoft.com")]
         [InlineData("www.yahoo.com")]
         [InlineData("www.google.com")]
@@ -208,12 +202,12 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.epic.com")]
         [InlineData("www.cerner.com")]
         [InlineData("www.ibm.com")]
-        private void CreateCertResponseDumps(string domain)
+        public void CreateCertResponseDumps(string domain)
         {
             DnsBuffer buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
             m_client.Resolve(DnsRequest.CreateCERT(domain)).Serialize(buff);
             byte[] bytes = buff.CreateReader().ReadBytes();
-            string path = Path.Combine(m_apppath, string.Format("cert.{0}.bin", domain)).Replace("www.", "");
+            string path = Path.Combine(DnsResponsePath, string.Format("cert.{0}.bin", domain)).Replace("www.", "");
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -225,7 +219,7 @@ namespace Health.Direct.Common.Tests.Caching
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Alters file system")]
         [InlineData("microsoft.com")]
         [InlineData("yahoo.com")]
         [InlineData("google.com")]
@@ -236,16 +230,14 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("cerner.com")]
         [InlineData("ibm.com")]
         public void CreateDnsResourceRecords(string domain)
-
         {
             DnsBuffer buff = new DnsBuffer();
-            byte[] bytes = null;
+            byte[] bytes;
             AddressRecord arec = new AddressRecord(domain
-                , "127.0.0.1");
-            arec.TTL = 1000;
+                , "127.0.0.1") {TTL = 1000};
             arec.Serialize(buff);
 
-            string path = Path.Combine(m_apppath, string.Format("aname.{0}.bin", domain));
+            string path = Path.Combine(DNSRECORDSEPATH, string.Format("aname.{0}.bin", domain));
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -270,19 +262,18 @@ namespace Health.Direct.Common.Tests.Caching
             Console.WriteLine(arec.TTL);
             Console.WriteLine(arec.Name);
             //----------------------------------------------------------------------------------------------------------------
-            SOARecord soa = new SOARecord("soa"
-                , domain
+            SOARecord soa = new SOARecord(domain
+                , domain + ".dom"
                 , "somebody"
                 , 1
                 , 2
                 , 3
                 , 4
-                , 5);
-            soa.TTL = 2000;
+                , 5) {TTL = 2000};
             buff = new DnsBuffer();
             soa.Serialize(buff);
 
-            path = Path.Combine(m_apppath, string.Format("soa.{0}.bin", domain));
+            path = Path.Combine(DNSRECORDSEPATH, string.Format("soa.{0}.bin", domain));
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -293,7 +284,6 @@ namespace Health.Direct.Common.Tests.Caching
                 s.Close();
             }
 
-            soa = null;
             //----------------------------------------------------------------------------------------------------
             //---read the stream from the bytes
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -314,13 +304,12 @@ namespace Health.Direct.Common.Tests.Caching
             //----------------------------------------------------------------------------------------------------------------
             MXRecord mx = new MXRecord(domain
                 , string.Format("mx.{0}", domain)
-                , 1);
+                , 1) {TTL = 2000};
 
-            mx.TTL = 2000;
             buff = new DnsBuffer();
             mx.Serialize(buff);
 
-            path = Path.Combine(m_apppath, string.Format("mx.{0}.bin", domain));
+            path = Path.Combine(DNSRECORDSEPATH, string.Format("mx.{0}.bin", domain));
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -331,7 +320,6 @@ namespace Health.Direct.Common.Tests.Caching
                 s.Close();
             }
 
-            mx = null;
             //----------------------------------------------------------------------------------------------------
             //---read the stream from the bytes
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -350,13 +338,12 @@ namespace Health.Direct.Common.Tests.Caching
             CertRecord cert = new CertRecord(new DnsX509Cert(CreateNamedKeyCertificate(new CertData(domain
                 , domain
                 , string.Format("CN={0}", domain)
-                , ""))));
+                , "")))) {TTL = 2000};
 
-            cert.TTL = 2000;
             buff = new DnsBuffer();
             cert.Serialize(buff);
 
-            path = Path.Combine(m_apppath, string.Format("cert.{0}.bin", domain));
+            path = Path.Combine(DNSRECORDSEPATH, string.Format("cert.{0}.bin", domain));
             Console.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
@@ -367,7 +354,6 @@ namespace Health.Direct.Common.Tests.Caching
                 s.Close();
             }
 
-            cert = null;
             //----------------------------------------------------------------------------------------------------
             //---read the stream from the bytes
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -386,14 +372,32 @@ namespace Health.Direct.Common.Tests.Caching
         {
             try
             {
-                CngKeyCreationParameters keyCreationParameters = new CngKeyCreationParameters();
-                keyCreationParameters.ExportPolicy = CngExportPolicies.AllowExport | CngExportPolicies.AllowPlaintextExport | CngExportPolicies.AllowPlaintextArchiving | CngExportPolicies.AllowArchiving;
-                keyCreationParameters.KeyUsage = CngKeyUsages.AllUsages;
+                CngKeyCreationParameters keyCreationParameters
+                    = new CngKeyCreationParameters
+                          {
+                              ExportPolicy =
+                                  CngExportPolicies.AllowExport |
+                                  CngExportPolicies.AllowPlaintextExport |
+                                  CngExportPolicies.AllowPlaintextArchiving |
+                                  CngExportPolicies.AllowArchiving,
+                              KeyUsage = CngKeyUsages.AllUsages
+                          };
 
-                X509Certificate2 cert = null;
-                X509CertificateCreationParameters configCreate = new X509CertificateCreationParameters(new X500DistinguishedName(data.DistinguishedName));
-                configCreate.EndTime = DateTime.Parse("01/01/2020", System.Globalization.DateTimeFormatInfo.InvariantInfo);
-                configCreate.StartTime = DateTime.Parse("01/01/2010", System.Globalization.DateTimeFormatInfo.InvariantInfo);
+                X509Certificate2 cert;
+                X509CertificateCreationParameters configCreate
+                    = new X509CertificateCreationParameters(new X500DistinguishedName(data.DistinguishedName))
+                          {
+                              EndTime =
+                                  DateTime.Parse("01/01/2020",
+                                                 System.Globalization.
+                                                     DateTimeFormatInfo.
+                                                     InvariantInfo),
+                              StartTime =
+                                  DateTime.Parse("01/01/2010",
+                                                 System.Globalization.
+                                                     DateTimeFormatInfo.
+                                                     InvariantInfo)
+                          };
 
                 using (CngKey namedKey = CngKey.Create(CngAlgorithm2.Rsa, data.Key, keyCreationParameters))
                 {
@@ -419,7 +423,5 @@ namespace Health.Direct.Common.Tests.Caching
                 }
             }
         }
-
-
     }
 }

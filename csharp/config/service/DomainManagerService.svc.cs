@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 
+using Health.Direct.Common.DnsResolver;
 using Health.Direct.Config.Store;
 
 namespace Health.Direct.Config.Service
@@ -24,11 +25,11 @@ namespace Health.Direct.Config.Service
     {
         #region IDomainManager Members
 
-        public void AddDomain(Domain domain)
+        public Domain AddDomain(Domain domain)
         {
             try
             {
-                Store.Domains.Add(domain);
+                return Store.Domains.Add(domain);
             }
             catch (Exception ex)
             {
@@ -57,6 +58,18 @@ namespace Health.Direct.Config.Service
             catch (Exception ex)
             {
                 throw CreateFault("GetDomainCount", ex);
+            }
+        }
+
+        public Domain GetDomain(long id)
+        {
+            try
+            {
+                return Store.Domains.Get(id);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetDomain", ex);
             }
         }
 
@@ -99,6 +112,18 @@ namespace Health.Direct.Config.Service
         #endregion
 
         #region IAddressManager Members
+
+        public Address AddAddress(Address address)
+        {
+            try
+            {
+                return Store.Addresses.Add(address);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddAddress", ex);
+            }
+        }
 
         public void AddAddresses(Address[] addresses)
         {
@@ -241,17 +266,18 @@ namespace Health.Direct.Config.Service
             Store.DnsRecords.Add(dnsRecords);
         }
 
-        public void AddDnsRecord(DnsRecord record)
+        public DnsRecord AddDnsRecord(DnsRecord record)
         {
             Store.DnsRecords.Add(record);
+            return record;
         }
 
-        public int Count(Health.Direct.Common.DnsResolver.DnsStandard.RecordType? recordType)
+        public int Count(DnsStandard.RecordType? recordType)
         {
             return Store.DnsRecords.Count(recordType);
         }
 
-        public DnsRecord[] GetLastDnsRecords(long lastRecordID, int maxResults, Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
+        public DnsRecord[] GetLastDnsRecords(long lastRecordID, int maxResults, DnsStandard.RecordType typeID)
         {
             return  Store.DnsRecords.Get(lastRecordID
                 , maxResults
@@ -286,6 +312,30 @@ namespace Health.Direct.Config.Service
         public void UpdateDnsRecords(System.Collections.Generic.IEnumerable<DnsRecord> dnsRecords)
         {
             Store.DnsRecords.Update(dnsRecords);
+        }
+
+        public DnsRecord[] GetMatchingDnsRecords(string domainName)
+        {
+            return Store.DnsRecords.Get(domainName);
+        }
+
+        public DnsRecord[] GetMatchingDnsRecordsByType(string domainName
+            , DnsStandard.RecordType typeID)
+        {
+            return Store.DnsRecords.Get(domainName
+                , typeID);
+        }
+
+        public DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults, DnsStandard.RecordType type)
+        {
+            try
+            {
+                return Store.DnsRecords.Get(lastID, maxResults, type);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("EnumerateDnsRecords", ex);
+            }
         }
 
         #endregion

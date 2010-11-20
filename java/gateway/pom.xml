@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
     <groupId>org.nhind</groupId>    
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>nhin-d-gateways</artifactId>    
+    <artifactId>gateway</artifactId>    
     <name>NHIN Direct Agent Gateways.</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <description>NHIN Direct security agent gateways and bridges.</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/gateway/${project.version}</url>        
@@ -41,26 +41,26 @@
   </licenses>  
   <parent>
     <groupId>org.nhind</groupId>  
-    <artifactId>nhind-java-reference-implementation</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>parent</artifactId>
+    <version>1.1-SNAPSHOT</version>
   </parent>     
   <dependencies>   
 	    <dependency>
 	        <groupId>org.nhind</groupId>
-	        <artifactId>nhinAgent</artifactId>
-	        <version>1.0-SNAPSHOT</version>
+	        <artifactId>agent</artifactId>
+	        <version>1.1-SNAPSHOT</version>
 	        <scope>compile</scope>
 	    </dependency> 
 	    <dependency>
 	        <groupId>org.nhind</groupId>
 	        <artifactId>config-service-client</artifactId>
-	        <version>1.0-SNAPSHOT</version>
+	        <version>1.0</version>
 	        <scope>compile</scope>
 	    </dependency>	    
 	    <dependency>
 	        <groupId>org.nhind</groupId>
-	        <artifactId>nhinAgent</artifactId>
-	        <version>1.0-SNAPSHOT</version>
+	        <artifactId>agent</artifactId>
+	        <version>1.0</version>
 	         <type>test-jar</type>
 	        <scope>test</scope>
 	    </dependency>  
@@ -250,7 +250,7 @@
                 <artifactItem>
                   <groupId>org.nhind</groupId>
                   <artifactId>config-service</artifactId>
-                  <version>1.0-SNAPSHOT</version>
+                  <version>1.0</version>
                   <type>war</type>
                   <overWrite>true</overWrite>
                   <destFileName>config-service.war</destFileName>
@@ -308,10 +308,10 @@
               <configuration>
                 <tasks>
                   <copy todir="${project.build.directory}/generated-site/xdoc/users-guide/images/">
-                    <fileset dir="${basedir}/src/books/users-guide/images/"/>
+                    <fileset dir="${basedir}/src/books/users-guide/images/" />
                   </copy>
                   <copy todir="${project.build.directory}/site/users-guide/images/">
-                    <fileset dir="${basedir}/src/books/users-guide/images/"/>
+                    <fileset dir="${basedir}/src/books/users-guide/images/" />
                   </copy>                  
                 </tasks>
               </configuration>
@@ -423,14 +423,17 @@
 	                <outputEncoding>UTF-8</outputEncoding>
 	                <type>date</type>
 	            </configuration>
-	        </plugin>			
+	        </plugin>	
+	        <!-- 		
 	        <plugin>
 	            <groupId>org.codehaus.mojo</groupId>
 	            <artifactId>clirr-maven-plugin</artifactId>
 	            <configuration>
 	                <minSeverity>info</minSeverity>
+	                <failOnError>false</failOnError>
 	            </configuration>
-	        </plugin> 
+	        </plugin>
+	         --> 
 	        <plugin>
 	            <groupId>org.codehaus.mojo</groupId> 
 	            <artifactId>findbugs-maven-plugin</artifactId>

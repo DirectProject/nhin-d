@@ -34,8 +34,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -47,14 +54,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DBStore.cs" />
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="DnsRecordStorageService .cs" />
     <Compile Include="DnsRecordTable.cs" />
+    <Compile Include="DnsServerSettingsSection.cs" />
     <Compile Include="DnsUdpContext.cs" />
     <Compile Include="MemoryStore.cs" />
     <Compile Include="ProxyStore.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SocketServer.cs" />
+    <Compile Include="SocketServerSettingsElement.cs" />
     <Compile Include="SynchronizedObjectPool.cs" />
     <Compile Include="TcpContext.cs" />
     <Compile Include="UdpServer.cs" />
@@ -82,6 +94,16 @@
       <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
       <Name>config.client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\config\store\config.store.csproj">
+      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
+      <Name>config.store</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

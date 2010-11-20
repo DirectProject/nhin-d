@@ -59,7 +59,7 @@
 	      <groupId>org.nhind</groupId>
 	      <artifactId>config-service</artifactId>
 	      <type>war</type>
-	      <version>1.0-SNAPSHOT</version>
+	      <version>1.1-SNAPSHOT</version>
 	   </dependency>   	
 	   <dependency>
 	      <groupId>org.nhind</groupId>
@@ -69,19 +69,19 @@
 	   </dependency>  	         
 	   <dependency>
 	      <groupId>org.nhind</groupId>
-	      <artifactId>nhinAgent</artifactId>
-	      <version>1.0-SNAPSHOT</version>
+	      <artifactId>agent</artifactId>
+	      <version>1.1-SNAPSHOT</version>
 	   </dependency>  	
 	   <dependency>
 	      <groupId>org.nhind</groupId>
-	      <artifactId>nhin-d-gateways</artifactId>
-	      <version>1.0-SNAPSHOT</version>
+	      <artifactId>gateway</artifactId>
+	      <version>1.1-SNAPSHOT</version>
        </dependency>
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>xdmail</artifactId>
 	      <version>1.0-SNAPSHOT</version>
-       </dependency>  	         	
+       </dependency>         	         	
    </dependencies>   
    <build>
       <extensions>

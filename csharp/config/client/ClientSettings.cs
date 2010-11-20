@@ -19,6 +19,7 @@ using System.ServiceModel;
 
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Client.RecordRetrieval;
 
 namespace Health.Direct.Config.Client
 {
@@ -42,7 +43,7 @@ namespace Health.Direct.Config.Client
         int m_sendTimeout = -1;
         EndpointAddress m_endpoint;
         BasicHttpBinding m_binding;
-        
+
         /// <summary>
         /// The Service Url
         /// </summary>
@@ -52,7 +53,7 @@ namespace Health.Direct.Config.Client
             get
             {
                 return m_url;
-            }            
+            }
             set
             {
                 if (string.IsNullOrEmpty(value))
@@ -64,7 +65,7 @@ namespace Health.Direct.Config.Client
                 m_binding = null;
             }
         }
-        
+
         [XmlElement]
         public int MaxReceivedMessageSize
         {
@@ -81,8 +82,8 @@ namespace Health.Direct.Config.Client
                 m_maxReceivedMessageSize = value;
             }
         }
-        
-        [XmlElement]        
+
+        [XmlElement]
         public bool Secure
         {
             get
@@ -94,7 +95,7 @@ namespace Health.Direct.Config.Client
                 m_secure = value;
             }
         }
-        
+
         [XmlElement("ReceiveTimeout")]
         public int ReceiveTimeoutSeconds
         {
@@ -120,16 +121,16 @@ namespace Health.Direct.Config.Client
                 m_sendTimeout = value;
             }
         }
-        
+
         [XmlIgnore]
         public EndpointAddress Endpoint
         {
             get
             {
                 return m_endpoint;
-            }            
+            }
         }
-        
+
         [XmlIgnore]
         public BasicHttpBinding Binding
         {
@@ -139,7 +140,7 @@ namespace Health.Direct.Config.Client
                 return m_binding;
             }
         }
-        
+
         public void SetHost(string host, int port)
         {
             Uri current = new Uri(this.Url);
@@ -151,7 +152,7 @@ namespace Health.Direct.Config.Client
             }
             this.Url = builder.ToString();
         }
-                
+
         public void Validate()
         {
             if (string.IsNullOrEmpty(this.Url))
@@ -159,14 +160,14 @@ namespace Health.Direct.Config.Client
                 throw new ArgumentException("Invalid ServiceUrl");
             }
         }
-        
+
         void EnsureBinding()
         {
             if (m_binding != null)
             {
                 return;
             }
-            
+
             m_binding = BindingFactory.CreateBasic(m_maxReceivedMessageSize, m_secure);
             if (m_receiveTimeout > 0)
             {
@@ -176,13 +177,13 @@ namespace Health.Direct.Config.Client
             {
                 m_binding.SendTimeout = TimeSpan.FromSeconds(m_sendTimeout);
             }
-        }        
-        
+        }
+
         public DomainManagerClient CreateDomainManagerClient()
         {
             return new DomainManagerClient(this.Binding, this.Endpoint);
         }
-        
+
         public AddressManagerClient CreateAddressManagerClient()
         {
             return new AddressManagerClient(this.Binding, this.Endpoint);
@@ -192,15 +193,21 @@ namespace Health.Direct.Config.Client
         {
             return new DnsRecordManagerClient(this.Binding, this.Endpoint);
         }
-        
+
         public CertificateStoreClient CreateCertificateStoreClient()
         {
             return new CertificateStoreClient(this.Binding, this.Endpoint);
         }
-        
+
         public AnchorStoreClient CreateAnchorStoreClient()
         {
             return new AnchorStoreClient(this.Binding, this.Endpoint);
+        }
+
+        public RecordRetrievalServiceClient CreateRecordRetrievalClient()
+        {
+            return new RecordRetrievalServiceClient(this.Binding
+                , this.Endpoint);
         }
     }
 }

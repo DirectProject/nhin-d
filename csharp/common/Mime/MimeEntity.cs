@@ -271,7 +271,7 @@ namespace Health.Direct.Common.Mime
                 return false;
             }
             
-            return (this.m_headers[name] != null);
+            return (m_headers[name] != null);
         }
 
         /// <summary>
@@ -287,7 +287,7 @@ namespace Health.Direct.Common.Mime
                 return false;
             }
 
-            Header header = this.m_headers[name];
+            Header header = m_headers[name];
             return (header != null && MimeStandard.Equals(header.Value, value));
         }
         

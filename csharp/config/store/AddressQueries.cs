@@ -169,12 +169,12 @@ namespace Health.Direct.Config.Store
         public static void ExecSetStatus(this Table<Address> table, string[] emailAddresses, EntityStatus status)
         {
             string addressesIn = emailAddresses.ToIn();
-            table.Context.ExecuteCommand(Sql_SetStatus, status, DateTime.Now, addressesIn);
+            table.Context.ExecuteCommand(Sql_SetStatus, status, DateTimeHelper.Now, addressesIn);
         }
 
         public static void ExecSetStatus(this Table<Address> table, long domainID, EntityStatus status)
         {
-            table.Context.ExecuteCommand(Sql_SetStatusByDomain, status, DateTime.Now, domainID);
+            table.Context.ExecuteCommand(Sql_SetStatusByDomain, status, DateTimeHelper.Now, domainID);
         }
 
         public static IEnumerable<Address> ExecGet(this Table<Address> table, long domainID, string lastAddress, int maxResults)

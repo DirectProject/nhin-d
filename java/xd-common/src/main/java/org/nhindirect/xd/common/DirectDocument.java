@@ -71,8 +71,12 @@ import org.nhindirect.xd.transform.util.XmlUtils;
 /**
  * Abstract representation of a document with supporting metadata.
  * 
+ * @deprecated Use DirectDocument2 and DirectDocuments - DirectDocument will
+ *             eventually be refactored to contain DirectDocument2 contents
+ * 
  * @author beau
  */
+@Deprecated
 public class DirectDocument
 {
     private String data;
@@ -158,7 +162,7 @@ public class DirectDocument
         private List<String> authorInstitution = new ArrayList<String>();
         private String authorRole;
         private String authorSpecialty;
-
+        
         private String classCode;
         private String classCode_localized;
 
@@ -191,6 +195,7 @@ public class DirectDocument
         private List<String> ss_authorInstitution = new ArrayList<String>();
         private String ss_authorRole;
         private String ss_authorSpecialty;
+        private String ss_authorTelecommunication;
 
         private String contentTypeCode;
         private String contentTypeCode_localized;
@@ -219,8 +224,27 @@ public class DirectDocument
          */
         public Metadata(File file)
         {
-            // TODO add a mime.types file
-            this.mimeType = new MimetypesFileTypeMap().getContentType(file);
+            MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
+            
+            mimetypesFileTypeMap.addMimeTypes("application/msword doc dot wiz rtf");
+            mimetypesFileTypeMap.addMimeTypes("application/pdf pdf");
+            mimetypesFileTypeMap.addMimeTypes("application/postscript ai eps ps");
+            mimetypesFileTypeMap.addMimeTypes("application/vnd.ms-excel xls xlw xla xlc xlm xlt");
+            mimetypesFileTypeMap.addMimeTypes("application/vnd.ms-powerpoint ppt pps pot");
+            mimetypesFileTypeMap.addMimeTypes("application/x-javascript js");
+            mimetypesFileTypeMap.addMimeTypes("application/x-asap asp");
+            mimetypesFileTypeMap.addMimeTypes("application/x-latex latex");
+            mimetypesFileTypeMap.addMimeTypes("application/x-tar tar");
+            mimetypesFileTypeMap.addMimeTypes("application/x-texinfo texinfo texi");
+            mimetypesFileTypeMap.addMimeTypes("application/zip zip");
+            mimetypesFileTypeMap.addMimeTypes("text/css css");
+            mimetypesFileTypeMap.addMimeTypes("text/html htm html");
+            mimetypesFileTypeMap.addMimeTypes("text/plain txt");
+            mimetypesFileTypeMap.addMimeTypes("text/richtext rtx");
+            mimetypesFileTypeMap.addMimeTypes("text/xml xml");
+            
+            // Best guess at MIME type from list above
+            this.mimeType = mimetypesFileTypeMap.getContentType(file);
         }
 
         /**
@@ -395,6 +419,9 @@ public class DirectDocument
             return eot;
         }
 
+        /*
+         * Generate the Submission Set
+         */
         private RegistryPackageType generateRegistryPackageType()
         {
             RegistryPackageType rpt = new RegistryPackageType();
@@ -419,6 +446,7 @@ public class DirectDocument
             addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_INSTITUTION, ss_authorInstitution));
             addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_ROLE, ss_authorRole));
             addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_SPECIALTY, ss_authorSpecialty));
+            addSlot(authorClassificationSlots, makeSlot(SlotType1Enum.AUTHOR_TELECOMMUNICATION, ss_authorTelecommunication));
 
             rpt.getClassification().add(authorClassification);
 
@@ -898,6 +926,11 @@ public class DirectDocument
                                 {
                                     if (slotNotEmpty(slot))
                                         ss_authorSpecialty = slot.getValueList().getValue().get(0);
+                                }
+                                else if (SlotType1Enum.AUTHOR_TELECOMMUNICATION.matches(slot.getName()))
+                                {
+                                    if (slotNotEmpty(slot))
+                                        ss_authorTelecommunication = slot.getValueList().getValue().get(0);
                                 }
                             }
                         }
@@ -1750,6 +1783,23 @@ public class DirectDocument
             ss_authorSpecialty = ssAuthorSpecialty;
         }
 
+        /**
+         * @return the ss_authorTelecommunication
+         */
+        public String getSs_authorTelecommunication()
+        {
+            return ss_authorTelecommunication;
+        }
+
+        /**
+         * @param ssAuthorTelecommunication
+         *            the ss_authorTelecommunication to set
+         */
+        public void setSs_authorTelecommunication(String ssAuthorTelecommunication)
+        {
+            ss_authorTelecommunication = ssAuthorTelecommunication;
+        }
+        
         /**
          * @return the contentTypeCode
          */

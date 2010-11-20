@@ -8,7 +8,7 @@ setlocal
 set dest=%1
 set bin=..\..\bin\debug
 
-if "%dest%"=="" set dest=C:\inetpub\nhindConfigConsole
+if "%dest%"=="" set dest=C:\inetpub\ConfigConsole
 if "%bin%"=="" goto :Usage
 
 call :EnsureDirs

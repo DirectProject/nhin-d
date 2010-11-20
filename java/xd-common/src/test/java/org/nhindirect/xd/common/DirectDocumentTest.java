@@ -38,8 +38,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
 
-import sun.awt.SunHints.Value;
-
 /**
  * Unit tests for the DirectDocument class.
  * 
@@ -887,6 +885,27 @@ public class DirectDocumentTest extends TestCase
     }
 
     /**
+     * Test ss_authorTelecommunication
+     * 
+     * @throws Exception
+     */
+    public void testSs_authorTelecommunication() throws Exception
+    {
+        DirectDocument document = new DirectDocument();
+        DirectDocument.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setSs_authorTelecommunication(value);
+
+        String xml = metadata.toString();
+
+        metadata = new DirectDocument.Metadata();
+        metadata.setValues(xml);
+
+        assertEquals("Output does not match expected", value, metadata.getSs_authorTelecommunication());
+    }
+    
+    /**
      * Test contentTypeCode.
      * 
      * @throws Exception
@@ -1045,6 +1064,7 @@ public class DirectDocumentTest extends TestCase
         metadata.setSs_authorInstitution(Arrays.asList("34.1", "34.2"));
         metadata.setSs_authorRole("35");
         metadata.setSs_authorSpecialty("36");
+        metadata.setSs_authorTelecommunication("36.1");
         metadata.setContentTypeCode("37");
         metadata.setContentTypeCode_localized("38");
         metadata.setSs_uniqueId("39");
@@ -1092,6 +1112,7 @@ public class DirectDocumentTest extends TestCase
         LOGGER.info("ss_authorInstitution                   " + metadata.getSs_authorInstitution());
         LOGGER.info("ss_authorRole                          " + metadata.getSs_authorRole());
         LOGGER.info("ss_authorSpecialty                     " + metadata.getSs_authorSpecialty());
+        LOGGER.info("ss_authorTelecommunication             " + metadata.getSs_authorTelecommunication());        
         LOGGER.info("contentTypeCode                        " + metadata.getContentTypeCode());
         LOGGER.info("contentTypeCode_localized              " + metadata.getContentTypeCode_localized());
         LOGGER.info("ss_uniqueId                            " + metadata.getSs_uniqueId());

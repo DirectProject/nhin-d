@@ -35,7 +35,7 @@ package org.nhindirect.xd.common.type;
  */
 public enum AssociationType1Enum
 {
-    HAS_MEMBER("as01", "HasMember");
+    HAS_MEMBER("as01", "urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember");
 
     private String associationId;
     private String associationType;

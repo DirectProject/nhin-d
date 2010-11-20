@@ -62,6 +62,7 @@ namespace Health.Direct.SmtpAgent.Tests
             }            
             
             m_agent.Settings.InternalMessage.PickupFolder = Path.GetTempPath();
+            Assert.DoesNotThrow(() => m_producer.Send(incoming, m_agent.Settings.InternalMessage.PickupFolder));
             Assert.DoesNotThrow(() => m_agent.ProcessMessage(this.LoadMessage(outgoing.SerializeMessage())));
         }
 

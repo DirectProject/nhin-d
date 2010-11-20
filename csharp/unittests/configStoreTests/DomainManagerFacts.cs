@@ -23,13 +23,18 @@ namespace Health.Direct.Config.Store.Tests
 {
     class DomainManagerFacts : ConfigStoreTestBase
     {
+        private static DomainManager CreateManager()
+        {
+            return new DomainManager(CreateConfigStore());
+        }
+
         /// <summary>
         ///A test for Store
         ///</summary>
         [Fact]
         public void StoreTest()
         {
-            DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager target = CreateManager();
             ConfigStore actual = target.Store;
             Assert.Equal(target.Store, actual);
         }
@@ -41,7 +46,7 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveAllTest1()
         {
             InitDomainRecords();
-            DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT, target.Get(string.Empty, MAXDOMAINCOUNT + 1).Count());
             target.RemoveAll();
             Assert.Equal(0, target.Get(string.Empty, MAXDOMAINCOUNT + 1).Count());
@@ -54,9 +59,9 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveAllTest()
         {
             InitDomainRecords();
-            DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT, target.Get(string.Empty, MAXDOMAINCOUNT + 1).Count());
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 target.RemoveAll(db);
             }
@@ -70,7 +75,7 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveTest1()
         {
             InitDomainRecords();
-            DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager target = CreateManager();
             string name = BuildDomainName(GetRndDomainID());
             Assert.NotNull(target.Get(name));
             target.Remove(name);
@@ -84,10 +89,10 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveTest()
         {
             InitDomainRecords();
-            DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager target = CreateManager();
             string name = BuildDomainName(GetRndDomainID());
             Assert.NotNull(target.Get(name));
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 target.Remove(name);
                 db.SubmitChanges();
@@ -102,7 +107,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetEnumeratorTest()
         {
             InitDomainRecords();
-            IEnumerable<Domain> mgr = new DomainManager(new ConfigStore(CONNSTR));
+            IEnumerable<Domain> mgr = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT, mgr.Count());
         }
 
@@ -113,7 +118,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest7()
         {
             InitDomainRecords();
-            DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager target = CreateManager();
             string[] names = TestDomainNames.ToArray();
             Domain[] actual = target.Get(names);
             Assert.Equal(names.Length, actual.Length);
@@ -130,9 +135,9 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest6()
         {
             InitDomainRecords();
-            DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager target = CreateManager();
             string[] names = TestDomainNames.ToArray();
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 Domain[] actual = target.Get(db,names).ToArray();
                 Assert.Equal(names.Length, actual.Length);
@@ -150,7 +155,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest5()
         {
             InitDomainRecords();
-            DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager target = CreateManager();
             string name = BuildDomainName(GetRndDomainID());
             Domain actual = target.Get(name);
             Assert.Equal(name, actual.Name);
@@ -163,9 +168,9 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest4()
         {
             InitDomainRecords();
-            DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager target = CreateManager();
             string name = BuildDomainName(GetRndDomainID());
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 Domain actual = target.Get(db, name);
                 Assert.Equal(name, actual.Name);
@@ -179,7 +184,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest3Last()
         {
             InitDomainRecords();
-            DomainManager mgr = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager mgr = CreateManager();
 
             //----------------------------------------------------------------------------------------------------
             //---get the full dictionary using the domain name as the key and pick one to start at
@@ -221,7 +226,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest3First()
         {
             InitDomainRecords();
-            DomainManager mgr = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager mgr = CreateManager();
 
             Domain[] mxs = mgr.Get(String.Empty, MAXDOMAINCOUNT + 1);
 
@@ -243,9 +248,9 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest2Last()
         {
             InitDomainRecords();
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
-                DomainManager mgr = new DomainManager(new ConfigStore(CONNSTR));
+                DomainManager mgr = CreateManager();
 
                 //----------------------------------------------------------------------------------------------------
                 //---get the full dictionary using the domain name as the key and pick one to start at
@@ -288,9 +293,9 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest2First()
         {
             InitDomainRecords();
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
-                DomainManager mgr = new DomainManager(new ConfigStore(CONNSTR));
+                DomainManager mgr = CreateManager();
 
                 Domain[] mxs = mgr.Get(db,String.Empty, MAXDOMAINCOUNT + 1).ToArray();
 
@@ -314,14 +319,13 @@ namespace Health.Direct.Config.Store.Tests
         {
             InitDomainRecords();
 
-            DomainManager mgr = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager mgr = CreateManager();
 
-            Domain[] actual = null;
-            string[] names = new string[] { BuildDomainName(1), BuildDomainName(2), BuildDomainName(3) };
+            string[] names = new[] { BuildDomainName(1), BuildDomainName(2), BuildDomainName(3) };
 
             //----------------------------------------------------------------------------------------------------
             //---new status should still yield 3 results
-            actual = mgr.Get( names, EntityStatus.New);
+            Domain[] actual = mgr.Get( names, EntityStatus.New);
             Assert.Equal(names.Length, actual.Length);
 
             //----------------------------------------------------------------------------------------------------
@@ -350,15 +354,14 @@ namespace Health.Direct.Config.Store.Tests
 
             InitDomainRecords();
 
-            DomainManager mgr = new DomainManager(new ConfigStore(CONNSTR));
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            DomainManager mgr = CreateManager();
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
-                Domain[] actual = null;
-                string[] names = new string[] { BuildDomainName(1), BuildDomainName(2), BuildDomainName(3) };
+                string[] names = new[] { BuildDomainName(1), BuildDomainName(2), BuildDomainName(3) };
 
                 //----------------------------------------------------------------------------------------------------
                 //---new status should still yield 3 results
-                actual = mgr.Get(db, names, EntityStatus.New).ToArray();
+                Domain[] actual = mgr.Get(db, names, EntityStatus.New).ToArray();
                 Assert.Equal(names.Length, actual.Length);
 
                 //----------------------------------------------------------------------------------------------------
@@ -387,7 +390,7 @@ namespace Health.Direct.Config.Store.Tests
         public void CountTest()
         {
             InitDomainRecords();
-            DomainManager mgr = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager mgr = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT, mgr.Count());
             
         }
@@ -398,9 +401,9 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void AddTest3()
         {
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
-                DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+                DomainManager target = CreateManager();
                 target.RemoveAll();
                 Assert.Equal(0, target.Count());
                 string name = BuildDomainName(GetRndDomainID());
@@ -416,7 +419,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void AddTest2()
         {
-            DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager target = CreateManager();
             target.RemoveAll();
             Assert.Equal(0, target.Count());
             string name = BuildDomainName(GetRndDomainID());
@@ -431,10 +434,10 @@ namespace Health.Direct.Config.Store.Tests
         public void AddTest1()
         {
              
-            DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager target = CreateManager();
             target.RemoveAll();
             Assert.Equal(0, target.Count());
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 string name = BuildDomainName(GetRndDomainID());
                 Domain domain = new Domain(name);
@@ -451,7 +454,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void AddTest()
         {
-            DomainManager target = new DomainManager(new ConfigStore(CONNSTR));
+            DomainManager target = CreateManager();
             target.RemoveAll();
             Assert.Equal(0, target.Count());
             string name = BuildDomainName(GetRndDomainID());

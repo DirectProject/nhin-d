@@ -23,6 +23,10 @@ namespace Health.Direct.Config.Store.Tests
 {
     class AddressManagerFacts : ConfigStoreTestBase
     {
+        private static AddressManager CreateManager()
+        {
+            return new AddressManager(CreateConfigStore());
+        }
 
         /// <summary>
         ///A test for Store
@@ -30,8 +34,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void StoreTest()
         {
-            ConfigStore store = new ConfigStore(CONNSTR);
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR)); 
+            ConfigStore store = CreateConfigStore();
+            AddressManager mgr = new AddressManager(store); 
             ConfigStore actual = mgr.Store;
             Assert.Equal(mgr.Store, actual);
         }
@@ -45,10 +49,10 @@ namespace Health.Direct.Config.Store.Tests
 
             InitAddressRecords();
 
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
             IEnumerable<Address> addresses = mgr.Get(1, String.Empty, MAXADDRESSCOUNT);
             Assert.Equal(MAXADDRESSCOUNT, addresses.Count());
-            string testType = "testtype";
+            const string testType = "testtype";
             foreach (Address add in addresses)
             {
                 Assert.Equal(add.Status, EntityStatus.New);
@@ -73,10 +77,10 @@ namespace Health.Direct.Config.Store.Tests
         {
             InitAddressRecords();
 
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
             Address add = mgr.Get(BuildEmailAddress(1,1));
             Assert.NotNull(add);
-            string testType = "testtype";
+            const string testType = "testtype";
             Assert.Equal(add.Status, EntityStatus.New);
             add.Status = EntityStatus.Enabled;
             add.Type = testType;
@@ -95,7 +99,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetEnumeratorTest1()
         {
             InitAddressRecords();
-            IEnumerable<Address> mgr = new AddressManager(new ConfigStore(CONNSTR));
+            IEnumerable<Address> mgr = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXADDRESSCOUNT, mgr.Count());
         }
 
@@ -107,9 +111,9 @@ namespace Health.Direct.Config.Store.Tests
         public void SetStatusTest1()
         {
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR)); 
-            long domainID = STARTID;
-            EntityStatus status = EntityStatus.Enabled;
+            AddressManager mgr = CreateManager(); 
+            const long domainID = STARTID;
+            const EntityStatus status = EntityStatus.Enabled;
             mgr.SetStatus(domainID, status);
             Address[] adds = mgr.Get(domainID, String.Empty, MAXADDRESSCOUNT);
             Assert.Equal(MAXADDRESSCOUNT, adds.Count());
@@ -127,10 +131,10 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveDomainTest1()
         {
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR)); 
-            long domainID = 1; 
-           
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            AddressManager mgr = CreateManager(); 
+            const long domainID = 1;
+
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 //----------------------------------------------------------------------------------------------------
                 //---make sure that we have max addresses for the given domain
@@ -153,10 +157,10 @@ namespace Health.Direct.Config.Store.Tests
         {
 
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
-            long domainID = 1;
+            AddressManager mgr = CreateManager();
+            const long domainID = 1;
 
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 //----------------------------------------------------------------------------------------------------
                 //---make sure that we have max addresses for the given domain
@@ -178,8 +182,8 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveTest2()
         {
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
-            string[] emailAddresses = new string[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
+            AddressManager mgr = CreateManager();
+            string[] emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
             Assert.Equal(emailAddresses.Length, mgr.Get(emailAddresses).Count());
             mgr.Remove(emailAddresses);
             Assert.Equal(0, mgr.Get(emailAddresses).Count());
@@ -195,7 +199,7 @@ namespace Health.Direct.Config.Store.Tests
         {
 
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
             string emailAddress = BuildEmailAddress(1, 1);
             mgr.Get(emailAddress);
             Assert.NotNull(emailAddress);
@@ -212,10 +216,10 @@ namespace Health.Direct.Config.Store.Tests
         {
 
             InitAddressRecords();
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
 
-                AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+                AddressManager mgr = CreateManager();
                 string emailAddress = BuildEmailAddress(1, 1);
                 mgr.Get(db,emailAddress);
                 Assert.NotNull(emailAddress);
@@ -233,7 +237,7 @@ namespace Health.Direct.Config.Store.Tests
         {
 
             InitAddressRecords();
-            IEnumerable<Address> mgr = new AddressManager(new ConfigStore(CONNSTR));
+            IEnumerable<Address> mgr = CreateManager();
             Assert.Equal(MAXADDRESSCOUNT * MAXDOMAINCOUNT, mgr.Count());
         }
 
@@ -245,7 +249,7 @@ namespace Health.Direct.Config.Store.Tests
         public void GetByDomainTest1()
         {
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
             string domainName = BuildDomainName(1);
             Address[] addrs = mgr.GetAllForDomain(domainName.ToUpper()
                 , int.MaxValue);
@@ -264,10 +268,10 @@ namespace Health.Direct.Config.Store.Tests
         public void GetByDomainTest()
         {
             InitAddressRecords();
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 InitAddressRecords();
-                AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+                AddressManager mgr = CreateManager();
                 string domainName = BuildDomainName(1);
                 Address[] addrs = mgr.GetAllForDomain(db
                     , domainName.ToUpper()
@@ -288,10 +292,10 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest13()
         {
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            AddressManager mgr = CreateManager();
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
-                string[] emailAddresses  = new string[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
+                string[] emailAddresses  = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
                 IEnumerable<Address> actual = mgr.Get(db, emailAddresses);
                 Assert.Equal(emailAddresses.Length, actual.Count());
                 
@@ -311,9 +315,9 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest12()
         {
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
 
-            string[] emailAddresses = new string[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
+            string[] emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
             IEnumerable<Address> actual = mgr.Get(emailAddresses, EntityStatus.New);
             Assert.Equal(emailAddresses.Length, actual.Count());
 
@@ -331,10 +335,9 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetTest11()
         {
-
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
-            string[] emailAddresses = new string[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
+            AddressManager mgr = CreateManager();
+            string[] emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
             IEnumerable<Address> actual = mgr.Get(emailAddresses);
             Assert.Equal(emailAddresses.Length, actual.Count());
 
@@ -342,8 +345,6 @@ namespace Health.Direct.Config.Store.Tests
             {
                 Assert.True(emailAddresses.Contains(actual.ToArray()[t].EmailAddress));
             }
-
-            
         }
 
         /// <summary>
@@ -352,14 +353,11 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetTest10()
         {
-
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
             string emailAddress = BuildEmailAddress(1, 1);
             Address add = mgr.Get(emailAddress);
             Assert.Equal(emailAddress, add.EmailAddress);
-            
-            
         }
 
         /// <summary>
@@ -368,18 +366,14 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetTest9()
         {
-
-
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
             string emailAddress = BuildEmailAddress(1, 1);
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 Address add = mgr.Get(db,emailAddress);
                 Assert.Equal(emailAddress, add.EmailAddress);
             }
-           
-            
         }
 
         /// <summary>
@@ -389,10 +383,10 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest8()
         {
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
 
-            string[] emailAddresses = new string[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            string[] emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 IEnumerable<Address> actual = mgr.Get(db,emailAddresses, EntityStatus.New);
                 Assert.Equal(emailAddresses.Length, actual.Count());
@@ -403,7 +397,6 @@ namespace Health.Direct.Config.Store.Tests
                     Assert.Equal(EntityStatus.New, actual.ToArray()[t].Status);
                 }
             }
-            
         }
 
         /// <summary>
@@ -413,8 +406,8 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTest7()
         {
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            AddressManager mgr = CreateManager();
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 long[] addressIDs = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
                 IEnumerable<Address> actual = mgr.Get(db, addressIDs);
@@ -424,7 +417,6 @@ namespace Health.Direct.Config.Store.Tests
                     Assert.True(addressIDs.Contains(actual.ToArray()[t].ID));
                 }
             }
-            
         }
 
         /// <summary>
@@ -435,7 +427,7 @@ namespace Health.Direct.Config.Store.Tests
         {
 
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
 
             long[] addressIDs = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             IEnumerable<Address> actual = mgr.Get(addressIDs);
@@ -455,8 +447,8 @@ namespace Health.Direct.Config.Store.Tests
         {
 
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            AddressManager mgr = CreateManager();
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 long[] addressIDs = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
                 IEnumerable<Address> actual = mgr.Get(db, addressIDs, EntityStatus.New);
@@ -478,7 +470,7 @@ namespace Health.Direct.Config.Store.Tests
         {
 
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
 
             long[] addressIDs = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             IEnumerable<Address> actual = mgr.Get(addressIDs, EntityStatus.New);
@@ -498,8 +490,8 @@ namespace Health.Direct.Config.Store.Tests
         public void GetTestLast3()
         {
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            AddressManager mgr = CreateManager();
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 //----------------------------------------------------------------------------------------------------
                 //---get the full dictionary using the smtp domain name as the key and pick one to start at
@@ -544,7 +536,7 @@ namespace Health.Direct.Config.Store.Tests
         {
 
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
 
             //----------------------------------------------------------------------------------------------------
             //---get the full dictionary using the smtp domain name as the key and pick one to start at
@@ -591,7 +583,7 @@ namespace Health.Direct.Config.Store.Tests
 
 
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
 
             //----------------------------------------------------------------------------------------------------
             //---get the full dictionary using the smtp domain name as the key and pick one to start at
@@ -622,10 +614,10 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetTest()
         {
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (ConfigDatabase db = CreateConfigDatabase())
             {
                 InitAddressRecords();
-                AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+                AddressManager mgr = CreateManager();
 
                 //----------------------------------------------------------------------------------------------------
                 //---get the full dictionary using the smtp domain name as the key and pick one to start at
@@ -658,7 +650,7 @@ namespace Health.Direct.Config.Store.Tests
         public void CountTest()
         {
             InitAddressRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR)); 
+            AddressManager mgr = CreateManager(); 
             Assert.Equal(MAXADDRESSCOUNT, mgr.Count(1));
             
         }
@@ -672,13 +664,13 @@ namespace Health.Direct.Config.Store.Tests
             //----------------------------------------------------------------------------------------------------
             //---only init the domain records which will force a cleaning of the address records
             InitDomainRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR)); 
+            AddressManager mgr = CreateManager(); 
 
             //----------------------------------------------------------------------------------------------------
             //---make sure there are no mx records that exist
             Assert.Equal(0, mgr.Count());
 
-            long domainId = 1; //--we always have domain id of 1 (unless someone changed testing values in base)
+            const long domainId = 1;
             string email = BuildEmailAddress(1, 1);
             string displayName = BuildEmailAddressDisplayName(1,1);
             Address addr = new Address(domainId, email, displayName);
@@ -704,17 +696,17 @@ namespace Health.Direct.Config.Store.Tests
             //----------------------------------------------------------------------------------------------------
             //---only init the domain records which will force a cleaning of the address records
             InitDomainRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR));
+            AddressManager mgr = CreateManager();
 
             //----------------------------------------------------------------------------------------------------
             //---make sure there are no mx records that exist
             Assert.Equal(0, mgr.Count());
 
-            long domainId = 1; //--we always have domain id of 1 (unless someone changed testing values in base)
+            const long domainId = 1;
             string email = BuildEmailAddress(1, 1);
             string displayName = BuildEmailAddressDisplayName(1, 1);
             Address addr = new Address(domainId, email, displayName);
-            using (ConfigDatabase db = new ConfigDatabase(CONNSTR))
+            using (CreateConfigDatabase())
             {
                 mgr.Add(addr);
             }
@@ -734,7 +726,7 @@ namespace Health.Direct.Config.Store.Tests
         public void AddTest()
         {
             InitDomainRecords();
-            AddressManager mgr = new AddressManager(new ConfigStore(CONNSTR)); 
+            AddressManager mgr = CreateManager(); 
             List<Address> addresses = new List<Address>();
             
             for (int i = 1; i <= MAXADDRESSCOUNT; i++)

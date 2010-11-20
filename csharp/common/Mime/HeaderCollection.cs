@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.IO;
 using Health.Direct.Common.Collections;
 
 namespace Health.Direct.Common.Mime
@@ -399,7 +399,37 @@ namespace Health.Direct.Common.Mime
         {
             return new HeaderCollection(NonMimeHeaders);
         }
+        
+        /// <summary>
+        /// Returns the header collection as a string
+        /// The headers are formatted according to MIME rules
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            using(StringWriter stringWriter = new StringWriter())
+            {
+                using (MimeWriter mimeWriter = new MimeWriter(stringWriter))
+                {
+                    mimeWriter.Write(this);
+                }
+                
+                return stringWriter.ToString();
+            }
+        }
 
+        /// <summary>
+        /// Tests if this collection has the named header with a value, using MIME-appropriate string comparison.
+        /// </summary>
+        /// <param name="name">The header name to test for.</param>
+        /// <param name="value">The value to test</param>
+        /// <returns><c>true</c> if the collection has the named header and the header has the appropriate value, <c>false</c> otherwise</returns>
+        public bool HasHeader(string name, string value)
+        {
+            Header header = this[name];
+            return (header != null && MimeStandard.Equals(header.Value, value));
+        }
+        
         /// <summary>
         /// Verifies that a header name matches name of the associate header, with MIME string comparison semantics. 
         /// </summary>

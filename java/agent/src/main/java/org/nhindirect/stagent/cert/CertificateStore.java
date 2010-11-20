@@ -182,6 +182,15 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
        		theAddress = theAddress.substring(0, theAddress.length() - 1);
         }
         
+        // search for "+" extension on the email address
+        if (theAddress.indexOf("+") > -1 && theAddress.indexOf("@") > -1)
+        {
+        	int startIndex = theAddress.indexOf("+");
+        	int endIndex = theAddress.indexOf("@");
+        	
+        	theAddress = theAddress.substring(0, startIndex) + theAddress.substring(endIndex);
+        }
+        
         Collection<X509Certificate> certs = getCertificates("EMAILADDRESS=" + theAddress);
 
         if (certs == null || certs.size() == 0)

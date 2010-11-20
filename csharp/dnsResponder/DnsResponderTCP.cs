@@ -24,7 +24,7 @@ namespace Health.Direct.DnsResponder
     /// </summary>
     public class DnsResponderTCP : DnsResponder, IHandler<DnsTcpContext>
     {
-        TcpServer<DnsTcpContext> m_tcpServer;
+        readonly TcpServer<DnsTcpContext> m_tcpServer;
         
         public DnsResponderTCP(DnsServer server)
             : base(server)

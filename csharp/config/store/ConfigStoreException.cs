@@ -53,8 +53,10 @@ namespace Health.Direct.Config.Store
         MXSMTPNameLength,
         InvalidMX,
         InvaildDnsRecord,
-        NotesLength
-
+        NotesLength,
+        InvalidAdministrator,
+        InvalidUsername,
+        InvalidPassword
     }
 
     public class ConfigStoreException : DirectException<ConfigStoreError>

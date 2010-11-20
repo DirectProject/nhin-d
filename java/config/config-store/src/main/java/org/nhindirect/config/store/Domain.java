@@ -247,7 +247,6 @@ public class Domain {
      */
     public void setPostMasterEmail(String email) {
 
-        Long oldId = getPostmasterAddressId();
         if (email == null) {
             if (getPostmasterAddressId() != null) {
                 setPostmasterAddressId(null);

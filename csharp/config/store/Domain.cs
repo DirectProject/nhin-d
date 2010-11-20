@@ -30,14 +30,14 @@ namespace Health.Direct.Config.Store
         
         public Domain()
         {
-        }
-        
-        public Domain(string name)
-        {
-            this.Name = name;
-            this.CreateDate = DateTime.Now;
+            this.CreateDate = DateTimeHelper.Now;
             this.UpdateDate = this.CreateDate;
             this.Status = EntityStatus.New;
+        }
+        
+        public Domain(string name) : this()
+        {
+            this.Name = name;
         }
            
         [Column(Name="DomainID", IsPrimaryKey=true, IsDbGenerated=true, UpdateCheck = UpdateCheck.Never)]
@@ -96,14 +96,6 @@ namespace Health.Direct.Config.Store
             set;
         }
 
-        [Column(Name = "PostmasterAddressID", CanBeNull = true, UpdateCheck = UpdateCheck.Never)]
-        [DataMember(IsRequired = false)]
-        public long? PostmasterID
-        {
-            get;
-            set;
-        }
-        
         internal void CopyFixed(Domain source)
         {
             this.ID = source.ID;
@@ -114,9 +106,8 @@ namespace Health.Direct.Config.Store
         
         internal void ApplyChanges(Domain source)
         {
-            this.PostmasterID = source.PostmasterID;
             this.Status = source.Status;
-            this.UpdateDate = DateTime.Now;
+            this.UpdateDate = DateTimeHelper.Now;
         }
         
         public bool IsValidEmailDomain()

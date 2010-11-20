@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:tns="http://www.nhindirect.org/config/store/082010" elementFormDefault="qualified" targetNamespace="http://www.nhindirect.org/config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:tns="urn:directproject:config/store/082010" elementFormDefault="qualified" targetNamespace="urn:directproject:config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="http://localhost:6692/CertificateService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
   <xs:import schemaLocation="http://localhost:6692/CertificateService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
-  <xs:element name="AddCertificates">
+  <xs:element name="AddCertificate">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="certificates" nillable="true" type="tns:ArrayOfCertificate" />
+        <xs:element minOccurs="0" name="certificate" nillable="true" type="tns:Certificate" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:complexType name="ArrayOfCertificate">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="Certificate" nillable="true" type="tns:Certificate" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfCertificate" nillable="true" type="tns:ArrayOfCertificate" />
   <xs:complexType name="Certificate">
     <xs:sequence>
       <xs:element name="CreateDate" type="xs:dateTime" />
@@ -28,9 +22,11 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="Certificate" nillable="true" type="tns:Certificate" />
-  <xs:element name="AddCertificatesResponse">
+  <xs:element name="AddCertificateResponse">
     <xs:complexType>
-      <xs:sequence />
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddCertificateResult" nillable="true" type="tns:Certificate" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:complexType name="ConfigStoreFault">
@@ -40,6 +36,24 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="ConfigStoreFault" nillable="true" type="tns:ConfigStoreFault" />
+  <xs:element name="AddCertificates">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="certificates" nillable="true" type="tns:ArrayOfCertificate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfCertificate">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Certificate" nillable="true" type="tns:Certificate" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCertificate" nillable="true" type="tns:ArrayOfCertificate" />
+  <xs:element name="AddCertificatesResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
   <xs:element name="GetCertificate">
     <xs:complexType>
       <xs:sequence>
@@ -160,19 +174,13 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="AddAnchors">
+  <xs:element name="AddAnchor">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="anchors" nillable="true" type="tns:ArrayOfAnchor" />
+        <xs:element minOccurs="0" name="anchor" nillable="true" type="tns:Anchor" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:complexType name="ArrayOfAnchor">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="Anchor" nillable="true" type="tns:Anchor" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfAnchor" nillable="true" type="tns:ArrayOfAnchor" />
   <xs:complexType name="Anchor">
     <xs:sequence>
       <xs:element name="CreateDate" type="xs:dateTime" />
@@ -188,6 +196,26 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="Anchor" nillable="true" type="tns:Anchor" />
+  <xs:element name="AddAnchorResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddAnchorResult" nillable="true" type="tns:Anchor" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddAnchors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="anchors" nillable="true" type="tns:ArrayOfAnchor" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfAnchor">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Anchor" nillable="true" type="tns:Anchor" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAnchor" nillable="true" type="tns:ArrayOfAnchor" />
   <xs:element name="AddAnchorsResponse">
     <xs:complexType>
       <xs:sequence />
@@ -269,11 +297,24 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="SetAnchorStatus">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q11="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q11:ArrayOflong" />
+        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q12:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetAnchorStatusResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
   <xs:element name="SetAnchorStatusForOwner">
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
-        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q11:EntityStatus" />
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q13:EntityStatus" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -301,7 +342,7 @@
   <xs:element name="RemoveAnchors">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q12="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q12:ArrayOflong" />
+        <xs:element xmlns:q14="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q14:ArrayOflong" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

@@ -23,6 +23,7 @@ package org.nhindirect.gateway.smtp.james.mailet;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.mail.Address;
@@ -39,6 +40,7 @@ import org.nhindirect.gateway.smtp.MessageProcessResult;
 import org.nhindirect.gateway.smtp.SmtpAgent;
 import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.SmtpAgentFactory;
+import org.nhindirect.gateway.smtp.SmtpAgentSettings;
 import org.nhindirect.stagent.AddressSource;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
@@ -96,7 +98,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		{
 			LOGGER.error("Failed to create the SMTP agent: " + e.getMessage(), e);
 			throw new MessagingException("Failed to create the SMTP agent: " + e.getMessage(), e);
-		}
+		}		
 		
 		// this should never happen because an exception should be thrown by Guice or one of the providers, but check
 		// just in case...
@@ -116,8 +118,9 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	@SuppressWarnings("unchecked")
 	@Override
 	public void service(Mail mail) throws MessagingException 
-	{ 
+	{ 		
 		LOGGER.trace("Entering service(Mail mail)");
+		
 		
 		NHINDAddressCollection recipients = new NHINDAddressCollection();		
 		
@@ -146,6 +149,8 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		// get the sender
 		
 		NHINDAddress sender = new NHINDAddress(mail.getSender().toInternetAddress(), AddressSource.From);				
+		
+		LOGGER.info("Proccessing incoming message from sender " + mail.getSender().toInternetAddress());
 		
 		// process the message with the agent stack
 		LOGGER.trace("Calling agent.processMessage");
@@ -192,6 +197,23 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			mail.setState(Mail.GHOST);
 		}
 		
+		// remove reject recipients from the RCTP headers
+		if (result.getProcessedMessage().getRejectedRecipients() != null && 
+				result.getProcessedMessage().getRejectedRecipients().size() > 0 && mail.getRecipients() != null &&
+				mail.getRecipients().size() > 0)
+		{
+			
+			Collection<MailAddress> newRCPTList = new ArrayList<MailAddress>();
+			for (MailAddress rctpAdd : (Collection<MailAddress>)mail.getRecipients())
+			{
+				if (!isRcptRejected(rctpAdd, result.getProcessedMessage().getRejectedRecipients()))
+				{
+					newRCPTList.add(rctpAdd);
+				}
+			}
+			
+			mail.setRecipients(newRCPTList);
+		}
 		
 		/*
 		 * Handle sending MDN messages
@@ -199,6 +221,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		Collection<NotificationMessage> notifications = result.getNotificationMessages();
 		if (notifications != null && notifications.size() > 0)
 		{
+			LOGGER.info("MDN messages requested.  Sending MDN \"processed\" messages");
 			// create a message for each notification and put it on James "stack"
 			for (NotificationMessage message : notifications)
 			{
@@ -240,5 +263,19 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		}
 		else
 			return null;
+	}
+	
+	/*
+	 * Determine if the recipient has been rejected
+	 * 
+	 * @param rejectedRecips
+	 */
+	private boolean isRcptRejected(MailAddress rctpAdd, NHINDAddressCollection rejectedRecips)
+	{
+		for (NHINDAddress rejectedRecip : rejectedRecips)
+			if (rejectedRecip.getAddress().equals(rctpAdd.toInternetAddress().toString()))
+				return true;
+		
+		return false;
 	}
 }

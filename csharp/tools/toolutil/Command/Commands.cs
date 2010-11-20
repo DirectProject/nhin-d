@@ -60,8 +60,6 @@ namespace Health.Direct.Config.Tools.Command
      */
     public class Commands
     {
-        private const string CRLF = "\r\n";
-
         static string[] EmptyArgs = new string[0];
 
         readonly string m_appName;
@@ -225,7 +223,7 @@ namespace Health.Direct.Config.Tools.Command
                 return;
             }
             
-            string commandName = input[0];
+            string commandName = input.First();
             CommandDef cmd = this[commandName];
             if (cmd == null)
             {
@@ -235,25 +233,16 @@ namespace Health.Direct.Config.Tools.Command
                 return;
             }
             
-            string[] args = EmptyArgs;            
-            if (input.Length > 1)
-            {
-                args = new string[input.Length - 1];
-                Array.Copy(input, 1, args, 0, input.Length - 1);
-            }
-            
             try
             {
-                cmd.Eval(args);
-                return;
+                cmd.Eval((input.Select(arg => arg)).Skip(1).ToArray());
             }
             catch(Exception ex)
             {
                 this.HandleError(ex);
+                CommandUI.PrintSectionBreak();
+                cmd.ShowUsage();
             }
-            
-            CommandUI.PrintSectionBreak();
-            cmd.ShowUsage();            
         }
         
         public void ShowUsage(string cmdName)
@@ -336,15 +325,12 @@ namespace Health.Direct.Config.Tools.Command
             {
                 return;
             }
-            
-            m_commandNames = new string[m_commands.Values.Count];
-            int i = 0;
-            foreach (CommandDef command in m_commands.Values)
-            {
-                m_commandNames[i++] = command.Name;
-            }
 
-            Array.Sort(m_commandNames);
+            m_commandNames = (from cmd in m_commands.Values
+                              let name = cmd.Name
+                              orderby name
+                              select name)
+                .ToArray();
         }
         
         void SetEval(string name, Action<string[]> eval)
@@ -445,11 +431,11 @@ namespace Health.Direct.Config.Tools.Command
 
         private const string HelpUsage
             = "Show help"
-              + CRLF + "help ['all' | name]"
-              + CRLF + "   all: All commands"
-              + CRLF + "   name: This command name or names with this PREFIX"
-              + CRLF + CRLF + "search [pattern]"
-              + CRLF + SearchUsage;
+              + Constants.CRLF + "help ['all' | name]"
+              + Constants.CRLF + "   all: All commands"
+              + Constants.CRLF + "   name: This command name or names with this PREFIX"
+              + Constants.CRLF + Constants.CRLF + "search [pattern]"
+              + Constants.CRLF + SearchUsage;
         
         /// <summary>
         /// Search for a command containing the given pattern
@@ -474,8 +460,8 @@ namespace Health.Direct.Config.Tools.Command
 
         private const string SearchUsage
             = "Search for commands matching the given wildcard pattern"
-              + CRLF + "    pattern"
-              + CRLF + "\t pattern: (optional) pattern, containing '*' wildcards";
+              + Constants.CRLF + "    pattern"
+              + Constants.CRLF + "\t pattern: (optional) pattern, containing '*' wildcards";
 
         /// <summary>
         /// Run commands in a batch
@@ -510,8 +496,8 @@ namespace Health.Direct.Config.Tools.Command
 
         private const string BatchUsage
             = "Run a series of commands from a file"
-              + CRLF + "Each command is on its own line. Comments begin with //"
-              + CRLF + "   filepath [echo command (default true)]";
+              + Constants.CRLF + "Each command is on its own line. Comments begin with //"
+              + Constants.CRLF + "   filepath [echo command (default true)]";
 
         [Command(Name = "Echo", Usage = "Echo the args to the console")]
         public void Echo(string[] args)

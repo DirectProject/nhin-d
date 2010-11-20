@@ -14,6 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Net.Mail;
+using Health.Direct.Common.Mime;
 
 namespace Health.Direct.Common.Mail.Notifications
 {
@@ -22,6 +24,8 @@ namespace Health.Direct.Common.Mail.Notifications
     /// </summary>
     public class NotificationMessage : Message
     {        
+        const string DefaultSubject = "Message Disposition Notification"; 
+        
         /// <summary>
         /// Initializes an MDN to the specified recipient.
         /// </summary>
@@ -41,22 +45,41 @@ namespace Health.Direct.Common.Mail.Notifications
         public NotificationMessage(string to, string from, Notification notification)
             : base(to, from)
         {
+            if (notification == null)
+            {
+                throw new ArgumentNullException("notification");
+            }
+            
+            if (!notification.HasFinalRecipient)
+            {
+                if (string.IsNullOrEmpty(from))
+                {
+                    throw new ArgumentException("from");
+                }
+                notification.FinalRecipient = new MailAddress(from);
+            }
+            
             this.SetParts(notification);
+            this.Subject = new Header(MailStandard.Headers.Subject, DefaultSubject);
         }                
         
         /// <summary>
-        /// Takes a message and constructs an MDN.
+        /// Takes a message and constructs an MDN for it.
         /// </summary>
         /// <param name="message">The message to send notification about.</param>
+        /// <param name="from">MailAddress this notification is from</param>
         /// <param name="notification">The notification to create.</param>
         /// <returns>The MDN.</returns>
-        public static NotificationMessage CreateNotificationFor(Message message, Notification notification)
+        public static NotificationMessage CreateNotificationFor(Message message, MailAddress from, Notification notification)
         {
             if (message == null)
             {
                 throw new ArgumentNullException("message");
             }
-
+            if (from == null)
+            {
+                throw new ArgumentNullException("from");
+            }
             if (notification == null)
             {
                 throw new ArgumentNullException("notification");
@@ -81,7 +104,12 @@ namespace Health.Direct.Common.Mail.Notifications
                 notification.OriginalMessageID = originalMessageID;
             }
             
-            NotificationMessage notificationMessage = new NotificationMessage(notifyTo, notification);
+            if (!notification.HasFinalRecipient)
+            {
+                notification.FinalRecipient = from;
+            }
+                       
+            NotificationMessage notificationMessage = new NotificationMessage(notifyTo, from.ToString(), notification);
             notificationMessage.IDValue = Guid.NewGuid().ToString("D");
             
             return notificationMessage;

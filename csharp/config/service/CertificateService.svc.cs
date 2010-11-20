@@ -22,11 +22,23 @@ using Health.Direct.Config.Store;
 
 namespace Health.Direct.Config.Service
 {
-    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
+    //[AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class CertificateService : ConfigServiceBase, ICertificateStore, IAnchorStore
     {        
         #region ICertificateStore
         
+        public Certificate AddCertificate(Certificate certificate)
+        {
+            try
+            {
+                return Store.Certificates.Add(certificate);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddCertificates", ex);
+            }
+        }
+
         public void AddCertificates(Certificate[] certificates)
         {
             if (certificates == null)
@@ -146,6 +158,18 @@ namespace Health.Direct.Config.Service
         
         #region IAnchorStore
         
+        public Anchor AddAnchor(Anchor anchor)
+        {
+            try
+            {
+                return Store.Anchors.Add(anchor);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddAnchors", ex);
+            }
+        }
+
         public void AddAnchors(Anchor[] anchors)
         {
             try
@@ -217,6 +241,18 @@ namespace Health.Direct.Config.Service
             catch (Exception ex)
             {
                 throw CreateFault("GetOutgoingAnchors", ex);
+            }
+        }
+
+        public void SetAnchorStatus(long[] anchorIDs, EntityStatus status)
+        {
+            try
+            {
+                Store.Anchors.SetStatus(anchorIDs, status);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("SetAnchorStatusForOwner", ex);
             }
         }
 

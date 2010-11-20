@@ -18,7 +18,6 @@
     <EnableRelay>false</EnableRelay>
   </InternalMessage>
   <Notifications>
-    <AutoRequest>false</AutoRequest>
     <AutoResponse>false</AutoResponse>
     <Text>Message Delivery Notification</Text>
   </Notifications>

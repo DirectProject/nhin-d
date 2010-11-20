@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nhind</groupId>  
-    <artifactId>nhind-java-reference-implementation</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>parent</artifactId>
+    <version>1.1-SNAPSHOT</version>
   </parent>   
   <groupId>org.nhind</groupId>
-  <artifactId>NHINDClient</artifactId>
+  <artifactId>client</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>NHIN Direct Client</name>

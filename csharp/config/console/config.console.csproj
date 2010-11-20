@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -49,9 +50,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Command\AddressCommands.cs" />
     <Compile Include="Command\AnchorCommands.cs" />
     <Compile Include="Command\CertificateCommands.cs" />
+    <Compile Include="Command\CertificateFileInfo.cs" />
     <Compile Include="Command\CommandsBase.cs" />
     <Compile Include="Command\DnsRecordCommands.cs" />
     <Compile Include="Command\DomainCommands.cs" />
