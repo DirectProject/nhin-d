@@ -27,7 +27,7 @@ using System.IO;
 
 namespace Health.Direct.Xdm
 {
-    public class XDMZipPackager
+    public class XDMZipPackager : IPackager<ZipFile>
     {
         // Use Default
         private XDMZipPackager() { }
