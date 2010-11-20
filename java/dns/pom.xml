@@ -269,12 +269,7 @@
 	              <systemProperty>com.sun.management.jmxremote.authenticate=false</systemProperty>
 	              <systemProperty>com.sun.management.jmxremote.ssl=false</systemProperty>
 	            </systemProperties>
-	            <extraArguments>
-	              <extraArgument>-server</extraArgument>
-	            </extraArguments>
-	          </defaultJvmSettings>
-
-	                 
+	          </defaultJvmSettings>	                 
 	          <daemons>
 	            <daemon>
 	              <id>DirectDNSServer</id>
@@ -307,7 +302,7 @@
                                 </property>   
 			                    <property>
 			                      <name>wrapper.logfile</name>
-			                      <value>logs/wrapper.log</value>
+			                      <value>logs/wrapper.txt</value>
 			                    </property>                        
                             </configuration>
                         </generatorConfiguration>
