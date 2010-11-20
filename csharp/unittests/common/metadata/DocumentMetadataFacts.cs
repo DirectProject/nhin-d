@@ -22,6 +22,7 @@ using System.Security.Cryptography;
 using Xunit;
 
 using Health.Direct.Common.Metadata;
+using System.IO;
 
 namespace Health.Direct.Common.Tests.Metadata
 {
@@ -46,6 +47,17 @@ namespace Health.Direct.Common.Tests.Metadata
             DocumentMetadata m = new DocumentMetadata();
             m.SetDocument(new byte[] { 72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100 });
             Assert.Equal(11, m.Size);
+        }
+
+        [Fact]
+        public void SetDocumentWithStream()
+        {
+            DocumentMetadata m = new DocumentMetadata();
+            using (MemoryStream stream = new MemoryStream(new byte[] { 72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100 }))
+            {
+                m.SetDocument(stream);
+            }
+            Assert.Equal(11, m.Size);                
         }
 
         [Fact]

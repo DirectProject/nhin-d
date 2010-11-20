@@ -17,6 +17,10 @@ namespace Health.Direct.Xdm
         /// <summary>
         /// An XDM metadata file could not be found
         /// </summary>
-        NoMetadataFile
+        NoMetadataFile,
+        /// <summary>
+        /// The file pointed to by the metadata URI attribute was not found in the XDM Zip archive
+        /// </summary>
+        FileNotFound
     }
 }
