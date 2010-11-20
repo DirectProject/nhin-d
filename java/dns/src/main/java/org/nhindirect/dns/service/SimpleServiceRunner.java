@@ -37,9 +37,13 @@ public class SimpleServiceRunner
 {
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(SimpleServiceRunner.class);
 	
+	private static final String MODE_STANDALONE = "STANDALONE";
+	private static final String MODE_SERVER = "SERVER";
+	
 	private static int port;
 	private static String bind;
 	private static URL servURL;
+	private static String mode;
 	
 	static
 	{
@@ -47,6 +51,7 @@ public class SimpleServiceRunner
 		
 		port = 53;
 		bind = "0.0.0.0";
+		mode = MODE_STANDALONE;
 		
 		try
 		{
@@ -108,6 +113,7 @@ public class SimpleServiceRunner
                 catch(Exception e)
                 {
                 	System.err.println("Error in bind IP address " + checkIP + " : " + e.getMessage());
+                    System.exit(-1);
                 }
             }
             else if (arg.equals("-u"))
@@ -125,6 +131,22 @@ public class SimpleServiceRunner
                 catch (Exception e)
                 {
                 	System.err.println("Error in service URL parameter: " + e.getMessage());
+                    System.exit(-1);
+                }
+            }
+            else if (arg.equals("-m"))
+            {
+                if (i == argv.length - 1 || argv[i + 1].startsWith("-"))
+                {
+                    System.err.println("Error: Missing mode");
+                    System.exit(-1);
+                }
+                mode = argv[++i];
+                if (!mode.equalsIgnoreCase(MODE_STANDALONE) && !mode.equalsIgnoreCase(MODE_SERVER))
+                {
+                	System.err.println("Unknown mode: " + mode);
+                	System.exit(-1);
+                    
                 }
             }
             else if (arg.equals("-help"))
@@ -142,7 +164,8 @@ public class SimpleServiceRunner
 
         startAndRun();
         
-        System.exit(0);
+        if (mode.equalsIgnoreCase(MODE_STANDALONE))
+        	System.exit(0);
 
 	}
 	
@@ -172,30 +195,33 @@ public class SimpleServiceRunner
 			LOGGER.error("Server failed to start: " + e.getMessage(), e);
 			return;
 		}
+			
+		if (mode.equalsIgnoreCase(MODE_STANDALONE))
+		{
+			LOGGER.info("\r\nServer running....  Press Enter or Return to stop.");
+			
+			InputStreamReader input = new InputStreamReader(System.in);
+			BufferedReader reader = new BufferedReader(input);
+			
+			try
+			{
+				reader.readLine();
 				
-		LOGGER.info("\r\nServer running....  Press Enter or Return to stop.");
-		
-		InputStreamReader input = new InputStreamReader(System.in);
-		BufferedReader reader = new BufferedReader(input);
-		
-		try
-		{
-			reader.readLine();
+				LOGGER.info("Shutting down server.  Wait 5 seconds for cleanup.");
+				
+				server.stopService();
 			
-			LOGGER.info("Shutting down server.  Wait 5 seconds for cleanup.");
-			
-			server.stopService();
-		
-			Thread.sleep(5000);
-			
-			LOGGER.info("Server stopped");
-		}
-		catch (Exception e)
-		{
-			
-		}
-		
-		
+				Thread.sleep(5000);
+				
+				LOGGER.info("Server stopped");
+			}
+			catch (Exception e)
+			{
+				
+			}
+		}				
+		else
+			LOGGER.info("\r\nServer running.");
 	}
 	
 	/*
@@ -213,7 +239,10 @@ public class SimpleServiceRunner
         use.append("			      Default: 0.0.0.0 (All IP addresses on local machine)\n\n");        
         use.append("-u    URL	  URL of DNS configuration service.\n");
         use.append("			      Default: http://localhost:8080/config-service/ConfigurationService\n\n");        
+        use.append("-m    mode	  Run mode: STANDALONE or SERVER.\n");
+        use.append("			      Default: STANDALONE\n\n");        
 
+        
         System.err.println(use);        
     }
 
