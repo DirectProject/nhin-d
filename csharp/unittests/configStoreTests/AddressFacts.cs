@@ -46,7 +46,7 @@ namespace Health.Direct.Config.Store.Tests
         public void TypeTest()
         {
             Address addr = new Address(1, BuildEmailAddress(1, 1), BuildEmailAddressDisplayName(1, 1));
-            string expected = "test.type";
+            const string expected = "test.type";
             Assert.NotEqual(addr.Type, expected);
             addr.Type = expected;
             string actual = addr.Type;
@@ -62,7 +62,7 @@ namespace Health.Direct.Config.Store.Tests
         public void StatusTest()
         {
             Address addr = new Address(1, BuildEmailAddress(1, 1), BuildEmailAddressDisplayName(1, 1));
-            EntityStatus expected = EntityStatus.Enabled;
+            const EntityStatus expected = EntityStatus.Enabled;
             Assert.NotEqual(addr.Status, expected);
             addr.Status = expected;
             EntityStatus actual = addr.Status;
@@ -78,7 +78,7 @@ namespace Health.Direct.Config.Store.Tests
         {
 
             Address addr = new Address(1, BuildEmailAddress(1, 1), BuildEmailAddressDisplayName(1, 1));
-            long expected = 777;
+            const long expected = 777;
             Assert.NotEqual(addr.ID, expected);
             addr.ID = expected;
             long actual = addr.ID;
@@ -93,8 +93,7 @@ namespace Health.Direct.Config.Store.Tests
         public void HasTypeTest()
         {
             Address addr = new Address(1, BuildEmailAddress(1, 1), BuildEmailAddressDisplayName(1, 1));
-            bool actual;
-            actual = addr.HasType;
+            bool actual = addr.HasType;
             Assert.False(actual);
             addr.Type = "testtype";
             actual = addr.HasType;
@@ -109,7 +108,7 @@ namespace Health.Direct.Config.Store.Tests
         public void EmailAddressTest()
         {
             Address addr = new Address(1, BuildEmailAddress(1, 1), BuildEmailAddressDisplayName(1, 1));
-            string expected = "test@test.com";
+            const string expected = "test@test.com";
             Assert.NotEqual(addr.EmailAddress, expected);
             addr.EmailAddress = expected;
             string actual = addr.EmailAddress;
@@ -124,7 +123,7 @@ namespace Health.Direct.Config.Store.Tests
         public void DomainIDTest()
         {
             Address addr = new Address(1, BuildEmailAddress(1, 1), BuildEmailAddressDisplayName(1, 1));
-            long expected = 777;
+            const long expected = 777;
             Assert.NotEqual(addr.DomainID, expected);
             addr.DomainID = expected;
             long actual = addr.DomainID;
@@ -139,7 +138,7 @@ namespace Health.Direct.Config.Store.Tests
         public void DisplayNameTest()
         {
             Address addr = new Address(1, BuildEmailAddress(1, 1), BuildEmailAddressDisplayName(1, 1));
-            string expected = "test display name";
+            const string expected = "test display name";
             Assert.NotEqual(addr.DisplayName, expected);
             addr.DisplayName = expected;
             string actual = addr.DisplayName;
@@ -254,7 +253,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void AddressConstructorTest3()
         {
-            long domainID = STARTID;
+            const long domainID = STARTID;
             string address = BuildEmailAddress(1, 1);
             Address target = new Address(domainID, address);
             Assert.Equal(domainID, target.DomainID);
@@ -283,7 +282,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void AddressConstructorTest1()
         {
-            long domainID = STARTID;
+            const long domainID = STARTID;
             MailAddress address = new MailAddress(BuildEmailAddress(1, 1));
             Address target = new Address(domainID, address);
             Assert.Equal(domainID,target.DomainID);
@@ -296,7 +295,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void AddressConstructorTest()
         {
-            long domainID = STARTID;
+            const long domainID = STARTID;
             string address = BuildEmailAddress(1, 1);
             string displayName = BuildEmailAddressDisplayName(1, 1);
             Address target = new Address(domainID, address, displayName);

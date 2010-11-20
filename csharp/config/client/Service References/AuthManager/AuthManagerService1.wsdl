@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="urn:directproject:config/store/082010" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" targetNamespace="urn:directproject:config/store/082010" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="urn:directproject:config/store/082010/Imports">
+      <xsd:import schemaLocation="http://localhost:6692/AuthManagerService.svc?xsd=xsd0" namespace="urn:directproject:config/store/082010" />
+      <xsd:import schemaLocation="http://localhost:6692/AuthManagerService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:6692/AuthManagerService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IAuthManager_GetUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetUser" />
+  </wsdl:message>
+  <wsdl:message name="IAuthManager_GetUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAuthManager_GetUser_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAuthManager_ValidateUser_InputMessage">
+    <wsdl:part name="parameters" element="tns:ValidateUser" />
+  </wsdl:message>
+  <wsdl:message name="IAuthManager_ValidateUser_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ValidateUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAuthManager_ValidateUser_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:portType name="IAuthManager">
+    <wsdl:operation name="GetUser">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAuthManager/GetUser" message="tns:IAuthManager_GetUser_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAuthManager/GetUserResponse" message="tns:IAuthManager_GetUser_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAuthManager/GetUserConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAuthManager_GetUser_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateUser">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAuthManager/ValidateUser" message="tns:IAuthManager_ValidateUser_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAuthManager/ValidateUserResponse" message="tns:IAuthManager_ValidateUser_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAuthManager/ValidateUserConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAuthManager_ValidateUser_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

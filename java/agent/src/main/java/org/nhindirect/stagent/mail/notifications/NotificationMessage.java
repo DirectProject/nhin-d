@@ -78,7 +78,7 @@ public class NotificationMessage extends Message
     	String boundary = type.getParameter("boundary");	
     	
     	headers.addHeader(MailStandard.Headers.ContentType, MDNStandard.MediaType.DispositionReport + 
-    			"; boundary=" + boundary);    	
+    			"; boundary=\"" + boundary + "\"");    	
     	
     	return headers;
 
@@ -124,9 +124,14 @@ public class NotificationMessage extends Message
 	        {
 	            notification.setOriginalMessageId(originalMessageID);
 	        }
-	        
+	        	        
 	        notificationMessage = new NotificationMessage(notifyTo, notification);
 	        notificationMessage.setHeader(MailStandard.Headers.MessageID, UUID.randomUUID().toString());
+	        String subject = message.getHeader(MailStandard.Headers.Subject, ",");
+	        if (subject == null)
+	        	subject = "";
+
+	        notificationMessage.setHeader(MailStandard.Headers.Subject, "Processed: " + subject);
         }
         catch (MessagingException e) {/* no-op */}
         

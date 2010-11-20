@@ -47,26 +47,22 @@ namespace Health.Direct.Config.Store
             }
         }
         
-        public void Add(ConfigDatabase db, string name)
+        public Domain Add(ConfigDatabase db, string name)
         {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            
-            db.Domains.InsertOnSubmit(new Domain(name));
+            return Add(db, new Domain(name));
         }
 
-        public void Add(Domain domain)
+        public Domain Add(Domain domain)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
                 this.Add(db, domain);
                 db.SubmitChanges();
+                return domain;
             }
         }
 
-        public void Add(ConfigDatabase db, Domain domain)
+        public Domain Add(ConfigDatabase db, Domain domain)
         {
             if (db == null)
             {
@@ -83,6 +79,7 @@ namespace Health.Direct.Config.Store
             }
             
             db.Domains.InsertOnSubmit(domain);
+            return domain;
         }
         
         public int Count()
@@ -170,7 +167,27 @@ namespace Health.Direct.Config.Store
             return db.Domains.ExecGet(lastDomain, maxResults);
         }
 
-        public  void Update(Domain domain)
+        public Domain Get(long id)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                return this.Get(db, id);
+            }
+        }
+
+        public Domain Get(ConfigDatabase db, long id)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+
+            return (from domain in db.Domains
+                    where domain.ID == id
+                    select domain).SingleOrDefault();
+        }
+
+        public void Update(Domain domain)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {

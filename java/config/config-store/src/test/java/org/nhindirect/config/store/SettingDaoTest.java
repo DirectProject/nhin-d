@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SettingDaoTest 
 {
-	private static final String derbyHomeLoc = "/src/test/resources/data";	
+	private static final String derbyHomeLoc = "/target/data";	
 	
 	static
 	{

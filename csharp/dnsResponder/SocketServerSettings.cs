@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Chris Lomonico  chris.lomonico@surescripts.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -19,17 +20,21 @@ using System.Xml.Serialization;
 
 namespace Health.Direct.DnsResponder
 {
-    public class SocketServerSettings
+    public class SocketServerSettings 
     {
         public const short DefaultMaxConnectionBacklog = 64;
         public const short DefaultMaxActiveRequests = 64;
         public const short DefaultMaxOutstandingAccepts = 16;
         public const short DefaultReadBufferSize = 1024;
-        
+
         short m_maxOutstandingAccepts = DefaultMaxOutstandingAccepts;
         short m_maxConnectionBacklog = DefaultMaxConnectionBacklog;
         short m_maxActiveRequests = DefaultMaxActiveRequests;
         short m_readBufferSize = DefaultReadBufferSize;
+
+        int m_sendTimeout;
+        int m_receiveTimeout;
+        int m_socketClostTimeout;
         
         public SocketServerSettings()
         {
@@ -52,7 +57,7 @@ namespace Health.Direct.DnsResponder
                 {
                     throw new ArgumentException();
                 }
-                
+
                 m_maxOutstandingAccepts = value;
             }
         }
@@ -75,7 +80,6 @@ namespace Health.Direct.DnsResponder
                 {
                     throw new ArgumentException();
                 }
-
                 m_maxConnectionBacklog = value;
             }
         }
@@ -97,7 +101,7 @@ namespace Health.Direct.DnsResponder
                     throw new ArgumentException();
                 }
 
-                m_maxActiveRequests = value;
+                m_maxActiveRequests = value ;
             }
         }
         
@@ -114,7 +118,7 @@ namespace Health.Direct.DnsResponder
                 {
                     throw new ArgumentException();
                 }
-                
+
                 m_readBufferSize = value;
             }
         }
@@ -128,22 +132,40 @@ namespace Health.Direct.DnsResponder
         [XmlElement]
         public int SendTimeout
         {
-            get;
-            set;
+            get
+            {
+                return m_sendTimeout;
+            }
+            set
+            {
+                m_sendTimeout = value;
+            }
         }
 
         [XmlElement]
         public int ReceiveTimeout
         {
-            get;
-            set;
+            get
+            {
+                return m_receiveTimeout;
+            }
+            set
+            {
+                m_receiveTimeout = value;
+            }
         }
 
         [XmlElement]
         public int SocketCloseTimeout
         {
-            get;
-            set;
+            get
+            {
+                return m_socketClostTimeout;
+            }
+            set
+            {
+                m_socketClostTimeout = value;
+            }
         }
         
         [XmlIgnore]
@@ -151,7 +173,7 @@ namespace Health.Direct.DnsResponder
         {
             get
             {
-                return (m_maxActiveRequests > 0 && m_maxActiveRequests < short.MaxValue);
+                return (this.MaxActiveRequests > 0 && MaxActiveRequests < short.MaxValue);
             }
         }
         
@@ -160,22 +182,22 @@ namespace Health.Direct.DnsResponder
         //                                
         public virtual void Validate()
         {
-            if (m_maxOutstandingAccepts <= 0)
+            if (this.MaxOutstandingAccepts <= 0)
             {
                 throw new ArgumentException("MaxOutstandingAccepts");
             }
             
-            if (m_maxConnectionBacklog <= 0)
+            if (this.MaxConnectionBacklog <= 0)
             {
                 throw new ArgumentException("MaxPendingConnections");
             }
-            
-            if (m_maxActiveRequests <= 0)
+
+            if (this.MaxActiveRequests <= 0)
             {
                 throw new ArgumentException("MaxActiveRequests");
             }
             
-            if (m_readBufferSize <= 0)
+            if (this.ReadBufferSize <= 0)
             {
                 throw new ArgumentException("ReadBufferSize");
             }
@@ -197,7 +219,7 @@ namespace Health.Direct.DnsResponder
         {
             if (this.IsThrottled)
             {
-                return new WorkThrottle(m_maxActiveRequests);
+                return new WorkThrottle(this.MaxActiveRequests);
             }
             
             return new NullThrottle();
@@ -205,7 +227,7 @@ namespace Health.Direct.DnsResponder
         
         internal IWorkLoadThrottle CreateAcceptThrottle()
         {
-            return new WorkThrottle(m_maxOutstandingAccepts);
+            return new WorkThrottle(this.MaxOutstandingAccepts);
         }
         
     }

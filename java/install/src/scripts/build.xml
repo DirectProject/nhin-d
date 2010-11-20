@@ -33,10 +33,7 @@
 	<property name="build.dir" value="${install.root.dir}/build"></property>
 	<property name="build.download.dir" value="${build.dir}/download"></property>
 	<property name="apache.james.binary.url" value="http://ftp.wayne.edu/apache//james/server/apache-james-2.3.2.zip"></property>
-	<property name="metro.download.url" value="https://metro.dev.java.net/2.0.1/metro-2_0_1.zip"></property>
 	<property name="apache.james.binary.zip" value="${build.download.dir}/apache-james-2.3.2.zip"></property>
-	<property name="metro.download.zip" value="${build.download.dir}/metro-2_0_1.zip"></property>
-	<property name="metro.stage.dir" value="${build.dir}/metro"></property>
 
 	<property name="james.stage.dir" value="${env.DIRECT_INSTALL_DIR}/james-2.3.2"></property>
 	<property name="james.stage.apps.dir" value="${james.stage.dir}/apps/james"></property>
@@ -45,22 +42,22 @@
 	<property name="james.stage.config.new" value="${james.stage.apps.dir}/SAR-INF/config-new.xml"></property>
 	<property name="james.stage.apps.SAR-INF.lib.dir" value="${james.stage.apps.dir}/SAR-INF/lib"></property>
 	<property name="james.stage.apps.james.sar.path" value="${james.stage.dir}/apps/james.sar"></property>
+	
+	<property name="tomcat.binary.url" value="http://mirrors.ibiblio.org/pub/mirrors/apache/tomcat/tomcat-6/v6.0.29/bin/apache-tomcat-6.0.29.tar.gz"></property>
+	<property name="tomcat.binary.compressed.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar.gz"></property>
+	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-6.0.29"></property>
+	<property name="tomcat.webapp.dir" value="${tomcat.stage.dir}/webapps"></property>
+	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
+	<property name="tomcat.stage.config.save" value="${tomcat.stage.config}.save"></property>
+	<property name="tomcat.stage.config.new" value="${tomcat.stage.config}.new"></property>
 
-	<!-- Jetty properties -->
-	<property name="jetty.binary.url" value="http://dist.codehaus.org/jetty/jetty-6.1.26/jetty-6.1.26RC0.zip"></property>
-	<property name="jetty.binary.zip" value="${build.download.dir}/jetty-6.1.26RC0.zip"></property>
-	<property name="jetty.stage.dir" value="${env.DIRECT_INSTALL_DIR}/jetty-6.1.26RC0"></property>
-	<property name="jetty.webapp.dir" value="${jetty.stage.dir}/webapps"></property>
-	<property name="jetty.stage.config" value="${jetty.stage.dir}/etc/jetty.xml"></property>
-	<property name="jetty.stage.config.save" value="${jetty.stage.config}.save"></property>
-	<property name="jetty.stage.config.new" value="${jetty.stage.config}.new"></property>
-
+	<!-- Maven repository -->
 	<property name="maven.repo" value="${env.HOME}/.m2/repository"></property>
 	
 	<!-- Config server files -->
 	<property name="config.root" value="${install.root.dir}/../config"></property>
 	<property name="config.service.dir" value="${config.root}/config-service/target"></property>
-	<property name="config.service.orig.war" value="config-service-1.0-SNAPSHOT.war"></property>
+	<property name="config.service.orig.war" value="config-service-1.1-SNAPSHOT.war"></property>
 	<property name="config.service.dest.war" value="config-service.war"></property>
 	<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
 	<property name="config.ui.orig.war" value="config-ui-1.0-SNAPSHOT.war"></property>
@@ -79,8 +76,6 @@
 	<property name="lib.commons-lang" value="${maven.repo}/commons-lang/commons-lang/2.5/commons-lang-2.5.jar"></property>
 	<property name="lib.mail" value="${maven.repo}/javax/mail/mail/1.4.1/mail-1.4.1.jar"></property>
 	<property name="lib.guice" value="${maven.repo}/com/google/inject/guice/2.0/guice-2.0.jar"></property>
-	<property name="lib.metro.src" value="${install.root.dir}/build/metro/lib//webservices-rt.jar"></property>
-	<property name="lib.metro.dst" value="${james.stage.apps.SAR-INF.lib.dir}/webservices-rt-2.0.1.jar"></property>
 
 	<!-- Support libraries (DNS) -->
 	<property name="lib.jcs" value="${maven.repo}/org/apache/jcs/jcs/1.3/jcs-1.3.jar"></property>
@@ -92,29 +87,56 @@
 	<property name="lib.jaxrpc-api" value="${maven.repo}/javax/xml/jaxrpc-api/1.1/jaxrpc-api-1.1.jar"></property>
 	<property name="lib.commons-discovery" value="${maven.repo}/commons-discovery/commons-discovery/0.4/commons-discovery-0.4.jar"></property>
 	<property name="lib.axis" value="${maven.repo}/org/apache/axis/axis/1.4/axis-1.4.jar"></property>
-    <property name="lib.config.proxy" value="${config.root}/config-service-client/target/config-service-client-1.0-SNAPSHOT.jar"></property>
+    <property name="lib.config.proxy" value="${config.root}/config-service-client/target/config-service-client-1.1-SNAPSHOT.jar"></property>
 
 	<!-- Package libraries -->
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
-	<property name="lib.agent" value="${agent.dir}/target/nhinAgent-1.0-SNAPSHOT.jar"></property>
-	<property name="lib.gateway" value="${gateway.dir}/target/nhin-d-gateways-1.0-SNAPSHOT.jar"></property>
+	<property name="lib.agent" value="${agent.dir}/target/agent-1.1-SNAPSHOT.jar"></property>
+	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.1-SNAPSHOT.jar"></property>
 	<property name="lib.xdmail" value="${xdmail.dir}/target/xdmail-1.0-SNAPSHOT.jar"></property>
 	
 	<!-- Stylesheet to edit the config file -->
 	<property name="edit.config.stylesheet" value="${src}/scripts/edit-config.xsl"></property>
 
-	<!-- Stylesheet to edit jetty.xml -->
-	<property name="edit.jetty.stylesheet" value="${src}/scripts/edit-jetty.xsl"></property>
+	<!-- Stylesheet to edit server.xml for tomcat configuration -->
+	<property name="edit.tomcat.stylesheet" value="${src}/scripts/edit-tomcat.xsl"></property>
 
-	<target name="windows-specific" if="is.windows">
-		<echo message="src is ${src}"></echo>
-		<property name="wget.command.path" value="${resources.dir}/wget.exe"></property>
+	<target name="fail-if-no-gunzip">
+		<fail unless="env.GUNZIP_PATH" message="Environment variable GUNZIP_PATH is not set"></fail>
 	</target>
 	
+	<target name="fail-if-no-tar">
+		<fail unless="env.TAR_PATH" message="Environment variable TAR_PATH is not set"></fail>
+	</target>
+	
+	<target name="fail-if-no-wget">
+		<fail unless="env.WGET_PATH" message="Environment variable WGET_PATH is not set"></fail>
+	</target>
+	
+	<target name="windows-specific" if="is.windows">
+		<echo message="src is ${src}"></echo>
+		<antcall target="fail-if-no-wget"></antcall>
+		<antcall target="fail-if-no-tar"></antcall>
+		<antcall target="fail-if-no-gunzip"></antcall>
+		<property name="wget.command.path" value="${env.WGET_PATH}"></property>
+		<property name="wget.command.options" value="" />
+		<property name="tar.command.path" value="${env.TAR_PATH}"></property>
+		<property name="gunzip.command.path" value="${env.GUNZIP_PATH}"></property>
+		<property name="tomcat.tar.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar"></property>
+		<property name="tomcat.binary.pkg" value="${tomcat.tar.pkg}" />
+		<property name="tar.command.options" value="xvf" />
+	</target>
+
 	<target name="unix-specific" if="is.unix">
-		<property name="wget.command.path" value="/usr/bin/wget"></property>
+		<property name="wget.command.path" value="/usr/bin/wget" />
+		<property name="wget.command.options" value="--no-check-certificate -q" />
+		<exec executable="which" outputproperty="tar.command.path" resultproperty="tar.command.result" failonerror="true">
+			<arg line="tar"></arg>
+		</exec>
+		<property name="tar.command.options" value="xvzf" />
+		<property name="tomcat.binary.pkg" value="${tomcat.binary.compressed.pkg}" />
 	</target>
 	
 	<target name="mac-specific" if="is.mac">
@@ -129,6 +151,14 @@
 			<arg line="curl"></arg>
 		</exec>
 		
+		<exec executable="which" outputproperty="tar.command.path" resultproperty="tar.command.result" failonerror="true">
+			<arg line="tar"></arg>
+		</exec>
+		<property name="tar.command.options" value="xvzf" />
+
+		<property name="tomcat.tar.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar"></property>
+		<property name="tomcat.binary.pkg" value="${tomcat.tar.pkg}" />
+
 		<!-- do we have a downloader? -->
 		<condition property="no.downloader">
 			<and>
@@ -165,21 +195,21 @@
 		<available file="${apache.james.binary.zip}" property="apache.james.download.exists"></available>
 		<antcall target="get-james"></antcall>
 		
-		<!-- get metro -->
-		<available file="${metro.download.zip}" property="metro.download.exists"></available>
-		<antcall target="get-metro"></antcall>
-		
-		<!-- get the jetty binary install package -->
-		<available file="${jetty.binary.zip}" property="jetty.download.exists"></available>
-		<antcall target="get-jetty"></antcall>
+		<!-- get the tomcat binary install package -->
+		<available file="${tomcat.binary.pkg}" property="tomcat.download.exists"></available>
+		<antcall target="get-tomcat"></antcall>
 		
 		<!-- unpack -->
 		<delete dir="${james.stage.dir}"></delete>
-		<delete dir="${metro.stage.dir}"></delete>
-		<delete dir="${jetty.stage.dir}"></delete>
+		<delete dir="${tomcat.stage.dir}"></delete>
+
+		<!-- unpack james -->
 		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${apache.james.binary.zip}"></unzip>
-		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${jetty.binary.zip}"></unzip>
-		<unzip dest="${build.dir}" src="${metro.download.zip}"></unzip>
+
+		<!-- unpack tomcat -->
+		<exec executable="${tar.command.path}" failonerror="true" dir="${env.DIRECT_INSTALL_DIR}">
+			<arg line="${tar.command.options} ${tomcat.binary.pkg}" />
+		</exec>
 		
 		<!-- configure james -->
 		<antcall target="configure"></antcall>
@@ -193,7 +223,7 @@
 	<!-- get james with wget -->
 	<target name="get-james-with-wget" if="wget.command.path" unless="apache.james.download.exists">
 	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true" errorproperty="wget.james.erroroutput">
-	  		<arg line="--no-check-certificate -q ${apache.james.binary.url}"></arg>
+	  		<arg line="${wget.command.options} ${apache.james.binary.url}"></arg>
 	  	</exec>
 	</target>
 	
@@ -204,41 +234,31 @@
 	  	</exec>
 	</target>
 
-	<!-- get metro -->
-	<target name="get-metro" depends="get-metro-with-wget,get-metro-with-curl" unless="metro.download.exists"></target>
+	<!-- Windows tar is simplistic and doesn't support compressed archives; therefore, we must uncompress the tar file in an extra step -->
+	<target name="expand-tomcat-for-windows" if="is.windows">
+		<exec executable="${gunzip.command.path}" failonerror="true" output="${tomcat.tar.pkg}">
+			<arg line="-c ${tomcat.binary.compressed.pkg}" />
+		</exec>
+	</target>
+	
+	<!-- get tomcat -->
+	<target name="get-tomcat" depends="get-tomcat-with-wget, get-tomcat-with-curl, expand-tomcat-for-windows" unless="tomcat.download.exists"></target>
 
-	<!-- get metro with wget -->
-	<target name="get-metro-with-wget" if="wget.command.path" unless="metro.download.exists">
-	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true" errorproperty="wget.metro.erroroutput">
-	  		<arg line="--no-check-certificate -q ${metro.download.url}"></arg>
+	<!-- get tomcat with wget -->
+	<target name="get-tomcat-with-wget" if="wget.command.path" unless="tomcat.download.exists">
+	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true" errorproperty="wget.tomcat.erroroutput">
+	  		<arg line="${wget.command.options} ${tomcat.binary.url}"></arg>
 	  	</exec>
 	</target>
 	
-	<!-- get metro with curl -->
-	<target name="get-metro-with-curl" if="curl.command.path" unless="metro.download.exists">
-	  	<exec dir="${build.download.dir}" executable="${curl.command.path}" failonerror="true" errorproperty="curl.metro.erroroutput">
-	  		<arg line="-o ${metro.download.zip} ${metro.download.url}"></arg>
+	<!-- get tomcat with curl -->
+	<target name="get-tomcat-with-curl" if="curl.command.path" unless="tomcat.download.exists">
+	  	<exec dir="${build.download.dir}" executable="${curl.command.path}" failonerror="true" errorproperty="curl.tomcat.erroroutput">
+	  		<arg line="-o ${tomcat.binary.pkg} ${tomcat.binary.url}"></arg>
 	  	</exec>
 	</target>
 
-	<!-- get jetty -->
-	<target name="get-jetty" depends="get-jetty-with-wget, get-jetty-with-curl" unless="jetty.download.exists"></target>
-
-	<!-- get jetty with wget -->
-	<target name="get-jetty-with-wget" if="wget.command.path" unless="jetty.download.exists">
-	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true" errorproperty="wget.jetty.erroroutput">
-	  		<arg line="--no-check-certificate -q ${jetty.binary.url}"></arg>
-	  	</exec>
-	</target>
-	
-	<!-- get jetty with curl -->
-	<target name="get-jetty-with-curl" if="curl.command.path" unless="jetty.download.exists">
-	  	<exec dir="${build.download.dir}" executable="${curl.command.path}" failonerror="true" errorproperty="curl.jetty.erroroutput">
-	  		<arg line="-o ${jetty.binary.zip} ${jetty.binary.url}"></arg>
-	  	</exec>
-	</target>
-
-	<target name="configure" depends="configure-james,configure-jetty"></target>
+	<target name="configure" depends="configure-james,configure-tomcat"></target>
 
 	<target name="configure-james">
 		<!-- expand the sar file in apps -->
@@ -262,7 +282,6 @@
 		<copy file="${lib.commons-logging}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.guice}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.mail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
-		<copy file="${lib.metro.src}" tofile="${lib.metro.dst}"></copy>
 		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
@@ -296,13 +315,15 @@
 		<copy file="${src}/scripts/config.xml" tofile="${james.stage.config}" overwrite="true"></copy>
 
 		<copy file="${src}/scripts/setdomain.sh" todir="${james.stage.dir}/bin" overwrite="true"></copy>
+		<copy file="${src}/scripts/set-domain.xml" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
+		<copy file="${src}/scripts/set-domain.xsl" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
 
 		<!-- clean up work files -->
 		<delete file="${james.stage.config.new}" failonerror="false"></delete>
 		
 	</target>
 
-	<target name="configure-jetty">
+	<target name="configure-tomcat">
 		<property name="config.service.orig.war" value="config-service-1.0-SNAPSHOT.war"></property>
 		<property name="config.service.dest.war" value="config-service.war"></property>
 		<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
@@ -310,13 +331,23 @@
 		<property name="config.ui.dest.war" value="config-ui.war"></property>
 
 		<!-- Copy war files -->
-		<copy file="${config.service.dir}/${config.service.orig.war}" tofile="${jetty.webapp.dir}/${config.service.dest.war}"></copy>
-		<copy file="${config.ui.dir}/${config.ui.orig.war}" tofile="${jetty.webapp.dir}/${config.ui.dest.war}"></copy>
+		<copy file="${config.service.dir}/${config.service.orig.war}" tofile="${tomcat.webapp.dir}/${config.service.dest.war}"></copy>
+		<copy file="${config.ui.dir}/${config.ui.orig.war}" tofile="${tomcat.webapp.dir}/${config.ui.dest.war}"></copy>
 
-		<!-- edit the jetty.xml file -->
+		<!-- edit the tomcat server.xml file -->
 		<!-- TODO mark :) .. for now just overwrite with custom version -->
-		<copy file="${jetty.stage.config}" tofile="${jetty.stage.config.save}" overwrite="true"></copy>
-		<copy file="${src}/scripts/jetty.xml" tofile="${jetty.stage.config}" overwrite="true"></copy>
+<!--
+		<copy file="${tomcat.stage.config}" tofile="${tomcat.stage.config.save}" overwrite="true"></copy>
+		<copy file="${src}/scripts/tomcat.xml" tofile="${tomcat.stage.config}" overwrite="true"></copy>
+-->
+		
+		<xslt style="${edit.tomcat.stylesheet}" in="${tomcat.stage.config}" out="${tomcat.stage.config.new}">
+		    <param name="port" expression="8081"></param>
+		</xslt>
+		<copy file="${tomcat.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
+		<copy file="${tomcat.stage.config.new}" tofile="${tomcat.stage.config}" overwrite="true"></copy>
+		<delete file="${tomcat.stage.config.new}" />
+	
 	</target>
 
 	<!-- make shell files executable -->
@@ -330,7 +361,6 @@
 	<target name="clean" depends="init" description="clean up">
 	    <!-- Delete the ${build} directory tree -->
 	    <delete dir="${build.dir}/download"></delete>
-	    <delete dir="${build.dir}/metro"></delete>
 	</target>
 	
 </project>

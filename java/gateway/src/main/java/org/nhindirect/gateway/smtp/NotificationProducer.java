@@ -27,6 +27,8 @@ import java.util.Collections;
 
 import javax.mail.internet.InternetAddress;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhindirect.stagent.IncomingMessage;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.mail.notifications.Notification;
@@ -45,7 +47,7 @@ import org.nhindirect.stagent.mail.notifications.ReportingUserAgent;
  */
 public class NotificationProducer implements NotificationCreator
 {
-
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(NotificationProducer.class);	
 
 	private final NotificationSettings settings;
 	
@@ -55,7 +57,18 @@ public class NotificationProducer implements NotificationCreator
 	 */
 	public NotificationProducer(NotificationSettings settings)
 	{
+		
 		this.settings = settings;
+		
+		if (LOGGER.isInfoEnabled() && settings != null)
+		{
+			StringBuilder builder = new StringBuilder("Notification settings:");
+			builder.append("\n\r\tMDN Auto Response: " + settings.isAutoResponse());
+			builder.append("\n\r\tMDN Producer Name: " + settings.getProductName());
+			builder.append("\n\r\tMDN Response Test: " + settings.getText());
+			
+			LOGGER.info(builder.toString());
+		}
 	}
 	
 	/**
@@ -79,11 +92,15 @@ public class NotificationProducer implements NotificationCreator
             throw new IllegalArgumentException();
         }
 
+        
         if (!settings.isAutoResponse() || !envelope.hasDomainRecipients() || !NotificationHelper.shouldIssueNotification(envelope.getMessage()))
         {
+        	LOGGER.info("No MDN messages to send.");
             return Collections.emptyList();
         }
 
+        LOGGER.info("Generating MDN \"processed\" messages");
+        
         Collection<InternetAddress> senders = envelope.getDomainRecipients().toInternetAddressCollection();
         Collection<NotificationMessage> notifications = NotificationHelper.createNotificationMessages(envelope.getMessage(), senders, this); 
         
@@ -106,3 +123,4 @@ public class NotificationProducer implements NotificationCreator
     }
 	
 }
+

@@ -1,16 +1,14 @@
 <?xml version="1.0"?>
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>config</artifactId>
 		<groupId>org.nhind</groupId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.nhind</groupId>
 	<artifactId>config-service-client</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>NHIN Direct Java config service client proxy</name>
     <description>NHIN Direct Java config service client proxy</description>
@@ -114,7 +112,20 @@
                 <version>1.5.8</version>
                 <type>jar</type>
                 <scope>test</scope>
-        </dependency>    				
+        </dependency>  
+		<dependency>
+		    <groupId>dnsjava</groupId>
+		    <artifactId>dnsjava</artifactId>
+		    <version>2.0.8</version>	 
+            <scope>test</scope>		       
+		</dependency>	
+        <dependency>
+            <groupId>org.nhind</groupId>
+            <artifactId>config-store</artifactId>
+            <version>1.1-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>  						
 	</dependencies>
 	<build>
 		<pluginManagement>
@@ -164,7 +175,7 @@
 		                <artifactItem>
 		                  <groupId>org.nhind</groupId>
 		                  <artifactId>config-service</artifactId>
-		                  <version>1.0-SNAPSHOT</version>
+		                  <version>1.1-SNAPSHOT</version>
 		                  <type>war</type>
 		                  <overWrite>true</overWrite>
 		                  <destFileName>config-service.war</destFileName>

@@ -14,13 +14,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Net.Mail;
 using System.IO;
 
-using Health.Direct.Config.Client;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
 using Health.Direct.Common.DnsResolver;
 
@@ -33,94 +32,93 @@ namespace Health.Direct.Config.Console.Command
 
         private const string ImportMXUsage
             = "Import a new MX dns record from a binary file."
-              + CRLF + "    filepath "
-              + CRLF + "\t filePath: path fo the MX record binary file. Can have any (or no extension)";
+              + Constants.CRLF + "    filepath "
+              + Constants.CRLF + "\t filePath: path to the MX record binary file. Can have any (or no extension)";
 
         private const string ImportSOAUsage
             = "Import a new SOA dns record from a binary file."
-              + CRLF + "    filepath "
-              + CRLF + "\t filePath: path fo the SOA record binary file. Can have any (or no extension)";
+              + Constants.CRLF + "    filepath "
+              + Constants.CRLF + "\t filePath: path to the SOA record binary file. Can have any (or no extension)";
 
         private const string ImportAddressUsage
             = "Import a new A dns record from a binary file."
-              + CRLF + "    filepath "
-              + CRLF + "\t filePath: path fo the A record binary file. Can have any (or no extension)";
-
+              + Constants.CRLF + "    filepath "
+              + Constants.CRLF + "\t filePath: path to the A record binary file. Can have any (or no extension)";
 
         private const string AddMXUsage
             = "Add a new MX dns record."
-              + CRLF + "  domainname exchange ttl [preference] [notes]"
-              + CRLF + "\t domainname: domain name for the record"
-              + CRLF + "\t exchange: smtp domain name for the record"
-              + CRLF + "\t ttl: time to live, 32bit int"
-              + CRLF + "\t [preference]: short value indicating preference of the record"
-              + CRLF + "\t [notes]: description for the record";
+              + Constants.CRLF + "  domainname exchange ttl [preference] [notes]"
+              + Constants.CRLF + "\t domainname: domain name for the record"
+              + Constants.CRLF + "\t exchange: smtp domain name for the record"
+              + Constants.CRLF + "\t ttl: time to live, 32bit int"
+              + Constants.CRLF + "\t [preference]: short value indicating preference of the record"
+              + Constants.CRLF + "\t [notes]: description for the record";
 
         private const string AddSOAUsage
             = "Add a new SOA dns record."
-              + CRLF + "  domainname primarysourcedomain responsibleemail serialnumber ttl [refresh] [retry] [expire] [minimum] [notes]"
-              + CRLF + "\t domainname: The domain name of the name server that was the primary source for this zone"
-              + CRLF + "\t responsibleemail: Email mailbox of the hostmaster"
-              + CRLF + "\t serialnumber: Version number of the original copy of the zone."
-              + CRLF + "\t ttl: time to live, 32bit int"
-              + CRLF + "\t [refresh]: Number of seconds before the zone should be refreshed."
-              + CRLF + "\t [retry]: Number of seconds before failed refresh should be retried."
-              + CRLF + "\t [expire]: Number of seconds before records should be expired if not refreshed"
-              + CRLF + "\t [minimum]: Minimum TTL for this zone."
-              + CRLF + "\t [notes]: description for the record";
+              + Constants.CRLF + "  domainname primarysourcedomain responsibleemail serialnumber ttl [refresh] [retry] [expire] [minimum] [notes]"
+              + Constants.CRLF + "\t domainname: The domain name of the name server that was the primary source for this zone"
+              + Constants.CRLF + "\t responsibleemail: Email mailbox of the hostmaster"
+              + Constants.CRLF + "\t serialnumber: Version number of the original copy of the zone."
+              + Constants.CRLF + "\t ttl: time to live, 32bit int"
+              + Constants.CRLF + "\t [refresh]: Number of seconds before the zone should be refreshed."
+              + Constants.CRLF + "\t [retry]: Number of seconds before failed refresh should be retried."
+              + Constants.CRLF + "\t [expire]: Number of seconds before records should be expired if not refreshed"
+              + Constants.CRLF + "\t [minimum]: Minimum TTL for this zone."
+              + Constants.CRLF + "\t [notes]: description for the record";
 
         private const string AddANAMEUsage
             = "Add a new ANAME dns record."
-              + CRLF + "  domainname ipaddress ttl [notes]"
-              + CRLF + "\t domainname: domain name for the record"
-              + CRLF + "\t ipaddress: IP address in dot notation"
-              + CRLF + "\t ttl: time to live, 32bit int"
-              + CRLF + "\t [notes]: description for the record";
+              + Constants.CRLF + "  domainname ipaddress ttl [notes]"
+              + Constants.CRLF + "\t domainname: domain name for the record"
+              + Constants.CRLF + "\t ipaddress: IP address in dot notation"
+              + Constants.CRLF + "\t ttl: time to live, 32bit int"
+              + Constants.CRLF + "\t [notes]: description for the record";
 
         private const string RemoveMXUsage
              = "Remove an existing MX record by ID."
-              + CRLF + "  recordid"
-              + CRLF + "\t recordid: record id to be removed from the database";
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be removed from the database";
 
 
         private const string RemoveSOAUsage
              = "Remove an existing SOA record by ID."
-              + CRLF + "  recordid"
-              + CRLF + "\t recordid: record id to be removed from the database";
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be removed from the database";
 
 
         private const string RemoveANAMEUsage
              = "Remove an existing ANAME record by ID."
-              + CRLF + "  recordid"
-              + CRLF + "\t recordid: record id to be removed from the database";
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be removed from the database";
 
 
         private const string GetMXUsage
              = "Gets an existing MX record by ID."
-              + CRLF + "  recordid"
-              + CRLF + "\t recordid: record id to be retrieved from the database";
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
 
 
         private const string GetSOAUsage
              = "Gets an existing SOA record by ID."
-              + CRLF + "  recordid"
-              + CRLF + "\t recordid: record id to be retrieved from the database";
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
 
 
         private const string GetANAMEUsage
              = "Gets an existing ANAME record by ID."
-              + CRLF + "  recordid"
-              + CRLF + "\t recordid: record id to be retrieved from the database";
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
 
-        private const string UpdateMXUsage
-            = "Update an existing MX dns record."
-              + CRLF + "  recordid domainname exchange ttl [preference] [notes]"
-              + CRLF + "\t recordid: id of the record to be update"
-              + CRLF + "\t domainname: new domain name for the record"
-              + CRLF + "\t exchange: new smtp domain name for the record"
-              + CRLF + "\t ttl: new time to live, 32bit int"
-              + CRLF + "\t [preference]: new short value indicating preference of the record"
-              + CRLF + "\t [notes]: new description for the record";
+        //private const string UpdateMXUsage
+        //    = "Update an existing MX dns record."
+        //      + Constants.CRLF + "  recordid domainname exchange ttl [preference] [notes]"
+        //      + Constants.CRLF + "\t recordid: id of the record to be update"
+        //      + Constants.CRLF + "\t domainname: new domain name for the record"
+        //      + Constants.CRLF + "\t exchange: new smtp domain name for the record"
+        //      + Constants.CRLF + "\t ttl: new time to live, 32bit int"
+        //      + Constants.CRLF + "\t [preference]: new short value indicating preference of the record"
+        //      + Constants.CRLF + "\t [notes]: new description for the record";
 
         #endregion
 
@@ -139,7 +137,7 @@ namespace Health.Direct.Config.Console.Command
         /// <returns>bytes from the bin file</returns>
         protected T LoadAndVerifyDnsRecordFromBin<T>(string path) where T : DnsResourceRecord
         {
-            T record = null;
+            T record;
             //----------------------------------------------------------------------------------------------------
             //---read the stream from the bytes
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -147,7 +145,7 @@ namespace Health.Direct.Config.Console.Command
                 byte[] bytes = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
                 DnsBufferReader rdr = new DnsBufferReader(bytes, 0, bytes.Length);
                 record = DnsResourceRecord.Deserialize(ref rdr) as T;
-                if (record.GetType() != typeof(T))
+                if (record == null)
                 {
                     throw new TypeLoadException("unexpected type encountered in file");
                 }
@@ -176,8 +174,7 @@ namespace Health.Direct.Config.Console.Command
         protected void ImportRecord<T>(string path
             , int typeID) where T : DnsResourceRecord
         {
-            DnsRecord dnsRecord = new DnsRecord();
-            dnsRecord.TypeID = typeID;
+            DnsRecord dnsRecord = new DnsRecord {TypeID = typeID};
             T record = this.LoadAndVerifyDnsRecordFromBin<T>(path);
             dnsRecord.RecordData = GetBytesFromRecord(record);
             dnsRecord.DomainName = record.Name;
@@ -190,12 +187,9 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Dns_MX_Import", Usage = ImportMXUsage)]
         public void MXImport(string[] args)
         {
-            DnsRecord rec = new DnsRecord();
-
             string path = args.GetRequiredValue(0);
             this.ImportRecord<MXRecord>(path
                 , (int)DnsStandard.RecordType.MX);
-
         }
 
         /// <summary>
@@ -204,12 +198,9 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Dns_SOA_Import", Usage = ImportSOAUsage)]
         public void SOAImport(string[] args)
         {
-            DnsRecord rec = new DnsRecord();
-
             string path = args.GetRequiredValue(0);
             this.ImportRecord<SOARecord>(path
                 , (int)DnsStandard.RecordType.SOA);
-
         }
 
         /// <summary>
@@ -218,12 +209,9 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Dns_ANAME_Import", Usage = ImportAddressUsage)]
         public void ImportAddress(string[] args)
         {
-            DnsRecord rec = new DnsRecord();
-
             string path = args.GetRequiredValue(0);
             this.ImportRecord<AddressRecord>(path
                 , (int)DnsStandard.RecordType.ANAME);
-
         }       
 
         /// <summary>
@@ -241,12 +229,13 @@ namespace Health.Direct.Config.Console.Command
  
             MXRecord record = new MXRecord(domainName
                 , exchange
-                , pref);
-            record.TTL = ttl;
+                , pref) {TTL = ttl};
+
             DnsRecord dns = new DnsRecord(domainName
                 , (int)DnsStandard.RecordType.MX
                 , this.GetBytesFromRecord(record)
                 , notes);
+
             Client.AddDnsRecord(dns);
         }
 
@@ -263,10 +252,10 @@ namespace Health.Direct.Config.Console.Command
             int serialNumber = args.GetRequiredValue<int>(3);
             int ttl = args.GetRequiredValue<int>(4);
 
-            int refresh = args.GetOptionalValue<int>(5,0);
-            int retry = args.GetOptionalValue<int>(6,0);
-            int expire = args.GetOptionalValue<int>(7,0);
-            int minimum = args.GetOptionalValue<int>(8,0);
+            int refresh = args.GetOptionalValue(5,0);
+            int retry = args.GetOptionalValue(6,0);
+            int expire = args.GetOptionalValue(7,0);
+            int minimum = args.GetOptionalValue(8,0);
             string notes = args.GetOptionalValue(9,string.Empty);
 
             SOARecord record = new SOARecord(domainName
@@ -276,12 +265,13 @@ namespace Health.Direct.Config.Console.Command
                , refresh
                , retry
                , expire
-               , minimum);
-            record.TTL = ttl;
+               , minimum) {TTL = ttl};
+
             DnsRecord dns = new DnsRecord(domainName
                 , (int)DnsStandard.RecordType.SOA
                 , this.GetBytesFromRecord(record)
                 , notes);
+
             Client.AddDnsRecord(dns);
         }
 
@@ -298,12 +288,13 @@ namespace Health.Direct.Config.Console.Command
             string notes = args.GetOptionalValue(3, string.Empty);
 
             AddressRecord record = new AddressRecord(domainName
-               , ipAddress);
-            record.TTL = ttl;
+               , ipAddress) {TTL = ttl};
+
             DnsRecord dns = new DnsRecord(domainName
                 , (int)DnsStandard.RecordType.ANAME
                 , this.GetBytesFromRecord(record)
                 , notes);
+
             Client.AddDnsRecord(dns);
         }
 
@@ -351,27 +342,26 @@ namespace Health.Direct.Config.Console.Command
             DnsRecord dr = Client.GetDnsRecord(recordID);
             if (dr == null)
             {
-                CommandUI.Print(new Exception("no record found matching id"));
-                return;
+                throw new Exception("no record found matching id");
             }
 
-            if (dr.RecordData == null || dr.RecordData.Length.Equals(0))
+            if (dr.RecordData.IsNullOrEmpty())
             {
-                CommandUI.Print(new Exception("empty record data found for matchng record, please update or delete data"));
-                return;
+                throw new Exception("empty record data found for matchng record, please update or delete data");
             }
 
             DnsBufferReader dbr = new DnsBufferReader(dr.RecordData
                 , 0
                 , dr.RecordData.Length);
+
             MXRecord ar = DnsResourceRecord.Deserialize(ref dbr) as MXRecord;
             if (ar == null)
             {
-                CommandUI.Print(new Exception(string.Format(
+                throw new Exception(string.Format(
                     "returned record type does not match expected type, found [{0}], expected [MX]"
-                    , ((DnsStandard.RecordType)dr.TypeID))));
-                return;
+                    , ((DnsStandard.RecordType)dr.TypeID)));
             }
+
             CommandUI.Print("DomainName", ar.Name);
             CommandUI.Print("Exchange", ar.Exchange);
             CommandUI.Print("Preference", ar.Preference);
@@ -393,14 +383,12 @@ namespace Health.Direct.Config.Console.Command
             DnsRecord dr = Client.GetDnsRecord(recordID);
             if (dr == null)
             {
-                CommandUI.Print(new Exception("no record found matching id"));
-                return;
+                throw new Exception("no record found matching id");
             }
 
-            if (dr.RecordData == null || dr.RecordData.Length.Equals(0))
+            if (dr.RecordData.IsNullOrEmpty())
             {
-                CommandUI.Print(new Exception("empty record data found for matchng record, please update or delete data"));
-                return;
+                throw new Exception("empty record data found for matchng record, please update or delete data");
             }
 
             DnsBufferReader dbr = new DnsBufferReader(dr.RecordData
@@ -409,10 +397,9 @@ namespace Health.Direct.Config.Console.Command
             SOARecord ar = DnsResourceRecord.Deserialize(ref dbr) as SOARecord;
             if (ar == null)
             {
-                CommandUI.Print(new Exception(string.Format(
+                throw new Exception(string.Format(
                     "returned record type does not match expected type, found [{0}], expected [SOA]"
-                    , ((DnsStandard.RecordType)dr.TypeID))));
-                return;
+                    , ((DnsStandard.RecordType)dr.TypeID)));
             }
             CommandUI.Print("DomainName", ar.Name);
             CommandUI.Print("primarySourceDomain", ar.DomainName);
@@ -436,34 +423,31 @@ namespace Health.Direct.Config.Console.Command
             long recordID = args.GetRequiredValue<long>(0);
             DnsRecord dr = Client.GetDnsRecord(recordID);
             if(dr == null){
-                CommandUI.Print(new Exception("no record found matching id"));
-                return;
+                throw new Exception("no record found matching id");
             }
 
-            if(dr.RecordData == null || dr.RecordData.Length.Equals(0)){
-                CommandUI.Print(new Exception("empty record data found for matchng record, please update or delete data"));
-                return;
+            if(dr.RecordData.IsNullOrEmpty()){
+                throw new Exception("empty record data found for matchng record, please update or delete data");
             }
 
             DnsBufferReader dbr = new DnsBufferReader(dr.RecordData
                 ,0
                 ,dr.RecordData.Length);
+
             AddressRecord ar = DnsResourceRecord.Deserialize(ref dbr) as AddressRecord;
             if (ar == null)
             {
-                CommandUI.Print(new Exception(string.Format(
+                throw new Exception(string.Format(
                     "returned record type does not match expected type, found [{0}], expected [ANAME]"
-                    ,((DnsStandard.RecordType)dr.TypeID))));
-                return;
+                    ,((DnsStandard.RecordType)dr.TypeID)));
             }
+
             CommandUI.Print("DomainName", ar.Name);
             CommandUI.Print("IP Address", ar.IPAddress);
             CommandUI.Print("TTL", ar.TTL);
             CommandUI.Print("CreateDate", dr.CreateDate);
             CommandUI.Print("UpdateDate", dr.UpdateDate);
             CommandUI.Print("Notes", dr.Notes);
-                
-
         }
 
         /*

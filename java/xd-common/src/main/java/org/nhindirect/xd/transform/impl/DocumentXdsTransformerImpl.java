@@ -53,6 +53,7 @@ import org.nhindirect.xd.transform.util.XmlUtils;
  * 
  * @author Vince
  */
+@Deprecated
 public class DocumentXdsTransformerImpl implements DocumentXdsTransformer
 {
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DocumentXdsTransformerImpl.class);

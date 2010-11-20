@@ -54,6 +54,7 @@ public class Notification
     private MdnGateway gateway;
     private Disposition disposition;
     private MimeMultipart mmRep;
+    private String finalRecipient;
     
     /**
      * Initializes a new instance of the supplied notification type.
@@ -216,14 +217,43 @@ public class Notification
 	}
 	
 	/**
+	 * Gets the final recipient for this instance.
+	 * @return the final recipient for this instance
+	 */
+	public String getFinalRecipeint() 
+	{
+		return finalRecipient;
+	}
+
+	/**
+	 * Sets final recipient.
+	 * @param messageId The final recipient.
+	 */
+	public void setFinalRecipient(String recip)
+	{
+		try
+		{
+			if (recip != null && !recip.isEmpty())
+				notification.setHeader(MDNStandard.Headers.FinalRecipient, recip);
+			else
+				notification.removeHeader(MDNStandard.Headers.FinalRecipient);
+			
+			genMMRep();
+		}
+		catch (MessagingException e) {/* no-op */}
+		
+		this.finalRecipient = recip;
+	}
+	
+	/**
 	 * Gets the {@link Disposition} for this instance.
 	 * @return the {@link Disposition} for this instance
 	 */
 	public Disposition getDisposition() 
 	{
 		return disposition;
-	}
-
+	}	
+	
 	/*
 	 * set the disposition but optionally suppress generating the multipart... this
 	 * is mainly used because of the constructor not setting all attributes before

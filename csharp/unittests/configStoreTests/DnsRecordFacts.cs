@@ -14,15 +14,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-
-using Health.Direct.Common.Certificates;
-using Health.Direct.Common.Extensions;
-using Health.Direct.Common.DnsResolver;
 
 using Xunit;
-using Xunit.Extensions;
+
 namespace Health.Direct.Config.Store.Tests
 {
     public class DnsRecordFacts : ConfigStoreTestBase
@@ -31,7 +25,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for UpdateDate
         ///</summary>
-        [Fact()]
+        [Fact]
         public void UpdateDateTest()
         {
             DnsRecord target = new DnsRecord(); 
@@ -45,11 +39,11 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for TypeID
         ///</summary>
-        [Fact()]
+        [Fact]
         public void TypeIDTest()
         {
             DnsRecord target = new DnsRecord(); 
-            int expected = 777; 
+            const int expected = 777; 
             
             target.TypeID = expected;
             int actual = target.TypeID;
@@ -60,11 +54,11 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for RecordID
         ///</summary>
-        [Fact()]
+        [Fact]
         public void RecordIDTest()
         {
             DnsRecord target = new DnsRecord();
-            long expected = 777;
+            const long expected = 777;
             
             target.RecordID = expected;
             long actual = target.RecordID;
@@ -75,7 +69,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for RecordData
         ///</summary>
-        [Fact()]
+        [Fact]
         public void RecordDataTest()
         {
             DnsRecord target = new DnsRecord();
@@ -90,14 +84,13 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Notes
         ///</summary>
-        [Fact()]
+        [Fact]
         public void NotesTest()
         {
             DnsRecord target = new DnsRecord();
-            string expected = "these are some test notes";
-            string actual;
+            const string expected = "these are some test notes";
             target.Notes = expected;
-            actual = target.Notes;
+            string actual = target.Notes;
             Assert.Equal(expected, actual);
             
         }
@@ -105,14 +98,13 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for DomainName
         ///</summary>
-        [Fact()]
+        [Fact]
         public void DomainNameTest()
         {
             DnsRecord target = new DnsRecord();
             string expected = BuildDomainName(1);
-            string actual;
             target.DomainName = expected;
-            actual = target.DomainName;
+            string actual = target.DomainName;
             Assert.Equal(expected, actual);
             
         }
@@ -120,14 +112,13 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for CreateDate
         ///</summary>
-        [Fact()]
+        [Fact]
         public void CreateDateTest()
         {
             DnsRecord target = new DnsRecord();
             DateTime expected = DateTime.UtcNow;
-            DateTime actual;
             target.CreateDate = expected;
-            actual = target.CreateDate;
+            DateTime actual = target.CreateDate;
             Assert.Equal(expected, actual);
             
         }
@@ -135,11 +126,11 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for ValidateHasData
         ///</summary>
-        [Fact()]
+        [Fact]
         public void ValidateHasDataTest()
         {
             DnsRecord target = new DnsRecord();
-            bool failed = false;
+            bool failed;
             try{
                 target.ValidateHasData();
                 failed = false;
@@ -163,15 +154,12 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for CopyFixed
         ///</summary>
-        [Fact()]
+        [Fact]
         public void CopyFixedTest()
         {
             DnsRecord target = new DnsRecord(); 
-            DnsRecord source = new DnsRecord(); 
-            
-            source.RecordID = 777;
-            source.DomainName = BuildDomainName(1);
-            source.TypeID = 3;
+            DnsRecord source = new DnsRecord {RecordID = 777, DomainName = BuildDomainName(1), TypeID = 3};
+
             target.CopyFixed(source);
             Assert.Equal(777, target.RecordID);
             Assert.Equal(BuildDomainName(1), target.DomainName);
@@ -183,12 +171,12 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for ApplyChanges
         ///</summary>
-        [Fact()]
+        [Fact]
         public void ApplyChangesTest()
         {
             DnsRecord target = new DnsRecord();
             DnsRecord source = new DnsRecord();
-            DateTime update = DateTime.Now;
+            DateTime update = DateTimeHelper.Now;
             byte[] bytes = System.Text.Encoding.UTF8.GetBytes("test this");
             source.RecordData = bytes;
             source.Notes = "some notes here";

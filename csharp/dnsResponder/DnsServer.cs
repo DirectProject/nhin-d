@@ -19,12 +19,16 @@ namespace Health.Direct.DnsResponder
 {
     public class DnsServer
     {
-        DnsServerSettings m_settings;
-        WorkThrottle m_activeRequestThrottle;
-        IDnsStore m_store;
-        
-        DnsResponderTCP m_tcpResponder;
-        DnsResponderUDP m_udpResponder;
+        public event Action<Exception> Error;
+
+        readonly DnsServerSettings m_settings;
+        readonly IDnsStore m_store;
+
+        readonly DnsResponderTCP m_tcpResponder;
+        readonly DnsResponderUDP m_udpResponder;
+
+        // put this back in when we make use of it...
+        //readonly WorkThrottle m_activeRequestThrottle;
         
         public DnsServer(IDnsStore store, DnsServerSettings settings)
         {
@@ -34,13 +38,23 @@ namespace Health.Direct.DnsResponder
             }
 
             m_settings = settings;
-            m_activeRequestThrottle = new WorkThrottle(m_settings.TcpServerSettings.MaxActiveRequests);
             m_store = store;
 
             m_tcpResponder = new DnsResponderTCP(this);
             m_udpResponder = new DnsResponderUDP(this);
+
+            m_tcpResponder.Server.Error += InvokeError;
+            m_udpResponder.Server.Error += InvokeError;
+
+            //m_activeRequestThrottle = new WorkThrottle(m_settings.TcpServerSettings.MaxActiveRequests);
         }
-                
+
+        private void InvokeError(Exception ex)
+        {
+            Action<Exception> action = Error;
+            if (action != null) action(ex);
+        }
+
         public DnsServerSettings Settings
         {
             get
@@ -81,8 +95,23 @@ namespace Health.Direct.DnsResponder
         
         public void Stop()
         {
-            m_udpResponder.Stop();
-            m_tcpResponder.Stop();
+            try
+            {
+                m_udpResponder.Stop();
+            }
+            catch (Exception ex)
+            {
+                InvokeError(ex);
+            }
+
+            try
+            {
+                m_tcpResponder.Stop();
+            }
+            catch (Exception ex)
+            {
+                InvokeError(ex);
+            }
         }
     }
 }

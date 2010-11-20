@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mime;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Tools.Command;
