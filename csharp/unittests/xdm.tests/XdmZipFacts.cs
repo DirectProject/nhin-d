@@ -124,6 +124,25 @@ namespace Health.Direct.Xdm.Tests
             Assert.Equal(Examples.TestPackage.Documents.Count(), package.Documents.Count());
         }
 
+        [Fact]
+        public void UnpackageRoundTripHasDocumentData()
+        {
+            XDMZipPackager p = XDMZipPackager.Default;
+            DocumentPackage package;
+            using (ZipFile z = p.Package(Examples.TestPackage))
+            {
+                z.Save("xdm.zip");
+                package = p.Unpackage(z);
+            }
+            //not a perfect equality test but it should do....
+            Assert.Equal(Examples.TestPackage.Documents.Count(), package.Documents.Count());
+            Assert.Equal(1, package.Documents.Count());
+            Assert.NotNull(package.Documents.First().DocumentString);
+            Assert.Equal(Examples.TestPackage.Documents.First().DocumentString,
+                package.Documents.First().DocumentString);
+        }
+
+
 
     }
 }

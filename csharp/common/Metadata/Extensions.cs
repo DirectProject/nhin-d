@@ -43,7 +43,7 @@ namespace Health.Direct.Common.Metadata
 
 
         /// <summary>
-        /// Reads all bytes of the supplied string.
+        /// Reads all bytes of the supplied stream.
         /// </summary>
         public static byte[] ReadAllBytes(this Stream stream)
         {
@@ -51,16 +51,18 @@ namespace Health.Direct.Common.Metadata
             byte[] buffer = new byte[buffSize];
 
             int bytesRead = 0;
-            var inStream = new BufferedStream(stream);
-            var outStream = new MemoryStream();
-
-            while ((bytesRead = inStream.Read(buffer, 0, buffSize)) > 0)
+            using (BufferedStream inStream = new BufferedStream(stream))
             {
-                outStream.Write(buffer, 0, bytesRead);
+                using (MemoryStream outStream = new MemoryStream())
+                {
+                    while ((bytesRead = inStream.Read(buffer, 0, buffSize)) > 0)
+                    {
+                        outStream.Write(buffer, 0, bytesRead);
+                    }
+
+                    return outStream.ToArray();
+                }
             }
-
-            return outStream.GetBuffer();
         }
-
     }
 }

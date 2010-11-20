@@ -58,20 +58,48 @@ namespace Health.Direct.Xdm
 
         private DocumentPackage ReadMetadata(ZipFile z)
         {
-            ZipEntry metadataFile = LocateMetadataFile(z);
+            ZipEntry metadataEntry = LocateMetadataFile(z);
+            XDocument metadataDoc = ExtractMetadataFile(metadataEntry);
+            DocumentPackage package = XDMetadataConsumer.Consume(metadataDoc.Root);
+            string[] dirParts = metadataEntry.FileName.Split('/');
+            string submissionSetDir = String.Format("{0}/{1}", dirParts[0], dirParts[1]);
+            foreach (DocumentMetadata doc in package.Documents)
+            {
+                string docPath = String.Format("{0}/{1}", submissionSetDir, doc.Uri);
+                byte[] bytes = ExtractDocumentBytes(z, docPath);
+                doc.SetDocument(bytes);
+            }
+
+            return package;
+        }
+
+        private byte[] ExtractDocumentBytes(ZipFile z, string path)
+        {
+            ZipEntry docEntry = z[path];
+            if (docEntry == null) throw new XdmException(XdmError.FileNotFound, String.Format("File {0} was not located in the archive", path));
+            using (MemoryStream stream = new MemoryStream())
+            {
+                docEntry.Extract(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                return stream.ReadAllBytes();
+            }
+        }
+
+        private XDocument ExtractMetadataFile(ZipEntry e)
+        {
             XDocument metadataDoc;
             using (MemoryStream docStream = new MemoryStream())
             {
-                metadataFile.Extract(docStream);
+                e.Extract(docStream);
                 docStream.Seek(0, SeekOrigin.Begin);
                 using (TextReader reader = new StreamReader(docStream))
                 {
                     metadataDoc = XDocument.Load(reader);
                 }
             }
-            DocumentPackage package = XDMetadataConsumer.Consume(metadataDoc.Root);
-            return package;
+            return metadataDoc;
         }
+
 
         private ZipEntry LocateMetadataFile(ZipFile z)
         {
@@ -135,9 +163,10 @@ namespace Health.Direct.Xdm
             {
                 if (doc.DocumentBytes == null) throw new XdMetadataException(XdError.MissingDocumentBytes);
                 string suffix = i.ToString("000");
-                string name = String.Format("{0}/{1}/{2}", XDMStandard.MainDirectory, XDMStandard.DefaultSubmissionSet, XDMStandard.DocPrefix + suffix);
+                string name = XDMStandard.DocPrefix + suffix;
+                string path = String.Format("{0}/{1}/{2}", XDMStandard.MainDirectory, XDMStandard.DefaultSubmissionSet, name);
                 doc.Uri = name;
-                z.AddEntry(name, doc.DocumentBytes);
+                z.AddEntry(path, doc.DocumentBytes);
             }
         }
 
@@ -146,7 +175,7 @@ namespace Health.Direct.Xdm
             var liElts = from d in package.Documents
                          select new XElement("li",
                              new XElement("a", d.Title,
-                                 new XAttribute("href", d.Uri)));
+                                 new XAttribute("href", String.Format("{0}/{1}/{2}", XDMStandard.MainDirectory, XDMStandard.DefaultSubmissionSet, d.Uri))));
             XDocument index = new XDocument(
                 new XDocumentType("html", "-//W3C//DTD XHTML Basic 1.1//EN", "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd", null),
                 new XElement("html",
