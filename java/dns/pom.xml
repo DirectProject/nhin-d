@@ -269,7 +269,9 @@
 	              <systemProperty>com.sun.management.jmxremote.authenticate=false</systemProperty>
 	              <systemProperty>com.sun.management.jmxremote.ssl=false</systemProperty>
 	            </systemProperties>
-	          </defaultJvmSettings>	                 
+	          </defaultJvmSettings>
+
+	                 
 	          <daemons>
 	            <daemon>
 	              <id>DirectDNSServer</id>
@@ -281,6 +283,8 @@
 	                <commandLineArgument>0.0.0.0</commandLineArgument>
 	                <commandLineArgument>-u</commandLineArgument>
 	                <commandLineArgument>http://localhost:8081/config-service/ConfigurationService</commandLineArgument>
+	                <commandLineArgument>-m</commandLineArgument>
+	                <commandLineArgument>SERVER</commandLineArgument>	                
 	              </commandLineArguments>
 	              <platforms>
 	                <platform>jsw</platform>
