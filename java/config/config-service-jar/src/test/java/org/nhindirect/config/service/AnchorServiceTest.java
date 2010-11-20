@@ -166,6 +166,7 @@ public class AnchorServiceTest extends MockObjectTestCase
             {
 
             	oneOf(anchorDao).listByIds(anchorIds);
+            	will(returnValue(Collections.<Long>emptyList()));
             }
         });
 
@@ -174,8 +175,31 @@ public class AnchorServiceTest extends MockObjectTestCase
 
         try
         {
+            Collection<Anchor> output = service.getAnchors(null, certificateOptions);
+            assertNotNull("Output is null when passing a null param", output);
+            assertEquals("Output does not match expected return value for a null param", Collections.emptyList(), output);
+        }
+        catch (Exception e)
+        {
+            fail("Exception thrown");
+        }
+        
+        try
+        {
+            Collection<Anchor> output = service.getAnchors(Collections.<Long>emptyList(), certificateOptions);
+            assertNotNull("Output is null when passing an empty collection", output);
+            assertEquals("Output does not match expected return value for an empty collection", Collections.emptyList(), output);
+        }
+        catch (Exception e)
+        {
+            fail("Exception thrown");
+        }
+        
+        try
+        {
             Collection<Anchor> output = service.getAnchors(anchorIds, certificateOptions);
-            assertEquals("Output does not match expected", Collections.emptyList(), output);
+            assertNotNull("Output is null when using valid params", output);
+            assertEquals("Output does not match mocked return value when using valid params", Collections.<Long>emptyList(), output);
         }
         catch (Exception e)
         {
@@ -199,6 +223,7 @@ public class AnchorServiceTest extends MockObjectTestCase
         {
             {
             	oneOf(anchorDao).list(owners);
+            	will(returnValue(Collections.<Anchor>emptyList()));
             }
         });
 
@@ -208,7 +233,8 @@ public class AnchorServiceTest extends MockObjectTestCase
         try
         {
             Collection<Anchor> output = service.getAnchorsForOwner(owner, certificateOptions);
-            assertEquals("Output does not match expected", Collections.emptyList(), output);
+            assertNotNull("Output is null when passing valid params", output);
+            assertEquals("Output does not match mocked return value when using valid params", Collections.<Anchor>emptyList(), output);
         }
         catch (Exception e)
         {
@@ -331,6 +357,7 @@ public class AnchorServiceTest extends MockObjectTestCase
         {
             {
             	oneOf(anchorDao).listAll();
+            	will(returnValue(Collections.<Anchor>emptyList()));
             }
         });
 
@@ -340,7 +367,8 @@ public class AnchorServiceTest extends MockObjectTestCase
         try
         {
             Collection<Anchor> output = service.listAnchors(anchorId, maxResults, certificateOptions);
-            assertEquals("Output does not match expected", Collections.emptyList(), output);
+            assertNotNull("Output is null when passing valid params", output);
+            assertEquals("Output does not match mocked return value when using valid params", Collections.<Anchor>emptyList(), output);
         }
         catch (Exception e)
         {
