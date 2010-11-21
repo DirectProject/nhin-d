@@ -14,55 +14,58 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace Health.Direct.Common.Metadata
+using Health.Direct.Common;
+
+namespace Health.Direct.Xdm
 {
     /// <summary>
-    /// Extension methods for working with metadata elements
+    /// Represents an exception in generating or consuming XDM packages
     /// </summary>
-    public static class Extensions
+    public class XdmException : DirectException<XdmError>
     {
-
         /// <summary>
-        /// Converts the supplied date to an HL7 formatted UTC datetime string
+        /// Creates an exception with the specified error
         /// </summary>
-        public static string ToHL7Date(this DateTime? datetime)
+        /// <param name="error">The <see cref="XdmError"/> that triggered this exception.</param>
+        public XdmException(XdmError error)
+            : base(error)
         {
-            if (datetime == null) return null;
-            return datetime.Value.ToUniversalTime().ToString(HL7Util.DateTimeFormat, System.Globalization.DateTimeFormatInfo.InvariantInfo);
         }
 
         /// <summary>
-        /// Formats the provided value as a string suitable for inclusion in HL7
+        /// Creates an exception with the specified error and a custom message
         /// </summary>
-        public static string AsString(this Sex? s)
+        /// <param name="error">The <see cref="XdmError"/> that triggered this exception.</param>
+        /// <param name="message">The custom error message</param>
+        public XdmException(XdmError error, string message)
+            : base(error, message)
         {
-            return HL7Util.ToHL7Value(s);
         }
-
 
         /// <summary>
-        /// Reads all bytes of the supplied stream.
+        /// Creates an exception with the specified error, and a lower level exception
         /// </summary>
-        public static byte[] ReadAllBytes(this Stream stream)
+        /// <param name="error">The <see cref="XdmError"/> that triggered this exception.</param>
+        /// <param name="innerException">The lower level exception that triggered this exception</param>
+        public XdmException(XdmError error, Exception innerException)
+            : base(error, innerException)
         {
-            int buffSize = 1024;
-            byte[] buffer = new byte[buffSize];
-
-            int bytesRead = 0;
-            using (BufferedStream inStream = new BufferedStream(stream))
-            {
-                using (MemoryStream outStream = new MemoryStream())
-                {
-                    while ((bytesRead = inStream.Read(buffer, 0, buffSize)) > 0)
-                    {
-                        outStream.Write(buffer, 0, bytesRead);
-                    }
-
-                    return outStream.ToArray();
-                }
-            }
         }
+
+        /// <summary>
+        /// Creates an exception with the specified error, a lower level exception, and a custom message
+        /// </summary>
+        /// <param name="error">The <see cref="XdmError"/> that triggered this exception.</param>
+        /// <param name="innerException">The lower level exception that triggered this exception</param>
+        /// <param name="message">The custom error message</param>
+        public XdmException(XdmError error, string message, Exception innerException)
+            : base(error, message, innerException)
+        {
+        }
+
     }
 }

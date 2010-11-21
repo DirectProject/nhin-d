@@ -64,7 +64,7 @@ namespace Health.Direct.Common.Metadata
             if (Hash == null)
                 Hash = h;
             else if (Hash != h)
-                throw new FormatException("Hash does not match computed value");
+                throw new FormatException(String.Format("Stored hash {0} does not match computed {1}", Hash, h));
         }
 
         private void SetSize()

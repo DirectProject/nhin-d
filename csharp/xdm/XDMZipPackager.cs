@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using System.Xml;
 
 using Health.Direct.Common.Metadata;
 using Health.Direct.Xd;
@@ -26,7 +27,7 @@ using System.IO;
 
 namespace Health.Direct.Xdm
 {
-    public class XDMZipPackager
+    public class XDMZipPackager : IPackager<ZipFile>
     {
         // Use Default
         private XDMZipPackager() { }
@@ -44,6 +45,73 @@ namespace Health.Direct.Xdm
                 return m_Instance;
             }
         }
+
+        /// <summary>
+        /// Unpackages an XDM-encoded zip file
+        /// </summary>
+        public DocumentPackage Unpackage(ZipFile z)
+        {
+            DocumentPackage package;
+            package = ReadMetadata(z);
+            return package;
+        }
+
+        private DocumentPackage ReadMetadata(ZipFile z)
+        {
+            ZipEntry metadataEntry = LocateMetadataFile(z);
+            XDocument metadataDoc = ExtractMetadataFile(metadataEntry);
+            DocumentPackage package = XDMetadataConsumer.Consume(metadataDoc.Root);
+            string[] dirParts = metadataEntry.FileName.Split('/');
+            string submissionSetDir = String.Format("{0}/{1}", dirParts[0], dirParts[1]);
+            foreach (DocumentMetadata doc in package.Documents)
+            {
+                string docPath = String.Format("{0}/{1}", submissionSetDir, doc.Uri);
+                byte[] bytes = ExtractDocumentBytes(z, docPath);
+                doc.SetDocument(bytes);
+            }
+
+            return package;
+        }
+
+        private byte[] ExtractDocumentBytes(ZipFile z, string path)
+        {
+            ZipEntry docEntry = z[path];
+            if (docEntry == null) throw new XdmException(XdmError.FileNotFound, String.Format("File {0} was not located in the archive", path));
+            using (MemoryStream stream = new MemoryStream())
+            {
+                docEntry.Extract(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                return stream.ReadAllBytes();
+            }
+        }
+
+        private XDocument ExtractMetadataFile(ZipEntry e)
+        {
+            XDocument metadataDoc;
+            using (MemoryStream docStream = new MemoryStream())
+            {
+                e.Extract(docStream);
+                docStream.Seek(0, SeekOrigin.Begin);
+                using (TextReader reader = new StreamReader(docStream))
+                {
+                    metadataDoc = XDocument.Load(reader);
+                }
+            }
+            return metadataDoc;
+        }
+
+
+        private ZipEntry LocateMetadataFile(ZipFile z)
+        {
+            IEnumerable<ZipEntry> subFiles = z.Entries.Where(e => e.FileName.StartsWith(XDMStandard.MainDirectory));
+            IEnumerable<ZipEntry> metadataFiles = subFiles
+                .Where(e => e.FileName.EndsWith(XDMStandard.MetadataFilename) &&
+                    e.FileName.Split('/').Count() == 3);
+            if (metadataFiles.Count() == 0) throw new XdmException(XdmError.NoMetadataFile);
+            if (metadataFiles.Count() > 1) throw new NotImplementedException("Multiple submission sets not supported");
+            return metadataFiles.First();
+        }
+
 
 
         /// <summary>
@@ -95,9 +163,10 @@ namespace Health.Direct.Xdm
             {
                 if (doc.DocumentBytes == null) throw new XdMetadataException(XdError.MissingDocumentBytes);
                 string suffix = i.ToString("000");
-                string name = String.Format("{0}/{1}/{2}", XDMStandard.MainDirectory, XDMStandard.DefaultSubmissionSet, XDMStandard.DocPrefix + suffix);
+                string name = XDMStandard.DocPrefix + suffix;
+                string path = String.Format("{0}/{1}/{2}", XDMStandard.MainDirectory, XDMStandard.DefaultSubmissionSet, name);
                 doc.Uri = name;
-                z.AddEntry(name, doc.DocumentBytes);
+                z.AddEntry(path, doc.DocumentBytes);
             }
         }
 
@@ -106,7 +175,7 @@ namespace Health.Direct.Xdm
             var liElts = from d in package.Documents
                          select new XElement("li",
                              new XElement("a", d.Title,
-                                 new XAttribute("href", d.Uri)));
+                                 new XAttribute("href", String.Format("{0}/{1}/{2}", XDMStandard.MainDirectory, XDMStandard.DefaultSubmissionSet, d.Uri))));
             XDocument index = new XDocument(
                 new XDocumentType("html", "-//W3C//DTD XHTML Basic 1.1//EN", "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd", null),
                 new XElement("html",

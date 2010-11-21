@@ -59,7 +59,7 @@ public class DNSException extends Exception
 	 */    
     public DNSException(DNSError<?> error, String message)
     {
-    	this(error,"",null);
+    	this(error,message,null);
     }
        
 	/**
