@@ -192,6 +192,19 @@ namespace Health.Direct.Config.Store
                 , (int)typeID);
         }
 
+        public DnsRecord[] Get(long lastRecordID, int maxResults)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, lastRecordID, maxResults).ToArray();
+            }
+        }
+        
+        public IEnumerable<DnsRecord> Get(ConfigDatabase db, long lastRecordID, int maxResults)
+        {
+            return db.DnsRecords.Get(lastRecordID, maxResults);
+        }
+
         /// <summary>
         /// simple method to remove an dns record by ID 
         /// </summary>
@@ -264,7 +277,7 @@ namespace Health.Direct.Config.Store
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
-                this.Update(db, dnsRecord);
+                Update(db, dnsRecord);
                 db.SubmitChanges();
             }
         }
@@ -279,13 +292,13 @@ namespace Health.Direct.Config.Store
             {
                 foreach (DnsRecord dnsRecord in dnsRecords)
                 {
-                    this.Update(db, dnsRecord);
+                    Update(db, dnsRecord);
                 }
                 db.SubmitChanges();
             }
         }
 
-        void Update(ConfigDatabase db
+        static void Update(ConfigDatabase db
             , DnsRecord dnsRecord)
         {
             if (db == null)

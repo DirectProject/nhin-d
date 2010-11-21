@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.Linq;
 
-using Health.Direct.Common.Extensions;
 namespace Health.Direct.Config.Store
 {
     public static class DnsRecordQueries
@@ -37,16 +36,24 @@ namespace Health.Direct.Config.Store
         static readonly Func<ConfigDatabase, long, IQueryable<DnsRecord>> DnsRecordByID = CompiledQuery.Compile(
             (ConfigDatabase db, long recordID) =>
             from dnsrecords in db.DnsRecords
-            where dnsrecords.RecordID == recordID
+            where dnsrecords.ID == recordID
             select dnsrecords
+            );
+
+        static readonly Func<ConfigDatabase, long, int, IQueryable<DnsRecord>> AllDnsRecords = CompiledQuery.Compile(
+            (ConfigDatabase db, long lastRecordID, int maxResults) =>
+            (from dnsrecords in db.DnsRecords
+             where dnsrecords.ID > lastRecordID
+             orderby dnsrecords.ID ascending
+             select dnsrecords).Take(maxResults)
             );
 
         static readonly Func<ConfigDatabase, long, int, int, IQueryable<DnsRecord>> AllDnsRecordsForType = CompiledQuery.Compile(
             (ConfigDatabase db, long lastRecordID, int maxResults, int typeID) =>
             (from dnsrecords in db.DnsRecords
-             where dnsrecords.RecordID > lastRecordID
+             where dnsrecords.ID > lastRecordID
              && dnsrecords.TypeID == typeID
-             orderby dnsrecords.RecordID ascending
+             orderby dnsrecords.ID ascending
              select dnsrecords).Take(maxResults)
             );
 
@@ -60,24 +67,16 @@ namespace Health.Direct.Config.Store
             , string domainName
             , int? typeID)
         {
-            IEnumerable<DnsRecord> records = null;
             if (typeID.HasValue)
             {
-                records = (from dnsrecords in table.GetDB().DnsRecords
+                return (from dnsrecords in table.GetDB().DnsRecords
                         where dnsrecords.TypeID == typeID.Value
-                        && domainName.ToLower().Equals(dnsrecords.DomainName.ToLower())
+                              && domainName.ToLower().Equals(dnsrecords.DomainName.ToLower())
                         select dnsrecords);
-
-                return records;
             }
-            records = (from 
-                       dnsrecords in table.GetDB().DnsRecords
-                   where
-                        domainName.ToLower().Equals(dnsrecords.DomainName.ToLower())
-                   select 
-                        dnsrecords);
-
-            return records;
+            return (from dnsrecords in table.GetDB().DnsRecords
+                    where domainName.ToLower().Equals(dnsrecords.DomainName.ToLower())
+                    select dnsrecords);
         }
 
 
@@ -92,21 +91,26 @@ namespace Health.Direct.Config.Store
             {
                 return (from dnsrecords in table.GetDB().DnsRecords
                         where dnsrecords.TypeID == typeID.Value
-                        select dnsrecords.RecordID).Count();
+                        select dnsrecords.ID).Count();
 
             }
             return (from dnsrecords in table.GetDB().DnsRecords
-                    select dnsrecords.RecordID).Count();
+                    select dnsrecords.ID).Count();
 
         }
-        
+
+        public static IQueryable<DnsRecord> Get(this Table<DnsRecord> table, long lastID, int maxResults)
+        {
+            return AllDnsRecords(table.GetDB(), lastID, maxResults);
+        }
+
         public static IQueryable<DnsRecord> Get(this Table<DnsRecord> table
-            , long lastCertID
+            , long lastID
             , int maxResults
             , int typeID)
         {
             return AllDnsRecordsForType(table.GetDB()
-                , lastCertID
+                , lastID
                 , maxResults
                 ,typeID);
         }
@@ -119,7 +123,7 @@ namespace Health.Direct.Config.Store
         public static IEnumerable<DnsRecord> Get(this Table<DnsRecord> table, long[] recordIDs)
         {
             return from dnsrecords in table.GetDB().DnsRecords
-                   where recordIDs.Contains(dnsrecords.RecordID)
+                   where recordIDs.Contains(dnsrecords.ID)
                    select dnsrecords;
         }
 

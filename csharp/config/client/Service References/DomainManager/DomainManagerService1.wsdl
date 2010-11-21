@@ -288,6 +288,15 @@
   <wsdl:message name="IDnsRecordManager_EnumerateDnsRecords_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_EnumerateDnsRecordsByType_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateDnsRecordsByType" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_EnumerateDnsRecordsByType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateDnsRecordsByTypeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_EnumerateDnsRecordsByType_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:portType name="IAddressManager">
     <wsdl:operation name="AddAddress">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/AddAddress" message="tns:IAddressManager_AddAddress_InputMessage" />
@@ -447,6 +456,11 @@
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecords" message="tns:IDnsRecordManager_EnumerateDnsRecords_InputMessage" />
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsResponse" message="tns:IDnsRecordManager_EnumerateDnsRecords_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_EnumerateDnsRecords_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateDnsRecordsByType">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsByType" message="tns:IDnsRecordManager_EnumerateDnsRecordsByType_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsByTypeResponse" message="tns:IDnsRecordManager_EnumerateDnsRecordsByType_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsByTypeConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_EnumerateDnsRecordsByType_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
   </wsdl:portType>
 </wsdl:definitions>

@@ -191,7 +191,6 @@
       <xs:element name="CreateDate" type="xs:dateTime" />
       <xs:element name="ID" type="xs:long" />
       <xs:element name="Name" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="PostmasterID" nillable="true" type="xs:long" />
       <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q9:EntityStatus" />
       <xs:element name="UpdateDate" type="xs:dateTime" />
     </xs:sequence>
@@ -307,9 +306,9 @@
     <xs:sequence>
       <xs:element name="CreateDate" type="xs:dateTime" />
       <xs:element name="DomainName" nillable="true" type="xs:string" />
+      <xs:element name="ID" type="xs:long" />
       <xs:element minOccurs="0" name="Notes" nillable="true" type="xs:string" />
       <xs:element name="RecordData" nillable="true" type="xs:base64Binary" />
-      <xs:element name="RecordID" type="xs:long" />
       <xs:element name="TypeID" type="xs:int" />
       <xs:element name="UpdateDate" type="xs:dateTime" />
     </xs:sequence>
@@ -474,7 +473,6 @@
       <xs:sequence>
         <xs:element minOccurs="0" name="lastID" type="xs:long" />
         <xs:element minOccurs="0" name="maxResults" type="xs:int" />
-        <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="type" type="q16:DnsStandard.RecordType" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -482,6 +480,22 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="EnumerateDnsRecordsResult" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateDnsRecordsByType">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastID" type="xs:long" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+        <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="type" type="q16:DnsStandard.RecordType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateDnsRecordsByTypeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateDnsRecordsByTypeResult" nillable="true" type="tns:ArrayOfDnsRecord" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
