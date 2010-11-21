@@ -24,6 +24,7 @@
                 <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.Owner, "*", new { @class = "ui-state-error-text" })%></span>
             <% } else { %>
                 <span class="display-field"><%= Html.DisplayFor(m => m.Owner)%></span>
+                <%= Html.HiddenFor(m => m.Owner) %>
             <% } %>
             <br class="clear" />
         

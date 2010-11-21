@@ -40,7 +40,7 @@ namespace Health.Direct.Admin.Console.Models
             PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(value);
             object originalValue = properties.Find(OriginalProperty, true /* ignoreCase */).GetValue(value);
             object confirmValue = properties.Find(ConfirmProperty, true /* ignoreCase */).GetValue(value);
-            return Object.Equals(originalValue, confirmValue);
+            return Equals(originalValue, confirmValue);
         }
     }
 }

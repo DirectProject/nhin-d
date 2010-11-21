@@ -14,8 +14,8 @@
             column.For(d => d.ID).Attributes(style => "display: none;").HeaderAttributes(style => "display: none;");
             column.For(d => d.Name);
             column.For(d => d.Status).Attributes(@class => "status");
-            column.For(d => Html.Span(Formatter.Format(d.CreateDate), new { title = d.CreateDate.ToString() })).Named("Created On");
-            column.For(d => Html.Span(Formatter.Format(d.UpdateDate), new { title = d.UpdateDate.ToString() })).Named("Updated On");
+            column.For(d => Html.Span(Formatter.Format(d.CreateDate), new { title = d.CreateDate })).Named("Created On");
+            column.For(d => Html.Span(Formatter.Format(d.UpdateDate), new { title = d.UpdateDate })).Named("Updated On");
             
             column.For(d => Html.ActionLink("View", "Details", new {id = d.ID}, new { @class = "view-details"}));
             column.For(d => Html.ActionLink("Addresses", "Addresses", new { id = d.ID }));

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -27,24 +28,59 @@ namespace Health.Direct.Admin.Console.Controllers
                             .AsPagination(page ?? 1, DefaultPageSize));
         }
 
-        //public ActionResult Add(long domainID)
-        //{
-        //    return View(new AddressModel {DomainID = domainID});
-        //}
+        [Authorize]
+        public ActionResult AddMx()
+        {
+            return View(new MxRecordModel());
+        }
 
-        //[HttpPost]
-        //public ActionResult Add(FormCollection formValues)
-        //{
-        //    var model = Mapper.Map<Address, AddressModel>(new Address());
+        [Authorize]
+        [HttpPost]
+        public ActionResult AddMx(FormCollection formValues)
+        {
+            return Add<MxRecordModel>();
+        }
 
-        //    if (TryUpdateModel(model))
-        //    {
-        //        Repository.Add(Mapper.Map<AddressModel, Address>(model));
-        //        return RedirectToAction("Index", new { domainID = model.DomainID });
-        //    }
+        [Authorize]
+        public ActionResult AddAname()
+        {
+            return View(new AddressRecordModel());
+        }
 
-        //    return View(model);
-        //}
+        [Authorize]
+        [HttpPost]
+        public ActionResult AddAname(FormCollection formValues)
+        {
+            return Add<AddressRecordModel>();
+        }
+
+        [Authorize]
+        public ActionResult AddSoa()
+        {
+            return View(new SoaRecordModel());
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult AddSoa(FormCollection formValues)
+        {
+            return Add<SoaRecordModel>();
+        }
+
+        private ActionResult Add<T>()
+            where T : DnsRecordModel, new()
+        {
+            var model = new T();
+
+            if (TryUpdateModel(model))
+            {
+                Repository.Add(Mapper.Map<DnsRecordModel, DnsRecord>(model));
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
+
+        }
 
         //public ActionResult Details(long id)
         //{

@@ -9,7 +9,9 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
     <div class="action-bar">
-        <%= Html.ActionLink("Add DNS Record", "Add", null, new { @class = "action ui-priority-primary"})%>
+        <%= Html.ActionLink("Add ANAME Record", "AddAname", null, new { @class = "action ui-priority-primary"})%>
+        <%= Html.ActionLink("Add MX Record", "AddMx", null, new { @class = "action ui-priority-primary"})%>
+        <%= Html.ActionLink("Add SOA Record", "AddSoa", null, new { @class = "action ui-priority-primary"})%>
     </div>
 
     <%= Html.Partial("DnsRecordList", Model) %>

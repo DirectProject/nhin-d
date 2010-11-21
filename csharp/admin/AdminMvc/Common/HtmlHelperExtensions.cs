@@ -13,8 +13,14 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
 using System.Web.Routing;
 
 namespace Health.Direct.Admin.Console.Common
@@ -81,6 +87,48 @@ namespace Health.Direct.Admin.Console.Common
             builder.MergeAttribute("type", "file");
             builder.MergeAttribute("id", name, false);
             return MvcHtmlString.Create(builder.ToString(TagRenderMode.SelfClosing));
+        }
+
+        public static MvcHtmlString TextBoxWithMaxLengthFor<TModel, TProperty>(
+            this HtmlHelper<TModel> htmlHelper,
+            Expression<Func<TModel, TProperty>> expression
+            )
+        {
+            return TextBoxWithMaxLengthFor(htmlHelper, expression, null);
+        }
+
+        public static MvcHtmlString TextBoxWithMaxLengthFor<TModel, TProperty>(
+                this HtmlHelper<TModel> htmlHelper,
+                Expression<Func<TModel, TProperty>> expression,
+                object htmlAttributes
+            )
+        {
+            var member = expression.Body as MemberExpression;
+            if (member == null)
+            {
+                return htmlHelper.TextBoxFor(expression);
+            }
+
+            var metadataTypeAttr = member.Member.ReflectedType
+              .GetCustomAttributes(typeof(MetadataTypeAttribute), true)
+              .FirstOrDefault() as MetadataTypeAttribute;
+
+            IDictionary<string, object> attributes = null;
+
+            if (metadataTypeAttr != null)
+            {
+                var stringLength = metadataTypeAttr.MetadataClassType
+                  .GetProperty(member.Member.Name)
+                  .GetCustomAttributes(typeof(StringLengthAttribute), true)
+                  .FirstOrDefault() as StringLengthAttribute;
+
+                if (stringLength != null)
+                {
+                    attributes = new RouteValueDictionary(htmlAttributes) {{"maxlength", stringLength.MaximumLength}};
+                }
+            }
+
+            return htmlHelper.TextBoxFor(expression, attributes);
         }
     }
 }
