@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    John Theisen     jtheisen@kryptiq.com
+    John Theisen
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -15,7 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Configuration;
-using System.Diagnostics;
 using System.Web;
 using System.Web.Hosting;
 
@@ -25,20 +24,13 @@ namespace Health.Direct.Common.Diagnostics
     /// The LogFileSection class allows us to specify LogFileSettings in an
     /// app.config file.
     ///</summary>
-    /// <remarks>
-    /// If you are using this from a WCF service be sure to include 
-    ///     &lt;serviceHostingEnvironment aspNetCompatibilityEnabled="true" /&gt;
-    /// in your &lt;system.serviceModel /&gt; section and annotate your service
-    /// classes with the following:
-    ///     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
-    /// </remarks>
     /// <example>
     ///   &lt;!-- place this in the configSections --&gt;
     ///   &lt;section name="logging" type="Health.Direct.Common.Diagnostics.LogFileSection"/&gt;
     ///   &lt;!-- insert into your app.config file --&gt;
     ///   &lt;logging&gt;
-    ///     &lt;location directory="~\Log" name="ConfigService" extension="log" /&gt;
-    ///     &lt;behavior rolloverFrequency="24" loggingLevel="Debug" /&gt;
+    ///     &lt;file directory="~\Log" name="ConfigService" extension="log" /&gt;
+    ///     &lt;behavior rolloverFrequency="Day" loggingLevel="Debug" /&gt;
     ///     &lt;eventLog threshold="Fatal" source="Health.Direct.Config.Service" /&gt;
     ///   &lt;/logging&gt;
     /// </example>
@@ -46,7 +38,7 @@ namespace Health.Direct.Common.Diagnostics
     {
         private const string EventLogTag = "eventLog";
         private const string BehaviorTag = "behavior";
-        private const string LocationTag = "location";
+        private const string FileTag = "file";
 
         /// <summary>
         /// This is a utility method to convert the values found in the LogFileSection
@@ -78,23 +70,23 @@ namespace Health.Direct.Common.Diagnostics
         }
 
         /// <summary>
-        /// The location information used to define the path to the log file.
+        /// The file information used to define the path to the log file.
         /// </summary>
         /// <example>
-        ///     &lt;location directory="~\Log" name="ConfigService" extension="log" /&gt;
+        ///     &lt;file directory="~\Log" name="ConfigService" extension="log" /&gt;
         /// </example>
-        [ConfigurationProperty(LocationTag, IsRequired = true)]
-        public LogLocationElement Location
+        [ConfigurationProperty(FileTag, IsRequired = true)]
+        public LogFileElement LogFile
         {
-            get { return (LogLocationElement)this[LocationTag]; }
-            set { this[LocationTag] = value; }
+            get { return (LogFileElement)this[FileTag]; }
+            set { this[FileTag] = value; }
         }
 
         /// <summary>
         /// The behavior of the logging framework.
         /// </summary>
         /// <example>
-        ///     &lt;behavior rolloverFrequency="24" loggingLevel="Debug" /&gt;
+        ///     &lt;behavior rolloverFrequency="Day" loggingLevel="Debug" /&gt;
         /// </example>
         [ConfigurationProperty(BehaviorTag, IsRequired = true)]
         public LogBehaviorElement Behavior
@@ -121,10 +113,10 @@ namespace Health.Direct.Common.Diagnostics
         {
             return new LogFileSettings
                        {
-                           DirectoryPath = Location.Directory,
-                           NamePrefix = Location.Name,
-                           Ext = Location.Extension,
-                           FileChangeFrequency = Behavior.RolloverFrequency,
+                           DirectoryPath = LogFile.Directory,
+                           NamePrefix = LogFile.Name,
+                           Ext = LogFile.Extension,
+                           RolloverFrequency = Behavior.RolloverFrequency,
                            Level = Behavior.Level,
                            EventLogLevel = EventLogInfo.Threshold,
                            EventLogSource = EventLogInfo.Source
@@ -133,12 +125,12 @@ namespace Health.Direct.Common.Diagnostics
     }
 
     /// <summary>
-    /// The location information used to define the path to the log file.
+    /// The file information used to define the path to the log file.
     /// </summary>
     /// <example>
-    ///     &lt;location directory="~\Log" name="ConfigService" extension="log" /&gt;
+    ///     &lt;file directory="~\Log" name="ConfigService" extension="log" /&gt;
     /// </example>
-    public class LogLocationElement : ConfigurationElement
+    public class LogFileElement : ConfigurationElement
     {
         private const string DirectoryTag = "directory";
         private const string NameTag = "name";
@@ -179,7 +171,7 @@ namespace Health.Direct.Common.Diagnostics
     /// The behavior of the logging framework.
     /// </summary>
     /// <example>
-    ///     &lt;behavior rolloverFrequency="24" loggingLevel="Debug" /&gt;
+    ///     &lt;behavior rolloverFrequency="Day" loggingLevel="Debug" /&gt;
     /// </example>
     public class LogBehaviorElement : ConfigurationElement
     {
@@ -192,9 +184,9 @@ namespace Health.Direct.Common.Diagnostics
         /// value.
         ///</summary>
         [ConfigurationProperty(RolloverFrequencyTag, IsRequired = true)]
-        public int RolloverFrequency
+        public RolloverPeriod RolloverFrequency
         {
-            get { return (int)this[RolloverFrequencyTag]; }
+            get { return (RolloverPeriod)this[RolloverFrequencyTag]; }
             set { this[RolloverFrequencyTag] = value; }
         }
 

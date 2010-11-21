@@ -24,6 +24,10 @@ using NLog.Config;
 using NLog.Targets;
 using NLog.Win32.Targets;
 
+// these have been renamed in the NLog 2.0 version
+using ArchiveNumberingMode = NLog.Targets.FileTarget.ArchiveNumberingMode;
+using FileArchivePeriod = NLog.Targets.FileTarget.ArchiveEveryMode;
+
 namespace Health.Direct.Diagnostics.NLog
 {
     public class NLogFactory : ILogFactory
@@ -37,18 +41,16 @@ namespace Health.Direct.Diagnostics.NLog
         // honors the principle of being a code based configuration vs XML/file based.
         public NLogFactory(LogFileSettings settings)
         {
-            Target target
+            FileTarget target
                 = new FileTarget
                       {
                           Layout = "${longdate} [${threadid}] ${level} ${logger} - ${message}",
                           FileName = CreatePathFromSettings(settings, ""),
                           ArchiveFileName = CreatePathFromSettings(settings, ".{###}"),
-
-                          // TODO: expose this up to the LogFileSettings
-                          ArchiveEvery = settings.FileChangeFrequency < 24
-                                             ? FileTarget.ArchiveEveryMode.Hour
-                                             : FileTarget.ArchiveEveryMode.Day,
-                          ArchiveNumbering = FileTarget.ArchiveNumberingMode.Rolling
+                          ArchiveEvery = ConvertRollingPeriod(settings.RolloverFrequency),
+                          ArchiveNumbering = ArchiveNumberingMode.Rolling,
+                          MaxArchiveFiles = 100,
+                          DeleteOldFileOnStartup = false,
                       };
 
             LoggingConfiguration config = new LoggingConfiguration();
@@ -73,6 +75,28 @@ namespace Health.Direct.Diagnostics.NLog
             }
 
             LogManager.Configuration = config;
+            LogManager.ReconfigExistingLoggers();
+        }
+
+        private static FileArchivePeriod ConvertRollingPeriod(RolloverPeriod period)
+        {
+            switch (period)
+            {
+                case RolloverPeriod.Day:
+                    return FileArchivePeriod.Day;
+                case RolloverPeriod.Hour:
+                    return FileArchivePeriod.Hour;
+                case RolloverPeriod.Minute:
+                    return FileArchivePeriod.Minute;
+                case RolloverPeriod.Month:
+                    return FileArchivePeriod.Month;
+                case RolloverPeriod.None:
+                    return FileArchivePeriod.None;
+                case RolloverPeriod.Year:
+                    return FileArchivePeriod.Year;
+            }
+
+            throw new ArgumentException("Unexpected value - " + period);
         }
 
         public ILogger GetLogger(string name)
@@ -87,9 +111,8 @@ namespace Health.Direct.Diagnostics.NLog
 
         private static string CreatePathFromSettings(LogFileSettings settings, string suffix)
         {
-            return Path.ChangeExtension(
-                Path.Combine(settings.DirectoryPath, settings.NamePrefix + suffix),
-                NormalizeExtension(settings));
+            return Path.Combine(settings.DirectoryPath, settings.NamePrefix)
+                   + suffix + NormalizeExtension(settings);
         }
 
         private static string NormalizeExtension(LogFileSettings settings)

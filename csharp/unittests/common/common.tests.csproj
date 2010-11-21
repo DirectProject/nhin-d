@@ -72,6 +72,7 @@
     <Compile Include="Caching\DnsClientWithCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseToBinExample.cs" />
+    <Compile Include="Diagnostics\RolloverFacts.cs" />
     <Compile Include="DnsResolver\BasicResolverTests.cs" />
     <Compile Include="DnsResolver\TestSerialization.cs" />
     <Compile Include="Mail\RoundTripFacts.cs" />
@@ -101,6 +102,10 @@
     <ProjectReference Include="..\..\common\common.csproj">
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj">
+      <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
+      <Name>diagnostics.nlog</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

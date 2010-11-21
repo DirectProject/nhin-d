@@ -10,7 +10,7 @@
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>redmondGateway</NamePrefix>
-    <FileChangeFrequency>24</FileChangeFrequency>
+    <RolloverFrequency>Day</RolloverFrequency>
     <Level>Debug</Level>
   </Log>
   <InternalMessage>

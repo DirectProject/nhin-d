@@ -17,7 +17,7 @@
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>testSmtpAgent</NamePrefix>
-    <FileChangeFrequency>24</FileChangeFrequency>
+    <RolloverFrequency>Day</RolloverFrequency>
     <Level>Debug</Level>
   </Log>
   <Cryptographer>

@@ -96,6 +96,7 @@
     <Compile Include="Diagnostics\LoggingLevel.cs" />
     <Compile Include="Diagnostics\MethodTracer.cs" />
     <Compile Include="Diagnostics\NullAuditor.cs" />
+    <Compile Include="Diagnostics\RolloverPeriod.cs" />
     <Compile Include="DnsResolver\AddressRecord.cs" />
     <Compile Include="DnsResolver\CertRecord.cs" />
     <Compile Include="DnsResolver\CNameRecord.cs" />

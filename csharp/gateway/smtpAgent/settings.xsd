@@ -109,10 +109,19 @@
       <xs:element minOccurs="0" maxOccurs="1" name="DirectoryPath" type="xs:string" />
       <xs:element minOccurs="0" maxOccurs="1" name="NamePrefix" type="xs:string" />
       <xs:element minOccurs="0" maxOccurs="1" name="Ext" type="xs:string" />
-      <xs:element minOccurs="1" maxOccurs="1" name="FileChangeFrequency" type="xs:int" />
-      <xs:element minOccurs="1" maxOccurs="1" name="UseUTC" type="xs:boolean" />
+      <xs:element minOccurs="1" maxOccurs="1" name="RolloverFrequency" type="RolloverMode" />
     </xs:sequence>
   </xs:complexType>
+  <xs:simpleType name="RolloverMode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Minute" />
+      <xs:enumeration value="Hour" />
+      <xs:enumeration value="Day" />
+      <xs:enumeration value="Month" />
+      <xs:enumeration value="Year" />
+    </xs:restriction>
+	</xs:simpleType>
   <xs:complexType name="ClientSettings">
     <xs:sequence>
       <xs:element minOccurs="0" maxOccurs="1" name="Url" type="xs:string" />

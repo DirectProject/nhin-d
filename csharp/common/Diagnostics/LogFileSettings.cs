@@ -30,7 +30,7 @@ namespace Health.Direct.Common.Diagnostics
         /// </summary>
         public LogFileSettings()
         {
-            FileChangeFrequency = 24;
+            RolloverFrequency = RolloverPeriod.Day;
             Ext = "log";
             Level = LoggingLevel.Error;
 
@@ -72,9 +72,9 @@ namespace Health.Direct.Common.Diagnostics
         /// <summary>
         /// Gets and sets the log file rotation period.
         /// </summary>
-        /// <value>The number of hours between log rotation.</value>
+        /// <value>The enumerated value - minute, hour, day, month, year or none.</value>
         [XmlElement]
-        public int FileChangeFrequency
+        public RolloverPeriod RolloverFrequency
         {
             get; set;
         }
@@ -124,7 +124,7 @@ namespace Health.Direct.Common.Diagnostics
             {
                 throw new ArgumentException("Extension not specified");
             }
-            if (this.FileChangeFrequency <= 0)
+            if (this.RolloverFrequency <= 0)
             {
                 throw new ArgumentException("FileIntervalHours not specified");
             }
