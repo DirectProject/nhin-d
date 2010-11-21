@@ -44,6 +44,11 @@ namespace Health.Direct.Common.Container
         ///<returns>An instance of type <typeparamref name="T"/></returns>
         public T Resolve<T>()
         {
+            if (!m_types.ContainsKey(typeof(T)))
+            {
+                throw new Exception("Could not resolve type in container - " + typeof(T).FullName);
+            }
+
             return (T) m_types[typeof (T)]();
         }
 
