@@ -78,6 +78,10 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults, DnsStandard.RecordType type);
+        DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        DnsRecord[] EnumerateDnsRecordsByType(long lastID, int maxResults, DnsStandard.RecordType type);
     }
 }

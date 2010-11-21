@@ -326,7 +326,19 @@ namespace Health.Direct.Config.Service
                 , typeID);
         }
 
-        public DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults, DnsStandard.RecordType type)
+        public DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults)
+        {
+            try
+            {
+                return Store.DnsRecords.Get(lastID, maxResults);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("EnumerateDnsRecords", ex);
+            }
+        }
+
+        public DnsRecord[] EnumerateDnsRecordsByType(long lastID, int maxResults, DnsStandard.RecordType type)
         {
             try
             {
@@ -334,7 +346,7 @@ namespace Health.Direct.Config.Service
             }
             catch (Exception ex)
             {
-                throw CreateFault("EnumerateDnsRecords", ex);
+                throw CreateFault("EnumerateDnsRecordsByType", ex);
             }
         }
 

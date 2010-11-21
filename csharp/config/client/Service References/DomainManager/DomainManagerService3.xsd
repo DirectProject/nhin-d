@@ -44,6 +44,9 @@
       <xs:enumeration value="InvalidMX" />
       <xs:enumeration value="InvaildDnsRecord" />
       <xs:enumeration value="NotesLength" />
+      <xs:enumeration value="InvalidAdministrator" />
+      <xs:enumeration value="InvalidUsername" />
+      <xs:enumeration value="InvalidPassword" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />

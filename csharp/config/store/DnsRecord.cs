@@ -33,7 +33,7 @@ namespace Health.Direct.Config.Store
 
         public DnsRecord()
         {
-            RecordID = -1;
+            ID = -1;
             this.CreateDate = DateTimeHelper.Now;
             this.UpdateDate = this.CreateDate;
         }
@@ -51,7 +51,7 @@ namespace Health.Direct.Config.Store
         }
 
         [Column(Name = "RecordID", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never), DataMember(IsRequired = true)]
-        public long RecordID { get; set; }
+        public long ID { get; set; }
 
         [Column(Name = "DomainName", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
@@ -121,7 +121,7 @@ namespace Health.Direct.Config.Store
 
         internal void CopyFixed(DnsRecord source)
         {
-            this.RecordID = source.RecordID;
+            this.ID = source.ID;
             this.DomainName = source.DomainName;
             this.CreateDate = source.CreateDate;
             this.TypeID = source.TypeID;

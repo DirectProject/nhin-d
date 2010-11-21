@@ -52,7 +52,7 @@ namespace Health.Direct.Config.Store.Tests
         }
 
         /// <summary>
-        ///A test for RecordID
+        ///A test for ID
         ///</summary>
         [Fact]
         public void RecordIDTest()
@@ -60,8 +60,8 @@ namespace Health.Direct.Config.Store.Tests
             DnsRecord target = new DnsRecord();
             const long expected = 777;
             
-            target.RecordID = expected;
-            long actual = target.RecordID;
+            target.ID = expected;
+            long actual = target.ID;
             Assert.Equal(expected, actual);
             
         }
@@ -158,10 +158,10 @@ namespace Health.Direct.Config.Store.Tests
         public void CopyFixedTest()
         {
             DnsRecord target = new DnsRecord(); 
-            DnsRecord source = new DnsRecord {RecordID = 777, DomainName = BuildDomainName(1), TypeID = 3};
+            DnsRecord source = new DnsRecord {ID = 777, DomainName = BuildDomainName(1), TypeID = 3};
 
             target.CopyFixed(source);
-            Assert.Equal(777, target.RecordID);
+            Assert.Equal(777, target.ID);
             Assert.Equal(BuildDomainName(1), target.DomainName);
             Assert.Equal(3, target.TypeID);
 

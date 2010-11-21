@@ -315,7 +315,14 @@ namespace Health.Direct.Config.Client.DomainManager {
             "se")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsConfig" +
             "StoreFaultFault", Name="ConfigStoreFault")]
-        Health.Direct.Config.Store.DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults, Health.Direct.Common.DnsResolver.DnsStandard.RecordType type);
+        Health.Direct.Config.Store.DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsByType" +
+            "", ReplyAction="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsByType" +
+            "Response")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsByType" +
+            "ConfigStoreFaultFault", Name="ConfigStoreFault")]
+        Health.Direct.Config.Store.DnsRecord[] EnumerateDnsRecordsByType(long lastID, int maxResults, Health.Direct.Common.DnsResolver.DnsStandard.RecordType type);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
@@ -393,8 +400,12 @@ namespace Health.Direct.Config.Client.DomainManager {
             base.Channel.UpdateDnsRecords(dnsRecords);
         }
         
-        public Health.Direct.Config.Store.DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults, Health.Direct.Common.DnsResolver.DnsStandard.RecordType type) {
-            return base.Channel.EnumerateDnsRecords(lastID, maxResults, type);
+        public Health.Direct.Config.Store.DnsRecord[] EnumerateDnsRecords(long lastID, int maxResults) {
+            return base.Channel.EnumerateDnsRecords(lastID, maxResults);
+        }
+        
+        public Health.Direct.Config.Store.DnsRecord[] EnumerateDnsRecordsByType(long lastID, int maxResults, Health.Direct.Common.DnsResolver.DnsStandard.RecordType type) {
+            return base.Channel.EnumerateDnsRecordsByType(lastID, maxResults, type);
         }
     }
 }
