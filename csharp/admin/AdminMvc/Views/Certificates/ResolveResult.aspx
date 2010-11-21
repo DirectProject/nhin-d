@@ -5,12 +5,12 @@
 <%@ Import Namespace="Health.Direct.Admin.Console.Common"%>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="TitleContent" runat="server">
-	ResolveResult
+	Resolve Result
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-    <h2>ResolveResult</h2>
+    <h2>Resolve Result</h2>
 
     <%= Html.Grid(Model)
         .Attributes(@class => "grid ui-widget ui-widget-content")
@@ -19,11 +19,15 @@
         column =>
             {
                 column.For(c => c.Owner);
-                column.For(c => c.Thumbprint);
+                column.For(c => Html.P(c.Thumbprint, new {@class = "thumbprint", title = c.Thumbprint}))
+                    .Named("Thumbprint");
                 column.For(c => c.Status).Attributes(@class => "status");
-                column.For(c => Html.Span(Formatter.Format(c.CreateDate), new { title = c.CreateDate.ToString() })).Named("Created On");
-                column.For(c => Html.Span(Formatter.Format(c.ValidStartDate), new { title = c.ValidStartDate.ToString() })).Named("Valid From");
-                column.For(c => Html.Span(Formatter.Format(c.ValidEndDate), new { title = c.ValidEndDate.ToString() })).Named("Valid Until");
+                column.For(c => Html.Span(Formatter.Format(c.CreateDate), new { title = c.CreateDate }))
+                    .Named("Created On");
+                column.For(c => Html.Span(Formatter.Format(c.ValidStartDate), new { title = c.ValidStartDate }))
+                    .Named("Valid From");
+                column.For(c => Html.Span(Formatter.Format(c.ValidEndDate), new { title = c.ValidEndDate }))
+                    .Named("Valid Until");
                 column.For(c => Html.ActionLink("View", "Details", new { c.ID }, new { @class = "view-details" }));
             })%>
 

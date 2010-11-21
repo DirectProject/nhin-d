@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Net;
 
 using AutoMapper;
 
@@ -38,15 +39,16 @@ namespace Health.Direct.Admin.Console.Models
             CreateBidirectionalMap<Certificate, CertificateModel>();
             CreateBidirectionalMap<DnsRecord, DnsRecordModel>();
             CreateBidirectionalMap<Domain, DomainModel>();
+
             Mapper.CreateMap<string, EntityStatus>().ConvertUsing(new EntityStatusTypeConverter());
+
+            ForSourceType<EntityStatus>()
+                .AddFormatExpression(context =>
+                ((EntityStatus)context.SourceValue).ToString());
         }
 
         private void CreateBidirectionalMap<TSource,TDestination>()
         {
-            ForSourceType<EntityStatus>()
-                .AddFormatExpression(context =>
-                ((EntityStatus)context.SourceValue).ToString());
-
             CreateMap<TSource, TDestination>();
             CreateMap<TDestination, TSource>();
         }
@@ -57,6 +59,14 @@ namespace Health.Direct.Admin.Console.Models
         public EntityStatus Convert(ResolutionContext context)
         {
             return (EntityStatus) Enum.Parse(typeof(EntityStatus), (string)context.SourceValue, true);
+        }
+    }
+
+    public class IPAddressTypeConverter : ITypeConverter<string, IPAddress>
+    {
+        public IPAddress Convert(ResolutionContext context)
+        {
+            return IPAddress.Parse((string) context.SourceValue);
         }
     }
 }

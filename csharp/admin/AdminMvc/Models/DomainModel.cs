@@ -16,11 +16,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.ComponentModel.DataAnnotations;
 
+using Health.Direct.Admin.Console.Common;
 using Health.Direct.Config.Store;
 
 namespace Health.Direct.Admin.Console.Models
 {
-    [MetadataType(typeof(DomainModel_Validation))]
+    [MetadataType(typeof(Metadata))]
     public class DomainModel
     {
         public long ID { get; set; }
@@ -33,13 +34,13 @@ namespace Health.Direct.Admin.Console.Models
         {
             get { return Status == EntityStatus.Enabled.ToString(); }
         }
-    }
 
-    public class DomainModel_Validation
-    {
-        [Required(ErrorMessage = "Name is required")]
-        [StringLength(255, ErrorMessage = "Name may not be longer than 255 characters")]
-        [RegularExpression(@"^([A-Za-z0-9]+)(([\.\-]?[a-zA-Z0-9]+)*)\.([A-Za-z]{2,})$", ErrorMessage = "Name must be a domain name")]
-        public string Name { get; set; }
+        public sealed class Metadata
+        {
+            [Required(ErrorMessage = "Name is required")]
+            [StringLength(255, ErrorMessage = "Name may not be longer than 255 characters")]
+            [DomainName]
+            public string Name { get; set; }
+        }
     }
 }

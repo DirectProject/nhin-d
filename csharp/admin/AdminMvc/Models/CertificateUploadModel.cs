@@ -17,7 +17,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Health.Direct.Admin.Console.Models
 {
-    [MetadataType(typeof(CertificateUploadModel_Validation))]
+    [MetadataType(typeof(Metadata))]
     public class CertificateUploadModel
     {
         public CertificateUploadModel()
@@ -37,18 +37,18 @@ namespace Health.Direct.Admin.Console.Models
         public string Owner { get; set; }
         public string Password { get; set; }
         public string PasswordConfirm { get; set; }
-    }
 
-    [PropertiesMustMatch("Password", "PasswordConfirm", ErrorMessage = "Password must match")]
-    public class CertificateUploadModel_Validation
-    {
-        [Required]
-        public string Owner { get; set; }
+        [PropertiesMustMatch("Password", "PasswordConfirm", ErrorMessage = "Password must match")]
+        public sealed class Metadata
+        {
+            [Required]
+            public string Owner { get; set; }
 
-        [Required]
-        public string Password { get; set; }
+            [Required]
+            public string Password { get; set; }
 
-        [Required]
-        public string PasswordConfirm { get; set; }
+            [Required]
+            public string PasswordConfirm { get; set; }
+        }
     }
 }

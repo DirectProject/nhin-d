@@ -11,12 +11,13 @@
         .Columns(
         column =>
             {
-                column.For(a => a.Owner).Visible(false);
-                column.For(a => a.Thumbprint);
+                column.For(c => c.Owner);
+                column.For(c => Html.P(c.Thumbprint, new { title = c.Thumbprint, @class = "thumbprint" }))
+                    .Named("Thumbprint");
                 column.For(a => a.Status).Attributes(@class => "status");
-                column.For(a => Html.Span(Formatter.Format(a.CreateDate), new { title = a.CreateDate.ToString() })).Named("Created On");
-                column.For(a => Html.Span(Formatter.Format(a.ValidStartDate), new { title = a.ValidStartDate.ToString() })).Named("Valid From");
-                column.For(a => Html.Span(Formatter.Format(a.ValidEndDate), new { title = a.ValidEndDate.ToString() })).Named("Valid Until");
+                column.For(a => Html.Span(Formatter.Format(a.CreateDate), new { title = a.CreateDate })).Named("Created On");
+                column.For(a => Html.Span(Formatter.Format(a.ValidStartDate), new { title = a.ValidStartDate })).Named("Valid From");
+                column.For(a => Html.Span(Formatter.Format(a.ValidEndDate), new { title = a.ValidEndDate })).Named("Valid Until");
                 column.For(a => a.Purpose);
                 column.For(d => Html.ActionLink("View", "Details", new { d.ID }, new { @class = "view-details" }));
                 column.For(d => d.IsEnabled

@@ -91,6 +91,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Common\DirectMembershipProvider.cs" />
+    <Compile Include="Common\DomainNameAttribute.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AddressesController.cs" />
     <Compile Include="Controllers\AnchorsController.cs" />
@@ -99,6 +100,8 @@
     <Compile Include="Controllers\DnsRecordsController.cs" />
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Models\AddressRecordModel.cs" />
+    <Compile Include="Models\DnsRecordModel.cs" />
     <Compile Include="Models\ResolveModel.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -108,7 +111,7 @@
     <Compile Include="Models\AnchorUploadModel.cs" />
     <Compile Include="Models\CertificateModel.cs" />
     <Compile Include="Models\CertificateUploadModel.cs" />
-    <Compile Include="Models\DnsRecordModel.cs" />
+    <Compile Include="Models\MxRecordModel.cs" />
     <Compile Include="Models\ModelProfiles.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\AddressModel.cs" />
@@ -128,6 +131,7 @@
     <Compile Include="Models\Repositories\IDomainRepository.cs" />
     <Compile Include="Models\Repositories\IRepository.cs" />
     <Compile Include="Models\Repositories\RepositoryModule.cs" />
+    <Compile Include="Models\SoaRecordModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\HtmlHelperExtensions.cs" />
   </ItemGroup>
@@ -191,6 +195,9 @@
     <Content Include="Scripts\OwnerAutocomplete.js" />
     <Content Include="Views\Certificates\Resolve.aspx" />
     <Content Include="Views\Certificates\ResolveResult.aspx" />
+    <Content Include="Views\DnsRecords\AddMx.aspx" />
+    <Content Include="Views\DnsRecords\AddAname.aspx" />
+    <Content Include="Views\DnsRecords\AddSoa.aspx" />
     <Content Include="Views\Shared\UnAuthSite.Master" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

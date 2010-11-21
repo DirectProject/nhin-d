@@ -26,12 +26,8 @@
     <span id="valid-end-date" class="display-field"></span>
     <br class="clear" />
 
-    <span class="display-label">For Incoming</span>
-    <span id="for-incoming" class="display-field"></span>
-    <br class="clear" />
-
-    <span class="display-label">For Outgoing</span>
-    <span id="for-outgoing" class="display-field"></span>
+    <span class="display-label">Purpose</span>
+    <span id="purpose" class="display-field"></span>
     <br class="clear" />
 </div>
 
@@ -44,7 +40,15 @@
         $('#created', dialog).text(data.CreateDate.parseJSONDate().format(dateTimeFormatString));
         $('#valid-start-date', dialog).text(data.ValidStartDate.parseJSONDate().format(dateTimeFormatString));
         $('#valid-end-date', dialog).text(data.ValidEndDate.parseJSONDate().format(dateTimeFormatString));
-        $('#for-incoming', dialog).text(data.ForIncoming);
-        $('#for-outgoing', dialog).text(data.ForOutgoing);
+        $('#purpose', dialog).text(formatPurpose(data.ForIncoming, data.ForOutgoing));
+    }
+    function formatPurpose(incoming,outgoing) {
+        var purpose = "None";
+        if (incoming === true) {
+            purpose = "Incoming" + ((outgoing === true)? " & Outgoing" : "");
+        } else if (outgoing === true) {
+            purpose = "Outgoing";
+        }
+        return purpose;
     }
 </script>

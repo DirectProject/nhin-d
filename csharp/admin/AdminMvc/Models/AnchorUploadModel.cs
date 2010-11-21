@@ -21,7 +21,7 @@ using System.Web.Mvc;
 
 namespace Health.Direct.Admin.Console.Models
 {
-    [MetadataType(typeof(CertificateUploadModel_Validation))]
+    [MetadataType(typeof(Metadata))]
     public class AnchorUploadModel : CertificateUploadModel
     {
         public PurposeType Purpose { get; set; }

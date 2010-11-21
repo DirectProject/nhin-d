@@ -15,11 +15,11 @@
                 column.For(c => Html.P(c.Thumbprint, new {title = c.Thumbprint, @class = "thumbprint"}))
                     .Named("Thumbprint");
                 column.For(c => c.Status).Attributes(@class => "status");
-                column.For(c => Html.Span(Formatter.Format(c.CreateDate), new {title = c.CreateDate.ToString()}))
+                column.For(c => Html.Span(Formatter.Format(c.CreateDate), new {title = c.CreateDate}))
                     .Named("Created On");
-                column.For(c => Html.Span(Formatter.Format(c.ValidStartDate), new {title = c.ValidStartDate.ToString()}))
+                column.For(c => Html.Span(Formatter.Format(c.ValidStartDate), new {title = c.ValidStartDate}))
                     .Named("Valid From");
-                column.For(c => Html.Span(Formatter.Format(c.ValidEndDate), new {title = c.ValidEndDate.ToString()}))
+                column.For(c => Html.Span(Formatter.Format(c.ValidEndDate), new {title = c.ValidEndDate}))
                     .Named("Valid Until");
                 column.For(c => Html.ActionLink("View", "Details", new {c.ID}, new {@class = "view-details"}));
                 column.For(c => c.IsEnabled

@@ -1,6 +1,5 @@
 using System.Linq;
 
-using Health.Direct.Common.DnsResolver;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
 
@@ -19,7 +18,7 @@ namespace Health.Direct.Admin.Console.Models.Repositories
         
         public IQueryable<DnsRecord> Query()
         {
-            return Client.EnumerateDnsRecords(0, int.MaxValue, DnsStandard.RecordType.MX).AsQueryable();
+            return Client.EnumerateDnsRecords(0, int.MaxValue).AsQueryable();
         }
 
         public DnsRecord Add(DnsRecord record)
