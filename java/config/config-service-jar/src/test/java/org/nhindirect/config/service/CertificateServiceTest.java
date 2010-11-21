@@ -193,6 +193,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         {
             {
             	oneOf(certificateDao).list(owner);
+            	will(returnValue(Collections.<Certificate>emptyList()));
             }
         });
 
@@ -202,7 +203,8 @@ public class CertificateServiceTest extends MockObjectTestCase
         try
         {
             Collection<Certificate> output = service.getCertificatesForOwner(owner, certificateOptions);
-            assertEquals("Output does not match expected", Collections.emptyList(), output);
+            assertNotNull("Output is null when using valid params", output);
+            assertEquals("Output does not match mocked return value when using valid params", Collections.<Certificate>emptyList(), output);
         }
         catch (Exception e)
         {
@@ -313,6 +315,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         {
             {
             	oneOf(certificateDao).list((String)null);
+            	will(returnValue(Collections.<Certificate>emptyList()));
             }
         });
 
@@ -322,7 +325,8 @@ public class CertificateServiceTest extends MockObjectTestCase
         try
         {
             Collection<Certificate> output = service.listCertificates(certificateId, maxResults, certificateOptions);
-            assertEquals("Output does not match expected", Collections.emptyList(), output);
+            assertNotNull("Output is null when using valid params", output);
+            assertEquals("Output does not match mocked return value when using valid params", Collections.<Certificate>emptyList(), output);
         }
         catch (Exception e)
         {

@@ -25,6 +25,7 @@ using Ionic.Zlib;
 
 using Health.Direct.Xdm;
 using Health.Direct.Xd.Tests;
+using Health.Direct.Common.Metadata;
 
 namespace Health.Direct.Xdm.Tests
 {
@@ -93,6 +94,54 @@ namespace Health.Direct.Xdm.Tests
                 }
             }
         }
+
+        [Fact]
+        public void UnpackageRoundTripHasMetadata()
+        {
+            XDMZipPackager p = XDMZipPackager.Default;
+            DocumentPackage package;
+            using (ZipFile z = p.Package(Examples.TestPackage))
+            {
+                z.Save("xdm.zip");
+                package = p.Unpackage(z);
+            }
+            Assert.NotNull(package);
+        }
+
+        [Fact]
+        public void UnpackageRoundTripHasSameMetadata()
+        {
+            XDMZipPackager p = XDMZipPackager.Default;
+            DocumentPackage package;
+            using (ZipFile z = p.Package(Examples.TestPackage))
+            {
+                z.Save("xdm.zip");
+                package = p.Unpackage(z);
+            }
+            //not a perfect equality test but it should do....
+            Assert.Equal(Examples.TestPackage.Author, package.Author);
+            Assert.Equal(Examples.TestPackage.SubmissionTime.ToHL7Date(), package.SubmissionTime.ToHL7Date());
+            Assert.Equal(Examples.TestPackage.Documents.Count(), package.Documents.Count());
+        }
+
+        [Fact]
+        public void UnpackageRoundTripHasDocumentData()
+        {
+            XDMZipPackager p = XDMZipPackager.Default;
+            DocumentPackage package;
+            using (ZipFile z = p.Package(Examples.TestPackage))
+            {
+                z.Save("xdm.zip");
+                package = p.Unpackage(z);
+            }
+            //not a perfect equality test but it should do....
+            Assert.Equal(Examples.TestPackage.Documents.Count(), package.Documents.Count());
+            Assert.Equal(1, package.Documents.Count());
+            Assert.NotNull(package.Documents.First().DocumentString);
+            Assert.Equal(Examples.TestPackage.Documents.First().DocumentString,
+                package.Documents.First().DocumentString);
+        }
+
 
 
     }

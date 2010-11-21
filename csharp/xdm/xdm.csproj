@@ -49,8 +49,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="XdmError.cs" />
+    <Compile Include="XdmException.cs" />
     <Compile Include="XDMStandard.cs" />
-    <Compile Include="XDMZip.cs" />
+    <Compile Include="XDMZipPackager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
