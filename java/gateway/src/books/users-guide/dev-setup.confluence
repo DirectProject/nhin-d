@@ -81,8 +81,8 @@ Linux Example:
 *Install the Agent and Gateway JARs*
 
 {code}
-   sudo cp $NHIN_D_ROOT/nhin-d/java/agent/target/nhinAgent-1.0-SNAPSHOT.jar $JAMES_ROOT/james_v1/apps/james/SAR-INF/lib/
-   sudo cp $NHIN_D_ROOT/nhin-d/java/gateway/target/nhin-d-gateways-1.0-SNAPSHOT.jar $JAMES_ROOT/james_v1/apps/james/SAR-INF/lib/
+   sudo cp $NHIN_D_ROOT/nhin-d/java/agent/target/agent-1.1-SNAPSHOT.jar $JAMES_ROOT/james_v1/apps/james/SAR-INF/lib/
+   sudo cp $NHIN_D_ROOT/nhin-d/java/gateway/target/gateways-1.1-SNAPSHOT.jar $JAMES_ROOT/james_v1/apps/james/SAR-INF/lib/
 {code}
 
 *Install Dependencies*
