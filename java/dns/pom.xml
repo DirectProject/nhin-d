@@ -264,21 +264,17 @@
 	            <maxMemorySize>1024M</maxMemorySize>
 	            <systemProperties>
 	              <systemProperty>java.security.policy=conf/policy.all</systemProperty>
-	              <systemProperty>com.sun.management.jmxremote</systemProperty>
-	              <systemProperty>com.sun.management.jmxremote.port=8999</systemProperty>
-	              <systemProperty>com.sun.management.jmxremote.authenticate=false</systemProperty>
-	              <systemProperty>com.sun.management.jmxremote.ssl=false</systemProperty>
+                  <systemProperty>org.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog</systemProperty>
+                  <systemProperty>org.apache.commons.logging.simplelog.defaultlog=info</systemProperty>                  
 	            </systemProperties>
-	          </defaultJvmSettings>
-
-	                 
+	          </defaultJvmSettings>	                 
 	          <daemons>
 	            <daemon>
 	              <id>DirectDNSServer</id>
 	              <mainClass>org.nhindirect.dns.service.SimpleServiceRunner</mainClass>
 	              <commandLineArguments>
 	                <commandLineArgument>-p</commandLineArgument>
-	                <commandLineArgument>1024</commandLineArgument>
+	                <commandLineArgument>53</commandLineArgument>
 	                <commandLineArgument>-b</commandLineArgument>
 	                <commandLineArgument>0.0.0.0</commandLineArgument>
 	                <commandLineArgument>-u</commandLineArgument>

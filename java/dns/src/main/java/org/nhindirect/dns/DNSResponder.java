@@ -21,9 +21,11 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.xbill.DNS.Flags;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Rcode;
+import org.xbill.DNS.Section;
 
 /**
  * Abstract DNSResponder for DNS requests.  It implements common methods for calling the DNS store and handling error conditions.  Protocol specific
@@ -134,6 +136,11 @@ public abstract class DNSResponder
     		for (int i = 0; i < 4; i++)
     			response.removeAllRecords(i);
 
+    		response.addRecord(request.getQuestion(), Section.QUESTION);
+    		
+            response.getHeader().setFlag(Flags.QR);
+        	if (request.getHeader().getFlag(Flags.RD))
+        		response.getHeader().setFlag(Flags.RD);    		
     		respHeader.setRcode(Integer.parseInt(error.getError().toString()));    		    		
     		
     		return response;
