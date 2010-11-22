@@ -2,7 +2,7 @@ h1. Certificate Resolvers
 
 The agent utilizes X509 certificates for encryption and signature purposes.  Certificates are required in theory for every destination (sometime referred to in the Direct Project as a universal address).  The Direct Project network is made up a series of HISPs with each HISP containing one or more destinations.  A HISP maintains certificates for all if it's destinations and must obtain public certificates for destinations owned by other HISPs.  The obvious looming question is how does the agent obtain certificates for local and remote destinations.
 
-Certificates are obtained by the agent using the [CertificateResolver|http://api.nhindirect.org/java/site/agent/1.0-SNAPSHOT/apidocs/org/nhindirect/stagent/cert/CertificateResolver.html] interface.  
+Certificates are obtained by the agent using the [CertificateResolver|http://api.nhindirect.org/java/site/agent/1.0/apidocs/org/nhindirect/stagent/cert/CertificateResolver.html] interface.  
 
 {code}
 package org.nhindirect.stagent.cert;
@@ -114,7 +114,7 @@ The second allows you to override the DNS servers that the resolver will use to 
 
 The last allows you to provide a custom bootstrap store and a custom cache policy.  Passing null for the server list for either constructor results in the resolver using the machine's configured DNS servers.
 
-Certificate resolvers that use cache policies implement the [CacheableCertStore|http://api.nhindirect.org/java/site/agent/1.0-SNAPSHOT/apidocs/org/nhindirect/stagent/cert/CacheableCertStore.html] interface.  This interface allows the cache and bootstrap parameters to be set after instance construction.
+Certificate resolvers that use cache policies implement the [CacheableCertStore|http://api.nhindirect.org/java/site/agent/1.0/apidocs/org/nhindirect/stagent/cert/CacheableCertStore.html] interface.  This interface allows the cache and bootstrap parameters to be set after instance construction.
 
 *Example*
 {code}

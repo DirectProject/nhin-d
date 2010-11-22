@@ -165,7 +165,8 @@ public class TrustChainValidator
     {
     	for (X509Certificate issuer : issuers)
     	{
-    		if (checkIssuer.equals(issuer.getSubjectX500Principal()) && Thumbprint.toThumbprint(issuer).equals(Thumbprint.toThumbprint(checkIssuer)))
+    		if (checkIssuer.getSubjectX500Principal().equals(issuer.getSubjectX500Principal()) 
+    				&& Thumbprint.toThumbprint(issuer).equals(Thumbprint.toThumbprint(checkIssuer)))
     			return true; // already found the certificate issuer... done
     	}
     	return false;

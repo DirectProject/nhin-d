@@ -166,6 +166,8 @@ public class CreatePKCS12
 		CreatePKCS12.certFile = certFile;
 		CreatePKCS12.keyFile = keyFile;
 		
+		FileOutputStream outStr = null;
+		InputStream inStr = null;
 		// load cert file
 		try
 		{
@@ -176,7 +178,7 @@ public class CreatePKCS12
 			byte[] keyData = loadFileData(keyFile);
 			
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
-			InputStream inStr = new ByteArrayInputStream(certData);
+			inStr = new ByteArrayInputStream(certData);
 			java.security.cert.Certificate cert = cf.generateCertificate(inStr);
 			inStr.close();
 			
@@ -204,7 +206,7 @@ public class CreatePKCS12
 			localKeyStore.setKeyEntry("privCert", privKey, array,  new java.security.cert.Certificate[] {cert});
 
 			pkcs12File = getPKCS12OutFile(createFile);
-			FileOutputStream outStr = new FileOutputStream(pkcs12File);
+			outStr = new FileOutputStream(pkcs12File);
 			localKeyStore.store(outStr, array);			
 		}
 		catch (Exception e)
@@ -212,6 +214,25 @@ public class CreatePKCS12
 			System.err.println("Failed to create pcks12 file: " + e.getMessage());
 			e.printStackTrace(System.err);
 			return null;
+		}
+		finally
+		{
+			if (outStr != null)
+			{
+				try
+				{
+					outStr.close();
+				}
+				catch (Exception e) {/* no-op */}
+			}
+			if (outStr != null)
+			{
+				try
+				{
+					inStr.close();
+				}
+				catch (Exception e) {/* no-op */}
+			}			
 		}
 		
 		
