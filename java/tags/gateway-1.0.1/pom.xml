@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>gateway</artifactId>    
     <name>NHIN Direct Agent Gateways.</name>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <description>NHIN Direct security agent gateways and bridges.</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/gateway/${project.version}</url>        
@@ -368,7 +368,7 @@
 	          <show>public</show>
 	          <excludePackageNames>
 	              org.nhindirect.gateway.smtp.annotation:org.nhindirect.gateway.smtp.module:org.nhindirect.gateway.smtp.provider:org.nhindirect.gateway.smtp.config.cert.impl
-	          </excludePackageNames>     	               	          
+	          </excludePackageNames> 	                   	          
 	        </configuration>
 	        <executions>
 	            <execution>
@@ -380,7 +380,6 @@
 	            </execution>
 	        </executions>		        
 	      </plugin>
-	      <!--  
 	      <plugin>
              <groupId>org.apache.maven.plugins</groupId>
              <artifactId>maven-gpg-plugin</artifactId>
@@ -393,8 +392,7 @@
                      </goals>
               </execution>
             </executions>
-         </plugin>
-          -->              
+         </plugin>         
     </plugins>
     <pluginManagement>
        <plugins>
