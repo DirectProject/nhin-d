@@ -122,7 +122,7 @@ class CertGenerator
 			dnBuilder.append("O=").append(fields.getAttributes().get("O")).append(", ");				
 		
 		String DN = dnBuilder.toString().trim();
-		if (DN.endsWith(","));
+		if (DN.endsWith(","))
 			DN = DN.substring(0, DN.length() - 1);
 		
 		X509V3CertificateGenerator  v1CertGen = new X509V3CertificateGenerator();
@@ -175,7 +175,7 @@ class CertGenerator
 			dnBuilder.append("O=").append(fields.getAttributes().get("O")).append(", ");				
 		
 		String DN = dnBuilder.toString().trim();
-		if (DN.endsWith(","));
+		if (DN.endsWith(","))
 			DN = DN.substring(0, DN.length() - 1);
 		
 		X509V3CertificateGenerator  v1CertGen = new X509V3CertificateGenerator();
