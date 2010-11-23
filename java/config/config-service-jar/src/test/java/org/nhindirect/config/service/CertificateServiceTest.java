@@ -162,6 +162,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         {
             {
             	oneOf(certificateDao).list(new ArrayList<Long>(certificateIds));
+            	will(returnValue(Collections.<Certificate>emptyList()));
             }
         });
 
@@ -171,7 +172,7 @@ public class CertificateServiceTest extends MockObjectTestCase
         try
         {
             Collection<Certificate> output = service.getCertificates(certificateIds, certificateOptions);
-            assertEquals("Output does not match expected", Collections.emptyList(), output);
+            assertEquals("Output does not match expected", Collections.<Certificate>emptyList(), output);
         }
         catch (Exception e)
         {

@@ -98,4 +98,11 @@ public class DNSRecordUtil
 		
 		return toDnsRecord(rec);
 	}	
+	
+	public static DnsRecord createSOARecord(String name, String nameServer, String hostmaster) throws Exception
+	{
+		DNSRecord rec = DNSRecordUtils.createSOARecord(name, 3600L, nameServer, hostmaster, 1, 3600L, 600L, 604800L, 3600L);
+		
+		return toDnsRecord(rec);
+	}		
 }
