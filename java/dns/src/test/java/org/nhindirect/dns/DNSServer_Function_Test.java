@@ -151,7 +151,7 @@ public class DNSServer_Function_Test extends TestCase
 
 	}
 	
-	public void testQueryARecord_AssertRecordsRetrieved() throws Exception 
+	public void testQueryARecord_AssertRecordsRetrieved_NoSOA() throws Exception 
 	{
 		new TestPlan()
 		{
@@ -181,6 +181,46 @@ public class DNSServer_Function_Test extends TestCase
 				assertNotNull(records);
 				assertEquals(1, records.size());
 				assertEquals("example2.domain.com.", records.iterator().next().getName().toString());
+			}
+		}.perform();
+	}
+	
+	public void testQueryARecord_AssertRecordsRetrieved_SOARecord() throws Exception 
+	{
+		new TestPlan()
+		{
+			protected void addRecords() throws Exception
+			{
+				ArrayList<DnsRecord> recs = new ArrayList<DnsRecord>();
+				DnsRecord rec = DNSRecordUtil.createARecord("example.domain.com", "127.0.0.1");
+				recs.add(rec);
+				
+				rec = DNSRecordUtil.createARecord("example2.domain.com", "127.0.0.1");
+				recs.add(rec);
+							
+				rec = DNSRecordUtil.createARecord("sub2.example2.domain.com", "127.0.0.1");
+				recs.add(rec);				
+
+				rec = DNSRecordUtil.createSOARecord("domain.com", "nsserver.domain.com","master.domain.com");
+				recs.add(rec);
+				
+				proxy.addDNS(recs.toArray(new DnsRecord[recs.size()]));
+								
+			}
+			
+			protected Collection<Query> getTestQueries() throws Exception
+			{
+				Collection<Query> queries = new ArrayList<Query>();
+				queries.add(new Query("sub2.example2.domain.com", Type.A));			
+				
+				return queries;
+			}
+			
+			protected void doAssertions(Collection<Record> records) throws Exception
+			{
+				assertNotNull(records);
+				assertEquals(1, records.size());
+				assertEquals("sub2.example2.domain.com.", records.iterator().next().getName().toString());
 			}
 		}.perform();
 	}
@@ -231,7 +271,10 @@ public class DNSServer_Function_Test extends TestCase
 				
 				rec = DNSRecordUtil.createARecord("example.domain.com", "127.0.0.2");
 				recs.add(rec);
-								
+												
+				rec = DNSRecordUtil.createSOARecord("domain.com", "nsserver.domain.com","master.domain.com");
+				recs.add(rec);
+				
 				proxy.addDNS(recs.toArray(new DnsRecord[recs.size()]));
 								
 			}
@@ -300,7 +343,14 @@ public class DNSServer_Function_Test extends TestCase
 				addCert = xCertToCert(cert);
 				recs.add(addCert);
 				
-				proxy.addCertificates(recs.toArray(new Certificate[recs.size()]));	
+				proxy.addCertificates(recs.toArray(new Certificate[recs.size()]));
+				
+				
+				ArrayList<DnsRecord> soaRecs = new ArrayList<DnsRecord>();
+				DnsRecord rec = DNSRecordUtil.createSOARecord("securehealthemail.com", "nsserver.securehealthemail.com","master.securehealthemail.com");
+				soaRecs.add(rec);		
+				
+				proxy.addDNS(soaRecs.toArray(new DnsRecord[soaRecs.size()]));
 								
 			}
 			

@@ -354,6 +354,7 @@
                 </dependency>	
 			</dependencies>
 		</plugin>   
+	      <!--  only for release		
 	      <plugin>
 	      	<groupId>org.apache.maven.plugins</groupId> 
 	        <artifactId>maven-javadoc-plugin</artifactId>
@@ -368,10 +369,18 @@
 	          <show>public</show>
 	          <excludePackageNames>
 	              org.nhindirect.gateway.smtp.annotation:org.nhindirect.gateway.smtp.module:org.nhindirect.gateway.smtp.provider:org.nhindirect.gateway.smtp.config.cert.impl
-	          </excludePackageNames>          	          
+	          </excludePackageNames>     	               	          
 	        </configuration>
+	        <executions>
+	            <execution>
+	              <phase>package</phase>
+	              <id>attach-javadocs</id>
+	              <goals>
+	                <goal>jar</goal>
+	              </goals>
+	            </execution>
+	        </executions>		        
 	      </plugin>
-	      <!--  
 	      <plugin>
              <groupId>org.apache.maven.plugins</groupId>
              <artifactId>maven-gpg-plugin</artifactId>

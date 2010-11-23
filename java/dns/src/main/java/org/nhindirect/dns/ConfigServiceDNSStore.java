@@ -20,9 +20,11 @@ package org.nhindirect.dns;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import java.security.KeyStore;
 import java.security.Security;
@@ -36,7 +38,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.DnsRecord;
-import org.nhind.config.Domain;
 import org.nhindirect.dns.annotation.ConfigServiceURL;
 import org.xbill.DNS.CERTRecord;
 import org.xbill.DNS.DClass;
@@ -65,7 +66,7 @@ public class ConfigServiceDNSStore implements DNSStore
 	
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(ConfigServiceDNSStore.class);
 	
-	private Collection<Domain> domains;
+	private Map<String, Record> soaRecords = null;
 	
 	
 	static
@@ -82,27 +83,7 @@ public class ConfigServiceDNSStore implements DNSStore
 	@Inject
 	public ConfigServiceDNSStore(@ConfigServiceURL URL serviceURL)
 	{
-		proxy = new ConfigurationServiceProxy(serviceURL.toString());
-		
-		// TODO: Do we really care at this point about configured domains
-		// There is not really any logic using it right now
-		/*
-		Domain[] lDomains = null;
-		try
-		{
-			lDomains = proxy.getDomains(null, null);
-		}
-		catch (Exception e)
-		{
-			throw new IllegalStateException("Cannot connect to configuration service.");
-		}
-		
-		if (lDomains == null || lDomains.length == 0)
-			throw new IllegalStateException("No domains have been configured.  " +
-					"At least one domain must be configured.");
-		
-		domains = Arrays.asList(lDomains);
-		*/
+		proxy = new ConfigurationServiceProxy(serviceURL.toString());		
 	}
 	
 	/**
@@ -211,13 +192,18 @@ public class ConfigServiceDNSStore implements DNSStore
     		response.getHeader().setFlag(Flags.RD);
     	response.addRecord(queryRecord, Section.QUESTION);
     	
-    	// we are authoritative only
-    	response.getHeader().setFlag(Flags.AA);
     	
 		Iterator<Record> iter = lookupRecords.rrs();
 		while (iter.hasNext())
 			response.addRecord(iter.next(), Section.ANSWER);
     	
+    	// we are authoritative only
+    	response.getHeader().setFlag(Flags.AA);
+    	// look for an SOA record
+    	Record soaRecord = checkForSoaRecord(name.toString());
+    	if (soaRecord != null)
+    		response.addRecord(soaRecord, Section.AUTHORITY);		
+		
 		LOGGER.trace("get(Message) Exit");
 		
     	return response;
@@ -430,5 +416,66 @@ public class ConfigServiceDNSStore implements DNSStore
         
         return retVal;
     }
+ 
     
+    /*
+     * Look for SOA records corresponding to the request
+     * TODO: Add cache coherency to SOA records?
+     */
+    private synchronized Record checkForSoaRecord(String questionName)
+    {
+		if (!questionName.endsWith("."))
+			questionName += ".";
+    	
+    	if (soaRecords == null)
+    	{
+    		DnsRecord[] getRecs = null;
+    		// load all SOA records...
+    		try
+    		{
+    			getRecs = proxy.getDNSByType(Type.SOA);
+    			
+    			if (getRecs == null || getRecs.length == 0)
+    				soaRecords = Collections.emptyMap();
+    			else
+    			{
+	    			soaRecords = new HashMap<String, Record>();
+	    			
+	    			for (DnsRecord rec : getRecs)
+	    			{
+	    				Record newRec = Record.newRecord(Name.fromString(rec.getName()), Type.SOA, 
+	    						rec.getDclass(), rec.getTtl(), rec.getData());
+	    				
+	    				soaRecords.put(newRec.getName().toString(), newRec);
+	    			}
+    			}
+    		}
+    		catch (Exception e)
+    		{
+    			LOGGER.error("Failed to load SOA records from config service.");    			
+    		}
+    	}
+    	
+    	Record retVal = null;
+    	if (soaRecords.size() > 0)
+    	{
+    		// look for the record by question name
+    		
+    		retVal = soaRecords.get(questionName);
+    		if (retVal == null)
+    		{
+	    		// start taking apart the question name . by .
+	    		int index = -1;
+	    		while ((index = questionName.indexOf(".")) > 0 && index < (questionName.length() - 1))
+	    		{
+	    			questionName = questionName.substring(index + 1);
+	    			retVal = soaRecords.get(questionName);
+	        		if (retVal != null)
+	        			break;
+	    		}
+    		}    		
+    	}
+    	
+    	return retVal;
+    }
 }
