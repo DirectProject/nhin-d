@@ -213,6 +213,7 @@ namespace Health.Direct.Config.Store
         {
             using (ConfigDatabase db = Store.CreateContext())
             {
+                db.DnsRecords.Attach(dnsRecord);
                 this.Remove(db
                     , dnsRecord);
             }
