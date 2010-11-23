@@ -13,7 +13,7 @@
 	<PropertyGroup>
 		<agent_solution>.\build\agent.sln</agent_solution>
 		<gateway_solution>.\build\gateway.sln</gateway_solution>
-		<xds_solution>.\xds\ReceiveDocumentSet\ReceiveDocumentSet.sln</xds_solution>
+		<xds_solution>.\xds\ProvideAndRegisterDocumentSet\ProvideAndRegisterDocumentSet.sln</xds_solution>
 	</PropertyGroup>
 
 	<!-- Aliases -->
