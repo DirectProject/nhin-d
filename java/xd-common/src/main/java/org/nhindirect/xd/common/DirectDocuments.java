@@ -103,6 +103,9 @@ public class DirectDocuments
      */
     public void setSubmissionSet(SubmissionSet submissionSet)
     {
+        if (this.submissionSet != null && this.submissionSet.equals(submissionSet))
+            LOGGER.warn("Overwriting existing SubmissionSet values");
+        
         this.submissionSet = submissionSet;
     }
 
@@ -302,14 +305,17 @@ public class DirectDocuments
 
         for (DirectDocument2 document : documents)
         {
-            DataSource source = new ByteArrayDataSource(document.getData(), document.getMetadata().getMimeType());
-            DataHandler dhnew = new DataHandler(source);
-
-            Document pdoc = new Document();
-            pdoc.setValue(dhnew);
-            pdoc.setId(document.getMetadata().getUniqueId());
-            
-            request.getDocument().add(pdoc);
+            if (document.getData() != null)
+            {
+                DataSource source = new ByteArrayDataSource(document.getData(), document.getMetadata().getMimeType());
+                DataHandler dhnew = new DataHandler(source);
+    
+                Document pdoc = new Document();
+                pdoc.setValue(dhnew);
+                pdoc.setId(document.getMetadata().getUniqueId());
+                
+                request.getDocument().add(pdoc);
+            }
         }
 
         return request;
@@ -328,7 +334,7 @@ public class DirectDocuments
      * 
      * @author beau
      */
-    public class SubmissionSet
+    static public class SubmissionSet
     {
         private String id;
         private String name;
@@ -840,6 +846,157 @@ public class DirectDocuments
         public void setPatientId(String patientId)
         {
             this.patientId = patientId;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode()
+        {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((authorInstitution == null) ? 0 : authorInstitution.hashCode());
+            result = prime * result + ((authorPerson == null) ? 0 : authorPerson.hashCode());
+            result = prime * result + ((authorRole == null) ? 0 : authorRole.hashCode());
+            result = prime * result + ((authorSpecialty == null) ? 0 : authorSpecialty.hashCode());
+            result = prime * result + ((authorTelecommunication == null) ? 0 : authorTelecommunication.hashCode());
+            result = prime * result + ((contentTypeCode == null) ? 0 : contentTypeCode.hashCode());
+            result = prime * result + ((contentTypeCode_localized == null) ? 0 : contentTypeCode_localized.hashCode());
+            result = prime * result + ((description == null) ? 0 : description.hashCode());
+            result = prime * result + ((id == null) ? 0 : id.hashCode());
+            result = prime * result + ((intendedRecipient == null) ? 0 : intendedRecipient.hashCode());
+            result = prime * result + ((name == null) ? 0 : name.hashCode());
+            result = prime * result + ((patientId == null) ? 0 : patientId.hashCode());
+            result = prime * result + ((sourceId == null) ? 0 : sourceId.hashCode());
+            result = prime * result + ((submissionTime == null) ? 0 : submissionTime.hashCode());
+            result = prime * result + ((uniqueId == null) ? 0 : uniqueId.hashCode());
+            return result;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (!(obj instanceof SubmissionSet))
+                return false;
+            SubmissionSet other = (SubmissionSet) obj;
+            if (authorInstitution == null)
+            {
+                if (other.authorInstitution != null)
+                    return false;
+            }
+            else if (!authorInstitution.equals(other.authorInstitution))
+                return false;
+            if (authorPerson == null)
+            {
+                if (other.authorPerson != null)
+                    return false;
+            }
+            else if (!authorPerson.equals(other.authorPerson))
+                return false;
+            if (authorRole == null)
+            {
+                if (other.authorRole != null)
+                    return false;
+            }
+            else if (!authorRole.equals(other.authorRole))
+                return false;
+            if (authorSpecialty == null)
+            {
+                if (other.authorSpecialty != null)
+                    return false;
+            }
+            else if (!authorSpecialty.equals(other.authorSpecialty))
+                return false;
+            if (authorTelecommunication == null)
+            {
+                if (other.authorTelecommunication != null)
+                    return false;
+            }
+            else if (!authorTelecommunication.equals(other.authorTelecommunication))
+                return false;
+            if (contentTypeCode == null)
+            {
+                if (other.contentTypeCode != null)
+                    return false;
+            }
+            else if (!contentTypeCode.equals(other.contentTypeCode))
+                return false;
+            if (contentTypeCode_localized == null)
+            {
+                if (other.contentTypeCode_localized != null)
+                    return false;
+            }
+            else if (!contentTypeCode_localized.equals(other.contentTypeCode_localized))
+                return false;
+            if (description == null)
+            {
+                if (other.description != null)
+                    return false;
+            }
+            else if (!description.equals(other.description))
+                return false;
+            if (id == null)
+            {
+                if (other.id != null)
+                    return false;
+            }
+            else if (!id.equals(other.id))
+                return false;
+            if (intendedRecipient == null)
+            {
+                if (other.intendedRecipient != null)
+                    return false;
+            }
+            else if (!intendedRecipient.equals(other.intendedRecipient))
+                return false;
+            if (name == null)
+            {
+                if (other.name != null)
+                    return false;
+            }
+            else if (!name.equals(other.name))
+                return false;
+            if (patientId == null)
+            {
+                if (other.patientId != null)
+                    return false;
+            }
+            else if (!patientId.equals(other.patientId))
+                return false;
+            if (sourceId == null)
+            {
+                if (other.sourceId != null)
+                    return false;
+            }
+            else if (!sourceId.equals(other.sourceId))
+                return false;
+            if (submissionTime == null)
+            {
+                if (other.submissionTime != null)
+                    return false;
+            }
+            else if (!submissionTime.equals(other.submissionTime))
+                return false;
+            if (uniqueId == null)
+            {
+                if (other.uniqueId != null)
+                    return false;
+            }
+            else if (!uniqueId.equals(other.uniqueId))
+                return false;
+            return true;
         }
     }
 }

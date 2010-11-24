@@ -5,14 +5,18 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
+import javax.activation.DataHandler;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -46,6 +50,11 @@ public class XdmPackage
     public void setDocuments(DirectDocuments documents)
     {
         this.documents = documents;
+    }
+    
+    public DirectDocuments getDocuments()
+    {
+        return this.documents;
     }
 
     public File toFile()
@@ -181,7 +190,41 @@ public class XdmPackage
 
     }
 
-    public static XdmPackage fromFile(File file) throws Exception
+    public static XdmPackage fromXdmZipDataHandler(DataHandler dataHandler) throws Exception
+    {
+        File file = null;
+
+        try
+        {
+            // Create a temporary work file
+            file = fileFromDataHandler(dataHandler);
+        }
+        catch (Exception e)
+        {
+            if (LOGGER.isErrorEnabled())
+                LOGGER.error("Error creating temporary work file, unable to complete transformation.", e);
+            throw new Exception("Error creating temporary work file, unable to complete transformation.", e);
+        }
+
+        XdmPackage xdmPackage = fromXdmZipFile(file);
+
+        boolean delete = file.delete();
+
+        if (delete)
+        {
+            if (LOGGER.isTraceEnabled())
+                LOGGER.trace("Deleted temporary work file " + file.getAbsolutePath());
+        }
+        else
+        {
+            if (LOGGER.isWarnEnabled())
+                LOGGER.warn("Unable to delete temporary work file " + file.getAbsolutePath());
+        }
+
+        return xdmPackage;
+    }
+    
+    public static XdmPackage fromXdmZipFile(File file) throws Exception
     {
         DirectDocuments documents = new DirectDocuments();
         
@@ -341,6 +384,52 @@ public class XdmPackage
         is.close();
 
         return bytes;
+    }
+    
+    private static File fileFromDataHandler(DataHandler dh) throws Exception
+    {
+        File f = null;
+        OutputStream out = null;
+        InputStream inputStream = null;
+
+        final String fileName = UUID.randomUUID().toString() + ".zip";
+
+        try
+        {
+            f = new File(fileName);
+            inputStream = dh.getInputStream();
+            out = new FileOutputStream(f);
+            byte buf[] = new byte[1024];
+            int len;
+            while ((len = inputStream.read(buf)) > 0)
+            {
+                out.write(buf, 0, len);
+            }
+        }
+        catch (FileNotFoundException e)
+        {
+            if (LOGGER.isErrorEnabled())
+                LOGGER.error("File not found - " + fileName, e);
+            throw e;
+        }
+        catch (IOException e)
+        {
+            if (LOGGER.isErrorEnabled())
+                LOGGER.error("Exception thrown while trying to read file from DataHandler object", e);
+            throw e;
+        }
+        finally
+        {
+            if (inputStream != null)
+                inputStream.close();
+            if (out != null)
+                out.close();
+        }
+
+        if (LOGGER.isTraceEnabled())
+            LOGGER.trace("Created temporary work file " + f.getAbsolutePath());
+
+        return f;
     }
 
 }

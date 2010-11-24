@@ -31,30 +31,28 @@ package org.nhindirect.xd.transform.impl;
 import static org.nhindirect.xd.transform.util.XdConstants.CCD_EXTENSION;
 import static org.nhindirect.xd.transform.util.XdConstants.CCD_XMLNS;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
 import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.util.ByteArrayDataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.xd.common.DirectDocument;
+import org.nhindirect.xd.common.DirectDocument2;
+import org.nhindirect.xd.common.DirectDocuments;
+import org.nhindirect.xd.common.XdmPackage;
 import org.nhindirect.xd.common.type.ClassCodeEnum;
 import org.nhindirect.xd.common.type.FormatCodeEnum;
 import org.nhindirect.xd.common.type.HealthcareFacilityTypeCodeEnum;
@@ -66,18 +64,6 @@ import org.nhindirect.xd.transform.exception.TransformationException;
 import org.nhindirect.xd.transform.parse.ccd.CcdParser;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
 import org.nhindirect.xd.transform.util.type.MimeType;
-
-/*
- * FIXME
- * 
- * The system currently handles multiple documents and recipients. 
- * 
- * Each document is placed into its own ProvideAndRegisterDocumentSetRequestType 
- * object, and correspondingly its own SOAP message. 
- * 
- * ProvideAndRegisterDocumentSetRequestType allows for multiple documents in a 
- * single request, and this class should eventually be updated to support this.
- */
 
 /**
  * Transform a MimeMessage into a XDS request.
@@ -111,16 +97,15 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
     public List<ProvideAndRegisterDocumentSetRequestType> transform(MimeMessage mimeMessage)
             throws TransformationException
     {
-        List<ProvideAndRegisterDocumentSetRequestType> requests = new ArrayList<ProvideAndRegisterDocumentSetRequestType>();
+        DirectDocuments documents = new DirectDocuments();
 
         try
         {
-            Date sentDate = mimeMessage.getSentDate();
-            String subject = mimeMessage.getSubject();
-
-            String from = mimeMessage.getFrom()[0].toString();
+            Date sentDate        = mimeMessage.getSentDate();
+            String subject       = mimeMessage.getSubject();
+            String from          = mimeMessage.getFrom()[0].toString();
             Address[] recipients = mimeMessage.getAllRecipients();
-
+            
             // Plain mail (no attachments)
             if (MimeType.TEXT_PLAIN.matches(mimeMessage.getContentType()))
             {
@@ -130,8 +115,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                 xdsMimeType = MimeType.TEXT_PLAIN.getType();
                 xdsDocument = ((String) mimeMessage.getContent()).getBytes();
 
-                List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, sentDate, from, recipients);
-                requests.addAll(items);
+                documents.getDocuments().add(getDocument(sentDate, from));
+                documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
             }
             // Multipart/mixed (attachments)
             else if (MimeType.MULTIPART_MIXED.matches(mimeMessage.getContentType()))
@@ -163,21 +148,27 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                     if (LOGGER.isInfoEnabled())
                         LOGGER.info("File name: " + bodyPart.getFileName());
 
+                    // Assumed that any .zip is an XDM package (FIXME: this is a bad assumption)
                     if (StringUtils.contains(bodyPart.getFileName(), ".zip"))
                     {
                         try
                         {
                             LOGGER.info("Bodypart is an XDM request");
 
-                            ProvideAndRegisterDocumentSetRequestType request = getXDMRequest(bodyPart);
-                            requests.add(request);
+                            XdmPackage xdmPackage = XdmPackage.fromXdmZipDataHandler(bodyPart.getDataHandler());
+
+                            // Spec says if XDM package is present, this will be the only attachment
+                            // Overwrite all documents with XDM content
+                            documents = xdmPackage.getDocuments();
                         }
                         catch (Exception x)
                         {
                             LOGGER.warn("Handling of assumed XDM request failed, skipping");
                         }
 
-                        continue;
+                        // Spec says if XDM package is present, this will be the only attachment
+                        // No need to look at additional attachments
+                        break;
                     }
 
                     InputStream inputStream = bodyPart.getInputStream();
@@ -208,9 +199,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                         xdsMimeType = MimeType.TEXT_PLAIN.getType();
                         xdsDocument = outputStream.toByteArray();
 
-                        List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, mimeMessage
-                                .getSentDate(), from, recipients);
-                        requests.addAll(items);
+                        documents.getDocuments().add(getDocument(sentDate, from));
+                        documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
                     }
                     else if (MimeType.TEXT_XML.matches(bodyPart.getContentType()))
                     {
@@ -237,9 +227,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
 
                         // TODO: support more XML types
 
-                        List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, mimeMessage
-                                .getSentDate(), from, recipients);
-                        requests.addAll(items);
+                        documents.getDocuments().add(getDocument(sentDate, from));
+                        documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
                     }
                     else
                     {
@@ -251,9 +240,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                         xdsMimeType = bodyPart.getContentType();
                         xdsDocument = outputStream.toByteArray();
 
-                        List<ProvideAndRegisterDocumentSetRequestType> items = getRequests(subject, mimeMessage
-                                .getSentDate(), from, recipients);
-                        requests.addAll(items);
+                        documents.getDocuments().add(getDocument(sentDate, from));
+                        documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
                     }
                 }
             }
@@ -276,83 +264,60 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                 LOGGER.error("Unexpected IOException occured while handling MimeMessage", e);
             throw new TransformationException("Unable to complete transformation.", e);
         }
-
-        return requests;
-    }
-
-    /**
-     * Get an XDM Request from a BodyPart object.
-     * 
-     * @param bodyPart
-     *            The BodyPart object containing the XDM request.
-     * @return a ProvideAndRegisterDocumentSetRequestType object.
-     * @throws Exception
-     */
-    protected ProvideAndRegisterDocumentSetRequestType getXDMRequest(BodyPart bodyPart) throws Exception
-    {
-        LOGGER.trace("Inside getMDMRequest");
-
-        DataHandler dh = bodyPart.getDataHandler();
-
-        return xdmXdsTransformer.transform(dh);
-    }
-
-    /**
-     * Create a list of ProvideAndRegisterDocumentSetRequestType objects from
-     * the provided data for each of the provided recipients.
-     * 
-     * @param subject
-     *            The message subject.
-     * @param sentDate
-     *            The message sent date.
-     * @param auth
-     *            The author of the document.
-     * @param recipients
-     *            The list of recipients to receive the XDS request.
-     * @return a list of ProvideAndRegisterDocumentSetRequestType objects.
-     */
-    protected List<ProvideAndRegisterDocumentSetRequestType> getRequests(String subject, Date sentDate, String auth,
-            Address[] recipients)
-    {
-        List<ProvideAndRegisterDocumentSetRequestType> requests = new ArrayList<ProvideAndRegisterDocumentSetRequestType>();
-
-        for (Address recipient : recipients)
+        catch (Exception e)
         {
-            try
-            {
-                ProvideAndRegisterDocumentSetRequestType request = getRequest(subject, sentDate, auth, recipient
-                        .toString());
-                requests.add(request);
-            }
-            catch (Exception e)
-            {
-                if (LOGGER.isWarnEnabled())
-                    LOGGER.warn("Error creating ProvideAndRegisterDocumentSetRequestType object, skipping", e);
-            }
+            if (LOGGER.isErrorEnabled())
+                LOGGER.error("Unexpected Exception occured while handling MimeMessage", e);
+            throw new TransformationException("Unable to complete transformation", e);
         }
+        
+        try
+        {
+            ProvideAndRegisterDocumentSetRequestType request = documents.toProvideAndRegisterDocumentSetRequestType();
+            return Arrays.asList(request);
+        }
+        catch (IOException e)
+        {
+            if (LOGGER.isErrorEnabled())
+                LOGGER.error("Unexpected IOException occured while transforming to ProvideAndRegisterDocumentSetRequestType", e);
+            throw new TransformationException("Unable to complete transformation", e);
+        }
+    }
+  
+    private DirectDocuments.SubmissionSet getSubmissionSet(String subject, Date sentDate, String auth,
+            Address[] recipients) throws Exception
+    {
+        DirectDocuments.SubmissionSet submissionSet = new DirectDocuments.SubmissionSet();
+        
+        // Parse CCD for patient info
+        String sdoc = new String(xdsDocument);
+        CcdParser cp = new CcdParser();
+        cp.parse(sdoc);
 
-        return requests;
+        // Create patient object
+        SimplePerson sourcePatient = new SimplePerson();
+        sourcePatient.setLocalId(cp.getPatientId());
+        sourcePatient.setLocalOrg(cp.getOrgId());
+        
+        submissionSet.setSubmissionTime(sentDate);
+        submissionSet.setAuthorPerson(auth);
+        submissionSet.setAuthorInstitution(Arrays.asList(sourcePatient.getLocalOrg()));
+        submissionSet.setAuthorRole(auth == null ? "System" : auth + "'s role");
+        submissionSet.setContentTypeCode(subject, true);
+        submissionSet.setUniqueId(UUID.randomUUID().toString());
+        submissionSet.setSourceId(sourcePatient.getLocalOrg());
+        submissionSet.setPatientId(sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg());
+        
+        for (Address address : recipients)
+            submissionSet.getIntendedRecipient().add("|" + address.toString() + "^last^first^^^prefix^^^&amp;1.3.6.1.4.1.21367.3100.1&amp;ISO");
+        
+        return submissionSet;
     }
 
-    /**
-     * Create a single ProvideAndRegisterDocumentSetRequestType objects from the
-     * provided data.
-     * 
-     * @param subject
-     *            The message subject.
-     * @param sentDate
-     *            The message sent date.
-     * @param auth
-     *            The author of the document.
-     * @param recip
-     *            The recipient of the document.
-     * @return a single ProvideAndRegisterDocumentSetRequestType object.
-     * @throws Exception
-     */
-    protected ProvideAndRegisterDocumentSetRequestType getRequest(String subject, Date sentDate, String auth,
-            String recip) throws Exception
+    private DirectDocument2 getDocument(Date sentDate, String auth) throws Exception
     {
-        ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
+        DirectDocument2 document = new DirectDocument2();
+        DirectDocument2.Metadata metadata = document.getMetadata();
 
         // Parse CCD for patient info
         String sdoc = new String(xdsDocument);
@@ -363,9 +328,6 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         SimplePerson sourcePatient = new SimplePerson();
         sourcePatient.setLocalId(cp.getPatientId());
         sourcePatient.setLocalOrg(cp.getOrgId());
-
-        // Build metadata
-        DirectDocument.Metadata metadata = new DirectDocument.Metadata();
 
         metadata.setMimeType(xdsMimeType);
         metadata.setCreationTime(sentDate);
@@ -381,30 +343,9 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         metadata.setPatientId(sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg());
         metadata.setUniqueId(UUID.randomUUID().toString());
 
-        metadata.setSs_submissionTime(sentDate);
-        metadata.setSs_intendedRecipient(Arrays.asList("|" + recip + "^last^first^^^prefix^^^&amp;1.3.6.1.4.1.21367.3100.1&amp;ISO"));
-        metadata.setSs_authorPerson(auth);
-        metadata.setSs_authorInstitution(Arrays.asList(sourcePatient.getLocalOrg()));
-        metadata.setSs_authorRole(auth == null ? "System" : auth + "'s role");
-        metadata.setContentTypeCode(subject, true);
-        metadata.setSs_uniqueId(UUID.randomUUID().toString());
-        metadata.setSs_sourceId(sourcePatient.getLocalOrg());
-        metadata.setSs_patientId(sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg());
+        document.setData(new String(xdsDocument));
 
-        prsr.setSubmitObjectsRequest(metadata.getSubmitObjectsRequest());
-
-        // Build document
-        DataSource source = new ByteArrayDataSource(xdsDocument, MimeType.APPLICATION_XML + "; charset=UTF-8");
-        DataHandler dhnew = new DataHandler(source);
-
-        List<Document> docs = prsr.getDocument();
-        Document pdoc = new Document();
-
-        pdoc.setValue(dhnew);
-        pdoc.setId(metadata.getUniqueId());
-        docs.add(pdoc);
-
-        return prsr;
+        return document;
     }
 
 }
