@@ -40,7 +40,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.activation.DataHandler;
 import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
@@ -59,7 +58,6 @@ import org.nhindirect.xd.common.type.HealthcareFacilityTypeCodeEnum;
 import org.nhindirect.xd.common.type.LoincEnum;
 import org.nhindirect.xd.common.type.PracticeSettingCodeEnum;
 import org.nhindirect.xd.transform.MimeXdsTransformer;
-import org.nhindirect.xd.transform.XdmXdsTransformer;
 import org.nhindirect.xd.transform.exception.TransformationException;
 import org.nhindirect.xd.transform.parse.ccd.CcdParser;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
@@ -75,8 +73,6 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
     private byte[] xdsDocument = null;
     private String xdsMimeType = null;
     private String xdsFormatCode = null;
-
-    private XdmXdsTransformer xdmXdsTransformer = new DefaultXdmXdsTransformer();
 
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultMimeXdsTransformer.class);
 
