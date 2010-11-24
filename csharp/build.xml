@@ -89,11 +89,34 @@
 		-->
 	</Target>
 
-	<Target Name="build-installer" DependsOnTargets="build-gateway32;build-gateway64">		
+	<Target Name="publish-configui">
+		<CallTarget Targets="clean-configui" />
+		<AspNetCompiler
+				VirtualPath="/ConfigUI"
+				PhysicalPath="admin\adminmvc\"
+				TargetPath=".\installer\configui\"
+				Clean="true"
+				Force="true"
+				Updateable="true"
+				/>
+		<!-- Clean up after ourselves -->
+		<ItemGroup>
+			<FilesToDelete Include=".\installer\configui\AdminMvc.*" />
+		</ItemGroup>
+		<RemoveDir Directories=".\installer\configui\common;.\installer\configui\controllers;.\installer\configui\models;.\installer\configui\obj;.\installer\configui\properties" />
+		<Delete Files="@(FilesToDelete)" />
+	</Target>
+
+	<Target Name="clean-configui">
+		<RemoveDir Directories=".\installer\configui" />
+	</Target>
+
+	<Target Name="build-installer" DependsOnTargets="build-gateway32;build-gateway64;publish-configui">
 		<Exec Command='"C:\Program Files (x86)\inno setup 5\iscc.exe" /Q installer\DirectGateway.iss' 
 			Condition="Exists('C:\Program Files (x86)\inno setup 5\iscc.exe')" />
 		<Exec Command='"C:\Program Files\inno setup 5\iscc.exe" /Q installer\DirectGateway.iss' 
 			Condition="Exists('C:\Program Files\inno setup 5\iscc.exe')" />
+		<CallTarget Targets="clean-configui" />
 	</Target>
 	
 </Project>

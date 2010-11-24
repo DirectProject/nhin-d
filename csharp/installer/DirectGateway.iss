@@ -43,6 +43,8 @@ Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignor
 Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: ignoreversion;
 Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags: ignoreversion recursesubdirs;
 
+Source: "configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs;
+
 Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion;
 
@@ -62,7 +64,7 @@ Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion;
 [Icons]
 Name: "{group}\Admin Console"; Filename: "{app}\AdminConsole.exe"; WorkingDir: "{app}";
 Name: "{group}\Config Console"; Filename: "{app}\ConfigConsole.exe"; WorkingDir: "{app}";
-Name: "{group}\Admin UI"; Filename: "http://localhost/AdminMvc/";
+Name: "{group}\Config Web UI"; Filename: "http://localhost/ConfigUI/";
 Name: "{group}\Test Database"; Filename: "http://localhost/ConfigService/TestService.aspx";
 Name: "{group}\{cm:UninstallProgram,Direct Gateway}"; Filename: "{uninstallexe}";
 
