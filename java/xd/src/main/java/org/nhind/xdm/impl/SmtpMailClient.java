@@ -47,8 +47,6 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.commons.lang.StringUtils;
 import org.nhind.xdm.MailClient;
 import org.nhindirect.xd.common.DirectMessage;
-import org.nhindirect.xd.transform.DocumentXdmTransformer;
-import org.nhindirect.xd.transform.impl.DocumentXdmTransformerImpl;
 
 /**
  * This class handles the packaging and sending of XDM data over SMTP.
@@ -67,8 +65,6 @@ public class SmtpMailClient implements MailClient
     private String hostname = null;
     private String username = null;
     private String password = null;
-
-    private DocumentXdmTransformer transformer = new DocumentXdmTransformerImpl();
     
     public SmtpMailClient(String hostname, String username, String password)
     {

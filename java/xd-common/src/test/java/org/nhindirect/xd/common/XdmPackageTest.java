@@ -117,7 +117,7 @@ public class XdmPackageTest extends TestCase
         URL url = XdmPackageTest.class.getClassLoader().getResource("samplexdm.zip");
         File file = new File(url.getPath());
         
-        XdmPackage xdmPackage = XdmPackage.fromFile(file);
+        XdmPackage xdmPackage = XdmPackage.fromXdmZipFile(file);
 
         File f2 = xdmPackage.toFile();
         System.out.println(f2.getAbsolutePath());

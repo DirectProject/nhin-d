@@ -4,8 +4,6 @@ import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 
 import javax.activation.DataHandler;
 
