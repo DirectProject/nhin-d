@@ -103,7 +103,7 @@ public class DirectDocuments
      */
     public void setSubmissionSet(SubmissionSet submissionSet)
     {
-        if (this.submissionSet != null && this.submissionSet.equals(submissionSet))
+        if (this.submissionSet != null && !this.submissionSet.equals(submissionSet))
             LOGGER.warn("Overwriting existing SubmissionSet values");
         
         this.submissionSet = submissionSet;
