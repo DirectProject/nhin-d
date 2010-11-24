@@ -786,19 +786,6 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="getAddresss">
-    <xs:sequence>
-      <xs:element name="emailAddress" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="status" type="tns:entityStatus" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="getAddresssResponse">
-    <xs:sequence>
-      <xs:element name="return" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
   <xs:complexType name="listAddresss">
     <xs:sequence>
       <xs:element name="lastEmailAddress" type="xs:string" minOccurs="0"/>
@@ -807,6 +794,19 @@
   </xs:complexType>
 
   <xs:complexType name="listAddresssResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getAddresss">
+    <xs:sequence>
+      <xs:element name="emailAddress" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="status" type="tns:entityStatus" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getAddresssResponse">
     <xs:sequence>
       <xs:element name="return" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
