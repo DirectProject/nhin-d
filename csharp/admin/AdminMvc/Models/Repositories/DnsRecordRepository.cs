@@ -33,7 +33,7 @@ namespace Health.Direct.Admin.Console.Models.Repositories
 
         public void Delete(DnsRecord record)
         {
-            Client.RemoveDnsRecord(record);
+            Client.RemoveDnsRecordByID(record.ID);
         }
 
         public DnsRecord Get(long id)

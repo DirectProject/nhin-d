@@ -13,8 +13,6 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
-using System.Net;
 
 using AutoMapper;
 
@@ -39,34 +37,12 @@ namespace Health.Direct.Admin.Console.Models
             CreateBidirectionalMap<Certificate, CertificateModel>();
             CreateBidirectionalMap<DnsRecord, DnsRecordModel>();
             CreateBidirectionalMap<Domain, DomainModel>();
-
-            Mapper.CreateMap<string, EntityStatus>().ConvertUsing(new EntityStatusTypeConverter());
-
-            ForSourceType<EntityStatus>()
-                .AddFormatExpression(context =>
-                ((EntityStatus)context.SourceValue).ToString());
         }
 
         private void CreateBidirectionalMap<TSource,TDestination>()
         {
             CreateMap<TSource, TDestination>();
             CreateMap<TDestination, TSource>();
-        }
-    }
-
-    public class EntityStatusTypeConverter : ITypeConverter<string, EntityStatus>
-    {
-        public EntityStatus Convert(ResolutionContext context)
-        {
-            return (EntityStatus) Enum.Parse(typeof(EntityStatus), (string)context.SourceValue, true);
-        }
-    }
-
-    public class IPAddressTypeConverter : ITypeConverter<string, IPAddress>
-    {
-        public IPAddress Convert(ResolutionContext context)
-        {
-            return IPAddress.Parse((string) context.SourceValue);
         }
     }
 }
