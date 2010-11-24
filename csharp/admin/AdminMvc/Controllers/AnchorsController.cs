@@ -71,9 +71,10 @@ namespace Health.Direct.Admin.Console.Controllers
         }
 
         [Authorize]
-        public ActionResult Add(DomainModel domain)
+        public ActionResult Add(long domainID)
         {
-            return View(new AnchorUploadModel { Owner = (domain != null)? domain.Name : null });
+            var domain = m_domainRepository.Get(domainID);
+            return View(new AnchorUploadModel(Mapper.Map<Domain, DomainModel>(domain)));
         }
 
         [Authorize]
@@ -85,15 +86,25 @@ namespace Health.Direct.Admin.Console.Controllers
             if (TryUpdateModel(model))
             {
                 var bytes = GetFileFromRequest("certificateFile");
+                if (bytes.Length < 1)
+                {
+                    ModelState.AddModelError("certificateFile", "No file provided");
+                    return View(model);
+                }
+
+                var domain = m_domainRepository.GetByDomainName(model.Owner);
+                if (domain == null)
+                {
+                    ModelState.AddModelError("owner", "No matching domain found for owner.");
+                    return View(model);
+                }
+
                 var anchor = new Anchor(model.Owner, bytes, model.Password)
                                  {
                                      ForIncoming = (model.Purpose & PurposeType.Incoming) == PurposeType.Incoming,
                                      ForOutgoing = (model.Purpose & PurposeType.Outgoing) == PurposeType.Outgoing
                                  };
                 Repository.Add(anchor);
-
-                var domain = m_domainRepository.GetByDomainName(model.Owner);
-                if (domain == null) return View("NotFound");
 
                 return RedirectToAction("Index", new { domainID = domain.ID });
             }

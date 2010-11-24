@@ -51,9 +51,11 @@ namespace Health.Direct.Admin.Console.Models.Repositories
             return Client.AddAddress(address);
         }
 
-        public void Update(Address address)
+        public Address Update(Address address)
         {
             Client.UpdateAddresses(new[] {address});
+            address.UpdateDate = DateTimeHelper.Now;
+            return address;
         }
 
         public void Delete(Address address)

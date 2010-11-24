@@ -47,7 +47,7 @@ namespace Health.Direct.Admin.Console.Models.Repositories
             Client.RemoveAnchors(new[] {anchor.ID});
         }
 
-        public void Update(Anchor anchor)
+        public Anchor Update(Anchor anchor)
         {
             throw new NotSupportedException("Updating anchors not supported");
         }

@@ -15,15 +15,23 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web.Mvc;
 
 namespace Health.Direct.Admin.Console.Models
 {
-    [MetadataType(typeof(Metadata))]
     public class AnchorUploadModel : CertificateUploadModel
     {
+        public AnchorUploadModel()
+            : this(null)
+        {
+        }
+
+        public AnchorUploadModel(DomainModel domain)
+            : base(domain)
+        {
+        }
+
         public PurposeType Purpose { get; set; }
 
         public static SelectList PurposeTypeList

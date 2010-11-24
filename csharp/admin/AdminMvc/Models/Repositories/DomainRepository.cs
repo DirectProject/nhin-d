@@ -41,9 +41,11 @@ namespace Health.Direct.Admin.Console.Models.Repositories
             return Client.AddDomain(domain);
         }
 
-        public void Update(Domain domain)
+        public Domain Update(Domain domain)
         {
             Client.UpdateDomain(domain);
+            domain.UpdateDate = DateTimeHelper.Now;
+            return domain;
         }
 
         public void Delete(Domain domain)

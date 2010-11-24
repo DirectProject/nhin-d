@@ -97,6 +97,7 @@
     <Compile Include="Controllers\AnchorsController.cs" />
     <Compile Include="Controllers\CertificatesController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
+    <Compile Include="Controllers\ControllerErrorBase.cs" />
     <Compile Include="Controllers\DnsRecordsController.cs" />
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -192,12 +193,16 @@
     <Content Include="Views\Domains\Index.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Scripts\Master.js" />
     <Content Include="Scripts\OwnerAutocomplete.js" />
+    <Content Include="Views\Anchors\NotFound.aspx" />
     <Content Include="Views\Certificates\Resolve.aspx" />
     <Content Include="Views\Certificates\ResolveResult.aspx" />
     <Content Include="Views\DnsRecords\AddMx.aspx" />
     <Content Include="Views\DnsRecords\AddAname.aspx" />
     <Content Include="Views\DnsRecords\AddSoa.aspx" />
+    <Content Include="Views\Shared\ConfigStoreError.aspx" />
+    <Content Include="Views\Shared\ServiceDownError.aspx" />
     <Content Include="Views\Shared\UnAuthSite.Master" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

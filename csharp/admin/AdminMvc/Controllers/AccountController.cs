@@ -22,9 +22,7 @@ using Health.Direct.Admin.Console.Models.Repositories;
 
 namespace Health.Direct.Admin.Console.Controllers
 {
-
-    [HandleError]
-    public class AccountController : Controller
+    public class AccountController : ControllerErrorBase
     {
         private readonly IAuthRepository m_repository;
         public IFormsAuthenticationService FormsService { get; set; }

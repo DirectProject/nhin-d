@@ -21,7 +21,7 @@ namespace Health.Direct.Admin.Console.Models.Repositories
     {
         T Get(long id);
         T Add(T obj);
-        void Update(T obj);
+        T Update(T obj);
         void Delete(T obj);
 
         IQueryable<T> Query();

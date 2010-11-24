@@ -26,9 +26,11 @@ namespace Health.Direct.Admin.Console.Models.Repositories
             return Client.AddDnsRecord(record);
         }
 
-        public void Update(DnsRecord address)
+        public DnsRecord Update(DnsRecord address)
         {
             Client.UpdateDnsRecord(address);
+            address.UpdateDate = DateTimeHelper.Now;
+            return address;
         }
 
         public void Delete(DnsRecord record)

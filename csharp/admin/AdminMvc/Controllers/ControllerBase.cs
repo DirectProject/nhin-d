@@ -27,7 +27,7 @@ using MvcContrib.Pagination;
 
 namespace Health.Direct.Admin.Console.Controllers
 {
-    public abstract class ControllerBase<T,TModel,TRepository> : Controller
+    public abstract class ControllerBase<T, TModel, TRepository> : ControllerErrorBase
         where T : class
         where TRepository : IRepository<T>
     {

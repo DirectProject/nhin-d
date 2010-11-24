@@ -20,11 +20,6 @@ a.ui-state-disabled:hover
     text-decoration: none;
 }
 
-div.info-flash a
-{
-    text-decoration: underline !important;
-}
-
 .border-none
 {
     border: none !important;
@@ -171,4 +166,29 @@ p.thumbprint
     -o-text-overflow: ellipsis;
     white-space: nowrap;
     width: 10em;
+}
+
+div.flash
+{
+    margin-bottom: 1em; 
+    float: left;
+}
+
+div.flash a
+{
+    text-decoration: underline !important;
+    cursor: pointer;
+}
+
+div.flash div.ui-state-highlight
+{
+    padding: .3em .7em;
+    min-height: 1em;
+}
+
+div.flash span.flash-text,
+div.flash span.ui-icon-close
+{
+    line-height: 1em;
+    float: left;
 }

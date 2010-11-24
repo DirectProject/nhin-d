@@ -50,7 +50,7 @@ namespace Health.Direct.Admin.Console.Models.Repositories
             Client.RemoveCertificates(new[] {certificate.ID});
         }
 
-        public void Update(Certificate certificate)
+        public Certificate Update(Certificate certificate)
         {
             throw new NotSupportedException("Updates are not supported on Certificates");
         }

@@ -16,7 +16,7 @@
                 column.For(a => a.DisplayName);
                 column.For(a => a.Status).Attributes(@class => "status");
                 column.For(d => Html.Span(Formatter.Format(d.CreateDate), new { title = d.CreateDate })).Named("Created On");
-                column.For(d => Html.Span(Formatter.Format(d.UpdateDate), new { title = d.UpdateDate })).Named("Updated On");
+                column.For(d => Html.Span(Formatter.Format(d.UpdateDate), new { @class="update-date", title = d.UpdateDate })).Named("Updated On");
                 column.For(a => Html.ActionLink("View", "Details", new { id = a.ID }, new { @class = "view-details" }));
                 column.For(a => Html.ActionLink("Edit", "Edit", new { id = a.ID }));
                 column.For(a => a.IsEnabled

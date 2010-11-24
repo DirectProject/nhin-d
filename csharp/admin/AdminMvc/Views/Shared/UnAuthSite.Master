@@ -6,7 +6,7 @@
 <head runat="server">
     <title>The Direct Project Console - <asp:ContentPlaceHolder ID="TitleContent" runat="server" /></title>
     <%= Html.JQueryUITheme("redmond") %>
-    <link href="../../Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js" type="text/javascript" language="javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js" type="text/javascript" language="javascript"></script>
 </head>
@@ -16,7 +16,7 @@
 
         <div class="ui-widget-header border-none">
             <span id="title">
-                <img src="../../Content/logo.png" alt="logo" />
+                <img src="<%= Url.Content("~/Content/logo.png") %>" alt="logo" />
             </span>
         </div>
 

@@ -55,6 +55,6 @@
     
     <% } %>
 
-    <script type="text/javascript" language="javascript" src="../../Scripts/OwnerAutocomplete.js"></script>
+    <script type="text/javascript" language="javascript" src="<%= Url.Content("~/Scripts/OwnerAutocomplete.js") %>"></script>
 
 </asp:Content>

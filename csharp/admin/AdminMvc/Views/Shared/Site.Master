@@ -6,21 +6,19 @@
 <head runat="server">
     <title>The Direct Project Console - <asp:ContentPlaceHolder ID="TitleContent" runat="server" /></title>
     <%= Html.JQueryUITheme("redmond") %>
-    <link href="../../Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript" language="javascript"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js" type="text/javascript" language="javascript"></script>
-    <script src="../../Scripts/Common.js" type="text/javascript" language="javascript"></script>
-    <script type="text/javascript" language="javascript">
-        $(function() { $('#switcher').themeswitcher({ expires: 30, path: '/' }); });
-    </script>
+    <script src="<%= Url.Content("~/Scripts/Common.js") %>" type="text/javascript" language="javascript"></script>
+    <script src="<%= Url.Content("~/Scripts/Master.js") %>" type="text/javascript" language="javascript"></script>
 </head>
 
 <body class="ui-widget-content">
     <div>
 
         <div class="ui-widget-header border-none">
-            <a href="http://nhindirect.org"><img src="../../Content/logo.png" alt="Direct Project link" border="0" style="padding: 2px 5px;" /></a>
+            <a href="http://nhindirect.org"><img src="<%= Url.Content("~/Content/logo.png") %>" alt="Direct Project link" border="0" style="padding: 2px 5px;" /></a>
             <ul style="float: right; font-size: 10px; height: 30px; line-height: 30px; font-weight: normal; margin-right: 30px;">
                 <li style="display: inline; margin: 0; padding: 0; text-transform: lowercase;"><%= HttpContext.Current.User.Identity.Name %></li>
                 <li style="border-left: solid 1px; padding-left: 10px; margin-left: 8px; display: inline;"><%= Html.ActionLink("Log Out", "LogOff", "Account") %></li>
@@ -50,101 +48,8 @@
     </div>
 
     <script type="text/javascript" language="javascript">
+        $(function() { $('#switcher').themeswitcher({ expires: 30, path: '/' }); });
         var controllerName = '<%= ViewContext.RouteData.Values["Controller"].ToString().ToLower() %>';
-        $(function() {
-            $(':submit').button().click(function() { $(this).button("disable"); $('form').submit(); });
-            $('a.action').button();
-            $('div.ui-tabs #tab-' + controllerName).addClass('ui-tabs-selected ui-state-active');
-            $('a.enable-disable-action').click(changeAndUpdateStatus);
-            $('table.grid tbody tr').hover(
-                function() { $(this).addClass('ui-state-highlight'); },
-                function() { $(this).removeClass('ui-state-highlight'); }
-                )
-                .dblclick(function(event) {
-                    event.preventDefault();
-                    clearSelection();
-                    $('a.view-details', this).click();
-                });
-            $('#close-flash').click(function() { $('div.info-flash').hide(); });
-
-            $(".input-validation-error").addClass("ui-state-error");
-            $(".field-validation-error").addClass("ui-state-error-text");
-            $("span.ui-state-error-text:contains('*')").html('<span class="ui-icon ui-icon-alert"></span>');
-        });
-        function clearSelection() {
-            if (document.selection && document.selection.empty) {
-                document.selection.empty();
-            } else if (window.getSelection) {
-                var sel = window.getSelection();
-                sel.removeAllRanges();
-            }
-        }
-        function confirmDelete(event, dialog, link, message, objectName) {
-            event.preventDefault();
-            dialog.html('<p>' + message + '</p>');
-            dialog.dialog({
-                title: 'Confirmation',
-                resizable: false,
-                width: 500,
-                modal: true,
-                buttons: {
-                    "Delete": function() {
-                        $.post(link[0].href, function(data) {
-                            if (data == '<%= Boolean.TrueString %>') {
-                                link.closest('tr').hide('fast');
-                            } else if (data == 'NotFound') {
-                                alert(objectName + ' was not found.');
-                            } else {
-                                alert('An error occurred - ' + data);
-                            }
-                        });
-                        $(this).dialog("close");
-                    },
-                    "Cancel": function() { $(this).dialog("close"); }
-                }
-            });
-        }
-        function changeAndUpdateStatus(event) {
-            event.preventDefault();
-            var link = $(this);
-            link.text(link.text().replace(/le$/, 'ling...')).attr('disabled', true).addClass('ui-state-disabled');
-            $.post(link[0].href, function(data) {
-                adjustStatusForRow(link, data);
-            });
-        }
-        function adjustStatusForRow(link, data) {
-            link.attr('disabled', false).removeClass('ui-state-disabled');
-            var row = link.closest('tr');
-            var status = data.Status;
-            var oldActionString = status == 'Enabled' ? 'Enable' : 'Disable'
-            var newActionString = status == 'Enabled' ? 'Disable' : 'Enable'
-
-            $('td.status', row).text(status);
-
-            var actionCell = $('td a.enable-disable-action', row);
-            actionCell.text(newActionString);
-            var href = actionCell.attr('href');
-            actionCell.attr('href', href.replace(oldActionString, newActionString));
-        }
-        function endsWith(str, suffix) {
-            return str.indexOf(suffix, str.length - suffix.length) !== -1;
-        }
-        function showDetailsDialog(dialog, event, link, title) {
-            event.preventDefault();
-            clearDialog();
-            $.get(link.attr('href'), function(data) { updateAndShowDialog(dialog, data, title); });
-        }
-        function updateAndShowDialog(dialog, data, title) {
-            updateDialog(dialog, data);
-            dialog.dialog({
-                title: title,
-                modal: true,
-                width: 550
-            });
-        }
-        function clearDialog(dialog) {
-            $('div.display-field', dialog).text('');
-        }
     </script>
 </body>
 </html>
