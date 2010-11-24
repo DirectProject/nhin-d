@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -74,7 +73,7 @@ namespace Health.Direct.Admin.Console.Controllers
 
             if (TryUpdateModel(model))
             {
-                Repository.Add(Mapper.Map<DnsRecordModel, DnsRecord>(model));
+                Repository.Add(Mapper.Map<T, DnsRecord>(model));
                 return RedirectToAction("Index");
             }
 
