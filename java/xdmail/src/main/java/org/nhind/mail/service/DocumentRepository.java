@@ -28,7 +28,6 @@
 
 package org.nhind.mail.service;
 
-import ihe.iti.xds_b._2007.DocumentRepositoryPortType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
 import java.util.UUID;
@@ -38,7 +37,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhind.mail.util.DocumentRepositoryUtils;
+import org.nhindirect.xd.proxy.DocumentRepositoryProxy;
 
 /**
  * Document repository class for handling XDS webservice calls.
@@ -81,25 +80,15 @@ public class DocumentRepository
 
         setHeaderData();
 
-        DocumentRepositoryPortType port = null;
-
-        try
-        {
-            port = DocumentRepositoryUtils.getDocumentRepositoryPortType(endpoint);
-        }
-        catch (Exception e)
-        {
-            LOGGER.error("Unable to create port", e);
-            throw e;
-        }
-
         // Inspect the message
         //
         // QName qname = new QName("urn:ihe:iti:xds-b:2007", "ProvideAndRegisterDocumentSet_bRequest");
         // String body = XMLUtils.marshal(qname, prds, ihe.iti.xds_b._2007.ObjectFactory.class);
         // LOGGER.info(body);
+        
+        DocumentRepositoryProxy proxy = new DocumentRepositoryProxy(endpoint, new RepositoryHandlerResolver());
 
-        RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(prds);
+        RegistryResponseType rrt = proxy.provideAndRegisterDocumentSetB(prds);
 
         String response = rrt.getStatus();
 

@@ -116,45 +116,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxws-maven-plugin</artifactId>
-                <version>1.10</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>wsimport</goal>
-                        </goals>
-                        <configuration>
-                            <wsdlFiles>
-                                <wsdlFile>XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl</wsdlFile>
-                            </wsdlFiles>
-                            <wsdlLocation>
-                                /XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl
-                            </wsdlLocation>
-                            <staleFile>${project.build.directory}/jaxws/stale/XDS.b_DocumentRepositoryWSDLSynchMTOM.stale
-                            </staleFile>
-                        </configuration>
-                        <id>wsimport-generate-XDS.b_DocumentRepositoryWSDLSynchMTOM</id>
-                        <phase>generate-sources</phase>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.xml</groupId>
-                        <artifactId>webservices-api</artifactId>
-                        <version>1.4</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <sourceDestDir>${project.build.directory}/generated-sources/jaxws-wsimport
-                    </sourceDestDir>
-                    <xnocompile>true</xnocompile>
-                    <verbose>true</verbose>
-                    <extension>true</extension>
-                    <catalog>${basedir}/src/jax-ws-catalog.xml</catalog>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
