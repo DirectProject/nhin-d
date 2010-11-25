@@ -90,7 +90,7 @@
 	</Target>
 
 	<Target Name="publish-configui">
-		<CallTarget Targets="clean-configui" />
+		<MSBuild Targets="clean-configui" Projects="$(MSBuildProjectFile)" Properties="state=pre" />
 		<AspNetCompiler
 				VirtualPath="/ConfigUI"
 				PhysicalPath="admin\adminmvc\"
@@ -116,7 +116,7 @@
 			Condition="Exists('C:\Program Files (x86)\inno setup 5\iscc.exe')" />
 		<Exec Command='"C:\Program Files\inno setup 5\iscc.exe" /Q installer\DirectGateway.iss' 
 			Condition="Exists('C:\Program Files\inno setup 5\iscc.exe')" />
-		<CallTarget Targets="clean-configui" />
+		<MSBuild Targets="clean-configui" Projects="$(MSBuildProjectFile)" Properties="state=post" />
 	</Target>
 	
 </Project>
