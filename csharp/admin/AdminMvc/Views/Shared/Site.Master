@@ -4,6 +4,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
+    <link rel="shortcut icon" href="~/content/favicon.ico" />
+    <link rel="icon" type="image/vnd.microsoft.icon" href="~/content/favicon.ico" />
     <title>The Direct Project Console - <asp:ContentPlaceHolder ID="TitleContent" runat="server" /></title>
     <%= Html.JQueryUITheme("redmond") %>
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
