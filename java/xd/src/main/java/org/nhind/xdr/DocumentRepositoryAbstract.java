@@ -28,8 +28,6 @@
 
 package org.nhind.xdr;
 
-import ihe.iti.xds_b._2007.DocumentRepositoryPortType;
-import ihe.iti.xds_b._2007.DocumentRepositoryService;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
@@ -47,11 +45,8 @@ import javax.annotation.Resource;
 import javax.mail.util.ByteArrayDataSource;
 import javax.naming.InitialContext;
 import javax.servlet.ServletContext;
-import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.soap.MTOMFeature;
-import javax.xml.ws.soap.SOAPBinding;
 
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
@@ -60,6 +55,7 @@ import org.nhind.xdm.MailClient;
 import org.nhind.xdm.impl.SmtpMailClient;
 import org.nhindirect.xd.common.DirectDocuments;
 import org.nhindirect.xd.common.DirectMessage;
+import org.nhindirect.xd.proxy.DocumentRepositoryProxy;
 import org.nhindirect.xd.routing.RoutingResolver;
 import org.nhindirect.xd.routing.impl.RoutingResolverImpl;
 import org.nhindirect.xd.transform.XdsDirectDocumentsTransformer;
@@ -220,18 +216,10 @@ public abstract class DocumentRepositoryAbstract
                 docs.add(doc);
 
                 LOGGER.info(" SENDING TO ENDPOINT " + to);
-                DocumentRepositoryService service = new DocumentRepositoryService();
-                service.setHandlerResolver(new RepositoryHandlerResolver());
 
-                DocumentRepositoryPortType port = service.getDocumentRepositoryPortSoap12(new MTOMFeature(true, 1));
-
-                BindingProvider bp = (BindingProvider) port;
-                SOAPBinding binding = (SOAPBinding) bp.getBinding();
-                binding.setMTOMEnabled(true);
-
-                bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointUrl);
-
-                RegistryResponseType rrt = port.documentRepositoryProvideAndRegisterDocumentSetB(prdst);
+                DocumentRepositoryProxy proxy = new DocumentRepositoryProxy(endpointUrl, new RepositoryHandlerResolver());
+                
+                RegistryResponseType rrt = proxy.provideAndRegisterDocumentSetB(prdst);
                 String test = rrt.getStatus();
                 if (test.indexOf("Failure") >= 0) 
                 {

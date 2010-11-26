@@ -62,7 +62,6 @@ public class DocumentRepositoryProxy
         {
             URL url = DocumentRepositoryProxy.class.getClassLoader().getResource(
                     "XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl");
-            LOGGER.info("Beau wsdl: " + url.toString());
 
             QName qname = new QName("urn:ihe:iti:xds-b:2007", "DocumentRepository_Service");
             DocumentRepositoryService service = new DocumentRepositoryService(url, qname);
@@ -80,8 +79,7 @@ public class DocumentRepositoryProxy
         }
         catch (Exception e)
         {
-            LOGGER.error("Beau threw an error: " + e);
-            e.printStackTrace();
+            LOGGER.error("Error initializing proxy.", e);
         }
     }
 
