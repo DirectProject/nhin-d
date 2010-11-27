@@ -108,18 +108,14 @@ public class NHINDMailet extends GenericMailet
                 // Replace recipients with only XD* addresses
                 mail.getMessage().setRecipients(RecipientType.TO, xdAddresses.toArray(new Address[0]));
 
-                List<ProvideAndRegisterDocumentSetRequestType> requests = getMimeXDSTransformer().transform(
-                        mail.getMessage());
+                ProvideAndRegisterDocumentSetRequestType request = getMimeXDSTransformer().transform(mail.getMessage());
 
-                for (ProvideAndRegisterDocumentSetRequestType request : requests)
+                String response = getDocumentRepository().forwardRequest(endpointUrl, request);
+
+                if (!isSuccessful(response))
                 {
-                    String response = getDocumentRepository().forwardRequest(endpointUrl, request);
-
-                    if (!isSuccessful(response))
-                    {
-                        LOGGER.error("NHINDMailet failed to deliver XD message.");
-                        LOGGER.error(response);
-                    }
+                    LOGGER.error("NHINDMailet failed to deliver XD message.");
+                    LOGGER.error(response);
                 }
             }
             catch (Throwable e)
