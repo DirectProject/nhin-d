@@ -163,6 +163,19 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                     sto.setValue(to);
                 }
 
+                SOAPHeaderElement directHeader = sh.addHeaderElement(new QName("urn:direct:addressing", "addressBlock"));
+                directHeader.setPrefix("direct");
+                directHeader.setRole("urn:direct:addressing:destination");
+                directHeader.setRelay(true);
+                
+                SOAPElement directFrom = directHeader.addChildElement(new QName("from"));
+                directFrom.setPrefix("direct");
+                directFrom.setValue("fromAddress");
+                
+                SOAPElement directTo = directHeader.addChildElement(new QName("to"));
+                directTo.setPrefix("direct");
+                directTo.setValue("toAddress");
+
             } else {
                //should not be any inbound
             }

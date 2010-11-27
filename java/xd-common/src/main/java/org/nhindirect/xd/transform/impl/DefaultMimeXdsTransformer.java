@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import javax.mail.Address;
@@ -90,8 +89,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      * @see org.nhindirect.transform.MimeXdsTransformer#transform(javax.mail.internet.MimeMessage)
      */
     @Override
-    public List<ProvideAndRegisterDocumentSetRequestType> transform(MimeMessage mimeMessage)
-            throws TransformationException
+    public ProvideAndRegisterDocumentSetRequestType transform(MimeMessage mimeMessage) throws TransformationException
     {
         DirectDocuments documents = new DirectDocuments();
 
@@ -269,8 +267,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         
         try
         {
-            ProvideAndRegisterDocumentSetRequestType request = documents.toProvideAndRegisterDocumentSetRequestType();
-            return Arrays.asList(request);
+            return documents.toProvideAndRegisterDocumentSetRequestType();
         }
         catch (IOException e)
         {

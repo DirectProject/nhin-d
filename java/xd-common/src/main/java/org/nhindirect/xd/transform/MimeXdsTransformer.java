@@ -30,8 +30,6 @@ package org.nhindirect.xd.transform;
 
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
-import java.util.List;
-
 import javax.mail.internet.MimeMessage;
 
 import org.nhindirect.xd.transform.exception.TransformationException;
@@ -50,9 +48,9 @@ public interface MimeXdsTransformer
      * 
      * @param mimeMessage
      *            The MimeMessage object to trasform.
-     * @return a List of ProvideAndRegisterDocumentSetRequestType objects.
+     * @return a ProvideAndRegisterDocumentSetRequestType objects.
      * @throws TransformationException
      */
-    public List<ProvideAndRegisterDocumentSetRequestType> transform(MimeMessage mimeMessage)
+    public ProvideAndRegisterDocumentSetRequestType transform(MimeMessage mimeMessage)
             throws TransformationException;
 }
