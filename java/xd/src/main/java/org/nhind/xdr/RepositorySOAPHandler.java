@@ -51,6 +51,7 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.nhindirect.xd.proxy.ThreadData;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -72,6 +73,9 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     protected String thisHost;
     protected String pid;
     protected String from;
+    
+    protected String directFrom;
+    protected String directTo;
 
     /**
      * Class logger.
@@ -163,6 +167,22 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                     SOAPHeaderElement sto = sh.addHeaderElement(qname);
                     sto.setValue(to);
                 }
+                
+                if (StringUtils.isNotBlank(directFrom) && StringUtils.isNotBlank(directTo))
+                {
+                    SOAPHeaderElement directHeader = sh.addHeaderElement(new QName("urn:direct:addressing", "addressBlock"));
+                    directHeader.setPrefix("direct");
+                    directHeader.setRole("urn:direct:addressing:destination");
+                    directHeader.setRelay(true);
+
+                    SOAPElement directFromElement = directHeader.addChildElement(new QName("from"));
+                    directFromElement.setPrefix("direct");
+                    directFromElement.setValue(StringUtils.contains(directFrom, "mailto:") ? directFrom : "mailto:" + directFrom);
+
+                    SOAPElement directToElement = directHeader.addChildElement(new QName("to"));
+                    directToElement.setPrefix("direct");
+                    directToElement.setValue(StringUtils.contains(directTo, "mailto:") ? directTo : "mailto:" + directTo);
+                }
 
             } else {
                 // INBOUND
@@ -175,6 +195,9 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                 thisHost = null;
                 pid = null;
                 relatesTo = null;
+                
+                directFrom = null;
+                directTo = null;
              
                 LOGGER.info("Direction=inbound (handleMessage)");
 
@@ -196,50 +219,83 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                 
                 @SuppressWarnings("unchecked")
                 Iterator<Node> it = sh.extractAllHeaderElements();
-                while (it.hasNext()) {
+                while (it.hasNext())
+                {
                     Node header = it.next();
                     LOGGER.info(header.getNodeName());
 
-                    if (header.toString().indexOf("MessageID") >= 0) {
+                    if (StringUtils.contains(header.toString(), "MessageID"))
+                    {
                         messageId = header.getTextContent();
                         LOGGER.info(messageId);
-
-                    } else if (header.toString().indexOf("Action") >= 0) {
+                    }
+                    else if (StringUtils.contains(header.toString(), "Action"))
+                    {
                         action = header.getTextContent();
                         LOGGER.info(action);
-                    } else if (header.toString().indexOf("RelatesTo") >= 0) {
+                    }
+                    else if (StringUtils.contains(header.toString(), "RelatesTo"))
+                    {
                         relatesTo = header.getTextContent();
                         LOGGER.info(action);
-                    } else if (header.toString().indexOf("ReplyTo") >= 0) {
+                    }
+                    else if (StringUtils.contains(header.toString(), "ReplyTo"))
+                    {
                         NodeList reps = header.getChildNodes();
-                        for (int i = 0; i < reps.getLength(); i++) {
+                        for (int i = 0; i < reps.getLength(); i++)
+                        {
                             Node address = reps.item(i);
                             LOGGER.info(address.getNodeName());
-                            if (address.getNodeName().indexOf("Address") >= 0) {
+                            if (StringUtils.contains(address.getNodeName(), "Address"))
+                            {
                                 endpoint = address.getTextContent();
                                 LOGGER.info(endpoint);
-
                             }
                         }
-                    } else if (header.toString().indexOf("From") >= 0) {
+                    }
+                    else if (StringUtils.contains(header.toString(), "From"))
+                    {
                         NodeList reps = header.getChildNodes();
-                        for (int i = 0; i < reps.getLength(); i++) {
+                        for (int i = 0; i < reps.getLength(); i++)
+                        {
                             Node address = reps.item(i);
                             LOGGER.info(address.getNodeName());
-                            if (address.getNodeName().indexOf("Address") >= 0) {
+                            if (StringUtils.contains(address.getNodeName(), "Address"))
+                            {
                                 from = address.getTextContent();
                                 LOGGER.info(from);
-
                             }
                         }
-                    } else if (header.toString().indexOf("To") >= 0) {// must be after ReplyTo
+                    }
+                    else if (StringUtils.contains(header.toString(), "To")) // must be after ReplyTo
+                    {
                         to = header.getTextContent();
                         LOGGER.info(to);
                     }
+                    else if (StringUtils.contains(header.toString(), "addressBlock"))
+                    {
+                        NodeList childNodes = header.getChildNodes();
+                        
+                        for (int i = 0; i < childNodes.getLength(); i++)
+                        {
+                            Node node = childNodes.item(i);
+                            LOGGER.info(node.getNodeName());
+                            
+                            if (StringUtils.contains(node.getNodeName(), "from"))
+                            {
+                                directFrom = node.getTextContent();
+                                LOGGER.info(directFrom);
+                            }
+                            else if (StringUtils.contains(node.getNodeName(), "to"));
+                            {
+                                directTo = node.getTextContent();
+                                LOGGER.info(directTo);
+                            }
+                        }
+                    }
                 }
+                
                 setHeaderData();
-
-
             }
 
         } catch (Exception e) {
@@ -365,6 +421,9 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         remoteHost = threadData.getRemoteHost();
         pid = threadData.getPid();
         from = threadData.getFrom();
+        
+        directFrom = threadData.getDirectFrom();
+        directTo = threadData.getDirectTo();
     }
 
     /**
@@ -383,6 +442,9 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         threadData.setTo(to);
         threadData.setPid(pid);
         threadData.setFrom(from);
+        
+        threadData.setDirectFrom(directFrom);
+        threadData.setDirectTo(directTo);
     }
 
     /**
