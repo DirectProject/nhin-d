@@ -56,6 +56,7 @@ import org.nhind.xdm.impl.SmtpMailClient;
 import org.nhindirect.xd.common.DirectDocuments;
 import org.nhindirect.xd.common.DirectMessage;
 import org.nhindirect.xd.proxy.DocumentRepositoryProxy;
+import org.nhindirect.xd.proxy.ThreadData;
 import org.nhindirect.xd.routing.RoutingResolver;
 import org.nhindirect.xd.routing.impl.RoutingResolverImpl;
 import org.nhindirect.xd.transform.XdsDirectDocumentsTransformer;
@@ -79,6 +80,9 @@ public abstract class DocumentRepositoryAbstract
     protected String relatesTo = null;
     protected String action = null;
     protected String to = null;
+    
+    protected String directTo = null;
+    protected String directFrom = null;
     
     private String thisHost = null;
     private String remoteHost = null;
@@ -410,6 +414,9 @@ public abstract class DocumentRepositoryAbstract
         this.pid = threadData.getPid();
         this.action = threadData.getAction();
         this.from = threadData.getFrom();
+        
+        this.directTo = threadData.getDirectTo();
+        this.directFrom = threadData.getDirectFrom();
 
         LOGGER.info(threadData.toString());
     }
@@ -430,6 +437,9 @@ public abstract class DocumentRepositoryAbstract
         threadData.setRemoteHost(this.remoteHost);
         threadData.setPid(this.pid);
         threadData.setFrom(this.from);
+        
+        threadData.setDirectTo(this.directTo);
+        threadData.setDirectFrom(this.directFrom);
 
         LOGGER.info(threadData.toString());
     }
