@@ -69,6 +69,9 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     protected String thisHost;
     protected String pid;
     protected String from;
+    
+    protected String directTo;
+    protected String directFrom;
 
     /**
      * Class logger.
@@ -168,13 +171,13 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                 directHeader.setRole("urn:direct:addressing:destination");
                 directHeader.setRelay(true);
                 
-                SOAPElement directFrom = directHeader.addChildElement(new QName("from"));
-                directFrom.setPrefix("direct");
-                directFrom.setValue("fromAddress");
+                SOAPElement directFromElement = directHeader.addChildElement(new QName("from"));
+                directFromElement.setPrefix("direct");
+                directFromElement.setValue("mailto:" + directFrom);
                 
-                SOAPElement directTo = directHeader.addChildElement(new QName("to"));
-                directTo.setPrefix("direct");
-                directTo.setValue("toAddress");
+                SOAPElement directToElement = directHeader.addChildElement(new QName("to"));
+                directToElement.setPrefix("direct");
+                directToElement.setValue("mailto:" + directTo);
 
             } else {
                //should not be any inbound
@@ -309,6 +312,9 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         remoteHost = threadData.getRemoteHost();
         pid = threadData.getPid();
         from = threadData.getFrom();
+        
+        directTo = threadData.getDirectTo();
+        directFrom = threadData.getDirectFrom();
     }
 
     /**
@@ -328,6 +334,9 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         threadData.setTo(to);
         threadData.setPid(pid);
         threadData.setFrom(from);
+        
+        threadData.setDirectTo(directTo);
+        threadData.setDirectFrom(directFrom);
     }
 
     /**

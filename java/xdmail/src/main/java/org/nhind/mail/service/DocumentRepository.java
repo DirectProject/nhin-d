@@ -49,6 +49,9 @@ public class DocumentRepository
     private String to = null;
     private String action = null;
     private String messageId = null;
+    
+    private String directTo = null;
+    private String directFrom = null;
 
     /**
      * Class logger.
@@ -65,7 +68,7 @@ public class DocumentRepository
      *            The ProvideAndRegisterDocumentSetRequestType object.
      * @throws Exception
      */
-    public String forwardRequest(String endpoint, ProvideAndRegisterDocumentSetRequestType prds) throws Exception
+    public String forwardRequest(String endpoint, ProvideAndRegisterDocumentSetRequestType prds, String directTo, String directFrom) throws Exception
     {
         if (StringUtils.isBlank(endpoint))
             throw new IllegalArgumentException("Endpoint must not be blank");
@@ -77,6 +80,9 @@ public class DocumentRepository
         this.action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
         this.messageId = UUID.randomUUID().toString();
         this.to = endpoint;
+        
+        this.directTo = directTo;
+        this.directFrom = directFrom;
 
         setHeaderData();
 
@@ -117,6 +123,9 @@ public class DocumentRepository
         threadData.setTo(this.to);
         threadData.setMessageId(this.messageId);
         threadData.setAction(this.action);
+        
+        threadData.setDirectTo(this.directTo);
+        threadData.setDirectFrom(this.directFrom);
 
         LOGGER.info(threadData.toString());
     }

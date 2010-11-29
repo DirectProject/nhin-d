@@ -110,12 +110,15 @@ public class NHINDMailet extends GenericMailet
 
                 ProvideAndRegisterDocumentSetRequestType request = getMimeXDSTransformer().transform(mail.getMessage());
 
-                String response = getDocumentRepository().forwardRequest(endpointUrl, request);
-
-                if (!isSuccessful(response))
+                for (String directTo : recipAddresses)
                 {
-                    LOGGER.error("NHINDMailet failed to deliver XD message.");
-                    LOGGER.error(response);
+                    String response = getDocumentRepository().forwardRequest(endpointUrl, request, directTo, mail.getSender().toString());
+
+                    if (!isSuccessful(response))
+                    {
+                        LOGGER.error("NHINDMailet failed to deliver XD message.");
+                        LOGGER.error(response);
+                    }
                 }
             }
             catch (Throwable e)

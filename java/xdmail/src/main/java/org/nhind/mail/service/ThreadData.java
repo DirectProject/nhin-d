@@ -48,6 +48,8 @@ public class ThreadData {
     public static final String REMOTEHOST = "remotehost";
     public static final String PID = "pid";
     public static final String FROM = "from";
+    public static final String DIRECT_TO = "directTo";
+    public static final String DIRECT_FROM = "directFrom";
     
     private Long threadId = null;
 
@@ -165,7 +167,27 @@ public class ThreadData {
     public void setRelatesTo(String value) {
         setValue(value, RELATESTO);
     }
+    
+    /**
+     * Set the value for the key DIRECT_TO.
+     * 
+     * @param value
+     *            the value for the key DIRECT_TO.
+     */
+    public void setDirectTo(String value) {
+        setValue(value, DIRECT_TO);
+    }
 
+    /**
+     * Set the value for the key DIRECT_FROM.
+     * 
+     * @param value
+     *            the value for the key DIRECT_FROM.
+     */
+    public void setDirectFrom(String value) {
+        setValue(value, DIRECT_FROM);
+    }
+    
     /**
      * Return the value for the key THISHOST.
      * 
@@ -245,6 +267,24 @@ public class ThreadData {
      */
     public String getRelatesTo() {
         return getValue(RELATESTO);
+    }
+    
+    /**
+     * Return the value for the key DIRECT_TO.
+     * 
+     * @return the value for the key DIRECT_TO.
+     */
+    public String getDirectTo() {
+        return getValue(DIRECT_TO);
+    }
+    
+    /**
+     * Return the value for the key DIRECT_FROM.
+     * 
+     * @return the value for the key DIRECT_FROM.
+     */
+    public String getDirectFrom() {
+        return getValue(DIRECT_FROM);
     }
 
     /**
