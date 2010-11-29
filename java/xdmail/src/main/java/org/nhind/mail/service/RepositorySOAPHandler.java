@@ -51,6 +51,7 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.proxy.ThreadData;
 
 /**
  * This class handles the SOAP-Requests before they reach the Web Service
