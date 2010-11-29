@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.xd.proxy.DocumentRepositoryProxy;
+import org.nhindirect.xd.proxy.ThreadData;
 
 /**
  * Document repository class for handling XDS webservice calls.
