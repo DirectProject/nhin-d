@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhind.xdr;
+package org.nhindirect.xd.proxy;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,6 +48,8 @@ public class ThreadData {
     public static final String REMOTEHOST = "remotehost";
     public static final String PID = "pid";
     public static final String FROM = "from";
+    public static final String DIRECT_TO = "directTo";
+    public static final String DIRECT_FROM = "directFrom";
     
     private Long threadId = null;
 
@@ -59,7 +61,8 @@ public class ThreadData {
     /**
      * Constructor.
      * 
-     * @param id The value to set as the ID for the ThreadData object
+     * @param id
+     *            The value to set as the ID for the ThreadData object.
      */
     public ThreadData(Long id) {
         this.threadId = id;
@@ -69,106 +72,126 @@ public class ThreadData {
      * Remove an element from the threadMap object specified by the given id.
      * 
      * @param id
-     *            The id of the element to remove from the threadMap object
+     *            The id of the element to remove from the threadMap object.
      */
     public static void clean(Long id) {
         threadMap.remove(id);
     }
 
     /**
-     * Set the value for the key MESSAGE
+     * Set the value for the key MESSAGE.
      * 
      * @param value
-     *            the value for the key MESSAGE
+     *            the value for the key MESSAGE.
      */
     public void setMessageId(String value) {
         setValue(value, MESSAGE);
     }
 
     /**
-     * Set the value for the key FROM
+     * Set the value for the key FROM.
      * 
      * @param value
-     *            the value for the key FROM
+     *            the value for the key FROM.
      */
     public void setFrom(String value) {
         setValue(value,FROM);
     }
 
     /**
-     * Set the value for the key THISHOST
+     * Set the value for the key THISHOST.
      * 
      * @param value
-     *            the value for the key THISHOST
+     *            the value for the key THISHOST.
      */
     public void setThisHost(String value) {
         setValue(value, THISHOST);
     }
 
     /**
-     * Set the value for the key REMOTEHOST
+     * Set the value for the key REMOTEHOST.
      * 
      * @param value
-     *            the value for the key REMOTEHOST
+     *            the value for the key REMOTEHOST.
      */
     public void setRemoteHost(String value) {
         setValue(value, REMOTEHOST);
     }
 
     /**
-     * Set the value for the key ACTION
+     * Set the value for the key ACTION.
      * 
      * @param value
-     *            the value for the key ACTION
+     *            the value for the key ACTION.
      */
     public void setAction(String value) {
         setValue(value, ACTION);
     }
 
     /**
-     * Set the value for the key PID
+     * Set the value for the key PID.
      * 
      * @param value
-     *            the value for the key PID
+     *            the value for the key PID.
      */
     public void setPid(String value) {
         setValue(value, PID);
     }
 
     /**
-     * Set the value for the key REPLY
+     * Set the value for the key REPLY.
      * 
      * @param value
-     *            the value for the key REPLY
+     *            the value for the key REPLY.
      */
     public void setReplyAddress(String value) {
         setValue(value, REPLY);
     }
 
     /**
-     * Set the value for the key TO
+     * Set the value for the key TO.
      * 
      * @param value
-     *            the value for the key TO
+     *            the value for the key TO.
      */
     public void setTo(String value) {
         setValue(value, TO);
     }
 
     /**
-     * Set the value for the key RELATESTO
+     * Set the value for the key RELATESTO.
      * 
      * @param value
-     *            the value for the key RELATESTO
+     *            the value for the key RELATESTO.
      */
     public void setRelatesTo(String value) {
         setValue(value, RELATESTO);
     }
+    
+    /**
+     * Set the value for the key DIRECT_TO.
+     * 
+     * @param value
+     *            the value for the key DIRECT_TO.
+     */
+    public void setDirectTo(String value) {
+        setValue(value, DIRECT_TO);
+    }
 
+    /**
+     * Set the value for the key DIRECT_FROM.
+     * 
+     * @param value
+     *            the value for the key DIRECT_FROM.
+     */
+    public void setDirectFrom(String value) {
+        setValue(value, DIRECT_FROM);
+    }
+    
     /**
      * Return the value for the key THISHOST.
      * 
-     * @return the value for the key THISHOST
+     * @return the value for the key THISHOST.
      */
     public String getThisHost() {
        return getValue(THISHOST);
@@ -177,7 +200,7 @@ public class ThreadData {
     /**
      * Return the value for the key REMOTEHOST.
      * 
-     * @return the value for the key REMOTEHOST
+     * @return the value for the key REMOTEHOST.
      */
     public String getRemoteHost() {
         return getValue(REMOTEHOST);
@@ -186,7 +209,7 @@ public class ThreadData {
     /**
      * Return the value for the key MESSAGE.
      * 
-     * @return the value for the key MESSAGE
+     * @return the value for the key MESSAGE.
      */
     public String getMessageId() {
         return getValue(MESSAGE);
@@ -195,7 +218,7 @@ public class ThreadData {
     /**
      * Return the value for the key ACTION.
      * 
-     * @return the value for the key ACTION
+     * @return the value for the key ACTION.
      */
     public String getAction() {
         return getValue(ACTION);
@@ -204,7 +227,7 @@ public class ThreadData {
     /**
      * Return the value for the key PID.
      * 
-     * @return the value for the key PID
+     * @return the value for the key PID.
      */
     public String getPid() {
         return getValue(PID);
@@ -213,7 +236,7 @@ public class ThreadData {
     /**
      * Return the value for the key REPLY.
      * 
-     * @return the value for the key REPLY
+     * @return the value for the key REPLY.
      */
     public String getReplyAddress() {
         return getValue(REPLY);
@@ -222,7 +245,7 @@ public class ThreadData {
     /**
      * Return the value for the key TO.
      * 
-     * @return the value for the key TO
+     * @return the value for the key TO.
      */
     public String getTo() {
         return getValue(TO);
@@ -231,7 +254,7 @@ public class ThreadData {
     /**
      * Return the value for the key FROM.
      * 
-     * @return the value for the key FROM
+     * @return the value for the key FROM.
      */
     public String getFrom() {
         return getValue(FROM);
@@ -240,19 +263,37 @@ public class ThreadData {
     /**
      * Return the value for the key RELATESTO.
      * 
-     * @return the value for the key RELATESTO
+     * @return the value for the key RELATESTO.
      */
     public String getRelatesTo() {
         return getValue(RELATESTO);
+    }
+    
+    /**
+     * Return the value for the key DIRECT_TO.
+     * 
+     * @return the value for the key DIRECT_TO.
+     */
+    public String getDirectTo() {
+        return getValue(DIRECT_TO);
+    }
+    
+    /**
+     * Return the value for the key DIRECT_FROM.
+     * 
+     * @return the value for the key DIRECT_FROM.
+     */
+    public String getDirectFrom() {
+        return getValue(DIRECT_FROM);
     }
 
     /**
      * Set a key,value pair for the current threadId.
      * 
      * @param value
-     *            The value to set
+     *            The value to set.
      * @param key
-     *            The key to set
+     *            The key to set.
      */
     private void setValue(String value, String key) {
         Map<String, String> data = null;
@@ -269,8 +310,8 @@ public class ThreadData {
      * Get the value relating to the specified key and current threadId.
      * 
      * @param key
-     *            The key for which to retrieve the value
-     * @return the value associated with the given key and current threadId
+     *            The key for which to retrieve the value.
+     * @return the value associated with the given key and current threadId.
      */
     private String getValue(String key) {
         String ret = null;

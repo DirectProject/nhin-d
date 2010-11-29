@@ -51,6 +51,7 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
+import org.nhindirect.xd.proxy.ThreadData;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
