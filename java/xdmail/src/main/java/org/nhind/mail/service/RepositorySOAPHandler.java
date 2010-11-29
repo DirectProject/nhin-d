@@ -49,6 +49,7 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.xd.proxy.ThreadData;
@@ -167,18 +168,21 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                     sto.setValue(to);
                 }
 
-                SOAPHeaderElement directHeader = sh.addHeaderElement(new QName("urn:direct:addressing", "addressBlock"));
-                directHeader.setPrefix("direct");
-                directHeader.setRole("urn:direct:addressing:destination");
-                directHeader.setRelay(true);
-                
-                SOAPElement directFromElement = directHeader.addChildElement(new QName("from"));
-                directFromElement.setPrefix("direct");
-                directFromElement.setValue("mailto:" + directFrom);
-                
-                SOAPElement directToElement = directHeader.addChildElement(new QName("to"));
-                directToElement.setPrefix("direct");
-                directToElement.setValue("mailto:" + directTo);
+                if (StringUtils.isNotBlank(directFrom) && StringUtils.isNotBlank(directTo))
+                {
+                    SOAPHeaderElement directHeader = sh.addHeaderElement(new QName("urn:direct:addressing", "addressBlock"));
+                    directHeader.setPrefix("direct");
+                    directHeader.setRole("urn:direct:addressing:destination");
+                    directHeader.setRelay(true);
+
+                    SOAPElement directFromElement = directHeader.addChildElement(new QName("from"));
+                    directFromElement.setPrefix("direct");
+                    directFromElement.setValue(StringUtils.contains(directFrom, "mailto:") ? directFrom : "mailto:" + directFrom);
+
+                    SOAPElement directToElement = directHeader.addChildElement(new QName("to"));
+                    directToElement.setPrefix("direct");
+                    directToElement.setValue(StringUtils.contains(directTo, "mailto:") ? directTo : "mailto:" + directTo);
+                }
 
             } else {
                //should not be any inbound
