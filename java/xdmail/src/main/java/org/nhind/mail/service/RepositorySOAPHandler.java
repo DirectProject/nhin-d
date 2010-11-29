@@ -31,6 +31,7 @@ package org.nhind.mail.service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -177,11 +178,11 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
 
                     SOAPElement directFromElement = directHeader.addChildElement(new QName("from"));
                     directFromElement.setPrefix("direct");
-                    directFromElement.setValue(StringUtils.contains(directFrom, "mailto:") ? directFrom : "mailto:" + directFrom);
+                    directFromElement.setValue((new URI("mailto", directFrom, null)).toString());
 
                     SOAPElement directToElement = directHeader.addChildElement(new QName("to"));
                     directToElement.setPrefix("direct");
-                    directToElement.setValue(StringUtils.contains(directTo, "mailto:") ? directTo : "mailto:" + directTo);
+                    directToElement.setValue((new URI("mailto", directTo, null)).toString());
                 }
 
             } else {

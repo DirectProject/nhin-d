@@ -34,7 +34,9 @@ import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -153,12 +155,18 @@ public abstract class DocumentRepositoryAbstract
 
             DirectDocuments documents = xdsDirectDocumentsTransformer.transform(prdst);
             
-            // Get endpoints
             List<String> forwards = new ArrayList<String>();
-            for (String recipient : documents.getSubmissionSet().getIntendedRecipient()) 
+                        
+            // Get endpoints (first check direct:to header, then go to intendedRecipients)
+            if (StringUtils.isNotBlank(directTo))
+                forwards = Arrays.asList((new URI(directTo).getSchemeSpecificPart()));
+            else
             {
-                String address = StringUtils.remove(recipient, "|");
-                forwards.add(StringUtils.splitPreserveAllTokens(address, "^")[0]);
+                for (String recipient : documents.getSubmissionSet().getIntendedRecipient())
+                {
+                    String address = StringUtils.remove(recipient, "|");
+                    forwards.add(StringUtils.splitPreserveAllTokens(address, "^")[0]);
+                }
             }
 
             messageId = UUID.randomUUID().toString();
@@ -171,18 +179,23 @@ public abstract class DocumentRepositoryAbstract
             // Send to SMTP endpoints
             if (getResolver().hasSmtpEndpoints(forwards)) 
             {
-                // Get a reply address
-                replyEmail = documents.getSubmissionSet().getAuthorPerson();
-                replyEmail = StringUtils.splitPreserveAllTokens(replyEmail, "^")[0];
-                replyEmail = StringUtils.contains(replyEmail, "@") ? replyEmail : "nhindirect@nhindirect.org";
+                // Get a reply address (first check direct:from header, then go to authorPerson)
+                if (StringUtils.isNotBlank(directFrom))
+                    replyEmail = new URI(directFrom).getSchemeSpecificPart();
+                else
+                {
+                    replyEmail = documents.getSubmissionSet().getAuthorPerson();
+                    replyEmail = StringUtils.splitPreserveAllTokens(replyEmail, "^")[0];
+                    replyEmail = StringUtils.contains(replyEmail, "@") ? replyEmail : "nhindirect@nhindirect.org";
+                }
 
                 LOGGER.info("SENDING EMAIL TO " + getResolver().getSmtpEndpoints(forwards) + " with message id "
                         + messageId);
 
                 // Construct message wrapper
                 DirectMessage message = new DirectMessage(replyEmail, getResolver().getSmtpEndpoints(forwards));
-                message.setSubject("data");
-                message.setBody("data attached");
+                message.setSubject("XD* Originated Message");
+                message.setBody("Please find the attached XDM file.");
                 message.setDirectDocuments(documents);
 
                 // Send mail
