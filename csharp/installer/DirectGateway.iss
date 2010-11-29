@@ -48,7 +48,7 @@ Source: "configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesub
 Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion;
 
-Source: "..\gateway\devInstall\DevAgentWithServiceConfig.xml"; DestDir: "{app}\DevAgentConfig.xml"; Flags: ignoreversion;
+Source: "..\gateway\devInstall\DevAgentWithServiceConfig.xml"; DestDir: "{app}"; DestName: "DevAgentConfig.xml"; Flags: ignoreversion;
 Source: "..\gateway\devInstall\setupdomains.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\gateway\devInstall\simple.eml"; DestDir: "{app}\Samples"; Flags: ignoreversion;
 

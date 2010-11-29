@@ -1,6 +1,6 @@
 Dim g_agentSetup
 
-Set g_agentSetup = CreateObject("NHINDirect.SmtpAgent.AgentSetup")
+Set g_agentSetup = CreateObject("Health.Direct.SmtpAgent.AgentSetup")
 
 EnsureStores
 ValidateConfig WScript.Arguments(0)
