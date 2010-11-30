@@ -1,0 +1,44 @@
+h1. DNS Record Configuration
+
+The primary purpose of the DNS service is to respond to DNS queries with appropriate DNS record responses.  By design, the DNS service can store any type of DNS record defined by the DNS RFC, however it is tuned only to respond to a few types of records.  
+
+The DNS service stores all DNS records in the Direct Project configurations services and accesses them over the web service interface.  The the public facing DNS interface does not allow for records to be added or changed in anyway.  Instead, the configuration UI tool is used to manage and maintain DNS records.
+
+h2. Managing Records
+
+The configuration UI tool is used to add, update, and delete all record types.
+
+*Config UI TDB*
+
+h3. SOA Records
+
+The [SOA|http://support.microsoft.com/kb/163971] (start of authority) record defines (amongst other attributes) the host that is the authoritative server for a DNS zone/domain.  Each domain managed by the DNS server should have a SOA record associated with it.
+
+*Config UI TDB*
+
+h3. A Records
+
+A records maps a host name to an IP4 address.
+
+*Config UI TDB*
+
+
+h3. MX Records
+
+[MX|http://en.wikipedia.org/wiki/MX_record] records map a domain to one of more servers or message transfer agents for that domain.  The records are returned are generally are cononical names which means they must have A or CNAME records in the DNS server.  
+
+*Config UI TDB*
+
+h3. CERT Records
+[Cert|http://tools.ietf.org/html/rfc4398] records store a certificate with a DNS name entry.  The Direct Project DNS server only stores x.509 public certificates.  *NOTE*  The DNS server does not automatically resolve organizational level certificate resolution as defined by the security and trust specification; it only responds with the exact matches to a DNS query.  The DNS client is responsibly for sending an org level query if the server does not respond with certificate to  user level certificate query.
+
+Unlike all other DNS record types, the DNS service uses the configuration services certificate store to find certificates.  Certificates are added to the store using the certificates button in the configuration UI web tool.  See the SMTP web deployment [guide|http://api.nhindirect.org/java/site/gateway/1.0.1/users-guide/smtp-depl-wsconfig.html#PrivateCertStore] for instruction on importing certificates into the configuration UI tool.  *NOTE*  Even though certificates in your domain will have the private key stored with the certificates, the DNS service only returns public certificate information for CERT record queries.
+
+h2. Required DNS Configuration
+
+Typically your domain registration service will allow you to define an NS (name service) record that will point the server running your DNS service.  Your DNS service is then responsible for handling all queries for your domain(s).  Depending on your deployment, you will need the following minimal set of DNS records for your Direct messaging implementation:
+
+* An SOA record for each domain managed by your server.
+* An A record for each of you email servers.
+* An MX record for each of you email servers server a domain.
+* Either an org level certificate for each domain or individual certificates per email address (this should already be configured as part of you SMTP agent/gateway installation).
