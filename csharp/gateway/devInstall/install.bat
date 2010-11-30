@@ -39,6 +39,7 @@ goto :Done
 @rem -------------------------------
 :GetConfigFile
 set configDestPath="%~dp1%2"
+echo configDestPath set to "%configDestPath%"
 goto :EOF
 
 @rem -------------------------------

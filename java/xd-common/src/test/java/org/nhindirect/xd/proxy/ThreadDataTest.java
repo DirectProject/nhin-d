@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhind.xdr;
+package org.nhindirect.xd.proxy;
 
 import java.util.Map;
 
