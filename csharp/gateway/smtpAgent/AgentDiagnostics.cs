@@ -73,7 +73,18 @@ namespace Health.Direct.SmtpAgent
         
         internal void OnCertificateProblem(X509ChainElement chainElement)
         {
-            Logger.Error("Certificate problem {0}", this.Summarize(chainElement));
+            if (Logger.IsDebugEnabled && chainElement != null)
+            {
+                Logger.Error("Certificate problem {0}", this.Summarize(chainElement));
+            }
+        }
+
+        internal void OnUntrustedCertificate(X509Certificate2 cert)
+        {
+            if (Logger.IsDebugEnabled && cert != null)
+            {
+                Logger.Error("Untrusted certificate {0}", cert.Subject);
+            }
         }
         
         internal void LogEnvelopeHeaders(ISmtpMessage message)

@@ -248,6 +248,7 @@ namespace Health.Direct.SmtpAgent
                 }
                 
                 m_agent.TrustModel.CertChainValidator.Problem += m_diagnostics.OnCertificateProblem;
+                m_agent.TrustModel.CertChainValidator.Untrusted += m_diagnostics.OnUntrustedCertificate;
             }
         }
         
@@ -493,12 +494,16 @@ namespace Health.Direct.SmtpAgent
             }
             
             message.EnsureRecipientsCategorizedByDomain(this.SecurityAgent.Domains);
-
+            if (!message.HasDomainRecipients)
+            {
+                throw new AgentException(AgentError.NoRecipients);
+            }
+            
             DirectAddressCollection recipients = message.DomainRecipients;
             Address[] resolved = m_configService.GetAddresses(recipients);
             if (resolved.IsNullOrEmpty())
             {
-                throw new AgentException(AgentError.NoRecipients);
+                throw new AgentException(AgentError.NoDomainRecipients);
             }
 
             // Remove any addresses that could not be resolved
