@@ -38,7 +38,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.xd.proxy.DocumentRepositoryProxy;
-import org.nhindirect.xd.proxy.ThreadData;
+import org.nhindirect.xd.soap.DirectSOAPHandlerResolver;
+import org.nhindirect.xd.soap.ThreadData;
 
 /**
  * Document repository class for handling XDS webservice calls.
@@ -93,7 +94,7 @@ public class DocumentRepository
         // String body = XMLUtils.marshal(qname, prds, ihe.iti.xds_b._2007.ObjectFactory.class);
         // LOGGER.info(body);
         
-        DocumentRepositoryProxy proxy = new DocumentRepositoryProxy(endpoint, new RepositoryHandlerResolver());
+        DocumentRepositoryProxy proxy = new DocumentRepositoryProxy(endpoint, new DirectSOAPHandlerResolver());
 
         RegistryResponseType rrt = proxy.provideAndRegisterDocumentSetB(prds);
 

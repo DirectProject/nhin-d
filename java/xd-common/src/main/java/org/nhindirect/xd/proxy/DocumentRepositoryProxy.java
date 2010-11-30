@@ -47,6 +47,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.transform.util.XmlUtils;
 
 /**
  * Wrapper class for handling calls to the Document Repository WS (XD*). The
@@ -132,7 +133,7 @@ public class DocumentRepositoryProxy
         if (proxy == null)
             initProxy();
 
-        LOGGER.debug("Sending to endpoint: " + endpoint);
+        LOGGER.debug("Sending to endpoint: " + endpoint);       
         return proxy.documentRepositoryProvideAndRegisterDocumentSetB(body);
     }
 

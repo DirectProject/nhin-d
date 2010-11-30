@@ -58,9 +58,10 @@ import org.nhind.xdm.impl.SmtpMailClient;
 import org.nhindirect.xd.common.DirectDocuments;
 import org.nhindirect.xd.common.DirectMessage;
 import org.nhindirect.xd.proxy.DocumentRepositoryProxy;
-import org.nhindirect.xd.proxy.ThreadData;
 import org.nhindirect.xd.routing.RoutingResolver;
 import org.nhindirect.xd.routing.impl.RoutingResolverImpl;
+import org.nhindirect.xd.soap.DirectSOAPHandlerResolver;
+import org.nhindirect.xd.soap.ThreadData;
 import org.nhindirect.xd.transform.XdsDirectDocumentsTransformer;
 import org.nhindirect.xd.transform.impl.DefaultXdsDirectDocumentsTransformer;
 
@@ -181,7 +182,7 @@ public abstract class DocumentRepositoryAbstract
             {
                 // Get a reply address (first check direct:from header, then go to authorPerson)
                 if (StringUtils.isNotBlank(directFrom))
-                    replyEmail = new URI(directFrom).getSchemeSpecificPart();
+                    replyEmail = (new URI(directFrom)).getSchemeSpecificPart();
                 else
                 {
                     replyEmail = documents.getSubmissionSet().getAuthorPerson();
@@ -234,7 +235,7 @@ public abstract class DocumentRepositoryAbstract
 
                 LOGGER.info(" SENDING TO ENDPOINT " + to);
 
-                DocumentRepositoryProxy proxy = new DocumentRepositoryProxy(endpointUrl, new RepositoryHandlerResolver());
+                DocumentRepositoryProxy proxy = new DocumentRepositoryProxy(endpointUrl, new DirectSOAPHandlerResolver());
                 
                 RegistryResponseType rrt = proxy.provideAndRegisterDocumentSetB(prdst);
                 String test = rrt.getStatus();
