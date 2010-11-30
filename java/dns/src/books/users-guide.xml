@@ -27,7 +27,13 @@
         </section>                                               
         <section>
           <id>dns-proto-config</id>     
-        </section>                                               
+        </section> 
+        <section>
+          <id>dns-record-config</id>     
+        </section>   
+        <section>
+          <id>dns-godad-config</id>     
+        </section>                                                       
       </sections>      
     </chapter> 
   </chapters>
