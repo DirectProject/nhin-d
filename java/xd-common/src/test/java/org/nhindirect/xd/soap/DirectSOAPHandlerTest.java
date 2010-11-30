@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhind.xdr;
+package org.nhindirect.xd.soap;
 
 import java.util.Set;
 
@@ -38,11 +38,12 @@ import javax.xml.soap.SOAPMessage;
 import junit.framework.TestCase;
 
 /**
- * Test class for methods in RepositorySOAPHandler.
+ * Test class for methods in DirectSOAPHandler.
  * 
  * @author beau
  */
-public class RepositorySOAPHandlerTest extends TestCase {
+public class DirectSOAPHandlerTest extends TestCase
+{
 
     /**
      * Constructor
@@ -50,7 +51,8 @@ public class RepositorySOAPHandlerTest extends TestCase {
      * @param testName
      *            The test name
      */
-    public RepositorySOAPHandlerTest(String testName) {
+    public DirectSOAPHandlerTest(String testName)
+    {
         super(testName);
     }
 
@@ -60,7 +62,8 @@ public class RepositorySOAPHandlerTest extends TestCase {
      * @see junit.framework.TestCase#setUp()
      */
     @Override
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
         super.setUp();
     }
 
@@ -70,27 +73,32 @@ public class RepositorySOAPHandlerTest extends TestCase {
      * @see junit.framework.TestCase#tearDown()
      */
     @Override
-    protected void tearDown() throws Exception {
+    protected void tearDown() throws Exception
+    {
         super.tearDown();
     }
 
     /**
      * Test the getHeaders method.
      */
-    public void testGetHeaders() {
-        RepositorySOAPHandler handler = new RepositorySOAPHandler();
+    public void testGetHeaders()
+    {
+        DirectSOAPHandler handler = new DirectSOAPHandler();
 
         Set<QName> headers = handler.getHeaders();
         assertEquals("Number of elements does not match expected", 3, headers.size());
 
-        if (!headers.contains(new QName("http://www.w3.org/2005/08/addressing", "Action"))) {
+        if (!headers.contains(new QName("http://www.w3.org/2005/08/addressing", "Action")))
+        {
             fail("Headers missing expected object");
         }
-        if (!headers.contains(new QName("http://www.w3.org/2005/08/addressing", "To"))) {
+        if (!headers.contains(new QName("http://www.w3.org/2005/08/addressing", "To")))
+        {
             fail("Headers missing expected object");
         }
         if (!headers.contains(new QName(
-                "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", "Security"))) {
+                "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", "Security")))
+        {
             fail("Headers missing expected object");
         }
     }
@@ -98,12 +106,14 @@ public class RepositorySOAPHandlerTest extends TestCase {
     /**
      * Test the getMessageEncoding method.
      */
-    public void testGetMessageEncoding() {
+    public void testGetMessageEncoding()
+    {
         String output = null;
         SOAPMessage message = null;
-        RepositorySOAPHandler handler = new RepositorySOAPHandler();
+        DirectSOAPHandler handler = new DirectSOAPHandler();
 
-        try {
+        try
+        {
             MessageFactory mf = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
             message = mf.createMessage();
 
@@ -116,7 +126,9 @@ public class RepositorySOAPHandlerTest extends TestCase {
             assertNull("Test setup failed", message.getProperty(SOAPMessage.CHARACTER_SET_ENCODING));
             output = handler.getMessageEncoding(message);
             assertEquals("Message encoding does not match expected", "utf-8", output);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             fail("Exception thrown during mock SOAPMessage creation/handling.");
             e.printStackTrace();
         }
