@@ -101,7 +101,7 @@ namespace Health.Direct.Agent
             
             if (!message.HasSignatures)
             {
-                throw new AgentException(AgentError.UntrustedMessage);
+                throw new AgentException(AgentError.UnsignedMessage);
             }
             //
             // The message could have multiple signatures, including, possibly, some not by the sender

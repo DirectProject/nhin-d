@@ -86,8 +86,20 @@ namespace Health.Direct.Agent
         /// </summary>
         MissingRecipientCertificate,
         /// <summary>
+        /// The message did not contain recipients in a domain managed by this agent
+        /// </summary>
+        NoDomainRecipients,        
+        /// <summary>
         /// There are no trusted recipients for this message after trust enforcement.
         /// </summary>
-        NoTrustedRecipients
+        NoTrustedRecipients,
+        /// <summary>
+        /// Couldn not resolve the public certificate for the given address
+        /// </summary>
+        CouldNotResolvePublicCert,
+        /// <summary>
+        /// Could not resolve private keys for the an address
+        /// </summary>
+        CouldNotResolvePrivateKey,
     }
 }

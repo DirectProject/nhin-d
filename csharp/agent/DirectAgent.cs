@@ -523,7 +523,7 @@ namespace Health.Direct.Agent
             message.EnsureRecipientsCategorizedByDomain(m_managedDomains);
             if (!message.HasDomainRecipients)
             {
-                throw new AgentException(AgentError.NoTrustedRecipients);
+                throw new AgentException(AgentError.NoDomainRecipients);
             }            
             //
             // Map each address to its certificates/trust settings
@@ -913,7 +913,7 @@ namespace Health.Direct.Agent
                 certs = m_privateCertResolver.GetCertificates(address);
                 if (certs == null && required)
                 {
-                    throw new AgentException(AgentError.UnknownRecipient);
+                    throw new AgentException(AgentError.CouldNotResolvePrivateKey, address.Address);
                 }
             }
             catch (Exception ex)
@@ -936,7 +936,7 @@ namespace Health.Direct.Agent
                 cert = m_publicCertResolver.GetCertificates(address);
                 if (cert == null && required)
                 {
-                    throw new AgentException(AgentError.UnknownRecipient);
+                    throw new AgentException(AgentError.CouldNotResolvePublicCert, address.Address);
                 }
             }
             catch (Exception ex)
