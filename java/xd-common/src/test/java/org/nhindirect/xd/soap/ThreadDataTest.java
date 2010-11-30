@@ -26,11 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.xd.proxy;
+package org.nhindirect.xd.soap;
 
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.nhindirect.xd.soap.ThreadData;
 
 import junit.framework.TestCase;
 

@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhind.xdr;
+package org.nhindirect.xd.soap;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.management.ManagementFactory;
@@ -34,7 +34,6 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -53,7 +52,8 @@ import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import org.apache.commons.lang.StringUtils;
-import org.nhindirect.xd.proxy.ThreadData;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -63,8 +63,8 @@ import org.w3c.dom.NodeList;
  * 
  * @author Siegfried Bolz
  */
-public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
-
+public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
+{
     protected String endpoint;
     protected String messageId;
     protected String relatesTo;
@@ -74,31 +74,30 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     protected String thisHost;
     protected String pid;
     protected String from;
-    
+
     protected String directFrom;
     protected String directTo;
+    protected String directMetadataLevel;
 
-    /**
-     * Class logger.
-     */
-    private static final Logger LOGGER = Logger.getLogger(RepositorySOAPHandler.class.getPackage().getName());
-    
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(DirectSOAPHandler.class);
+
     /**
      * Is called after constructing the handler and before executing any othe
      * method.
      */
     @PostConstruct
-    public void init() {
+    public void init()
+    {
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * javax.xml.ws.handler.Handler#close(javax.xml.ws.handler.MessageContext)
+     * @see javax.xml.ws.handler.Handler#close(javax.xml.ws.handler.MessageContext)
      */
     @Override
-    public void close(MessageContext messageContext) {
+    public void close(MessageContext messageContext)
+    {
     }
 
     /**
@@ -106,7 +105,8 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
      * has been executed.
      */
     @PreDestroy
-    public void destroy() {
+    public void destroy()
+    {
     }
 
     /**
@@ -118,27 +118,34 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
      * @return true for successful handling, false otherwise.
      */
     @Override
-    public boolean handleMessage(SOAPMessageContext context) {
-
-        //Inquire incoming or outgoing message.
+    public boolean handleMessage(SOAPMessageContext context)
+    {
+        LOGGER.info("Entering DirectSOAPHandler.handleMessage(SOAPMessageContext)");
+        
+        // Inquire incoming or outgoing message.
         boolean outbound = (Boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-        try {
 
-            if (outbound) {
+        try
+        {
+            if (outbound)
+            {
+                LOGGER.info("Handling an outbound message");
+                
                 getHeaderData();
 
                 SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
-                // dumpSOAPMessage(msg);
 
                 SOAPPart sp = msg.getSOAPPart();
 
                 // edit Envelope
                 SOAPEnvelope env = sp.getEnvelope();
                 SOAPHeader sh = env.addHeader();
+
                 @SuppressWarnings("unused")
                 SOAPBody sb = env.getBody();
 
-                if (action != null) {
+                if (action != null)
+                {
                     QName qname = new QName("http://www.w3.org/2005/08/addressing", "Action");
                     SOAPHeaderElement saction = sh.addHeaderElement(qname);
                     boolean must = true;
@@ -146,47 +153,62 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                     saction.setMustUnderstand(must);
                     saction.setValue(action);
                 }
-                if (relatesTo != null) {
+                if (relatesTo != null)
+                {
                     QName qname = new QName("http://www.w3.org/2005/08/addressing", "RelatesTo");
                     SOAPHeaderElement relates = sh.addHeaderElement(qname);
                     relates.setValue(relatesTo);
                 }
-                if (from != null) {
+                if (from != null)
+                {
                     QName qname = new QName("http://www.w3.org/2005/08/addressing", "From");
                     QName child = new QName("http://www.w3.org/2005/08/addressing", "Address");
                     SOAPHeaderElement efrom = sh.addHeaderElement(qname);
                     SOAPElement address = efrom.addChildElement(child);
                     address.setValue(from);
                 }
-                if (messageId != null) {
+                if (messageId != null)
+                {
                     QName qname = new QName("http://www.w3.org/2005/08/addressing", "MessageID");
                     SOAPHeaderElement message = sh.addHeaderElement(qname);
                     message.setValue(messageId);
                 }
-                if (to != null) {
+                if (to != null)
+                {
                     QName qname = new QName("http://www.w3.org/2005/08/addressing", "To");
                     SOAPHeaderElement sto = sh.addHeaderElement(qname);
                     sto.setValue(to);
                 }
-                
-                if (StringUtils.isNotBlank(directFrom) && StringUtils.isNotBlank(directTo))
-                {
-                    SOAPHeaderElement directHeader = sh.addHeaderElement(new QName("urn:direct:addressing", "addressBlock"));
-                    directHeader.setPrefix("direct");
-                    directHeader.setRole("urn:direct:addressing:destination");
-                    directHeader.setRelay(true);
 
+                SOAPHeaderElement directHeader = sh.addHeaderElement(new QName("urn:direct:addressing", "addressBlock"));
+                directHeader.setPrefix("direct");
+                directHeader.setRole("urn:direct:addressing:destination");
+                directHeader.setRelay(true);
+
+                if (StringUtils.isNotBlank(directFrom))
+                {
                     SOAPElement directFromElement = directHeader.addChildElement(new QName("from"));
                     directFromElement.setPrefix("direct");
-                    directFromElement.setValue((new URI("mailto", directFrom, null)).toString());
-
-                    SOAPElement directToElement = directHeader.addChildElement(new QName("to"));
-                    directToElement.setPrefix("direct");
-                    directToElement.setValue((new URI("mailto", directTo, null)).toString());
+                    URI uri = new URI(directFrom);
+                    directFromElement.setValue((new URI("mailto", uri.getSchemeSpecificPart(), null)).toString());
                 }
 
-            } else {
-                // INBOUND
+                if (StringUtils.isNotBlank(directTo))
+                {
+                    SOAPElement directToElement = directHeader.addChildElement(new QName("to"));
+                    directToElement.setPrefix("direct");
+                    URI uri = new URI(directTo);
+                    directToElement.setValue((new URI("mailto", uri.getSchemeSpecificPart(), null)).toString());
+                }
+
+                SOAPElement directMetadataLevelElement = directHeader.addChildElement(new QName("metadata-level"));
+                directMetadataLevelElement.setPrefix("direct");
+                directMetadataLevelElement.setValue("medata-level"); // TODO (minimal or XDS)
+            }
+            else
+            {
+                LOGGER.info("Handling an inbound message");
+                
                 messageId = null;
                 action = null;
                 endpoint = null;
@@ -196,17 +218,17 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                 thisHost = null;
                 pid = null;
                 relatesTo = null;
-                
+
                 directFrom = null;
                 directTo = null;
-             
-                LOGGER.info("Direction=inbound (handleMessage)");
+                directMetadataLevel = null;
 
                 SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
                 dumpSOAPMessage(msg);
 
                 ServletRequest sr = (ServletRequest) context.get(MessageContext.SERVLET_REQUEST);
-                if (sr != null) {
+                if (sr != null)
+                {
                     remoteHost = sr.getRemoteHost();
                     thisHost = sr.getServerName();
                     pid = getPID();
@@ -214,10 +236,10 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
 
                 SOAPPart sp = msg.getSOAPPart();
 
-                //edit Envelope
+                // edit Envelope
                 SOAPEnvelope env = sp.getEnvelope();
                 SOAPHeader sh = env.getHeader();
-                
+
                 @SuppressWarnings("unchecked")
                 Iterator<Node> it = sh.extractAllHeaderElements();
                 while (it.hasNext())
@@ -276,53 +298,56 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
                     else if (StringUtils.contains(header.toString(), "addressBlock"))
                     {
                         NodeList childNodes = header.getChildNodes();
-                        
+
                         for (int i = 0; i < childNodes.getLength(); i++)
                         {
                             Node node = childNodes.item(i);
-                            LOGGER.info(node.getNodeName());
-                            
+
                             if (StringUtils.contains(node.getNodeName(), "from"))
                             {
                                 directFrom = node.getTextContent();
                                 LOGGER.info(directFrom);
                             }
-                            else if (StringUtils.contains(node.getNodeName(), "to"));
+                            else if (StringUtils.contains(node.getNodeName(), "to"))
                             {
                                 directTo = node.getTextContent();
                                 LOGGER.info(directTo);
                             }
+                            else if (StringUtils.contains(node.getNodeName(), "metadata-level"))
+                            {
+                                directMetadataLevel = node.getTextContent();
+                                LOGGER.info(directMetadataLevel);
+                            }
                         }
                     }
                 }
-                
+
                 setHeaderData();
             }
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
+        }
+        catch (Exception e)
+        {
+            LOGGER.warn("Error handling SOAP message.", e);
             return false;
         }
+
         return true;
     }
 
-    /**
-     * Returns the <code>Set</code> of supported SOAP headers.
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.xml.ws.handler.soap.SOAPHandler#getHeaders()
      */
     @Override
-    public Set<QName> getHeaders() {
+    public Set<QName> getHeaders()
+    {
         Set<QName> set = new HashSet<QName>();
-        
-        QName qname = new QName("http://www.w3.org/2005/08/addressing", "Action");
-        set.add(qname);
-        
-        qname = new QName("http://www.w3.org/2005/08/addressing", "To");
-        set.add(qname);
-        
-        qname = new QName("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", "Security");
-        set.add(qname);
-        
+
+        set.add(new QName("http://www.w3.org/2005/08/addressing", "Action"));
+        set.add(new QName("http://www.w3.org/2005/08/addressing", "To"));
+        set.add(new QName("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", "Security"));
+
         return set;
     }
 
@@ -334,9 +359,11 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
      * @return the message encoding.
      * @throws javax.xml.soap.SOAPException
      */
-    protected String getMessageEncoding(SOAPMessage msg) throws SOAPException {
+    protected String getMessageEncoding(SOAPMessage msg) throws SOAPException
+    {
         String encoding = "utf-8";
-        if (msg.getProperty(SOAPMessage.CHARACTER_SET_ENCODING) != null) {
+        if (msg.getProperty(SOAPMessage.CHARACTER_SET_ENCODING) != null)
+        {
             encoding = msg.getProperty(SOAPMessage.CHARACTER_SET_ENCODING).toString();
         }
         return encoding;
@@ -348,59 +375,78 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
      * @param msg
      *            The SOAPMessage object.
      */
-    protected void dumpSOAPMessage(SOAPMessage msg) {
-        if (msg == null) {
+    protected void dumpSOAPMessage(SOAPMessage msg)
+    {
+        if (msg == null)
+        {
             LOGGER.info("SOAP Message is null");
             return;
         }
+
         LOGGER.info("");
         LOGGER.info("--------------------");
         LOGGER.info(" DUMP OF SOAP MESSAGE");
         LOGGER.info("--------------------");
-        try {
+
+        try
+        {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             msg.writeTo(baos);
             LOGGER.info(baos.toString(getMessageEncoding(msg)));
 
             // show included values
             String values = msg.getSOAPBody().getTextContent();
-            LOGGER.info("Included values:" + values);
-        } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.trace("Included values:" + values);
+        }
+        catch (Exception e)
+        {
+            LOGGER.warn("Unable to dump soap message.", e);
         }
     }
 
-    /**
-     * Handles SOAP-Errors.
+    /*
+     * (non-Javadoc)
      * 
-     * @param context
-     *            The SOAPMessageContext object.
-     * @return true for successful fault handling, false otherwise.
+     * @see javax.xml.ws.handler.Handler#handleFault(javax.xml.ws.handler.MessageContext)
      */
     @Override
-    public boolean handleFault(SOAPMessageContext context) {
+    public boolean handleFault(SOAPMessageContext context)
+    {
         LOGGER.info("ServerSOAPHandler.handleFault");
         boolean outbound = (Boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-        if (outbound) {
+        if (outbound)
+        {
             LOGGER.info("Direction=outbound (handleFault)");
-        } else {
+        }
+        else
+        {
             LOGGER.info("Direction=inbound (handleFault)");
         }
 
-        try {
+        try
+        {
             @SuppressWarnings("unused")
             SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
             // dumpSOAPMessage(msg);
-            if (context.getMessage().getSOAPBody().getFault() != null) {
+
+            if (context.getMessage().getSOAPBody().getFault() != null)
+            {
                 String detailName = null;
-                try {
-                    detailName = context.getMessage().getSOAPBody().getFault().getDetail().getFirstChild().getLocalName();
+                try
+                {
+                    detailName = context.getMessage().getSOAPBody().getFault().getDetail().getFirstChild()
+                            .getLocalName();
                     LOGGER.info("detailName=" + detailName);
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
+                    LOGGER.warn("Unable to extract detailName", e);
                 }
             }
-        } catch (SOAPException e) {
-            e.printStackTrace();
+        }
+        catch (SOAPException e)
+        {
+            LOGGER.warn("Error handling fault", e);
         }
 
         return true;
@@ -409,9 +455,11 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
     /**
      * Extract header values from a ThreadData object.
      */
-    protected void getHeaderData() {
+    protected void getHeaderData()
+    {
         Long threadId = new Long(Thread.currentThread().getId());
-        LOGGER.fine("GTHREAD ID " + threadId);
+        if (LOGGER.isTraceEnabled())
+            LOGGER.trace("GTHREAD ID " + threadId);
 
         ThreadData threadData = new ThreadData(threadId);
         messageId = threadData.getMessageId();
@@ -422,18 +470,21 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         remoteHost = threadData.getRemoteHost();
         pid = threadData.getPid();
         from = threadData.getFrom();
-        
+
         directFrom = threadData.getDirectFrom();
         directTo = threadData.getDirectTo();
+        directMetadataLevel = threadData.getDirectMetadataLevel();
     }
 
     /**
      * Build a ThreadData object with header information.
      */
-    protected void setHeaderData() {
+    protected void setHeaderData()
+    {
         Long threadId = new Long(Thread.currentThread().getId());
-        LOGGER.fine("GTHREAD ID " + threadId);
-        
+        if (LOGGER.isTraceEnabled())
+            LOGGER.trace("GTHREAD ID " + threadId);
+
         ThreadData threadData = new ThreadData(threadId);
         threadData.setReplyAddress(endpoint);
         threadData.setMessageId(messageId);
@@ -443,9 +494,10 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
         threadData.setTo(to);
         threadData.setPid(pid);
         threadData.setFrom(from);
-        
+
         threadData.setDirectFrom(directFrom);
         threadData.setDirectTo(directTo);
+        threadData.setDirectMetadataLevel(directMetadataLevel);
     }
 
     /**
@@ -453,9 +505,9 @@ public class RepositorySOAPHandler implements SOAPHandler<SOAPMessageContext> {
      * 
      * @return the current process ID
      */
-    public String getPID() {
-        String processName =
-                ManagementFactory.getRuntimeMXBean().getName();
+    public String getPID()
+    {
+        String processName = ManagementFactory.getRuntimeMXBean().getName();
         return processName.split("@")[0];
     }
 }
