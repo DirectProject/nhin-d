@@ -4,6 +4,7 @@
 
  Authors:
     Chris Lomonico      (chris.lomonico@surescripts.com)
+    Umesh Madan         umeshma@microsoft.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -15,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.IO;
-
+using System.Collections.Generic;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
@@ -47,33 +48,27 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AddMXUsage
             = "Add a new MX dns record."
-              + Constants.CRLF + "  domainname exchange ttl [preference] [notes]"
-              + Constants.CRLF + "\t domainname: domain name for the record"
-              + Constants.CRLF + "\t exchange: smtp domain name for the record"
-              + Constants.CRLF + "\t ttl: time to live, 32bit int"
-              + Constants.CRLF + "\t [preference]: short value indicating preference of the record"
-              + Constants.CRLF + "\t [notes]: description for the record";
+            + Constants.CRLF + DnsRecordParser.ParseMXUsage;
+
+        private const string EnsureMXUsage
+            = "Adds a new MX dns record if an identical one does't already exist. "
+            + Constants.CRLF + DnsRecordParser.ParseMXUsage;
 
         private const string AddSOAUsage
             = "Add a new SOA dns record."
-              + Constants.CRLF + "  domainname primarysourcedomain responsibleemail serialnumber ttl [refresh] [retry] [expire] [minimum] [notes]"
-              + Constants.CRLF + "\t domainname: The domain name of the name server that was the primary source for this zone"
-              + Constants.CRLF + "\t responsibleemail: Email mailbox of the hostmaster"
-              + Constants.CRLF + "\t serialnumber: Version number of the original copy of the zone."
-              + Constants.CRLF + "\t ttl: time to live, 32bit int"
-              + Constants.CRLF + "\t [refresh]: Number of seconds before the zone should be refreshed."
-              + Constants.CRLF + "\t [retry]: Number of seconds before failed refresh should be retried."
-              + Constants.CRLF + "\t [expire]: Number of seconds before records should be expired if not refreshed"
-              + Constants.CRLF + "\t [minimum]: Minimum TTL for this zone."
-              + Constants.CRLF + "\t [notes]: description for the record";
+              + Constants.CRLF + DnsRecordParser.ParseSOAUsage;
 
+        private const string EnsureSOAUsage
+            = "Add a new SOA dns record if an identical one does not exist."
+              + Constants.CRLF + DnsRecordParser.ParseSOAUsage;
+              
         private const string AddANAMEUsage
             = "Add a new ANAME dns record."
-              + Constants.CRLF + "  domainname ipaddress ttl [notes]"
-              + Constants.CRLF + "\t domainname: domain name for the record"
-              + Constants.CRLF + "\t ipaddress: IP address in dot notation"
-              + Constants.CRLF + "\t ttl: time to live, 32bit int"
-              + Constants.CRLF + "\t [notes]: description for the record";
+              + Constants.CRLF + DnsRecordParser.ParseANAMEUsage;
+
+        private const string EnsureANAMEUsage
+            = "Add a new ANAME dns record if an identical one does not exist."
+              + Constants.CRLF + DnsRecordParser.ParseANAMEUsage;
 
         private const string RemoveMXUsage
              = "Remove an existing MX record by ID."
@@ -109,7 +104,7 @@ namespace Health.Direct.Config.Console.Command
              = "Gets an existing ANAME record by ID."
               + Constants.CRLF + "  recordid"
               + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
-
+        
         //private const string UpdateMXUsage
         //    = "Update an existing MX dns record."
         //      + Constants.CRLF + "  recordid domainname exchange ttl [preference] [notes]"
@@ -122,10 +117,14 @@ namespace Health.Direct.Config.Console.Command
 
         #endregion
 
-
+        DnsRecordPrinter m_printer;
+        DnsRecordParser m_parser;
+        
         internal DnsRecordCommands(ConfigConsole console, Func<DnsRecordManagerClient> client)
             : base(console, client)
         {
+            m_parser = new DnsRecordParser();
+            m_printer = new DnsRecordPrinter(System.Console.Out);
         }
 
         /// <summary>
@@ -221,22 +220,24 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Dns_MX_Add", Usage = AddMXUsage)]
         public void AddMX(string[] args)
         {
-            string domainName = args.GetRequiredValue(0);
-            string exchange = args.GetRequiredValue(1);
-            int ttl = args.GetRequiredValue<int>(2);
-            short pref = args.GetOptionalValue<short>(3,0);
-            string notes = args.GetOptionalValue(4,string.Empty);
- 
-            MXRecord record = new MXRecord(domainName
-                , exchange
-                , pref) {TTL = ttl};
+            DnsRecord record = m_parser.ParseMX(args);
+            Client.AddDnsRecord(record);
+        }
 
-            DnsRecord dns = new DnsRecord(domainName
-                , (int)DnsStandard.RecordType.MX
-                , this.GetBytesFromRecord(record)
-                , notes);
-
-            Client.AddDnsRecord(dns);
+        /// <summary>
+        /// Add this MX DnsRecord entry to the db if it doesn't already exist
+        /// </summary>
+        /// <param name="args"></param>
+        [Command(Name = "Dns_MX_Ensure", Usage = EnsureMXUsage)]
+        public void EnsureMX(string[] args)
+        {
+            DnsRecord record = m_parser.ParseMX(args);
+            if (!this.VerifyIsUnique(record, false))
+            {
+                return;
+            }
+            
+            Client.AddDnsRecord(record);
         }
 
         /// <summary>
@@ -246,33 +247,20 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Dns_SOA_Add", Usage = AddSOAUsage)]
         public void AddSOA(string[] args)
         {
-            string domainName = args.GetRequiredValue(0);
-            string primarySourceDomain = args.GetRequiredValue(1);
-            string responsibleEmail = args.GetRequiredValue(2);
-            int serialNumber = args.GetRequiredValue<int>(3);
-            int ttl = args.GetRequiredValue<int>(4);
+            DnsRecord record = m_parser.ParseSOA(args);
+            Client.AddDnsRecord(record);
+        }
 
-            int refresh = args.GetOptionalValue(5,0);
-            int retry = args.GetOptionalValue(6,0);
-            int expire = args.GetOptionalValue(7,0);
-            int minimum = args.GetOptionalValue(8,0);
-            string notes = args.GetOptionalValue(9,string.Empty);
-
-            SOARecord record = new SOARecord(domainName
-               , primarySourceDomain
-               , responsibleEmail
-               , serialNumber
-               , refresh
-               , retry
-               , expire
-               , minimum) {TTL = ttl};
-
-            DnsRecord dns = new DnsRecord(domainName
-                , (int)DnsStandard.RecordType.SOA
-                , this.GetBytesFromRecord(record)
-                , notes);
-
-            Client.AddDnsRecord(dns);
+        [Command(Name = "Dns_SOA_Ensure", Usage = EnsureSOAUsage)]
+        public void EnsureSOA(string[] args)
+        {
+            DnsRecord record = m_parser.ParseSOA(args);
+            if (!this.VerifyIsUnique(record, false))
+            {
+                return;
+            }
+            
+            Client.AddDnsRecord(record);
         }
 
         /// <summary>
@@ -282,20 +270,20 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Dns_ANAME_Add", Usage = AddANAMEUsage)]
         public void AddANAME(string[] args)
         {
-            string domainName = args.GetRequiredValue(0);
-            string ipAddress = args.GetRequiredValue(1);
-            int ttl = args.GetRequiredValue<int>(2);
-            string notes = args.GetOptionalValue(3, string.Empty);
+            DnsRecord record = m_parser.ParseANAME(args);
+            Client.AddDnsRecord(record);
+        }
 
-            AddressRecord record = new AddressRecord(domainName
-               , ipAddress) {TTL = ttl};
-
-            DnsRecord dns = new DnsRecord(domainName
-                , (int)DnsStandard.RecordType.ANAME
-                , this.GetBytesFromRecord(record)
-                , notes);
-
-            Client.AddDnsRecord(dns);
+        [Command(Name = "Dns_ANAME_Ensure", Usage = EnsureANAMEUsage)]
+        public void EnsureANAME(string[] args)
+        {
+            DnsRecord record = m_parser.ParseANAME(args);
+            if (!this.VerifyIsUnique(record, false))
+            {
+                return;
+            }
+            
+            Client.AddDnsRecord(record);
         }
 
         /// <summary>
@@ -338,38 +326,7 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Dns_MX_Get", Usage = GetMXUsage)]
         public void GetMX(string[] args)
         {
-            long recordID = args.GetRequiredValue<long>(0);
-            DnsRecord dr = Client.GetDnsRecord(recordID);
-            if (dr == null)
-            {
-                throw new Exception("no record found matching id");
-            }
-
-            if (dr.RecordData.IsNullOrEmpty())
-            {
-                throw new Exception("empty record data found for matchng record, please update or delete data");
-            }
-
-            DnsBufferReader dbr = new DnsBufferReader(dr.RecordData
-                , 0
-                , dr.RecordData.Length);
-
-            MXRecord ar = DnsResourceRecord.Deserialize(ref dbr) as MXRecord;
-            if (ar == null)
-            {
-                throw new Exception(string.Format(
-                    "returned record type does not match expected type, found [{0}], expected [MX]"
-                    , ((DnsStandard.RecordType)dr.TypeID)));
-            }
-
-            CommandUI.Print("DomainName", ar.Name);
-            CommandUI.Print("Exchange", ar.Exchange);
-            CommandUI.Print("Preference", ar.Preference);
-            CommandUI.Print("TTL", ar.TTL);
-            CommandUI.Print("CreateDate", dr.CreateDate);
-            CommandUI.Print("UpdateDate", dr.UpdateDate);
-            CommandUI.Print("Notes", dr.Notes);
-                
+            this.Get<MXRecord>(args.GetRequiredValue<long>(0));
         }
 
         /// <summary>
@@ -379,38 +336,7 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Dns_SOA_Get", Usage = GetSOAUsage)]
         public void GetSOA(string[] args)
         {
-            long recordID = args.GetRequiredValue<long>(0);
-            DnsRecord dr = Client.GetDnsRecord(recordID);
-            if (dr == null)
-            {
-                throw new Exception("no record found matching id");
-            }
-
-            if (dr.RecordData.IsNullOrEmpty())
-            {
-                throw new Exception("empty record data found for matchng record, please update or delete data");
-            }
-
-            DnsBufferReader dbr = new DnsBufferReader(dr.RecordData
-                , 0
-                , dr.RecordData.Length);
-            SOARecord ar = DnsResourceRecord.Deserialize(ref dbr) as SOARecord;
-            if (ar == null)
-            {
-                throw new Exception(string.Format(
-                    "returned record type does not match expected type, found [{0}], expected [SOA]"
-                    , ((DnsStandard.RecordType)dr.TypeID)));
-            }
-            CommandUI.Print("DomainName", ar.Name);
-            CommandUI.Print("primarySourceDomain", ar.DomainName);
-            CommandUI.Print("TTL", ar.TTL);
-            CommandUI.Print("Refresh", ar.Refresh);
-            CommandUI.Print("Retry", ar.Retry);
-            CommandUI.Print("Expire", ar.Expire);
-            CommandUI.Print("Minimum", ar.Minimum);
-            CommandUI.Print("CreateDate", dr.CreateDate);
-            CommandUI.Print("UpdateDate", dr.UpdateDate);
-            CommandUI.Print("Notes", dr.Notes);
+            this.Get<SOARecord>(args.GetRequiredValue<long>(0));
         }
 
         /// <summary>
@@ -420,68 +346,199 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Dns_ANAME_Get", Usage = GetANAMEUsage)]
         public void GetANAME(string[] args)
         {
-            long recordID = args.GetRequiredValue<long>(0);
-            DnsRecord dr = Client.GetDnsRecord(recordID);
-            if(dr == null){
-                throw new Exception("no record found matching id");
-            }
-
-            if(dr.RecordData.IsNullOrEmpty()){
-                throw new Exception("empty record data found for matchng record, please update or delete data");
-            }
-
-            DnsBufferReader dbr = new DnsBufferReader(dr.RecordData
-                ,0
-                ,dr.RecordData.Length);
-
-            AddressRecord ar = DnsResourceRecord.Deserialize(ref dbr) as AddressRecord;
-            if (ar == null)
-            {
-                throw new Exception(string.Format(
-                    "returned record type does not match expected type, found [{0}], expected [ANAME]"
-                    ,((DnsStandard.RecordType)dr.TypeID)));
-            }
-
-            CommandUI.Print("DomainName", ar.Name);
-            CommandUI.Print("IP Address", ar.IPAddress);
-            CommandUI.Print("TTL", ar.TTL);
-            CommandUI.Print("CreateDate", dr.CreateDate);
-            CommandUI.Print("UpdateDate", dr.UpdateDate);
-            CommandUI.Print("Notes", dr.Notes);
+            this.Get<AddressRecord>(args.GetRequiredValue<long>(0));
         }
-
-        /*
-        /// <summary>
-        /// Update an existing MX DnsRecord entry to the db
-        /// </summary>
-        /// <param name="args"></param>
-        [Command(Name = "Dns_MX_Updte", Usage = UpdateMXUsage)]
-        public void UpdateMX(string[] args)
+        
+        void Get<T>(long recordID)
+            where T : DnsResourceRecord
         {
-            long recordID = args.GetRequiredValue<long>(0);
-            string domainName = args.GetRequiredValue(1);
-            string exchange = args.GetRequiredValue(2);
-            int ttl = args.GetRequiredValue<int>(3);
-            short pref = args.GetOptionalValue<short>(4, 0);
-            string notes = args.GetOptionalValue(5, string.Empty);
-
-            MXRecord record = new MXRecord(domainName
-                , exchange
-                , pref);
-            record.TTL = ttl;
-            DnsRecord dns = new DnsRecord(domainName
-                , (int)DnsStandard.RecordType.MX
-                , this.GetBytesFromRecord(record)
-                , notes);
-            Client.AddDnsRecord(dns);
+            T record = this.GetRecord(recordID).Deserialize<T>();
+            m_printer.Print(record);
+        }
+        
+        /// <summary>
+        /// Resolves all records that match the given domain
+        /// </summary>
+        /// <param name="args"></param>
+        [Command(Name = "Dns_Match", Usage = "Resolve all records for the given domain")]
+        public void Match(string[] args)
+        {
+            string domain = args.GetRequiredValue(0);
+            DnsRecord[] records = Client.GetMatchingDnsRecords(domain);
+            if (records.IsNullOrEmpty())
+            {
+                throw new ArgumentException("Domain not found");
+            }
+            Print(records);
         }
 
         /// <summary>
-        /// Update an existing SOA DnsRecord entry to the db
+        /// Resolves records that match the given domain
         /// </summary>
         /// <param name="args"></param>
-        [Command(Name = "Dns_SOA_Add", Usage = AddSOAUsage)]
-        public void AddSOA(string[] args)
+        [Command(Name = "Dns_SOA_Match", Usage = "Resolve SOA records for the given domain")]
+        public void MatchSOA(string[] args)
+        {
+            this.Match(args.GetRequiredValue(0), DnsStandard.RecordType.SOA);
+        }
+        
+        [Command(Name = "Dns_ANAME_Match", Usage = "Resolve Address records for the given domain")]
+        public void MatchAName(string[] args)
+        {
+            this.Match(args.GetRequiredValue(0), DnsStandard.RecordType.ANAME);
+        }
+
+        [Command(Name = "Dns_MX_Match", Usage = "Resolve MX records for the given domain")]
+        public void MatchMX(string[] args)
+        {
+            this.Match(args.GetRequiredValue(0), DnsStandard.RecordType.MX);
+        }
+        
+        void Match(string domain, DnsStandard.RecordType type)
+        {
+            DnsRecord[] records = this.GetRecords(domain, type);
+            if (records.IsNullOrEmpty())
+            {
+                throw new ArgumentException("No matches");
+            }
+            Print(records);
+        }
+        
+        DnsRecord GetRecord(long recordID)
+        {
+            DnsRecord dr = Client.GetDnsRecord(recordID);
+            if (dr == null)
+            {
+                throw new ArgumentException("No record found matching id");
+            }
+            if (dr.RecordData.IsNullOrEmpty())
+            {
+                throw new ArgumentException("Empty record data found for matchng record");
+            }
+            
+            return dr;
+        }
+        
+        DnsRecord[] GetRecords(string domain, DnsStandard.RecordType type)
+        {
+            DnsRecord[] records = Client.GetMatchingDnsRecordsByType(domain, type);
+            if (records.IsNullOrEmpty())
+            {
+                throw new ArgumentException("No matches");
+            }
+            return records;
+        }
+
+        bool VerifyIsUnique(DnsRecord record, bool details)
+        {
+            DnsRecord existing = this.Find(record);
+            if (existing != null)
+            {
+                CommandUI.PrintBold("Record already exists");
+                if (details)
+                {
+                    Print(existing);
+                }
+                else
+                {
+                    CommandUI.Print("RecordID", existing.ID);
+                }
+                return false;
+            }
+            
+            return true;
+        }
+                
+        DnsRecord Find(DnsRecord record)
+        {
+            DnsRecord[] existingRecords = Client.GetMatchingDnsRecordsByType(record.DomainName, record.RecordType);
+            if (existingRecords.IsNullOrEmpty())
+            {
+                return null;
+            }
+            
+            DnsResourceRecord testRecord = record.Deserialize();
+            foreach(DnsRecord existingRecord in existingRecords)
+            {
+                DnsResourceRecord rr = existingRecord.Deserialize();
+                if (rr.Equals(testRecord))
+                {
+                    return existingRecord;
+                }
+            }
+            
+            return null;
+        }
+        
+        void Print(DnsRecord[] records)
+        {
+            foreach(DnsRecord record in records)
+            {
+                Print(record);
+                CommandUI.PrintDivider();
+            }
+        }
+        
+        void Print(DnsRecord dnsRecord)
+        {
+            CommandUI.Print("RecordID", dnsRecord.ID);                        
+            DnsResourceRecord resourceRecord = dnsRecord.Deserialize();
+
+            m_printer.Print(resourceRecord);
+
+            CommandUI.Print("CreateDate", dnsRecord.CreateDate);
+            CommandUI.Print("UpdateDate", dnsRecord.UpdateDate);
+            CommandUI.Print("Notes", dnsRecord.Notes);
+        }
+    }
+    
+    public class DnsRecordParser
+    {
+        public const string ParseANAMEUsage = 
+              "  domainname ipaddress ttl [notes]"
+              + Constants.CRLF + "\t domainname: domain name for the record"
+              + Constants.CRLF + "\t ipaddress: IP address in dot notation"
+              + Constants.CRLF + "\t ttl: time to live in seconds, 32bit int"
+              + Constants.CRLF + "\t [notes]: description for the record";
+
+        public const string ParseSOAUsage =
+              "  domainname primarysourcedomain responsibleemail serialnumber ttl [refresh] [retry] [expire] [minimum] [notes]"
+              + Constants.CRLF + "\t domainname: The domain name of the name server that was the primary source for this zone"
+              + Constants.CRLF + "\t responsibleemail: Email mailbox of the hostmaster"
+              + Constants.CRLF + "\t serialnumber: Version number of the original copy of the zone."
+              + Constants.CRLF + "\t ttl: time to live in seconds, 32bit int"
+              + Constants.CRLF + "\t [refresh]: Number of seconds before the zone should be refreshed."
+              + Constants.CRLF + "\t [retry]: Number of seconds before failed refresh should be retried."
+              + Constants.CRLF + "\t [expire]: Number of seconds before records should be expired if not refreshed"
+              + Constants.CRLF + "\t [minimum]: Minimum TTL for this zone."
+              + Constants.CRLF + "\t [notes]: description for the record";
+
+        public const string ParseMXUsage =
+              "  domainname exchange ttl [preference] [notes]"
+              + Constants.CRLF + "\t domainname: domain name for the record"
+              + Constants.CRLF + "\t exchange: smtp domain name for the record"
+              + Constants.CRLF + "\t ttl: time to live in seconds"
+              + Constants.CRLF + "\t [preference]: short value indicating preference of the record"
+              + Constants.CRLF + "\t [notes]: description for the record";
+        
+        public DnsRecordParser()
+        {
+        }
+        
+        public DnsRecord ParseANAME(string[] args)
+        {
+            string domainName = args.GetRequiredValue(0);
+            string ipAddress = args.GetRequiredValue(1);
+            int ttl = args.GetRequiredValue<int>(2);
+            string notes = args.GetOptionalValue(3, string.Empty);
+
+            AddressRecord record = new AddressRecord(domainName
+               , ipAddress) { TTL = ttl };
+
+            return new DnsRecord(domainName, (int)DnsStandard.RecordType.ANAME, record.Serialize(), notes);
+        }
+                
+        public DnsRecord ParseSOA(string[] args)
         {
             string domainName = args.GetRequiredValue(0);
             string primarySourceDomain = args.GetRequiredValue(1);
@@ -489,10 +546,10 @@ namespace Health.Direct.Config.Console.Command
             int serialNumber = args.GetRequiredValue<int>(3);
             int ttl = args.GetRequiredValue<int>(4);
 
-            int refresh = args.GetOptionalValue<int>(5, 0);
-            int retry = args.GetOptionalValue<int>(6, 0);
-            int expire = args.GetOptionalValue<int>(7, 0);
-            int minimum = args.GetOptionalValue<int>(8, 0);
+            int refresh = args.GetOptionalValue(5, 0);
+            int retry = args.GetOptionalValue(6, 0);
+            int expire = args.GetOptionalValue(7, 0);
+            int minimum = args.GetOptionalValue(8, 0);
             string notes = args.GetOptionalValue(9, string.Empty);
 
             SOARecord record = new SOARecord(domainName
@@ -502,37 +559,25 @@ namespace Health.Direct.Config.Console.Command
                , refresh
                , retry
                , expire
-               , minimum);
-            record.TTL = ttl;
-            DnsRecord dns = new DnsRecord(domainName
-                , (int)DnsStandard.RecordType.SOA
-                , this.GetBytesFromRecord(record)
-                , notes);
-            Client.AddDnsRecord(dns);
+               , minimum) { TTL = ttl };
+
+            return new DnsRecord(domainName, (int)DnsStandard.RecordType.SOA, record.Serialize(), notes);
         }
-
-
-        /// <summary>
-        /// Update an existing A DnsRecord entry to the db
-        /// </summary>
-        /// <param name="args"></param>
-        [Command(Name = "Dns_ANAME_Add", Usage = AddANAMEUsage)]
-        public void AddANAME(string[] args)
-        {
+                
+        public DnsRecord ParseMX(string[] args)
+        {        
             string domainName = args.GetRequiredValue(0);
-            string ipAddress = args.GetRequiredValue(1);
-            int ttl = args.GetRequiredValue<int>(4);
-            string notes = args.GetOptionalValue(9, string.Empty);
+            string exchange = args.GetRequiredValue(1);
+            int ttl = args.GetRequiredValue<int>(2);
+            short pref = args.GetOptionalValue<short>(3, 0);
+            string notes = args.GetOptionalValue(4, string.Empty);
 
-            AddressRecord record = new AddressRecord(domainName
-               , ipAddress);
-            record.TTL = ttl;
-            DnsRecord dns = new DnsRecord(domainName
-                , (int)DnsStandard.RecordType.ANAME
-                , this.GetBytesFromRecord(record)
-                , notes);
-            Client.AddDnsRecord(dns);
+            MXRecord record = new MXRecord(domainName
+                , exchange
+                , pref) { TTL = ttl };
+
+            DnsRecord dnsRecord = new DnsRecord(domainName, (int)DnsStandard.RecordType.MX, record.Serialize(), notes);
+            return dnsRecord;
         }
-        */
     }
 }
