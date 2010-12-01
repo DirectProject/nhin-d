@@ -26,65 +26,54 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhind.mail.service;
+package org.nhindirect.xd.soap.type;
 
-import java.util.List;
-
-import javax.xml.ws.handler.Handler;
-import javax.xml.ws.handler.PortInfo;
-
-import junit.framework.TestCase;
+import org.apache.commons.lang.StringUtils;
 
 /**
- * Test class for methods in RepositoryHandlerResolver.
+ * Enumeration representing valid metadata levels for the direct:metadata-level
+ * SOAP header.
  * 
  * @author beau
  */
-public class RepositoryHandlerResolverTest extends TestCase {
+public enum MetadataLevelEnum
+{
+    MINIMAL("minimal"), 
+    XDS("XDS");
 
-    /**
-     * Constructor
-     * 
-     * @param testName
-     *            The test name
-     */
-    public RepositoryHandlerResolverTest(String testName) {
-        super(testName);
-    }
+    private String level;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see junit.framework.TestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    private MetadataLevelEnum(String level)
+    {
+        this.level = level;
     }
 
     /**
-     * Test the getHandlerChain method.
+     * Return the value of level.
+     * 
+     * @return the value of level.
      */
-    public void testGetHandlerChain() {
-        PortInfo portInfo = null;
-        List<Handler> output = null;
-        RepositoryHandlerResolver handler = new RepositoryHandlerResolver();
+    public String getLevel()
+    {
+        return level;
+    }
 
-        output = handler.getHandlerChain(portInfo);
+    /**
+     * Return the MetadataLevelEnum object matching the provided level.
+     * 
+     * @param level
+     *            The level to use for the lookup.
+     * @return the MetadataLevelEnum object matching the provided level, or null
+     *         if not found.
+     */
+    public MetadataLevelEnum lookup(String level)
+    {
+        for (MetadataLevelEnum e : values())
+        {
+            if (StringUtils.equalsIgnoreCase(e.getLevel(), level))
+                return e;
+        }
 
-        assertNotNull("List is null", output);
-        assertTrue("List contains 0 elements", !output.isEmpty());
-        assertEquals("List contains more than expected elements", 1, output.size());
-        assertTrue("List does not contain expected element", output.get(0) instanceof RepositorySOAPHandler);
+        return null;
     }
 }
