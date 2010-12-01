@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Data.Linq.Mapping;
 using System.Runtime.Serialization;
-
+using Health.Direct.Common.DnsResolver;
 using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Config.Store
@@ -110,7 +110,15 @@ namespace Health.Direct.Config.Store
         [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         [DataMember(IsRequired = true)]
         public DateTime UpdateDate { get; set; }
-
+        
+        public DnsStandard.RecordType RecordType
+        {
+            get
+            {
+                return (DnsStandard.RecordType) this.TypeID;
+            }
+        }
+        
         public void ValidateHasData()
         {
             if (RecordData.IsNullOrEmpty())
@@ -140,5 +148,36 @@ namespace Health.Direct.Config.Store
             this.Notes = source.Notes;
             this.UpdateDate = DateTimeHelper.Now;
         }
+
+        /// <summary>
+        /// Deserialize the raw ResourceRecord embedded in this DnsRecord
+        /// </summary>
+        public DnsResourceRecord Deserialize()
+        {
+            if (this.RecordData.IsNullOrEmpty())
+            {
+                throw new InvalidOperationException("Empty record data found.");
+            }
+
+            DnsBufferReader bufferReader = new DnsBufferReader(this.RecordData, 0, this.RecordData.Length);
+            return DnsResourceRecord.Deserialize(ref bufferReader);
+        }
+                
+        /// <summary>
+        /// Deserialize the raw ResourceRecord embedded in this DnsRecord
+        /// </summary>
+        /// <typeparam name="T">Of type DnsResourceRecord</typeparam>
+        /// <returns>DnsResourceRecord</returns>
+        public T Deserialize<T>()
+            where T : DnsResourceRecord
+        {
+            T record = this.Deserialize() as T;
+            if (record == null)
+            {
+                throw new ArgumentException(string.Format("Returned record type does not match expected type, found {0}", this.RecordType));
+            }
+            
+            return record;
+        } 
     }
 }

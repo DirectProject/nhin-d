@@ -155,7 +155,7 @@ namespace Health.Direct.Config.Console.Command
             = "Set the status for ALL certificates for an OWNER."
             + Constants.CRLF + "     owner status"
             + Constants.CRLF + "\t owner: Certificate owner"
-            + Constants.CRLF + "\t status: {0}" + Constants.EntityStatusString;
+            + Constants.CRLF + "\t status: " + Constants.EntityStatusString;
         
         /// <summary>
         /// Remove certificate
@@ -180,6 +180,7 @@ namespace Health.Direct.Config.Console.Command
         {
             MailAddress owner = new MailAddress(args.GetRequiredValue(0));
             CertificateGetOptions options = GetOptions(args, 1);
+            options.Status = EntityStatus.Enabled;  // We only ever resolve Enabled Certs
 
             Certificate[] certs = Client.GetCertificatesForOwner(owner.Address, options);
             if (certs.IsNullOrEmpty())
@@ -473,9 +474,10 @@ namespace Health.Direct.Config.Console.Command
 
         internal const string PrintOptionsUsage
             = "\t options:"
-              + Constants.CRLF + "\t [certData] [privatekey]"
+              + Constants.CRLF + "\t [certData] [privatekey] [status]"
               + Constants.CRLF + "\t certData: (True/False) Fetch certificate data"
-              + Constants.CRLF + "\t privateKey: (True/False) Include private key";
+              + Constants.CRLF + "\t privateKey: (True/False) Include private key"
+              + Constants.CRLF + "\t status: " + Constants.EntityStatusString;
 
 
         void Print(Certificate[] certs)

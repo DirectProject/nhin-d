@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="RecordRetrievalService.svc" />
+    <Content Include="TestService.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +71,13 @@
     </Compile>
     <Compile Include="Service.cs" />
     <Compile Include="ServiceSettings.cs" />
+    <Compile Include="TestService.aspx.cs">
+      <DependentUpon>TestService.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TestService.aspx.designer.cs">
+      <DependentUpon>TestService.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\common.csproj">
