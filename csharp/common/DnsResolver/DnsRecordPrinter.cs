@@ -136,7 +136,7 @@ namespace Health.Direct.Common.DnsResolver
             
             m_writer.WriteLine("-----------");
             this.Print("Type", record.Type.ToString());
-            this.Print("Name", record.Name);
+            this.Print("DomainName", record.Name);
             this.Print<int>("TTL", record.TTL);
             switch(record.Type)
             {
@@ -252,7 +252,12 @@ namespace Health.Direct.Common.DnsResolver
         /// <param name="soa">The RR to print</param>
         public void Print(SOARecord soa)
         {
-            this.Print(soa.DomainName);
+            this.Print("DomainName", soa.Name);
+            this.Print("PrimarySourceDomain", soa.DomainName);
+            this.Print("Refresh", soa.Refresh);
+            this.Print("Retry", soa.Retry);
+            this.Print("Expire", soa.Expire);
+            this.Print("Minimum", soa.Minimum);
         }
         
         /// <summary>
@@ -302,7 +307,7 @@ namespace Health.Direct.Common.DnsResolver
 
         void Print(string name, string value)
         {
-            m_writer.WriteLine("{0}={1}", name, value);
+            m_writer.WriteLine("{0} = {1}", name, value);
         }
 
         void Print(string message)

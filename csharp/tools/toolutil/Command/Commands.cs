@@ -377,19 +377,33 @@ namespace Health.Direct.Config.Tools.Command
         {
             Exit(0);
         }
+        private const string ExitUsage
+            = "Exit the application";
 
-        [Command(Name = "Commands", Usage = "List the commands available")]
+
+        [Command(Name = "Commands", Usage = CommandsUsage)]
         public void ListCommands(string[] args)
         {
-            foreach (string name in this.CommandNames)
+            string prefix = args.GetOptionalValue(0, null);
+            
+            IEnumerable<string> names;
+            if (string.IsNullOrEmpty(prefix))
+            {
+                names = this.CommandNames;
+            }
+            else
+            {
+                names = this.PrefixMatchCommandNames(prefix);
+            }
+            foreach (string name in names)
             {
                 this.Bind(name).ShowCommand();
             }
         }
-
-        private const string ExitUsage
-            = "Exit the application";
-        
+        private const string CommandsUsage
+            = "List the commands available"
+            + Constants.CRLF + "commands [nameprefix]";
+            
         /// <summary>
         /// Show help
         /// </summary>

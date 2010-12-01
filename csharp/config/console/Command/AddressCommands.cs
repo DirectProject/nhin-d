@@ -205,7 +205,7 @@ namespace Health.Direct.Config.Console.Command
             = "Set the status of an address"
               + Constants.CRLF + "    emailAddress status"
               + Constants.CRLF + "\t emailAddress: set the status of this address"
-              + Constants.CRLF + "\t status: New | Enabled | Disabled";
+              + Constants.CRLF + "\t status: " + Constants.EntityStatusString;
         
         /// <summary>
         /// Return # of addresses in a domain

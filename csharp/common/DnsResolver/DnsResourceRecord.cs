@@ -203,6 +203,17 @@ namespace Health.Direct.Common.DnsResolver
         }
 
         /// <summary>
+        /// Serialize this DnsResourceRecord into a byte array, as per the DNS RFC
+        /// </summary>
+        /// <returns>buffer containing serialized record</returns>
+        public byte[] Serialize()
+        {
+            DnsBuffer buff = new DnsBuffer();
+            this.Serialize(buff);
+            return buff.Buffer;
+        }
+        
+        /// <summary>
         /// Serialize this DnsResourceRecord into the given buffer, as per the DNS RFC
         /// </summary>
         /// <param name="buffer">buffer to write into</param>
