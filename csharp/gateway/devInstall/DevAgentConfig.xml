@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<!--
+ 
+THIS CONFIG FILE SETS YOU UP TO RUN A GATEWAY USING THE TEST CERTS AND
+IDENTITIES USED BY THE UNIT TESTS.
+
+ALL CERTIFICATE RESOLUTION IS DONE LOCALLY USING MACHINE CERT STORES
+  
+-->
+<SmtpAgentConfig>
+  <Domain>redmond.hsgincubator.com</Domain>
+  <Domain>nhind.hsgincubator.com</Domain>
+  <Log>
+    <DirectoryPath>C:\inetpub\logs</DirectoryPath>
+    <NamePrefix>testGateway</NamePrefix>
+    <RolloverFrequency>Day</RolloverFrequency>
+    <Level>Trace</Level>
+  </Log>
+  <!--
+
+    MESSAGE PROCESSING
+
+   -->
+  <InternalMessage>
+    <PickupFolder>C:\inetpub\mailroot\pickup</PickupFolder>
+    <EnableRelay>true</EnableRelay>
+  </InternalMessage>
+  <Notifications>
+      <AutoResponse>false</AutoResponse>
+  </Notifications>
+  <!--
+
+    CERTIFICATE RESOLUTION
+
+  -->
+  <PublicCerts>
+    <!-- 	
+	DO NOT ENABLE DNS WITHOUT LOOKING AT FIREWALL SETTINGS, BOTH MACHINE & CORPORATE
+ 	Firewalls must ALLOW BOTH UDP & TCP on Port 53. 
+    -->
+    <!--
+    <DnsResolver>
+      <ServerIP>8.8.8.8</ServerIP>
+      <Timeout>5000</Timeout>
+    </DnsResolver>
+    -->
+    <!-- Uses a cert store on Local  Computer -->
+    <MachineResolver>
+      <Name>NHINDExternal</Name>
+    </MachineResolver>
+  </PublicCerts>
+  <PrivateCerts>
+    <!-- Uses a cert store on Local  Computer -->
+    <MachineResolver>
+      <Name>NHINDPrivate</Name>
+    </MachineResolver>
+  </PrivateCerts>
+  <Anchors>
+    <!-- Uses a cert store on Local  Computer -->
+    <MachineResolver>
+      <Incoming>
+        <Name>NHINDAnchors</Name>
+      </Incoming>
+      <Outgoing>
+        <Name>NHINDAnchors</Name>
+      </Outgoing>
+    </MachineResolver>
+  </Anchors>
+  <!--
+
+	DEBUGGING SUPPORT
+
+   -->
+  <RawMessage>
+    <CopyFolder>C:\inetpub\mailroot\dev\raw</CopyFolder>
+  </RawMessage>
+  <BadMessage>
+    <CopyFolder>C:\inetpub\mailroot\dev\badMail</CopyFolder>
+  </BadMessage>
+  <ProcessIncoming>
+    <CopyFolder>C:\inetpub\mailroot\dev\incoming</CopyFolder>
+    <EnableRelay>false</EnableRelay>
+  </ProcessIncoming>
+  <ProcessOutgoing>
+    <CopyFolder>C:\inetpub\mailroot\dev\outgoing</CopyFolder>
+    <EnableRelay>false</EnableRelay>
+  </ProcessOutgoing>
+</SmtpAgentConfig>
