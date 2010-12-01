@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhindirect.xd.proxy;
+package org.nhindirect.xd.soap;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,6 +50,7 @@ public class ThreadData {
     public static final String FROM = "from";
     public static final String DIRECT_TO = "directTo";
     public static final String DIRECT_FROM = "directFrom";
+    public static final String DIRECT_METADATA_LEVEL = "directMetadataLevel";
     
     private Long threadId = null;
 
@@ -189,6 +190,16 @@ public class ThreadData {
     }
     
     /**
+     * Set the value for the key DIRECT_METADATA_LEVEL.
+     * 
+     * @param value
+     *            the value for the key DIRECT_METADATA_LEVEL.
+     */
+    public void setDirectMetadataLevel(String value) {
+        setValue(value, DIRECT_METADATA_LEVEL);
+    }
+    
+    /**
      * Return the value for the key THISHOST.
      * 
      * @return the value for the key THISHOST.
@@ -287,6 +298,15 @@ public class ThreadData {
         return getValue(DIRECT_FROM);
     }
 
+    /**
+     * Return the value for the key DIRECT_METADATA_LEVEL.
+     * 
+     * @return the value for the key DIRECT_METADATA_LEVEL.
+     */
+    public String getDirectMetadataLevel() {
+        return getValue(DIRECT_METADATA_LEVEL);
+    }
+    
     /**
      * Set a key,value pair for the current threadId.
      * 

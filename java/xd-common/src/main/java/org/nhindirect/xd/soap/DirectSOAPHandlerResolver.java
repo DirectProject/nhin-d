@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nhind.xdr;
+package org.nhindirect.xd.soap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,16 +40,19 @@ import javax.xml.ws.handler.PortInfo;
  * 
  * @author Vincent Lewis
  */
-public class RepositoryHandlerResolver implements HandlerResolver{
+public class DirectSOAPHandlerResolver implements HandlerResolver
+{
 
     /*
      * (non-Javadoc)
      * 
      * @see javax.xml.ws.handler.HandlerResolver#getHandlerChain(javax.xml.ws.handler.PortInfo)
      */
-    public List<Handler> getHandlerChain(PortInfo portInfo) {
+    public List<Handler> getHandlerChain(PortInfo portInfo)
+    {
         List<Handler> handlerList = new ArrayList<Handler>();
-        handlerList.add(new RepositorySOAPHandler());
+        handlerList.add(new DirectSOAPHandler());
         return handlerList;
     }
+
 }

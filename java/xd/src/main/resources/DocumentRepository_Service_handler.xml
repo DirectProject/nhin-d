@@ -2,8 +2,8 @@
 <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
   <handler-chain>
     <handler>
-      <handler-name>org.nhind.xdr.RepositorySOAPHandler</handler-name>
-      <handler-class>org.nhind.xdr.RepositorySOAPHandler</handler-class>
+      <handler-name>org.nhindirect.xd.soap.DirectSOAPHandler</handler-name>
+      <handler-class>org.nhindirect.xd.soap.DirectSOAPHandler</handler-class>
     </handler>
   </handler-chain>
 </handler-chains>

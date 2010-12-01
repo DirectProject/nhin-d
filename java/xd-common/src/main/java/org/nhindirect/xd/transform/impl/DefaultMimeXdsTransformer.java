@@ -292,17 +292,33 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         sourcePatient.setLocalId(cp.getPatientId());
         sourcePatient.setLocalOrg(cp.getOrgId());
         
-        submissionSet.setSubmissionTime(sentDate);
+        // author R2 R
         submissionSet.setAuthorPerson(auth);
         submissionSet.setAuthorInstitution(Arrays.asList(sourcePatient.getLocalOrg()));
         submissionSet.setAuthorRole(auth == null ? "System" : auth + "'s role");
+        
+        // contentTypeCode R R2
         submissionSet.setContentTypeCode(subject, true);
-        submissionSet.setUniqueId(UUID.randomUUID().toString());
-        submissionSet.setSourceId(sourcePatient.getLocalOrg());
+        
+        // entryUUID R R
+        
+        // intendedRecipient O R
+        for (Address address : recipients)
+            submissionSet.getIntendedRecipient().add("||^^Internet^" + address.toString());
+        
+        // patientId R R2
         submissionSet.setPatientId(sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg());
         
-        for (Address address : recipients)
-            submissionSet.getIntendedRecipient().add("|" + address.toString() + "^last^first^^^prefix^^^&amp;1.3.6.1.4.1.21367.3100.1&amp;ISO");
+        // sourceId R R
+        submissionSet.setSourceId(sourcePatient.getLocalOrg());
+        
+        // submissionTime R R
+        submissionSet.setSubmissionTime(sentDate);
+
+        // title O O
+        
+        // uniqueId R R
+        submissionSet.setUniqueId(UUID.randomUUID().toString());
         
         return submissionSet;
     }
@@ -322,19 +338,52 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         sourcePatient.setLocalId(cp.getPatientId());
         sourcePatient.setLocalOrg(cp.getOrgId());
 
-        metadata.setMimeType(xdsMimeType);
-        metadata.setCreationTime(sentDate);
-        metadata.setSourcePatient(sourcePatient);
+        // author R2 R2
         metadata.setAuthorPerson(auth);
         metadata.setAuthorInstitution(Arrays.asList(sourcePatient.getLocalOrg()));
         metadata.setAuthorRole(auth == null ? "System" : auth + "'s role");
+        
+        // classCode R R2
         metadata.setClassCode(ClassCodeEnum.HISTORY_AND_PHYSICAL.getValue(), true);
+        
+        // confidentialityCode R R2
+        // TODO
+        
+        // creationTime R R2
+        metadata.setCreationTime(sentDate);
+        
+        // entryUUID R R
+        
+        // formatCode R R2
         metadata.setFormatCode(xdsFormatCode, true);
+        
+        // healthcareFacilityTypeCode R R2
         metadata.setHealthcareFacilityTypeCode(HealthcareFacilityTypeCodeEnum.OF.getValue(), true);
-        metadata.setPracticeSettingCode(PracticeSettingCodeEnum.MULTIDISCIPLINARY.getValue(), true);
-        metadata.setLoinc(LoincEnum.LOINC_34133_9.getValue(), true);
+        
+        // languageCode R R2
+        // TODO
+        
+        // mimeType R R
+        metadata.setMimeType(xdsMimeType);
+        
+        // patientId R R2
         metadata.setPatientId(sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg());
+        
+        // practiceSettingCode R R2
+        metadata.setPracticeSettingCode(PracticeSettingCodeEnum.MULTIDISCIPLINARY.getValue(), true);
+        
+        // sourcePatientId R R2
+        // sourcePatientInfo R2 R2
+        metadata.setSourcePatient(sourcePatient);
+        
+        // typeCode R R2
+        // TODO
+        
+        // uniqueId R R
         metadata.setUniqueId(UUID.randomUUID().toString());
+        
+        // TODO: There are extra values being set not specified in the XD* spec, need to verify correctness
+        metadata.setLoinc(LoincEnum.LOINC_34133_9.getValue(), true);
 
         document.setData(new String(xdsDocument));
 
