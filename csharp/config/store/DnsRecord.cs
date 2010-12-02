@@ -50,6 +50,11 @@ namespace Health.Direct.Config.Store
             this.Notes = notes;
         }
 
+        public DnsRecord(string domainName, DnsStandard.RecordType recordType, byte[] recordData, string notes)
+            : this(domainName, (int) recordType, recordData, notes)
+        {
+        }
+
         [Column(Name = "RecordID", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never), DataMember(IsRequired = true)]
         public long ID { get; set; }
 

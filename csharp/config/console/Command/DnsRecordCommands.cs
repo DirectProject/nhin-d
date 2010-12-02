@@ -70,23 +70,18 @@ namespace Health.Direct.Config.Console.Command
             = "Add a new ANAME dns record if an identical one does not exist."
               + Constants.CRLF + DnsRecordParser.ParseANAMEUsage;
 
-        private const string RemoveMXUsage
-             = "Remove an existing MX record by ID."
+        private const string AddNSUsage
+            = "Add a new NS dns record."
+              + Constants.CRLF + DnsRecordParser.ParseNSUsage;
+
+        private const string EnsureNSUsage
+            = "Add a new NS dns record if an identical one does not exist."
+              + Constants.CRLF + DnsRecordParser.ParseNSUsage;
+
+        private const string RemoveRecordUsage
+             = "Remove an existing record by its ID."
               + Constants.CRLF + "  recordid"
               + Constants.CRLF + "\t recordid: record id to be removed from the database";
-
-
-        private const string RemoveSOAUsage
-             = "Remove an existing SOA record by ID."
-              + Constants.CRLF + "  recordid"
-              + Constants.CRLF + "\t recordid: record id to be removed from the database";
-
-
-        private const string RemoveANAMEUsage
-             = "Remove an existing ANAME record by ID."
-              + Constants.CRLF + "  recordid"
-              + Constants.CRLF + "\t recordid: record id to be removed from the database";
-
 
         private const string GetMXUsage
              = "Gets an existing MX record by ID."
@@ -102,6 +97,11 @@ namespace Health.Direct.Config.Console.Command
 
         private const string GetANAMEUsage
              = "Gets an existing ANAME record by ID."
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
+
+        private const string GetNSUsage
+             = "Gets an existing NS record by ID."
               + Constants.CRLF + "  recordid"
               + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
         
@@ -287,33 +287,34 @@ namespace Health.Direct.Config.Console.Command
         }
 
         /// <summary>
+        /// Add a new NS DnsRecord entry to the db
+        /// </summary>
+        /// <param name="args"></param>
+        [Command(Name = "Dns_NS_Add", Usage = AddNSUsage)]
+        public void AddNS(string[] args)
+        {
+            DnsRecord record = m_parser.ParseNS(args);
+            Client.AddDnsRecord(record);
+        }
+
+        [Command(Name = "Dns_NS_Ensure", Usage = EnsureNSUsage)]
+        public void EnsureNS(string[] args)
+        {
+            DnsRecord record = m_parser.ParseNS(args);
+            if (!this.VerifyIsUnique(record, false))
+            {
+                return;
+            }
+
+            Client.AddDnsRecord(record);
+        }
+
+        /// <summary>
         /// Removes an existing MX DnsRecord entry to the db
         /// </summary>
         /// <param name="args"></param>
-        [Command(Name = "Dns_MX_Remove", Usage = RemoveMXUsage)]
-        public void RemoveMX(string[] args)
-        {
-            long recordID = args.GetRequiredValue<long>(0);
-            Client.RemoveDnsRecordByID(recordID);
-        }
-
-        /// <summary>
-        /// Removes an existing SOA DnsRecord entry to the db
-        /// </summary>
-        /// <param name="args"></param>
-        [Command(Name = "Dns_SOA_Remove", Usage = RemoveSOAUsage)]
-        public void RemoveSOA(string[] args)
-        {
-            long recordID = args.GetRequiredValue<long>(0);
-            Client.RemoveDnsRecordByID(recordID);
-        }
-
-        /// <summary>
-        /// Removes an existing ANAME DnsRecord entry to the db
-        /// </summary>
-        /// <param name="args"></param>
-        [Command(Name = "Dns_ANAME_Remove", Usage = RemoveANAMEUsage)]
-        public void RemoveANAME(string[] args)
+        [Command(Name = "Dns_Record_Remove", Usage = RemoveRecordUsage)]
+        public void RemoveRecord(string[] args)
         {
             long recordID = args.GetRequiredValue<long>(0);
             Client.RemoveDnsRecordByID(recordID);
@@ -347,6 +348,16 @@ namespace Health.Direct.Config.Console.Command
         public void GetANAME(string[] args)
         {
             this.Get<AddressRecord>(args.GetRequiredValue<long>(0));
+        }
+
+        /// <summary>
+        /// Gets an existing ANAME DnsRecord entry from the db
+        /// </summary>
+        /// <param name="args"></param>
+        [Command(Name = "Dns_NS_Get", Usage = GetNSUsage)]
+        public void GetNS(string[] args)
+        {
+            this.Get<NSRecord>(args.GetRequiredValue<long>(0));
         }
         
         void Get<T>(long recordID)
@@ -392,6 +403,12 @@ namespace Health.Direct.Config.Console.Command
         public void MatchMX(string[] args)
         {
             this.Match(args.GetRequiredValue(0), DnsStandard.RecordType.MX);
+        }
+
+        [Command(Name = "Dns_NS_Match", Usage = "Resolve NS records for the given domain")]
+        public void MatchNS(string[] args)
+        {
+            this.Match(args.GetRequiredValue(0), DnsStandard.RecordType.NS);
         }
         
         void Match(string domain, DnsStandard.RecordType type)
@@ -494,6 +511,8 @@ namespace Health.Direct.Config.Console.Command
     
     public class DnsRecordParser
     {
+        #region usage strings
+
         public const string ParseANAMEUsage = 
               "  domainname ipaddress ttl [notes]"
               + Constants.CRLF + "\t domainname: domain name for the record"
@@ -507,10 +526,10 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + "\t responsibleemail: Email mailbox of the hostmaster"
               + Constants.CRLF + "\t serialnumber: Version number of the original copy of the zone."
               + Constants.CRLF + "\t ttl: time to live in seconds, 32bit int"
-              + Constants.CRLF + "\t [refresh]: Number of seconds before the zone should be refreshed."
-              + Constants.CRLF + "\t [retry]: Number of seconds before failed refresh should be retried."
-              + Constants.CRLF + "\t [expire]: Number of seconds before records should be expired if not refreshed"
-              + Constants.CRLF + "\t [minimum]: Minimum TTL for this zone."
+              + Constants.CRLF + "\t [refresh]: Number of seconds before the zone should be refreshed. Default is 10800 seconds"
+              + Constants.CRLF + "\t [retry]: Number of seconds before failed refresh should be retried. Default is 3600 seconds"
+              + Constants.CRLF + "\t [expire]: Number of seconds before records should be expired if not refreshed. Default is 86400 seconds"
+              + Constants.CRLF + "\t [minimum]: Minimum TTL for this zone. Default is 10800 seconds"
               + Constants.CRLF + "\t [notes]: description for the record";
 
         public const string ParseMXUsage =
@@ -518,9 +537,18 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + "\t domainname: domain name for the record"
               + Constants.CRLF + "\t exchange: smtp domain name for the record"
               + Constants.CRLF + "\t ttl: time to live in seconds"
-              + Constants.CRLF + "\t [preference]: short value indicating preference of the record"
+              + Constants.CRLF + "\t [preference]: short value indicating preference of the record. Default 10"
+              + Constants.CRLF + "\t [notes]: description for the record";
+
+        public const string ParseNSUsage =
+              "  domainname nameserver [notes]"
+              + Constants.CRLF + "\t domainname: domain name for the record"
+              + Constants.CRLF + "\t nameserver: nameserver"
+              + Constants.CRLF + "\t ttl: time to live in seconds"
               + Constants.CRLF + "\t [notes]: description for the record";
         
+        #endregion
+                
         public DnsRecordParser()
         {
         }
@@ -529,13 +557,13 @@ namespace Health.Direct.Config.Console.Command
         {
             string domainName = args.GetRequiredValue(0);
             string ipAddress = args.GetRequiredValue(1);
-            int ttl = args.GetRequiredValue<int>(2);
+            int ttl = this.ValidateTTL(args.GetRequiredValue<int>(2));
             string notes = args.GetOptionalValue(3, string.Empty);
 
             AddressRecord record = new AddressRecord(domainName
                , ipAddress) { TTL = ttl };
 
-            return new DnsRecord(domainName, (int)DnsStandard.RecordType.ANAME, record.Serialize(), notes);
+            return new DnsRecord(domainName, DnsStandard.RecordType.ANAME, record.Serialize(), notes);
         }
                 
         public DnsRecord ParseSOA(string[] args)
@@ -544,12 +572,12 @@ namespace Health.Direct.Config.Console.Command
             string primarySourceDomain = args.GetRequiredValue(1);
             string responsibleEmail = args.GetRequiredValue(2);
             int serialNumber = args.GetRequiredValue<int>(3);
-            int ttl = args.GetRequiredValue<int>(4);
+            int ttl = this.ValidateTTL(args.GetRequiredValue<int>(4));
 
-            int refresh = args.GetOptionalValue(5, 0);
-            int retry = args.GetOptionalValue(6, 0);
-            int expire = args.GetOptionalValue(7, 0);
-            int minimum = args.GetOptionalValue(8, 0);
+            int refresh = args.GetOptionalValue(5, 10800);
+            int retry = args.GetOptionalValue(6, 3600);
+            int expire = args.GetOptionalValue(7, 86400);
+            int minimum = args.GetOptionalValue(8, 10800);
             string notes = args.GetOptionalValue(9, string.Empty);
 
             SOARecord record = new SOARecord(domainName
@@ -561,23 +589,45 @@ namespace Health.Direct.Config.Console.Command
                , expire
                , minimum) { TTL = ttl };
 
-            return new DnsRecord(domainName, (int)DnsStandard.RecordType.SOA, record.Serialize(), notes);
+            return new DnsRecord(domainName, DnsStandard.RecordType.SOA, record.Serialize(), notes);
         }
                 
         public DnsRecord ParseMX(string[] args)
         {        
             string domainName = args.GetRequiredValue(0);
             string exchange = args.GetRequiredValue(1);
-            int ttl = args.GetRequiredValue<int>(2);
-            short pref = args.GetOptionalValue<short>(3, 0);
+            int ttl = this.ValidateTTL(args.GetRequiredValue<int>(2));
+            short pref = args.GetOptionalValue<short>(3, 10);
             string notes = args.GetOptionalValue(4, string.Empty);
 
             MXRecord record = new MXRecord(domainName
                 , exchange
                 , pref) { TTL = ttl };
 
-            DnsRecord dnsRecord = new DnsRecord(domainName, (int)DnsStandard.RecordType.MX, record.Serialize(), notes);
+            DnsRecord dnsRecord = new DnsRecord(domainName, DnsStandard.RecordType.MX, record.Serialize(), notes);
             return dnsRecord;
+        }
+        
+        public DnsRecord ParseNS(string[] args)
+        {
+            string domainName = args.GetRequiredValue(0);
+            string nameServer = args.GetRequiredValue(1);
+            int ttl = this.ValidateTTL(args.GetRequiredValue<int>(2));
+            string notes = args.GetOptionalValue(3, string.Empty);
+            
+            NSRecord nsRecord = new NSRecord(domainName, nameServer);
+            DnsRecord dnsRecord = new DnsRecord(domainName, DnsStandard.RecordType.NS, nsRecord.Serialize(), notes);
+            return dnsRecord;
+        }
+        
+        int ValidateTTL(int ttl)
+        {
+            if (ttl <= 0)
+            {
+                throw new ArgumentException(string.Format("Invalid TTL {0}", ttl));
+            }
+            
+            return ttl;
         }
     }
 }

@@ -21,6 +21,7 @@ pushd %bin%
 call :CopyBins
 popd
 if %ERRORLEVEL% NEQ 0 goto :Error
+xcopy /y /d install.bat "%dest%"
 
 goto :Done
 

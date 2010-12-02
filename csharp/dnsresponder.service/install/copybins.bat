@@ -37,19 +37,15 @@ call :CopyFiles *.cs
 call :CopyFiles *.xml 
 call :CopyFiles *.aspx
 call :CopyFiles *.config
-call :CopyFilesRecursive *.dll
+pushd bin
+xcopy /y * "%dest%"\bin\
+popd
 
 exit /b %ERRORLEVEL%
 
 @rem -------------------------------
 :CopyFiles
 for %%i in (%*) do (xcopy /y %%i "%dest%" || exit /b)
-goto :EOF
-
-@rem -------------------------------
-:CopyFilesRecursive
-xcopy /y /s %1 "%dest%"
-if %ERRORLEVEL% NEQ 0 exit /b
 goto :EOF
 
 @rem -------------------------------
