@@ -93,3 +93,4 @@ glob:csharp/config/install/umeshma4.config
 glob:csharp/config/service/ve-5E8C.tmp
 glob:csharp/config/service/ve-7A85.tmp
 glob:csharp/config/service/ve-8472.tmp
+glob:DirectGateway-*-NET35-Source.zip
