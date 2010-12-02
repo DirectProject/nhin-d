@@ -62,6 +62,7 @@ import org.nhindirect.xd.common.exception.MetadataException;
 import org.nhindirect.xd.common.type.ClassificationTypeEnum;
 import org.nhindirect.xd.common.type.ExternalIdentifierTypeEnum;
 import org.nhindirect.xd.common.type.ExtrinsicObjectTypeEnum;
+import org.nhindirect.xd.common.type.FormatCodeEnum;
 import org.nhindirect.xd.common.type.SlotType1Enum;
 import org.nhindirect.xd.common.type.SubmitObjectsRequestEnum;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
@@ -281,82 +282,100 @@ public class DirectDocument2
             eot.getClassification().add(authorClassification);
 
             // classCode
-            ClassificationType classCodeClassification = new ClassificationType();
-            classCodeClassification.setClassifiedObject(id);
-            classCodeClassification.setNodeRepresentation(classCode);
-            classCodeClassification.setName(makeInternationalStringType(classCode_localized));
-            classCodeClassification.setId(ClassificationTypeEnum.DOC_CLASS_CODE.getClassificationId());
-            classCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_CLASS_CODE.getClassificationScheme());
-
-            List<SlotType1> classCodeClassificationSlots = classCodeClassification.getSlot();
-            addSlot(classCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CLASS_CODE.getCodingScheme()));
-
-            eot.getClassification().add(classCodeClassification);
+            if (classCode != null)
+            {
+                ClassificationType classCodeClassification = new ClassificationType();
+                classCodeClassification.setClassifiedObject(id);
+                classCodeClassification.setNodeRepresentation(classCode);
+                classCodeClassification.setName(makeInternationalStringType(classCode_localized));
+                classCodeClassification.setId(ClassificationTypeEnum.DOC_CLASS_CODE.getClassificationId());
+                classCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_CLASS_CODE.getClassificationScheme());
+    
+                List<SlotType1> classCodeClassificationSlots = classCodeClassification.getSlot();
+                addSlot(classCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CLASS_CODE.getCodingScheme()));
+    
+                eot.getClassification().add(classCodeClassification);
+            }
 
             // confidentialityCode
-            ClassificationType confidentialityCodeClassification = new ClassificationType();
-            confidentialityCodeClassification.setClassifiedObject(id);
-            confidentialityCodeClassification.setNodeRepresentation(confidentialityCode);
-            confidentialityCodeClassification.setName(makeInternationalStringType(confidentialityCode_localized));
-            confidentialityCodeClassification.setId(ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getClassificationId());
-            confidentialityCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getClassificationScheme());
-
-            List<SlotType1> confidentialityCodeClassificationSlots = confidentialityCodeClassification.getSlot();
-            addSlot(confidentialityCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getCodingScheme()));
-
-            eot.getClassification().add(confidentialityCodeClassification);
+            if (confidentialityCode != null)
+            {
+                ClassificationType confidentialityCodeClassification = new ClassificationType();
+                confidentialityCodeClassification.setClassifiedObject(id);
+                confidentialityCodeClassification.setNodeRepresentation(confidentialityCode);
+                confidentialityCodeClassification.setName(makeInternationalStringType(confidentialityCode_localized));
+                confidentialityCodeClassification.setId(ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getClassificationId());
+                confidentialityCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getClassificationScheme());
+    
+                List<SlotType1> confidentialityCodeClassificationSlots = confidentialityCodeClassification.getSlot();
+                addSlot(confidentialityCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_CONFIDENTIALITY_CODE.getCodingScheme()));
+    
+                eot.getClassification().add(confidentialityCodeClassification);
+            }
 
             // formatCode
-            ClassificationType formatCodeClassification = new ClassificationType();
-            formatCodeClassification.setClassifiedObject(id);
-            formatCodeClassification.setNodeRepresentation(formatCode);
-            formatCodeClassification.setName(makeInternationalStringType(formatCode_localized));
-            formatCodeClassification.setId(ClassificationTypeEnum.DOC_FORMAT_CODE.getClassificationId());
-            formatCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_FORMAT_CODE.getClassificationScheme());
-
-            List<SlotType1> formatCodeClassificationSlots = formatCodeClassification.getSlot();
-            addSlot(formatCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_FORMAT_CODE.getCodingScheme()));
-
-            eot.getClassification().add(formatCodeClassification);
+            if (formatCode != null)
+            {
+                ClassificationType formatCodeClassification = new ClassificationType();
+                formatCodeClassification.setClassifiedObject(id);
+                formatCodeClassification.setNodeRepresentation(formatCode);
+                formatCodeClassification.setName(makeInternationalStringType(formatCode_localized));
+                formatCodeClassification.setId(ClassificationTypeEnum.DOC_FORMAT_CODE.getClassificationId());
+                formatCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_FORMAT_CODE.getClassificationScheme());
+    
+                List<SlotType1> formatCodeClassificationSlots = formatCodeClassification.getSlot();
+                addSlot(formatCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_FORMAT_CODE.getCodingScheme()));
+    
+                eot.getClassification().add(formatCodeClassification);
+            }
 
             // healthcareFacilityTypeCode
-            ClassificationType healthcareFacilityTypeCodeClassification = new ClassificationType();
-            healthcareFacilityTypeCodeClassification.setClassifiedObject(id);
-            healthcareFacilityTypeCodeClassification.setNodeRepresentation(healthcareFacilityTypeCode);
-            healthcareFacilityTypeCodeClassification.setName(makeInternationalStringType(healthcareFacilityTypeCode_localized));
-            healthcareFacilityTypeCodeClassification.setId(ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getClassificationId());
-            healthcareFacilityTypeCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getClassificationScheme());
-
-            List<SlotType1> healthcareFacilityTypeCodeClassificationSlots = healthcareFacilityTypeCodeClassification.getSlot();
-            addSlot(healthcareFacilityTypeCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getCodingScheme()));
-
-            eot.getClassification().add(healthcareFacilityTypeCodeClassification);
+            if (healthcareFacilityTypeCode != null)
+            {
+                ClassificationType healthcareFacilityTypeCodeClassification = new ClassificationType();
+                healthcareFacilityTypeCodeClassification.setClassifiedObject(id);
+                healthcareFacilityTypeCodeClassification.setNodeRepresentation(healthcareFacilityTypeCode);
+                healthcareFacilityTypeCodeClassification.setName(makeInternationalStringType(healthcareFacilityTypeCode_localized));
+                healthcareFacilityTypeCodeClassification.setId(ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getClassificationId());
+                healthcareFacilityTypeCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getClassificationScheme());
+    
+                List<SlotType1> healthcareFacilityTypeCodeClassificationSlots = healthcareFacilityTypeCodeClassification.getSlot();
+                addSlot(healthcareFacilityTypeCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_HEALTHCARE_FACILITY_TYPE_CODE.getCodingScheme()));
+    
+                eot.getClassification().add(healthcareFacilityTypeCodeClassification);
+            }
 
             // practiceSettingCode
-            ClassificationType practiceSettingCodeClassification = new ClassificationType();
-            practiceSettingCodeClassification.setClassifiedObject(id);
-            practiceSettingCodeClassification.setNodeRepresentation(practiceSettingCode);
-            practiceSettingCodeClassification.setName(makeInternationalStringType(practiceSettingCode_localized));
-            practiceSettingCodeClassification.setId(ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getClassificationId());
-            practiceSettingCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getClassificationScheme());
-
-            List<SlotType1> practiceSettingCodeClassificationSlots = practiceSettingCodeClassification.getSlot();
-            addSlot(practiceSettingCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getCodingScheme()));
-
-            eot.getClassification().add(practiceSettingCodeClassification);
+            if (practiceSettingCode != null)
+            {
+                ClassificationType practiceSettingCodeClassification = new ClassificationType();
+                practiceSettingCodeClassification.setClassifiedObject(id);
+                practiceSettingCodeClassification.setNodeRepresentation(practiceSettingCode);
+                practiceSettingCodeClassification.setName(makeInternationalStringType(practiceSettingCode_localized));
+                practiceSettingCodeClassification.setId(ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getClassificationId());
+                practiceSettingCodeClassification.setClassificationScheme(ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getClassificationScheme());
+    
+                List<SlotType1> practiceSettingCodeClassificationSlots = practiceSettingCodeClassification.getSlot();
+                addSlot(practiceSettingCodeClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_PRACTICE_SETTING_CODE.getCodingScheme()));
+    
+                eot.getClassification().add(practiceSettingCodeClassification);
+            }
 
             // loinc
-            ClassificationType loincClassification = new ClassificationType();
-            loincClassification.setClassifiedObject(id);
-            loincClassification.setNodeRepresentation(loinc);
-            loincClassification.setName(makeInternationalStringType(loinc_localized));
-            loincClassification.setId(ClassificationTypeEnum.DOC_LOINC.getClassificationId());
-            loincClassification.setClassificationScheme(ClassificationTypeEnum.DOC_LOINC.getClassificationScheme());
-
-            List<SlotType1> loincClassificationSlots = loincClassification.getSlot();
-            addSlot(loincClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_LOINC.getCodingScheme()));
-
-            eot.getClassification().add(loincClassification);
+            if (loinc != null)
+            {
+                ClassificationType loincClassification = new ClassificationType();
+                loincClassification.setClassifiedObject(id);
+                loincClassification.setNodeRepresentation(loinc);
+                loincClassification.setName(makeInternationalStringType(loinc_localized));
+                loincClassification.setId(ClassificationTypeEnum.DOC_LOINC.getClassificationId());
+                loincClassification.setClassificationScheme(ClassificationTypeEnum.DOC_LOINC.getClassificationScheme());
+    
+                List<SlotType1> loincClassificationSlots = loincClassification.getSlot();
+                addSlot(loincClassificationSlots, makeSlot(SlotType1Enum.CODING_SCHEME, ClassificationTypeEnum.DOC_LOINC.getCodingScheme()));
+    
+                eot.getClassification().add(loincClassification);
+            }
 
             // patientId
             ExternalIdentifierType xdsDocumentEntry_patientId = new ExternalIdentifierType();
@@ -1036,6 +1055,18 @@ public class DirectDocument2
             
             if (setLocalized)
                 formatCode_localized = formatCode;
+        }
+        
+        /**
+         * @param formatCode
+         *            the formatCode to set
+         */
+        public void setFormatCode(FormatCodeEnum formatCode)
+        {
+            if (formatCode != null) {
+                setFormatCode(formatCode.getConceptCode());
+                setFormatCode_localized(formatCode.getConceptName());
+            }
         }
         
         /**

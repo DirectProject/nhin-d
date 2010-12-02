@@ -180,8 +180,7 @@ public class NHINDClientTest extends TestCase
         metadata1.setClassCode_localized(ClassCodeEnum.HISTORY_AND_PHYSICAL.getValue());
         metadata1.setConfidentialityCode("1.16");
         metadata1.setConfidentialityCode_localized("1.17");
-        metadata1.setFormatCode(FormatCodeEnum.TEXT.getValue());
-        metadata1.setFormatCode_localized(FormatCodeEnum.TEXT.getValue());
+        metadata1.setFormatCode(FormatCodeEnum.XDS_MEDICAL_SUMMARIES);
         metadata1.setHealthcareFacilityTypeCode(HealthcareFacilityTypeCodeEnum.OF.getValue());
         metadata1.setHealthcareFacilityTypeCode_localized(HealthcareFacilityTypeCodeEnum.OF.getValue());
         metadata1.setPracticeSettingCode(PracticeSettingCodeEnum.MULTIDISCIPLINARY.getValue());
@@ -211,8 +210,7 @@ public class NHINDClientTest extends TestCase
         metadata2.setClassCode_localized(ClassCodeEnum.HISTORY_AND_PHYSICAL.getValue());
         metadata2.setConfidentialityCode("2.16");
         metadata2.setConfidentialityCode_localized("2.17");
-        metadata2.setFormatCode(FormatCodeEnum.TEXT.getValue());
-        metadata2.setFormatCode_localized(FormatCodeEnum.TEXT.getValue());
+        metadata2.setFormatCode(FormatCodeEnum.BASIC_PATIENT_PRIVACY_CONSENTS);
         metadata2.setHealthcareFacilityTypeCode(HealthcareFacilityTypeCodeEnum.OF.getValue());
         metadata2.setHealthcareFacilityTypeCode_localized(HealthcareFacilityTypeCodeEnum.OF.getValue());
         metadata2.setPracticeSettingCode(PracticeSettingCodeEnum.MULTIDISCIPLINARY.getValue());
