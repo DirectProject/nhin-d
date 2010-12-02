@@ -1,3 +1,31 @@
+/* 
+ * Copyright (c) 2010, NHIN Direct Project
+ * All rights reserved.
+ *  
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright 
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.  
+ * 3. Neither the name of the the NHIN Direct Project (nhindirect.org)
+ *    nor the names of its contributors may be used to endorse or promote products 
+ *    derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY 
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY 
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package org.nhindirect.xd.common.type;
 
 import java.io.ByteArrayOutputStream;
@@ -48,38 +76,8 @@ public enum DirectDocumentType
         }  
     },
     PDF(FormatCodeEnum.TEXT, MimeType.APPLICATION_PDF),
-    XML(FormatCodeEnum.TEXT, MimeType.TEXT_XML)
-    {
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.nhindirect.xd.common.type.DirectDocumentType#matches(java.lang.String, java.lang.String, java.lang.String)
-         */
-        @Override
-        public boolean matches(String data, String contentType, String fileName)
-        {
-            if (MimeType.TEXT_XML.matches(contentType))
-                return true;
-
-            return false;
-        }
-    },
-    TEXT(FormatCodeEnum.TEXT, MimeType.TEXT_PLAIN)
-    {
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.nhindirect.xd.common.type.DirectDocumentType#matches(java.lang.String, java.lang.String, java.lang.String)
-         */
-        @Override
-        public boolean matches(String data, String contentType, String fileName)
-        {
-            if (MimeType.TEXT_PLAIN.matches(contentType))
-                return true;
-
-            return false;
-        }
-    },
+    XML(FormatCodeEnum.TEXT, MimeType.TEXT_XML),
+    TEXT(FormatCodeEnum.TEXT, MimeType.TEXT_PLAIN),
     UNKNOWN(FormatCodeEnum.TEXT, MimeType.TEXT_PLAIN)
     {
         /*
@@ -104,43 +102,65 @@ public enum DirectDocumentType
     }
 
     /**
-     * @param m
-     * @return
+     * Check to see if the MimeMessage matches the current DirectDocumentType.
+     * 
+     * @param mimeMessage
+     *            The MimeMessage object to compare against the current
+     *            DirectDocumentType.
+     * @return true if the current DirectDocumentType matches, false otherwise.
      * @throws MessagingException
      * @throws IOException
      */
-    public boolean matches(MimeMessage m) throws MessagingException, IOException
+    public boolean matches(MimeMessage mimeMessage) throws MessagingException, IOException
     {
-        return matches((String) m.getContent(), m.getContentType(), m.getFileName());
+        return matches((String) mimeMessage.getContent(), mimeMessage.getContentType(), mimeMessage.getFileName());
     }
 
     /**
-     * @param b
-     * @return
+     * Check to see if the BodyPart matches the current DirectDocumentType.
+     * 
+     * @param bodyPart
+     *            The BodyPart object to compare against the current
+     *            DirectDocumentType.
+     * @return true if the current DirectDocumentType matches, false otherwise.
      * @throws MessagingException
      * @throws IOException
      */
-    public boolean matches(BodyPart b) throws MessagingException, IOException
+    public boolean matches(BodyPart bodyPart) throws MessagingException, IOException
     {
-        String s = read(b);
+        String s = read(bodyPart);
 
-        return matches(s, b.getContentType(), b.getFileName());
+        return matches(s, bodyPart.getContentType(), bodyPart.getFileName());
     }
 
     /**
+     * Check to see if the BodyPart matches the provided params. The default
+     * implementation checks only the contentType param. More specific
+     * enumerations should override this method with custom matching logic.
+     * 
      * @param data
+     *            The document contents.
      * @param contentType
+     *            The document content type.
      * @param fileName
-     * @return
+     *            The document file name.
+     * @return true it the DirectDocumentType matches, false otherwise.
      */
     public boolean matches(String data, String contentType, String fileName)
     {
+        if (this.mimeType.matches(contentType))
+            return true;
+
         return false;
     }
 
     /**
+     * Lookup and return the DirectDocumentType which most closely matches the
+     * provided MimeMessage.
+     * 
      * @param mimeMessage
-     * @return
+     *            The MimeMessage to match up with a DirectDocumentType.
+     * @return the most closely matching DirectDocumentType.
      * @throws MessagingException
      * @throws IOException
      */
@@ -156,8 +176,12 @@ public enum DirectDocumentType
     }
 
     /**
+     * Lookup and return the DirectDocumentType which most closely matches the
+     * provided BodyPart.
+     * 
      * @param bodyPart
-     * @return
+     *            The BodyPart to match up with a directDocumentType.
+     * @return the most closely matching DirectDocumentType.
      * @throws MessagingException
      * @throws IOException
      */

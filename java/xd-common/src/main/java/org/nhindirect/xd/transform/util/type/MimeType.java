@@ -37,6 +37,11 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum MimeType
 {
+    /*
+     * When adding new MimeType values, the DirectDocumentType class should be
+     * updated with an appropriate new entry.
+     */
+    
     TEXT_PLAIN("text/plain", "txt"), 
     TEXT_XML("text/xml", "xml"), 
     TEXT_CDA_XML("text/cda+xml", "xml"), 
