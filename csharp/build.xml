@@ -4,7 +4,9 @@
 	
 	<!-- Tigris - external\Tigris\MSBuildTasks.msi be installed http://msbuildtasks.tigris.org/ -->
 	<!-- After installation the help file is at [Program Files]\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.chm -->
-	<!-- <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/> -->
+	<!-- ON 64-bit machines you may need to change line 6 in the MSBuild.Community.Tasks.Targets 
+			 to $(MSBuildExtensionsPath32)\MSBuildCommunityTasks -->
+	<!-- <Import Project="$(MSBuildExtensionsPath32)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" /> -->
 	
 	<!-- this imports the xunit and xunitproject tasks -->
 	<UsingTask AssemblyFile="external\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunitproject" />
@@ -21,7 +23,7 @@
 	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway;build-xds" />
 
 	<Target Name="clean" DependsOnTargets="clean-all" />
-	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xds" />
+	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xds;clean-configui" />
 
 	<Target Name="test" DependsOnTargets="test-all" />
 	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xds" />
@@ -111,12 +113,10 @@
 		<RemoveDir Directories=".\installer\configui" />
 	</Target>
 
-	<Target Name="build-installer" DependsOnTargets="build-gateway32;build-gateway64;publish-configui">
-		<Exec Command='"C:\Program Files (x86)\inno setup 5\iscc.exe" /Q installer\DirectGateway.iss' 
-			Condition="Exists('C:\Program Files (x86)\inno setup 5\iscc.exe')" />
-		<Exec Command='"C:\Program Files\inno setup 5\iscc.exe" /Q installer\DirectGateway.iss' 
-			Condition="Exists('C:\Program Files\inno setup 5\iscc.exe')" />
-		<MSBuild Targets="clean-configui" Projects="$(MSBuildProjectFile)" Properties="state=post" />
+	<Target Name="prepare-installer" DependsOnTargets="build-gateway32;build-gateway64;publish-configui" />
+
+	<Target Name="build-installer">
+		<Error Text="Use the build-installer.bat script found in the installer directory." />
 	</Target>
 	
 </Project>
