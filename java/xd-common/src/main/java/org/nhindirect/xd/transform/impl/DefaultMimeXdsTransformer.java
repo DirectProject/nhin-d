@@ -50,7 +50,6 @@ import org.nhindirect.xd.common.DirectDocuments;
 import org.nhindirect.xd.common.XdmPackage;
 import org.nhindirect.xd.common.type.ClassCodeEnum;
 import org.nhindirect.xd.common.type.DirectDocumentType;
-import org.nhindirect.xd.common.type.FormatCodeEnum;
 import org.nhindirect.xd.common.type.HealthcareFacilityTypeCodeEnum;
 import org.nhindirect.xd.common.type.LoincEnum;
 import org.nhindirect.xd.common.type.PracticeSettingCodeEnum;
