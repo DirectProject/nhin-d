@@ -28,17 +28,14 @@
 
 package org.nhindirect.xd.common;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import junit.framework.TestCase;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
@@ -397,6 +394,7 @@ public class DirectDocument2Test extends TestCase
         DirectDocument2.Metadata metadata = document.getMetadata();
 
         String value = "input";
+        metadata.setClassCode(UUID.randomUUID().toString());
         metadata.setClassCode_localized(value);
 
         ExtrinsicObjectType eot = metadata.generateExtrinsicObjectType();
@@ -450,6 +448,7 @@ public class DirectDocument2Test extends TestCase
         DirectDocument2.Metadata metadata = document.getMetadata();
 
         String value = "input";
+        metadata.setConfidentialityCode(UUID.randomUUID().toString());
         metadata.setConfidentialityCode_localized(value);
 
         ExtrinsicObjectType eot = metadata.generateExtrinsicObjectType();
@@ -503,6 +502,7 @@ public class DirectDocument2Test extends TestCase
         DirectDocument2.Metadata metadata = document.getMetadata();
 
         String value = "input";
+        metadata.setFormatCode(UUID.randomUUID().toString());
         metadata.setFormatCode_localized(value);
 
         ExtrinsicObjectType eot = metadata.generateExtrinsicObjectType();
@@ -556,6 +556,7 @@ public class DirectDocument2Test extends TestCase
         DirectDocument2.Metadata metadata = document.getMetadata();
 
         String value = "input";
+        metadata.setHealthcareFacilityTypeCode(UUID.randomUUID().toString());
         metadata.setHealthcareFacilityTypeCode_localized(value);
 
         ExtrinsicObjectType eot = metadata.generateExtrinsicObjectType();
@@ -609,6 +610,7 @@ public class DirectDocument2Test extends TestCase
         DirectDocument2.Metadata metadata = document.getMetadata();
 
         String value = "input";
+        metadata.setPracticeSettingCode(UUID.randomUUID().toString());
         metadata.setPracticeSettingCode_localized(value);
 
         ExtrinsicObjectType eot = metadata.generateExtrinsicObjectType();
@@ -662,6 +664,7 @@ public class DirectDocument2Test extends TestCase
         DirectDocument2.Metadata metadata = document.getMetadata();
 
         String value = "input";
+        metadata.setLoinc(UUID.randomUUID().toString());
         metadata.setLoinc_localized(value);
 
         ExtrinsicObjectType eot = metadata.generateExtrinsicObjectType();

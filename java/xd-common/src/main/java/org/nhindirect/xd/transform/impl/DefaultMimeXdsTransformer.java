@@ -33,7 +33,6 @@ import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
@@ -48,11 +47,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nhindirect.xd.common.DirectDocument2;
 import org.nhindirect.xd.common.DirectDocuments;
 import org.nhindirect.xd.common.XdmPackage;
-import org.nhindirect.xd.common.type.ClassCodeEnum;
 import org.nhindirect.xd.common.type.DirectDocumentType;
-import org.nhindirect.xd.common.type.HealthcareFacilityTypeCodeEnum;
-import org.nhindirect.xd.common.type.LoincEnum;
-import org.nhindirect.xd.common.type.PracticeSettingCodeEnum;
+import org.nhindirect.xd.common.type.FormatCodeEnum;
 import org.nhindirect.xd.transform.MimeXdsTransformer;
 import org.nhindirect.xd.transform.exception.TransformationException;
 import org.nhindirect.xd.transform.parse.ccd.CcdParser;
@@ -68,7 +64,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
 {
     private byte[] xdsDocument = null;
     private String xdsMimeType = null;
-    private String xdsFormatCode = null;
+    private FormatCodeEnum xdsFormatCode = null;
     private DirectDocumentType documentType = null;
 
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultMimeXdsTransformer.class);
@@ -89,6 +85,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
     @Override
     public ProvideAndRegisterDocumentSetRequestType transform(MimeMessage mimeMessage) throws TransformationException
     {
+        ProvideAndRegisterDocumentSetRequestType request;
         DirectDocuments documents = new DirectDocuments();
 
         try
@@ -106,11 +103,14 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                 // Get the document type
                 documentType = DirectDocumentType.lookup(mimeMessage);
                 
-                xdsFormatCode = documentType.getFormatCode().getValue();
+                // Get the format code and MIME type
+                xdsFormatCode = documentType.getFormatCode();
                 xdsMimeType = documentType.getMimeType().getType();
                 
+                // Get the contents
                 xdsDocument = ((String) mimeMessage.getContent()).getBytes();
 
+                // Add document to the collection of documents
                 documents.getDocuments().add(getDocument(sentDate, from));
                 documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
             }
@@ -159,15 +159,18 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                         break;
                     }
                     
-                    xdsFormatCode = documentType.getFormatCode().getValue();
+                    // Get the formata code and MIME type
+                    xdsFormatCode = documentType.getFormatCode();
                     xdsMimeType = documentType.getMimeType().getType();
                     
-                    // Best guess for UNKNOWN
+                    // Best guess for UNKNOWN MIME type
                     if (DirectDocumentType.UNKNOWN.equals(documentType))
                         xdsMimeType = bodyPart.getContentType();
                     
+                    // Get the contents
                     xdsDocument = read(bodyPart).getBytes();
                     
+                    // Add the document to the collection of documents
                     documents.getDocuments().add(getDocument(sentDate, from));
                     documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
                 }
@@ -199,7 +202,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         
         try
         {
-            return documents.toProvideAndRegisterDocumentSetRequestType();
+            request = documents.toProvideAndRegisterDocumentSetRequestType();
         }
         catch (IOException e)
         {
@@ -207,38 +210,42 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                 LOGGER.error("Unexpected IOException occured while transforming to ProvideAndRegisterDocumentSetRequestType", e);
             throw new TransformationException("Unable to complete transformation", e);
         }
+        
+        return request;
     }
   
+    /*
+     * Metadata Attribute           XDS     Minimal Metadata
+     * -----------------------------------------------------
+     * author                       R2      R
+     * contentTypeCode              R       R2
+     * entryUUID                    R       R
+     * intendedRecipient            O       R
+     * patientId                    R       R2
+     * sourceId                     R       R
+     * submissionTime               R       R
+     * title                        O       O
+     * uniqueId                     R       R
+     */
     private DirectDocuments.SubmissionSet getSubmissionSet(String subject, Date sentDate, String auth,
             Address[] recipients) throws Exception
     {
         DirectDocuments.SubmissionSet submissionSet = new DirectDocuments.SubmissionSet();
         
-        // author R2 R
-        submissionSet.setAuthorPerson(auth);
-        submissionSet.setAuthorRole(auth == null ? "System" : auth + "'s role");
-        
-        // contentTypeCode R R2
-        submissionSet.setContentTypeCode(subject, true);
-        
-        // entryUUID R R
-        
-        // intendedRecipient O R
+        // (R) Minimal Metadata Source
+        submissionSet.setAuthorTelecommunication(auth); // TODO: format this correctly
+        submissionSet.setSourceId("TODO"); // TODO: "UUID URN mapped by configuration to sending organization"
+        submissionSet.setSubmissionTime(sentDate);
+        submissionSet.setUniqueId(UUID.randomUUID().toString());
         for (Address address : recipients)
             submissionSet.getIntendedRecipient().add("||^^Internet^" + address.toString());
         
-        // patientId R R2
+        // (R2) Minimal Metadata Source
+        // --
         
-        // sourceId R R
-        
-        // submissionTime R R
-        submissionSet.setSubmissionTime(sentDate);
-
-        // title O O
-        
-        // uniqueId R R
-        submissionSet.setUniqueId(UUID.randomUUID().toString());
-        
+        // (O) Minimal Metadata Source
+        // TODO: title (subject)
+            
         if (DirectDocumentType.CCD.equals(documentType))
         {
             // Parse CCD for patient info
@@ -251,67 +258,52 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
             sourcePatient.setLocalId(cp.getPatientId());
             sourcePatient.setLocalOrg(cp.getOrgId());
             
-            // author R2 R
-            submissionSet.setAuthorInstitution(Arrays.asList(sourcePatient.getLocalOrg()));
-            
-            // patientId R R2
+            // (R) XDS
+            // TODO: contentTypeCode
             submissionSet.setPatientId(sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg());
-            
-            // sourceId R R
             submissionSet.setSourceId(sourcePatient.getLocalOrg());
+            
+            // (R2) XDS
+            // --
+            
+            // (O) XDS
+            // --
         }
         
         return submissionSet;
     }
 
+    /*
+     * Metadata Attribute           XDS     Minimal Metadata
+     * -----------------------------------------------------
+     * author                       R2      R2
+     * classCode                    R       R2
+     * confidentialityCode          R       R2
+     * creationTime                 R       R2
+     * entriUUID                    R       R
+     * formatCode                   R       R
+     * healthcareFacilityTypeCode   R       R2
+     * languageCode                 R       R2
+     * mimeType                     R       R
+     * patientId                    R       R2
+     * practiceSettingCode          R       R2
+     * sourcePatientId              R       R2
+     * typeCode                     R       R2
+     * uniqueId                     R       R
+     */
     private DirectDocument2 getDocument(Date sentDate, String auth) throws Exception
     {
         DirectDocument2 document = new DirectDocument2();
         DirectDocument2.Metadata metadata = document.getMetadata();
 
-        // author R2 R2
-        metadata.setAuthorPerson(auth);
-        metadata.setAuthorRole(auth == null ? "System" : auth + "'s role");
-        
-        // classCode R R2
-        metadata.setClassCode(ClassCodeEnum.HISTORY_AND_PHYSICAL.getValue(), true);
-        
-        // confidentialityCode R R2
-        // TODO
-        
-        // creationTime R R2
-        metadata.setCreationTime(sentDate);
-        
-        // entryUUID R R
-        
-        // formatCode R R2
-        metadata.setFormatCode(xdsFormatCode, true);
-        
-        // healthcareFacilityTypeCode R R2
-        metadata.setHealthcareFacilityTypeCode(HealthcareFacilityTypeCodeEnum.OF.getValue(), true);
-        
-        // languageCode R R2
-        // TODO
-        
-        // mimeType R R
+        // (R) Minimal Metadata Source
         metadata.setMimeType(xdsMimeType);
-        
-        // patientId R R2
-        
-        // practiceSettingCode R R2
-        metadata.setPracticeSettingCode(PracticeSettingCodeEnum.MULTIDISCIPLINARY.getValue(), true);
-        
-        // sourcePatientId R R2
-        // sourcePatientInfo R2 R2
-        
-        // typeCode R R2
-        // TODO
-        
-        // uniqueId R R
         metadata.setUniqueId(UUID.randomUUID().toString());
-        
-        // TODO: There are extra values being set not specified in the XD* spec, need to verify correctness
-        metadata.setLoinc(LoincEnum.LOINC_34133_9.getValue(), true);
+
+        // (R2) Minimal Metadata Source
+        if (xdsFormatCode != null)
+            metadata.setFormatCode(xdsFormatCode);
+            
 
         if (DirectDocumentType.CCD.equals(documentType))
         {
@@ -325,13 +317,20 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
             sourcePatient.setLocalId(cp.getPatientId());
             sourcePatient.setLocalOrg(cp.getOrgId());
 
-            // author R2 R2
-            metadata.setAuthorInstitution(Arrays.asList(sourcePatient.getLocalOrg()));
-
-            // patientId R R2
+            // (R) XDS Source
+            // TODO: Can we get any of the below values from the CCD? And does the presence of a CCD mean XDS source?
+            // TODO: classCode
+            // TODO: confidentialityCode
+            // TODO: creationTime
+            // TODO: formatCode
+            // TODO: healthcareFacilityTypeCode
+            // TODO: languageCode
             metadata.setPatientId(sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg());
-
-            // sourcePatientInfo R2 R2
+            // TODO: practiceSettingCode
+            // TODO: typeCode
+            
+            // (R2) XDS Source
+            // TODO: author (We should be able to get this out of the CCD)
             metadata.setSourcePatient(sourcePatient);
         }
         
