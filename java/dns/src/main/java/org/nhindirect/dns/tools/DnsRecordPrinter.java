@@ -1,3 +1,24 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.dns.tools;
 
 import java.io.PrintWriter;
@@ -16,21 +37,32 @@ import org.xbill.DNS.SOARecord;
 import org.xbill.DNS.Type;
 import org.xbill.DNS.security.CERTConverter;
 
-
+/**
+ * Utility class for formatting and outputting the content of DNS records.
+ * @author Greg Meyer
+ * 
+ * @since 1.0
+ */
 public class DnsRecordPrinter 
 {
 	private final PrintWriter writer;
     
-    /// <summary>
-    /// Initializes the printer with <paramref name="writer"/>
-    /// </summary>
-    /// <param name="writer">The <see cref="TextWriter"/> used for output</param>
+	/**
+	 * Default constructor.  Create a writer that outputs to system console.
+	 * 
+	 * @since 1.0
+	 */
     public DnsRecordPrinter()
     {        
         writer = new PrintWriter(System.out);
     }
     
-    
+    /**
+     * Prints the contents of a collection of DNS records.
+     * @param records A collection of DNS records to print.
+     * 
+     * @since 1.0
+     */
     public void print(Collection<DnsRecord> records)
     {
         if (records == null || records.size() == 0)
@@ -45,6 +77,12 @@ public class DnsRecordPrinter
         }
     }
     
+    /**
+     * Prints the contents of an array of DNS records.
+     * @param records An array of DNS records to print.
+     * 
+     * @since 1.0
+     */    
     public void print(DnsRecord[] records)
     {
     	if (records == null || records.length == 0)
@@ -56,6 +94,9 @@ public class DnsRecordPrinter
     	print(Arrays.asList(records));
     }
 
+    /*
+     * Converts a DNS record type to a string representation
+     */
     private String typeToString(int type)
     {
     	switch (type)
@@ -77,6 +118,10 @@ public class DnsRecordPrinter
     	}
     }
     
+    /**
+     * Prints the contents of a single DNS records.
+     * @param record DNS records to print.
+     */
     public void print(DnsRecord record)
     {
         if (record == null)
@@ -114,6 +159,9 @@ public class DnsRecordPrinter
         writer.flush();
     }
     
+    /*
+     * converts a String to a DNS name
+     */
 	private Name nameFromString(String str)
 	{
 		if (!str.endsWith("."))
@@ -129,13 +177,18 @@ public class DnsRecordPrinter
 		}
 	}
 
-    
+    /*
+     * converts a configuration service DnsRecord to a dnsjava Record
+     */
     private Record toRecord(DnsRecord rec)
     {
     	return Record.newRecord(nameFromString(rec.getName()), rec.getType(), rec.getDclass(), rec.getTtl(), rec.getData());
     }
     
-    public void print(ARecord body)
+    /*
+     * prints the A record specific fields
+     */
+    private void print(ARecord body)
     {
         if (body == null)
         {
@@ -146,7 +199,10 @@ public class DnsRecordPrinter
         this.print("IPAddress", body.getAddress().getHostAddress());
     }
 
-    public void print(MXRecord body)
+    /*
+     * prints the MX record specific fields
+     */
+    private void print(MXRecord body)
     {
         if (body == null)
         {
@@ -158,7 +214,10 @@ public class DnsRecordPrinter
         print("Priority", String.valueOf(body.getPriority()));
     }
     
-    public void print(SOARecord soa)
+    /*
+     * prints the SOA record specific fields
+     */
+    private void print(SOARecord soa)
     {
         if (soa == null)
         {
@@ -175,7 +234,10 @@ public class DnsRecordPrinter
         print("Minimum", String.valueOf(soa.getMinimum()));
     }
     
-    public void print(CERTRecord certbody)
+    /*
+     * prints the CERT record specific fields
+     */    
+    private void print(CERTRecord certbody)
     {
         if (certbody == null)
         {
@@ -193,14 +255,18 @@ public class DnsRecordPrinter
     }
     
 
-
-    void print(String name, String value)
+    /*
+     * prints a name value pair
+     */
+    private void print(String name, String value)
     {
         writer.println(name + ": " + value);
     }
 
-
-    void print(String message)
+    /*
+     * prints a specific string message
+     */
+    private void print(String message)
     {
     	writer.println(message);
     }

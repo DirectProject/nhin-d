@@ -1,3 +1,24 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.dns.tools;
 
 import java.io.File;
@@ -15,6 +36,12 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
 import org.xbill.DNS.Type;
 
+/**
+ * Command definition and logic for managing DNS records.  Commands are case-insensitive.
+ * @author Greg Meyer
+ *
+ * @since 1.0
+ */
 public class DNSRecordCommands 
 {
     private static final String IMPORT_MX_USAGE = "Import a new MX dns record from a binary file." +
@@ -75,10 +102,17 @@ public class DNSRecordCommands
     private static final String GET_ANAME_USAGE = "Gets an existing ANAME record by ID." +
         "\r\n\trecordid";
 
+    private static final String GET_ALL_USAGE = "Gets all records in the DNS store.";
     DnsRecordPrinter printer;
     private DnsRecordParser parser;
     private final ConfigurationServiceProxy proxy;
     
+    /**
+     * Constructor that takes a reference to the configuration service proxy.
+     * @param proxy Configuratoin service proxy for accessing the configuration service.
+     * 
+     * @since 1.0
+     */
 	public DNSRecordCommands(ConfigurationServiceProxy proxy)
 	{
 	    parser = new DnsRecordParser();
@@ -86,6 +120,9 @@ public class DNSRecordCommands
 	    this.proxy = proxy;
 	}
 	
+	/*
+	 * Convert a dnsjava record to a DnsRecord for use with the proxy.
+	 */
 	private DnsRecord fromRecord(Record rec)
 	{
 	    DnsRecord retVal = new DnsRecord();
@@ -98,7 +135,10 @@ public class DNSRecordCommands
 	    return retVal;
 	}
 	
-	protected DnsRecord loadAndVerifyDnsRecordFromBin(String path)
+	/*
+	 * Loads a record from a file.  Records are stored in raw wire format.
+	 */
+	private DnsRecord loadAndVerifyDnsRecordFromBin(String path)
 	{
 	    File recFile = new File(path);
 	    if (!recFile.exists())
@@ -119,6 +159,9 @@ public class DNSRecordCommands
 	    return (rec != null) ? fromRecord(rec) : null;
 	}
 	
+	/*
+	 * Adds a DNS record to the configuration service.
+	 */
 	private void addDNS(DnsRecord dnsRecord)
 	{
 		try
@@ -132,11 +175,15 @@ public class DNSRecordCommands
 		}
 	}
 
+	/*
+	 * Removed a DNS record from the service
+	 */
 	private void removeDNS(long recordId)
 	{
 		try
 		{
 			proxy.removeDNSByRecordId(recordId);
+			System.out.println("Record removed successfully.");
 		}
 		catch (Exception e)
 		{
@@ -144,7 +191,10 @@ public class DNSRecordCommands
 		}
 	}
 	
-	protected void importRecord(String path, int type)
+	/*
+	 * Imports a specific DNS record type from a file.
+	 */
+	private void importRecord(String path, int type)
 	{
 		DnsRecord dnsRecord = loadAndVerifyDnsRecordFromBin(path);
 
@@ -156,6 +206,12 @@ public class DNSRecordCommands
 		addDNS(dnsRecord);
 	}
 	
+	/**
+	 * Imports an MX record from a file.  The file contains the record in raw DNS wire format.
+	 * @param args The first entry in the array contains the file path (required).
+	 * 
+     * @since 1.0
+	 */
 	@Command(name = "Dns_MX_Import", usage = IMPORT_MX_USAGE)
 	public void mXImport(String[] args)
 	{
@@ -163,6 +219,12 @@ public class DNSRecordCommands
 	    importRecord(path, Type.MX);
 	}
 		
+	/**
+	 * Imports an SOA record from a file.  The file contains the record in raw DNS wire format.
+	 * @param args The first entry in the array contains the file path (required).
+	 * 
+     * @since 1.0
+	 */
 	@Command(name = "Dns_SOA_Import", usage = IMPORT_SOA_USAGE)
 	public void sOAImport(String[] args)
 	{
@@ -170,6 +232,12 @@ public class DNSRecordCommands
 	    importRecord(path, Type.SOA);
 	}
 	
+	/**
+	 * Imports an A record from a file.  The file contains the record in raw DNS wire format.
+	 * @param args The first entry in the array contains the file path (required).
+	 * 
+     * @since 1.0
+	 */
 	@Command(name = "Dns_ANAME_Import", usage = IMPORT_ADDRESS_USAGE)
 	public void importAddress(String[] args)
 	{
@@ -177,6 +245,12 @@ public class DNSRecordCommands
 	    importRecord(path, Type.A);
 	}       
 	
+	/**
+	 * Adds an MX records to the configuration service.
+	 * @param args Contains the MX record attributes.
+	 * 
+	 * @since 1.0
+	 */
 	@Command(name = "Dns_MX_Add", usage = ADD_MX_USAGE)
 	public void addMX(String[] args)
 	{
@@ -185,6 +259,12 @@ public class DNSRecordCommands
 		addDNS(record);
 	}
 	
+	/**
+	 * Adds an MX records to the configuration service only if the record does not exist.
+	 * @param args Contains the MX record attributes.
+	 * 
+	 * @since 1.0
+	 */	
 	@Command(name = "Dns_MX_Ensure", usage = ENSURE_MX_USAGE)
 	public void ensureMX(String[] args)
 	{
@@ -198,6 +278,12 @@ public class DNSRecordCommands
 		addDNS(record);
 	}
 	
+	/**
+	 * Adds an SOA records to the configuration service.
+	 * @param args Contains the SOA record attributes.
+	 * 
+	 * @since 1.0
+	 */		
 	@Command(name = "Dns_SOA_Add", usage = ADD_SOA_USAGE)
 	public void addSOA(String[] args)
 	{
@@ -206,6 +292,12 @@ public class DNSRecordCommands
 		addDNS(record);
 	}
 	
+	/**
+	 * Adds an SOA records to the configuration service only if the record does not exist.
+	 * @param args Contains the SOA record attributes.
+	 * 
+	 * @since 1.0
+	 */	
 	@Command(name = "Dns_SOA_Ensure", usage = ENSURE_SOA_USAGE)
 	public void ensureSOA(String[] args)
 	{
@@ -218,6 +310,12 @@ public class DNSRecordCommands
 		addDNS(record);
 	}
 	
+	/**
+	 * Adds an A records to the configuration service.
+	 * @param args Contains the A record attributes.
+	 * 
+	 * @since 1.0
+	 */
 	@Command(name = "Dns_ANAME_Add", usage = ADD_ANAME_USAGE)
 	public void addANAME(String[] args)
 	{
@@ -225,6 +323,13 @@ public class DNSRecordCommands
 		addDNS(record);
 	}
 	
+	
+	/**
+	 * Adds an A records to the configuration service only if the record does not exist.
+	 * @param args Contains the A record attributes.
+	 * 
+	 * @since 1.0
+	 */		
 	@Command(name = "Dns_ANAME_Ensure", usage = ENSURE_ANAME_USAGE)
 	public void ensureANAME(String[] args)
 	{
@@ -237,6 +342,12 @@ public class DNSRecordCommands
 		addDNS(record);
 	}
 	
+	/**
+	 * Removes an MX record from the configuration service by record id.
+	 * @param args The first entry in the array contains the record id (required).
+	 * 
+	 * @since 1.0
+	 */
 	@Command(name = "Dns_MX_Remove", usage = REMOVE_MX_USAGE)
 	public void removeMX(String[] args)
 	{
@@ -244,7 +355,12 @@ public class DNSRecordCommands
 	    removeDNS(recordID);
 	}
 	
-
+	/**
+	 * Removes an SOA record from the configuration service by record id.
+	 * @param args The first entry in the array contains the record id (required).
+	 * 
+	 * @since 1.0
+	 */
 	@Command(name = "Dns_SOA_Remove", usage = REMOVE_SOA_USAGE)
 	public void removeSOA(String[] args)
 	{
@@ -252,6 +368,12 @@ public class DNSRecordCommands
 	    removeDNS(recordID);
 	}
 	
+	/**
+	 * Removes an A record from the configuration service by record id.
+	 * @param args The first entry in the array contains the record id (required).
+	 * 
+	 * @since 1.0
+	 */	
 	@Command(name = "Dns_ANAME_Remove", usage = REMOVE_ANAME_USAGE)
 	public void removeANAME(String[] args)
 	{
@@ -259,30 +381,84 @@ public class DNSRecordCommands
 	    removeDNS(recordID);
 	}
 	
+	/**
+	 * Looks up an MX record by record id.
+	 * @param args The first entry in the array contains the record id (required).
+	 * 
+	 * @since 1.0
+	 */		
 	@Command(name = "Dns_MX_Get", usage = GET_MX_USAGE)
 	public void getMX(String[] args)
 	{
 	    get(Long.parseLong(StringArrayUtil.getRequiredValue(args, 0)));
 	}
 	
+	/**
+	 * Looks up an SOA record by record id.
+	 * @param args The first entry in the array contains the record id (required).
+	 * 
+	 * @since 1.0
+	 */	
 	@Command(name = "Dns_SOA_Get", usage = GET_SOA_USAGE)
 	public void getSOA(String[] args)
 	{
 		get(Long.parseLong(StringArrayUtil.getRequiredValue(args, 0)));
 	}
 	
+	/**
+	 * Looks up an A record by record id.
+	 * @param args The first entry in the array contains the record id (required).
+	 * 
+	 * @since 1.0
+	 */	
 	@Command(name = "Dns_ANAME_Get", usage = GET_ANAME_USAGE)
 	public void getANAME(String[] args)
 	{
 		get(Long.parseLong(StringArrayUtil.getRequiredValue(args, 0)));
 	}
 	
+	/**
+	 * Retrieves and prints all records in the configuration store. 
+	 * @param args Empty
+	 * 
+	 * @since 1.0
+	 */		
+	@Command(name= "Dns_Get_All", usage = GET_ALL_USAGE)
+	public void getAll(String[] args)
+	{
+	    DnsRecord[] records = null;
+	    try
+	    {
+	    	records = proxy.getDNSByType(Type.ANY);
+	    }
+		catch (Exception e)
+		{
+			throw new RuntimeException("Error accessing configuration service.");
+		}
+		
+	    if (records == null || records.length == 0)
+	    {
+	        throw new IllegalArgumentException("No records found");
+	    }
+	    
+	    print(records);
+	}
+	
+	/*
+	 * Gets and prings a record by record is
+	 */
 	private void get(long recordID)
 	{
 	    DnsRecord record = getRecord(recordID);
 	    printer.print(record);
 	}
 	
+	/**
+	 * Looks up all records for a given domain and any sub domains.
+	 * @param args The first entry in the array contains the domain name (required).
+	 * 
+	 * @since 1.0
+	 */			
 	@Command(name = "Dns_Match", usage = "Resolve all records for the given domain")
 	public void match(String[] args)
 	{
@@ -323,25 +499,45 @@ public class DNSRecordCommands
 	    print(matchedRecords.toArray(new DnsRecord[matchedRecords.size()]));
 	}
 	
-
+	/**
+	 * Looks up SOA records for a given domain and any sub domains.
+	 * @param args The first entry in the array contains the domain name (required).
+	 * 
+	 * @since 1.0
+	 */	
 	@Command(name = "Dns_SOA_Match", usage = "Resolve SOA records for the given domain")
 	public void matchSOA(String[] args)
 	{
 	    match(StringArrayUtil.getRequiredValue(args, 0), Type.SOA);
 	}
 	
+	/**
+	 * Looks up A records for a given domain and any sub domains.
+	 * @param args The first entry in the array contains the domain name (required).
+	 * 
+	 * @since 1.0
+	 */		
 	@Command(name = "Dns_ANAME_Match", usage = "Resolve Address records for the given domain")
 	public void matchAName(String[] args)
 	{
 	    match(StringArrayUtil.getRequiredValue(args, 0), Type.A);
 	}
 	
+	/**
+	 * Looks up MX records for a given domain and any sub domains.
+	 * @param args The first entry in the array contains the domain name (required).
+	 * 
+	 * @since 1.0
+	 */		
 	@Command(name = "Dns_MX_Match", usage = "Resolve MX records for the given domain")
 	public void MatchMX(String[] args)
 	{
 	    match(StringArrayUtil.getRequiredValue(args, 0), Type.MX);
 	}
 	
+	/*
+	 * gets records for a domain name and sub domains for a specific type of record
+	 */
 	private void match(String domain, int type)
 	{
 	    DnsRecord[] records = getRecords(domain, type);
@@ -352,6 +548,9 @@ public class DNSRecordCommands
 	    print(records);
 	}
 	
+	/*
+	 * gets a record by record id
+	 */
 	private DnsRecord getRecord(long recordID)
 	{
 		DnsRecord dr = null;
@@ -372,6 +571,9 @@ public class DNSRecordCommands
 	    return dr;
 	}
 	
+	/*
+	 * gets records by name and type
+	 */
 	private DnsRecord[] getRecords(String domain, int type)
 	{
 	    DnsRecord[] records = null;
@@ -391,6 +593,9 @@ public class DNSRecordCommands
 	    return records;
 	}
 	
+	/*
+	 * ensures that a record is unique in the configuration service
+	 */
 	private boolean verifyIsUnique(DnsRecord record, boolean details)
 	{
 	    DnsRecord existing = find(record);
@@ -411,6 +616,9 @@ public class DNSRecordCommands
 	    return true;
 	}
 	        
+	/*
+	 * finds a specific record by name and type
+	 */
 	private DnsRecord find(DnsRecord record)
 	{
 	    DnsRecord[] existingRecords = null;
@@ -435,7 +643,10 @@ public class DNSRecordCommands
 	    return null;
 	}
 	
-	void print(DnsRecord[] records)
+	/*
+	 * prints the contents of an array of records
+	 */
+	private void print(DnsRecord[] records)
 	{
 		if (records != null)
 		{
@@ -447,15 +658,16 @@ public class DNSRecordCommands
 		}
 	}
 	
+	/*
+	 * prints the contents of a specific record
+	 */
 	void print(DnsRecord dnsRecord)
 	{
 	    System.out.println("RecordID: " + dnsRecord.getId());                        
 
 	
 	    printer.print(dnsRecord);
-	
-	    //CommandUI.Print("CreateDate", dnsRecord.CreateDate);
-	    //CommandUI.Print("UpdateDate", dnsRecord.UpdateDate);
+
 	}
     
 }

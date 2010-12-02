@@ -456,7 +456,10 @@
               <detectJavaApiLink>true</detectJavaApiLink>
               <detectLinks>true</detectLinks>
 	          <source>1.6</source>
-	          <show>public</show>     	          
+	          <show>public</show>    
+	          <excludePackageNames>
+	              org.nhindirect.dns.tools.utils
+	          </excludePackageNames>	           	          
 	        </configuration>
 	      </plugin>
 			<plugin>
@@ -480,7 +483,7 @@
 	            <configuration>
 	                <dates>
 	                    <!-- Insert the date of the most recent release -->
-                        <date>2007-01-01</date>
+                        <date>2010-12-01</date>
 	                </dates>
 	                <outputEncoding>UTF-8</outputEncoding>
 	                <type>date</type>
