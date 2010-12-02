@@ -15,14 +15,17 @@ if exist %default_buildfile% (
 if not exist %buildfile% goto :error_missing_buildfile
 
 for %%i in (%*) do call :append_arg %%i
+echo on
 msbuild %msbuild_verbosity% %buildfile%%options%
+@echo off
 goto :done
 
 :append_arg
-if "%1" EQU "verbose" (
+set arg=%1
+if "%arg%" EQU "verbose" (
 	set msbuild_verbosity=/v:normal
-) else (
-  if "%1" NEQ "help" set options=%options% -t:%1
+) else if "%arg%" NEQ "help" (
+	set options=%options% -t:%arg%
 )
 goto :eof
 
