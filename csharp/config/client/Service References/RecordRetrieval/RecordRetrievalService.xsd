@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="urn:directproject:config/store/082010" elementFormDefault="qualified" targetNamespace="urn:directproject:config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:6693/RecordRetrievalService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" />
+  <xs:import schemaLocation="http://localhost:6693/RecordRetrievalService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
+  <xs:element name="GetMatchingDnsRecords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string" />
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="typeID" type="q1:DnsStandard.RecordType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMatchingDnsRecordsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetMatchingDnsRecordsResult" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfDnsRecord">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DnsRecord" nillable="true" type="tns:DnsRecord" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDnsRecord" nillable="true" type="tns:ArrayOfDnsRecord" />
+  <xs:complexType name="DnsRecord">
+    <xs:sequence>
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="DomainName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Notes" nillable="true" type="xs:string" />
+      <xs:element name="RecordData" nillable="true" type="xs:base64Binary" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element name="TypeID" type="xs:int" />
+      <xs:element name="UpdateDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DnsRecord" nillable="true" type="tns:DnsRecord" />
+  <xs:complexType name="ConfigStoreFault">
+    <xs:sequence>
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="Error" type="q2:ConfigStoreError" />
+      <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ConfigStoreFault" nillable="true" type="tns:ConfigStoreFault" />
+  <xs:element name="GetCertificatesForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCertificatesForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetCertificatesForOwnerResult" nillable="true" type="tns:ArrayOfCertificate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfCertificate">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Certificate" nillable="true" type="tns:Certificate" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCertificate" nillable="true" type="tns:ArrayOfCertificate" />
+  <xs:complexType name="Certificate">
+    <xs:sequence>
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="Data" nillable="true" type="xs:base64Binary" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element name="Owner" nillable="true" type="xs:string" />
+      <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q3:EntityStatus" />
+      <xs:element name="Thumbprint" nillable="true" type="xs:string" />
+      <xs:element name="ValidEndDate" type="xs:dateTime" />
+      <xs:element name="ValidStartDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Certificate" nillable="true" type="tns:Certificate" />
+</xs:schema>
