@@ -25,6 +25,13 @@ msbuild %msbuild_verbosity% installer-build.xml -p:VERSION=%VERSION% -t:build-in
 if ERRORLEVEL 1 goto :done
 
 hg commit -m "Advancing version number to %VERSION%..." ..\GlobalAssemblyInfo.cs .\DirectGateway.iss
+if ERRORLEVEL 1 goto :done
+
+hg tag -m "Tagging CSharp as dotnet-%VERSION%" dotnet-%VERSION%
+if ERRORLEVEL 1 goto :done
+
+hg archive -r dotnet-%VERSION% -t zip -X certs -X java DirectGateway-%VERSION%-NET35-Source.zip -X .hg*
+
 goto :done
 
 @rem determine if msbuild is in the path...
