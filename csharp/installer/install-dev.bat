@@ -14,7 +14,6 @@ if %ERRORLEVEL% NEQ 0 goto :error
 echo Succeeded
 
 echo Setting up EventLog sources...
-@rem for /F "eol=; tokens=1,2* delims=," %%i in (event-sources.txt) do eventcreate /ID 1 /L APPLICATION /T INFORMATION /SO %%i /D "%%j"
 powershell -Command "set-executionpolicy unrestricted -force"
 for /F "eol=; tokens=1,2* delims=," %%i in (event-sources.txt) do powershell -File createeventlogsource.ps1 %%i "%%j"
 if %ERRORLEVEL% NEQ 0 goto :error
