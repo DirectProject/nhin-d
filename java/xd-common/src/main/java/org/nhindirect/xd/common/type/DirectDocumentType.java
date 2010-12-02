@@ -19,7 +19,7 @@ import org.nhindirect.xd.transform.util.type.MimeType;
  */
 public enum DirectDocumentType
 {
-    CCD
+    CCD(FormatCodeEnum.CDAR2, MimeType.TEXT_XML)
     {
         /*
          * (non-Javadoc)
@@ -33,7 +33,7 @@ public enum DirectDocumentType
             return StringUtils.contains(data, "POCD_HD000040");
         }
     },
-    XDM
+    XDM(null, null)
     {
         /*
          * (non-Javadoc)
@@ -47,8 +47,8 @@ public enum DirectDocumentType
             return StringUtils.contains(fileName, ".zip");
         }  
     },
-    PDF, 
-    XML
+    PDF(FormatCodeEnum.TEXT, MimeType.APPLICATION_PDF),
+    XML(FormatCodeEnum.TEXT, MimeType.TEXT_XML)
     {
         /*
          * (non-Javadoc)
@@ -64,7 +64,7 @@ public enum DirectDocumentType
             return false;
         }
     },
-    TEXT
+    TEXT(FormatCodeEnum.TEXT, MimeType.TEXT_PLAIN)
     {
         /*
          * (non-Javadoc)
@@ -80,7 +80,7 @@ public enum DirectDocumentType
             return false;
         }
     },
-    UNKNOWN
+    UNKNOWN(FormatCodeEnum.TEXT, MimeType.TEXT_PLAIN)
     {
         /*
          * (non-Javadoc)
@@ -94,8 +94,13 @@ public enum DirectDocumentType
         }
     };
 
-    private DirectDocumentType()
+    private FormatCodeEnum formatCode;
+    private MimeType mimeType;
+    
+    private DirectDocumentType(FormatCodeEnum formatCode, MimeType mimeType)
     {
+        this.formatCode = formatCode;
+        this.mimeType = mimeType;
     }
 
     /**
@@ -167,6 +172,26 @@ public enum DirectDocumentType
         return UNKNOWN;
     }
 
+    /**
+     * Return the value of formatCode.
+     * 
+     * @return the formatCode.
+     */
+    public FormatCodeEnum getFormatCode()
+    {
+        return formatCode;
+    }
+
+    /**
+     * Return the value of mimeType.
+     * 
+     * @return the mimeType.
+     */
+    public MimeType getMimeType()
+    {
+        return mimeType;
+    }
+    
     private static String read(BodyPart bodyPart) throws MessagingException, IOException
     {
         InputStream inputStream = bodyPart.getInputStream();

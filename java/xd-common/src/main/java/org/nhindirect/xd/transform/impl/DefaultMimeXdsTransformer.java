@@ -104,7 +104,12 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
             {
                 LOGGER.info("Handling plain mail (no attachments)");
 
-                parseData(mimeMessage);
+                // Get the document type
+                documentType = DirectDocumentType.lookup(mimeMessage);
+                
+                xdsFormatCode = documentType.getFormatCode().getValue();
+                xdsMimeType = documentType.getMimeType().getType();
+                
                 xdsDocument = ((String) mimeMessage.getContent()).getBytes();
 
                 documents.getDocuments().add(getDocument(sentDate, from));
@@ -128,9 +133,13 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                         LOGGER.warn("Empty body, skipping");
                         continue;
                     }
+                    
+                    // Get the document type
+                    documentType = DirectDocumentType.lookup(bodyPart);
 
                     if (LOGGER.isInfoEnabled()) LOGGER.info("File name: " + bodyPart.getFileName());
                     if (LOGGER.isInfoEnabled()) LOGGER.info("Content type: " + bodyPart.getContentType());
+                    if (LOGGER.isInfoEnabled()) LOGGER.info("DocumentType: " + documentType.toString());
                     
                     /*
                      * Special handling for XDM attachments.
@@ -142,8 +151,6 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                      */
                     if (DirectDocumentType.XDM.equals(documentType))
                     {
-                        LOGGER.info("Matched DirectDocumentType.XDM");
-
                         XdmPackage xdmPackage = XdmPackage.fromXdmZipDataHandler(bodyPart.getDataHandler());
 
                         // Spec says if XDM package is present, this will be the only attachment
@@ -153,7 +160,13 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                         break;
                     }
                     
-                    parseData(bodyPart);
+                    xdsFormatCode = documentType.getFormatCode().getValue();
+                    xdsMimeType = documentType.getMimeType().getType();
+                    
+                    // Best guess for UNKNOWN
+                    if (DirectDocumentType.UNKNOWN.equals(documentType))
+                        xdsMimeType = bodyPart.getContentType();
+                    
                     xdsDocument = read(bodyPart).getBytes();
                     
                     documents.getDocuments().add(getDocument(sentDate, from));
@@ -194,54 +207,6 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
             if (LOGGER.isErrorEnabled())
                 LOGGER.error("Unexpected IOException occured while transforming to ProvideAndRegisterDocumentSetRequestType", e);
             throw new TransformationException("Unable to complete transformation", e);
-        }
-    }
-    
-    private void parseData(BodyPart bodyPart) throws MessagingException, IOException
-    {
-        // Get the document type
-        documentType = DirectDocumentType.lookup(bodyPart);
-        
-        parseData(bodyPart.getContentType());
-    }
-    
-    private void parseData(MimeMessage mimeMessage) throws MessagingException, IOException
-    {
-     // Get the document type
-        documentType = DirectDocumentType.lookup(mimeMessage);
-        
-        parseData(MimeType.TEXT_PLAIN.getType());
-    }
-    
-    private void parseData(String defaultContentType)
-    {
-        if (DirectDocumentType.CCD.equals(documentType))
-        {
-            LOGGER.info("Matched DirectDocumentType.CCD");
-
-            xdsFormatCode = FormatCodeEnum.CDAR2.getValue();
-            xdsMimeType = MimeType.TEXT_XML.getType();
-        }
-        else if (DirectDocumentType.XML.equals(documentType))
-        {
-            LOGGER.info("MATCHED DirectDocumentType.XML");
-            
-            xdsFormatCode = FormatCodeEnum.TEXT.getValue();
-            xdsMimeType = MimeType.TEXT_XML.getType();
-        }
-        else if (DirectDocumentType.TEXT.equals(documentType))
-        {
-            LOGGER.info("Matched DirectDocumentType.TEXT");
-            
-            xdsFormatCode = FormatCodeEnum.TEXT.getValue();
-            xdsMimeType = MimeType.TEXT_PLAIN.getType();
-        }
-        else
-        {
-            LOGGER.info("Matched DirectDocumentType.UNKNOWN");
-            
-            xdsFormatCode = FormatCodeEnum.TEXT.getValue();
-            xdsMimeType = defaultContentType;
         }
     }
   
