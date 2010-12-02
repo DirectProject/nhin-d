@@ -3,7 +3,7 @@ using System;
 using log4net;
 using log4net.Core;
 
-using ILogger=NHINDirect.Diagnostics.ILogger;
+using ILogger=Health.Direct.Diagnostics.ILogger;
 
 namespace Log4NetDiagnosticsSample
 {
