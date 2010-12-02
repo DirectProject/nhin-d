@@ -1,3 +1,31 @@
+/* 
+ * Copyright (c) 2010, NHIN Direct Project
+ * All rights reserved.
+ *  
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright 
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright 
+ *    notice, this list of conditions and the following disclaimer in the 
+ *    documentation and/or other materials provided with the distribution.  
+ * 3. Neither the name of the the NHIN Direct Project (nhindirect.org)
+ *    nor the names of its contributors may be used to endorse or promote products 
+ *    derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY 
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY 
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package org.nhindirect.xd.common;
 
 import java.io.File;
@@ -13,11 +41,20 @@ import org.nhindirect.xd.common.type.FormatCodeEnum;
 import org.nhindirect.xd.common.type.HealthcareFacilityTypeCodeEnum;
 import org.nhindirect.xd.common.type.LoincEnum;
 import org.nhindirect.xd.common.type.PracticeSettingCodeEnum;
-import org.nhindirect.xd.transform.impl.DefaultXdmXdsTransformerTest;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
+import org.nhindirect.xd.transform.util.type.MimeType;
 
+/**
+ * Test class for the XdmPackage class.
+ * 
+ * @author beau
+ */
 public class XdmPackageTest extends TestCase
 {
+    
+    /**
+     * Test the XdmPackage class.
+     */
     public void testXdmPackage()
     {
         XdmPackage xdmPackage = new XdmPackage(UUID.randomUUID().toString());
@@ -45,7 +82,7 @@ public class XdmPackageTest extends TestCase
         doc1.setData("data1");
         
         DirectDocument2.Metadata metadata1 = doc1.getMetadata();
-        metadata1.setMimeType("1.1");
+        metadata1.setMimeType(MimeType.TEXT_PLAIN.getType());
         metadata1.setId("1.2");
         metadata1.setDescription("1.3");
         metadata1.setCreationTime(new Date());
@@ -76,7 +113,7 @@ public class XdmPackageTest extends TestCase
         doc2.setData("doc2");
         
         DirectDocument2.Metadata metadata2 = doc2.getMetadata();
-        metadata2.setMimeType("2.1");
+        metadata2.setMimeType(MimeType.TEXT_XML.getType());
         metadata2.setId("2.2");
         metadata2.setDescription("2.3");
         metadata2.setCreationTime(new Date());
@@ -112,6 +149,11 @@ public class XdmPackageTest extends TestCase
         System.out.println(f.getAbsolutePath());
     }
     
+    /**
+     * Test the fromFile method.
+     * 
+     * @throws Exception
+     */
     public void testFromFile() throws Exception
     {
         URL url = XdmPackageTest.class.getClassLoader().getResource("samplexdm.zip");

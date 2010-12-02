@@ -37,18 +37,22 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum MimeType
 {
-    TEXT_PLAIN("text/plain"), 
-    TEXT_XML("text/xml"), 
-    TEXT_CDA_XML("text/cda+xml"), 
-    APPLICATION_CCR("application/ccr"), 
-    APPLICATION_XML("application/xml"), 
-    APPLICATION_PDF("application/pdf"), 
-    MULTIPART_MIXED("multipart/mixed");
-
-    /**
-     * The MIME type.
+    /*
+     * When adding new MimeType values, the DirectDocumentType class should be
+     * updated with an appropriate new entry.
      */
+    
+    TEXT_PLAIN("text/plain", "txt"), 
+    TEXT_XML("text/xml", "xml"), 
+    TEXT_CDA_XML("text/cda+xml", "xml"), 
+    APPLICATION_CCR("application/ccr", "xml"), 
+    APPLICATION_XML("application/xml", "xml"), 
+    APPLICATION_PDF("application/pdf", "pdf"), 
+    MULTIPART_MIXED("multipart/mixed", "???"),
+    UNKNOWN(null, "txt");
+
     private String type;
+    private String suffix;
 
     /**
      * Enumeration constructor.
@@ -56,10 +60,10 @@ public enum MimeType
      * @param type
      *            The MIME type.
      */
-    private MimeType(String type)
+    private MimeType(String type, String suffix)
     {
         this.type = type;
-
+        this.suffix = suffix;
     }
 
     /**
@@ -79,6 +83,24 @@ public enum MimeType
 
         return false;
     }
+    
+    /**
+     * Lookup a MimeType enumeration by type.
+     * 
+     * @param type
+     *            The type to use for lookup.
+     * @return the matching MimeType or UNKNOWN if not found.
+     */
+    public static MimeType lookup(String type)
+    {
+        for (MimeType m : values())
+        {
+            if (m.matches(type))
+                return m;
+        }
+        
+        return UNKNOWN;
+    }
 
     /**
      * Return the type.
@@ -88,6 +110,16 @@ public enum MimeType
     public String getType()
     {
         return type;
+    }
+    
+    /**
+     * Return the suffix.
+     * 
+     * @return the suffix.
+     */
+    public String getSuffix()
+    {
+        return suffix;
     }
 
     /*

@@ -21,13 +21,13 @@ import javax.activation.DataHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.transform.util.type.MimeType;
 
 public class XdmPackage
 {
     private String messageId;
     private DirectDocuments documents;
 
-    // TODO: Need to figure out how to get suffix from a document
     @Deprecated
     private static final String SUFFIX = ".xml";
 
@@ -73,7 +73,7 @@ public class XdmPackage
             for (DirectDocument2 document : documents.getDocuments())
             {
                 if (document.getData() != null)
-                    addEntry(zipOutputStream, document.getData(), XDM_SUB_FOLDER + document.getMetadata().getId() + SUFFIX);
+                    addEntry(zipOutputStream, document.getData(), XDM_SUB_FOLDER + document.getMetadata().getId() + getSuffix(document.getMetadata().getMimeType()));
             }
 
             addEntry(zipOutputStream, documents.getSubmitObjectsRequestAsString(), XDM_SUB_FOLDER + XDM_METADATA_FILE);
@@ -131,7 +131,7 @@ public class XdmPackage
             {
                 if (document.getData() != null)
                 {
-                    String file = XDM_SUB_FOLDER + document.getMetadata().getId() + SUFFIX;
+                    String file = XDM_SUB_FOLDER + document.getMetadata().getId() + getSuffix(document.getMetadata().getMimeType());
                     data += "<li><a href=\"" + file + "\">" + file + "</a> - " + document.getMetadata().getDescription() + "</li>";
                 }
             }
@@ -430,6 +430,11 @@ public class XdmPackage
             LOGGER.trace("Created temporary work file " + f.getAbsolutePath());
 
         return f;
+    }
+    
+    private String getSuffix(String mimeType)
+    {
+        return "." + MimeType.lookup(mimeType).getSuffix();
     }
 
 }
