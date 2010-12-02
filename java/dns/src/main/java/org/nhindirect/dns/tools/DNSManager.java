@@ -33,18 +33,18 @@ import org.nhindirect.dns.tools.utils.Commands;
  * <p>
  * The tool can either be run directly from the command prompt by passing arguments directly from
  * the command line or can be run interactively by passing 0 parameters.  The only exception is setting
- * the URL to the configuration service.  By default the manager uses "http://localhost:8080/config-service/ConfigurationService"
+ * the URL to the configuration service.  By default the manager uses "http://localhost:8081/config-service/ConfigurationService"
  * as the config URL, but can be changed using the configURL command line parameters (it must be the first parameter on the 
  * command line).  
  * <p>
- * <i>DNSManager configURL http://someserver:8080/config-service/ConfigurationService</i>
+ * <i>DNSManager configURL http://someserver:8081/config-service/ConfigurationService</i>
  * @author Greg Meyer
  *
  * @since 1.0
  */
 public class DNSManager 
 {
-	private static final String DEFAULT_CONFIG_URL = "http://localhost:8080/config-service/ConfigurationService"; 
+	private static final String DEFAULT_CONFIG_URL = "http://localhost:8081/config-service/ConfigurationService"; 
 	
 	final Commands commands;
 	

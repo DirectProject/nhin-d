@@ -54,7 +54,9 @@
 	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
 	<property name="tomcat.stage.config.save" value="${tomcat.stage.config}.save"></property>
 	<property name="tomcat.stage.config.new" value="${tomcat.stage.config}.new"></property>
-
+	<property name="dnsserver.stage.dir" value="${env.DIRECT_INSTALL_DIR}/DirectDNSServices/DirectDNSServer"></property>
+	<property name="dnsmgmt.stage.dir" value="${env.DIRECT_INSTALL_DIR}/DirectDNSServices/DNSMgmtConsole"></property>
+	
 	<property name="maven.repo" value="${env.HOME}/.m2/repository"></property>
 	
 	<!-- Config server files -->
@@ -90,7 +92,7 @@
 	<property name="lib.jaxrpc-api" value="${install.root.dir}/lib/jaxrpc-api-1.1.jar"></property>
 	<property name="lib.commons-discovery" value="${install.root.dir}/lib/commons-discovery-0.4.jar"></property>
 	<property name="lib.axis" value="${install.root.dir}/lib/axis-1.4.jar"></property>
-    <property name="lib.config.proxy" value="${install.root.dir}/lib/config-service-client-1.0.jar"></property>
+    <property name="lib.config.proxy" value="${install.root.dir}/lib/config-service-client-1.1-SNAPSHOT.jar"></property>
 
 	<!-- Package libraries -->
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
@@ -102,6 +104,9 @@
 	
 	<!-- Stylesheet to edit the config file -->
 	<property name="edit.config.stylesheet" value="${src}/scripts/edit-config.xsl"></property>
+
+	<!-- Stylesheet to edit server.xml for tomcat configuration -->
+	<property name="edit.tomcat.stylesheet" value="${src}/scripts/edit-tomcat.xsl"></property>
 
 	<target name="windows-specific" if="is.windows">
 		<echo message="src is ${src}"></echo>
@@ -232,7 +237,7 @@
 		<copy file="${lib.bcprov-jdk15}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.commons-codec}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.commons-io}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
-		<!-- <copy file="${lib.commons-lang}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy> -->
+		<copy file="${lib.commons-lang}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.commons-logging}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.guice}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.mail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
@@ -269,6 +274,8 @@
 		<copy file="${src}/scripts/config.xml" tofile="${james.stage.config}" overwrite="true"></copy>
 
 		<copy file="${src}/scripts/setdomain.sh" todir="${james.stage.dir}/bin" overwrite="true"></copy>
+		<copy file="${src}/scripts/set-domain.xml" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
+		<copy file="${src}/scripts/set-domain.xsl" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
 
 		<!-- clean up work files -->
 		<delete file="${james.stage.config.new}" failonerror="false"></delete>
@@ -285,10 +292,12 @@
 		<copy file="${install.root.dir}/lib/${config.service.orig.war}" tofile="${tomcat.webapp.dir}/${config.service.dest.war}"></copy>
 		<copy file="${install.root.dir}/lib/${config.ui.orig.war}" tofile="${tomcat.webapp.dir}/${config.ui.dest.war}"></copy>
 
-		<!-- edit the tomcat.xml file -->
-		<!-- TODO mark :) .. for now just overwrite with custom version -->
-		<copy file="${tomcat.stage.config}" tofile="${tomcat.stage.config.save}" overwrite="true"></copy>
-		<copy file="${src}/scripts/server.xml" tofile="${tomcat.stage.config}" overwrite="true"></copy>
+		<xslt style="${edit.tomcat.stylesheet}" in="${tomcat.stage.config}" out="${tomcat.stage.config.new}">
+		    <param name="port" expression="8081"></param>
+		</xslt>
+		<copy file="${tomcat.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
+		<copy file="${tomcat.stage.config.new}" tofile="${tomcat.stage.config}" overwrite="true"></copy>
+		<delete file="${tomcat.stage.config.new}" />
 	</target>
 
 	<!-- make shell files executable -->
@@ -299,6 +308,21 @@
 		<exec executable="sh">
 			<arg line="-c 'cd ${tomcat.stage.dir}/bin; chmod a+x *.sh'"></arg>
 		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x wrapper-linux-x86-32'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x wrapper-linux-x86-64'"></arg>
+		</exec>				
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x wrapper-solaris-x86-32'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x DirectDNSServer'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsmgmt.stage.dir}/bin; chmod a+x DNSMgmtConsole'"></arg>
+		</exec>				
 	</target>
 
 	<!-- clean up -->
