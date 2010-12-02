@@ -4,33 +4,27 @@ set msbuild_verbosity=/v:minimal
 
 if "%1" EQU "help" goto :help
 
-set MAJOR=1
-set MINOR=0
-set BUILD=0
-set REVISION=0
+set VERSION=1.0.0.0
 
 call :check_environment
 
 :enter-version-info
 echo Enter the version information:
-set /p MAJOR=  MAJOR (DEFAULT %MAJOR%)? 
-set /p MINOR=  MINOR (DEFAULT %MINOR%)? 
-set /p BUILD=  BUILD (DEFAULT %BUILD%)? 
-set /p REVISION=  REVISION (DEFAULT %REVISION%)? 
+set /p VERSION=  VERSION (DEFAULT %VERSION%)? 
 
-if "%MAJOR%" EQU "" set MAJOR=1
-if "%MINOR%" EQU "" set MINOR=0
-if "%BUILD%" EQU "" set BUILD=0
-if "%REVISION%" EQU "" set REVISION=0
+if "%VERSION%" EQU "" set VERSION=1.0.0.0
 
-set /p CONFIRM=Use '%MAJOR%.%MINOR%.%BUILD%.%REVISION%' as the version info? (DEFAULT=Y) 
+set /p CONFIRM=Use '%VERSION%' as the version info? (DEFAULT=Y) 
 if "%CONFIRM%" EQU "" set CONFIRM=Y
 if "%CONFIRM%" NEQ "Y" goto :enter-version-info
 
-@rem hg commit -m "Advancing version number to %major%.%minor%.%build%.%revision%..."
-
 msbuild %msbuild_verbosity% ..\build.xml -t:prepare-installer
-msbuild %msbuild_verbosity% installer-build.xml -p:MAJOR=%major% -p:MINOR=%minor% -p:BUILD=%build% -p:REVISION=%revision% -t:build-installer
+if ERRORLEVEL 1 goto :done
+
+msbuild %msbuild_verbosity% installer-build.xml -p:VERSION=%VERSION% -t:build-installer
+if ERRORLEVEL 1 goto :done
+
+hg commit -m "Advancing version number to %VERSION%..." ..\GlobalAssemblyInfo.cs .\DirectGateway.iss
 goto :done
 
 @rem determine if msbuild is in the path...
