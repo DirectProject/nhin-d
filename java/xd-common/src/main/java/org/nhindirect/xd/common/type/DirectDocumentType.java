@@ -47,7 +47,7 @@ import org.nhindirect.xd.transform.util.type.MimeType;
  */
 public enum DirectDocumentType
 {
-    CCD(FormatCodeEnum.CDAR2, MimeType.TEXT_XML)
+    CCD(FormatCodeEnum.HL7_CCD_DOCUMENT, MimeType.TEXT_XML)
     {
         /*
          * (non-Javadoc)
@@ -75,10 +75,10 @@ public enum DirectDocumentType
             return StringUtils.contains(fileName, ".zip");
         }  
     },
-    PDF(FormatCodeEnum.TEXT, MimeType.APPLICATION_PDF),
-    XML(FormatCodeEnum.TEXT, MimeType.TEXT_XML),
-    TEXT(FormatCodeEnum.TEXT, MimeType.TEXT_PLAIN),
-    UNKNOWN(FormatCodeEnum.TEXT, MimeType.TEXT_PLAIN)
+    PDF(null, MimeType.APPLICATION_PDF),
+    XML(null, MimeType.TEXT_XML),
+    TEXT(null, MimeType.TEXT_PLAIN),
+    UNKNOWN(null, MimeType.TEXT_PLAIN)
     {
         /*
          * (non-Javadoc)
@@ -148,7 +148,7 @@ public enum DirectDocumentType
      */
     public boolean matches(String data, String contentType, String fileName)
     {
-        if (this.mimeType.matches(contentType))
+        if (StringUtils.contains(contentType, this.mimeType.getType()))
             return true;
 
         return false;
