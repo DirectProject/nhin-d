@@ -41,6 +41,7 @@ import org.nhindirect.xd.common.type.HealthcareFacilityTypeCodeEnum;
 import org.nhindirect.xd.common.type.LoincEnum;
 import org.nhindirect.xd.common.type.PracticeSettingCodeEnum;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
+import org.nhindirect.xd.transform.util.type.MimeType;
 
 /**
  * Test class for the DirectDocuments class.
@@ -113,7 +114,7 @@ public class DirectDocumentsTest extends TestCase
         doc1.setData("this is some data for document 1");
         
         DirectDocument2.Metadata metadata1 = doc1.getMetadata();
-        metadata1.setMimeType("1.1");
+        metadata1.setMimeType(MimeType.TEXT_PLAIN.getType());
         metadata1.setId("1.2");
         metadata1.setDescription("1.3");
         metadata1.setCreationTime(new Date());
@@ -129,8 +130,7 @@ public class DirectDocumentsTest extends TestCase
         metadata1.setClassCode_localized(ClassCodeEnum.HISTORY_AND_PHYSICAL.getValue());
         metadata1.setConfidentialityCode("1.16");
         metadata1.setConfidentialityCode_localized("1.17");
-        metadata1.setFormatCode(FormatCodeEnum.TEXT.getValue());
-        metadata1.setFormatCode_localized(FormatCodeEnum.TEXT.getValue());
+        metadata1.setFormatCode(FormatCodeEnum.CANCER_REGISTRY_CONTENT_CRC);
         metadata1.setHealthcareFacilityTypeCode(HealthcareFacilityTypeCodeEnum.OF.getValue());
         metadata1.setHealthcareFacilityTypeCode_localized(HealthcareFacilityTypeCodeEnum.OF.getValue());
         metadata1.setPracticeSettingCode(PracticeSettingCodeEnum.MULTIDISCIPLINARY.getValue());
@@ -144,7 +144,7 @@ public class DirectDocumentsTest extends TestCase
         doc2.setData("and this is some data for document 2");
         
         DirectDocument2.Metadata metadata2 = doc2.getMetadata();
-        metadata2.setMimeType("2.1");
+        metadata1.setMimeType(MimeType.TEXT_XML.getType());
         metadata2.setId("2.2");
         metadata2.setDescription("2.3");
         metadata2.setCreationTime(new Date());
@@ -160,8 +160,7 @@ public class DirectDocumentsTest extends TestCase
         metadata2.setClassCode_localized(ClassCodeEnum.HISTORY_AND_PHYSICAL.getValue());
         metadata2.setConfidentialityCode("2.16");
         metadata2.setConfidentialityCode_localized("2.17");
-        metadata2.setFormatCode(FormatCodeEnum.TEXT.getValue());
-        metadata2.setFormatCode_localized(FormatCodeEnum.TEXT.getValue());
+        metadata2.setFormatCode(FormatCodeEnum.HL7_CCD_DOCUMENT);
         metadata2.setHealthcareFacilityTypeCode(HealthcareFacilityTypeCodeEnum.OF.getValue());
         metadata2.setHealthcareFacilityTypeCode_localized(HealthcareFacilityTypeCodeEnum.OF.getValue());
         metadata2.setPracticeSettingCode(PracticeSettingCodeEnum.MULTIDISCIPLINARY.getValue());
