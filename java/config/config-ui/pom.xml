@@ -4,15 +4,10 @@
   <groupId>org.nhind</groupId>
   <artifactId>config-ui</artifactId>
   <packaging>war</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
   <name>NHIN Direct Java Configuration UI</name>
   <description>NHIN Direct Java Configuration UI</description>
   <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-ui/${project.version}</url>   
-	<parent>
-		<artifactId>config</artifactId>
-		<groupId>org.nhind</groupId>
-		<version>1.0</version>
-	</parent>
 	<scm>
 		<url>https://nhin-d.googlecode.com/hg/java/config/config-ui</url>
 		<connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/config/config-ui</connection>
@@ -86,21 +81,21 @@
     <dependency>
     	<groupId>org.springframework</groupId>
     	<artifactId>spring-webmvc</artifactId>
-    	<version>${spring-version}</version>
+    	<version>3.0.4.RELEASE</version>
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
     <dependency>
     	<groupId>org.springframework</groupId>
     	<artifactId>spring-context</artifactId>
-    	<version>${spring-version}</version>
+    	<version>3.0.4.RELEASE</version>
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
     <dependency>
     	<groupId>org.springframework</groupId>
     	<artifactId>spring-beans</artifactId>
-    	<version>${spring-version}</version>
+    	<version>3.0.4.RELEASE</version>
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
@@ -258,8 +253,21 @@
 	        </requestLog>
 	    </configuration>
 	  </plugin>	 
-	      <!--  only for releases -->
-      <plugin>
+  	
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-source-plugin</artifactId>
+           <version>2.0.3</version>
+           <executions>
+             <execution>
+               <goals>
+                 <goal>jar</goal>
+               </goals>
+             </execution>
+           </executions>
+         </plugin>   
+	      <!--  only for releases 
+         <plugin>
 
 	      	<groupId>org.apache.maven.plugins</groupId> 
 	        <artifactId>maven-javadoc-plugin</artifactId>
@@ -282,19 +290,7 @@
                 </goals>
               </execution>
             </executions>	        
-	    </plugin>		
-        <plugin>
-           <groupId>org.apache.maven.plugins</groupId>
-           <artifactId>maven-source-plugin</artifactId>
-           <version>2.0.3</version>
-           <executions>
-             <execution>
-               <goals>
-                 <goal>jar</goal>
-               </goals>
-             </execution>
-           </executions>
-         </plugin>   
+        </plugin>
 	    <plugin>
              <groupId>org.apache.maven.plugins</groupId>
              <artifactId>maven-gpg-plugin</artifactId>
@@ -307,7 +303,8 @@
                      </goals>
               </execution>
             </executions>
-        </plugin>              
+        </plugin>  	
+        -->                       
     </plugins>
     <pluginManagement>
           <plugins>
