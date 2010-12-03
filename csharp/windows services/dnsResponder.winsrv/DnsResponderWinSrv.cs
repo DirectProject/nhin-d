@@ -4,6 +4,7 @@
 
  Authors:
     Chris Lomonico
+    Umesh Madan     umeshma@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -23,46 +24,23 @@ namespace Health.Direct.DnsResponder.WinSrv
 {
     public partial class DnsResponderWinSrv : ServiceBase
     {
-        const string EventLogSourceName = "Health.Direct.DnsResponder.WinSrv";
-
         private DnsServer m_dnsServer;
         private DnsRecordStorageService m_store;
-        private readonly ILogger m_logger;
-
+        Diagnostics m_diagnostics;
+        
         public DnsResponderWinSrv()
         {
             InitializeComponent();
 
             try
             {
-                m_logger = Log.For(this);
+                m_diagnostics = new Diagnostics(this);
             }
             catch (Exception ex)
             {
-                WriteToEventLog(ex);
+                Diagnostics.WriteEventLog(ex);
                 throw;
             }
-        }
-
-        private ILogger Logger
-        {
-            get { return m_logger; }
-        }
-
-        private static void WriteToEventLog(Exception ex)
-        {
-            EventLogHelper.WriteError(EventLogSourceName, ex.Message);
-            EventLogHelper.WriteError(EventLogSourceName, ex.GetBaseException().ToString());
-        }
-
-        //private static void WriteToEventLogWarn(string message)
-        //{
-        //    EventLogHelper.WriteWarning(EventLogSourceName, message);
-        //}
-
-        private static void WriteToEventLogInfo(string message)
-        {
-            EventLogHelper.WriteInformation(EventLogSourceName, message);
         }
 
         /// <summary>
@@ -70,7 +48,7 @@ namespace Health.Direct.DnsResponder.WinSrv
         /// </summary>
         private void InitializeService()
         {
-            WriteToEventLogInfo("Service is being initialized");
+            m_diagnostics.ServiceInitializing();
 
             // load the settings from the related sections in app.config
             ClientSettings recordRetrievalSettings = ClientSettingsSection.GetSection().AsClientSettings();
@@ -80,22 +58,48 @@ namespace Health.Direct.DnsResponder.WinSrv
 
             // create the DNS Server instance
             m_dnsServer = new DnsServer(m_store, dnsServerSettings);
+            //
+            // Hook up events for logging/debugging
+            //
+            m_diagnostics.HookEvents(m_dnsServer);
 
-            // setup the error listener
-            m_dnsServer.Error += Server_Error;
-
-            WriteToEventLogInfo("Service has been fully initialized");
+            m_diagnostics.ServiceInitializingComplete();
         }
 
         public void StartService(string[] args)
         {
-            InitializeService();
-            m_dnsServer.Start();
+            try
+            {
+                InitializeService();
+                
+                m_diagnostics.ServerStarting();
+                
+                m_dnsServer.Start();
+                
+                m_diagnostics.ServerStarted();
+            }
+            catch(Exception ex)
+            {
+                Diagnostics.WriteEventLog(ex);
+                throw;
+            }
         }
 
         public void StopService()
         {
-            m_dnsServer.Stop();
+            try
+            {
+                m_diagnostics.ServerStopping();
+                
+                m_dnsServer.Stop();
+                
+                m_diagnostics.ServerStopped();
+            }
+            catch(Exception ex)
+            {
+                Diagnostics.WriteEventLog(ex);
+                throw;
+            }
         }
 
         protected override void OnStart(string[] args)
@@ -106,11 +110,6 @@ namespace Health.Direct.DnsResponder.WinSrv
         protected override void OnStop()
         {
             this.StopService();
-        }
-
-        static void Server_Error(Exception ex)
-        {
-            WriteToEventLog(ex);
         }
     }
 }
