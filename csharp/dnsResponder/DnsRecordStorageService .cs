@@ -4,6 +4,7 @@
 
  Authors:
     Chris Lomonico (chris.lomonico@surescripts.com)
+    Umesh Madan     umeshma@microsoft.com
     
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -55,14 +56,21 @@ namespace Health.Direct.DnsResponder
             {
                 return null;
             }
+
             DnsStandard.RecordType questionType = request.Question.Type;
             DnsResponse response = new DnsResponse(request);
-
+            response.Header.IsAuthoritativeAnswer = true;            
             switch (questionType)
             {
+                default:
+                    break;
+                    
                 case DnsStandard.RecordType.ANAME:
                     ProcessANAMEQuestion(response);
                     break;
+                case DnsStandard.RecordType.NS:
+                    ProcessNSQuestion(response);
+                    break;                    
                 case DnsStandard.RecordType.MX:
                     ProcessMXQuestion(response);
                     break;
@@ -72,11 +80,14 @@ namespace Health.Direct.DnsResponder
                 case DnsStandard.RecordType.CERT:
                     ProcessCERTQuestion(response);
                     break;
-                default:
-                    return response;
             }
+            
+            if (!response.HasAnswerRecords && !response.HasNameServerRecords)
+            {
+                return null;
+            }
+            
             return response;
-
         }
 
         #endregion
@@ -103,8 +114,8 @@ namespace Health.Direct.DnsResponder
         {
             using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
-                client.GetANAMEDnsRecords(response);
-            }
+                client.GetANAMERecords(response);
+            }            
         }
 
         /// <summary>
@@ -116,7 +127,7 @@ namespace Health.Direct.DnsResponder
         {
             using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
-                client.GetSOADnsRecords(response);
+                client.GetSOARecords(response);
             }
         }
 
@@ -129,7 +140,7 @@ namespace Health.Direct.DnsResponder
         {
             using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
-                client.GetMXDnsRecords(response);
+                client.GetMXRecords(response);
             }
         }
 
@@ -138,7 +149,7 @@ namespace Health.Direct.DnsResponder
         /// </summary>
         /// <param name="response">DnsResponse instance containing information about the question that will
         /// have any corresponding answer records populated upon return</param>
-        protected void ProcessCERTQuestion(DnsResponse response)
+        void ProcessCERTQuestion(DnsResponse response)
         {
             using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
@@ -147,6 +158,14 @@ namespace Health.Direct.DnsResponder
                 {
                     response.AnswerRecords.Add(new CertRecord(new DnsX509Cert(cert.Data)));
                 }
+            }
+        }
+        
+        void ProcessNSQuestion(DnsResponse response)
+        {
+            using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
+            {
+                client.GetNSRecords(response);
             }
         }
     }
