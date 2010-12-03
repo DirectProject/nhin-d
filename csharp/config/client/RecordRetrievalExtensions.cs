@@ -4,6 +4,7 @@
 
  Authors:
     Chris Lomonico  (chris.lomonico@surescripts.com)
+    Umesh Madan     umeshma@microsoft.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -26,59 +27,46 @@ namespace Health.Direct.Config.Client
 {
     public static class RecordRetrievalExtensions
     {
-
-        public static void GetANAMEDnsRecords(this RecordRetrievalServiceClient client
-            , DnsResponse response)
+        public static void GetANAMERecords(this RecordRetrievalServiceClient client, DnsResponse response)
         {
-            DnsRecord[] records = client.GetMatchingDnsRecords(response.Question.Domain
-                , DnsStandard.RecordType.ANAME);
-            foreach (DnsRecord record in records)
-            {
-                DnsBufferReader rdr = new DnsBufferReader(record.RecordData
-                    , 0
-                    , record.RecordData.Length);
-                AddressRecord addressrec = AddressRecord.Deserialize(ref rdr) as AddressRecord;
-                if (addressrec != null)
-                {
-                    response.AnswerRecords.Add(addressrec);
-                }
-            }
-
+            DnsRecord[] matches = client.GetMatchingDnsRecords(response.Question.Domain, DnsStandard.RecordType.ANAME);
+            CollectAnswers<AddressRecord>(matches, response.AnswerRecords);
         }
 
-        public static void GetMXDnsRecords(this RecordRetrievalServiceClient client
+        public static void GetMXRecords(this RecordRetrievalServiceClient client
             , DnsResponse response)
         {
-            DnsRecord[] records = client.GetMatchingDnsRecords(response.Question.Domain
-                , DnsStandard.RecordType.MX);
-            foreach (DnsRecord record in records)
-            {
-                DnsBufferReader rdr = new DnsBufferReader(record.RecordData
-                    , 0
-                    , record.RecordData.Length);
-                MXRecord addressrec = MXRecord.Deserialize(ref rdr) as MXRecord;
-                if (addressrec != null)
-                {
-                    response.AnswerRecords.Add(addressrec);
-                }
-            }
+            DnsRecord[] matches = client.GetMatchingDnsRecords(response.Question.Domain, DnsStandard.RecordType.MX);
+            CollectAnswers<MXRecord>(matches, response.AnswerRecords);
         }
 
-
-        public static void GetSOADnsRecords(this RecordRetrievalServiceClient client
+        public static void GetSOARecords(this RecordRetrievalServiceClient client
             , DnsResponse response)
         {
-            DnsRecord[] records = client.GetMatchingDnsRecords(response.Question.Domain
-                , DnsStandard.RecordType.SOA);
+            DnsRecord[] matches = client.GetMatchingDnsRecords(response.Question.Domain, DnsStandard.RecordType.SOA);
+            CollectAnswers<SOARecord>(matches, response.AnswerRecords);
+        }
+
+        public static void GetNSRecords(this RecordRetrievalServiceClient client, DnsResponse response)
+        {
+            DnsRecord[] matches = client.GetMatchingDnsRecords(response.Question.Domain, DnsStandard.RecordType.NS);
+            CollectAnswers<NSRecord>(matches, response.NameServerRecords);
+        }
+        
+        static void CollectAnswers<T>(DnsRecord[] records, DnsResourceRecordCollection resourceRecords)
+            where T : DnsResourceRecord
+        {
+            if (records.IsNullOrEmpty())
+            {
+                return;
+            }
+            
             foreach (DnsRecord record in records)
             {
-                DnsBufferReader rdr = new DnsBufferReader(record.RecordData
-                    , 0
-                    , record.RecordData.Length);
-                SOARecord addressrec = SOARecord.Deserialize(ref rdr) as SOARecord;
-                if (addressrec != null)
+                T responseRecord = record.Deserialize() as T;
+                if (responseRecord != null)
                 {
-                    response.AnswerRecords.Add(addressrec);
+                    resourceRecords.Add(responseRecord);
                 }
             }
         }
