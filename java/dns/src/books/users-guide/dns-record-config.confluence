@@ -6,9 +6,26 @@ The DNS service stores all DNS records in the Direct Project configurations serv
 
 h2. Managing Records
 
-The configuration UI tool is used to add, update, and delete all record types.
+The configuration UI and DNS management command console tools are used to add, update, and delete all record types.
 
-*Config UI TDB*
+h3. Config UI TDB
+
+h3. DNS Management Console
+
+The DNS Management console is command line tool for managing DNS records.  To run the console:
+
+# Launch a command shell and navigate to the DNSMgmtConsole/bin directory.
+# Run the command _DNSMgmtConsole_ (./DNSMgmtConsole for unix based systems).
+
+The console connects to the Direct Project configuration service and manages records using the configuration service proxy module.  By default it uses the url _http://localhost:8081/config-service/ConfigurationService_, but can be overridden using the configURL command line parameter.
+
+{code}
+  DNSMgmtConsole configURL http://confserver/config-service/ConfigurationService
+{code}
+
+*NOTE* The configURL must be the first parameter on the command line to change the configuration service URL.
+
+The management console can either take command directly on the command line or run interactively.  If no arguments or commands are passed on the command line (with the exception of the configURL), then console runs interactively.  For a list of supported commands, simple type _help all_ either as command line arguments or when running interactively.
 
 h3. SOA Records
 
@@ -16,18 +33,65 @@ The [SOA|http://support.microsoft.com/kb/163971] (start of authority) record def
 
 *Config UI TDB*
 
+*Management Console*
+
+SOA records are added using either of the following commands:
+* DNS&#95;SOA&#95;ADD
+* DNS&#95;SOA&#95;ENSURE
+
+{code}
+ Add a new SOA dns record if an identical one does not exist.
+    domainname primarysourcedomain responsibleemail serialnumber ttl [refresh] [retry] [expire] [minimum]
+        domainname: The domain name of the name server that was the primary source for this zone
+        responsibleemail: Email mailbox of the hostmaster
+        serialnumber: Version number of the original copy of the zone.
+        ttl: time to live in seconds, 32bit int
+        [refresh]: Number of seconds before the zone should be refreshed.
+        [retry]: Number of seconds before failed refresh should be retried.
+        [expire]: Number of seconds before records should be expired if not refreshed
+        [minimum]: Minimum TTL for this zone.
+{code}
+
 h3. A Records
 
 A records maps a host name to an IP4 address.
 
 *Config UI TDB*
 
+*Management Console*
+
+A records are added using either of the following commands:
+* DNS&#95;ANAME&#95;ADD
+* DNS&#95;ANAME&#95;ENSURE
+
+{code}
+ Add a new A dns record if an identical one does not exist.
+    hostname ipaddress ttl
+        hostname: host name for the record
+        ipaddress: IP address in dot notation
+        ttl: time to live in seconds, 32bit int
+{code}
 
 h3. MX Records
 
-[MX|http://en.wikipedia.org/wiki/MX_record] records map a domain to one of more servers or message transfer agents for that domain.  The records are returned are generally are cononical names which means they must have A or CNAME records in the DNS server.  
+MX records map a domain to one of more servers or message transfer agents for that domain.  The records are returned are generally are cononical names which means they must have A or CNAME records in the DNS server.  
 
 *Config UI TDB*
+
+*Management Console*
+
+A records are added using either of the following commands:
+* DNS&#95;MX&#95;ADD
+* DNS&#95;MX&#95;ENSURE
+
+{code}
+ Adds a new MX dns record if an identical one does't already exist. 
+     domainname exchange ttl [priority]
+         domainname: email domain name for the record
+         exchange: smtp server host name for the domain
+         ttl: time to live in seconds
+         [priority]: short value indicating preference of the record
+{code}
 
 h3. CERT Records
 [Cert|http://tools.ietf.org/html/rfc4398] records store a certificate with a DNS name entry.  The Direct Project DNS server only stores x.509 public certificates.  *NOTE*  The DNS server does not automatically resolve organizational level certificate resolution as defined by the security and trust specification; it only responds with the exact matches to a DNS query.  The DNS client is responsibly for sending an org level query if the server does not respond with certificate to  user level certificate query.

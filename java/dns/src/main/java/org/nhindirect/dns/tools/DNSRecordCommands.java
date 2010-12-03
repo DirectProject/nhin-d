@@ -500,7 +500,7 @@ public class DNSRecordCommands
 	}
 	
 	/**
-	 * Looks up SOA records for a given domain and any sub domains.
+	 * Looks up SOA records for a given domain.
 	 * @param args The first entry in the array contains the domain name (required).
 	 * 
 	 * @since 1.0
@@ -512,7 +512,7 @@ public class DNSRecordCommands
 	}
 	
 	/**
-	 * Looks up A records for a given domain and any sub domains.
+	 * Looks up A records for a given host name.
 	 * @param args The first entry in the array contains the domain name (required).
 	 * 
 	 * @since 1.0
@@ -524,7 +524,7 @@ public class DNSRecordCommands
 	}
 	
 	/**
-	 * Looks up MX records for a given domain and any sub domains.
+	 * Looks up MX records for a given domain.
 	 * @param args The first entry in the array contains the domain name (required).
 	 * 
 	 * @since 1.0
@@ -576,6 +576,9 @@ public class DNSRecordCommands
 	 */
 	private DnsRecord[] getRecords(String domain, int type)
 	{
+		if (!domain.endsWith("."))
+			domain += ".";
+		
 	    DnsRecord[] records = null;
 	    try
 	    {

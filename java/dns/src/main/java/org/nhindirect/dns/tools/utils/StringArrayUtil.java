@@ -22,6 +22,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.dns.tools.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Utility class for parsing and working with string array paremeters.
  * @author Greg Meyer
@@ -30,6 +33,14 @@ package org.nhindirect.dns.tools.utils;
  */
 public class StringArrayUtil 
 {
+    private static final char[] Whitespace = { ' ', '\t', '\r', '\n' };
+    private static final char[] Quotes = { '"' };
+	
+    static
+    {
+    	Arrays.sort(Whitespace);    	
+    }
+    
     public static String getValueOrNull(String[] args, int indexAt)
     {
         if (indexAt < 0 || indexAt >= args.length)
@@ -72,4 +83,77 @@ public class StringArrayUtil
         return value;
     }
 
+    static int skipOver(String source, int startAt, char[] chars)
+    {
+        for (int i = startAt; i < source.length(); ++i)
+        {
+            if (Arrays.binarySearch(chars, source.charAt(i)) < 0)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+    
+    static String[] parseAsCommandLine(String input)
+    {
+    	if (isNullOrEmpty(input))
+    		return new String[0];
+    
+    	ArrayList<String> retVal = new ArrayList<String>();
+    	
+        int index = 0;
+        while (index < input.length())
+        {
+            int tokenStartAt = skipOver(input, index, Whitespace);
+            if (tokenStartAt < 0)
+            {
+                break;
+            }
+
+            char[] delimiter;
+            if (Arrays.binarySearch(Quotes, input.charAt(tokenStartAt)) >= 0)
+            {
+                tokenStartAt++;
+                delimiter = Quotes;
+            }
+            else
+            {
+                delimiter = Whitespace;
+            }
+
+            int tokenEndAt  = skipTo(input, tokenStartAt, delimiter);
+            if (tokenEndAt < 0)
+            {
+                tokenEndAt = input.length();
+            }
+            
+            int length = tokenEndAt - tokenStartAt;
+            if (length > 0)
+            {
+            	retVal.add(input.substring(tokenStartAt, length));
+            }
+            
+            index = tokenEndAt + 1;
+        }    	
+        
+        return retVal.toArray(new String[retVal.size()]);
+    }
+    
+    static int skipTo(String source, int startAt, char[] chars)
+    {
+    	int firstIndex = 0x8FFF;
+    	int foundIndex = -1;
+    	
+    	for (char ch : chars)
+    	{
+    		if ((foundIndex = source.indexOf(ch, startAt)) > -1)
+    			if (foundIndex < firstIndex)
+    				firstIndex = foundIndex;
+    	}
+    	
+       return (firstIndex < 0x8FFF) ? firstIndex : -1;
+    	   
+    }    
 }

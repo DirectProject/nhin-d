@@ -230,7 +230,7 @@ public class Commands
     {
         if (commandLine != null && !commandLine.isEmpty())
         {
-            String[] args = commandLine.split(" ");
+            String[] args = StringArrayUtil.parseAsCommandLine(commandLine);
             if (args != null && args.length > 0)
             {
                 return run(args);
