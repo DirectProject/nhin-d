@@ -227,7 +227,7 @@ public class DnsRecordPrinter
 
     	
     	print("DomainName", soa.getName().toString());
-        print("PrimarySourceDomain", soa.getHost().toString());
+        print("Primary Name Server", soa.getHost().toString());
         print("Refresh", String.valueOf(soa.getRefresh()));
         print("Retry", String.valueOf(soa.getRetry()));
         print("Expire", String.valueOf(soa.getExpire()));

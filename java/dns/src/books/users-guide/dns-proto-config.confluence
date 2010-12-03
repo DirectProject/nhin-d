@@ -1,6 +1,6 @@
 h1. DNS Protocol Configuration
 
-The DNS server has several configuration parameters for tuning the DNS communication protocol.  Some of the basic settings are configurable in the services configuration [file|./dns-serv-depl.html#Service_Deployment_Configuration], however the service can be tuned at a more granular level using the configuration UI web tool.  Settings in the configuration UI take precedence over those in the configuration file.
+The DNS server has several configuration parameters for tuning the DNS communication protocol.  Some of the basic settings are configurable in the services configuration [file|./dns-serv-depl.html], however the service can be tuned at a more granular level using the configuration UI web tool.  Settings in the configuration UI take precedence over those in the configuration file.
 
 h2. Protocol Configuration Parameters
 

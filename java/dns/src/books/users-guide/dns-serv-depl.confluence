@@ -23,7 +23,7 @@ The DNS services are assembled and packaged as a zipped tar ball.  In side the p
 
 h2. Service Installation
 
-Installation of the DNS services is slightly different for each operating system, however each case uses the same assembly.  To install, first download the [assembly|https://oss.sonatype.org/content/repositories/snapshots/org/nhind/dns/1.0-SNAPSHOT/dns-1.0-SNAPSHOT.tar.gz] and unpack the contents into the desired location using your archiver of choice (tar, WinZip, WinRar, File Roller, etc).
+Installation of the DNS services is slightly different for each operating system, however each case uses the same assembly.  To install, first download the Direct Project [assembly|http://nhin-d.googlecode.com/files/DirectGateway-M1.tar.gz] and unpack the contents into the desired location using your archiver of choice (tar, WinZip, WinRar, File Roller, etc).
 
 h3. Windows Installation
 
