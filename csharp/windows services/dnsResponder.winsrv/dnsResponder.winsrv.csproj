@@ -54,6 +54,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Diagnostics.cs" />
     <Compile Include="DnsResponderWinSrv.cs">
       <SubType>Component</SubType>
     </Compile>
