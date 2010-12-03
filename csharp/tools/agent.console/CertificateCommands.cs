@@ -88,6 +88,7 @@ namespace Health.Direct.Tools.Agent
             X509Certificate2 cert = new X509Certificate2(path);
             X509ExtensionCollection extensions = cert.Extensions;
             
+            Console.WriteLine(cert.ExtractEmailNameOrName());
             Console.WriteLine("Is CA={0}", cert.IsCertificateAuthority());
             foreach(X509Extension extension in extensions)
             {

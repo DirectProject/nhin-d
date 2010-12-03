@@ -41,6 +41,38 @@ namespace Health.Direct.Common.DnsResolver
         }
         
         /// <summary>
+        /// Prints a Dns Request
+        /// </summary>
+        /// <param name="request">the request to print</param>
+        public void Print(DnsRequest request)
+        {
+            if (request == null)
+            {
+                return;
+            }
+            
+            this.Print("RequestID", request.RequestID);
+            this.Print(request.Question);
+        }
+        
+        /// <summary>
+        /// Prints a DNS Question.
+        /// </summary>
+        /// <param name="question">The question to print</param>
+        public void Print(DnsQuestion question)
+        {
+            if (question == null)
+            {
+                return;
+            }
+            
+            this.Print("***QUESTION***");
+            this.Print("Domain", question.Domain);
+            this.Print("Type", question.Type);
+            this.Print("Class", question.Class);
+        }
+                
+        /// <summary>
         /// Prints a DNS response.
         /// </summary>
         /// <param name="response">The response to print</param>
@@ -50,18 +82,15 @@ namespace Health.Direct.Common.DnsResolver
             {
                 return;
             }
-            
-            if (response.IsNameError)
-            {
-                this.Print("Is Name Error");
-                return;
-            }
-            
+
+            this.Print("RequestID", response.RequestID);
+            this.Print("Response Code", response.Header.ResponseCode);
             if (!response.IsSuccess)
             {
-                this.Print("Failed");
                 return;
             }
+            
+            this.Print(response.Question);
             
             if (response.HasAnswerRecords)
             {

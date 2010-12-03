@@ -33,7 +33,7 @@
             // 
             // serviceProcessInstaller1
             // 
-            this.serviceProcessInstaller1.Account = System.ServiceProcess.ServiceAccount.NetworkService;
+            this.serviceProcessInstaller1.Account = System.ServiceProcess.ServiceAccount.LocalSystem;
             this.serviceProcessInstaller1.Password = null;
             this.serviceProcessInstaller1.Username = null;
             // 
@@ -42,6 +42,7 @@
             this.serviceInstaller1.Description = "The Direct Project DNS Responder Service";
             this.serviceInstaller1.DisplayName = "Direct DNS Responder Service";
             this.serviceInstaller1.ServiceName = "DirectDnsResponderSvc";
+            this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
             // 
