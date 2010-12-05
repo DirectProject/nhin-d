@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Xml;
 using System.IO;
 
-namespace Health.Direct.Xds.Common
+namespace Health.Direct.Xd.Common
 {
     public class Content
     {

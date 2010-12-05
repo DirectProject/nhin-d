@@ -17,9 +17,9 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
-using Health.Direct.Xds.Common;
+using Health.Direct.Xd.Common;
 
-namespace Health.Direct.Xds
+namespace Health.Direct.Xdr
 {
     [XmlRoot(Namespace = GlobalValues.IHEXDSbNamespace, ElementName = "ProvideAndRegisterDocumentSetRequest")]
     class ProvideAndRegisterRequest : IXmlSerializable

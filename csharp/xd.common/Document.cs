@@ -20,7 +20,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Health.Direct.Xds.Common
+namespace Health.Direct.Xd.Common
 {
     [XmlType(Namespace = GlobalValues.IHEXDSbNamespace)]
     public class Document

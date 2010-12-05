@@ -19,10 +19,10 @@ using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 using System.Net.Security;
 using Health.Direct.Common.Metadata;
-using Health.Direct.Xds.Common;
-using Health.Direct.Xds.Common.XdsMetadata;
+using Health.Direct.Xd.Common;
+using Health.Direct.Xd.Common.ebXml;
 
-namespace Health.Direct.Xds
+namespace Health.Direct.Xdr
 {
     class StaticHelpers
     {
