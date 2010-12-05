@@ -1,7 +1,7 @@
 ﻿using System.ServiceModel;
 using System.ServiceModel.Channels;
 
-namespace Health.Direct.XDS
+namespace Health.Direct.Xdr
 {
     [ServiceContract(Namespace = "urn:ihe:iti:xds-b:2007", Name = "XDSRepository")]
     public interface IReceiveDocumentSet

@@ -7,9 +7,9 @@ using System.Text;
 using System.Xml;
 
 using Health.Direct.Common.Diagnostics;
-using Health.Direct.Xds.Common;
+using Health.Direct.Xd.Common;
 
-namespace Health.Direct.XDS
+namespace Health.Direct.Xdr
 {
     public class ReceiveDocumentSet : IReceiveDocumentSet
     {

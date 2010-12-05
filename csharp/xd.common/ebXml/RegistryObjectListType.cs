@@ -20,7 +20,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Health.Direct.Xds.Common.XdsMetadata
+namespace Health.Direct.Xd.Common.ebXml
 {
     [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
     [System.Xml.Serialization.XmlRoot("RegistryObjectList", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]

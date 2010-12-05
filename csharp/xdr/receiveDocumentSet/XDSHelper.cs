@@ -6,7 +6,7 @@ using System.Xml.Schema;
 
 using Health.Direct.Common.Diagnostics;
 
-namespace Health.Direct.XDS
+namespace Health.Direct.Xdr
 {
     public class XDSHelper
     {

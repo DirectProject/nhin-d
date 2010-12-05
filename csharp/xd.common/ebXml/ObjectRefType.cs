@@ -19,7 +19,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.Xml.Serialization;
 
-namespace Health.Direct.Xds.Common.XdsMetadata
+namespace Health.Direct.Xd.Common.ebXml
 {
     [XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
     [XmlRoot("ObjectRef", Namespace = GlobalValues.ebXmlRIMNamespace, IsNullable = false)]

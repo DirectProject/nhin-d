@@ -26,14 +26,14 @@ using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 
-using Health.Direct.Xds.Common;
+using Health.Direct.Xd.Common;
 using Health.Direct.Common.Metadata;
 
 using WCF = System.ServiceModel.Channels;
 
 using System.IO;
 
-namespace Health.Direct.Xds
+namespace Health.Direct.Xdr
 {
     public class ExportDocumentSet: IExportDocumentSet
     {

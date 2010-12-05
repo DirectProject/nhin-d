@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-namespace Health.Direct.Xds.Common.XdsMetadata
+namespace Health.Direct.Xd.Common.ebXml
 {
     [System.Xml.Serialization.XmlType(Namespace = GlobalValues.ebXmlRIMNamespace)]
     static public class AssociationKind

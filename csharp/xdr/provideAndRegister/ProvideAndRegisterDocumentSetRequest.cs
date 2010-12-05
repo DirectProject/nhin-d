@@ -26,11 +26,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 using Health.Direct.Common.Metadata;
-using Health.Direct.Xds.Common.XdsMetadata;
-using Health.Direct.Xds.Common;
+using Health.Direct.Xd.Common.ebXml;
+using Health.Direct.Xd.Common;
 
 
-namespace Health.Direct.Xds
+namespace Health.Direct.Xdr
 {
 	/// <summary>
 	/// This class represents an IHE Cross Enterprise Document Sharing (XDS) Document Submission.

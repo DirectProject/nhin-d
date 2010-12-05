@@ -21,7 +21,7 @@ using System.IO;
 
 using Health.Direct.Common.Metadata;
 
-namespace Health.Direct.Xds
+namespace Health.Direct.Xdr
 {
     public interface IExportDocumentSet
     {
