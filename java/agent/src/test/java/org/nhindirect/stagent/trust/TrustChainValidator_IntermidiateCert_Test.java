@@ -163,4 +163,38 @@ public class TrustChainValidator_IntermidiateCert_Test extends TestCase
     	assertFalse(isTrusted);
     }       
     
+    public void testValidateCertAgainstSelf_CertGenToolCerts() throws Exception
+    {
+    	X509Certificate anchor = certFromData(getCertificateFileData("greg@messaging.cerner.com.p12"));
+    	X509Certificate certToValidate = certFromData(getCertificateFileData("greg@messaging.cerner.com.p12"));
+    	
+    	TrustChainValidator validator = new TrustChainValidator();
+    	
+    	boolean isTrusted = false;
+    	try
+    	{	
+    		isTrusted = validator.isTrusted(certToValidate, Arrays.asList(anchor));
+    	}
+    	catch (Exception e) {}
+    	
+    	assertTrue(isTrusted);
+    }
+    
+    public void testValidateCertAgainstSelf_OpenSSLCerts() throws Exception
+    {
+    	X509Certificate anchor = certFromData(getCertificateFileData("cert-a.der"));
+    	X509Certificate certToValidate = certFromData(getCertificateFileData("cert-a.der"));
+    	
+    	TrustChainValidator validator = new TrustChainValidator();
+    	
+    	boolean isTrusted = false;
+    	try
+    	{	
+    		isTrusted = validator.isTrusted(certToValidate, Arrays.asList(anchor));
+    	}
+    	catch (Exception e) {}
+    	
+    	assertTrue(isTrusted);
+    }        
+    
 }
