@@ -98,7 +98,7 @@
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
-	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.0.1.jar"></property>
+	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.1-SNAPSHOT.jar"></property>
 	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-1.0.1.jar"></property>
 	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.0-SNAPSHOT.jar"></property>
 	
