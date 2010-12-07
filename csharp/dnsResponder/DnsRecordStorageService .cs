@@ -28,8 +28,20 @@ namespace Health.Direct.DnsResponder
 {
     public class DnsRecordStorageService : IDnsStore
     {
-
         protected ClientSettings m_recordRetrievalServiceSettings = null;
+
+        /// <summary>
+        /// complex ctor expecting service settings
+        /// </summary>
+        /// <param name="domainManagerServiceSettings">ClientSettings for RecordRetrieval Service related data</param>
+        public DnsRecordStorageService(ClientSettings recordRetrievalServiceSettings)
+        {
+            if (recordRetrievalServiceSettings == null)
+            {
+                throw new ArgumentNullException("recordRetrievalServiceSettings not supplied to constructor");
+            }
+            m_recordRetrievalServiceSettings = recordRetrievalServiceSettings;
+        }
 
         /// <summary>
         /// Endpoint/Binding specifications in ClientSettings format for the Record Retrieval Service
@@ -54,23 +66,35 @@ namespace Health.Direct.DnsResponder
             DnsQuestion question = request.Question;
             if (question == null || question.Class != DnsStandard.Class.IN)
             {
-                return null;
+                throw new DnsServerException(DnsStandard.ResponseCode.NotImplemented);
             }
+            
+            DnsResponse response = this.ProcessRequest(request); 
+            //
+            // Usually need some post-processing on the response
+            //   
+            return this.ProcessResponse(response);    
+        }
 
+        #endregion
+        
+        DnsResponse ProcessRequest(DnsRequest request)
+        {
             DnsStandard.RecordType questionType = request.Question.Type;
             DnsResponse response = new DnsResponse(request);
-            response.Header.IsAuthoritativeAnswer = true;            
-            switch (questionType)
+            response.Header.IsAuthoritativeAnswer = true;
+            
+            switch (response.Question.Type)
             {
                 default:
                     break;
-                    
+
                 case DnsStandard.RecordType.ANAME:
                     ProcessANAMEQuestion(response);
                     break;
                 case DnsStandard.RecordType.NS:
                     ProcessNSQuestion(response);
-                    break;                    
+                    break;
                 case DnsStandard.RecordType.MX:
                     ProcessMXQuestion(response);
                     break;
@@ -82,29 +106,34 @@ namespace Health.Direct.DnsResponder
                     break;
             }
             
-            if (!response.HasAnswerRecords && !response.HasNameServerRecords)
+            return response;
+        }
+        
+        DnsResponse ProcessResponse(DnsResponse response)
+        {
+            if (response.HasAnyRecords)
             {
-                return null;
+                return response;
+            }
+            //
+            // No matches
+            //
+            if (response.Question.Type != DnsStandard.RecordType.NS)
+            {
+                //
+                // Try to at least return the Name Server record for the domain
+                //
+                ProcessNSQuestion(response);    
+            }
+            
+            if (!response.HasNameServerRecords)
+            {
+                response = null; // This will cause the server to return a NameError
             }
             
             return response;
         }
-
-        #endregion
-
-        /// <summary>
-        /// complex ctor expecting service settings
-        /// </summary>
-        /// <param name="domainManagerServiceSettings">ClientSettings for RecordRetrieval Service related data</param>
-        public DnsRecordStorageService(ClientSettings recordRetrievalServiceSettings)
-        {
-            if (recordRetrievalServiceSettings == null)
-            {
-                throw new ArgumentNullException("recordRetrievalServiceSettings not supplied to constructor");
-            }
-            m_recordRetrievalServiceSettings = recordRetrievalServiceSettings;
-        }
-
+        
         /// <summary>
         /// processes a ANAME Question, populated the response with any matching results pulled from the database store
         /// </summary>
@@ -167,7 +196,6 @@ namespace Health.Direct.DnsResponder
             {
                 client.GetNSRecords(response);
             }
-        }
+        }        
     }
-
 }
