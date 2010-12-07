@@ -25,10 +25,14 @@ package org.nhindirect.stagent;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import org.nhindirect.stagent.mail.MimeError;
+import org.nhindirect.stagent.mail.MimeException;
 import org.nhindirect.stagent.trust.TrustEnforcementStatus;
 
+import java.io.UnsupportedEncodingException;
 import java.security.cert.X509Certificate;
 
 /**
@@ -72,8 +76,26 @@ public class NHINDAddress extends InternetAddress
     public NHINDAddress(String address, AddressSource source)
     {
     	super();
+    	try
+    	{
+    		InternetAddress a[] = parse(address, true);
+    		if (a.length > 0)
+    		{
+    			this.setAddress(a[0].getAddress());
+    			this.setPersonal(a[0].getPersonal());
+    		}
+    		else
+    			this.setAddress(address);
+    	}
+    	catch (AddressException e)
+    	{
+    		this.setAddress(address);
+    	}
+    	catch (UnsupportedEncodingException e)
+    	{
+    		throw new MimeException(MimeError.InvalidHeader, e);
+    	}    	
     	this.source = source;    	
-    	setAddress(address);
     }    
     
     /**
@@ -84,6 +106,16 @@ public class NHINDAddress extends InternetAddress
     public NHINDAddress(InternetAddress address, AddressSource source)
     {
     	super();
+    	try
+    	{
+   			this.setAddress(address.getAddress());
+   			this.setPersonal(address.getPersonal());
+    	}
+    	catch (UnsupportedEncodingException e)
+    	{
+    		throw new MimeException(MimeError.InvalidHeader, e);
+    	}    
+    	
     	this.source = source;
     	setAddress(address.getAddress());
     }
@@ -98,7 +130,25 @@ public class NHINDAddress extends InternetAddress
     public NHINDAddress(String address, Collection<X509Certificate> certificates)
     {            
     	super();
-        setAddress(address);
+    	try
+    	{
+    		InternetAddress a[] = parse(address, true);
+    		if (a.length > 0)
+    		{
+    			this.setAddress(a[0].getAddress());
+    			this.setPersonal(a[0].getPersonal());
+    		}
+    		else
+    			this.setAddress(address);
+    	}
+    	catch (AddressException e)
+    	{
+    		this.setAddress(address);
+    	}
+    	catch (UnsupportedEncodingException e)
+    	{
+    		throw new MimeException(MimeError.InvalidHeader, e);
+    	}
     	this.certificates = certificates;
     }
     
