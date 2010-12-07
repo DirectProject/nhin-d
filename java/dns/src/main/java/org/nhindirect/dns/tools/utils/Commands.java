@@ -175,6 +175,7 @@ public class Commands
             				Throwable error = e.getCause();
             				if (error != null)
             					System.err.println("\r\n" + error.getMessage());
+            				
             			}
             		}
             	};
@@ -255,7 +256,7 @@ public class Commands
         return false;
     }   
        
-    public void eval(String[] input)
+    public void eval(String[] input) throws Exception
     {
         if (input == null || input.length == 0)
         {
@@ -282,6 +283,7 @@ public class Commands
             handleError(ex);
             System.out.println();
             cmd.showUsage();
+            throw ex;
         }
     }
     
