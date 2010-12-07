@@ -105,28 +105,28 @@ namespace Health.Direct.Tools.Agent
             + Constants.CRLF + "   domain or email-address"
             + Constants.CRLF + "   outputFile: (optional)";
         
-        [Command(Name="Dns_ResolveMx", Usage=ResolveMxUsage)]
-        public void ResolveMX(string[] args)
+        [Command(Name="Dns_Resolve", Usage=ResolveUsage)]
+        public void DnsResolve(string[] args)
         {
             string domain = args.GetRequiredValue(0);
+            DnsStandard.RecordType recordType = args.GetOptionalEnum<DnsStandard.RecordType>(1, DnsStandard.RecordType.ANAME);
+            
             using(DnsClient client = new DnsClient(m_dnsServer))
             {
-                IEnumerable<MXRecord> matches = client.ResolveMX(domain);
-                if (matches == null)
+                DnsResponse response = client.Resolve(new DnsRequest(recordType, domain));
+                if (response == null)
                 {
                     Console.WriteLine("No matches");
                     return;
-                }
-                
-                foreach(MXRecord record in client.ResolveMX(domain))
-                {
-                    m_recordPrinter.Print(record);
-                }
+                }                
+                m_recordPrinter.Print(response);
             }
         }
 
-        private const string ResolveMxUsage =
-            "Resolve MX records for the given email domain"
-            + Constants.CRLF + "    email domain";
+        const string ResolveUsage =
+            "Resolve records for the given domain"
+            + Constants.CRLF + "    domain recordType"
+            + Constants.CRLF + "\tdomain"
+            + Constants.CRLF + "\trecordType: ANAME | CERT | MX | SOA | NS | SRV | AAAA | PTR";
     }
 }
