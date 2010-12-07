@@ -46,7 +46,9 @@ public class DNSManager
 {
 	private static final String DEFAULT_CONFIG_URL = "http://localhost:8081/config-service/ConfigurationService"; 
 	
-	final Commands commands;
+	private final Commands commands;
+	
+	private static boolean exitOnEndCommands = true;
 	
 	/**
 	 * Application entry point.
@@ -97,8 +99,9 @@ public class DNSManager
 		{
 			runCommand = manager.run(passArgs);
 		}
-		
-		System.exit(runCommand ? 0 : -1);
+
+		if (exitOnEndCommands)
+			System.exit(runCommand ? 0 : -1);			
 	}	
 	
 	/**
@@ -137,5 +140,13 @@ public class DNSManager
         return true;		
 	}
 	
-
+	/**
+	 * Determines if the application should exit when command processing is complete.  It may be desirable to set this 
+	 * to false if calling from another application context.  The default is true.
+	 * @param exit True if the application should terminate on completing processing commands.  False otherwise.
+	 */
+	public static void setExitOnEndCommands(boolean exit)
+	{
+		exitOnEndCommands = exit;
+	}
 }
