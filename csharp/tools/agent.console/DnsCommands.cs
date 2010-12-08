@@ -111,15 +111,22 @@ namespace Health.Direct.Tools.Agent
             string domain = args.GetRequiredValue(0);
             DnsStandard.RecordType recordType = args.GetOptionalEnum<DnsStandard.RecordType>(1, DnsStandard.RecordType.ANAME);
             
-            using(DnsClient client = new DnsClient(m_dnsServer))
+            try
             {
-                DnsResponse response = client.Resolve(new DnsRequest(recordType, domain));
-                if (response == null)
+                using(DnsClient client = new DnsClient(m_dnsServer))
                 {
-                    Console.WriteLine("No matches");
-                    return;
-                }                
-                m_recordPrinter.Print(response);
+                    DnsResponse response = client.Resolve(new DnsRequest(recordType, domain));
+                    if (response == null)
+                    {
+                        Console.WriteLine("No matches");
+                        return;
+                    }                
+                    m_recordPrinter.Print(response);
+                }
+            }
+            catch(DnsServerException ex)
+            {
+                Console.WriteLine(ex.ResponseCode);
             }
         }
 
