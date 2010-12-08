@@ -33,6 +33,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
 
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
@@ -89,7 +90,7 @@ public class CryptoExtensions
         {
             throw new IllegalArgumentException();
         }
-        return cert.getSubjectDN().getName().contains(name);
+        return cert.getSubjectDN().getName().toUpperCase(Locale.getDefault()).contains(name.toUpperCase(Locale.getDefault()));
     }	
 	
     /**
@@ -106,7 +107,7 @@ public class CryptoExtensions
         }
 
         String distinguishedName = "CN=" + name;
-        return cert.getSubjectDN().getName().contains(distinguishedName);
+        return cert.getSubjectDN().getName().toUpperCase(Locale.getDefault()).contains(distinguishedName.toUpperCase(Locale.getDefault()));
     }
 
 	/**

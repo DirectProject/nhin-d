@@ -3,6 +3,6 @@
   <assemblies>
     <assembly filename="..\bin\debug\health.direct.smtpagent.tests.dll" shadow-copy="true" />
     <assembly filename="..\bin\debug\health.direct.dnsresponder.tests.dll" shadow-copy="true" />
-    <assembly filename="..\bin\debug\health.direct.config.store.tests" shadow-copy="true" />
+    <assembly filename="..\bin\debug\health.direct.config.store.tests.dll" shadow-copy="true" />
   </assemblies>
 </xunit>
