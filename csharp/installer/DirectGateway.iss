@@ -30,7 +30,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 ;Name: development; Description: "Development Install";
 
 [Files]
-Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Excludes: "security*.dll,xunit*.dll,*tests.dll*"; Flags: ignoreversion;
+Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\bin\debug\Win32\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX86;
 Source: "..\bin\debug\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64;
 Source: "..\bin\debug\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Flags: ignoreversion;
@@ -42,6 +42,11 @@ Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignore
 Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion;
 Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: ignoreversion;
 Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags: ignoreversion recursesubdirs;
+
+Source: "..\dnsresponder.service\*.svc"; DestDir: "{app}\DnsService"; Flags: ignoreversion;
+Source: "..\dnsresponder.service\*.aspx"; DestDir: "{app}\DnsService"; Flags: ignoreversion;
+Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: ignoreversion;
+Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Flags: ignoreversion recursesubdirs;
 
 Source: "configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs;
 
