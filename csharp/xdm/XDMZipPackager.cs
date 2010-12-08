@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    Arien Malec     arien.malec@nhindirect.org
+    Arien Malec
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
-using System.Xml;
 
 using Health.Direct.Common.Metadata;
 using Health.Direct.Xd;
@@ -33,7 +32,7 @@ namespace Health.Direct.Xdm
         private XDMZipPackager() { }
 
 
-        private static XDMZipPackager m_Instance = new XDMZipPackager();
+        private static readonly XDMZipPackager m_Instance = new XDMZipPackager();
 
         /// <summary>
         /// The default instance

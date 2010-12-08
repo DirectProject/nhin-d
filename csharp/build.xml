@@ -15,18 +15,18 @@
 	<PropertyGroup>
 		<agent_solution>.\build\agent.sln</agent_solution>
 		<gateway_solution>.\build\gateway.sln</gateway_solution>
-		<xds_solution>.\xds\ProvideAndRegisterDocumentSet\ProvideAndRegisterDocumentSet.sln</xds_solution>
+		<xd_solution>.\build\xd.sln</xd_solution>
 	</PropertyGroup>
 
 	<!-- Aliases -->
 	<Target Name="build" DependsOnTargets="build-all" />
-	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway;build-xds" />
+	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway;build-xd" />
 
 	<Target Name="clean" DependsOnTargets="clean-all" />
-	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xds;clean-configui" />
+	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xd;clean-configui" />
 
 	<Target Name="test" DependsOnTargets="test-all" />
-	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xds" />
+	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xd" />
 
 	<Target Name="build-agent">
 		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=Debug" />
@@ -68,12 +68,12 @@
 		<MSBuild Projects="$(gateway_solution)" Targets="clean" Properties="Configuration=Debug;Architecture=Any CPU" />
 	</Target>
 	
-	<Target Name="clean-xds">
-		<MSBuild Projects="$(xds_solution)" Targets="Clean" />
+	<Target Name="clean-xd">
+		<MSBuild Projects="$(xd_solution)" Targets="Clean" />
 	</Target>
 	
-	<Target Name="build-xds">
-		<MSBuild Projects="$(xds_solution)" Targets="Build" Properties="Configuration=Debug" />
+	<Target Name="build-xd">
+		<MSBuild Projects="$(xd_solution)" Targets="Build" Properties="Configuration=Debug" />
 	</Target>
 
 	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
@@ -85,10 +85,8 @@
 		<xunitproject ProjectFile="unittests\gateway.xunit" />
 	</Target>
 
-	<Target Name="test-xds" DependsOnTargets="build-xds">
-		<!-- TODO - no unit tests in the XDS project currently
-		<xunitproject ProjectFile="unittests\xds.xunit" />
-		-->
+	<Target Name="test-xd" DependsOnTargets="build-xd">
+		<xunitproject ProjectFile="unittests\xd.xunit" />
 	</Target>
 
 	<Target Name="publish-configui">

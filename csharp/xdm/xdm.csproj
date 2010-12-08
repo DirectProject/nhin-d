@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IPackager.cs" />
     <Compile Include="XdmError.cs" />
     <Compile Include="XdmException.cs" />
     <Compile Include="XDMStandard.cs" />
