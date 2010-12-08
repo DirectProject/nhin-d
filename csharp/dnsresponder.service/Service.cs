@@ -21,6 +21,7 @@ using Health.Direct.Common.Container;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Config.Store;
 using Health.Direct.Diagnostics.NLog;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.DnsResponder.Service
 {
@@ -62,12 +63,30 @@ namespace Health.Direct.DnsResponder.Service
         void LoadDomains()
         {
             using(MethodTracer tracer = new MethodTracer(m_logger))
-            {       
+            {    
+                //
+                // Load the domains and order them by the length in descending order
+                // This helps us do longest domain matches more efficiently
+                //   
                 m_domains = (from domain in this.m_store.Domains
                                select domain.Name).OrderByDescending<string, int>(x => x.Length).ToArray();
-                    
+                //
+                // And precompute a version of the domain list, this time with '.' prepended
+                // Just a simplification so we don't have to keep doing it at runtime. 
+                // Makes it a bit faster too
+                //    
                 m_dottedDomains = (from domain in m_domains
                                 select '.' + domain).ToArray();
+                                
+                
+                if (m_domains == null)
+                {
+                    m_domains = new string[0];
+                }
+                if (m_dottedDomains == null)
+                {
+                    m_dottedDomains = new string[0];
+                }   
             }
         }
         
@@ -110,6 +129,7 @@ namespace Health.Direct.DnsResponder.Service
         {
             get
             {
+                this.EnsureDomains();
                 return m_domains;
             }
         }
@@ -118,7 +138,23 @@ namespace Health.Direct.DnsResponder.Service
         {
             get
             {
+                this.EnsureDomains();
                 return m_dottedDomains;
+            }
+        }
+        
+        void EnsureDomains()
+        {
+            string[] domains = m_domains;
+            if (domains.IsNullOrEmpty())
+            {
+                lock(m_settings)
+                {
+                    if (m_domains.IsNullOrEmpty())
+                    {
+                        this.LoadDomains();
+                    }
+                }
             }
         }
     }

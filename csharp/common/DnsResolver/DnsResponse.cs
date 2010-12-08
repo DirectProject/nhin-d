@@ -110,7 +110,7 @@ namespace Health.Direct.Common.DnsResolver
         }
 
         /// <summary>
-        /// Gets other records (not A or NS) for this reponse
+        /// Gets other records for this reponse - not necessarily of the type requested
         /// </summary>
         /// <value>A possibly empty collection of records.</value>
         public DnsResourceRecordCollection AdditionalRecords
@@ -126,13 +126,24 @@ namespace Health.Direct.Common.DnsResolver
         }
         
         /// <summary>
-        /// Gets if this response has non-A or NS records.
+        /// Gets if this response has additional records - not necessarily of the type requested
         /// </summary>
         public bool HasAdditionalRecords
         {
             get
             {
                 return (m_additionalRecords != null && m_additionalRecords.Count > 0);
+            }
+        }
+
+        /// <summary>
+        /// Gets if this response has any Records
+        /// </summary>
+        public bool HasAnyRecords
+        {
+            get
+            {
+                return (this.HasAnswerRecords || this.HasNameServerRecords || this.HasAdditionalRecords);
             }
         }
         

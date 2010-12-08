@@ -73,15 +73,15 @@ namespace Health.Direct.SmtpAgent
         
         internal void OnCertificateProblem(X509ChainElement chainElement)
         {
-            if (Logger.IsDebugEnabled && chainElement != null)
+            if (chainElement != null)
             {
-                Logger.Error("Certificate problem {0}", this.Summarize(chainElement));
+                Logger.Error("Chain Element has problem {0}", this.Summarize(chainElement));
             }
         }
 
         internal void OnUntrustedCertificate(X509Certificate2 cert)
         {
-            if (Logger.IsDebugEnabled && cert != null)
+            if (cert != null)
             {
                 Logger.Error("Untrusted certificate {0}", cert.Subject);
             }
@@ -156,7 +156,7 @@ namespace Health.Direct.SmtpAgent
             X509ChainStatusFlags problemFlags = m_agent.SecurityAgent.TrustModel.CertChainValidator.ProblemFlags;
             
             StringBuilder builder = new StringBuilder();
-            builder.Append(chainElement.Certificate.SubjectName.Name);
+            builder.Append(chainElement.Certificate.ExtractEmailNameOrName());
             builder.Append(";");
             foreach(X509ChainStatus status in chainElement.ChainElementStatus)
             {

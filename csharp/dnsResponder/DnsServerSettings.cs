@@ -27,6 +27,7 @@ namespace Health.Direct.DnsResponder
     {
         public const short DefaultMaxRequestSize = 1024 * 16;
         public const byte DefaultMaxQuestionCount = 1;
+        public const int DefaultTTLSeconds = 3600;
         
         IPEndPoint m_endpoint;
 
@@ -36,6 +37,7 @@ namespace Health.Direct.DnsResponder
         SocketServerSettings m_udpServerSettings;
         byte m_maxQuestionCount = DefaultMaxQuestionCount;
         short m_maxRequestSize = DefaultMaxRequestSize;
+        int m_defaultTTL = DefaultTTLSeconds;
 
         [XmlElement]
         public string Address
@@ -76,6 +78,22 @@ namespace Health.Direct.DnsResponder
                 }
                 
                 return m_endpoint;
+            }
+        }
+        
+        [XmlElement]
+        public int DefaultTTL
+        {
+            get
+            {
+                return m_defaultTTL;
+            }
+            set
+            {
+                if (value > 0)
+                {
+                    m_defaultTTL = value;
+                }
             }
         }
         

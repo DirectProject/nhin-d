@@ -132,7 +132,7 @@ public class StringArrayUtil
             int length = tokenEndAt - tokenStartAt;
             if (length > 0)
             {
-            	retVal.add(input.substring(tokenStartAt, length));
+            	retVal.add(input.substring(tokenStartAt, tokenEndAt));
             }
             
             index = tokenEndAt + 1;
