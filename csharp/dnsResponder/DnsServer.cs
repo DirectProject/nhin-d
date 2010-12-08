@@ -26,9 +26,6 @@ namespace Health.Direct.DnsResponder
 
         readonly DnsResponderTCP m_tcpResponder;
         readonly DnsResponderUDP m_udpResponder;
-
-        // put this back in when we make use of it...
-        //readonly WorkThrottle m_activeRequestThrottle;
         
         public DnsServer(IDnsStore store, DnsServerSettings settings)
         {
@@ -45,8 +42,6 @@ namespace Health.Direct.DnsResponder
 
             m_tcpResponder.Server.Error += InvokeError;
             m_udpResponder.Server.Error += InvokeError;
-
-            //m_activeRequestThrottle = new WorkThrottle(m_settings.TcpServerSettings.MaxActiveRequests);
         }
 
         private void InvokeError(Exception ex)

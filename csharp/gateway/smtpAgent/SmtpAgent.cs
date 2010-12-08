@@ -158,7 +158,7 @@ namespace Health.Direct.SmtpAgent
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("While initializing", ex);
+                    Logger.Error("While initializing", ex.ToString());
                     throw;
                 }
             }
@@ -309,7 +309,7 @@ namespace Health.Direct.SmtpAgent
             catch (Exception ex)
             {
                 this.RejectMessage(message);
-                Logger.Error("While processing message", ex);
+                Logger.Error("While processing message", ex.ToString());
                 throw;
             }
         }
@@ -583,7 +583,7 @@ namespace Health.Direct.SmtpAgent
             }
             catch (Exception ex)
             {
-                Logger.Error("While sending notification", ex);
+                Logger.Error("While sending notification", ex.ToString());
             }
         }
 
@@ -655,7 +655,7 @@ namespace Health.Direct.SmtpAgent
             }
             catch (Exception ex)
             {
-                Logger.Error("While copying message", ex);
+                Logger.Error("While copying message", ex.ToString());
                 Logger.Debug(ex);
             }
         }

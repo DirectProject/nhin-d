@@ -104,17 +104,6 @@ namespace Health.Direct.Config.Console.Command
              = "Gets an existing NS record by ID."
               + Constants.CRLF + "  recordid"
               + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
-        
-        //private const string UpdateMXUsage
-        //    = "Update an existing MX dns record."
-        //      + Constants.CRLF + "  recordid domainname exchange ttl [preference] [notes]"
-        //      + Constants.CRLF + "\t recordid: id of the record to be update"
-        //      + Constants.CRLF + "\t domainname: new domain name for the record"
-        //      + Constants.CRLF + "\t exchange: new smtp domain name for the record"
-        //      + Constants.CRLF + "\t ttl: new time to live, 32bit int"
-        //      + Constants.CRLF + "\t [preference]: new short value indicating preference of the record"
-        //      + Constants.CRLF + "\t [notes]: new description for the record";
-
         #endregion
 
         DnsRecordPrinter m_printer;
@@ -514,18 +503,18 @@ namespace Health.Direct.Config.Console.Command
         #region usage strings
 
         public const string ParseANAMEUsage = 
-              "  domainname ipaddress ttl [notes]"
+              "  domainname ipaddress [ttl] [notes]"
               + Constants.CRLF + "\t domainname: domain name for the record"
               + Constants.CRLF + "\t ipaddress: IP address in dot notation"
-              + Constants.CRLF + "\t ttl: time to live in seconds, 32bit int"
+              + Constants.CRLF + "\t [ttl]: time to live in seconds, 32bit int"
               + Constants.CRLF + "\t [notes]: description for the record";
 
         public const string ParseSOAUsage =
-              "  domainname primarysourcedomain responsibleemail serialnumber ttl [refresh] [retry] [expire] [minimum] [notes]"
+              "  domainname primarysourcedomain responsibleemail serialnumber [ttl] [refresh] [retry] [expire] [minimum] [notes]"
               + Constants.CRLF + "\t domainname: The domain name of the name server that was the primary source for this zone"
               + Constants.CRLF + "\t responsibleemail: Email mailbox of the hostmaster"
               + Constants.CRLF + "\t serialnumber: Version number of the original copy of the zone."
-              + Constants.CRLF + "\t ttl: time to live in seconds, 32bit int"
+              + Constants.CRLF + "\t [ttl]: time to live in seconds, 32bit int"
               + Constants.CRLF + "\t [refresh]: Number of seconds before the zone should be refreshed. Default is 10800 seconds"
               + Constants.CRLF + "\t [retry]: Number of seconds before failed refresh should be retried. Default is 3600 seconds"
               + Constants.CRLF + "\t [expire]: Number of seconds before records should be expired if not refreshed. Default is 86400 seconds"
@@ -533,10 +522,10 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + "\t [notes]: description for the record";
 
         public const string ParseMXUsage =
-              "  domainname exchange ttl [preference] [notes]"
+              "  domainname exchange [ttl] [preference] [notes]"
               + Constants.CRLF + "\t domainname: domain name for the record"
               + Constants.CRLF + "\t exchange: smtp domain name for the record"
-              + Constants.CRLF + "\t ttl: time to live in seconds"
+              + Constants.CRLF + "\t [ttl]: time to live in seconds"
               + Constants.CRLF + "\t [preference]: short value indicating preference of the record. Default 10"
               + Constants.CRLF + "\t [notes]: description for the record";
 
@@ -544,7 +533,7 @@ namespace Health.Direct.Config.Console.Command
               "  domainname nameserver [notes]"
               + Constants.CRLF + "\t domainname: domain name for the record"
               + Constants.CRLF + "\t nameserver: nameserver"
-              + Constants.CRLF + "\t ttl: time to live in seconds"
+              + Constants.CRLF + "\t [ttl]: time to live in seconds"
               + Constants.CRLF + "\t [notes]: description for the record";
         
         #endregion
@@ -557,7 +546,7 @@ namespace Health.Direct.Config.Console.Command
         {
             string domainName = args.GetRequiredValue(0);
             string ipAddress = args.GetRequiredValue(1);
-            int ttl = this.ValidateTTL(args.GetRequiredValue<int>(2));
+            int ttl = this.ValidateTTL(args.GetOptionalValue<int>(2, 0));
             string notes = args.GetOptionalValue(3, string.Empty);
 
             AddressRecord record = new AddressRecord(domainName
@@ -572,7 +561,7 @@ namespace Health.Direct.Config.Console.Command
             string primarySourceDomain = args.GetRequiredValue(1);
             string responsibleEmail = args.GetRequiredValue(2);
             int serialNumber = args.GetRequiredValue<int>(3);
-            int ttl = this.ValidateTTL(args.GetRequiredValue<int>(4));
+            int ttl = this.ValidateTTL(args.GetOptionalValue<int>(4, 0));
 
             int refresh = args.GetOptionalValue(5, 10800);
             int retry = args.GetOptionalValue(6, 3600);
@@ -596,7 +585,7 @@ namespace Health.Direct.Config.Console.Command
         {        
             string domainName = args.GetRequiredValue(0);
             string exchange = args.GetRequiredValue(1);
-            int ttl = this.ValidateTTL(args.GetRequiredValue<int>(2));
+            int ttl = this.ValidateTTL(args.GetOptionalValue<int>(2, 0));
             short pref = args.GetOptionalValue<short>(3, 10);
             string notes = args.GetOptionalValue(4, string.Empty);
 
@@ -612,7 +601,7 @@ namespace Health.Direct.Config.Console.Command
         {
             string domainName = args.GetRequiredValue(0);
             string nameServer = args.GetRequiredValue(1);
-            int ttl = this.ValidateTTL(args.GetRequiredValue<int>(2));
+            int ttl = this.ValidateTTL(args.GetOptionalValue<int>(2, 0));
             string notes = args.GetOptionalValue(3, string.Empty);
             
             NSRecord nsRecord = new NSRecord(domainName, nameServer);

@@ -40,6 +40,7 @@ namespace Health.Direct.DnsResponder
             settings.Port = this.Port;
             settings.MaxQuestionCount = this.MaxQuestionCount;
             settings.MaxRequestSize = this.MaxRequestSize;
+            settings.DefaultTTL = this.DefaultTTL;
             settings.TcpServerSettings = this.TcpServerSettings.AsSocketServerSettings();
             settings.UdpServerSettings = this.UdpServerSettings.AsSocketServerSettings();
             return settings;
@@ -87,8 +88,20 @@ namespace Health.Direct.DnsResponder
                 return m_endpoint;
             }
         }
-        
 
+        [ConfigurationProperty("DefaultTTL", DefaultValue = DnsServerSettings.DefaultTTLSeconds, IsRequired = false)]
+        public int DefaultTTL
+        {
+            get
+            {
+                return (int) this["DefaultTTL"];
+            }
+            set
+            {
+                this["DefaultTTL"] = value;
+            }
+        }
+        
         [ConfigurationProperty("TcpServerSettings", IsRequired = false)]
         public SocketServerSettingsElement TcpServerSettings
         {
