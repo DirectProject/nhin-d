@@ -27,30 +27,28 @@ namespace Health.Direct.Config.Client
 {
     public static class RecordRetrievalExtensions
     {
-        public static void GetANAMERecords(this RecordRetrievalServiceClient client, DnsResponse response)
+        public static void GetANAMERecords(this RecordRetrievalServiceClient client, string domain, DnsResourceRecordCollection recordCollection)
         {
-            DnsRecord[] matches = client.GetMatchingDnsRecords(response.Question.Domain, DnsStandard.RecordType.ANAME);
-            CollectAnswers<AddressRecord>(matches, response.AnswerRecords);
+            DnsRecord[] matches = client.GetMatchingDnsRecords(domain, DnsStandard.RecordType.ANAME);
+            CollectAnswers<AddressRecord>(matches, recordCollection);
         }
 
-        public static void GetMXRecords(this RecordRetrievalServiceClient client
-            , DnsResponse response)
+        public static void GetMXRecords(this RecordRetrievalServiceClient client, string domain, DnsResourceRecordCollection recordCollection)
         {
-            DnsRecord[] matches = client.GetMatchingDnsRecords(response.Question.Domain, DnsStandard.RecordType.MX);
-            CollectAnswers<MXRecord>(matches, response.AnswerRecords);
+            DnsRecord[] matches = client.GetMatchingDnsRecords(domain, DnsStandard.RecordType.MX);
+            CollectAnswers<MXRecord>(matches, recordCollection);
         }
 
-        public static void GetSOARecords(this RecordRetrievalServiceClient client
-            , DnsResponse response)
+        public static void GetSOARecords(this RecordRetrievalServiceClient client, string domain, DnsResourceRecordCollection recordCollection)
         {
-            DnsRecord[] matches = client.GetMatchingDnsRecords(response.Question.Domain, DnsStandard.RecordType.SOA);
-            CollectAnswers<SOARecord>(matches, response.AnswerRecords);
+            DnsRecord[] matches = client.GetMatchingDnsRecords(domain, DnsStandard.RecordType.SOA);
+            CollectAnswers<SOARecord>(matches, recordCollection);
         }
 
-        public static void GetNSRecords(this RecordRetrievalServiceClient client, DnsResponse response)
+        public static void GetNSRecords(this RecordRetrievalServiceClient client, string domain, DnsResourceRecordCollection recordCollection)
         {
-            DnsRecord[] matches = client.GetMatchingDnsRecords(response.Question.Domain, DnsStandard.RecordType.NS);
-            CollectAnswers<NSRecord>(matches, response.NameServerRecords);
+            DnsRecord[] matches = client.GetMatchingDnsRecords(domain, DnsStandard.RecordType.NS);
+            CollectAnswers<NSRecord>(matches, recordCollection);
         }
         
         static void CollectAnswers<T>(DnsRecord[] records, DnsResourceRecordCollection resourceRecords)

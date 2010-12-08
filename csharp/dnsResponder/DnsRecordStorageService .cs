@@ -87,7 +87,7 @@ namespace Health.Direct.DnsResponder
             switch (response.Question.Type)
             {
                 default:
-                    break;
+                    throw new DnsServerException(DnsStandard.ResponseCode.NotImplemented);
 
                 case DnsStandard.RecordType.ANAME:
                     ProcessANAMEQuestion(response);
@@ -111,22 +111,7 @@ namespace Health.Direct.DnsResponder
         
         DnsResponse ProcessResponse(DnsResponse response)
         {
-            if (response.HasAnyRecords)
-            {
-                return response;
-            }
-            //
-            // No matches
-            //
-            if (response.Question.Type != DnsStandard.RecordType.NS)
-            {
-                //
-                // Try to at least return the Name Server record for the domain
-                //
-                ProcessNSQuestion(response);    
-            }
-            
-            if (!response.HasNameServerRecords)
+            if (!response.HasAnyRecords)
             {
                 response = null; // This will cause the server to return a NameError
             }
@@ -143,7 +128,7 @@ namespace Health.Direct.DnsResponder
         {
             using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
-                client.GetANAMERecords(response);
+                client.GetANAMERecords(response.Question.Domain, response.AnswerRecords);
             }            
         }
 
@@ -156,7 +141,7 @@ namespace Health.Direct.DnsResponder
         {
             using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
-                client.GetSOARecords(response);
+                client.GetSOARecords(response.Question.Domain, response.AnswerRecords);
             }
         }
 
@@ -169,7 +154,18 @@ namespace Health.Direct.DnsResponder
         {
             using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
-                client.GetMXRecords(response);
+                client.GetMXRecords(response.Question.Domain, response.AnswerRecords);
+                if (!response.HasAnswerRecords)
+                {
+                    return;
+                }
+                //
+                // additionally return each MX record's IP address
+                //
+                foreach (MXRecord mxRecord in response.AnswerRecords.MX)
+                {
+                    client.GetANAMERecords(mxRecord.Exchange, response.AdditionalRecords);
+                }
             }
         }
 
@@ -194,7 +190,18 @@ namespace Health.Direct.DnsResponder
         {
             using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
-                client.GetNSRecords(response);
+                client.GetNSRecords(response.Question.Domain, response.AnswerRecords);
+                if (!response.HasAnswerRecords)
+                {
+                    return;
+                }
+                //
+                // Also resolve the NS Record's actual address, to save roundtrips
+                //
+                foreach(NSRecord record in response.AnswerRecords.NS)
+                {
+                    client.GetANAMERecords(record.NameServer, response.AdditionalRecords);
+                }
             }
         }        
     }

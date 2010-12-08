@@ -145,9 +145,10 @@ namespace Health.Direct.DnsResponder.Service
         
         void EnsureDomains()
         {
-            if (m_domains.IsNullOrEmpty())
+            string[] domains = m_domains;
+            if (domains.IsNullOrEmpty())
             {
-                lock(this)
+                lock(m_settings)
                 {
                     if (m_domains.IsNullOrEmpty())
                     {
