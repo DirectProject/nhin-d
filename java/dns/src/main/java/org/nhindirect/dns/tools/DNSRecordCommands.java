@@ -22,6 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.dns.tools;
 
 import java.io.File;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -103,13 +104,13 @@ public class DNSRecordCommands
         "\r\n\trecordid";
 
     private static final String GET_ALL_USAGE = "Gets all records in the DNS store.";
-    DnsRecordPrinter printer;
+    private DnsRecordPrinter printer;
     private DnsRecordParser parser;
     private final ConfigurationServiceProxy proxy;
     
     /**
      * Constructor that takes a reference to the configuration service proxy.
-     * @param proxy Configuratoin service proxy for accessing the configuration service.
+     * @param proxy Configuration service proxy for accessing the configuration service.
      * 
      * @since 1.0
      */
@@ -153,7 +154,7 @@ public class DNSRecordCommands
 	    }
 	    catch (Exception e)
 	    {
-	    	System.out.println("Error reading file " + recFile.getAbsolutePath());
+	    	throw new RuntimeException("Error reading file " + recFile.getAbsolutePath() + " : " + e.getMessage(), e);
 	    }
 	    
 	    return (rec != null) ? fromRecord(rec) : null;
@@ -168,11 +169,12 @@ public class DNSRecordCommands
 		{
 			proxy.addDNS(new DnsRecord[] {dnsRecord});
 			System.out.println("Record added successfully.");
-		}
-		catch (Exception e)
+		}		
+		catch (RemoteException e)
 		{
-			throw new RuntimeException("Error accessing configuration service.");
+			throw new RuntimeException("Error adding DNS record: " + e.getMessage(), e);
 		}
+	
 	}
 
 	/*
@@ -664,7 +666,7 @@ public class DNSRecordCommands
 	/*
 	 * prints the contents of a specific record
 	 */
-	void print(DnsRecord dnsRecord)
+	private void print(DnsRecord dnsRecord)
 	{
 	    System.out.println("RecordID: " + dnsRecord.getId());                        
 
@@ -673,4 +675,12 @@ public class DNSRecordCommands
 
 	}
     
+	/**
+	 * Sets the printer that will be used to print record query responses.
+	 * @param printer The printer that will be used to print record query responses.
+	 */
+	public void setRecordPrinter(DnsRecordPrinter printer)
+	{
+		this.printer = printer; 
+	}
 }

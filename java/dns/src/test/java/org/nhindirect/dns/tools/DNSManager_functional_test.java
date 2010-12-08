@@ -1,4 +1,4 @@
-package org.nhindirect.dns.tool;
+package org.nhindirect.dns.tools;
 
 import java.net.URL;
 import java.util.ArrayList;
