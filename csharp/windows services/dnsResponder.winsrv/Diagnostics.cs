@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Net.Sockets;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Common.DnsResolver;
 
@@ -86,16 +87,31 @@ namespace Health.Direct.DnsResponder.WinSrv
 
         internal void OnDnsError(Exception ex)
         {
-            m_logger.Error("Dns Server", ex);
+            //
+            // Socket exceptions can get thrown due to clients getting closed, sockets being dropped, all kinds of issues
+            // So during runtime, almost entirely noise
+            //
+            SocketException se = ex as SocketException;
+            if (se != null)
+            {
+                if (m_logger.IsTraceEnabled)
+                {
+                    m_logger.Error("Socket Error", se.ToString());
+                }
+                
+                return;
+            }
+                        
+            m_logger.Error("Dns Server", ex.ToString());
         }
         
         void OnUdpRequest(DnsRequest request)
         {
-            if (m_logger.IsDebugEnabled)
+            if (m_logger.IsTraceEnabled)
             {
                 m_logger.Debug(this.Summarize("UDP", request));
             }
-            else if (m_logger.IsInfoEnabled)
+            else if (m_logger.IsDebugEnabled)
             {
                 m_logger.Info("UDP Request {0} {1}", request.Question.Domain, request.Question.Type);
             }
@@ -103,11 +119,11 @@ namespace Health.Direct.DnsResponder.WinSrv
         
         void OnUdpResponse(DnsResponse response)
         {
-            if (m_logger.IsDebugEnabled)
+            if (m_logger.IsTraceEnabled)
             {
                 m_logger.Debug(this.Summarize("UDP", response));
             }
-            else if (m_logger.IsInfoEnabled)
+            else if (m_logger.IsDebugEnabled)
             {
                 m_logger.Info("UDP Response {0} {1}", response.Question.Domain, response.Header.ResponseCode);
             }
@@ -115,11 +131,11 @@ namespace Health.Direct.DnsResponder.WinSrv
 
         void OnTcpRequest(DnsRequest request)
         {
-            if (m_logger.IsDebugEnabled)
+            if (m_logger.IsTraceEnabled)
             {
                 m_logger.Debug(this.Summarize("TCP", request));
             }
-            else if (m_logger.IsInfoEnabled)
+            else if (m_logger.IsDebugEnabled)
             {
                 m_logger.Info("TCP Request {0} {1}", request.Question.Domain, request.Question.Type);
             }
@@ -127,11 +143,11 @@ namespace Health.Direct.DnsResponder.WinSrv
 
         void OnTcpResponse(DnsResponse response)
         {
-            if (m_logger.IsDebugEnabled)
+            if (m_logger.IsTraceEnabled)
             {
                 m_logger.Debug(this.Summarize("TCP", response));
             }
-            else if (m_logger.IsInfoEnabled)
+            else if (m_logger.IsDebugEnabled)
             {
                 m_logger.Info("TCP Response {0} {1}", response.Question.Domain, response.Header.ResponseCode);
             }

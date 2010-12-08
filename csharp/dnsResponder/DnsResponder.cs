@@ -14,8 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-
 using Health.Direct.Common.DnsResolver;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.DnsResponder
 {
@@ -76,7 +76,9 @@ namespace Health.Direct.DnsResponder
                 if (response == null || !response.IsSuccess)
                 {
                     throw new DnsServerException(DnsStandard.ResponseCode.NameError);
-                }                
+                }
+                
+                this.FixupTTL(response);
             }
             catch (DnsProtocolException)
             {
@@ -133,6 +135,39 @@ namespace Health.Direct.DnsResponder
             {
                 throw new DnsServerException(DnsStandard.ResponseCode.Refused);
             }
+        }
+        
+        void FixupTTL(DnsResponse response)
+        {
+            if (response.HasAnswerRecords)
+            {
+                this.FixupTTL(response.AnswerRecords);
+            }
+            if (response.HasAdditionalRecords)
+            {
+                this.FixupTTL(response.AdditionalRecords);
+            }
+            if (response.HasNameServerRecords)
+            {
+                this.FixupTTL(response.NameServerRecords);
+            }
+        }
+        
+        void FixupTTL(DnsResourceRecordCollection matches)
+        {
+            if (matches.IsNullOrEmpty())
+            {
+                return;
+            }
+            
+            for (int i = 0, count = matches.Count; i < count; ++i)
+            {
+                DnsResourceRecord match = matches[i];
+                if (match.TTL <= 0)
+                {
+                    match.TTL = this.Settings.DefaultTTL;
+                }
+            } 
         }
     }
 }
