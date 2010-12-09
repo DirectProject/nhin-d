@@ -7,6 +7,7 @@ sc description DirectDnsResponderSvc "The Direct DNS Responder Service"
 iisreset
 %windir%\system32\inetsrv\appcmd add app /site.name:"Default Web Site" /path:/ConfigService /physicalPath:"%~1\ConfigService"
 %windir%\system32\inetsrv\appcmd add app /site.name:"Default Web Site" /path:/ConfigUI /physicalPath:"%~1\ConfigUI"
+%windir%\system32\inetsrv\appcmd add app /site.name:"Default Web Site" /path:/DnsService /physicalPath:"%~1\DnsService"
 
 echo Installing test certificates...
 ConfigConsole.exe test_certs_install

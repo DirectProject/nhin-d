@@ -21,7 +21,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\bin\$(ConfigurationName)\$(PlatformName)"
+			OutputDirectory="bin\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfATL="1"
@@ -56,7 +56,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(OutDir);$(OutDir)\.."
+				AdditionalIncludeDirectories="$(OutDir);$(OutDir)\..;$(SolutionDir)\..\gateway\smtpAgent\bin\$(ConfigurationName)"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -111,11 +111,12 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="XCOPY /I /Q /R /S /Y &quot;$(TargetDir)*.*&quot; &quot;$(SolutionDir)..\bin\$(ConfigurationName)\$(PlatformName)&quot;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="..\..\bin\$(ConfigurationName)\$(PlatformName)"
+			OutputDirectory="bin\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfATL="1"
@@ -149,7 +150,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(OutDir);$(OutDir)\.."
+				AdditionalIncludeDirectories="$(OutDir);$(OutDir)\..;$(SolutionDir)\..\gateway\smtpAgent\bin\$(ConfigurationName)"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -203,11 +204,12 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="XCOPY /I /Q /R /S /Y &quot;$(TargetDir)*.*&quot; &quot;$(SolutionDir)..\bin\$(ConfigurationName)\$(PlatformName)&quot;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\bin\$(ConfigurationName)\$(PlatformName)"
+			OutputDirectory="bin\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfATL="2"
@@ -242,7 +244,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="$(OutDir);$(OutDir)\.."
+				AdditionalIncludeDirectories="$(OutDir);$(OutDir)\..;$(SolutionDir)\..\gateway\smtpAgent\bin\$(ConfigurationName)"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="false"
@@ -296,11 +298,12 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="XCOPY /I /Q /R /S /Y &quot;$(TargetDir)*.*&quot; &quot;$(SolutionDir)..\bin\$(ConfigurationName)\$(PlatformName)&quot;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="..\..\bin\$(ConfigurationName)\$(PlatformName)"
+			OutputDirectory="bin\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfATL="2"
@@ -334,7 +337,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="$(OutDir);$(OutDir)\.."
+				AdditionalIncludeDirectories="$(OutDir);$(OutDir)\..;$(SolutionDir)\..\gateway\smtpAgent\bin\$(ConfigurationName)"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="false"
@@ -387,6 +390,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="XCOPY /I /Q /R /S /Y &quot;$(TargetDir)*.*&quot; &quot;$(SolutionDir)..\bin\$(ConfigurationName)\$(PlatformName)&quot;"
 			/>
 		</Configuration>
 	</Configurations>
