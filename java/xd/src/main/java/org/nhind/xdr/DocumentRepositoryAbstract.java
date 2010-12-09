@@ -55,6 +55,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.nhind.xdm.MailClient;
 import org.nhind.xdm.impl.SmtpMailClient;
+import org.nhindirect.xd.common.DirectDocument2;
 import org.nhindirect.xd.common.DirectDocuments;
 import org.nhindirect.xd.common.DirectMessage;
 import org.nhindirect.xd.proxy.DocumentRepositoryProxy;
@@ -217,21 +218,32 @@ public abstract class DocumentRepositoryAbstract
                 threadData.setTo(to);
 
                 List<Document> docs = prdst.getDocument();
-                Document oldDoc = docs.get(0);
+                
+                // Make a copy of the original documents
+                List<Document> originalDocs = new ArrayList<Document>();
+                for (Document d : docs)
+                    originalDocs.add(d);
+                
+                // Clear document list
                 docs.clear();
-                Document doc = new Document();
-                doc.setId(oldDoc.getId());
+                
+                // Re-add documents
+                for (Document d : originalDocs) 
+                {
+                    Document doc = new Document();
+                    doc.setId(d.getId());
 
-                DataHandler dh = oldDoc.getValue();
-                ByteArrayOutputStream buffOS = new ByteArrayOutputStream();
-                dh.writeTo(buffOS);
-                byte[] buff = buffOS.toByteArray();
+                    DataHandler dh = d.getValue();
+                    ByteArrayOutputStream buffOS = new ByteArrayOutputStream();
+                    dh.writeTo(buffOS);
+                    byte[] buff = buffOS.toByteArray();
 
-                DataSource source = new ByteArrayDataSource(buff, "application/xml; charset=UTF-8");
-                DataHandler dhnew = new DataHandler(source);
-                doc.setValue(dhnew);
-
-                docs.add(doc);
+                    DataSource source = new ByteArrayDataSource(buff, documents.getDocument(d.getId()).getMetadata().getMimeType());
+                    DataHandler dhnew = new DataHandler(source);
+                    doc.setValue(dhnew);
+    
+                    docs.add(doc);
+                }
 
                 LOGGER.info(" SENDING TO ENDPOINT " + to);
 
