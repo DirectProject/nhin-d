@@ -24,13 +24,15 @@ if ERRORLEVEL 1 goto :done
 msbuild %msbuild_verbosity% installer-build.xml -p:VERSION=%VERSION% -t:build-installer
 if ERRORLEVEL 1 goto :done
 
-hg commit -m "Advancing version number to %VERSION%..." ..\GlobalAssemblyInfo.cs .\DirectGateway.iss
-if ERRORLEVEL 1 goto :done
+if "%1" NEQ "test" (
+  hg commit -m "Advancing version number to %VERSION%..." ..\GlobalAssemblyInfo.cs .\DirectGateway.iss
+  if ERRORLEVEL 1 goto :done
 
-hg tag -m "Tagging CSharp as dotnet-%VERSION%" dotnet-%VERSION%
-if ERRORLEVEL 1 goto :done
+  hg tag -m "Tagging CSharp as dotnet-%VERSION%" dotnet-%VERSION%
+  if ERRORLEVEL 1 goto :done
 
-hg archive -r dotnet-%VERSION% -t zip -X certs -X java DirectGateway-%VERSION%-NET35-Source.zip -X .hg*
+  hg archive -r dotnet-%VERSION% -t zip -X certs -X java DirectGateway-%VERSION%-NET35-Source.zip -X .hg*
+)
 
 goto :done
 
@@ -45,13 +47,13 @@ exit /b %ERRORLEVEL%
 goto :eof
 
 :help
-echo usage: msb [target] ... [targetN]
-echo            execute one or more targets found in %buildfile%
+echo usage: %~n0
+echo        builds the installer, the source code archive, advances the version number and tags the repository with the build number
 echo.
-echo        msb verbose [target] ... [targetN]
-echo            same as above with more verbose logging
+echo        %~n0 test
+echo            builds the installer only 
 echo.
-echo        msb help
+echo        %~n0 help
 echo            this message
 echo.
 exit /B

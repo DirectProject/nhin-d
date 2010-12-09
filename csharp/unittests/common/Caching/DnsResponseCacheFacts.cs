@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    Chris Lomonico chris.lomonico@surescripts.com
+    Chris Lomonico
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -12,7 +12,6 @@ Redistributions in binary form must reproduce the above copyright notice, this l
 Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -30,11 +29,7 @@ namespace Health.Direct.Common.Tests.Caching
         private const bool DumpIsEnabled = false;
 
 
-#if DEBUG
-        private static readonly string m_filePath = @"..\..\bin\debug\metadata\dnsresponses";
-#else
-        private static readonly string m_filePath = @"..\..\bin\release\metadata\dnsresponses";
-#endif
+        private const string m_filePath = @"..\..\..\..\common.metadata\dnsresponses";
 
         private int m_basettl = 10;
         private DnsResponseCache m_drrc;
@@ -67,20 +62,20 @@ namespace Health.Direct.Common.Tests.Caching
         }
 
         /// <summary>
-        /// returns a list of dns response entries that has been loaded from the files that are part of the solution
+        /// Returns a list of dns response entries that has been loaded from the files that are part of the solution
         /// </summary>
         /// <remarks>
-        /// verifies that list has been properly loaded up note that these are only A record responses
+        /// Verifies that list has been properly loaded up. These are only A record responses.
         /// </remarks>
-        protected virtual void PopulateMockDnsARecordResponseEntries()
+        protected void PopulateMockDnsARecordResponseEntries()
         {
             m_responses = new List<DnsResponse>();
             foreach (string s in MockDomainResponses)
             {
-                byte[] buff = null;
-                DnsResponse dr = null;
+                byte[] buff;
+                DnsResponse dr;
 
-                string fileName = Path.Combine(m_filePath, s + ".bin");
+                string fileName = Path.GetFullPath(Path.Combine(m_filePath, s + ".bin"));
                 using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
                 {
                     Dump("checking [{0}]", fileName);
