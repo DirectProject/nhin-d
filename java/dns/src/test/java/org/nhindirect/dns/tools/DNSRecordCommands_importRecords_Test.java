@@ -13,20 +13,17 @@ import org.nhind.config.DnsRecord;
 import org.nhindirect.dns.ConfigServiceDNSStore;
 import org.nhindirect.dns.DNSServer;
 import org.nhindirect.dns.DNSServerSettings;
-import org.nhindirect.dns.tools.DNSRecordCommands_addSAORecords_test.TestPlan;
 import org.nhindirect.dns.util.BaseTestPlan;
 import org.nhindirect.dns.util.ConfigServiceRunner;
-import org.xbill.DNS.DClass;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
-import org.xbill.DNS.SOARecord;
 import org.xbill.DNS.Section;
 import org.xbill.DNS.Type;
 import org.xbill.DNS.WireParseException;
 
 import junit.framework.TestCase;
 
-public class DNSRecordCommands_importRecords_test extends TestCase
+public class DNSRecordCommands_importRecords_Test extends TestCase
 {
 	abstract class TestPlan extends BaseTestPlan 
 	{

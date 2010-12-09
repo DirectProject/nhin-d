@@ -1,14 +1,9 @@
 package org.nhindirect.dns.tools;
 
-import java.net.InetAddress;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.apache.mina.util.AvailablePortFinder;
 import org.nhind.config.ConfigurationServiceProxy;
@@ -18,17 +13,16 @@ import org.nhindirect.dns.DNSServer;
 import org.nhindirect.dns.DNSServerSettings;
 import org.nhindirect.dns.util.BaseTestPlan;
 import org.nhindirect.dns.util.ConfigServiceRunner;
-import org.xbill.DNS.ARecord;
 import org.xbill.DNS.DClass;
+import org.xbill.DNS.MXRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Type;
 
+import junit.framework.TestCase;
 
-public class DNSRecordCommands_addARecords_test extends TestCase 
+public class DNSRecordCommands_ensureMXRecords_Test extends TestCase 
 {
-	
-	
 	abstract class TestPlan extends BaseTestPlan 
 	{
 		protected int port;
@@ -41,9 +35,9 @@ public class DNSRecordCommands_addARecords_test extends TestCase
 			return Record.newRecord(Name.fromString(rec.getName()), rec.getType(), rec.getDclass(), rec.getTtl(), rec.getData());
 		}
 		
-		protected List<Record> getARecordsInStore() throws Exception
+		protected List<Record> getMXRecordsInStore() throws Exception
 		{
-			DnsRecord[] records = proxy.getDNSByType(Type.A);
+			DnsRecord[] records = proxy.getDNSByType(Type.MX);
 			
 			List<Record> retVal;
 			
@@ -96,13 +90,13 @@ public class DNSRecordCommands_addARecords_test extends TestCase
 			
 			for (Record recordToAdd : recordsToAdd)
 			{
-				ARecord rec = (ARecord)recordToAdd;
-				String[] command = {rec.getName().toString(), rec.getAddress().getHostAddress(), Long.toString(rec.getTTL())};
-				recordCommands.addANAME(command);
+				MXRecord rec = (MXRecord)recordToAdd;
+				String[] command = {rec.getName().toString(), rec.getTarget().toString(), Long.toString(rec.getTTL()), Integer.toString(rec.getPriority())};
+				recordCommands.ensureMX(command);
 			}
 			
 			
-			doAssertions(getARecordsInStore());
+			doAssertions(getMXRecordsInStore());
 		}		
 		
 		private void cleanRecords() throws Exception
@@ -124,7 +118,7 @@ public class DNSRecordCommands_addARecords_test extends TestCase
 		protected abstract void doAssertions(List<Record> records) throws Exception;
 	}
 	
-	public void testAddAName_AssertRecordAdded() throws Exception 
+	public void testEnsureMXName_AssertRecordAdded() throws Exception 
 	{
 		new TestPlan()
 		{
@@ -132,7 +126,8 @@ public class DNSRecordCommands_addARecords_test extends TestCase
 			protected List<Record> getRecordsToAdd() throws Exception
 			{
 				List<Record> addRecords = new ArrayList<Record>();
-				addRecords.add(new ARecord(Name.fromString("example.domain.com."), DClass.IN, 3600, InetAddress.getByName("127.0.0.1")));
+				addRecords.add(new MXRecord(Name.fromString("example.domain.com."), DClass.IN, 3600, 
+						1, Name.fromString("mail1.example.domain.com.")));
 								
 				return addRecords;				
 			}
@@ -146,18 +141,19 @@ public class DNSRecordCommands_addARecords_test extends TestCase
 				Record rec = records.iterator().next();
 				assertEquals("example.domain.com.", rec.getName().toString());
 				assertEquals(3600, rec.getTTL());
-				assertEquals(Type.A, rec.getType());
+				assertEquals(Type.MX, rec.getType());
 				assertEquals(DClass.IN, rec.getDClass());
 				
-				ARecord aRec = (ARecord)rec;
-				assertEquals(aRec.getAddress().getHostAddress(), "127.0.0.1");
+				MXRecord mxRec = (MXRecord)rec;
+				assertEquals("mail1.example.domain.com.", mxRec.getTarget().toString());
+				assertEquals(1, mxRec.getPriority());
 				
 			}
 
 		}.perform();
 	}
 	
-	public void testAddDupAName_AssertOneEntry() throws Exception 
+	public void testEnsureDupMX_AssertOneEntry() throws Exception 
 	{
 		new TestPlan()
 		{
@@ -165,21 +161,21 @@ public class DNSRecordCommands_addARecords_test extends TestCase
 			protected List<Record> getRecordsToAdd() throws Exception
 			{
 				List<Record> addRecords = new ArrayList<Record>();
-				addRecords.add(new ARecord(Name.fromString("example.domain.com."), DClass.IN, 3600, InetAddress.getByName("127.0.0.1")));
-				addRecords.add(new ARecord(Name.fromString("example.domain.com."), DClass.IN, 3600, InetAddress.getByName("127.0.0.1")));		
+				addRecords.add(new MXRecord(Name.fromString("example.domain.com."), DClass.IN, 3600, 
+						1, Name.fromString("mail1.example.domain.com.")));	
+				
+				addRecords.add(new MXRecord(Name.fromString("example.domain.com."), DClass.IN, 3600, 
+						1, Name.fromString("mail1.example.domain.com.")));	
 				
 				return addRecords;				
 			}
+
 			
 			@Override
-			protected void assertException(Exception exception) throws Exception 
+			protected void doAssertions(List<Record> records) throws Exception
 			{
-				assertTrue(exception instanceof RuntimeException);
-				assertNotNull(exception.getCause());
-				assertTrue(exception.getCause() instanceof RemoteException);
-
-				// make sure the first command worked
-				Collection<Record> records = getARecordsInStore();
+				assertNotNull(records);
+				assertEquals(1, records.size());
 				
 				assertNotNull(records);
 				assertEquals(1, records.size());
@@ -187,23 +183,18 @@ public class DNSRecordCommands_addARecords_test extends TestCase
 				Record rec = records.iterator().next();
 				assertEquals("example.domain.com.", rec.getName().toString());
 				assertEquals(3600, rec.getTTL());
-				assertEquals(Type.A, rec.getType());
+				assertEquals(Type.MX, rec.getType());
 				assertEquals(DClass.IN, rec.getDClass());
 				
-				ARecord aRec = (ARecord)rec;
-				assertEquals(aRec.getAddress().getHostAddress(), "127.0.0.1");				
-			}
-			
-			@Override
-			protected void doAssertions(List<Record> records) throws Exception
-			{
-	
+				MXRecord mxRec = (MXRecord)rec;
+				assertEquals("mail1.example.domain.com.", mxRec.getTarget().toString());
+				assertEquals(1, mxRec.getPriority());	
 			}
 
 		}.perform();
 	}	
 	
-	public void testAddMultipleRecords_AssertRecordsAdded() throws Exception 
+	public void testEnsureMultipleRecords_AssertRecordsAdded() throws Exception 
 	{
 		new TestPlan()
 		{
@@ -213,9 +204,15 @@ public class DNSRecordCommands_addARecords_test extends TestCase
 			protected List<Record> getRecordsToAdd() throws Exception
 			{
 				addRecords = new ArrayList<Record>();
-				addRecords.add(new ARecord(Name.fromString("example1.domain.com."), DClass.IN, 3600, InetAddress.getByName("127.0.0.1")));
-				addRecords.add(new ARecord(Name.fromString("example2.domain.com."), DClass.IN, 3600, InetAddress.getByName("127.0.0.2")));		
-				addRecords.add(new ARecord(Name.fromString("example3.domain.com."), DClass.IN, 3600, InetAddress.getByName("127.0.0.3")));
+				List<Record> addRecords = new ArrayList<Record>();
+				addRecords.add(new MXRecord(Name.fromString("example1.domain.com."), DClass.IN, 3600, 
+						1, Name.fromString("mail1.example.domain.com.")));	
+				
+				addRecords.add(new MXRecord(Name.fromString("example2.domain.com."), DClass.IN, 3600, 
+						1, Name.fromString("mail2.example.domain.com.")));	
+				
+				addRecords.add(new MXRecord(Name.fromString("example3.domain.com."), DClass.IN, 3600, 
+						1, Name.fromString("mail3.example.domain.com.")));					
 				
 				return addRecords;				
 			}
@@ -239,7 +236,7 @@ public class DNSRecordCommands_addARecords_test extends TestCase
 		}.perform();
 	}	
 	
-	public void testAddMultipleRecords_SameNameDiffIP_AssertRecordsAdded() throws Exception 
+	public void testEnsureMultipleRecords_SameNameDiffTarget_AssertRecordsAdded() throws Exception 
 	{
 		new TestPlan()
 		{
@@ -249,9 +246,55 @@ public class DNSRecordCommands_addARecords_test extends TestCase
 			protected List<Record> getRecordsToAdd() throws Exception
 			{
 				addRecords = new ArrayList<Record>();
-				addRecords.add(new ARecord(Name.fromString("example.domain.com."), DClass.IN, 3600, InetAddress.getByName("127.0.0.1")));
-				addRecords.add(new ARecord(Name.fromString("example.domain.com."), DClass.IN, 3600, InetAddress.getByName("127.0.0.2")));		
-				addRecords.add(new ARecord(Name.fromString("example.domain.com."), DClass.IN, 3600, InetAddress.getByName("127.0.0.3")));
+				addRecords.add(new MXRecord(Name.fromString("example1.domain.com."), DClass.IN, 3600, 
+						1, Name.fromString("mail1.example.domain.com.")));	
+				
+				addRecords.add(new MXRecord(Name.fromString("example1.domain.com."), DClass.IN, 3600, 
+						1, Name.fromString("mail2.example.domain.com.")));	
+				
+				addRecords.add(new MXRecord(Name.fromString("example1.domain.com."), DClass.IN, 3600, 
+						1, Name.fromString("mail3.example.domain.com.")));				
+				
+				return addRecords;				
+			}
+			
+			
+			@Override
+			protected void doAssertions(List<Record> records) throws Exception
+			{
+				assertNotNull(records);
+				assertEquals(3, records.size());
+				
+				for (Record record : addRecords)
+				{
+					int index = records.indexOf(record);
+					assertTrue(index > -1);
+					Record checkRecord = records.get(index);
+					assertEquals(record, checkRecord);
+				}
+			}
+
+		}.perform();
+	}		
+	
+	public void testEnsureMultipleRecords_SameNameAndTargetDiffPriorities_AssertRecordsAdded() throws Exception 
+	{
+		new TestPlan()
+		{
+			private List<Record> addRecords;
+			
+			@Override
+			protected List<Record> getRecordsToAdd() throws Exception
+			{
+				addRecords = new ArrayList<Record>();
+				addRecords.add(new MXRecord(Name.fromString("example1.domain.com."), DClass.IN, 3600, 
+						1, Name.fromString("mail1.example.domain.com.")));	
+				
+				addRecords.add(new MXRecord(Name.fromString("example1.domain.com."), DClass.IN, 3600, 
+						2, Name.fromString("mail2.example.domain.com.")));	
+				
+				addRecords.add(new MXRecord(Name.fromString("example3.domain.com."), DClass.IN, 3600, 
+						1, Name.fromString("mail3.example.domain.com.")));				
 				
 				return addRecords;				
 			}

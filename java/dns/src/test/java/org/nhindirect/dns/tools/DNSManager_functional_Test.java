@@ -24,7 +24,7 @@ import org.xbill.DNS.Type;
 
 import junit.framework.TestCase;
 
-public class DNSManager_functional_test extends TestCase 
+public class DNSManager_functional_Test extends TestCase 
 {	
 	abstract class TestPlan extends BaseTestPlan 
 	{
