@@ -21,7 +21,7 @@ import org.xbill.DNS.Type;
 
 import junit.framework.TestCase;
 
-public class DNSRecordCommands_ensureSAORecords_test extends TestCase 
+public class DNSRecordCommands_ensureSAORecords_Test extends TestCase 
 {
 	abstract class TestPlan extends BaseTestPlan 
 	{
