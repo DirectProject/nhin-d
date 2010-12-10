@@ -6,6 +6,30 @@
         Greg Meyer
         ---
 
+{1.1}
+
+    Changes included with release 1.1
+	
+    []
+    
+    * CertGen tool adding alternate subject names for email RFC822Name or DNSName.
+    
+    []
+    
+    Enhancements
+    
+    * A certificates can be validated for trust by using itself as a trust anchor.
+
+    [] 
+     
+    Bug Fixes
+
+    * Fixed case sensitivity issue when searching for certificates in the message signature.
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=87}87}}: Certificate extension searches now searching for subject alt names.
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=89}89}}: Fixed incorrect NHINDAddress constructor where personal name was missing.
+
 {1.0.1}
 
     Changes included with release 1.0.1.

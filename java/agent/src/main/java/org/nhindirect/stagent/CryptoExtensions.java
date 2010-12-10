@@ -29,10 +29,12 @@ import java.security.cert.CertStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import org.bouncycastle.cms.CMSSignedData;
@@ -50,6 +52,9 @@ import org.nhindirect.stagent.cert.Thumbprint;
 @SuppressWarnings("unchecked")
 public class CryptoExtensions 
 {
+	private static final int RFC822Name_TYPE = 1; // name type constant for Subject Alternative name email address
+	private static final int DNSName_TYPE = 2; // name type constant for Subject Alternative name domain name	
+	
 	private static CertificateFactory certFactory;
 	
 	static 
@@ -78,6 +83,50 @@ public class CryptoExtensions
 		return Thumbprint.toThumbprint(cert1).equals(Thumbprint.toThumbprint(cert2));
 	}
 	
+    /**
+     * Checks if the subject is contained in the certificates alternate subject names.  Specifically 
+     * the rfc822Name name and DNSName types are checked.
+     * @param cert The certificate to check.
+     * @param subjectName The subject name to check in the alternate names.
+     * @return True if the subjectName is contained in the alternate subject names.  False otherwise.
+     */
+    public static boolean containsEmailAddressInSubjectAltName(X509Certificate cert, String subjectName)
+    {
+        boolean searchingForEmailAddress = subjectName.toLowerCase(Locale.getDefault()).startsWith("emailaddress=");
+        subjectName = searchingForEmailAddress ? subjectName.toLowerCase().replaceFirst("^emailaddress=", "") : subjectName;    	
+    	
+    	Collection<List<?>> altNames = null;
+    	try
+    	{
+    		altNames = cert.getSubjectAlternativeNames();
+    	}
+    	catch (CertificateParsingException ex)
+    	{
+    		return false;
+    	}	
+		
+    	if (altNames != null)
+		{
+    		for (List<?> entries : altNames)
+    		{
+    			if (entries.size() >= 2) // should always be the case according the altNames spec, but checking to be defensive
+    			{
+    				
+    				Integer nameType = (Integer)entries.get(0);
+    				if (nameType == RFC822Name_TYPE || nameType == DNSName_TYPE)
+    				{
+    					String name = (String)entries.get(1);
+    					if (name.toLowerCase(Locale.getDefault()).equals(subjectName.toLowerCase()))
+    						return true;
+    				}
+    				
+    			}
+    		}
+		}
+    	
+    	return false;
+    }	
+	
 	/**
 	 * Checks if a name is contained in a certificate's distinguished name. 
 	 * @param cert The certificate to check.
@@ -90,6 +139,7 @@ public class CryptoExtensions
         {
             throw new IllegalArgumentException();
         }
+                
         return cert.getSubjectDN().getName().toUpperCase(Locale.getDefault()).contains(name.toUpperCase(Locale.getDefault()));
     }	
 	

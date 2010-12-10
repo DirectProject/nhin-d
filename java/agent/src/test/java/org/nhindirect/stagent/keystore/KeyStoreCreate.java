@@ -73,6 +73,7 @@ public class KeyStoreCreate
 			importCert("umesh", "umesh.der", "umeshKey.der");
 			importCert("dev", "dev.der", "devkey.der");
 			importCert("messagingexternal", "messagingExternal.der", "messagingExternalKey.der");
+			importCert("AlAndersonPublicCert", "AlAnderson@hospitalA.direct.visionshareinc.com.der", null);
 		}
 		catch (Exception e)
 		{

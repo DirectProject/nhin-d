@@ -30,6 +30,7 @@ import java.util.Locale;
 
 import javax.mail.internet.InternetAddress;
 
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cert.impl.CRLRevocationManager;
 
 /**
@@ -42,6 +43,7 @@ import org.nhindirect.stagent.cert.impl.CRLRevocationManager;
  */
 public abstract class CertificateStore implements X509Store, CertificateResolver
 {	
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -62,23 +64,27 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
 	 */    
     public Collection<X509Certificate> getCertificates(String subjectName)
     {
-    	Collection<X509Certificate> retVal = new ArrayList<X509Certificate>();
-    	
-    	Collection<X509Certificate> certs = getAllCertificates();
-    	
-    	if (certs == null)
-    		return retVal;
-    	
-    	for (X509Certificate cert : certs)
-    	{    		
-    		
-    		if (cert.getSubjectDN().getName().toLowerCase(Locale.getDefault()).contains(subjectName.toLowerCase(Locale.getDefault())))
-    			retVal.add(cert);
-    	}
-    	
-    	return retVal;
-    } 
-    
+        Collection<X509Certificate> retVal = new ArrayList<X509Certificate>();
+
+        Collection<X509Certificate> certs = getAllCertificates();
+
+        if (certs == null)
+            return retVal;
+
+        for (X509Certificate cert : certs) 
+        {
+            if (CryptoExtensions.containsEmailAddressInSubjectAltName(cert, subjectName)) 
+            {
+                retVal.add(cert);
+            } 
+            else if (cert.getSubjectDN().getName().toLowerCase().contains(subjectName.toLowerCase(Locale.getDefault()))) 
+            {
+                retVal.add(cert);
+            }
+        }
+
+        return retVal;
+    }
 	/**
 	 * {@inheritDoc}
 	 */    
@@ -238,4 +244,5 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         return filteredCerts.size() == 0 ? null : filteredCerts;
     }
     
+
 }
