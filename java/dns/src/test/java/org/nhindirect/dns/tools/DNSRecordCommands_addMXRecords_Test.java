@@ -24,7 +24,7 @@ import org.xbill.DNS.Type;
 
 import junit.framework.TestCase;
 
-public class DNSRecordCommands_addMXRecords_test extends TestCase 
+public class DNSRecordCommands_addMXRecords_Test extends TestCase 
 {
 	abstract class TestPlan extends BaseTestPlan 
 	{

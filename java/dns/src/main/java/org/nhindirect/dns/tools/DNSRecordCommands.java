@@ -58,22 +58,22 @@ public class DNSRecordCommands
         "\r\n\t filePath: path to the A record binary file. Can have any (or no extension)";
 
     private static final String ADD_MX_USAGE = "Add a new MX dns record." +
-    	"\r\n" + DnsRecordParser.PARSE_MX_USAGE;
+    	"\r\n" + DNSRecordParser.PARSE_MX_USAGE;
 
     private static final String ENSURE_MX_USAGE = "Adds a new MX dns record if an identical one does't already exist. " +
-        "\r\n" + DnsRecordParser.PARSE_MX_USAGE;
+        "\r\n" + DNSRecordParser.PARSE_MX_USAGE;
 
     private static final String ADD_SOA_USAGE = "Add a new SOA dns record." +
-        "\r\n" + DnsRecordParser.PARSE_SOA_USAGE;
+        "\r\n" + DNSRecordParser.PARSE_SOA_USAGE;
 
     private static final String ENSURE_SOA_USAGE = "Add a new SOA dns record if an identical one does not exist." +
-        "\r\n" + DnsRecordParser.PARSE_SOA_USAGE;
+        "\r\n" + DNSRecordParser.PARSE_SOA_USAGE;
       
     private static final String ADD_ANAME_USAGE  = "Add a new ANAME dns record." +
-        "\r\n" + DnsRecordParser.PARSE_ANAME_USAGE;
+        "\r\n" + DNSRecordParser.PARSE_ANAME_USAGE;
 
     private static final String ENSURE_ANAME_USAGE = "Add a new ANAME dns record if an identical one does not exist." +
-        "\r\n" + DnsRecordParser.PARSE_ANAME_USAGE;
+        "\r\n" + DNSRecordParser.PARSE_ANAME_USAGE;
 
     private static final String REMOVE_MX_USAGE = "Remove an existing MX record by ID." +
         "\r\n\trecordid" +
@@ -104,9 +104,9 @@ public class DNSRecordCommands
         "\r\n\trecordid";
 
     private static final String GET_ALL_USAGE = "Gets all records in the DNS store.";
-    private DnsRecordPrinter printer;
-    private DnsRecordParser parser;
-    private final ConfigurationServiceProxy proxy;
+    private DNSRecordPrinter printer;
+    private DNSRecordParser parser;
+    private ConfigurationServiceProxy proxy;
     
     /**
      * Constructor that takes a reference to the configuration service proxy.
@@ -116,8 +116,8 @@ public class DNSRecordCommands
      */
 	public DNSRecordCommands(ConfigurationServiceProxy proxy)
 	{
-	    parser = new DnsRecordParser();
-	    printer = new DnsRecordPrinter();
+	    parser = new DNSRecordParser();
+	    printer = new DefaultDNSRecordPrinter();
 	    this.proxy = proxy;
 	}
 	
@@ -189,7 +189,7 @@ public class DNSRecordCommands
 		}
 		catch (Exception e)
 		{
-			throw new RuntimeException("Error accessing configuration service.");
+			throw new RuntimeException("Error accessing configuration service: " + e.getMessage(), e);
 		}
 	}
 	
@@ -435,24 +435,25 @@ public class DNSRecordCommands
 	    }
 		catch (Exception e)
 		{
-			throw new RuntimeException("Error accessing configuration service.");
+			throw new RuntimeException("Error accessing configuration service: " + e.getMessage(), e);
 		}
 		
 	    if (records == null || records.length == 0)
 	    {
-	        throw new IllegalArgumentException("No records found");
+	    	System.out.println("No records found");
 	    }
-	    
-	    print(records);
+	    else
+	    	print(records);
 	}
 	
 	/*
-	 * Gets and prings a record by record is
+	 * Gets and prints a record by record is
 	 */
 	private void get(long recordID)
 	{
 	    DnsRecord record = getRecord(recordID);
-	    printer.print(record);
+	    if (record != null)
+	    	printer.print(record);
 	}
 	
 	/**
@@ -474,12 +475,13 @@ public class DNSRecordCommands
 	    }
 		catch (Exception e)
 		{
-			throw new RuntimeException("Error accessing configuration service.");
+			throw new RuntimeException("Error accessing configuration service: " + e.getMessage(), e);
 		}
 		
 	    if (records == null || records.length == 0)
 	    {
-	        throw new IllegalArgumentException("No records found");
+	        System.out.println("No records found");
+	        return;
 	    }
 	    else
 	    {
@@ -495,7 +497,8 @@ public class DNSRecordCommands
 	    
 	    if (matchedRecords.size() == 0)
 	    {
-	        throw new IllegalArgumentException("No matches found");
+	        System.out.println("No records found");
+	        return;
 	    }	    
 	    
 	    print(matchedRecords.toArray(new DnsRecord[matchedRecords.size()]));
@@ -532,7 +535,7 @@ public class DNSRecordCommands
 	 * @since 1.0
 	 */		
 	@Command(name = "Dns_MX_Match", usage = "Resolve MX records for the given domain")
-	public void MatchMX(String[] args)
+	public void matchMX(String[] args)
 	{
 	    match(StringArrayUtil.getRequiredValue(args, 0), Type.MX);
 	}
@@ -543,11 +546,8 @@ public class DNSRecordCommands
 	private void match(String domain, int type)
 	{
 	    DnsRecord[] records = getRecords(domain, type);
-	    if (records == null || records.length == 0)
-	    {
-	        throw new IllegalArgumentException("No matches");
-	    }
-	    print(records);
+	    if (records != null && records.length > 0)
+	    	print(records);
 	}
 	
 	/*
@@ -562,12 +562,12 @@ public class DNSRecordCommands
 		}
 		catch (Exception e)
 		{
-			throw new RuntimeException("Error accessing configuration service.");
+			throw new RuntimeException("Error accessing configuration service: " + e.getMessage(), e);
 		}
 		
 	    if (dr == null)
 	    {
-	        throw new IllegalArgumentException("No record found matching id");
+	    	System.out.println("No record found matching id.");
 	    }
 	    
 	    return dr;
@@ -588,12 +588,12 @@ public class DNSRecordCommands
 	    }
 		catch (Exception e)
 		{
-			throw new RuntimeException("Error accessing configuration service.");
+			throw new RuntimeException("Error accessing configuration service: " + e.getMessage(), e);
 		}
 		
 	    if (records == null || records.length == 0)
 	    {
-	        throw new IllegalArgumentException("No matches");
+	    	System.out.println("No records found");
 	    }
 	    return records;
 	}
@@ -607,14 +607,9 @@ public class DNSRecordCommands
 	    if (existing != null)
 	    {
 	        System.out.println("Record already exists");
-	        if (details)
-	        {
-	            print(existing);
-	        }
-	        else
-	        {
-	        	System.out.println("RecordID: " + existing.getId());
-	        }
+
+            print(existing);
+
 	        return false;
 	    }
 	    
@@ -633,7 +628,7 @@ public class DNSRecordCommands
 	    }
 		catch (Exception e)
 		{
-			throw new RuntimeException("Error accessing configuration service.");
+			throw new RuntimeException("Error accessing configuration service: " + e.getMessage(), e);
 		}
 		
 	    if (existingRecords == null || existingRecords.length == 0)
@@ -679,8 +674,17 @@ public class DNSRecordCommands
 	 * Sets the printer that will be used to print record query responses.
 	 * @param printer The printer that will be used to print record query responses.
 	 */
-	public void setRecordPrinter(DnsRecordPrinter printer)
+	public void setRecordPrinter(DNSRecordPrinter printer)
 	{
 		this.printer = printer; 
 	}
+	
+	/**
+	 * Sets the printer that will be used to print record query responses.
+	 * @param printer The printer that will be used to print record query responses.
+	 */
+	public void setConfigurationProxy(ConfigurationServiceProxy proxy)
+	{
+		this.proxy = proxy; 
+	}	
 }

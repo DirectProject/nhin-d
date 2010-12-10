@@ -36,7 +36,7 @@ import org.xbill.DNS.SOARecord;
  *
  * @since 1.0
  */
-public class DnsRecordParser 
+public class DNSRecordParser 
 {
 	public static final String PARSE_ANAME_USAGE = "  hostname ipaddress ttl [notes]" +
 	      "\r\n\t hostname: host name for the record" + 
@@ -64,7 +64,7 @@ public class DnsRecordParser
 	 * 
 	 * @since 1.0
 	 */
-	public DnsRecordParser()
+	public DNSRecordParser()
 	{
 	}
 	

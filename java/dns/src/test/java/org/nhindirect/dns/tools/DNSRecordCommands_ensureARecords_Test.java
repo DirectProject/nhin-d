@@ -8,6 +8,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.apache.axis.AxisFault;
 import org.apache.mina.util.AvailablePortFinder;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.DnsRecord;
@@ -22,7 +23,7 @@ import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Type;
 
-public class DNSRecordCommands_ensureARecords_test extends TestCase
+public class DNSRecordCommands_ensureARecords_Test extends TestCase
 {
 	abstract class TestPlan extends BaseTestPlan 
 	{
@@ -264,4 +265,35 @@ public class DNSRecordCommands_ensureARecords_test extends TestCase
 
 		}.perform();
 	}		
+	
+	public void testFailToEnsure_invalidProxy_AssertException() throws Exception 
+	{
+		new TestPlan()
+		{
+			private List<Record> addRecords;
+			
+			@Override
+			protected List<Record> getRecordsToAdd() throws Exception
+			{
+				addRecords = new ArrayList<Record>();
+				addRecords.add(new ARecord(Name.fromString("example.domain.com."), DClass.IN, 3600, InetAddress.getByName("127.0.0.1")));
+				
+				this.recordCommands.setConfigurationProxy(new ConfigurationServiceProxy("http://localhost:7777/bogusendpoint"));
+				return addRecords;				
+			}
+			
+			@Override
+			protected void assertException(Exception exception) throws Exception 
+			{
+				assertNotNull(exception);
+				assertTrue(exception instanceof RuntimeException);
+				assertTrue(exception.getCause() instanceof AxisFault);
+			}
+			
+			@Override			
+			protected void doAssertions(List<Record> recordsMatched) throws Exception		
+			{	
+			}
+		}.perform();
+	}			
 }

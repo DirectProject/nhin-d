@@ -43,7 +43,7 @@ import org.xbill.DNS.security.CERTConverter;
  * 
  * @since 1.0
  */
-public class DnsRecordPrinter 
+public class DefaultDNSRecordPrinter implements DNSRecordPrinter
 {
 	private final PrintWriter writer;
     
@@ -52,16 +52,13 @@ public class DnsRecordPrinter
 	 * 
 	 * @since 1.0
 	 */
-    public DnsRecordPrinter()
+    public DefaultDNSRecordPrinter()
     {        
         writer = new PrintWriter(System.out);
     }
     
     /**
-     * Prints the contents of a collection of DNS records.
-     * @param records A collection of DNS records to print.
-     * 
-     * @since 1.0
+     * {@inheritDoc}
      */
     public void print(Collection<DnsRecord> records)
     {
@@ -78,11 +75,8 @@ public class DnsRecordPrinter
     }
     
     /**
-     * Prints the contents of an array of DNS records.
-     * @param records An array of DNS records to print.
-     * 
-     * @since 1.0
-     */    
+     * {@inheritDoc}
+     */  
     public void print(DnsRecord[] records)
     {
     	if (records == null || records.length == 0)
@@ -119,8 +113,7 @@ public class DnsRecordPrinter
     }
     
     /**
-     * Prints the contents of a single DNS records.
-     * @param record DNS records to print.
+     * {@inheritDoc}
      */
     public void print(DnsRecord record)
     {
