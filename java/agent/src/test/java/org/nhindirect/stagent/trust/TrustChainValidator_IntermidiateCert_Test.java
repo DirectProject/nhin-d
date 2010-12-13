@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.X509CertificateEx;
+import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.cert.impl.UniformCertificateStore;
 
 public class TrustChainValidator_IntermidiateCert_Test extends TestCase
@@ -146,6 +147,30 @@ public class TrustChainValidator_IntermidiateCert_Test extends TestCase
     	assertTrue(isTrusted);
     }  
     
+    public void testValidateChain_IntermediatePublicResolver_OpenSSLCerts() throws Exception
+    {
+    	X509Certificate anchor = certFromData(getCertificateFileData("cert-c.der"));
+    	X509Certificate certToValidate = certFromData(getCertificateFileData("cert-a.der"));
+    	
+    	// uniform cert store that will just spit out whatever we put in it
+    	// will put the anchor in the public resolver... validator should hit it
+    	
+    	X509Certificate intermediateCert = certFromData(getCertificateFileData("cert-b.der"));
+    	CertificateResolver publicResolver = new UniformCertificateStore(intermediateCert);
+    	
+    	TrustChainValidator validator = new TrustChainValidator();
+    	validator.setCertificateResolver(Arrays.asList(publicResolver));
+    	
+    	boolean isTrusted = false;
+    	try
+    	{	
+    		isTrusted = validator.isTrusted(certToValidate, Arrays.asList(anchor));
+    	}
+    	catch (Exception e) {}
+    	
+    	assertTrue(isTrusted);
+    }     
+    
     public void testValidateCertMissingIntermediateCert_OpenSSLCerts() throws Exception
     {
     	X509Certificate anchor = certFromData(getCertificateFileData("cert-c.der"));
@@ -196,5 +221,26 @@ public class TrustChainValidator_IntermidiateCert_Test extends TestCase
     	
     	assertTrue(isTrusted);
     }        
+    
+    public void testValidateCert_FindIntermediateByAltName_AssertValidated() throws Exception
+    {
+    	X509Certificate anchor = certFromData(getCertificateFileData("Test Alt Name CA ROO.der"));
+    	X509Certificate certToValidate = certFromData(getCertificateFileData("altNameOnly.der"));
+
+		CertificateResolver publicCertResolver = new KeyStoreCertificateStore("src/test/resources/keystores/internalKeystore",
+				"h3||0 wor|d", "pKpa$$wd");
+    	
+    	TrustChainValidator validator = new TrustChainValidator();
+    	validator.setCertificateResolver(Arrays.asList(publicCertResolver));
+    	
+    	boolean isTrusted = false;
+    	try
+    	{	
+    		isTrusted = validator.isTrusted(certToValidate, Arrays.asList(anchor));
+    	}
+    	catch (Exception e) {}
+    	
+    	assertTrue(isTrusted);
+    }       
     
 }

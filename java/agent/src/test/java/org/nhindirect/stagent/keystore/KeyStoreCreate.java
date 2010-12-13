@@ -76,6 +76,7 @@ public class KeyStoreCreate
 			importCert("AlAndersonPublicCert", "AlAnderson@hospitalA.direct.visionshareinc.com.der", null);
 			importCert("testemailPubOrgCert", "test.email.com.der", "test.email.comKey.der");
 			importCert("expiredTest", "expired.der", "expiredKey.der");
+			importCert("altnameonly", "altNameOnly.der", "altNameOnlyKey.der");
 		}
 		catch (Exception e)
 		{
