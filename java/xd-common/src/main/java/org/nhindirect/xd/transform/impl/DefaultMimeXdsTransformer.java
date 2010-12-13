@@ -51,8 +51,6 @@ import org.nhindirect.xd.common.type.DirectDocumentType;
 import org.nhindirect.xd.common.type.FormatCodeEnum;
 import org.nhindirect.xd.transform.MimeXdsTransformer;
 import org.nhindirect.xd.transform.exception.TransformationException;
-import org.nhindirect.xd.transform.parse.ccd.CcdParser;
-import org.nhindirect.xd.transform.pojo.SimplePerson;
 import org.nhindirect.xd.transform.util.type.MimeType;
 
 /**
@@ -246,29 +244,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         // (O) Minimal Metadata Source
         // TODO: title (subject)
             
-        if (DirectDocumentType.CCD.equals(documentType))
-        {
-            // Parse CCD for patient info
-            String sdoc = new String(xdsDocument);
-            CcdParser cp = new CcdParser();
-            cp.parse(sdoc);
-
-            // Create patient object
-            SimplePerson sourcePatient = new SimplePerson();
-            sourcePatient.setLocalId(cp.getPatientId());
-            sourcePatient.setLocalOrg(cp.getOrgId());
-            
-            // (R) XDS
-            // TODO: contentTypeCode
-            submissionSet.setPatientId(sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg());
-            submissionSet.setSourceId(sourcePatient.getLocalOrg());
-            
-            // (R2) XDS
-            // --
-            
-            // (O) XDS
-            // --
-        }
+        // Additional metadata from document parsing
+        documentType.parse(new String(xdsDocument), submissionSet);
         
         return submissionSet;
     }
@@ -303,36 +280,9 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         // (R2) Minimal Metadata Source
         if (xdsFormatCode != null)
             metadata.setFormatCode(xdsFormatCode);
-            
 
-        if (DirectDocumentType.CCD.equals(documentType))
-        {
-            // Parse CCD for patient info
-            String sdoc = new String(xdsDocument);
-            CcdParser cp = new CcdParser();
-            cp.parse(sdoc);
-
-            // Create patient object
-            SimplePerson sourcePatient = new SimplePerson();
-            sourcePatient.setLocalId(cp.getPatientId());
-            sourcePatient.setLocalOrg(cp.getOrgId());
-
-            // (R) XDS Source
-            // TODO: Can we get any of the below values from the CCD? And does the presence of a CCD mean XDS source?
-            // TODO: classCode
-            // TODO: confidentialityCode
-            // TODO: creationTime
-            // TODO: formatCode
-            // TODO: healthcareFacilityTypeCode
-            // TODO: languageCode
-            metadata.setPatientId(sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg());
-            // TODO: practiceSettingCode
-            // TODO: typeCode
-            
-            // (R2) XDS Source
-            // TODO: author (We should be able to get this out of the CCD)
-            metadata.setSourcePatient(sourcePatient);
-        }
+        // Additional metadata from document parsing
+        documentType.parse(new String(xdsDocument), metadata);
         
         document.setData(new String(xdsDocument));
 
