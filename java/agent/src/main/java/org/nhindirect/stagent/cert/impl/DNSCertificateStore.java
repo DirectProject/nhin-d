@@ -505,6 +505,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 			retVal = new ExtendedResolver(servers);
 			retVal.setRetries(retries);
 			retVal.setTimeout(timeout);
+			retVal.setTCP(true);
 		}
 		catch (UnknownHostException e) {/* no-op */}
 		return retVal;

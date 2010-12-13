@@ -90,6 +90,69 @@ public class KeyStoreCertificateStore_GetCertificates_Test extends TestCase
 		
 	}
 	
+	public void testKeyStoreSearch_GetUserCertByDomain_AssertCertsNotFound() throws Exception
+	{
+		new TestPlan()
+		{
+			@Override
+			protected String getSubjectToSearch()
+			{
+				return "hospitalA.direct.visionshareinc.com";
+			}
+			
+			@Override
+			protected void doAssertions(Collection<X509Certificate> certs) throws Exception
+			{
+				assertNull(certs);	
+			}
+			
+		}.perform();
+		
+	}	
+	
+	public void testKeyStoreSearch_GetUnknownUserCert_AssertCertsNotFound() throws Exception
+	{
+		new TestPlan()
+		{
+			@Override
+			protected String getSubjectToSearch()
+			{
+				return "joe@hospitalA.direct.visionshareinc.com";
+			}
+			
+			@Override
+			protected void doAssertions(Collection<X509Certificate> certs) throws Exception
+			{
+				assertNull(null);
+			}
+			
+		}.perform();
+		
+	}	
+	
+	
+	public void testKeyStoreSearch_GetOrgCertAltName_AssertCertsFoundUsingAltSubject() throws Exception
+	{
+		new TestPlan()
+		{
+			@Override
+			protected String getSubjectToSearch()
+			{
+				return "test.email.com";
+			}
+			
+			@Override
+			protected void doAssertions(Collection<X509Certificate> certs) throws Exception
+			{
+				assertNotNull(certs);
+				assertEquals(1, certs.size());		
+				assertTrue(certFoundInAltSubject);
+			}
+			
+		}.perform();
+		
+	}	
+	
 	public void testKeyStoreSearch_GetWithDN_AssertCertsFoundNotUsingAltSubject() throws Exception
 	{
 		new TestPlan()
@@ -111,4 +174,24 @@ public class KeyStoreCertificateStore_GetCertificates_Test extends TestCase
 		}.perform();
 		
 	}	
+	
+	public void testKeyStoreSearch_GetExpiredCert_AssertCertsNotFound() throws Exception
+	{
+		new TestPlan()
+		{
+			@Override
+			protected String getSubjectToSearch()
+			{
+				return "expired@testexpired.email.com";
+			}
+			
+			@Override
+			protected void doAssertions(Collection<X509Certificate> certs) throws Exception
+			{
+				assertNull(certs);
+			}
+			
+		}.perform();
+		
+	}		
 }

@@ -213,7 +213,7 @@ class LeafCertGenDialog extends JDialog
 			CertCreateFields retCert;
 			try
 			{
-				retCert = CertGenerator.createCertificate(createFields);
+				retCert = CertGenerator.createCertificate(createFields, addToAltSubjects.isSelected());
 			}
 			catch (Exception e)
 			{

@@ -41,6 +41,8 @@ import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.crypto.prng.VMPCRandomGenerator;
 import org.bouncycastle.jce.X509Principal;
@@ -65,6 +67,12 @@ class CertGenerator
 	
 	public static CertCreateFields createCertificate(CertCreateFields fields) throws Exception
 	{
+		// use for passivity reasons
+		return createCertificate(fields, false);		
+	}
+	
+	public static CertCreateFields createCertificate(CertCreateFields fields, boolean addAltNames) throws Exception
+	{
 		// generate a key pair first using RSA and a key strength provided by the user
 		KeyPairGenerator kpg = (KeyPairGenerator) KeyPairGenerator.getInstance("RSA", "BC");
 		
@@ -74,12 +82,11 @@ class CertGenerator
 		
 		if (fields.getSignerCert() == null)
 			// this is request for a new CA
-			return createNewCA(fields, keyPair);
+			return createNewCA(fields, keyPair, addAltNames);
 		else
 			// new leaf certificate request
-			return createLeafCertificate(fields, keyPair);		
-	}
-	
+			return createLeafCertificate(fields, keyPair, addAltNames);		
+	}	
 	
 	private static long generatePositiveRandom()
 	{
@@ -98,13 +105,18 @@ class CertGenerator
 		return retVal;
 	}
 	
-	private static CertCreateFields createNewCA(CertCreateFields fields, KeyPair keyPair) throws Exception
+	private static CertCreateFields createNewCA(CertCreateFields fields, KeyPair keyPair, boolean addAltNames) throws Exception
 	{
 		StringBuilder dnBuilder = new StringBuilder();
 		
+		String altName = "";
+		
 		// create the DN
 		if (fields.getAttributes().containsKey("EMAILADDRESS"))
+		{
 			dnBuilder.append("EMAILADDRESS=").append(fields.getAttributes().get("EMAILADDRESS")).append(", ");
+			altName = fields.getAttributes().get("EMAILADDRESS").toString();
+		}
 		
 		if (fields.getAttributes().containsKey("CN"))
 			dnBuilder.append("CN=").append(fields.getAttributes().get("CN")).append(", ");
@@ -139,6 +151,16 @@ class CertGenerator
         v1CertGen.setPublicKey(keyPair.getPublic());
         v1CertGen.setSignatureAlgorithm("SHA1WithRSAEncryption");
         
+        if (addAltNames && !altName.isEmpty())
+        {        	
+        	int nameType = altName.contains("@") ? GeneralName.rfc822Name : GeneralName.dNSName;
+        	
+        	GeneralNames subjectAltName = new GeneralNames(new GeneralName(nameType, altName));
+        	
+            v1CertGen.addExtension(X509Extensions.SubjectAlternativeName, false, subjectAltName);
+
+        }
+        
         X509Certificate newCACert = v1CertGen.generate(keyPair.getPrivate(), "BC");
         
         // validate the certificate 
@@ -150,14 +172,17 @@ class CertGenerator
         return fields;
 	}
 	
-	private static CertCreateFields createLeafCertificate(CertCreateFields fields, KeyPair keyPair) throws Exception
+	private static CertCreateFields createLeafCertificate(CertCreateFields fields, KeyPair keyPair, boolean addAltNames) throws Exception
 	{
-			
+		String altName = "";
 		StringBuilder dnBuilder = new StringBuilder();
 		
 		// create the DN
 		if (fields.getAttributes().containsKey("EMAILADDRESS"))
+		{
 			dnBuilder.append("EMAILADDRESS=").append(fields.getAttributes().get("EMAILADDRESS")).append(", ");
+			altName = fields.getAttributes().get("EMAILADDRESS").toString();
+		}
 		
 		if (fields.getAttributes().containsKey("CN"))
 			dnBuilder.append("CN=").append(fields.getAttributes().get("CN")).append(", ");
@@ -200,6 +225,16 @@ class CertGenerator
                 new SubjectKeyIdentifierStructure(keyPair.getPublic()));
 
         v1CertGen.addExtension(X509Extensions.BasicConstraints, true, new BasicConstraints(false));
+        
+        if (addAltNames && !altName.isEmpty())
+        {        	
+        	int nameType = altName.contains("@") ? GeneralName.rfc822Name : GeneralName.dNSName;
+        	
+        	GeneralNames subjectAltName = new GeneralNames(new GeneralName(nameType, altName));
+        	
+            v1CertGen.addExtension(X509Extensions.SubjectAlternativeName, false, subjectAltName);
+
+        }        
         
         // use the CA's private key to sign the certificate
         X509Certificate newCACert = v1CertGen.generate((PrivateKey)fields.getSignerKey(), "BC");
