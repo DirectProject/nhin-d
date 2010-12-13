@@ -90,6 +90,7 @@ class CAPanel extends JPanel
 	protected JButton clear;
 	protected JButton genCert;
 	protected JCheckBox addToAltSubjects;
+	protected JCheckBox allowedToSign;
 	
 	protected CertCreateFields currentCert;
 	
@@ -181,8 +182,12 @@ class CAPanel extends JPanel
 		
 		addToAltSubjects = new JCheckBox("Add Email To Alt Subject Names");
 		addToAltSubjects.setVisible(true);
+		allowedToSign = new JCheckBox("Allowed To Sign Certificates");
+		allowedToSign.setVisible(false);
 		JPanel addAltPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		addAltPanel.add(addToAltSubjects);
+		addAltPanel.add(allowedToSign);
+		
 		
 		
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -193,7 +198,7 @@ class CAPanel extends JPanel
 		buttonPanel.add(genCert);
 		
 		JPanel combineAltAndButtonPanel = new JPanel(new BorderLayout());
-		combineAltAndButtonPanel.add(addToAltSubjects, BorderLayout.WEST);
+		combineAltAndButtonPanel.add(addAltPanel, BorderLayout.WEST);
 		combineAltAndButtonPanel.add(buttonPanel, BorderLayout.EAST);
 		
 		JPanel bottomPannel = new JPanel(new BorderLayout());
@@ -538,6 +543,15 @@ class CAPanel extends JPanel
 		    return;
 		}
  
+		// make sure this cert has privs to act as a CA and sign other CERTs		
+		if (retCert.getSignerCert().getBasicConstraints() < 0)
+		{
+			JOptionPane.showMessageDialog(this,"This certificate's policy does not allowed it to sign other certificates.", 
+		 		    "Policy Validation Error", JOptionPane.ERROR_MESSAGE);
+		 
+		    return;
+		}
+
 		// get the attributes
 		if (retCert.getAttributes().containsKey("EMAILADDRESS"))
 			this.emailField.setText(retCert.getAttributes().get("EMAILADDRESS").toString());

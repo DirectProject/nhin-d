@@ -26,6 +26,7 @@ import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateParsingException;
 import java.security.cert.PKIXParameters;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
@@ -53,6 +54,8 @@ import org.nhindirect.stagent.cert.Thumbprint;
  */
 public class TrustChainValidator 
 {
+	private static final int RFC822Name_TYPE = 1; // name type constant for Subject Alternative name email address
+	private static final int DNSName_TYPE = 2; // name type constant for Subject Alternative name domain name	
 	
 	private static int DefaultMaxIssuerChainLength = 5;
 
@@ -211,7 +214,7 @@ public class TrustChainValidator
     		return;
     	}
     	
-    	String address = this.getIssuerAddress(issuerPrin);
+    	String address = this.getIssuerAddress(certificate);
 
     	if (address == null || address.isEmpty())
     		return;// not much we can do about this... the resolver interface only knows how to work with addresses
@@ -251,8 +254,44 @@ public class TrustChainValidator
 		}
     }
     
-    private String getIssuerAddress(X500Principal issuerPrin)
+    
+    private String getIssuerAddress(X509Certificate certificate)
     {
+    	String address = "";
+    	// check alternative names first
+    	Collection<List<?>> altNames = null;
+    	try
+    	{    		
+    		altNames = certificate.getIssuerAlternativeNames();
+    	}
+    	catch (CertificateParsingException ex)
+    	{
+    		/* no -op */
+    	}	
+		
+    	if (altNames != null)
+		{
+    		for (List<?> entries : altNames)
+    		{
+    			if (entries.size() >= 2) // should always be the case according the altNames spec, but checking to be defensive
+    			{
+    				
+    				Integer nameType = (Integer)entries.get(0);
+    				// prefer email over over domain?
+    				if (nameType == RFC822Name_TYPE)    					
+    					address = (String)entries.get(1);
+    				else if (nameType == DNSName_TYPE && address.isEmpty())
+    					address = (String)entries.get(1);    				
+    			}
+    		}
+		}
+    	
+    	if (!address.isEmpty())
+    		return address;
+    	
+    	// can't find issuer address in alt names... try the principal 
+    	X500Principal issuerPrin = certificate.getIssuerX500Principal();
+    	
     	// get the domain name
 		Map<String, String> oidMap = new HashMap<String, String>();
 		oidMap.put("1.2.840.113549.1.9.1", "EMAILADDRESS");  // OID for email address
@@ -272,7 +311,6 @@ public class TrustChainValidator
 		
 		// look for a "," to find the end of this attribute
 		int endIndex = prinName.indexOf(",", index);
-		String address;
 		if (endIndex > -1)
 			address = prinName.substring(index + searchString.length(), endIndex);
 		else 

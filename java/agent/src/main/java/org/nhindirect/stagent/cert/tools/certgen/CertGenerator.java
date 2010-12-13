@@ -30,6 +30,7 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -151,6 +152,8 @@ class CertGenerator
         v1CertGen.setPublicKey(keyPair.getPublic());
         v1CertGen.setSignatureAlgorithm("SHA1WithRSAEncryption");
         
+        v1CertGen.addExtension(X509Extensions.BasicConstraints, true, new BasicConstraints(true));
+        
         if (addAltNames && !altName.isEmpty())
         {        	
         	int nameType = altName.contains("@") ? GeneralName.rfc822Name : GeneralName.dNSName;
@@ -224,7 +227,20 @@ class CertGenerator
         v1CertGen.addExtension(X509Extensions.SubjectKeyIdentifier, false,
                 new SubjectKeyIdentifierStructure(keyPair.getPublic()));
 
-        v1CertGen.addExtension(X509Extensions.BasicConstraints, true, new BasicConstraints(false));
+        boolean allowToSign = (fields.getAttributes().get("ALLOWTOSIGN") != null && 
+        		fields.getAttributes().get("ALLOWTOSIGN").toString().equalsIgnoreCase("true"));
+        
+        v1CertGen.addExtension(X509Extensions.BasicConstraints, true, new BasicConstraints(allowToSign));
+        
+        if (fields.getSignerCert().getSubjectAlternativeNames() != null)
+        {
+        	for (List<?> names : fields.getSignerCert().getSubjectAlternativeNames())
+        	{
+        		GeneralNames issuerAltName = new GeneralNames(new GeneralName((Integer)names.get(0), names.get(1).toString()));
+        	
+        		v1CertGen.addExtension(X509Extensions.IssuerAlternativeName, false, issuerAltName);
+        	}
+        }
         
         if (addAltNames && !altName.isEmpty())
         {        	
