@@ -34,6 +34,7 @@ import java.util.Map;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -88,6 +89,7 @@ class CAPanel extends JPanel
 	protected JButton createCert;
 	protected JButton clear;
 	protected JButton genCert;
+	protected JCheckBox addToAltSubjects;
 	
 	protected CertCreateFields currentCert;
 	
@@ -177,15 +179,26 @@ class CAPanel extends JPanel
 		genCert = new JButton("Create Leaf Cert");
 		genCert.setVisible(false);
 		
+		addToAltSubjects = new JCheckBox("Add Email To Alt Subject Names");
+		addToAltSubjects.setVisible(true);
+		JPanel addAltPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		addAltPanel.add(addToAltSubjects);
+		
+		
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		buttonPanel.add(addAltPanel);		
 		buttonPanel.add(loadCert);
 		buttonPanel.add(createCert);
 		buttonPanel.add(clear);
 		buttonPanel.add(genCert);
 		
+		JPanel combineAltAndButtonPanel = new JPanel(new BorderLayout());
+		combineAltAndButtonPanel.add(addToAltSubjects, BorderLayout.WEST);
+		combineAltAndButtonPanel.add(buttonPanel, BorderLayout.EAST);
+		
 		JPanel bottomPannel = new JPanel(new BorderLayout());
 		bottomPannel.add(filePanel, BorderLayout.NORTH);
-		bottomPannel.add(buttonPanel, BorderLayout.SOUTH);
+		bottomPannel.add(combineAltAndButtonPanel, BorderLayout.SOUTH);
 		
 		this.add(bottomPannel, BorderLayout.SOUTH);				
 	}
@@ -266,6 +279,7 @@ class CAPanel extends JPanel
 				createCert.setVisible(true);				
 				clear.setVisible(false);
 				genCert.setVisible(false);
+				addToAltSubjects.setVisible(true);
 	
 				if(workflowContext == WF_CONTEXT_CLEAR)
 				{
@@ -288,6 +302,7 @@ class CAPanel extends JPanel
 					createCert.setVisible(true);				
 					clear.setVisible(false);
 					genCert.setVisible(false);
+					addToAltSubjects.setVisible(true);
 					
 					currentCert = null;
 					
@@ -311,7 +326,8 @@ class CAPanel extends JPanel
 				createCert.setVisible(false);
 				clear.setVisible(false);
 				genCert.setVisible(false);
-
+				addToAltSubjects.setVisible(false);
+				
 				createCA.setEnabled(true);
 				loadCA.setEnabled(true);
 				
@@ -341,6 +357,8 @@ class CAPanel extends JPanel
 				createCert.setVisible(false);
 				clear.setVisible(true);
 				genCert.setVisible(true);
+				
+				addToAltSubjects.setVisible(false);
 				
 				break;
 			}
@@ -451,7 +469,7 @@ class CAPanel extends JPanel
 		CertCreateFields retCert;
 		try
 		{
-			retCert = CertGenerator.createCertificate(createFields);
+			retCert = CertGenerator.createCertificate(createFields, this.addToAltSubjects.isSelected());
 		}
 		catch (Exception e)
 		{
@@ -623,7 +641,7 @@ class CAPanel extends JPanel
 			label.setPreferredSize(new Dimension(50, label.getPreferredSize().getSize().height));
 			
 			value = new JSpinner(new SpinnerNumberModel(intValue,
-                    10, //min
+                    -10, //min
                     100000, //max
                     1));
 
