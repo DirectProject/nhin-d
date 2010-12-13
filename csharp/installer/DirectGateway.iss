@@ -8,7 +8,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.0.0.3
+AppVerName=Direct Project .NET Gateway 1.0.0.4
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -17,10 +17,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=DirectGateway-1.0.0.3-NET35
+OutputBaseFilename=DirectGateway-1.0.0.4-NET35
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.0.0.3
+VersionInfoVersion=1.0.0.4
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -30,7 +30,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 ;Name: development; Description: "Development Install";
 
 [Files]
-Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Excludes: "security*.dll,xunit*.dll,*tests.dll*"; Flags: ignoreversion;
+Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\bin\debug\Win32\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX86;
 Source: "..\bin\debug\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64;
 Source: "..\bin\debug\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Flags: ignoreversion;
@@ -42,6 +42,11 @@ Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignore
 Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion;
 Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: ignoreversion;
 Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags: ignoreversion recursesubdirs;
+
+Source: "..\dnsresponder.service\*.svc"; DestDir: "{app}\DnsService"; Flags: ignoreversion;
+Source: "..\dnsresponder.service\*.aspx"; DestDir: "{app}\DnsService"; Flags: ignoreversion;
+Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: ignoreversion;
+Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Flags: ignoreversion recursesubdirs;
 
 Source: "configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs;
 
