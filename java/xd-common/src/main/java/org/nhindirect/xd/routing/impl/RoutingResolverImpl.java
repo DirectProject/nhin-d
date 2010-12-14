@@ -161,7 +161,9 @@ public class RoutingResolverImpl extends RoutingResolver
 
             if (addr == null || addr.length == 0)
             {
-                LOGGER.warn("Unable to find address " + address);
+                if (LOGGER.isTraceEnabled())
+                    LOGGER.trace("Unable to find address " + address + " in configuration store.");
+                
                 return null;
             }
 
