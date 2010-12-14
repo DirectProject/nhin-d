@@ -180,17 +180,15 @@ public class RoutingResolverImplTest extends TestCase
     {
         startService();
         
-        Address[] addrs = new Address[4];
+        Address[] addrs = new Address[3];
 
         List<String> smtpEndpoints = Arrays.asList("smtp@nologs.org");
         List<String> xdEndpoints = Arrays.asList("xd@nologs.org");
-        List<String> localEndpoints = Arrays.asList("local@nologs.org");
         List<String> emptyEndpoints = Arrays.asList("empty@nologs.org");
 
         List<String> endpoints = new ArrayList<String>();
         endpoints.addAll(smtpEndpoints);
         endpoints.addAll(xdEndpoints);
-        endpoints.addAll(localEndpoints);
         endpoints.addAll(emptyEndpoints);
 
         // SMTP
@@ -208,18 +206,11 @@ public class RoutingResolverImplTest extends TestCase
         addrs[1].setEndpoint("xd_endpoint");
         addrs[1].setStatus(EntityStatus.ENABLED);
 
-        // LOCAL
-        addrs[2] = new Address();
-        addrs[2].setEmailAddress(localEndpoints.get(0));
-        addrs[2].setDisplayName("displayName");
-        addrs[2].setType("LOCAL");
-        addrs[2].setStatus(EntityStatus.ENABLED);
-
         // EMPTY
-        addrs[3] = new Address();
-        addrs[3].setEmailAddress(emptyEndpoints.get(0));
-        addrs[3].setDisplayName("displayName");
-        addrs[3].setStatus(EntityStatus.ENABLED);
+        addrs[2] = new Address();
+        addrs[2].setEmailAddress(emptyEndpoints.get(0));
+        addrs[2].setDisplayName("displayName");
+        addrs[2].setStatus(EntityStatus.ENABLED);
 
         Domain d = new Domain();
         d.setDomainName("domainName");
@@ -239,12 +230,6 @@ public class RoutingResolverImplTest extends TestCase
         assertEquals("List does not contain expected element", (new ArrayList<String>(xdResolved)).get(0), xdEndpoints.get(0));
         assertEquals("List does not match expected size", 1, xdResolved.size());
         assertEquals("List does not contain expected element", (new ArrayList<String>(xdResolved)).get(0), xdEndpoints.get(0));       
-
-        boolean local = resolver.isLocalEndpoint(localEndpoints.get(0));
-        assertTrue("Output does not match expected", local);
-
-        boolean nonLocal = resolver.isLocalEndpoint(emptyEndpoints.get(0));
-        assertFalse("Output does not match expected", nonLocal);
 
         String endpoint = resolver.resolve(xdEndpoints.get(0));
         assertEquals("Output does not match expected", addrs[1].getEndpoint(), endpoint);
