@@ -116,7 +116,7 @@ public class RoutingResolverImpl extends RoutingResolver
         }
 
         // fallback
-        return address.indexOf('@') > 0;
+        return StringUtils.contains(address, '@');
     }
 
     /*
@@ -141,33 +141,7 @@ public class RoutingResolverImpl extends RoutingResolver
         }
 
         // fallback
-        return address.indexOf('@') <= 0;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.nhindirect.xd.routing.RoutingResolver#isLocalEndpoint(java.lang.String
-     * )
-     */
-    @Override
-    public boolean isLocalEndpoint(String address)
-    {
-        if (address == null)
-            return false;
-
-        Address addr = lookup(address);
-
-        if (addr != null && StringUtils.isNotBlank(addr.getType()))
-        {
-            if (StringUtils.equalsIgnoreCase(addr.getType(), "LOCAL"))
-                return true;
-
-            return false;
-        }
-
-        // fallback
-        return false;
+        return !StringUtils.contains(address, '@');
     }
 
     private Address lookup(String address)
@@ -187,7 +161,7 @@ public class RoutingResolverImpl extends RoutingResolver
 
             if (addr == null || addr.length == 0)
             {
-                LOGGER.warn("Unable to find address.");
+                LOGGER.warn("Unable to find address " + address);
                 return null;
             }
 
