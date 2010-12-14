@@ -11,6 +11,10 @@
 
     </types>
 
+  <wsp:Policy xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="wsmtom_policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy">
+    <wsoma:OptimizedMimeSerialization xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization"/>
+  </wsp:Policy>
+
   <message name="RetrieveDocumentSet_Message">
     <documentation>Retrieve Document Set</documentation>
     <part name="body" element="ihe:RetrieveDocumentSetRequest"/>
@@ -46,6 +50,8 @@
   </portType>
   <binding name="DocumentRepository_Binding" type="ihe:DocumentRepository_PortType">
     <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+    <wsp:PolicyReference xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" URI="#wsmtom_policy" required="true"/>
 
     <operation name="DocumentRepository_ProvideAndRegisterDocumentSet-b">
       <soap12:operation soapAction="urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b"/>
