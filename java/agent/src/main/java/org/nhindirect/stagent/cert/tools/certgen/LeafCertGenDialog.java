@@ -91,6 +91,8 @@ class LeafCertGenDialog extends JDialog
 			signerCert = signer.getSignerCert();
 			signerKey = (PrivateKey)signer.getSignerKey();						
 			
+			allowedToSign.setVisible(true);
+			
 			prePopulateFields();
 		}
 		
@@ -201,6 +203,8 @@ class LeafCertGenDialog extends JDialog
 				attributes.put("O", orgField.getText());	
 			if (!emailField.getText().isEmpty())
 				attributes.put("EMAILADDRESS", emailField.getText());	
+			
+			attributes.put("ALLOWTOSIGN", Boolean.toString(allowedToSign.isSelected()));	
 			
 			int exp = Integer.parseInt(expField.getValue().toString());
 			int keyStre =  Integer.parseInt(keyStr.getValue().toString());
