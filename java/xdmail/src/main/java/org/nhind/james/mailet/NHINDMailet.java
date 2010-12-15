@@ -108,6 +108,7 @@ public class NHINDMailet extends GenericMailet
                 // Replace recipients with only XD* addresses
                 mail.getMessage().setRecipients(RecipientType.TO, xdAddresses.toArray(new Address[0]));
 
+                // Transform MimeMessage into ProvideAndRegisterDocumentSetRequestType object
                 ProvideAndRegisterDocumentSetRequestType request = getMimeXDSTransformer().transform(mail.getMessage());
 
                 for (String directTo : recipAddresses)

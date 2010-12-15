@@ -39,32 +39,40 @@ import java.util.Collection;
 public abstract class RoutingResolver
 {
     /**
+     * Resolve an address to a stored value.
+     * 
      * @param address
-     * @return
+     *            The address to resolve.
+     * @return the stored value for the address, or the address itself if no
+     *         value is stored.
      */
     public abstract String resolve(String address);
 
     /**
+     * Determine whether or not the provided address resolves to an XD endpoint.
+     * 
      * @param address
-     * @return
+     *            The address to resolve.
+     * @return true if the address maps to an XD endpoint, false otherwise.
      */
     public abstract boolean isXdEndpoint(String address);
 
     /**
-     * @param address
+     * Determine whether or not the provided address resolves to an SMTP endpoint.
+     * 
+     * @param address The address to resolve.
      * @return
      */
     public abstract boolean isSmtpEndpoint(String address);
     
     /**
-     * @param address
-     * @return
-     */
-    public abstract boolean isLocalEndpoint(String address);
-
-    /**
+     * Return a collection of SMTP endpoints from the provided collection of
+     * addresses.
+     * 
      * @param addresses
-     * @return
+     *            The collection of address from which to extract SMTP
+     *            endpoints.
+     * @return the SMTP endpoints within the provided collection.
      */
     public Collection<String> getSmtpEndpoints(Collection<String> addresses)
     {
@@ -72,10 +80,8 @@ public abstract class RoutingResolver
 
         for (String address : addresses)
         {
-
             if (isSmtpEndpoint(address))
             {
-              
                 smtpEndpoints.add(address);
             }
         }
@@ -84,8 +90,13 @@ public abstract class RoutingResolver
     }
 
     /**
+     * Return a collection of XD endpoints from the provided collection of
+     * addresses.
+     * 
      * @param addresses
-     * @return
+     *            The collection of addresses from which to extract XD
+     *            endpoints.
+     * @return the XD endpoints within the provided collection.
      */
     public Collection<String> getXdEndpoints(Collection<String> addresses)
     {
@@ -103,8 +114,11 @@ public abstract class RoutingResolver
     }
 
     /**
+     * Determine if the collection of addresses contains SMTP endpoints.
+     * 
      * @param addresses
-     * @return
+     *            The collection of addresses to inspect.
+     * @return true if the collection contains SMTP endpoints, false otherwise.
      */
     public boolean hasSmtpEndpoints(Collection<String> addresses)
     {
@@ -112,8 +126,11 @@ public abstract class RoutingResolver
     }
 
     /**
+     * Determine if the collection of addresses contains XD endpoints.
+     * 
      * @param addresses
-     * @return
+     *            The collection of addresses to inspect.
+     * @return true if the collection contains XD endpoints, false otherwise.
      */
     public boolean hasXdEndpoints(Collection<String> addresses)
     {

@@ -105,12 +105,12 @@ public class DocumentRepositoryProxy
             if (handlerResolver != null)
                 service.setHandlerResolver(handlerResolver);
 
-     //       proxy = service.getDocumentRepositoryPortSoap12(new MTOMFeature(true, 1));
-            proxy = service.getDocumentRepositoryPortSoap12();
+            proxy = service.getDocumentRepositoryPortSoap12(new MTOMFeature(true, 1));
+            // proxy = service.getDocumentRepositoryPortSoap12();
 
             BindingProvider bp = (BindingProvider) proxy;
-      //      SOAPBinding binding = (SOAPBinding) bp.getBinding();
-     //       binding.setMTOMEnabled(true);
+            SOAPBinding binding = (SOAPBinding) bp.getBinding();
+            binding.setMTOMEnabled(true);
 
             bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
         }

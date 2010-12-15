@@ -27,11 +27,13 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.jws.WebService;
@@ -52,6 +54,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 @WebService(endpointInterface = "org.nhindirect.config.service.CertificateService")
 public class CertificateServiceImpl implements CertificateService {
 
+	private static final int RFC822Name_TYPE = 1; // name type constant for Subject Alternative name email address
+	private static final int DNSName_TYPE = 2; // name type constant for Subject Alternative name domain name	
+	
     private static final Log log = LogFactory.getLog(CertificateServiceImpl.class);
 
     private CertificateDao dao;
@@ -99,7 +104,7 @@ public class CertificateServiceImpl implements CertificateService {
     				{
    					
     					// now get the owner info from the cert
-    					String theOwner = getOwner(cont.getCert().getSubjectX500Principal());
+    					String theOwner = getOwner(cont.getCert());
 
     					if (theOwner != null && !theOwner.isEmpty())
     						cert.setOwner(theOwner);
@@ -289,12 +294,47 @@ public class CertificateServiceImpl implements CertificateService {
 	
     }
     
-    private String getOwner(X500Principal prin)
+    private String getOwner(X509Certificate certificate)
     {
+    	String address = "";
+    	// check alternative names first
+    	Collection<List<?>> altNames = null;
+    	try
+    	{    		
+    		altNames = certificate.getSubjectAlternativeNames();
+    	}
+    	catch (CertificateParsingException ex)
+    	{
+    		/* no -op */
+    	}	
+		
+    	if (altNames != null)
+		{
+    		for (List<?> entries : altNames)
+    		{
+    			if (entries.size() >= 2) // should always be the case according the altNames spec, but checking to be defensive
+    			{
+    				
+    				Integer nameType = (Integer)entries.get(0);
+    				// prefer email over over domain?
+    				if (nameType == RFC822Name_TYPE)    					
+    					address = (String)entries.get(1);
+    				else if (nameType == DNSName_TYPE && address.isEmpty())
+    					address = (String)entries.get(1);    				
+    			}
+    		}
+		}
+    	
+    	if (!address.isEmpty())
+    		return address;
+    	
+    	// can't find issuer address in alt names... try the principal 
+    	X500Principal issuerPrin = certificate.getIssuerX500Principal();
+    	
     	// get the domain name
 		Map<String, String> oidMap = new HashMap<String, String>();
 		oidMap.put("1.2.840.113549.1.9.1", "EMAILADDRESS");  // OID for email address
-		String prinName = prin.getName(X500Principal.RFC1779, oidMap);    
+		String prinName = issuerPrin.getName(X500Principal.RFC1779, oidMap);    
 		
 		// see if there is an email address first in the DN
 		String searchString = "EMAILADDRESS=";
@@ -310,7 +350,6 @@ public class CertificateServiceImpl implements CertificateService {
 		
 		// look for a "," to find the end of this attribute
 		int endIndex = prinName.indexOf(",", index);
-		String address;
 		if (endIndex > -1)
 			address = prinName.substring(index + searchString.length(), endIndex);
 		else 
