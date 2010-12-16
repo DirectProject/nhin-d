@@ -20,12 +20,7 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -33,31 +28,18 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.config.service.ConfigurationService;
 import org.nhindirect.config.service.ConfigurationServiceException;
-import org.nhindirect.config.service.SettingService;
-import org.nhindirect.config.service.impl.CertificateGetOptions;
-import org.nhindirect.config.store.Anchor;
-import org.nhindirect.config.store.Certificate;
-import org.nhindirect.config.store.Domain;
-import org.nhindirect.config.store.Setting;
+import org.nhindirect.config.service.ConfigurationService;
+
 import org.nhindirect.config.store.EntityStatus;
-import org.nhindirect.config.ui.form.AddressForm;
-import org.nhindirect.config.ui.form.AnchorForm;
-import org.nhindirect.config.ui.form.CertificateForm;
-import org.nhindirect.config.ui.form.SimpleForm;
-import org.nhindirect.config.ui.form.LoginForm;
-import org.nhindirect.config.ui.form.DomainForm;
-import org.nhindirect.config.ui.form.SettingsForm;
 import org.nhindirect.config.ui.form.SearchDomainForm;
+import org.nhindirect.config.ui.form.SettingsForm;
+import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
-import org.nhindirect.config.ui.flash.FlashMap.Message;
-import org.nhindirect.config.ui.flash.FlashMap.MessageType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -65,21 +47,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequestMapping("/settings")
 public class SettingsController {
 	private final Log log = LogFactory.getLog(getClass());
 	
-	@Inject
-	private SettingService setService;
+	private ConfigurationService configSvc;
 	
-	public SettingsController(){
-		if (log.isDebugEnabled()) log.debug("ConfigurationController initialized");
+	@Inject
+	public void setConfigurationService(ConfigurationService service)
+	{
+	    this.configSvc = service;
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public SettingsController(){
+		if (log.isDebugEnabled()) log.debug("SettingsController initialized");
+	}
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/addsetting", method = RequestMethod.POST)
 	public ModelAndView addSetting (
 								@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
@@ -114,7 +100,7 @@ public class SettingsController {
 			value = ""+settingsForm.getValue();
 			try {
 				if (log.isDebugEnabled()) log.debug("trying set settings services");
-				setService.addSetting(key, value);
+				configSvc.addSetting(key, value);
 				if (log.isDebugEnabled()) log.debug("PAST trying set settings services");
 			} catch (ConfigurationServiceException e) {
 				e.printStackTrace();
@@ -126,7 +112,7 @@ public class SettingsController {
 			model.addAttribute("simpleForm",simple);
 
 			try {
-				model.addAttribute("settingsResults", setService.getAllSettings());
+				model.addAttribute("settingsResults", configSvc.getAllSettings());
 			} catch (ConfigurationServiceException e) {
 				e.printStackTrace();
 			}
@@ -142,7 +128,7 @@ public class SettingsController {
 		return mav;
 	}			
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/removesettings", method = RequestMethod.POST)
 	public ModelAndView removeAnchors (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
@@ -158,12 +144,12 @@ public class SettingsController {
 		}
 		
 		String strid = ""+simpleForm.getId();
-		if (setService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("delete") && simpleForm.getRemove() != null) {
+		if (configSvc != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("delete") && simpleForm.getRemove() != null) {
 			int cnt = simpleForm.getRemove().size();
 			try{
 				Collection<String> settingstoberemovedlist = simpleForm.getRemove();
 				if (log.isDebugEnabled()) log.debug(" Trying to remove settings from database");
-				setService.deleteSetting(settingstoberemovedlist);
+				configSvc.deleteSetting(settingstoberemovedlist);
 	    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to remove settings");
 			} catch (ConfigurationServiceException e) {
 				if (log.isDebugEnabled())
@@ -171,7 +157,7 @@ public class SettingsController {
 			}
 		}
 		try {
-			model.addAttribute("settingsResults", setService.getAllSettings());
+			model.addAttribute("settingsResults", configSvc.getAllSettings());
 		} catch (ConfigurationServiceException e) {
 			e.printStackTrace();
 		}

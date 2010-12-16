@@ -23,45 +23,52 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyStore;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
-import javax.security.auth.x500.X500Principal;
+import javax.security.cert.CertificateEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.config.service.ConfigurationService;
 import org.nhindirect.config.service.ConfigurationServiceException;
-import org.nhindirect.config.service.DomainService;
-import org.nhindirect.config.service.SettingService;
+import org.nhindirect.config.service.impl.CertificateGetOptions;
+import org.nhindirect.config.store.Certificate;
+import org.nhindirect.config.store.DNSRecord;
 import org.nhindirect.config.store.Domain;
-import org.nhindirect.config.store.Setting;
 import org.nhindirect.config.store.EntityStatus;
+import org.nhindirect.config.store.Setting;
+import org.nhindirect.config.store.util.DNSRecordUtils;
+import org.nhindirect.config.ui.DNSController.CertContainer;
+import org.nhindirect.config.ui.flash.FlashMap.Message;
+import org.nhindirect.config.ui.flash.FlashMap.MessageType;
 import org.nhindirect.config.ui.form.AddressForm;
 import org.nhindirect.config.ui.form.AnchorForm;
 import org.nhindirect.config.ui.form.CertificateForm;
-import org.nhindirect.config.ui.form.SettingsForm;
-import org.nhindirect.config.service.CertificateService;
-import org.nhindirect.config.service.impl.CertificateGetOptions;
-import org.nhindirect.config.ui.form.SimpleForm;
-import org.nhindirect.config.ui.form.LoginForm;
+import org.nhindirect.config.ui.form.DNSEntryForm;
+import org.nhindirect.config.ui.form.DNSForm;
+import org.nhindirect.config.ui.form.DNSType;
 import org.nhindirect.config.ui.form.DomainForm;
 import org.nhindirect.config.ui.form.SearchDomainForm;
+import org.nhindirect.config.ui.form.SettingsForm;
+import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
-import org.nhindirect.config.ui.flash.FlashMap.Message;
-import org.nhindirect.config.ui.flash.FlashMap.MessageType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -69,25 +76,40 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
-
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.nhindirect.config.store.Certificate;
+import org.xbill.DNS.AAAARecord;
+import org.xbill.DNS.ARecord;
+import org.xbill.DNS.CERTRecord;
+import org.xbill.DNS.CNAMERecord;
+import org.xbill.DNS.MXRecord;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.TextParseException;
 
 @Controller
 @RequestMapping("/main")
 public class MainController {
 	
 	private final Log log = LogFactory.getLog(getClass());
+
+	private ConfigurationService configSvc;
+	
+    @Inject
+    public void setConfigurationService(ConfigurationService service)
+    {
+        this.configSvc = service;
+    }
+	
+	/*
+	@Inject
+	private DomainService configSvc;
 	
 	@Inject
-	private DomainService dService;
+	private SettingService configSvc;
 	
 	@Inject
-	private SettingService settingsService;
-	
-	@Inject
-	private CertificateService certificatesService;
+	private CertificateService configSvc;
+	*/
 	
 	public MainController() {
 		if (log.isDebugEnabled()) log.debug("MainController initialized");
@@ -96,7 +118,7 @@ public class MainController {
 	/**
 	 * Execute the search and return the results
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public ModelAndView search (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
@@ -105,7 +127,6 @@ public class MainController {
 						        @RequestParam(value="submitType") String actionPath)  { 		
 		if (log.isDebugEnabled()) log.debug("Enter search");
 
-		if (log.isDebugEnabled()) log.debug("Enter search");
 		String message = "Search complete";
 		ModelAndView mav = new ModelAndView();
 		// check to see if new domain requested
@@ -124,20 +145,17 @@ public class MainController {
 			model.addAttribute("settingsForm", form);
 			// retrieve list of settings for settingsResults
 			List<Setting> results = null;
-			if (settingsService != null) {
+			if (configSvc != null) {
 				try {
-					results = new ArrayList<Setting>(settingsService.getAllSettings());
+					results = new ArrayList<Setting>(configSvc.getAllSettings());
 				} catch (ConfigurationServiceException e) {
 					e.printStackTrace();
 				}
 			}
 			model.addAttribute("simpleForm",new SimpleForm());
-			model.addAttribute("settingsResults", results);
-			// display settings.jsp
-			return mav;
-		}
-		
-		if (actionPath.equalsIgnoreCase("gotocertificates"))
+			model.addAttribute("settingsResults", results);			
+		}	
+		else if (actionPath.equalsIgnoreCase("gotocertificates"))
 		{
 			if (log.isDebugEnabled()) log.debug("trying to go to the certificates page");
 			String action = "Update";
@@ -152,20 +170,17 @@ public class MainController {
 			model.addAttribute("certificateForm", form);
 			// retrieve list of settings for settingsResults
 			List<Certificate> results = null;
-			if (certificatesService != null) {
+			if (configSvc != null) {
 				try {
-					results = new ArrayList<Certificate>(certificatesService.listCertificates(1, 1000, CertificateGetOptions.DEFAULT));
+					results = new ArrayList<Certificate>(configSvc.listCertificates(1, 1000, CertificateGetOptions.DEFAULT));
 				} catch (ConfigurationServiceException e) {
 					e.printStackTrace();
 				}
 			}
 			model.addAttribute("simpleForm",new SimpleForm());
 			model.addAttribute("certificatesResults", results);
-			// display settings.jsp
-			return mav;
 		}
-		
-		if (actionPath.equalsIgnoreCase("newdomain"))
+		else if (actionPath.equalsIgnoreCase("newdomain"))
 		{
 			if (log.isDebugEnabled()) log.debug("trying to go to the new domain page");
 			HashMap<String, String> msgs = new HashMap<String, String>();
@@ -195,40 +210,105 @@ public class MainController {
 			mav.setViewName("domain");
 			mav.addObject("actionPath", actionPath);
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
-			return mav;
-		}
-		
+		}		
+		else if (actionPath.equalsIgnoreCase("gotodns"))
+		{
+		    if (log.isDebugEnabled()) log.debug("trying to go to the DNS page");
+            HashMap<String, String> msgs = new HashMap<String, String>();
+            mav.addObject("msgs", msgs);
+            String action = "Update";
+            model.addAttribute("action", action);
+            // get all DNSType.A.getValue() records
+            // GET A RECORDS
+            Collection<DNSRecord> arecords = null;
+			arecords = getDnsRecords(DNSType.A.getValue());
+			model.addAttribute("dnsARecordResults",arecords);
+            // GET A4 RECORDS
+			Collection<DNSRecord> a4records = null;
+        	a4records = getDnsRecords(DNSType.AAAA.getValue());
+        	model.addAttribute("dnsA4RecordResults",a4records);
+            // GET C RECORDS
+			Collection<DNSRecord> crecords = null;
+			crecords = getDnsRecords(DNSType.CNAME.getValue());
+        	model.addAttribute("dnsCnameRecordResults",crecords);
+            // GET Cert RECORDS
+			Collection<DNSRecord> certrecords = null;
+			certrecords = getDnsRecords(DNSType.CERT.getValue());
+        	model.addAttribute("dnsCertRecordResults",certrecords);
+            // GET MX RECORDS
+			Collection<DNSRecord> mxrecords = null;
+			mxrecords = getDnsRecords(DNSType.MX.getValue());
+        	model.addAttribute("dnsMxRecordResults",mxrecords);
+            // GET SRV RECORDS
+			Collection<DNSRecord> srvrecords = null;
+			srvrecords = getDnsRecords(DNSType.SRV.getValue());
+        	model.addAttribute("dnsSrvRecordResults",srvrecords);
+        	
+            mav.setViewName("dns");
+            
+            mav.addObject("actionPath", actionPath);
 
-		SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
-		if (form == null) { 
-			form = new SearchDomainForm();
+			model.addAttribute("AdnsForm", new DNSEntryForm());
+            model.addAttribute("AAdnsForm", new DNSEntryForm());
+            model.addAttribute("CdnsForm", new DNSEntryForm());
+            model.addAttribute("CertdnsForm", new DNSEntryForm());
+            model.addAttribute("MXdnsForm", new DNSEntryForm());
+            model.addAttribute("SrvdnsForm", new DNSEntryForm());
+            
+            refreshModelFromService(model);
+            
+            model.addAttribute("simpleForm",new SimpleForm());            
 		}
-		model.addAttribute(form);
-		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-		
-		String domain = form.getDomainName();
-		EntityStatus status = form.getStatus();
-		List<Domain> results = null;
-		if (dService != null) {
-			results = new ArrayList<Domain>(dService.searchDomain(domain, status));
+		else
+		{
+    		SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
+    		if (form == null) { 
+    			form = new SearchDomainForm();
+    		}
+    		model.addAttribute(form);
+    		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+    		
+    		String domain = form.getDomainName();
+    		EntityStatus status = form.getStatus();
+    		List<Domain> results = null;
+    		if (configSvc != null) {
+    		    Collection<Domain> domains = configSvc.searchDomain(domain, status);
+    		    if (domains != null)
+    		    {
+    		        results = new ArrayList<Domain>(domains);
+    		    }
+    		    else 
+    		    {
+    		        results = new ArrayList<Domain>();
+    		    }
+    		}
+    		if (AjaxUtils.isAjaxRequest(requestedWith)) {
+    			// prepare model for rendering success message in this request
+    			model.addAttribute("message", new Message(MessageType.success, message));
+    			model.addAttribute("ajaxRequest", true);
+    			model.addAttribute("searchResults", results);
+    			return null;
+    		}
+    
+    		mav.setViewName("main");
+    		mav.addObject("statusList", EntityStatus.getEntityStatusList());
+    		mav.addObject("searchResults", results);
 		}
-		if (AjaxUtils.isAjaxRequest(requestedWith)) {
-			// prepare model for rendering success message in this request
-			model.addAttribute("message", new Message(MessageType.success, message));
-			model.addAttribute("ajaxRequest", true);
-			model.addAttribute("searchResults", results);
-			return null;
-		}
-
-		mav.setViewName("main");
-		mav.addObject("statusList", EntityStatus.getEntityStatusList());
-		mav.addObject("searchResults", results);
 
 		if (log.isDebugEnabled()) log.debug("Exit");
 		return mav;
 	}
-
 	
+	private Collection<DNSRecord> getDnsRecords(int type){
+		Collection<DNSRecord> arecords = null;
+        try {
+			arecords = configSvc.getDNSByType(type);
+			
+		} catch (ConfigurationServiceException e) {
+			e.printStackTrace();
+		}
+		return arecords;
+	}
 	/**
 	 * This method takes a List of domain objects and turns them into a JSON response object
 	 * that the jQuery datatable can consume.
@@ -276,7 +356,7 @@ public class MainController {
 	 * Return the login page when requested
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView display(@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
                                 HttpSession session, 
@@ -304,7 +384,7 @@ public class MainController {
 	 * @param model
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/new", method=RequestMethod.GET)
 	public ModelAndView newDomain (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 							        HttpSession session, 
@@ -321,6 +401,211 @@ public class MainController {
 		return mav;
 	}
 	
+    private Collection<DNSEntryForm> convertDNSRecords(Collection<DNSRecord> entries)
+    {
+        if (log.isDebugEnabled()) log.debug("Enter");
+        
+        Collection<DNSEntryForm> forms = new ArrayList<DNSEntryForm>();
+        if (entries != null)
+        {
+            for (Iterator<DNSRecord> iter = entries.iterator(); iter.hasNext();) 
+            {
+                DNSEntryForm form = new DNSEntryForm(iter.next());
+                forms.add(form);            
+            }
+        }
+       
+        if (log.isDebugEnabled()) log.debug("Exit");
+        return forms;
+    }
+    public void refreshModelFromService(Model model)
+    {
+        // GET A RECORDS
+        Collection<DNSRecord> arecords = null;
+		arecords = getDnsRecords(DNSType.A.getValue());
+		
+		Collection<DNSEntryForm> aform = new ArrayList<DNSEntryForm>();
+		for (Iterator iter = arecords.iterator(); iter.hasNext();) {
+			DNSRecord t = (DNSRecord) iter.next();
+			try {
+				ARecord newrec = (ARecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+				DNSEntryForm tmp = new DNSEntryForm();
+				tmp.setId(t.getId());
+				tmp.setDest(""+newrec.getAddress());
+				tmp.setTtl(newrec.getTTL());
+				tmp.setName(""+newrec.getName());
+				aform.add(tmp);
+			} catch (TextParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		model.addAttribute("dnsARecordResults",aform);
+        // GET A4 RECORDS
+		Collection<DNSRecord> a4records = null;
+    	a4records = getDnsRecords(DNSType.AAAA.getValue());
+		Collection<DNSEntryForm> a4form = new ArrayList<DNSEntryForm>();
+		for (Iterator iter = a4records.iterator(); iter.hasNext();) {
+			DNSRecord t = (DNSRecord) iter.next();
+			try {
+				AAAARecord newrec = (AAAARecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+				DNSEntryForm tmp = new DNSEntryForm();
+				tmp.setId(t.getId());
+				tmp.setDest(""+newrec.getAddress());
+				tmp.setTtl(newrec.getTTL());
+				tmp.setName(""+newrec.getName());
+				a4form.add(tmp);
+			} catch (TextParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+    	model.addAttribute("dnsA4RecordResults",a4form);
+        // GET CNAME RECORDS
+		Collection<DNSRecord> crecords = null;
+		crecords = getDnsRecords(DNSType.CNAME.getValue());
+		Collection<DNSEntryForm> cform = new ArrayList<DNSEntryForm>();
+		for (Iterator iter = crecords.iterator(); iter.hasNext();) {
+			DNSRecord t = (DNSRecord) iter.next();
+			try {
+				CNAMERecord newrec = (CNAMERecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+				DNSEntryForm tmp = new DNSEntryForm();
+				tmp.setId(t.getId());
+				tmp.setDest(""+newrec.getTarget());
+				tmp.setTtl(newrec.getTTL());
+				tmp.setName(""+newrec.getName());
+				cform.add(tmp);
+			} catch (TextParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+    	model.addAttribute("dnsCnameRecordResults",cform);
+        // GET MX RECORDS
+		Collection<DNSRecord> mxrecords = null;
+		mxrecords = getDnsRecords(DNSType.MX.getValue());
+		Collection<DNSEntryForm> mxform = new ArrayList<DNSEntryForm>();
+		for (Iterator iter = mxrecords.iterator(); iter.hasNext();) {
+			DNSRecord t = (DNSRecord) iter.next();
+			try {
+				MXRecord newrec = (MXRecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+				DNSEntryForm tmp = new DNSEntryForm();
+				tmp.setPriority(newrec.getPriority());
+				tmp.setId(t.getId());
+				tmp.setDest(""+newrec.getTarget());
+				tmp.setTtl(newrec.getTTL());
+				tmp.setName(""+newrec.getName());
+				mxform.add(tmp);
+			} catch (TextParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+    	model.addAttribute("dnsMxRecordResults",mxform);
+        // GET Cert RECORDS
+		Collection<DNSRecord> certrecords = null;
+		certrecords = getDnsRecords(DNSType.CERT.getValue());
+		// get the thumbprint and assign
+		// create a new collection 
+		Collection<SrvRecord> form = new ArrayList<SrvRecord>();
+		CertContainer cont;
+		for (Iterator iter = certrecords.iterator(); iter.hasNext();) {
+			DNSRecord t = (DNSRecord) iter.next();
+
+			SrvRecord srv = new SrvRecord();
+			srv.setCreateTime(t.getCreateTime());
+			srv.setData(t.getData());
+			srv.setDclass(t.getDclass());
+			srv.setId(t.getId());
+			srv.setName(t.getName());
+			srv.setTtl(t.getTtl());
+			srv.setType(t.getType());
+			srv.setThumb("");
+			byte[] bytes = t.getData();
+			
+			
+    		try {
+				CERTRecord newrec = (CERTRecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+				String thumb = "";
+	            byte[] certData = newrec.getCert();
+				if (certData != null) {
+					// get the owner from the certificate information
+					// first transform into a certificate
+					cont = toCertContainer(certData);
+					if (cont != null && cont.getCert() != null) {
+
+						Certificate cert2 = new Certificate();
+						cert2.setData(certData);
+						thumb = getThumbPrint(cont.getCert());
+						srv.setThumb(thumb);
+					}
+				}
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			form.add(srv);
+		}
+    	model.addAttribute("dnsCertRecordResults",form);
+        // GET SRV RECORDS
+		Collection<DNSRecord> srvrecords = null;
+		srvrecords = getDnsRecords(DNSType.SRV.getValue());
+		// create a new collection 
+		Collection<SrvRecord> form2 = new ArrayList<SrvRecord>();
+		for (Iterator iter = srvrecords.iterator(); iter.hasNext();) {
+			DNSRecord t = (DNSRecord) iter.next();
+			SrvRecord srv = new SrvRecord();
+			try {
+				SRVRecord srv4 = (SRVRecord) SRVRecord.newRecord(Name
+						.fromString(t.getName()), t.getType(), t.getDclass(), t
+						.getTtl(), t.getData());
+
+				srv.setCreateTime(t.getCreateTime());
+				srv.setData(t.getData());
+				srv.setDclass(t.getDclass());
+				srv.setId(t.getId());
+				srv.setName(t.getName());
+				String name = t.getName();
+				// parse the name to get service, protocol, priority , weight,
+				// port
+
+				int firstpos = name.indexOf("_");
+				if (firstpos == 0) {
+					// then this can be parsed as a srv record
+					// ("_"+SrvdnsForm.getService()+"._"+SrvdnsForm.getProtocol()+"._"+SrvdnsForm.getPriority()+"._"+SrvdnsForm.getWeight()+"._"+SrvdnsForm.getPort()+"._"+SrvdnsForm.getDest()+"."+SrvdnsForm.getName()
+					int secondpos = name.indexOf("._");
+					int thirdpos = name.indexOf(".", secondpos + 2);
+					// from first to second is service
+					String service_ = name.substring(firstpos + 1, secondpos);
+					srv.setService(service_);
+					// from second to third is protocol
+					String protocol_ = name.substring(secondpos + 2, thirdpos);
+					;
+					srv.setProtocol(protocol_);
+					int last2pos = name.indexOf(".", thirdpos);
+					String name_ = name.substring(last2pos+1, name.length());
+					srv.setName(name_);
+				}
+				srv.setTtl(t.getTtl());
+				srv.setType(t.getType());
+
+				srv.setPort(srv4.getPort());
+				srv.setWeight(srv4.getWeight());
+				srv.setPriority("" + srv4.getPriority());
+				srv.setTarget("" + srv4.getTarget().toString());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			form2.add(srv);
+		}
+    	model.addAttribute("dnsSrvRecordResults",form2);
+    }
+
+
 	/**
 	 * Handle exceptions as gracefully as possible
 	 * @param ex
@@ -328,13 +613,124 @@ public class MainController {
 	 * @return
 	 */
 	@ExceptionHandler(IOException.class) 
-	public String handleIOException(IOException ex, HttpServletRequest request) {
+	public String handleIOException(IOException ex, HttpServletRequest request) 
+	{
 		//TODO Actually do something useful
 		return ClassUtils.getShortName(ex.getClass() + ":" + ex.getMessage());
 	}
 
-	public void setdService(DomainService service) {
-		this.dService = service;
+	public void setConfigSvc(ConfigurationService service) {
+		this.configSvc = service;
 	}
-	
+
+	public static String getThumbPrint(X509Certificate cert)
+			throws NoSuchAlgorithmException, CertificateEncodingException {
+		MessageDigest md = MessageDigest.getInstance("SHA-1");
+		byte[] der = null;
+		byte[] digest = null;
+		try {
+			der = cert.getEncoded();
+			md.update(der);
+			digest = md.digest();
+		} catch (java.security.cert.CertificateEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return hexify(digest);
+
+	}
+
+	public static String hexify(byte bytes[]) {
+
+		char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+				'a', 'b', 'c', 'd', 'e', 'f' };
+
+		StringBuffer buf = new StringBuffer(bytes.length * 2);
+
+		for (int i = 0; i < bytes.length; ++i) {
+			buf.append(hexDigits[(bytes[i] & 0xf0) >> 4]);
+			buf.append(hexDigits[bytes[i] & 0x0f]);
+		}
+
+		return buf.toString();
+	}	
+    public CertContainer toCertContainer(byte[] data) throws Exception
+    {
+        CertContainer certContainer = null;
+        try
+        {
+            ByteArrayInputStream bais = new ByteArrayInputStream(data);
+
+            // lets try this a as a PKCS12 data stream first
+            try
+            {
+                KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+
+                localKeyStore.load(bais, "".toCharArray());
+                Enumeration<String> aliases = localKeyStore.aliases();
+
+
+                        // we are really expecting only one alias
+                        if (aliases.hasMoreElements())
+                        {
+                                String alias = aliases.nextElement();
+                                X509Certificate cert = (X509Certificate)localKeyStore.getCertificate(alias);
+
+                                // check if there is private key
+                                Key key = localKeyStore.getKey(alias, "".toCharArray());
+                                if (key != null && key instanceof PrivateKey)
+                                {
+                                        certContainer = new CertContainer(cert, key);
+
+                                }
+                        }
+            }
+            catch (Exception e)
+            {
+                // must not be a PKCS12 stream, go on to next step
+            }
+
+            if (certContainer == null)
+            {
+                //try X509 certificate factory next
+                bais.reset();
+                bais = new ByteArrayInputStream(data);
+
+                X509Certificate cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(bais);
+                certContainer = new CertContainer(cert, null);
+            }
+            bais.close();
+        }
+        catch (Exception e)
+        {
+            throw new ConfigurationServiceException("Data cannot be converted to a valid X.509 Certificate", e);
+        }
+
+        return certContainer;
+    }
+
+    public static class CertContainer
+    {
+                private final X509Certificate cert;
+        private final Key key;
+
+        public CertContainer(X509Certificate cert, Key key)
+        {
+                this.cert = cert;
+                this.key = key;
+        }
+
+        public X509Certificate getCert()
+        {
+                        return cert;
+                }
+
+                public Key getKey()
+                {
+                        return key;
+                }
+
+    }
+
+
 }

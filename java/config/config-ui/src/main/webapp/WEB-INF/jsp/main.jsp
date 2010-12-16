@@ -7,7 +7,12 @@
 <META  http-equiv="Content-Type"  content="text/html;charset=UTF-8">
 <title><fmt:message key="welcome.title" /></title>
 </head>
-
+<script type="text/javascript">
+$(document).ready(function()
+{
+    $("#domain-table").tablesorter(); 
+});
+</script>
 <body>
 <div id="form">
     <%@ include file="/WEB-INF/jsp/header.jsp" %>
@@ -34,19 +39,19 @@
 		<p>
 		<button name="submitType" id="submitType" type="submit" value="search">Search</button>		
         <button name="submitType" id="submitType" type="submit" value="newdomain">New Domain</button>
-		<button name="submitType" id="submitType" type="submit" value="gotosettings">Go To Settings</button>
-		<button name="submitType" id="submitType" type="submit" value="gotocertificates">Go To Certificates</button>
+        </p>
+        <hr>
+        <p>
+		<button name="submitType" id="submitType" type="submit" value="gotosettings">Settings</button>
+		<button name="submitType" id="submitType" type="submit" value="gotocertificates">Certificates</button>
+		<button name="submitType" id="submitType" type="submit" value="gotodns">DNS Entries</button>
 		</p>
+		<hr>
 	</form:form>
 	</fieldset>
 	</div>
 	<c:if test="${not empty searchResults}">
 	<div id="dynamic">
-	<script type="text/javascript">
-	jQuery(document).ready(function(){
-		jQuery("#domain-table").tablesorter(); 
-	     });
-    </script>
 		<spring:url value="/config/domain/remove" var="formUrlremove"/>
 	    <form:form name="removeForm" modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST" >
 		<table class="tablesorter" id="domain-table">
