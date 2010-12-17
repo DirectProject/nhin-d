@@ -595,6 +595,223 @@ Records</legend>
 
 
 
+<fieldset><legend>&quot;SOA&quot; (Start of Authority) Records</legend>
+<fieldset style="width: 95%;"><spring:url
+	value="/config/dns/addSOADNSRecord" var="formUrladdSoaRecord" /> <form:form
+	id="soaEntryForm" modelAttribute="SoadnsForm"
+	action="${fn:escapeXml(formUrladdSoaRecord)}" cssClass="cleanform"
+	method="POST" enctype="multipart/form-data">
+	<form:hidden path="id" />
+	<table cellpadding="1px" cellspacing="1px" id="dnsSoaTable">
+		<tr>
+			<th><form:label path="name">Name
+                            <form:errors path="name" cssClass="error" />
+			</form:label></th>
+			<td><form:input path="name" /></td>
+		</tr>
+		<tr>
+			<th><form:label path="admin">Host Master
+                            <form:errors path="admin"
+					cssClass="error" />
+			</form:label></th>
+			<td><form:input path="admin" /></td>
+		</tr>
+		<tr>
+			<th><form:label title="Name Server"
+				path="domain">Name Server 
+                            <form:errors path="domain" cssClass="error" />
+			</form:label></th>
+			<td><form:input path="domain" /></td>
+		</tr>
+		<tr>
+			<th><form:label title="In seconds" path="ttl">TTL 
+                            <form:errors path="ttl" cssClass="error" />
+			</form:label></th>
+			<td><form:input maxlength="8" path="ttl" /></td>
+		</tr>
+		<tr>
+			<th><form:label title="Lower number is higher priority"
+				path="expire">Expire
+                             <form:errors path="expire"
+					cssClass="error" />
+			</form:label></th>
+			<td><form:input maxlength="5" path="expire" /></td>
+		</tr>
+		<tr>
+			<th><form:label path="minimum">Minimum
+                             <form:errors path="minimum" cssClass="error" />
+			</form:label></th>
+			<td><form:input maxlength="8" path="minimum" /></td>
+		</tr>
+		<tr>
+			<th><form:label path="refresh">Refresh
+                             <form:errors path="refresh" cssClass="error" />
+			</form:label></th>
+			<td><form:input maxlength="5" path="refresh" /></td>
+		</tr>
+		<tr>
+			<th><form:label
+				title="serial"
+				path="serial">Serial
+                             <form:errors path="serial" cssClass="error" />
+			</form:label></th>
+			<td><form:input path="serial" /></td>
+		</tr>
+		<tr>
+			<th><form:label
+				title="retry"
+				path="retry">Retry
+                             <form:errors path="retry" cssClass="error" />
+			</form:label></th>
+			<td><form:input path="retry" /></td>
+		</tr>
+	</table>
+	<button name="submitType" id="submitType" type="submit"
+		value="newDNSRecord">Add Record</button>
+</form:form></fieldset>
+
+<c:if test="${not empty dnsSOARecordResults}">
+
+	<div id="certList" style="width: 100%; overflow: auto;">
+	<fieldset style="width: 95%;"><spring:url
+		value="/config/dns/removesettings" var="formUrlRemoveDns" /> <form:form
+		id="RemoveSoaEntries" modelAttribute="SoadnsForm"
+		action="${fn:escapeXml(formUrlRemoveDns)}" cssClass="cleanform"
+		method="POST" enctype="multipart/form-data">
+		<form:hidden path="type" value="SOA" />
+		<table cellpadding="1px" cellspacing="1px" id="dnsSoaList"
+			class="tablesorter">
+			<thead>
+				<tr>
+					<th width="15%">Name</th>
+					<th width="15%">Host Master</th>
+					<th width="15%">Name Server</th>
+					<th width="10%">TTL</th>
+					<th width="7%">Expire</th>
+					<th width="10%">Min.</th>
+					<th width="7%">Refresh</th>
+					<th width="8%">Serial</th>
+					<th width="7%">Retry</th>
+					<th width="6%">Remove</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!--  Put the data from the searchResults attribute here -->
+				<c:forEach var="entry" items="${dnsSOARecordResults}"
+					varStatus="rowCounter">
+					<tr>
+						<td width="15%">${entry.name}</td>
+						<td width="15%">${entry.admin}</td>
+						<td width="15%">${entry.domain}</td>
+						<td width="10%">${entry.ttl}</td>
+						<td width="7%">${entry.expire}</td>
+						<td width="10%">${entry.minimum}</td>
+						<td width="7%">${entry.refresh}</td>
+						<td width="8%">${entry.serial}</td>
+						<td width="7%">${entry.retry}</td>
+						<td width="6%"><form:checkbox path="remove"
+							value="${entry.id}" /></td>
+					</tr>
+				</c:forEach>
+			</tbody>
+			<tfoot>
+				<tr>
+					<th width="15%"></th>
+					<th width="15%"></th>
+					<th width="15%"></th>
+					<th width="10%"></th>
+					<th width="7%"></th>
+					<th width="10%"></th>
+					<th width="7%"></th>
+					<th width="15%/"></th>
+					<th width="6%"></th>
+				</tr>
+			</tfoot>
+		</table>
+		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
+		<button name="submitType" id="submitType" type="submit"
+			value="deleteSOADnsEntries">Remove Selected</button>
+	</form:form></fieldset>
+	</div>
+</c:if>
+</fieldset>
+
+<fieldset><legend>&quot;NS&quot; Records</legend>
+<fieldset style="width: 95%;"><spring:url
+	value="/config/dns/addNSDNSRecord" var="formUrladdNSRecord" /> <form:form
+	id="nsEntryForm" modelAttribute="NSdnsForm"
+	action="${fn:escapeXml(formUrladdNSRecord)}" cssClass="cleanform"
+	method="POST" enctype="multipart/form-data">
+	<form:hidden path="id" />
+	<table cellpadding="1px" cellspacing="1px" id="dnsNSTable">
+		<tr>
+			<th><form:label path="name">Name
+	                        <form:errors path="name" cssClass="error" />
+			</form:label></th>
+			<th><form:label path="dest">Target
+	                          <form:errors path="dest" cssClass="error" />
+			</form:label></th>
+			<th><form:label title="In seconds" path="ttl">TTL 
+	                         <form:errors path="ttl" cssClass="error" />
+			</form:label></th>
+		</tr>
+		<tr>
+			<td><form:input path="name" /></td>
+			<td><form:input id="dest" path="dest" /></td>
+			<td><form:input maxlength="8" id="ttl" path="ttl" /></td>
+		</tr>
+	</table>
+	<button name="submitType" id="submitType" type="submit"
+		value="newDNSRecord">Add Record</button>
+</form:form></fieldset>
+
+
+<c:if test="${not empty dnsNSRecordResults}">
+	<fieldset style="width: 95%;">
+	<div id="aList" style="width: 100%; overflow: auto;"><spring:url
+		value="/config/dns/removesettings" var="formUrlRemoveDns" /> <form:form
+		id="RemoveNSRecords" modelAttribute="NSdnsForm"
+		action="${fn:escapeXml(formUrlRemoveDns)}" cssClass="cleanform"
+		method="POST" enctype="multipart/form-data">
+		<table cellpadding="1px" cellspacing="1px" id="dnsNSList"
+			class="tablesorter">
+			<thead>
+				<tr>
+					<th width="35%">Name</th>
+					<th width="35%">Target</th>
+					<th width="20%">TTL</th>
+					<th width="10%">Remove</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!--  Put the data from the searchResults attribute here -->
+				<c:forEach var="entry" items="${dnsNSRecordResults}"
+					varStatus="rowCounter">
+					<tr>
+						<td width="35%">${entry.name}</a></td>
+						<td width="35%"><c:out value="${entry.dest}" /></td>
+						<td width="25%">${entry.ttl}</td>
+						<td width="10%"><form:checkbox path="remove"
+							value="${entry.id}" /></td>
+					</tr>
+				</c:forEach>
+			</tbody>
+			<tfoot>
+				<tr>
+					<th width="35%"></th>
+					<th width="35%"></th>
+					<th width="20%"></th>
+					<th width="10%"></th>
+				</tr>
+			</tfoot>
+		</table>
+		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
+		<button name="submitType" id="submitType" type="submit"
+			value="deleteNSDnsEntries">Remove Selected</button>
+	</form:form></div>
+	</fieldset>
+</c:if></fieldset>
+
 
 </body>
 </html>

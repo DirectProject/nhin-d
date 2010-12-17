@@ -31,6 +31,7 @@ public enum DNSType
     AAAA  (28),
     SRV   (33),
     CERT  (37),
+    NS    (2),
     SPF   (99)
     ;
     

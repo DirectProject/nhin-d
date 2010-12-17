@@ -83,8 +83,10 @@ import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CERTRecord;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.MXRecord;
+import org.xbill.DNS.NSRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.SOARecord;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
 
@@ -367,6 +369,43 @@ public class DNSController
 	}
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RequestMapping(value="/addNSDNSRecord", method = RequestMethod.POST)
+	public ModelAndView addNSSetting(
+			@RequestHeader(value = "X-Requested-With", required = false) String requestedWith,
+			HttpSession session,
+			@ModelAttribute("NSdnsForm") DNSEntryForm NSdnsForm, Model model,
+			@RequestParam(value = "submitType") String actionPath) {
+    	
+		if (log.isDebugEnabled())
+			log.debug("Enter");
+		// NS records
+		if (NSdnsForm != null && !NSdnsForm.getName().equalsIgnoreCase("")
+				&& NSdnsForm.getTtl() != 0L
+				&& !NSdnsForm.getDest().equalsIgnoreCase("")) {
+
+            Collection<DNSRecord> records = new ArrayList<DNSRecord>();
+            records.add(DNSEntryForm.createNSRecord(NSdnsForm.getName(), NSdnsForm.getTtl(), NSdnsForm.getDest()));
+            
+            try {
+				configSvc.addDNS(records);
+			} catch (ConfigurationServiceException e) {
+				e.printStackTrace();
+			}
+		}
+		
+
+		ModelAndView mav = new ModelAndView("dns");
+		refreshModelFromService(model);
+
+
+
+		if (log.isDebugEnabled())
+			log.debug("Exit");
+		return mav;
+	}
+
+    
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value="/addA4DNSRecord", method = RequestMethod.POST)
 	public ModelAndView addA4Setting(
 			@RequestHeader(value = "X-Requested-With", required = false) String requestedWith,
@@ -610,16 +649,55 @@ public class DNSController
 			log.debug("Exit");
 		return mav;
 	}
+
+    
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RequestMapping(value="/addSOADNSRecord", method = RequestMethod.POST)
+	public ModelAndView addSOASetting(
+			@RequestHeader(value = "X-Requested-With", required = false) String requestedWith,
+			HttpSession session,
+			@ModelAttribute("SoadnsForm") DNSEntryForm SoadnsForm, Model model,
+			@RequestParam(value = "submitType") String actionPath) {
+    	
+		if (log.isDebugEnabled())
+			log.debug("Enter");
+		// A records
+		if (SoadnsForm != null && !SoadnsForm.getName().equalsIgnoreCase("")
+				&& SoadnsForm.getTtl() != 0L
+				) {
+
+            Collection<DNSRecord> records = new ArrayList<DNSRecord>();
+            records.add(DNSRecordUtils.createSOARecord(SoadnsForm.getName(), SoadnsForm.getTtl(), SoadnsForm.getDomain(), SoadnsForm.getAdmin(), (int)SoadnsForm.getSerial(), SoadnsForm.getRefresh(), SoadnsForm.getRetry(), SoadnsForm.getExpire(), SoadnsForm.getMinimum()));
+            
+            
+            try {
+				configSvc.addDNS(records);
+			} catch (ConfigurationServiceException e) {
+				e.printStackTrace();
+			}
+		}
+
+		ModelAndView mav = new ModelAndView("dns");
+		refreshModelFromService(model);
+		mav.setViewName("dns");
+		if (log.isDebugEnabled())
+			log.debug("Exit");
+		return mav;
+	}
+
+    
     
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
     @RequestMapping(value="/removesettings", method = RequestMethod.POST)
 	public ModelAndView removeAnchors(
 			@RequestHeader(value = "X-Requested-With", required = false) String requestedWith,
 			@ModelAttribute("AdnsForm") DNSEntryForm AdnsForm,
+			@ModelAttribute("NSdnsForm") DNSEntryForm NSdnsForm,
 			@ModelAttribute("AAdnsForm") DNSEntryForm AAdnsForm,
 			@ModelAttribute("CdnsForm") DNSEntryForm CdnsForm,
 			@ModelAttribute("CertdnsForm") DNSEntryForm CertdnsForm,
 			@ModelAttribute("SrvdnsForm") DNSEntryForm SrvdnsForm,
+			@ModelAttribute("SoadnsForm") DNSEntryForm SoadnsForm,
 			@ModelAttribute("MXdnsForm") DNSEntryForm MXdnsForm,
 			HttpSession session, Model model,
 			@RequestParam(value = "submitType") String actionPath) {
@@ -776,6 +854,57 @@ public class DNSController
 		} catch (ConfigurationServiceException e1) {
 		}
 		
+		// SOA records
+		try {
+			String strid = "" + SoadnsForm.getId();
+			Collection<DNSRecord> soarecords = null;
+			if (configSvc != null && SoadnsForm != null && actionPath != null
+					&& actionPath.equalsIgnoreCase("deleteSOADnsEntries")
+					&& SoadnsForm.getRemove() != null) {
+
+				int cnt = SoadnsForm.getRemove().size();
+				soarecords = configSvc.getDNSByType(DNSType.SOA.getValue());
+				for (int x = 0; x < cnt; x++) {
+					String removeid = SoadnsForm.getRemove().get(x);
+					Long remid = Long.parseLong(removeid);
+					for (Iterator iter = soarecords.iterator(); iter.hasNext();) {
+						DNSRecord t = (DNSRecord) iter.next();
+						if (t.getId() == remid) {
+							configSvc.removeDNSByRecordId(remid);
+						}
+					}
+				}
+			}
+
+		} catch (ConfigurationServiceException e1) {
+		}
+
+		// NS records
+		try {
+			String strid = "" + NSdnsForm.getId();
+			Collection<DNSRecord> nsrecords = null;
+			if (configSvc != null && NSdnsForm != null && actionPath != null
+					&& actionPath.equalsIgnoreCase("deleteNSDnsEntries")
+					&& NSdnsForm.getRemove() != null) {
+
+				int cnt = NSdnsForm.getRemove().size();
+				nsrecords = configSvc.getDNSByType(DNSType.NS.getValue());
+				for (int x = 0; x < cnt; x++) {
+					String removeid = NSdnsForm.getRemove().get(x);
+					Long remid = Long.parseLong(removeid);
+					for (Iterator iter = nsrecords.iterator(); iter.hasNext();) {
+						DNSRecord t = (DNSRecord) iter.next();
+						if (t.getId() == remid) {
+							configSvc.removeDNSByRecordId(remid);
+						}
+					}
+				}
+			}
+
+		} catch (ConfigurationServiceException e1) {
+		}
+		
+		
 		// additional post clean up to redisplay
 
 		ModelAndView mav = new ModelAndView("dns");
@@ -837,6 +966,8 @@ public class DNSController
 		}
 		return arecords;
 	}
+
+    
     public void refreshModelFromService(Model model)
     {
         // GET A RECORDS
@@ -1022,8 +1153,65 @@ public class DNSController
 			form2.add(srv);
 		}
     	model.addAttribute("dnsSrvRecordResults",form2);
-    }
+        // GET SOA RECORDS
+        Collection<DNSRecord> soarecords = null;
+		soarecords = getDnsRecords(DNSType.SOA.getValue());
+		Collection<DNSEntryForm> soaform = new ArrayList<DNSEntryForm>();
+		for (Iterator iter = soarecords.iterator(); iter.hasNext();) {
+			DNSRecord t = (DNSRecord) iter.next();
+			try {
+				SOARecord newrec = (SOARecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+				DNSEntryForm tmp = new DNSEntryForm();
+				tmp.setId(t.getId());
+				tmp.setAdmin(""+newrec.getAdmin());
+				tmp.setExpire(newrec.getExpire());
+				tmp.setMinimum(newrec.getMinimum());
+				tmp.setRefresh(newrec.getRefresh());
+				tmp.setRetry(newrec.getRetry());
+				tmp.setSerial(newrec.getSerial());
+				tmp.setDest(""+newrec.getHost());
+				tmp.setDomain(""+newrec.getHost());
+				tmp.setTtl(newrec.getTTL());
+				tmp.setName(""+newrec.getName());
+				soaform.add(tmp);
+			} catch (TextParseException e) {
+				e.printStackTrace();
+			}
+		}
+		model.addAttribute("dnsSOARecordResults",soaform);
+		
+        // GET NS RECORDS
+        Collection<DNSRecord> nsrecords = null;
+        nsrecords = getDnsRecords(DNSType.NS.getValue());
+		Collection<DNSEntryForm> nsform = new ArrayList<DNSEntryForm>();
+		for (Iterator iter = nsrecords.iterator(); iter.hasNext();) {
+			DNSRecord t = (DNSRecord) iter.next();
+			try {
+				NSRecord newrec = (NSRecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+				DNSEntryForm tmp = new DNSEntryForm();
+				tmp.setId(t.getId());
+				tmp.setDest(""+newrec.getTarget());
+				tmp.setTtl(newrec.getTTL());
+				tmp.setName(""+newrec.getName());
+				nsform.add(tmp);
+			} catch (TextParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		model.addAttribute("dnsNSRecordResults",nsform);
 
+		// *****************
+		model.addAttribute("NSdnsForm", new DNSEntryForm());
+		model.addAttribute("SoadnsForm", new DNSEntryForm());
+		model.addAttribute("AdnsForm", new DNSEntryForm());
+		model.addAttribute("AAdnsForm", new DNSEntryForm());
+		model.addAttribute("CdnsForm", new DNSEntryForm());
+		model.addAttribute("MXdnsForm", new DNSEntryForm());
+		model.addAttribute("CertdnsForm", new DNSEntryForm());
+		model.addAttribute("SrvdnsForm", new DNSEntryForm());
+		
+    }
 	
     /**
      * Handle exceptions as gracefully as possible
