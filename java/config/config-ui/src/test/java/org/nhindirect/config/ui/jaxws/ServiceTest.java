@@ -43,8 +43,10 @@ import org.nhindirect.config.ui.form.DNSEntryForm;
 import org.nhindirect.config.ui.form.DNSType;
 import org.xbill.DNS.CERTRecord;
 import org.xbill.DNS.DClass;
+import org.xbill.DNS.NSRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.SOARecord;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
 import java.security.cert.X509Certificate;
@@ -65,7 +67,7 @@ public class ServiceTest
     
     private URL wsdlURL;
     private Service service;
-//    private ConfigurationService configSvc;
+    private ConfigurationService configSvc;
     
     @Before
     public void oneTimeSetUp() throws Exception
@@ -78,11 +80,76 @@ public class ServiceTest
 //        assertNotNull(configSvc);
     }
 
-  @Test
-  public void testDomainService()
+    @Test
+    public void testPlaceholder()
+    {
+	}
+	
+//    @Test
+    public void testNS()
+    {
+    	DNSEntryForm nsForm = new DNSEntryForm();
+    	nsForm.setTtl(8455L);
+    	nsForm.setName("name3");
+    	nsForm.setDest("192.3.4.5");
+    	
+		try {
+			Collection<DNSRecord> arecords = configSvc.getDNSByType(DNSType.NS.getValue());
+			for (Iterator<DNSRecord> iter = arecords.iterator(); iter.hasNext();) {
+				DNSRecord arec = iter.next();
+				NSRecord newrec = (NSRecord) Record.newRecord(Name
+						.fromString(arec.getName()), arec.getType(), arec
+						.getDclass(), arec.getTtl(), arec.getData());
+				System.out.println("target : " + newrec.getTarget());
+				System.out.println("name: " + newrec.getName());
+
+			}
+		} catch (Exception e) {
+
+		}
+    }
+    
+//  @Test
+  public void testSOA()
   {
+	  DNSEntryForm SoadnsForm = new DNSEntryForm();
+	  SoadnsForm.setName("savvy");
+	  SoadnsForm.setTtl(84555L);
+	  SoadnsForm.setAdmin("ns.savvy.com");
+	  SoadnsForm.setDomain("ns2.savvy.com");
+	  SoadnsForm.setSerial(4L);
+	  SoadnsForm.setRefresh(6L);
+	  SoadnsForm.setRetry(8L);
+	  SoadnsForm.setExpire(66L);
+	  SoadnsForm.setMinimum(22L);
+	  
+      Collection<DNSRecord> records = new ArrayList<DNSRecord>();
+      records.add(DNSRecordUtils.createSOARecord(SoadnsForm.getName(), SoadnsForm.getTtl(), SoadnsForm.getDomain(), SoadnsForm.getAdmin(), (int)SoadnsForm.getSerial(), SoadnsForm.getRefresh(), SoadnsForm.getRetry(), SoadnsForm.getExpire(), SoadnsForm.getMinimum()));
+      
+      
+      try {
+			configSvc.addDNS(records);
+			
+			Collection<DNSRecord> arecords = configSvc.getDNSByType(DNSType.SOA.getValue());
+			for (Iterator<DNSRecord> iter = arecords.iterator(); iter.hasNext();) {
+				DNSRecord arec = iter.next();
+				SOARecord newrec = (SOARecord)Record.newRecord(Name.fromString(arec.getName()), arec.getType(), arec.getDclass(), arec.getTtl(), arec.getData());
+				System.out.println("A admin: " + newrec.getAdmin());
+				System.out.println("A name: " + newrec.getName());
+
+			}
+			
+		} catch (ConfigurationServiceException e) {
+			e.printStackTrace();
+		} catch (TextParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	  
 	  
   }
+  
+  
 //    @Test
 //    public void testDomainService()
 //    {

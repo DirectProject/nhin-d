@@ -81,8 +81,10 @@ import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CERTRecord;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.MXRecord;
+import org.xbill.DNS.NSRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.SOARecord;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
 
@@ -418,6 +420,9 @@ public class MainController {
         if (log.isDebugEnabled()) log.debug("Exit");
         return forms;
     }
+    
+    
+    
     public void refreshModelFromService(Model model)
     {
         // GET A RECORDS
@@ -603,6 +608,64 @@ public class MainController {
 			form2.add(srv);
 		}
     	model.addAttribute("dnsSrvRecordResults",form2);
+        // GET SOA RECORDS
+        Collection<DNSRecord> soarecords = null;
+		soarecords = getDnsRecords(DNSType.SOA.getValue());
+		Collection<DNSEntryForm> soaform = new ArrayList<DNSEntryForm>();
+		for (Iterator iter = soarecords.iterator(); iter.hasNext();) {
+			DNSRecord t = (DNSRecord) iter.next();
+			try {
+				SOARecord newrec = (SOARecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+				DNSEntryForm tmp = new DNSEntryForm();
+				tmp.setId(t.getId());
+				tmp.setAdmin(""+newrec.getAdmin());
+				tmp.setExpire(newrec.getExpire());
+				tmp.setMinimum(newrec.getMinimum());
+				tmp.setRefresh(newrec.getRefresh());
+				tmp.setRetry(newrec.getRetry());
+				tmp.setSerial(newrec.getSerial());
+				tmp.setDest(""+newrec.getHost());
+				tmp.setDomain(""+newrec.getHost());
+				tmp.setTtl(newrec.getTTL());
+				tmp.setName(""+newrec.getName());
+				soaform.add(tmp);
+			} catch (TextParseException e) {
+				e.printStackTrace();
+			}
+		}
+		model.addAttribute("dnsSOARecordResults",soaform);
+		
+        // GET NS RECORDS
+        Collection<DNSRecord> nsrecords = null;
+        nsrecords = getDnsRecords(DNSType.NS.getValue());
+		Collection<DNSEntryForm> nsform = new ArrayList<DNSEntryForm>();
+		for (Iterator iter = nsrecords.iterator(); iter.hasNext();) {
+			DNSRecord t = (DNSRecord) iter.next();
+			try {
+				NSRecord newrec = (NSRecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+				DNSEntryForm tmp = new DNSEntryForm();
+				tmp.setId(t.getId());
+				tmp.setDest(""+newrec.getTarget());
+				tmp.setTtl(newrec.getTTL());
+				tmp.setName(""+newrec.getName());
+				nsform.add(tmp);
+			} catch (TextParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		model.addAttribute("dnsNSRecordResults",nsform);
+
+		// *****************
+		model.addAttribute("NSdnsForm", new DNSEntryForm());
+		model.addAttribute("SoadnsForm", new DNSEntryForm());
+		model.addAttribute("AdnsForm", new DNSEntryForm());
+		model.addAttribute("AAdnsForm", new DNSEntryForm());
+		model.addAttribute("CdnsForm", new DNSEntryForm());
+		model.addAttribute("MXdnsForm", new DNSEntryForm());
+		model.addAttribute("CertdnsForm", new DNSEntryForm());
+		model.addAttribute("SrvdnsForm", new DNSEntryForm());
+		
     }
 
 

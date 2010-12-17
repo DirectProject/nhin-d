@@ -41,6 +41,7 @@ import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CERTRecord;
 import org.xbill.DNS.DClass;
+import org.xbill.DNS.NSRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
@@ -54,6 +55,13 @@ import org.xbill.DNS.Section;
  */
 public class DNSEntryForm
 {
+	private String admin = "";
+	private long expire = 0L;
+	private long minimum = 0L;
+	private long refresh = 0L;
+	private long retry = 0L;
+	private long serial = 0L;
+	
 	private String thumbprint;
 	private String trusteddomainoruser;    
     private Long id         = 0L;
@@ -104,6 +112,34 @@ public class DNSEntryForm
 	}
     
 	/**
+	 * Creates a DNS NS type record.
+	 * @param name The record name.  Generally a fully qualified domain name such as host.example.com.
+	 * @param ttl The time to live in seconds.
+	 * @param ip The ip4 address that the name will resolve.
+	 * @return A DNSRecord representing an A type record.
+	 * @throws ConfigurationStoreException
+	 */
+	public static DNSRecord createNSRecord(String name, long ttl, String target) throws ConfigurationStoreException
+	{
+		if (!name.endsWith("."))
+			name = name + ".";
+		
+		if (!target.endsWith("."))
+			target = target + ".";
+
+		try
+		{
+			NSRecord rec = new NSRecord(Name.fromString(name), DClass.IN, ttl, Name.fromString(target));
+			
+			return DNSRecord.fromWire(rec.toWireCanonical());
+		}
+		catch (Exception e)
+		{
+			throw new ConfigurationStoreException("Failed to create DNS NS record: " + e.getMessage(), e);
+		}
+	}
+    
+	/**
 	 * Creates a DNS CNAME type record.
 	 * @param name The record name.  Generally a fully qualified domain name such as host.example.com.
 	 * @param ttl The time to live in seconds.
@@ -116,6 +152,9 @@ public class DNSEntryForm
 		if (!name.endsWith("."))
 			name = name + ".";
 		
+		if (!dest.endsWith("."))
+			dest = dest + ".";
+
 		try
 		{
 			CNAMERecord rec = new CNAMERecord(Name.fromString(name), DClass.IN, ttl, Name.fromString(dest));
@@ -485,5 +524,53 @@ public class DNSEntryForm
 
 	public String getThumbprint() {
 		return thumbprint;
+	}
+
+	public void setAdmin(String admin) {
+		this.admin = admin;
+	}
+
+	public String getAdmin() {
+		return admin;
+	}
+
+	public void setExpire(long expire) {
+		this.expire = expire;
+	}
+
+	public long getExpire() {
+		return expire;
+	}
+
+	public void setMinimum(long minimum) {
+		this.minimum = minimum;
+	}
+
+	public long getMinimum() {
+		return minimum;
+	}
+
+	public void setRefresh(long refresh) {
+		this.refresh = refresh;
+	}
+
+	public long getRefresh() {
+		return refresh;
+	}
+
+	public void setRetry(long retry) {
+		this.retry = retry;
+	}
+
+	public long getRetry() {
+		return retry;
+	}
+
+	public void setSerial(long serial) {
+		this.serial = serial;
+	}
+
+	public long getSerial() {
+		return serial;
 	}
 }
