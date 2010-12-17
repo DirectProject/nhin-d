@@ -19,6 +19,7 @@ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWE
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
 */
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -26,7 +27,6 @@ import java.security.PrivateKey;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -39,34 +39,28 @@ import javax.security.auth.x500.X500Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.config.service.AddressService;
-import org.nhindirect.config.service.AnchorService;
-import org.nhindirect.config.service.CertificateService;
+import org.nhindirect.config.service.ConfigurationService;
 import org.nhindirect.config.service.ConfigurationServiceException;
-import org.nhindirect.config.service.DomainService;
 import org.nhindirect.config.service.impl.CertificateGetOptions;
-import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.Address;
+import org.nhindirect.config.store.Anchor;
+import org.nhindirect.config.store.Certificate;
+import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
-import org.nhindirect.config.ui.form.DomainForm;
 import org.nhindirect.config.ui.form.AddressForm;
-import org.nhindirect.config.ui.form.LoginForm;
-import org.nhindirect.config.ui.form.SearchDomainForm;
-import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.form.AnchorForm;
 import org.nhindirect.config.ui.form.CertificateForm;
+import org.nhindirect.config.ui.form.DomainForm;
+import org.nhindirect.config.ui.form.SearchDomainForm;
+import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,34 +68,34 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-import org.nhindirect.config.store.Certificate;
-import org.nhindirect.config.store.Anchor;
-import java.io.FileOutputStream;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.support.ByteArrayMultipartFileEditor;
-import org.springframework.validation.BindingResult;
 
 @Controller
 @RequestMapping("/domain")
 public class DomainController {
-	private final Log log = LogFactory.getLog(getClass());
+	
+    private final Log log = LogFactory.getLog(getClass());
+    
+    private ConfigurationService configSvc;
+    
+    @Inject
+    public void setConfigurationService(ConfigurationService service)
+    {
+        this.configSvc = service;
+    }
+  
+    /*
 	@Inject
-	private DomainService dService;
+	private DomainService configSvc;
 
 	@Inject
-	private AddressService aService;
+	private AddressService configSvc;
 	
 	@Inject
-	private AnchorService anchorService;
+	private configSvc configSvc;
 	
 	@Inject
-	private CertificateService certService;
+	private CertificateService configSvc;
+    */
 
 	public DomainController() {
 		if (log.isDebugEnabled()) log.debug("DomainController initialized");
@@ -109,46 +103,48 @@ public class DomainController {
 	
 	private Collection<AnchorForm> convertAnchors(Collection<Anchor> anchors){
 		Collection<AnchorForm> form = new ArrayList<AnchorForm>();
-		for (Iterator iter = anchors.iterator(); iter.hasNext();) {
-			Anchor t = (Anchor) iter.next();
-			AnchorForm e = new AnchorForm();
-			e.setCertificateData(t.getData());
-			e.setCertificateId(t.getCertificateId());
-			e.setCreateTime(t.getCreateTime());
-			e.setId(t.getId());
-			e.setIncoming(t.isIncoming());
-			e.setOutgoing(t.isOutgoing());
-			e.setOwner(t.getOwner());
-			e.setStatus(t.getStatus());
-			e.setThumbprint(t.getThumbprint());
-			e.setValidEndDate(t.getValidEndDate());
-			e.setValidStartDate(t.getValidStartDate());
-
-            String theUser = "";
-            if (t.getData() != null)
-            {
-                    // get the owner from the certificate information
-                    // first transform into a certificate
-                    CertContainer cont;
-					try {
-						cont = toCertContainer(t.getData());
-	                    if (cont != null && cont.getCert() != null)
-	                    {
-	                            // now get the owner info from the cert
-	                            theUser = getTrustedEntityName(cont.getCert().getSubjectX500Principal());
-	                    }
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
-            }
-			e.setTrusteddomainoruser(theUser);
-			form.add(e);
-		}			
-		
+		if (anchors != null)
+		{
+    		for (Iterator iter = anchors.iterator(); iter.hasNext();) {
+    			Anchor t = (Anchor) iter.next();
+    			AnchorForm e = new AnchorForm();
+    			e.setCertificateData(t.getData());
+    			e.setCertificateId(t.getCertificateId());
+    			e.setCreateTime(t.getCreateTime());
+    			e.setId(t.getId());
+    			e.setIncoming(t.isIncoming());
+    			e.setOutgoing(t.isOutgoing());
+    			e.setOwner(t.getOwner());
+    			e.setStatus(t.getStatus());
+    			e.setThumbprint(t.getThumbprint());
+    			e.setValidEndDate(t.getValidEndDate());
+    			e.setValidStartDate(t.getValidStartDate());
+    
+                String theUser = "";
+                if (t.getData() != null)
+                {
+                        // get the owner from the certificate information
+                        // first transform into a certificate
+                        CertContainer cont;
+    					try {
+    						cont = toCertContainer(t.getData());
+    	                    if (cont != null && cont.getCert() != null)
+    	                    {
+    	                            // now get the owner info from the cert
+    	                            theUser = getEmailAddress(cont.getCert().getSubjectX500Principal());
+    	                    }
+    					} catch (Exception e1) {
+    						e1.printStackTrace();
+    					}
+                }
+    			e.setTrusteddomainoruser(theUser);
+    			form.add(e);
+    		}			
+		}	
 		return form;
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/addanchor", method = RequestMethod.POST)
 	public ModelAndView addAnchor (
 								@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
@@ -164,7 +160,7 @@ public class DomainController {
 		
 		if(actionPath.equalsIgnoreCase("newanchor")){
 			strid = ""+anchorForm.getId();
-			Domain dom = dService.getDomain(Long.parseLong(strid));
+			Domain dom = configSvc.getDomain(Long.parseLong(strid));
 			String owner = "";
 			if(dom != null){
 				owner = dom.getDomainName();
@@ -184,7 +180,7 @@ public class DomainController {
                             if (cont != null && cont.getCert() != null)
                             {
                                     // now get the owner info from the cert
-                                    theUser = getTrustedEntityName(cont.getCert().getSubjectX500Principal());
+                                    theUser = getEmailAddress(cont.getCert().getSubjectX500Principal());
                                     anchorForm.setTrusteddomainoruser(theUser);
                             }
                     }
@@ -201,7 +197,7 @@ public class DomainController {
 					ArrayList<Anchor> anchorlist = new ArrayList<Anchor>();
 					anchorlist.add(ank);
 					
-					anchorService.addAnchors(anchorlist);
+					configSvc.addAnchors(anchorlist);
 					if (log.isDebugEnabled()) log.debug("store the anchor certificate into database");
 				} else {
 					if (log.isDebugEnabled()) log.debug("DO NOT store the anchor certificate into database BECAUSE THERE IS NO FILE");
@@ -216,10 +212,10 @@ public class DomainController {
 			}
 			// certificate and anchor forms and results
 			try {
-				Collection<Certificate> certs = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+				Collection<Certificate> certs = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 				model.addAttribute("certificatesResults", certs);
 				 
-				Collection<Anchor> anchors = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+				Collection<Anchor> anchors = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 				// convert Anchor to AnchorForm
 				Collection<AnchorForm> convertedanchors = convertAnchors(anchors);					
 				// now set anchorsResults
@@ -270,7 +266,7 @@ public class DomainController {
 		return mav;
 	}			
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/removeanchors", method = RequestMethod.POST)
 	public ModelAndView removeAnchors (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
@@ -286,19 +282,19 @@ public class DomainController {
 		}
 		
 		String strid = ""+simpleForm.getId();
-		Domain dom = dService.getDomain(Long.parseLong(strid));
+		Domain dom = configSvc.getDomain(Long.parseLong(strid));
 		String owner = "";
 		String domname = "";
 		if( dom != null){
 			domname = dom.getDomainName();
 			owner = domname;
 		}
-		if (dService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deleteanchors") && simpleForm.getRemove() != null) {
+		if (configSvc != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deleteanchors") && simpleForm.getRemove() != null) {
 			int cnt = simpleForm.getRemove().size();
 			if (log.isDebugEnabled()) log.debug("removing anchors for domain with name: " + domname);
 			try{
 				// get list of certificates for this domain
-				Collection<Anchor> certs = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+				Collection<Anchor> certs = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 				ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
 				// now iterate over each one and remove the appropriate ones
 				for (int x = 0; x < cnt; x++) {
@@ -318,9 +314,9 @@ public class DomainController {
 				    	}
 					}			
 				}
-				// with the collection of anchor ids now remove them from the anchorService
+				// with the collection of anchor ids now remove them from the configSvc
 				if (log.isDebugEnabled()) log.debug(" Trying to remove anchors from database");
-				anchorService.removeAnchors(certtoberemovedlist);
+				configSvc.removeAnchors(certtoberemovedlist);
 	    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed anchors");
 				AddressForm addrform = new AddressForm();
 				addrform.setId(dom.getId());
@@ -359,14 +355,14 @@ public class DomainController {
 		model.addAttribute("addressesResults", form.getAddresses());
 		Collection<Certificate> certlist = null;
 		try {
-			certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+			certlist = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 		} catch (ConfigurationServiceException e) {
 			e.printStackTrace();
 		}
 		
 		Collection<Anchor> anchorlist = null;
 		try {
-			anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+			anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 		} catch (ConfigurationServiceException e) {
 			e.printStackTrace();
 		}
@@ -388,7 +384,7 @@ public class DomainController {
 	}			
 		
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/addcertificate", method = RequestMethod.POST)
 	public ModelAndView addCertificate (
 								@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
@@ -404,7 +400,7 @@ public class DomainController {
 	
 		if(actionPath.equalsIgnoreCase("newcertificate")){
 			strid = ""+certificateForm.getId();
-			Domain dom = dService.getDomain(Long.parseLong(strid));
+			Domain dom = configSvc.getDomain(Long.parseLong(strid));
 			String owner = "";
 			if(dom != null){
 				owner = dom.getPostMasterEmail();
@@ -423,7 +419,7 @@ public class DomainController {
 
 					ArrayList<Certificate> certlist = new ArrayList<Certificate>();
 					certlist.add(cert);
-					certService.addCertificates(certlist);
+					configSvc.addCertificates(certlist);
 					// store the bytes somewhere
 					if (log.isDebugEnabled()) log.debug("store the certificate into database");
 				} else {
@@ -439,10 +435,10 @@ public class DomainController {
 			}
 			// certificate and anchor forms and results
 			try {
-				Collection<Certificate> certs = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+				Collection<Certificate> certs = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 				model.addAttribute("certificatesResults", certs);
 				 
-				Collection<Anchor> anchors = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+				Collection<Anchor> anchors = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 				// convert Anchor to AnchorForm
 				Collection<AnchorForm> convertedanchors = convertAnchors(anchors);					
 				// now set anchorsResults
@@ -493,7 +489,7 @@ public class DomainController {
 		return mav;
 	}		
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/removecertifcates", method = RequestMethod.POST)
 	public ModelAndView removeCertificates (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
@@ -509,19 +505,19 @@ public class DomainController {
 		}
 		
 		String strid = ""+simpleForm.getId();
-		Domain dom = dService.getDomain(Long.parseLong(strid));
+		Domain dom = configSvc.getDomain(Long.parseLong(strid));
 		String owner = "";
 		String domname = "";
 		if( dom != null){
 			domname = dom.getPostMasterEmail();
 			owner = domname;
 		}
-		if (dService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deletecertificate") && simpleForm.getRemove() != null) {
+		if (configSvc != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deletecertificate") && simpleForm.getRemove() != null) {
 			int cnt = simpleForm.getRemove().size();
 			if (log.isDebugEnabled()) log.debug("removing certificates for domain with name: " + domname);
 			try{
 				// get list of certificates for this domain
-				Collection<Certificate> certs = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+				Collection<Certificate> certs = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 				ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
 				// now iterate over each one and remove the appropriate ones
 				for (int x = 0; x < cnt; x++) {
@@ -541,9 +537,9 @@ public class DomainController {
 				    	}
 					}			
 				}
-				// with the collection of anchor ids now remove them from the anchorService
+				// with the collection of anchor ids now remove them from the configSvc
 				if (log.isDebugEnabled()) log.debug(" Trying to remove certificates from database");
-				certService.removeCertificates(certtoberemovedlist);
+				configSvc.removeCertificates(certtoberemovedlist);
 	    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed certificates");
 				AddressForm addrform = new AddressForm();
 				addrform.setId(dom.getId());
@@ -582,14 +578,14 @@ public class DomainController {
 		model.addAttribute("addressesResults", form.getAddresses());
 		Collection<Certificate> certlist = null;
 		try {
-			certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+			certlist = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 		} catch (ConfigurationServiceException e) {
 			e.printStackTrace();
 		}
 		
 		Collection<Anchor> anchorlist = null;
 		try {
-			anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+			anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 		} catch (ConfigurationServiceException e) {
 			e.printStackTrace();
 		}
@@ -610,7 +606,7 @@ public class DomainController {
 		return mav;
 	}			
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/addaddress", method = RequestMethod.POST)
 	public ModelAndView addAddress (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
@@ -624,7 +620,7 @@ public class DomainController {
 		
 		if(actionPath.equalsIgnoreCase("newaddress")){
 			strid = ""+addressForm.getId();
-			Domain dom = dService.getDomain(Long.parseLong(strid));
+			Domain dom = configSvc.getDomain(Long.parseLong(strid));
 			String owner = dom.getPostMasterEmail();
 			// insert the new address into the Domain list of Addresses
 			String anEmail = addressForm.getEmailAddress();
@@ -644,7 +640,7 @@ public class DomainController {
 			dom.getAddresses().add(e);
 			
 			try{
-				dService.updateDomain(dom);
+			    configSvc.updateDomain(dom);
 				if (log.isDebugEnabled()) log.debug(" After attempt to insert new email address ");
 			} catch (ConfigurationServiceException ed) {
 				if (log.isDebugEnabled())
@@ -652,10 +648,10 @@ public class DomainController {
 			}
 			// certificate and anchor forms and results
 			try {
-				Collection<Certificate> certs = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+				Collection<Certificate> certs = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 				model.addAttribute("certificatesResults", certs);
 				 
-				Collection<Anchor> anchors = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+				Collection<Anchor> anchors = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 				// convert Anchor to AnchorForm
 				Collection<AnchorForm> convertedanchors = convertAnchors(anchors);					
 				// now set anchorsResults
@@ -722,12 +718,12 @@ public class DomainController {
 		}
 		
 		String strid = ""+simpleForm.getId();
-		Domain dom = dService.getDomain(Long.parseLong(strid));
+		Domain dom = configSvc.getDomain(Long.parseLong(strid));
 		String domname = "";
 		if( dom != null){
 			domname = dom.getDomainName();
 		}
-		if (dService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("delete") && simpleForm.getRemove() != null) {
+		if (configSvc != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("delete") && simpleForm.getRemove() != null) {
 			int cnt = simpleForm.getRemove().size();
 			if (log.isDebugEnabled()) log.debug("removing addresses for domain with name: " + domname);
 			try{
@@ -741,9 +737,9 @@ public class DomainController {
 					    		log.debug(" ");
 					    	}
 				    		dom.getAddresses().remove(t);
-				    		if(aService != null){
+				    		if(configSvc != null){
 				    			if (log.isDebugEnabled()) log.debug("Address Service is not null. Now trying to remove address: "+t.getEmailAddress());
-				    			aService.removeAddress(t.getEmailAddress());
+				    			configSvc.removeAddress(t.getEmailAddress());
 				    		}
 					    	if (log.isDebugEnabled()){
 					    		log.debug(" REMOVED ");
@@ -754,8 +750,8 @@ public class DomainController {
 					}			
 				}
 				if (log.isDebugEnabled()) log.debug(" Trying to update the domain with removed addresses");
-				dService.updateDomain(dom);
-				dom = dService.getDomain(Long.parseLong(strid));
+				configSvc.updateDomain(dom);
+				dom = configSvc.getDomain(Long.parseLong(strid));
 	    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed addresses");
 				AddressForm addrform = new AddressForm();
 				addrform.setId(dom.getId());
@@ -767,14 +763,14 @@ public class DomainController {
 
 				Collection<Certificate> certlist = null;
 				try {
-					certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+					certlist = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 				} catch (ConfigurationServiceException e) {
 					e.printStackTrace();
 				}
 				
 				Collection<Anchor> anchorlist = null;
 				try {
-					anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+					anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 				} catch (ConfigurationServiceException e) {
 					e.printStackTrace();
 				}
@@ -791,7 +787,7 @@ public class DomainController {
 				if (log.isDebugEnabled())
 					log.error(e);
 			}
-		}else if (dService != null && actionPath.equalsIgnoreCase("newaddress")) {
+		}else if (configSvc != null && actionPath.equalsIgnoreCase("newaddress")) {
 			// insert the new address into the Domain list of Addresses
 			String anEmail = simpleForm.getPostmasterEmail();
 			if (log.isDebugEnabled()) log.debug(" Trying to add address: "+anEmail);
@@ -800,7 +796,7 @@ public class DomainController {
 			dom.getAddresses().add(e);
 			simpleForm.setPostmasterEmail("");
 			try{
-				dService.updateDomain(dom);
+				configSvc.updateDomain(dom);
 				if (log.isDebugEnabled()) log.debug(" After attempt to insert new email address ");
 			} catch (ConfigurationServiceException ed) {
 				if (log.isDebugEnabled())
@@ -821,10 +817,10 @@ public class DomainController {
 		String owner = dom.getPostMasterEmail();
 		// certificate and anchor forms and results
 		try {
-			Collection<Certificate> certs = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+			Collection<Certificate> certs = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 			model.addAttribute("certificatesResults", certs);
 			 
-			Collection<Anchor> anchors = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+			Collection<Anchor> anchors = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 			// convert Anchor to AnchorForm
 			Collection<AnchorForm> convertedanchors = convertAnchors(anchors);					
 			// now set anchorsResults
@@ -849,7 +845,7 @@ public class DomainController {
 		return mav;
 	}		
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/remove", method = RequestMethod.POST)
 	public ModelAndView removeDomain (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
@@ -862,29 +858,29 @@ public class DomainController {
 		if (log.isDebugEnabled()) log.debug("Enter domain/remove");
 		if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
 		
-		if (dService != null) {
+		if (configSvc != null) {
 			int cnt = simpleForm.getRemove().size();
 			for (int x = 0; x < cnt; x++) {
 				try {
 					String strid = simpleForm.getRemove().remove(x);
-					Domain dom = dService.getDomain(Long.parseLong(strid));
+					Domain dom = configSvc.getDomain(Long.parseLong(strid));
 					String owner = dom.getDomainName();
 					String domname = dom.getDomainName();
 					if (log.isDebugEnabled()) log.debug("removing domain with name: " + domname);
-					dService.removeDomain(domname);
+					configSvc.removeDomain(domname);
 					// now delete anchors
 					try{
 						// get list of certificates for this domain
-						Collection<Anchor> certs = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+						Collection<Anchor> certs = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 						ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
 						// now iterate over each one and remove the appropriate ones
 						for (Iterator iter = certs.iterator(); iter.hasNext();) {
 							Anchor t = (Anchor) iter.next();
 					    	certtoberemovedlist.add(t.getId());
 						}			
-						// with the collection of anchor ids now remove them from the anchorService
+						// with the collection of anchor ids now remove them from the configSvc
 						if (log.isDebugEnabled()) log.debug(" Trying to remove anchors from database");
-						anchorService.removeAnchors(certtoberemovedlist);
+						configSvc.removeAnchors(certtoberemovedlist);
 			    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to remove anchors");
 					} catch (ConfigurationServiceException e) {
 						if (log.isDebugEnabled())
@@ -906,7 +902,7 @@ public class DomainController {
 		return mav;
 	}	
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView onSubmitAndView(Object command){
 		if (log.isDebugEnabled()) log.debug("Enter onSubmit");
@@ -962,8 +958,8 @@ public class DomainController {
 			
 			model.addAttribute("certificateForm",cform);
 			model.addAttribute("anchorForm",aform);
-			if (dService != null) {
-				results = dService.getDomain(dId);
+			if (configSvc != null) {
+				results = configSvc.getDomain(dId);
 				if (results != null) {
 					if (log.isDebugEnabled()) log.debug("Found a valid domain" + results.toString());		
 					form.populate(results);
@@ -978,14 +974,14 @@ public class DomainController {
 					model.addAttribute("addressesResults", results.getAddresses());
 					Collection<Certificate> certlist = null;
 					try {
-						certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+						certlist = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 					} catch (ConfigurationServiceException e) {
 						e.printStackTrace();
 					}
 					
 					Collection<Anchor> anchorlist = null;
 					try {
-						anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+						anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 					} catch (ConfigurationServiceException e) {
 						e.printStackTrace();
 					}
@@ -1059,9 +1055,9 @@ public class DomainController {
 			if (log.isDebugEnabled()) log.debug("Form passed validation");
 			try {
 				if (actionPath.equals("add")) {
-					dService.addDomain(form.getDomainFromForm());
+					configSvc.addDomain(form.getDomainFromForm());
 					List<Domain> result = new ArrayList<Domain>(
-							dService.searchDomain(form.getDomainName(),
+							configSvc.searchDomain(form.getDomainName(),
 									form.getStatus()));
 					if (result.size() > 0) {
 						form = new DomainForm();
@@ -1069,9 +1065,9 @@ public class DomainController {
 						msgs.put("msg", "domain.add.success");
 					}
 				} else if (actionPath.equals("update")) {
-					dService.updateDomain(form.getDomainFromForm());
+					configSvc.updateDomain(form.getDomainFromForm());
 					List<Domain> result = new ArrayList<Domain>(
-							dService.searchDomain(form.getDomainName(),
+							configSvc.searchDomain(form.getDomainName(),
 									form.getStatus()));
 					if (result.size() > 0) {
 						form = new DomainForm();
@@ -1103,14 +1099,14 @@ public class DomainController {
 				// BEGIN: temporary code for mocking purposes
 				Collection<Certificate> certlist = null;
 				try {
-					certlist = certService.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+					certlist = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 				} catch (ConfigurationServiceException e) {
 					e.printStackTrace();
 				}
 				
 				Collection<Anchor> anchorlist = null;
 				try {
-					anchorlist = anchorService.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+					anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 				} catch (ConfigurationServiceException e) {
 					e.printStackTrace();
 				}
@@ -1155,8 +1151,8 @@ public class DomainController {
 		return ClassUtils.getShortName(ex.getClass() + ":" + ex.getMessage());
 	}
 
-	public void setdService(DomainService service) {
-		this.dService = service;
+	public void setConfigSvc(ConfigurationService service) {
+		this.configSvc = service;
 	}
 
 	
@@ -1238,23 +1234,20 @@ public class DomainController {
 
     }
 
-    private String getTrustedEntityName(X500Principal prin)
+    private String getEmailAddress(X500Principal prin)
     {
-    	// check the CN attribute first
-    	
-    	
         // get the domain name
                 Map<String, String> oidMap = new HashMap<String, String>();
                 oidMap.put("1.2.840.113549.1.9.1", "EMAILADDRESS");  // OID for email address
                 String prinName = prin.getName(X500Principal.RFC1779, oidMap);
 
-                
-                String searchString = "CN=";
+                // see if there is an email address first in the DN
+                String searchString = "EMAILADDRESS=";
                 int index = prinName.indexOf(searchString);
                 if (index == -1)
                 {
-                        searchString = "EMAILADDRESS=";
-                        // fall back to email
+                        searchString = "CN=";
+                        // no Email.. check the CN
                         index = prinName.indexOf(searchString);
                         if (index == -1)
                                 return ""; // no CN... nothing else that can be done from here
