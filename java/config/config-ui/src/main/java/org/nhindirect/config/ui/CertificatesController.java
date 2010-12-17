@@ -30,13 +30,12 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.config.service.CertificateService;
+import org.nhindirect.config.service.ConfigurationService;
 import org.nhindirect.config.service.ConfigurationServiceException;
 import org.nhindirect.config.service.impl.CertificateGetOptions;
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.ui.form.CertificateForm;
-import org.nhindirect.config.ui.form.LoginForm;
 import org.nhindirect.config.ui.form.SearchDomainForm;
 import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
@@ -51,21 +50,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequestMapping("/certificates")
 public class CertificatesController {
 	private final Log log = LogFactory.getLog(getClass());
 	
-	@Inject
-	private CertificateService certService;
+	private ConfigurationService configSvc;
 	
-	public CertificatesController(){
+	@Inject
+	public void setConfigurationService(ConfigurationService certService)
+    {
+        this.configSvc = certService;
+    }
+
+    public CertificatesController(){
 		if (log.isDebugEnabled()) log.debug("ConfigurationController initialized");
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/addcertificate", method = RequestMethod.POST)
 	public ModelAndView addCertificate (
 								@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
@@ -107,7 +110,7 @@ public class CertificatesController {
 
 					ArrayList<Certificate> certlist = new ArrayList<Certificate>();
 					certlist.add(cert);
-					certService.addCertificates(certlist);
+					configSvc.addCertificates(certlist);
 					// store the bytes somewhere
 					if (log.isDebugEnabled()) log.debug("store the certificate into database");
 				} else {
@@ -123,7 +126,7 @@ public class CertificatesController {
 			}
 			// certificate form and result
 			try {
-				Collection<Certificate> certs = certService.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
+				Collection<Certificate> certs = configSvc.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
 				model.addAttribute("certificatesResults", certs);
 				 
 				CertificateForm cform = new CertificateForm();
@@ -150,7 +153,7 @@ public class CertificatesController {
 		return mav;
 	}			
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/removecertifcates", method = RequestMethod.POST)
 	public ModelAndView removeCertificates (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
 						        HttpSession session,
@@ -165,12 +168,12 @@ public class CertificatesController {
 			if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
 		}
 		
-		if (certService != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deletecertificate") && simpleForm.getRemove() != null) {
+		if (configSvc != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deletecertificate") && simpleForm.getRemove() != null) {
 			int cnt = simpleForm.getRemove().size();
 			if (log.isDebugEnabled()) log.debug("removing certificates");
 			try{
 				// get list of certificates for this domain
-				Collection<Certificate> certs = certService.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
+				Collection<Certificate> certs = configSvc.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
 				ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
 				// now iterate over each one and remove the appropriate ones
 				for (int x = 0; x < cnt; x++) {
@@ -192,7 +195,7 @@ public class CertificatesController {
 				}
 				// with the collection of anchor ids now remove them from the anchorService
 				if (log.isDebugEnabled()) log.debug(" Trying to remove certificates from database");
-				certService.removeCertificates(certtoberemovedlist);
+				configSvc.removeCertificates(certtoberemovedlist);
 	    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update certificates");
 			} catch (ConfigurationServiceException e) {
 				if (log.isDebugEnabled())
@@ -214,7 +217,7 @@ public class CertificatesController {
 
 		Collection<Certificate> certlist = null;
 		try {
-			certlist = certService.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
+			certlist = configSvc.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
 		} catch (ConfigurationServiceException e) {
 			e.printStackTrace();
 		}
