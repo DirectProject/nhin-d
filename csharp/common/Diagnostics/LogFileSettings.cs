@@ -60,6 +60,18 @@ namespace Health.Direct.Common.Diagnostics
         }
 
         /// <summary>
+        /// Gets and sets the archive name prefix used for logging.
+        /// If null or empty then the <see cref="NamePrefix"/> will be used with
+        /// any appropriate suffix.
+        /// </summary>
+        /// <remarks>Defaults to the process name</remarks>
+        [XmlElement]
+        public string ArchiveName
+        {
+            get; set;
+        }
+
+        /// <summary>
         /// Gets and sets the log file extension.
         /// </summary>
         /// <remarks>Defaults to <c>.log</c></remarks>

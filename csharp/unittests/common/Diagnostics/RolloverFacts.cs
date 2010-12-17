@@ -11,6 +11,7 @@ namespace Health.Direct.Common.Tests.Diagnostics
     public class RolloverFacts
     {
         [Fact(Skip = "Long running test used to test the file rollover.")]
+        //[Fact]
         public void Rollover()
         {
             var files = Directory.GetFiles(".", "common-tests*.log");
@@ -22,15 +23,17 @@ namespace Health.Direct.Common.Tests.Diagnostics
             var logger = Log.For(this);
             Assert.NotNull(logger);
 
-            var until = DateTime.Now.AddMinutes(1);
-            while (DateTime.Now < until)
+            logger.Debug("The time is - {0:HH:mm:ss.fff}", DateTime.Now);
+
+            string sentinal = DateTime.Now.ToString("yyyyMMddHHmm");
+            while (DateTime.Now.ToString("yyyyMMddHHmm") == sentinal)
             {
-                logger.Debug("The time is - {0:HH:mm:ss.fff}", DateTime.Now);
                 Thread.Sleep(1000);
-                Assert.True(File.Exists("common-tests.log"));
+                Assert.True(File.Exists(string.Format("common-tests-{0:yyyyMMdd}.log", DateTime.Now)));
+                logger.Debug("The time is - {0:HH:mm:ss.fff}", DateTime.Now);
             }
 
-            Assert.True(File.Exists("common-tests.000.log"));
+            Assert.True(File.Exists(string.Format("common-tests-{0:yyyyMMdd}.000.log", DateTime.Now)));
         }
     }
 }

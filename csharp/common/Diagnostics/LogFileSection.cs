@@ -115,6 +115,7 @@ namespace Health.Direct.Common.Diagnostics
                        {
                            DirectoryPath = LogFile.Directory,
                            NamePrefix = LogFile.Name,
+                           ArchiveName = LogFile.ArchiveName,
                            Ext = LogFile.Extension,
                            RolloverFrequency = Behavior.RolloverFrequency,
                            Level = Behavior.Level,
@@ -134,6 +135,7 @@ namespace Health.Direct.Common.Diagnostics
     {
         private const string DirectoryTag = "directory";
         private const string NameTag = "name";
+        private const string ArchiveNameTag = "archiveName";
         private const string ExtensionTag = "extension";
 
         ///<summary>
@@ -147,13 +149,23 @@ namespace Health.Direct.Common.Diagnostics
         }
 
         ///<summary>
-        /// The log file name's. 
+        /// The log file's name. 
         ///</summary>
         [ConfigurationProperty(NameTag, IsRequired = true)]
         public string Name
         {
             get { return (string)this[NameTag]; }
             set { this[NameTag] = value; }
+        }
+
+        ///<summary>
+        /// The log file's archived name. 
+        ///</summary>
+        [ConfigurationProperty(ArchiveNameTag, IsRequired = false)]
+        public string ArchiveName
+        {
+            get { return (string)this[ArchiveNameTag]; }
+            set { this[ArchiveNameTag] = value; }
         }
 
         ///<summary>

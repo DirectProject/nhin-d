@@ -41,12 +41,19 @@ namespace Health.Direct.Diagnostics.NLog
         // honors the principle of being a code based configuration vs XML/file based.
         public NLogFactory(LogFileSettings settings)
         {
+            string fileName = settings.NamePrefix;
+            string archiveFileName = settings.NamePrefix + ".{###}";
+            if (!string.IsNullOrEmpty(settings.ArchiveName))
+            {
+                archiveFileName = settings.ArchiveName;
+            }
+
             FileTarget target
                 = new FileTarget
                       {
                           Layout = "${longdate} [${threadid}] ${level} ${logger} - ${message}",
-                          FileName = CreatePathFromSettings(settings, ""),
-                          ArchiveFileName = CreatePathFromSettings(settings, ".{###}"),
+                          FileName = CreatePathFromSettings(settings.DirectoryPath, fileName, settings.Ext),
+                          ArchiveFileName = CreatePathFromSettings(settings.DirectoryPath, archiveFileName, settings.Ext),
                           ArchiveEvery = ConvertRollingPeriod(settings.RolloverFrequency),
                           ArchiveNumbering = ArchiveNumberingMode.Rolling,
                           MaxArchiveFiles = 100,
@@ -109,15 +116,14 @@ namespace Health.Direct.Diagnostics.NLog
             return GetLogger(loggerType.FullName);
         }
 
-        private static string CreatePathFromSettings(LogFileSettings settings, string suffix)
+        private static string CreatePathFromSettings(string directoryPath, string filename, string extension)
         {
-            return Path.Combine(settings.DirectoryPath, settings.NamePrefix)
-                   + suffix + NormalizeExtension(settings);
+            return Path.Combine(directoryPath, filename) + NormalizeExtension(extension);
         }
 
-        private static string NormalizeExtension(LogFileSettings settings)
+        private static string NormalizeExtension(string extension)
         {
-            return "." + settings.Ext.TrimStart('.');
+            return "." + extension.TrimStart('.');
         }
 
         private static LogLevel ConvertLogLevel(LoggingLevel level)
