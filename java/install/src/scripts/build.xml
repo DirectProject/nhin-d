@@ -298,22 +298,6 @@
 	    <copy file="${lib.config.proxy}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		
 		<!-- edit the config.xml file -->
-		<!-- TODO mark :) .. for now just overwrite with custom version -->
-		<!--
-		<xslt style="${edit.config.stylesheet}" in="${james.stage.config}" out="${james.stage.config.new}">
-		    <param name="postmaster" expression="nhin-d+postmaster@nologs.org"></param>
-		    <param name="servername" expression="james.nologs.org"></param>
-		    <param name="mailetpackage" expression="org.nhindirect.gateway.smtp.james.mailet"></param>
-		    <param name="matcherpackage" expression="org.nhindirect.gateway.smtp.james.matcher"></param>
-		    <param name="mailet-config-scope" expression="All"></param>
-		    <param name="mailet-config-url" expression="${james.stage.stconfig.url}"></param>
-		    <param name="mailet-config-class" expression="NHINDSecurityAndTrustMailet"></param>
-		    <param name="mailet-match-remove" expression="RemoteAddrNotInNetwork=127.0.0.1"></param>
-		</xslt>
-
-		<copy file="${james.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
-		<copy file="${james.stage.config.new}" tofile="${james.stage.config}" overwrite="true"></copy>
-		-->
 		<copy file="${james.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
 		<copy file="${src}/scripts/config.xml" tofile="${james.stage.config}" overwrite="true"></copy>
 
@@ -338,12 +322,6 @@
 		<copy file="${config.ui.dir}/${config.ui.orig.war}" tofile="${tomcat.webapp.dir}/${config.ui.dest.war}"></copy>
 
 		<!-- edit the tomcat server.xml file -->
-		<!-- TODO mark :) .. for now just overwrite with custom version -->
-<!--
-		<copy file="${tomcat.stage.config}" tofile="${tomcat.stage.config.save}" overwrite="true"></copy>
-		<copy file="${src}/scripts/tomcat.xml" tofile="${tomcat.stage.config}" overwrite="true"></copy>
--->
-		
 		<xslt style="${edit.tomcat.stylesheet}" in="${tomcat.stage.config}" out="${tomcat.stage.config.new}">
 		    <param name="port" expression="8081"></param>
 		</xslt>
