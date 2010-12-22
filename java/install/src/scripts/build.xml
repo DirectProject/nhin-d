@@ -93,9 +93,11 @@
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
+    <property name="xdcommon.dir" value="${install.root.dir}/../xd-common"></property>	
 	<property name="lib.agent" value="${agent.dir}/target/agent-1.1-SNAPSHOT.jar"></property>
 	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.1-SNAPSHOT.jar"></property>
 	<property name="lib.xdmail" value="${xdmail.dir}/target/xdmail-1.0-SNAPSHOT.jar"></property>
+	<property name="lib.xdcommon" value="${xdcommon.dir}/target/xd-common-1.0-SNAPSHOT.jar"></property>
 	
 	<!-- Stylesheet to edit the config file -->
 	<property name="edit.config.stylesheet" value="${src}/scripts/edit-config.xsl"></property>
@@ -285,6 +287,7 @@
 		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+	    <copy file="${lib.xdcommon}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.jcs}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.concurrent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.wsdl4j}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>

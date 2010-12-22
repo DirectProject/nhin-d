@@ -77,7 +77,7 @@ public class DirectXdMailet extends GenericMailet
     @Override
     public void service(Mail mail) throws MessagingException
     {
-        LOGGER.info("Servicing NHINDMailet");
+        LOGGER.info("Servicing DirectXdMailet");
 
         if (StringUtils.isBlank(endpointUrl))
         {
