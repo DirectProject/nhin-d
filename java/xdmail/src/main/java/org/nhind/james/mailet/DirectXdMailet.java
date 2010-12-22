@@ -57,7 +57,7 @@ import org.nhindirect.xd.transform.impl.DefaultMimeXdsTransformer;
  * XDR Document Recipient via IHE XDS.b Provide and Register transaction
  * (ITI-41).
  */
-public class NHINDMailet extends GenericMailet
+public class DirectXdMailet extends GenericMailet
 {
 
     private String endpointUrl;
@@ -67,7 +67,7 @@ public class NHINDMailet extends GenericMailet
     private DocumentRepository documentRepository;
     private RoutingResolver resolver;
 
-    private static final Log LOGGER = LogFactory.getFactory().getInstance(NHINDMailet.class);
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(DirectXdMailet.class);
 
     /*
      * (non-Javadoc)

@@ -103,7 +103,7 @@ public class NHINDMailetTest extends TestCase {
     public void testInit() {
         final String endpointUrl = "http://www.endpoint.url/";
 
-        NHINDMailet mailet = new NHINDMailet();
+        DirectXdMailet mailet = new DirectXdMailet();
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("EndpointURL", endpointUrl);
@@ -144,7 +144,7 @@ public class NHINDMailetTest extends TestCase {
      * Test the getMimeXDSTransformer and setMimeXDSTransformer methods.
      */
     public void testGetSetMimeXDSTransformer() {
-        NHINDMailet mailet = new NHINDMailet();
+        DirectXdMailet mailet = new DirectXdMailet();
         MimeXdsTransformer transformer = null;
 
         transformer = mailet.getMimeXDSTransformer();
