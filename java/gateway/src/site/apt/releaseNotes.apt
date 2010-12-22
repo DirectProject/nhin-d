@@ -1,0 +1,40 @@
+~~ $Id$
+
+        ---
+        Release Notes
+        ---
+        Greg Meyer
+        ---
+
+{1.0.1}
+
+    Changes included with release 1.0.1.
+	
+    []
+    
+    * Updated doxia book API reference to use 1.0 release instead of snapshots.
+    
+    * Added additional logging to James bridge.
+    
+    []
+    
+    Enhancements
+    
+    * N/A 
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=86}86}}: MDN missing subject and Final-Recipient headers.
+
+{1.0.0}
+
+    Changes included with release 1.0.0.
+
+    []
+    
+	* Initial Release 
+
+    * Requires Java SE 1.6 or greater.
+	

@@ -1,0 +1,68 @@
+~~ $Id$
+
+        ---
+        Release Notes
+        ---
+        Greg Meyer
+        ---
+
+{1.1}
+
+    Changes included with release 1.1
+	
+    []
+    
+    * CertGen tool adding alternate subject names for email RFC822Name or DNSName.
+    
+    []
+    
+    Enhancements
+    
+    * A certificates can be validated for trust by using itself as a trust anchor.
+
+    [] 
+     
+    Bug Fixes
+
+    * Fixed case sensitivity issue when searching for certificates in the message signature.
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=87}87}}: Certificate extension searches now searching for subject alt names.
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=89}89}}: Fixed incorrect NHINDAddress constructor where personal name was missing.
+
+{1.0.1}
+
+    Changes included with release 1.0.1.
+	
+    []
+    
+    * Updated doxia book API reference to use 1.0 release instead of snapshots.
+    
+    * Cleaned up some findbugs issues.
+    
+    []
+    
+    Enhancements
+    
+    * N/A 
+
+    [] 
+     
+    Bug Fixes
+
+    * Trust chain validator not properly handling trust anchors that may be publicly resolved as intermediate certs. 
+
+    * Trust chain validator not properly checking for non root anchors.
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=86}86}}: MDN missing subject and Final-Recipient headers.
+
+{1.0.0}
+
+    Changes included with release 1.0.0.
+
+    []
+    
+	* Initial Release 
+
+    * Requires Java SE 1.6 or greater.
+	
