@@ -87,6 +87,7 @@ call :CopyFiles Health.Direct.Common.dll ^
   Interop.ADODB.dll ^
   Interop.CDO.dll ^
   %platform_dir%\smtpEventHandler.dll ^
+  SmtpAgentConfig.xml ^
   Health.Direct.Config.Client.dll ^
   Health.Direct.Config.Store.dll ^
   Health.Direct.Config.Tools.dll ^
