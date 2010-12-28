@@ -36,6 +36,15 @@ namespace Health.Direct.Common.Extensions
         {
             return (x.IndexOf(y, comparison) >= 0);
         }
+        
+        /// <summary>
+        /// Creates a unique string by (a) Generating a new GUID (b) Turning it into a string
+        /// </summary>
+        /// <returns>string value</returns>
+        public static string UniqueString()
+        {
+            return Guid.NewGuid().ToString("D");
+        }
     }
 
     /// <summary>

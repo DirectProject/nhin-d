@@ -36,17 +36,19 @@ namespace Health.Direct.SmtpAgent
             
             m_settings = settings;
         }
-                
+        
+        /// <summary>
+        /// To simplify outbound mail sending, SMTP Server allows you to drop new messages into a pickup folder
+        /// You don't need to use SmtpClient or some other SMTP client
+        /// </summary>
         public void Send(IncomingMessage envelope, string pickupFolder)
         {
             if (string.IsNullOrEmpty(pickupFolder))
             {
                 throw new ArgumentException("value null or empty", "pickupFolder");
             }
-            
-            IEnumerable<MailAddress> senders = envelope.DomainRecipients.AsMailAddresses();
-            IEnumerable<NotificationMessage> notifications = envelope.Message.CreateNotificationMessages(senders, this.CreateAck);
-            foreach(NotificationMessage notification in notifications)
+        
+            foreach (NotificationMessage notification in this.Produce(envelope))
             {
                 string filePath = Path.Combine(pickupFolder, Extensions.CreateUniqueFileName());
                 notification.Save(filePath);
@@ -63,33 +65,19 @@ namespace Health.Direct.SmtpAgent
             if (envelope == null)
             {
                 throw new ArgumentNullException("envelope");
-            }
+            }              
 
-            if (!m_settings.AutoResponse || !envelope.HasDomainRecipients || !envelope.Message.ShouldIssueNotification())
-            {
-                yield break;
+            if (m_settings.AutoResponse)
+            {            
+                IEnumerable<NotificationMessage> notifications = envelope.CreateAcks(m_settings.ProductName, m_settings.Text, m_settings.AlwaysAck);
+                if (notifications != null)
+                {
+                    foreach (NotificationMessage notification in notifications)
+                    {
+                        yield return notification;
+                    }
+                }
             }
-
-            IEnumerable<MailAddress> senders = envelope.DomainRecipients.AsMailAddresses();
-            IEnumerable<NotificationMessage> notifications = envelope.Message.CreateNotificationMessages(senders, this.CreateAck);
-            //
-            // We do our own foreach in case we want to inject additional behavior (such as logging) here...
-            //
-            foreach (NotificationMessage notification in notifications)
-            {
-                yield return notification;
-            }
-        }
-        
-        Notification CreateAck(MailAddress address)
-        {
-            Notification notification = new Notification(MDNStandard.NotificationType.Processed);
-            if (m_settings.HasText)
-            {
-                notification.Explanation = m_settings.Text;
-            }
-            notification.ReportingAgent = new ReportingUserAgent(address.Host, m_settings.ProductName);            
-            return notification;
         }
     }
 }

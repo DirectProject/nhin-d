@@ -13,6 +13,9 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Health.Direct.Common.Mail.Notifications
@@ -32,16 +35,39 @@ namespace Health.Direct.Common.Mail.Notifications
         }
 
         /// <summary>
+        /// Initializes an instance with the specified disposition notification type and automatic modes
+        /// </summary> 
+        /// <param name="notification">The disposition notification type</param>
+        /// <param name="isError">Notification is for an error</param>
+        public Disposition(MDNStandard.NotificationType notification, bool isError)
+            : this(MDNStandard.TriggerType.Automatic, MDNStandard.SendType.Automatic, notification, isError)
+        {
+        }
+
+        /// <summary>
         /// Initializes an instance with the specified disposition notification type and action and sending modes
         /// </summary> 
         /// <param name="notification">The disposition notification type</param>
         /// <param name="sendType">The sending mode type</param>
         /// <param name="triggerType">The action (trigger) mode type</param>
         public Disposition(MDNStandard.TriggerType triggerType, MDNStandard.SendType sendType, MDNStandard.NotificationType notification)
+            : this(triggerType, sendType, notification, false)
+        {
+        }
+
+        /// <summary>
+        /// Initializes an instance with the specified disposition notification type and action and sending modes
+        /// </summary> 
+        /// <param name="notification">The disposition notification type</param>
+        /// <param name="sendType">The sending mode type</param>
+        /// <param name="triggerType">The action (trigger) mode type</param>
+        /// <param name="isError">Notification for an error</param>
+        public Disposition(MDNStandard.TriggerType triggerType, MDNStandard.SendType sendType, MDNStandard.NotificationType notification, bool isError)
         {
             this.TriggerType = triggerType;
             this.SendType = sendType;
             this.Notification = notification;
+            this.IsError = isError;
         }
         
         /// <summary>
@@ -50,7 +76,7 @@ namespace Health.Direct.Common.Mail.Notifications
         public MDNStandard.TriggerType TriggerType
         {
             get;
-            set;
+            internal set;
         }
 
         /// <summary>
@@ -59,7 +85,7 @@ namespace Health.Direct.Common.Mail.Notifications
         public MDNStandard.SendType SendType
         {
             get;
-            set;
+            internal set;
         }
 
         /// <summary>
@@ -68,7 +94,7 @@ namespace Health.Direct.Common.Mail.Notifications
         public MDNStandard.NotificationType Notification
         {
             get;
-            set;
+            internal set;
         }
         
         /// <summary>
@@ -77,7 +103,7 @@ namespace Health.Direct.Common.Mail.Notifications
         public bool IsError
         {
             get;
-            set;
+            internal set;
         }
         
         /// <summary>
@@ -105,6 +131,6 @@ namespace Health.Direct.Common.Mail.Notifications
             }
 
             return notification.ToString();
-        }
+        }        
     }
 }

@@ -66,6 +66,28 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.DoesNotThrow(() => m_agent.ProcessMessage(this.LoadMessage(outgoing.SerializeMessage())));
         }
 
+        [Fact]
+        public void TestNotifyAlways()
+        {
+            //
+            // Here, the sender does NOT explicitly request an MDN, but we send it anyway
+            //
+            m_agent.Settings.Notifications.AutoResponse = true;
+            
+            Message msg = Message.Load(TestMessage);
+            OutgoingMessage outgoing = null;
+            IncomingMessage incoming = null;
+
+            base.ProcessEndToEnd(m_agent, msg, out outgoing, out incoming);
+
+            m_agent.Settings.Notifications.AlwaysAck = true;
+            Assert.True(CountNotificationsToBeSent(incoming) > 0);
+
+            base.ProcessEndToEnd(m_agent, msg, out outgoing, out incoming);
+            m_agent.Settings.Notifications.AlwaysAck = false;
+            Assert.True(CountNotificationsToBeSent(incoming) == 0);
+        }
+        
         //
         // No MDNS should be produced in these cases
         //
@@ -83,28 +105,25 @@ namespace Health.Direct.SmtpAgent.Tests
             // We have a valid MDN request, but the gateway is configured not to send them
             //
             m_agent.Settings.Notifications.AutoResponse = false;
-            Assert.True(CountNotifications(incoming) == 0);
-
-            m_agent.Settings.Notifications.AutoResponse = true; // Gateway now enabled to send acks
+            Assert.True(CountNotificationsToBeSent(incoming) == 0);           
             //
-            // The gateway is enabled to send MDNs but one was not requested
+            // Renable Acks on the gateway
+            // Then generate an MDN Ack & pass it through the gateway            
+            // After end to end processing, we should receive a valid MDN 
+            // The receiving gateway should NOT generate an Ack
             //
-            incoming.Message.Headers.RemoveAt(incoming.Message.Headers.IndexOf(MDNStandard.Headers.DispositionNotificationTo));
-            Assert.True(CountNotifications(incoming) == 0);
-            
-            incoming.Message.RequestNotification();
-            NotificationMessage notificationMessage = m_producer.Produce(incoming).First();
-                        
+            m_agent.Settings.Notifications.AutoResponse = true; // Gateway now enabled to send acks            
+            NotificationMessage notificationMessage = m_producer.Produce(incoming).First();                        
             this.ProcessEndToEnd(m_agent, notificationMessage, out outgoing, out incoming);
-            
-            Assert.True(incoming.Message.IsMDN());            
+                        
+            Assert.True(incoming.Message.IsMDN());  // Verify that the receiver got a valid MDN
             //
             // The message is itself an MDN Response! Should not be able to send a response
             //            
-            Assert.True(CountNotifications(incoming) == 0);
+            Assert.True(CountNotificationsToBeSent(incoming) == 0);
         }
                         
-        int CountNotifications(IncomingMessage incoming)
+        int CountNotificationsToBeSent(IncomingMessage incoming)
         {
             return m_producer.Produce(incoming).Count();
         }

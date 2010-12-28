@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Net.Mime;
-
+using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mime;
 
 namespace Health.Direct.Common.Mail.Notifications
@@ -225,9 +225,12 @@ namespace Health.Direct.Common.Mail.Notifications
         internal const string Disposition_Processed = "processed";
         internal const string Disposition_Deleted = "deleted";
         internal const string Modifier_Error = "error";
+
+        internal const string RecipientType_Mail = "rfc822";
         
         internal const string ReportType = "report-type";
         internal const string ReportTypeValueNotification = "disposition-notification";
+        
         /// <summary>
         /// Tests the <paramref name="entity"/> to see if it contains an MDN request.
         /// </summary>
@@ -301,7 +304,7 @@ namespace Health.Direct.Common.Mail.Notifications
                     return Action_Manual;
             }
         }
-
+        
         /// <summary>
         /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="mode"/>
         /// </summary>

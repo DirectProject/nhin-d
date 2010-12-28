@@ -48,7 +48,11 @@ namespace Health.Direct.Agent
             Header from = message.From;
             if (from == null)
             {
-                throw new AgentException(AgentError.MissingFrom);
+                from = message.Headers[MailStandard.Headers.Sender];
+                if (from == null)
+                {
+                    throw new AgentException(AgentError.MissingFrom);
+                }
             }
             this.Sender = new DirectAddress(from.Value);
         }
@@ -70,7 +74,7 @@ namespace Health.Direct.Agent
         /// </summary>
         /// <param name="message">The <see cref="Message"/> this envelopes</param>
         /// <param name="recipients">The <see cref="DirectAddressCollection"/> of reciepients; takes precedence over the <c>To:</c> header</param>
-        /// <param name="sender">The <see cref="DirectAddress"/> of the sender; takes precendence over the <c>From:</c> header.</param>
+        /// <param name="sender">The <see cref="DirectAddress"/> of the sender - typically the MAIL FROM in SMTP; takes precendence over the <c>From:</c> header.</param>
         public MessageEnvelope(Message message, DirectAddressCollection recipients, DirectAddress sender)
         {
             this.Message = message;
@@ -84,7 +88,7 @@ namespace Health.Direct.Agent
         /// </summary>
         /// <param name="messageText">The RFC 5322 message string to intialize this envelope from. Stored as <c>RawMessage</c></param>
         /// <param name="recipients">The <see cref="DirectAddressCollection"/> of reciepients; takes precedence over the <c>To:</c> header</param>
-        /// <param name="sender">The <see cref="DirectAddress"/> of the sender; takes precendence over the <c>From:</c> header.</param>
+        /// <param name="sender">The <see cref="DirectAddress"/> of the sender - typically the MAIL FROM in SMTP; takes precendence over the <c>From:</c> header.</param>
         public MessageEnvelope(string messageText, DirectAddressCollection recipients, DirectAddress sender)
             : this(MimeSerializer.Default.Deserialize<Message>(messageText), recipients, sender)
         {
@@ -140,7 +144,7 @@ namespace Health.Direct.Agent
         }
         
         /// <summary>
-        /// The sender (<c>From:</c> header) address.
+        /// Either the SMTP envelope MAIL FROM OR the sender (<c>From:</c> header) address.
         /// </summary>
         public DirectAddress Sender
         {

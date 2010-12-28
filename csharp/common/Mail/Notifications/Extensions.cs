@@ -91,10 +91,35 @@ namespace Health.Direct.Common.Mail.Notifications
         {
             if (message.IsMDN())
             {
-                throw new NotSupportedException("Cannot request an MDN for an MDN");
+                throw new MDNException(MDNError.CannotSendMDNForMDN);
+            }
+
+            string notificationTo = message.Headers.GetValue(MailStandard.Headers.Sender);
+            if (string.IsNullOrEmpty(notificationTo))
+            {
+                notificationTo = message.Headers.GetValue(MailStandard.Headers.From);
             }
             
-            message.Headers.SetValue(MDNStandard.Headers.DispositionNotificationTo, message.FromValue);
+            message.Headers.SetValue(MDNStandard.Headers.DispositionNotificationTo, notificationTo);
+        }
+
+        /// <summary>
+        /// Sets the header values for this message to request message disposition notification.
+        /// </summary>
+        /// <param name="message">The message for which to set the disposition request headers</param>
+        /// <param name="notificationTo">Send notifications to this address</param>
+        public static void RequestNotification(this Message message, MailAddress notificationTo)
+        {
+            if (message.IsMDN())
+            {
+                throw new MDNException(MDNError.CannotSendMDNForMDN);
+            }
+            if (notificationTo == null)
+            {
+                throw new ArgumentNullException("notificationTo");
+            }
+            
+            message.Headers.SetValue(MDNStandard.Headers.DispositionNotificationTo, notificationTo.Address);
         }
                 
         /// <summary>

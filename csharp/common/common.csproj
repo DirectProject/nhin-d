@@ -127,7 +127,10 @@
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Mail\Notifications\Disposition.cs" />
     <Compile Include="Mail\Notifications\Extensions.cs" />
+    <Compile Include="Mail\Notifications\MDNError.cs" />
+    <Compile Include="Mail\Notifications\MDNException.cs" />
     <Compile Include="Mail\Notifications\MdnGateway.cs" />
+    <Compile Include="Mail\Notifications\MDNParser.cs" />
     <Compile Include="Mail\Notifications\Notification.cs" />
     <Compile Include="Mail\MailParser.cs" />
     <Compile Include="Mail\Extensions.cs" />

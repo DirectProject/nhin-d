@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Net.Mail;
 using Health.Direct.Common.Mime;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Common.Mail.Notifications
 {
@@ -110,9 +111,9 @@ namespace Health.Direct.Common.Mail.Notifications
             }
                        
             NotificationMessage notificationMessage = new NotificationMessage(notifyTo, from.ToString(), notification);
-            notificationMessage.IDValue = Guid.NewGuid().ToString("D");
+            notificationMessage.IDValue = StringExtensions.UniqueString();
             
             return notificationMessage;
-        }
+        }       
     }
 }
