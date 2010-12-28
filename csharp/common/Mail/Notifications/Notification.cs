@@ -14,8 +14,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Net.Mail;
+using System.Net.Mime;
 using Health.Direct.Common.Mime;
 using Health.Direct.Common.Extensions;
 
@@ -44,6 +46,16 @@ namespace Health.Direct.Common.Mail.Notifications
             : this(new Disposition(notification))
         {
         }
+
+        /// <summary>
+        /// Initializes a new instance of the supplied notification type.
+        /// </summary>
+        /// <param name="notification">The notification disposition for this instance.</param>
+        /// <param name="isError">If the notification is for an error</param>
+        public Notification(MDNStandard.NotificationType notification, bool isError)
+            : this(new Disposition(notification, isError))
+        {
+        }
         
         /// <summary>
         /// Initializes a new instance with the supplied <see cref="Disposition"/>
@@ -62,7 +74,33 @@ namespace Health.Direct.Common.Mail.Notifications
             
             this.Disposition = disposition;
         }
-        
+          
+        internal Notification(MimeEntity explanation, HeaderCollection fields)
+        {
+            m_explanation = explanation;
+            m_fields = fields;
+
+            m_disposition = MDNParser.ParseDisposition(m_fields.GetValue(MDNStandard.Fields.Disposition));
+            //
+            // Optional data
+            //
+            string field = m_fields.GetValue(MDNStandard.Fields.ReportingAgent);
+            if (!string.IsNullOrEmpty(field))
+            {
+                m_reportingAgent = MDNParser.ParseReportingUserAgent(field);
+            }
+            field = m_fields.GetValue(MDNStandard.Fields.Gateway);
+            if (!string.IsNullOrEmpty(field))
+            {
+                m_gateway = MDNParser.ParseMdnGateway(field);            
+            }
+            field = m_fields.GetValue(MDNStandard.Fields.FinalRecipient);
+            if (!string.IsNullOrEmpty(field))
+            {
+                m_finalRecipient = MDNParser.ParseFinalRecipient(field);
+            }
+        }
+               
         /// <summary>
         /// Gets and sets the body part corresponding to the notification explaination.
         /// </summary>
@@ -154,7 +192,7 @@ namespace Health.Direct.Common.Mail.Notifications
                 }
                 
                 m_finalRecipient = value;
-                m_fields.SetValue(MDNStandard.Fields.FinalRecipient, string.Format("rfc822;{0}", m_finalRecipient.Address));
+                m_fields.SetValue(MDNStandard.Fields.FinalRecipient, string.Format("{0};{1}", MDNStandard.RecipientType_Mail, m_finalRecipient.Address));
             }
         }
         
@@ -221,5 +259,27 @@ namespace Health.Direct.Common.Mail.Notifications
             yield return m_explanation;
             yield return m_notification;
         }
-    }
+        
+        /// <summary>
+        /// Create an ACK MDN notification
+        /// </summary>
+        /// <param name="source">The MTA or MUA that is generating this ack</param>
+        /// <param name="textExplanation">(optional) Text message to accompany the Ack</param>
+        /// <returns>Notification object</returns>
+        public static Notification CreateAck(ReportingUserAgent source, string textExplanation)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            
+            Notification notification = new Notification(MDNStandard.NotificationType.Processed);
+            notification.ReportingAgent = source;
+            if (!string.IsNullOrEmpty(textExplanation))
+            {
+                notification.Explanation = textExplanation;
+            }
+            return notification;
+        }
+   }
 }

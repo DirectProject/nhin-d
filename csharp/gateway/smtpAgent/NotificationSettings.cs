@@ -17,17 +17,25 @@ using System.Xml.Serialization;
 
 namespace Health.Direct.SmtpAgent
 {
+    /// <summary>
+    /// Configuration settings that control how and when MDNs are generated. 
+    /// The SMTPAgent can, if AutoResponse is true, generate MDN Acks automatically
+    /// </summary>
     public class NotificationSettings
     {
-        const string DefaultText = "Security Agent";
+        const string DefaultText = "Direct Security Agent";
         
         bool m_autoResponse = false;
+        bool m_alwaysAck = true;
         string m_productName = DefaultText;
         
         public NotificationSettings()
         {
         }
 
+        /// <summary>
+        /// Automatically send ACKs when messages have been successfully processed (security, trust etc)
+        /// </summary>
         [XmlElement]
         public bool AutoResponse
         {
@@ -41,6 +49,25 @@ namespace Health.Direct.SmtpAgent
             }
         }
         
+        /// <summary>
+        /// Always issue an Ack, even if the caller did not request one
+        /// </summary>
+        [XmlElement]
+        public bool AlwaysAck
+        {
+            get
+            {
+                return m_alwaysAck;
+            }
+            set
+            {
+                m_alwaysAck = value;
+            }
+        }
+        
+        /// <summary>
+        /// Optional explanation text to include when sending MDN Acks. 
+        /// </summary>
         [XmlElement]
         public string Text
         {
@@ -57,6 +84,9 @@ namespace Health.Direct.SmtpAgent
             }
         }
         
+        /// <summary>
+        /// Optional name of the sending entity. Default is 'Direct Security Agent'
+        /// </summary>
         [XmlElement]
         public string ProductName
         {

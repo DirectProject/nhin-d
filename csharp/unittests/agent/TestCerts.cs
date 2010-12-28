@@ -93,38 +93,8 @@ namespace Health.Direct.Agent.Tests
         public void TestNameExtraction(X509Certificate2 cert)
         {
             string name = cert.ExtractEmailNameOrName();
-            string manualName = this.ExtractEmailNameOrName(cert);
             Assert.False(string.IsNullOrEmpty(name));
-            Assert.Equal(name, manualName);
             Assert.True(cert.MatchEmailNameOrName(name));
-        }
-        
-        const string SubjectNamePrefix = "CN=";
-        const string EmailNamePrefix = "E=";
-
-        public string ExtractEmailNameOrName(X509Certificate2 cert)
-        {
-            string[] parts = cert.Subject.Split(',');
-            if (parts != null)
-            {
-                for (int i = 0; i < parts.Length; ++i)
-                {
-                    int index = parts[i].IndexOf(EmailNamePrefix);
-                    if (index >= 0)
-                    {
-                        return parts[i].Substring(index + EmailNamePrefix.Length).Trim();
-                    }
-                }
-                for (int i = 0; i < parts.Length; ++i)
-                {
-                    int index = parts[i].IndexOf(SubjectNamePrefix);
-                    if (index >= 0)
-                    {
-                        return parts[i].Substring(index + SubjectNamePrefix.Length).Trim();
-                    }
-                }
-            }
-            return null;
         }
     }
 

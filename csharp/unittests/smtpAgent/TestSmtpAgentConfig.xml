@@ -38,6 +38,11 @@
       </Outgoing>
     </MachineResolver>
   </Anchors>
+  <Notifications>
+    <AutoResponse>false</AutoResponse>
+    <AlwaysAck>true</AlwaysAck>
+    <Text>Message Delivery Notification</Text>
+  </Notifications>
   <IncomingRoutes>
     <Route>
       <AddressType>XDR</AddressType>

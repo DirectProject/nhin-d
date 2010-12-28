@@ -33,7 +33,7 @@ namespace Health.Direct.Common.Mail.Notifications
     {
         string m_name;
         string m_product;
-        
+                
         /// <summary>
         /// Initializes an instance with the specified user agent name and product name
         /// </summary>
