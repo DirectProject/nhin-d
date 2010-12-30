@@ -546,10 +546,14 @@ namespace Health.Direct.SmtpAgent
         void PostProcessIncoming(ISmtpMessage message, IncomingMessage envelope)
         {
             this.CopyMessage(message, m_settings.Incoming);
-
-            m_router.Route(message, envelope, this.CopyMessage);
             
-            this.SendNotifications(envelope);
+            if (envelope.HasDomainRecipients)
+            {
+                DirectAddressCollection routedRecipients = new DirectAddressCollection();                
+                m_router.Route(message, envelope, this.CopyMessage, routedRecipients);
+                
+                this.SendNotifications(envelope, routedRecipients);
+            }
             
             if (m_settings.Incoming.EnableRelay && envelope.HasDomainRecipients)
             {
@@ -566,7 +570,7 @@ namespace Health.Direct.SmtpAgent
             }
         }
 
-        protected virtual void SendNotifications(IncomingMessage envelope)
+        protected virtual void SendNotifications(IncomingMessage envelope, DirectAddressCollection senders)
         {
             if (!m_settings.InternalMessage.HasPickupFolder || !m_settings.Notifications.AutoResponse)
             {
@@ -579,7 +583,7 @@ namespace Health.Direct.SmtpAgent
             //
             try
             {
-                m_notifications.Send(envelope, m_settings.InternalMessage.PickupFolder);
+                m_notifications.Send(envelope, m_settings.InternalMessage.PickupFolder, senders);
             }
             catch (Exception ex)
             {

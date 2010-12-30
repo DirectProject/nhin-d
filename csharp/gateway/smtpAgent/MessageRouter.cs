@@ -107,14 +107,18 @@ namespace Health.Direct.SmtpAgent
 
             if (envelope.HasRecipients)
             {
-                this.Route(message, envelope.Recipients, action);
+                this.Route(message, envelope.Recipients, action, null);
             }
         }
         
         /// <summary>
         /// For incoming messages, we only route to DomainRecipients
         /// </summary>
-        public void Route(ISmtpMessage message, IncomingMessage envelope, Action<ISmtpMessage, MessageRoute> action)
+        /// <param name="message">message</param>
+        /// <param name="envelope">message envelope</param>
+        /// <param name="action">The actual routing action. Typically, just copy to a file</param>
+        /// <param name="routedRecipients">(Optional) - if not null, returns a list of recipients who matched routes</param>
+        public void Route(ISmtpMessage message, IncomingMessage envelope, Action<ISmtpMessage, MessageRoute> action, DirectAddressCollection routedRecipients)
         {
             if (message == null)
             {
@@ -131,11 +135,11 @@ namespace Health.Direct.SmtpAgent
             
             if (envelope.HasDomainRecipients)
             {
-                this.Route(message, envelope.DomainRecipients, action);
+                this.Route(message, envelope.DomainRecipients, action, routedRecipients);
             }
         }
 
-        void Route(ISmtpMessage message, DirectAddressCollection recipients, Action<ISmtpMessage, MessageRoute> action)
+        void Route(ISmtpMessage message, DirectAddressCollection recipients, Action<ISmtpMessage, MessageRoute> action, DirectAddressCollection routedRecipients)
         {
             Dictionary<string, MessageRoute> matches = new Dictionary<string, MessageRoute>(StringComparer.OrdinalIgnoreCase);
             int i = 0;
@@ -148,8 +152,12 @@ namespace Health.Direct.SmtpAgent
                     MessageRoute route = this[address.Type];
                     if (route != null)
                     {
-                        matches[address.Type] = route;
+                        matches[address.Type] = route;                        
                         recipients.RemoveAt(i);
+                        if (routedRecipients != null)
+                        {
+                            routedRecipients.Add(recipient);  // Add the routed recipient to the list
+                        }
                         continue;
                     }
                 }

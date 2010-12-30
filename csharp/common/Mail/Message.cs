@@ -89,7 +89,27 @@ namespace Health.Direct.Common.Mail
         {
             this.AddToFromHeaders(to, from);
         }
-        
+
+        /// <summary>
+        /// Gets and sets the headers for this entity
+        /// </summary>
+        public override HeaderCollection Headers
+        {
+            get
+            {
+                HeaderCollection headers = base.Headers;
+                if (headers.Count == 0)
+                {
+                    headers.Add(MailStandard.VersionHeader, "1.0");
+                }
+                
+                return base.Headers;
+            }
+            set
+            {
+                base.Headers = value;
+            }
+        }        
         /// <summary>
         /// The <c>to</c> header
         /// </summary>      

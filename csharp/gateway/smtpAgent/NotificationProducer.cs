@@ -17,9 +17,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Mail;
-
 using Health.Direct.Agent;
 using Health.Direct.Common.Mail.Notifications;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -41,35 +41,51 @@ namespace Health.Direct.SmtpAgent
         /// To simplify outbound mail sending, SMTP Server allows you to drop new messages into a pickup folder
         /// You don't need to use SmtpClient or some other SMTP client
         /// </summary>
-        public void Send(IncomingMessage envelope, string pickupFolder)
+        public void Send(IncomingMessage envelope, string pickupFolder, DirectAddressCollection senders)
         {
             if (string.IsNullOrEmpty(pickupFolder))
             {
                 throw new ArgumentException("value null or empty", "pickupFolder");
             }
-        
-            foreach (NotificationMessage notification in this.Produce(envelope))
+            
+            if (senders.IsNullOrEmpty())
+            {
+                return;
+            }
+            
+            foreach (NotificationMessage notification in this.Produce(envelope, senders.AsMailAddresses()))
             {
                 string filePath = Path.Combine(pickupFolder, Extensions.CreateUniqueFileName());
                 notification.Save(filePath);
             }
         }
-        
+
         /// <summary>
         /// Generate notification messages (if any) for this source message
         /// </summary>
         /// <param name="envelope"></param>
-        /// <returns></returns>
+        /// <param name="senders">sending acks on behalf of these message recipients</param>
+        /// <returns>An enumeration of notification messages</returns>
         public IEnumerable<NotificationMessage> Produce(IncomingMessage envelope)
+        {
+            return this.Produce(envelope, envelope.HasDomainRecipients ? envelope.DomainRecipients.AsMailAddresses() : null);
+        }
+                
+        /// <summary>
+        /// Generate notification messages (if any) for this source message
+        /// </summary>
+        /// <param name="envelope"></param>
+        /// <param name="senders">sending acks on behalf of these message recipients</param>
+        /// <returns>An enumeration of messages</returns>
+        public IEnumerable<NotificationMessage> Produce(IncomingMessage envelope, IEnumerable<MailAddress> senders)
         {
             if (envelope == null)
             {
                 throw new ArgumentNullException("envelope");
             }              
-
-            if (m_settings.AutoResponse)
+            if (senders != null && m_settings.AutoResponse)
             {            
-                IEnumerable<NotificationMessage> notifications = envelope.CreateAcks(m_settings.ProductName, m_settings.Text, m_settings.AlwaysAck);
+                IEnumerable<NotificationMessage> notifications = envelope.CreateAcks(senders, m_settings.ProductName, m_settings.Text, m_settings.AlwaysAck);
                 if (notifications != null)
                 {
                     foreach (NotificationMessage notification in notifications)

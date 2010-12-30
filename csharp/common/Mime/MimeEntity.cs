@@ -97,7 +97,6 @@ namespace Health.Direct.Common.Mime
             }
         }
 
-
         /// <summary>
         /// Gets and sets the headers for this entity
         /// </summary>

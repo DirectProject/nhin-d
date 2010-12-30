@@ -81,7 +81,7 @@ namespace Health.Direct.SmtpAgent.Tests
                 recipient.Tag = address;
             }      
             
-            m_agent.Router.Route(new DummySmtpMessage(), envelope, this.RouteHandler);
+            m_agent.Router.Route(new DummySmtpMessage(), envelope, this.RouteHandler, null);
             //
             // Verify counts
             //
