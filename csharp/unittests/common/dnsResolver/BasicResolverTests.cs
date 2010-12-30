@@ -52,7 +52,7 @@ namespace Health.Direct.Common.Tests.DnsResolver
         [InlineData("www.apple.com")]
         [InlineData("www.bing.com")]
         [InlineData("nhind.hsgincubator.com")]
-        [InlineData("hvnhind.hsgincubator.com")]
+        [InlineData("dns.hsgincubator.com")]
         [InlineData("www.nhindirect.org")]
         [InlineData("www.relayhealth.com")]
         [InlineData("www.epic.com")]
@@ -70,8 +70,8 @@ namespace Health.Direct.Common.Tests.DnsResolver
             {
                 yield return new[] { "nhind.hsgincubator.com" };
                 yield return new[] { "redmond.hsgincubator.com" };
-                yield return new[] { "gm2552.securehealthemail.com.hsgincubator.com" };
-                yield return new[] { "ses.testaccount.yahoo.com.hsgincubator.com" };
+                //yield return new[] { "gm2552.securehealthemail.com.hsgincubator.com" };
+                //yield return new[] { "ses.testaccount.yahoo.com.hsgincubator.com" };
                 // these two throw a DnsProtocolException
                 //yield return new[] { "nhin1.rwmn.org.hsgincubator.com" };
                 //yield return new[] { "nhin.whinit.org.hsgincubator.com" };
