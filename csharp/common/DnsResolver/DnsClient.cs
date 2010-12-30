@@ -728,13 +728,27 @@ namespace Health.Direct.Common.DnsResolver
         public IEnumerable<string> GetNameServerNames(string domain)
         {
             DnsResponse response = this.Resolve(DnsRequest.CreateNS(domain));
-            if (response == null || !response.HasNameServerRecords)
+            if (response == null)
+            {
+                yield break;
+            }
+            
+            IEnumerable<DnsResourceRecord> nsRecords = null;
+            if (response.HasAnswerRecords)
+            {
+                nsRecords = response.AnswerRecords;
+            }
+            else if (response.HasNameServerRecords)
+            {
+                nsRecords = response.NameServerRecords;
+            }
+            if (nsRecords == null)
             {
                 yield break;
             }
             
             string serverName = null;
-            foreach (DnsResourceRecord record in response.NameServerRecords)
+            foreach (DnsResourceRecord record in nsRecords)
             {
                 serverName = null;
                 switch (record.Type)
