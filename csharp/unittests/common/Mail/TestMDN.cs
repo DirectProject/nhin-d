@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Linq;
 using System.Net.Mail;
+using System.IO;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Common.Mime;
@@ -97,7 +98,7 @@ namespace Health.Direct.Common.Tests.Mail
             HeaderCollection fields = this.GetNotificationFields(mdnEntities[1]);
             Assert.NotNull(fields[MDNStandard.Fields.FinalRecipient]);
         }
-        
+            
         [Fact]
         public void TestNotificationOnNotication()
         {
@@ -111,7 +112,29 @@ namespace Health.Direct.Common.Tests.Mail
             Assert.Throws<MDNException>(() => notificationMessage.RequestNotification());
             Assert.Null(notificationMessage.CreateNotificationMessage(from, notification));
         }
-        
+
+        [Fact]
+        public void TestSerialization()
+        {
+            Message source = this.CreateSourceMessage();            
+            Notification notification = this.CreateProcessedNotification();
+            NotificationMessage notificationMessage = source.CreateNotificationMessage(new MailAddress(source.FromValue), notification);
+            
+            var path = Path.GetTempFileName();
+            try
+            {
+                notificationMessage.Save(path);
+                Message loadedMessage = Message.Load(File.ReadAllText(path));
+                Assert.True(loadedMessage.IsMDN());
+                Assert.Equal(notificationMessage.ParsedContentType.MediaType, loadedMessage.ParsedContentType.MediaType);
+                Assert.Equal(notificationMessage.SubjectValue, loadedMessage.SubjectValue);
+            }
+            finally
+            {
+                File.Delete(path);
+            }
+        }
+                
         [Fact]
         public void TestParser()
         {

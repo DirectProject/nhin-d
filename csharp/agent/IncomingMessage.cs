@@ -19,6 +19,7 @@ using System.Net.Mail;
 using System.Security.Cryptography.Pkcs;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mail.Notifications;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Agent
 {
@@ -161,23 +162,50 @@ namespace Health.Direct.Agent
         /// <returns>An enumeration of NotificationMessage</returns>
         public IEnumerable<NotificationMessage> CreateAcks(string reportingAgentName, string textMessage, bool alwaysAck)
         {
-            if (string.IsNullOrEmpty(reportingAgentName))
-            {
-                throw new ArgumentException("reportingAgentName");
-            }
-            
-            if (!this.HasDomainRecipients || this.Message.IsMDN())
+            if (!this.HasDomainRecipients)
             {
                 return null;
             }
             
+            return CreateAcks(this.DomainRecipients.AsMailAddresses(), reportingAgentName, textMessage, alwaysAck);
+        }
+
+        /// <summary>
+        /// Create ACK MDN notifications for this message - IF MDNs should be generated. 
+        /// Since the message could have multiple recipients, an independant MDN is generated FROM each recipient. 
+        /// If no MDNs should be generated, returns NULL. 
+        ///   - If there are no trusted domain recipients for the message, meaning there is nothing to ACK
+        ///   - If the message is itself an MDN
+        /// </summary>
+        /// <param name="senders">Sending Acks on behalf of these recipients</param>
+        /// <param name="reportingAgentName">The name of the MTA or MUA that is generating this ack</param>
+        /// <param name="textMessage">Optional text message to accompany the Ack</param>
+        /// <param name="alwaysAck">Generate acks even when none were requested</param>
+        /// <returns>An enumeration of NotificationMessage</returns>
+        public IEnumerable<NotificationMessage> CreateAcks(IEnumerable<MailAddress> senders, string reportingAgentName, string textMessage, bool alwaysAck)
+        {
+            if (senders == null)
+            {
+                throw new ArgumentException("senders");
+            }
+            
+            if (string.IsNullOrEmpty(reportingAgentName))
+            {
+                throw new ArgumentException("reportingAgentName");
+            }
+
+            if (this.Message.IsMDN())
+            {
+                return null;
+            }
+
             if (!this.Message.HasNotificationRequest())
             {
                 if (!alwaysAck)
                 {
                     return null;
                 }
-                
+
                 //
                 // Although an MDN was not explicitly requested, we are going to send one (as per the Direct spec). 
                 // To allow the MDN code to remain MDN RFC compliant & work naturally, we inject an MDN requested header 
@@ -186,11 +214,10 @@ namespace Health.Direct.Agent
                 this.Message.RequestNotification(this.Sender);
             }
 
-            IEnumerable<MailAddress> senders = this.DomainRecipients.AsMailAddresses();
-            return this.Message.CreateNotificationMessages(senders, 
+            return this.Message.CreateNotificationMessages(senders,
                                                            sender => Notification.CreateAck(new ReportingUserAgent(sender.Host, reportingAgentName), textMessage)
                                                            );
-                                                                    
+
         }
     }
 }
