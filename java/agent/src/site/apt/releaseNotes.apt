@@ -14,6 +14,8 @@
     
     * CertGen tool adding alternate subject names for email RFC822Name or DNSName.
     
+    * CertGen tool properly enforces BasicConstraint policy for CAs.   
+    
     []
     
     Enhancements
