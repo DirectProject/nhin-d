@@ -22,34 +22,6 @@
     </context-param>
 
     <context-param>
-        <param-name>mailHost</param-name>
-        <param-value>localhost</param-value>
-    </context-param>
-    <context-param>
-        <param-name>mailPort</param-name>
-        <param-value>25</param-value>
-    </context-param>
-    <context-param>
-        <param-name>mailUser</param-name>
-        <param-value>direct</param-value>
-    </context-param>
-    <context-param>
-        <param-name>mailPass</param-name>
-        <param-value>direct</param-value>
-    </context-param>
-    
-    <context-param>
-        <param-name>auditMethod</param-name>
-        <param-value>file</param-value> <!-- valid options are 'file' and 'syslog' -->
-    </context-param>
-    
-    <!-- Uncomment if using 'file' audit method -->
-    <context-param>
-        <param-name>auditFile</param-name>
-        <param-value>/tmp/auditlog.txt</param-value>
-    </context-param>
-
-    <context-param>
         <param-name>configService</param-name>
         <param-value>http://localhost:8081/config-service/ConfigurationService</param-value>
     </context-param>
