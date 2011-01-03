@@ -131,10 +131,13 @@ public class DNSController
         if (log.isDebugEnabled()) log.debug("Enter");
         
         Collection<DNSEntryForm> forms = new ArrayList<DNSEntryForm>();
-        for (Iterator<DNSRecord> iter = entries.iterator(); iter.hasNext();) 
+        if (entries != null)
         {
-            DNSEntryForm form = new DNSEntryForm(iter.next());
-            forms.add(form);            
+	        for (Iterator<DNSRecord> iter = entries.iterator(); iter.hasNext();) 
+	        {
+	            DNSEntryForm form = new DNSEntryForm(iter.next());
+	            forms.add(form);            
+	        }
         }
         
         if (log.isDebugEnabled()) log.debug("Exit");
@@ -182,7 +185,11 @@ public class DNSController
             List<Setting> results = null;
             if (configSvc != null) {
                 try {
-                    results = new ArrayList<Setting>(configSvc.getAllSettings());
+                	Collection<Setting> settings = configSvc.getAllSettings();
+                	if (settings != null)
+                		results = new ArrayList<Setting>(settings);
+                	else
+                		results = new ArrayList<Setting>();                		
                 } catch (ConfigurationServiceException e) {
                     e.printStackTrace();
                 }
@@ -206,7 +213,11 @@ public class DNSController
             List<Certificate> results = null;
             if (configSvc != null) {
                 try {
-                    results = new ArrayList<Certificate>(configSvc.listCertificates(1, 1000, CertificateGetOptions.DEFAULT));
+                	Collection<Certificate> certs = configSvc.listCertificates(1, 10000, CertificateGetOptions.DEFAULT);
+                	if (certs != null)
+                		results = new ArrayList<Certificate>(certs);
+                	else
+                		results = new ArrayList<Certificate>();
                 } catch (ConfigurationServiceException e) {
                     e.printStackTrace();
                 }
@@ -975,19 +986,22 @@ public class DNSController
 		arecords = getDnsRecords(DNSType.A.getValue());
 		
 		Collection<DNSEntryForm> aform = new ArrayList<DNSEntryForm>();
-		for (Iterator iter = arecords.iterator(); iter.hasNext();) {
-			DNSRecord t = (DNSRecord) iter.next();
-			try {
-				ARecord newrec = (ARecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
-				DNSEntryForm tmp = new DNSEntryForm();
-				tmp.setId(t.getId());
-				tmp.setDest(""+newrec.getAddress());
-				tmp.setTtl(newrec.getTTL());
-				tmp.setName(""+newrec.getName());
-				aform.add(tmp);
-			} catch (TextParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (arecords != null)
+		{
+			for (Iterator iter = arecords.iterator(); iter.hasNext();) {
+				DNSRecord t = (DNSRecord) iter.next();
+				try {
+					ARecord newrec = (ARecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+					DNSEntryForm tmp = new DNSEntryForm();
+					tmp.setId(t.getId());
+					tmp.setDest(""+newrec.getAddress());
+					tmp.setTtl(newrec.getTTL());
+					tmp.setName(""+newrec.getName());
+					aform.add(tmp);
+				} catch (TextParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		model.addAttribute("dnsARecordResults",aform);
@@ -995,19 +1009,22 @@ public class DNSController
 		Collection<DNSRecord> a4records = null;
     	a4records = getDnsRecords(DNSType.AAAA.getValue());
 		Collection<DNSEntryForm> a4form = new ArrayList<DNSEntryForm>();
-		for (Iterator iter = a4records.iterator(); iter.hasNext();) {
-			DNSRecord t = (DNSRecord) iter.next();
-			try {
-				AAAARecord newrec = (AAAARecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
-				DNSEntryForm tmp = new DNSEntryForm();
-				tmp.setId(t.getId());
-				tmp.setDest(""+newrec.getAddress());
-				tmp.setTtl(newrec.getTTL());
-				tmp.setName(""+newrec.getName());
-				a4form.add(tmp);
-			} catch (TextParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (a4records != null)
+		{
+			for (Iterator iter = a4records.iterator(); iter.hasNext();) {
+				DNSRecord t = (DNSRecord) iter.next();
+				try {
+					AAAARecord newrec = (AAAARecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+					DNSEntryForm tmp = new DNSEntryForm();
+					tmp.setId(t.getId());
+					tmp.setDest(""+newrec.getAddress());
+					tmp.setTtl(newrec.getTTL());
+					tmp.setName(""+newrec.getName());
+					a4form.add(tmp);
+				} catch (TextParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
     	model.addAttribute("dnsA4RecordResults",a4form);
@@ -1015,19 +1032,22 @@ public class DNSController
 		Collection<DNSRecord> crecords = null;
 		crecords = getDnsRecords(DNSType.CNAME.getValue());
 		Collection<DNSEntryForm> cform = new ArrayList<DNSEntryForm>();
-		for (Iterator iter = crecords.iterator(); iter.hasNext();) {
-			DNSRecord t = (DNSRecord) iter.next();
-			try {
-				CNAMERecord newrec = (CNAMERecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
-				DNSEntryForm tmp = new DNSEntryForm();
-				tmp.setId(t.getId());
-				tmp.setDest(""+newrec.getTarget());
-				tmp.setTtl(newrec.getTTL());
-				tmp.setName(""+newrec.getName());
-				cform.add(tmp);
-			} catch (TextParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (crecords != null)
+		{
+			for (Iterator iter = crecords.iterator(); iter.hasNext();) {
+				DNSRecord t = (DNSRecord) iter.next();
+				try {
+					CNAMERecord newrec = (CNAMERecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+					DNSEntryForm tmp = new DNSEntryForm();
+					tmp.setId(t.getId());
+					tmp.setDest(""+newrec.getTarget());
+					tmp.setTtl(newrec.getTTL());
+					tmp.setName(""+newrec.getName());
+					cform.add(tmp);
+				} catch (TextParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
     	model.addAttribute("dnsCnameRecordResults",cform);
@@ -1035,20 +1055,23 @@ public class DNSController
 		Collection<DNSRecord> mxrecords = null;
 		mxrecords = getDnsRecords(DNSType.MX.getValue());
 		Collection<DNSEntryForm> mxform = new ArrayList<DNSEntryForm>();
-		for (Iterator iter = mxrecords.iterator(); iter.hasNext();) {
-			DNSRecord t = (DNSRecord) iter.next();
-			try {
-				MXRecord newrec = (MXRecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
-				DNSEntryForm tmp = new DNSEntryForm();
-				tmp.setPriority(newrec.getPriority());
-				tmp.setId(t.getId());
-				tmp.setDest(""+newrec.getTarget());
-				tmp.setTtl(newrec.getTTL());
-				tmp.setName(""+newrec.getName());
-				mxform.add(tmp);
-			} catch (TextParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (mxrecords != null)
+		{
+			for (Iterator iter = mxrecords.iterator(); iter.hasNext();) {
+				DNSRecord t = (DNSRecord) iter.next();
+				try {
+					MXRecord newrec = (MXRecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+					DNSEntryForm tmp = new DNSEntryForm();
+					tmp.setPriority(newrec.getPriority());
+					tmp.setId(t.getId());
+					tmp.setDest(""+newrec.getTarget());
+					tmp.setTtl(newrec.getTTL());
+					tmp.setName(""+newrec.getName());
+					mxform.add(tmp);
+				} catch (TextParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
     	model.addAttribute("dnsMxRecordResults",mxform);
@@ -1059,44 +1082,47 @@ public class DNSController
 		// create a new collection 
 		Collection<SrvRecord> form = new ArrayList<SrvRecord>();
 		CertContainer cont;
-		for (Iterator iter = certrecords.iterator(); iter.hasNext();) {
-			DNSRecord t = (DNSRecord) iter.next();
-
-			SrvRecord srv = new SrvRecord();
-			srv.setCreateTime(t.getCreateTime());
-			srv.setData(t.getData());
-			srv.setDclass(t.getDclass());
-			srv.setId(t.getId());
-			srv.setName(t.getName());
-			srv.setTtl(t.getTtl());
-			srv.setType(t.getType());
-			srv.setThumb("");
-			byte[] bytes = t.getData();
-			
-			
-    		try {
-				CERTRecord newrec = (CERTRecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
-				String thumb = "";
-	            byte[] certData = newrec.getCert();
-				if (certData != null) {
-					// get the owner from the certificate information
-					// first transform into a certificate
-					cont = toCertContainer(certData);
-					if (cont != null && cont.getCert() != null) {
-
-						Certificate cert2 = new Certificate();
-						cert2.setData(certData);
-						thumb = getThumbPrint(cont.getCert());
-						srv.setThumb(thumb);
+		if (certrecords != null)
+		{
+			for (Iterator iter = certrecords.iterator(); iter.hasNext();) {
+				DNSRecord t = (DNSRecord) iter.next();
+	
+				SrvRecord srv = new SrvRecord();
+				srv.setCreateTime(t.getCreateTime());
+				srv.setData(t.getData());
+				srv.setDclass(t.getDclass());
+				srv.setId(t.getId());
+				srv.setName(t.getName());
+				srv.setTtl(t.getTtl());
+				srv.setType(t.getType());
+				srv.setThumb("");
+				byte[] bytes = t.getData();
+				
+				
+	    		try {
+					CERTRecord newrec = (CERTRecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+					String thumb = "";
+		            byte[] certData = newrec.getCert();
+					if (certData != null) {
+						// get the owner from the certificate information
+						// first transform into a certificate
+						cont = toCertContainer(certData);
+						if (cont != null && cont.getCert() != null) {
+	
+							Certificate cert2 = new Certificate();
+							cert2.setData(certData);
+							thumb = getThumbPrint(cont.getCert());
+							srv.setThumb(thumb);
+						}
 					}
+					
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				form.add(srv);
 			}
-			
-			form.add(srv);
 		}
     	model.addAttribute("dnsCertRecordResults",form);
         // GET SRV RECORDS
@@ -1104,78 +1130,85 @@ public class DNSController
 		srvrecords = getDnsRecords(DNSType.SRV.getValue());
 		// create a new collection 
 		Collection<SrvRecord> form2 = new ArrayList<SrvRecord>();
-		for (Iterator iter = srvrecords.iterator(); iter.hasNext();) {
-			DNSRecord t = (DNSRecord) iter.next();
-			SrvRecord srv = new SrvRecord();
-			try {
-				SRVRecord srv4 = (SRVRecord) SRVRecord.newRecord(Name
-						.fromString(t.getName()), t.getType(), t.getDclass(), t
-						.getTtl(), t.getData());
-
-				srv.setCreateTime(t.getCreateTime());
-				srv.setData(t.getData());
-				srv.setDclass(t.getDclass());
-				srv.setId(t.getId());
-				srv.setName(t.getName());
-				String name = t.getName();
-				// parse the name to get service, protocol, priority , weight,
-				// port
-
-				int firstpos = name.indexOf("_");
-				if (firstpos == 0) {
-					// then this can be parsed as a srv record
-					// ("_"+SrvdnsForm.getService()+"._"+SrvdnsForm.getProtocol()+"._"+SrvdnsForm.getPriority()+"._"+SrvdnsForm.getWeight()+"._"+SrvdnsForm.getPort()+"._"+SrvdnsForm.getDest()+"."+SrvdnsForm.getName()
-					int secondpos = name.indexOf("._");
-					int thirdpos = name.indexOf(".", secondpos + 2);
-					// from first to second is service
-					String service_ = name.substring(firstpos + 1, secondpos);
-					srv.setService(service_);
-					// from second to third is protocol
-					String protocol_ = name.substring(secondpos + 2, thirdpos);
-					;
-					srv.setProtocol(protocol_);
-					int last2pos = name.indexOf(".", thirdpos);
-					String name_ = name.substring(last2pos+1, name.length());
-					srv.setName(name_);
+		if (srvrecords != null)
+		{
+			for (Iterator iter = srvrecords.iterator(); iter.hasNext();) {
+				DNSRecord t = (DNSRecord) iter.next();
+				SrvRecord srv = new SrvRecord();
+				try {
+					SRVRecord srv4 = (SRVRecord) SRVRecord.newRecord(Name
+							.fromString(t.getName()), t.getType(), t.getDclass(), t
+							.getTtl(), t.getData());
+	
+					srv.setCreateTime(t.getCreateTime());
+					srv.setData(t.getData());
+					srv.setDclass(t.getDclass());
+					srv.setId(t.getId());
+					srv.setName(t.getName());
+					String name = t.getName();
+					// parse the name to get service, protocol, priority , weight,
+					// port
+	
+					int firstpos = name.indexOf("_");
+					if (firstpos == 0) {
+						// then this can be parsed as a srv record
+						// ("_"+SrvdnsForm.getService()+"._"+SrvdnsForm.getProtocol()+"._"+SrvdnsForm.getPriority()+"._"+SrvdnsForm.getWeight()+"._"+SrvdnsForm.getPort()+"._"+SrvdnsForm.getDest()+"."+SrvdnsForm.getName()
+						int secondpos = name.indexOf("._");
+						int thirdpos = name.indexOf(".", secondpos + 2);
+						// from first to second is service
+						String service_ = name.substring(firstpos + 1, secondpos);
+						srv.setService(service_);
+						// from second to third is protocol
+						String protocol_ = name.substring(secondpos + 2, thirdpos);
+						;
+						srv.setProtocol(protocol_);
+						int last2pos = name.indexOf(".", thirdpos);
+						String name_ = name.substring(last2pos+1, name.length());
+						srv.setName(name_);
+					}
+					srv.setTtl(t.getTtl());
+					srv.setType(t.getType());
+	
+					srv.setPort(srv4.getPort());
+					srv.setWeight(srv4.getWeight());
+					srv.setPriority("" + srv4.getPriority());
+					srv.setTarget("" + srv4.getTarget().toString());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				srv.setTtl(t.getTtl());
-				srv.setType(t.getType());
-
-				srv.setPort(srv4.getPort());
-				srv.setWeight(srv4.getWeight());
-				srv.setPriority("" + srv4.getPriority());
-				srv.setTarget("" + srv4.getTarget().toString());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				form2.add(srv);
 			}
-			
-			form2.add(srv);
 		}
     	model.addAttribute("dnsSrvRecordResults",form2);
         // GET SOA RECORDS
         Collection<DNSRecord> soarecords = null;
 		soarecords = getDnsRecords(DNSType.SOA.getValue());
 		Collection<DNSEntryForm> soaform = new ArrayList<DNSEntryForm>();
-		for (Iterator iter = soarecords.iterator(); iter.hasNext();) {
-			DNSRecord t = (DNSRecord) iter.next();
-			try {
-				SOARecord newrec = (SOARecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
-				DNSEntryForm tmp = new DNSEntryForm();
-				tmp.setId(t.getId());
-				tmp.setAdmin(""+newrec.getAdmin());
-				tmp.setExpire(newrec.getExpire());
-				tmp.setMinimum(newrec.getMinimum());
-				tmp.setRefresh(newrec.getRefresh());
-				tmp.setRetry(newrec.getRetry());
-				tmp.setSerial(newrec.getSerial());
-				tmp.setDest(""+newrec.getHost());
-				tmp.setDomain(""+newrec.getHost());
-				tmp.setTtl(newrec.getTTL());
-				tmp.setName(""+newrec.getName());
-				soaform.add(tmp);
-			} catch (TextParseException e) {
-				e.printStackTrace();
+		if (soarecords != null)
+		{
+			for (Iterator iter = soarecords.iterator(); iter.hasNext();) {
+				DNSRecord t = (DNSRecord) iter.next();
+				try {
+					SOARecord newrec = (SOARecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+					DNSEntryForm tmp = new DNSEntryForm();
+					tmp.setId(t.getId());
+					tmp.setAdmin(""+newrec.getAdmin());
+					tmp.setExpire(newrec.getExpire());
+					tmp.setMinimum(newrec.getMinimum());
+					tmp.setRefresh(newrec.getRefresh());
+					tmp.setRetry(newrec.getRetry());
+					tmp.setSerial(newrec.getSerial());
+					tmp.setDest(""+newrec.getHost());
+					tmp.setDomain(""+newrec.getHost());
+					tmp.setTtl(newrec.getTTL());
+					tmp.setName(""+newrec.getName());
+					soaform.add(tmp);
+				} catch (TextParseException e) {
+					e.printStackTrace();
+				}
+
 			}
 		}
 		model.addAttribute("dnsSOARecordResults",soaform);
@@ -1184,19 +1217,22 @@ public class DNSController
         Collection<DNSRecord> nsrecords = null;
         nsrecords = getDnsRecords(DNSType.NS.getValue());
 		Collection<DNSEntryForm> nsform = new ArrayList<DNSEntryForm>();
-		for (Iterator iter = nsrecords.iterator(); iter.hasNext();) {
-			DNSRecord t = (DNSRecord) iter.next();
-			try {
-				NSRecord newrec = (NSRecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
-				DNSEntryForm tmp = new DNSEntryForm();
-				tmp.setId(t.getId());
-				tmp.setDest(""+newrec.getTarget());
-				tmp.setTtl(newrec.getTTL());
-				tmp.setName(""+newrec.getName());
-				nsform.add(tmp);
-			} catch (TextParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (nsrecords != null)
+		{
+			for (Iterator iter = nsrecords.iterator(); iter.hasNext();) {
+				DNSRecord t = (DNSRecord) iter.next();
+				try {
+					NSRecord newrec = (NSRecord)Record.newRecord(Name.fromString(t.getName()), t.getType(), t.getDclass(), t.getTtl(), t.getData());
+					DNSEntryForm tmp = new DNSEntryForm();
+					tmp.setId(t.getId());
+					tmp.setDest(""+newrec.getTarget());
+					tmp.setTtl(newrec.getTTL());
+					tmp.setName(""+newrec.getName());
+					nsform.add(tmp);
+				} catch (TextParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		model.addAttribute("dnsNSRecordResults",nsform);

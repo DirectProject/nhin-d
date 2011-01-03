@@ -21,7 +21,6 @@
 
 package org.nhindirect.config.store.dao.impl;
 
-import java.io.File;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Calendar;

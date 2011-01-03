@@ -131,7 +131,7 @@ public class DomainController {
     	                    if (cont != null && cont.getCert() != null)
     	                    {
     	                            // now get the owner info from the cert
-    	                            theUser = getEmailAddress(cont.getCert().getSubjectX500Principal());
+    	                            theUser = getTrustedEntityName(cont.getCert().getSubjectX500Principal());
     	                    }
     					} catch (Exception e1) {
     						e1.printStackTrace();
@@ -180,7 +180,7 @@ public class DomainController {
                             if (cont != null && cont.getCert() != null)
                             {
                                     // now get the owner info from the cert
-                                    theUser = getEmailAddress(cont.getCert().getSubjectX500Principal());
+                                    theUser = getTrustedEntityName(cont.getCert().getSubjectX500Principal());
                                     anchorForm.setTrusteddomainoruser(theUser);
                             }
                     }
@@ -1234,20 +1234,23 @@ public class DomainController {
 
     }
 
-    private String getEmailAddress(X500Principal prin)
+    private String getTrustedEntityName(X500Principal prin)
     {
+    	// check the CN attribute first
+    	
+    	
         // get the domain name
                 Map<String, String> oidMap = new HashMap<String, String>();
                 oidMap.put("1.2.840.113549.1.9.1", "EMAILADDRESS");  // OID for email address
                 String prinName = prin.getName(X500Principal.RFC1779, oidMap);
 
-                // see if there is an email address first in the DN
-                String searchString = "EMAILADDRESS=";
+                
+                String searchString = "CN=";
                 int index = prinName.indexOf(searchString);
                 if (index == -1)
                 {
-                        searchString = "CN=";
-                        // no Email.. check the CN
+                        searchString = "EMAILADDRESS=";
+                        // fall back to email
                         index = prinName.indexOf(searchString);
                         if (index == -1)
                                 return ""; // no CN... nothing else that can be done from here
