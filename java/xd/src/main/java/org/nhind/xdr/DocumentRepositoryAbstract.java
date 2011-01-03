@@ -55,7 +55,7 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import org.apache.commons.lang.StringUtils;
 import org.nhind.xdm.MailClient;
 import org.nhind.xdm.impl.SmtpMailClient;
-import org.nhindirect.xd.common.DirectDocument2;
+import org.nhind.xdr.config.XdConfig;
 import org.nhindirect.xd.common.DirectDocuments;
 import org.nhindirect.xd.common.DirectMessage;
 import org.nhindirect.xd.proxy.DocumentRepositoryProxy;
@@ -95,21 +95,12 @@ public abstract class DocumentRepositoryAbstract
     private String suffix = null;
     private String replyEmail = null;
 
-    private static final String PARAM_MAIL_HOST = "mailHost";
-    private static final String PARAM_MAIL_USER = "mailUser";
-    private static final String PARAM_MAIL_PASS = "mailPass";
-    private static final String PARAM_AUDIT_METHOD = "auditMethod";
-    private static final String PARAM_AUDIT_HOST = "auditHost";
-    private static final String PARAM_AUDIT_PORT = "auditPort";
-    private static final String PARAM_AUDIT_FILE = "auditFile";
     private static final String PARAM_CONFIG_SERVICE = "configService";
     
+    private XdConfig config = null;
     private RoutingResolver resolver = null;
-    
     private AuditMessageGenerator auditMessageGenerator = null;
-    
     private MailClient mailClient = null;
-    
     private XdsDirectDocumentsTransformer xdsDirectDocumentsTransformer = new DefaultXdsDirectDocumentsTransformer();
 
     private static final Logger LOGGER = Logger.getLogger(DocumentRepositoryAbstract.class.getPackage().getName());
@@ -353,18 +344,18 @@ public abstract class DocumentRepositoryAbstract
     {
         if (auditMessageGenerator == null)
         {
-            String auditMethod = getServletContext().getInitParameter(PARAM_AUDIT_METHOD);
+            String auditMethod = getConfig().getAuditMethod();
 
             if (StringUtils.equals(auditMethod, AuditMethodEnum.SYSLOG.getMethod()))
             {
-                String auditHost = getServletContext().getInitParameter(PARAM_AUDIT_HOST);
-                String auditPort = getServletContext().getInitParameter(PARAM_AUDIT_PORT);
+                String auditHost = getConfig().getAuditHost();
+                String auditPort = getConfig().getAuditPort();
 
                 auditMessageGenerator = new AuditMessageGenerator(auditHost, auditPort);
             }
             else if (StringUtils.equals(auditMethod, AuditMethodEnum.FILE.getMethod()))
             {
-                String fileName = getServletContext().getInitParameter(PARAM_AUDIT_FILE);
+                String fileName = getConfig().getAuditFile();
 
                 auditMessageGenerator = new AuditMessageGenerator(fileName);
             }
@@ -381,9 +372,9 @@ public abstract class DocumentRepositoryAbstract
     {
         if (mailClient == null)
         {
-            String hostname = getServletContext().getInitParameter(PARAM_MAIL_HOST);
-            String username = getServletContext().getInitParameter(PARAM_MAIL_USER);
-            String password = getServletContext().getInitParameter(PARAM_MAIL_PASS);
+            String hostname = config.getMailHost();
+            String username = config.getMailUser();
+            String password = config.getMailPass();
 
             mailClient = new SmtpMailClient(hostname, username, password);
         }
@@ -400,6 +391,49 @@ public abstract class DocumentRepositoryAbstract
     public void setMailClient(MailClient mailClient)
     {
         this.mailClient = mailClient; 
+    }
+    
+    private XdConfig getConfig()
+    {
+        if (config == null)
+        {
+            String configService = null;
+            
+            try
+            {
+                configService = getServletContext().getInitParameter(PARAM_CONFIG_SERVICE);
+            }
+            catch (Exception e)
+            {
+                // TODO: define a custom exception
+                throw new RuntimeException("Unable to find XD configuration URL", e);
+            }
+            
+            if (StringUtils.isNotBlank(configService))
+            {
+                try
+                {
+                    config = new XdConfig(configService);
+                }
+                catch (Exception e)
+                {
+                    // TODO: define a custom exception
+                    throw new RuntimeException("Unable to create config from URL", e);
+                }
+            }
+            else
+            {
+                // TODO: define a custom exception
+                throw new RuntimeException("Configuration URL is blank");
+            }
+        }
+        
+        return config;
+    }
+    
+    public void setConfig(XdConfig config)
+    {
+        this.config = config;
     }
     
     /**

@@ -43,7 +43,8 @@ import javax.xml.namespace.QName;
 import junit.framework.TestCase;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
-import org.nhind.xdm.impl.SmtpMailClient;
+import org.nhind.xdr.config.XdConfig;
+import org.nhindirect.xd.routing.impl.RoutingResolverImpl;
 import org.nhindirect.xd.transform.util.XmlUtils;
 
 import com.gsihealth.auditclient.AuditMessageGenerator;
@@ -105,7 +106,15 @@ public class XDRTest extends TestCase
         
         // Set test objects
         instance.setAuditMessageGenerator(new AuditMessageGenerator(getLogfile()));
-        instance.setMailClient(new SmtpMailClient("gmail-smtp.l.google.com", "lewistower1@gmail.com", "hadron106"));
+        // instance.setMailClient(new SmtpMailClient("gmail-smtp.l.google.com", "lewistower1@gmail.com", "hadron106"));
+        instance.setResolver(new RoutingResolverImpl());
+        
+        XdConfig config = new XdConfig();
+        config.setMailHost("gmail-smtp.l.google.com");
+        config.setMailUser("lewistower1@gmail.com");
+        config.setMailPass("hadron106");
+        
+        instance.setConfig(config);
 
         RegistryResponseType result = instance.documentRepositoryProvideAndRegisterDocumentSetB(body);
 
@@ -141,7 +150,14 @@ public class XDRTest extends TestCase
 
             // Set test objects
             instance.setAuditMessageGenerator(new AuditMessageGenerator(getLogfile()));
-            instance.setMailClient(new SmtpMailClient("gmail-smtp.l.google.com", "lewistower1@gmail.com", "hadron106"));
+            // instance.setMailClient(new SmtpMailClient("gmail-smtp.l.google.com", "lewistower1@gmail.com", "hadron106"));
+            
+            XdConfig config = new XdConfig();
+            config.setMailHost("gmail-smtp.l.google.com");
+            config.setMailUser("lewistower1@gmail.com");
+            config.setMailPass("hadron106");
+            
+            instance.setConfig(config);
             
             @SuppressWarnings("unused")
             RetrieveDocumentSetResponseType response = null;
