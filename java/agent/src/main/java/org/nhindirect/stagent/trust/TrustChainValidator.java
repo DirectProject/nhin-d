@@ -102,11 +102,7 @@ public class TrustChainValidator
     		throw new IllegalArgumentException();
     	
     	if (anchors == null || anchors.size() == 0)
-    		return false; // no anchors... conspiracy theory?  trust no one
-    	
-    	// signing certificates can also be trust anchors...  check first if the certificate is in the anchor list
-    	if (isIssuerInAnchors(anchors, certificate))
-    		return true;
+    		return false; // no anchors... conspiracy theory?  trust no one    
     	
     	try
     	{

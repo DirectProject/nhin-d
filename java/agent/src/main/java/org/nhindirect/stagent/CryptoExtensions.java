@@ -34,8 +34,12 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
@@ -304,4 +308,73 @@ public class CryptoExtensions
     	
     	return retVal;
     }
+    
+    /**
+     * Gets the address name associated with the certificate.  It may be an email address or a domain name.
+     * @param certificate The certificate to search
+     * @return The address of domain associated with a certificate.
+     */
+    public static String getSubjectAddress(X509Certificate certificate)
+    {
+    	String address = "";
+    	// check alternative names first
+    	Collection<List<?>> altNames = null;
+    	try
+    	{    		
+    		altNames = certificate.getSubjectAlternativeNames();
+    	}
+    	catch (CertificateParsingException ex)
+    	{
+    		/* no -op */
+    	}	
+		
+    	if (altNames != null)
+		{
+    		for (List<?> entries : altNames)
+    		{
+    			if (entries.size() >= 2) // should always be the case according the altNames spec, but checking to be defensive
+    			{
+    				
+    				Integer nameType = (Integer)entries.get(0);
+    				// prefer email over over domain?
+    				if (nameType == RFC822Name_TYPE)    					
+    					address = (String)entries.get(1);
+    				else if (nameType == DNSName_TYPE && address.isEmpty())
+    					address = (String)entries.get(1);    				
+    			}
+    		}
+		}
+    	
+    	if (!address.isEmpty())
+    		return address;
+    	
+    	// can't find issuer address in alt names... try the principal 
+    	X500Principal issuerPrin = certificate.getSubjectX500Principal();
+    	
+    	// get the domain name
+		Map<String, String> oidMap = new HashMap<String, String>();
+		oidMap.put("1.2.840.113549.1.9.1", "EMAILADDRESS");  // OID for email address
+		String prinName = issuerPrin.getName(X500Principal.RFC1779, oidMap);    
+		
+		// see if there is an email address first in the DN
+		String searchString = "EMAILADDRESS=";
+		int index = prinName.indexOf(searchString);
+		if (index == -1)
+		{
+			searchString = "CN=";
+			// no Email.. check the CN
+			index = prinName.indexOf(searchString);
+			if (index == -1)
+				return ""; // no CN... nothing else that can be done from here
+		}
+		
+		// look for a "," to find the end of this attribute
+		int endIndex = prinName.indexOf(",", index);
+		if (endIndex > -1)
+			address = prinName.substring(index + searchString.length(), endIndex);
+		else 
+			address= prinName.substring(index + searchString.length());
+		
+		return address;
+    }    
 }

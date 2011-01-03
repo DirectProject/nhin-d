@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -158,50 +159,6 @@ public class LdapCertUtilImpl {
 		}
 	}
 	
-	/*
-	public String addCertificate(X509Certificate cert, String subjectName) {
-		String usersSymmetricKey;
-
-			String distinguishedName = getDistinguishedName(subjectName);
-			if (distinguishedName == null) {
-				return null;
-			} else {
-				InitialDirContext dirContext = null;
-				try {
-					dirContext = getInitialDirContext(ldapEnvironment.getEnv());
-					Attributes entryAttributes = new BasicAttributes(true);
-					// put the attribute for the symmetric key
-					Attribute oc = new BasicAttribute(ldapSearchTarget);
-					
-					try
-					{
-						if (cert instanceof X509CertificateEx) {
-							KeyStore ks = KeyStore.getInstance("PKCS12");
-							ks.setKeyEntry(alias, ((X509CertificateEx)cert).getPrivateKey(),
-									keyStorePassword == null ? null : keyStorePassword.toCharArray(), new Certificate[] {cert});
-							oc.add(ks);
-						}
-						else {
-							oc.add(cert);
-						}
-						
-					}
-					catch (Throwable e)
-					{
-						throw new NHINDException(e);
-					}     	
-					entryAttributes.put(oc);
-					String cn = ldapSearchDn + "=" + distinguishedName
-								+ ", " + ldapWriteInfo.getLdapSearchBase();
-					dirContext.createSubcontext(cn, entryAttributes);
-					
-				} finally {
-					closeDirContext(dirContext);
-				}
-			}
-		return usersSymmetricKey;
-	}
-	*/
 	
 	// /CLOVER:OFF
 	protected SearchControls getDefaultSearchControls() {

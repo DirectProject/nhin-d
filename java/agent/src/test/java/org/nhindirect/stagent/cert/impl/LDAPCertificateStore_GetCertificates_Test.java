@@ -216,6 +216,44 @@ public class LDAPCertificateStore_GetCertificates_Test extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
+	public void testLdapGetWildcardReturnsNonEmptyCollection_AddOrUpdateLocalStoreDelegateMethodNoCalled() throws Exception {
+		new CacheIsNull() {
+			
+			protected Collection<X509Certificate> ldapSearch_Internal(
+					String subjectName) {
+				theLdapSearch = new ArrayList();
+				try {
+					X509CertificateEx internalCert = TestUtils.getInternalCert("user1");
+					theLdapSearch.add(internalCert);
+				} catch (Exception e) {
+					e.printStackTrace();
+					fail();
+				}
+				return theLdapSearch;
+			}
+			
+			protected void addOrUpdateLocalStoreDelegate_Internal(
+					Collection<X509Certificate> retVal) {
+				assertEquals(theLdapSearch, retVal);
+			}
+			
+			protected String createSubjectName() throws Exception {
+				theCreateSubjectName = "*";
+				return theCreateSubjectName;
+			}
+			
+			protected void doAssertions(Collection<X509Certificate> getCertificates)
+				throws Exception {
+				assertEquals(0, addOrUpdateLocalStoreDelegateCalls);
+				assertEquals(theLdapSearch, getCertificates);
+			}
+		}.perform();
+	}	
+	
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	public void testLdapSearchReturnsEmptyCollection_GetsCertificatesFromBootstrapStore() throws Exception {
 		new CacheIsNull() {
 			

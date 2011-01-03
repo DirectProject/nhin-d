@@ -1,19 +1,23 @@
 package org.nhindirect.stagent.utils;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Security;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.commons.io.FileUtils;
 import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.NHINDAgentTest;
 import org.nhindirect.stagent.cert.X509CertificateEx;
@@ -26,6 +30,9 @@ import com.google.inject.TypeLiteral;
 
 public class TestUtils 
 {
+	// base directory for test certificates
+	private static final String certBasePath = "src/test/resources/certs/"; 
+	
 	// use a local key store for tests
 	private static KeyStore keyStore;
 	
@@ -173,4 +180,17 @@ public class TestUtils
 
 		return new String(ouStream.toByteArray());		
 	}
+	
+	public static X509Certificate loadCertificate(String certFileName) throws Exception
+	{
+		File fl = new File(certBasePath + certFileName);
+		
+		InputStream str = new ByteArrayInputStream(FileUtils.readFileToByteArray(fl));
+		
+		X509Certificate retVal = (X509Certificate)CertificateFactory.getInstance("X.509").generateCertificate(str);
+		
+		str.close();
+		
+		return retVal;
+	}	
 }

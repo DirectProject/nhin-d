@@ -32,9 +32,11 @@ import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 import org.apache.jcs.engine.behavior.ICompositeCacheAttributes;
 import org.apache.jcs.engine.behavior.IElementAttributes;
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cert.CacheableCertStore;
 import org.nhindirect.stagent.cert.CertStoreCachePolicy;
 import org.nhindirect.stagent.cert.CertificateStore;
+import org.nhindirect.stagent.cert.Thumbprint;
 
 import com.google.inject.Inject;
 
@@ -164,14 +166,34 @@ public class LDAPCertificateStore extends CertificateStore implements
 	}
 
 	@Override
-	public void add(X509Certificate cert) {
-		// TODO Auto-generated method stub
-
+	public void add(X509Certificate cert) 
+	{		
+    	if (contains(cert))
+    		throw new IllegalArgumentException("Cert already contained in store.  Use update() to update a certificate");
+    	
 	}
 
 	@Override
-	public boolean contains(X509Certificate cert) {
-		// TODO Auto-generated method stub
+	public boolean contains(X509Certificate cert) 
+	{
+		Collection<X509Certificate> foundCerts;
+		
+		String subject = CryptoExtensions.getSubjectAddress(cert);
+		if (subject == null || subject.isEmpty())
+			// this should not happen, but in case need to get the entire cert list
+			foundCerts = getAllCertificates();
+		else
+			foundCerts = getCertificates(subject);
+			
+		if (foundCerts != null)
+		{
+			Thumbprint searchCertTP = Thumbprint.toThumbprint(cert);
+			
+			for (X509Certificate foundCert : foundCerts)
+				if (Thumbprint.toThumbprint(foundCert).equals(searchCertTP))
+					return true;
+		}
+		
 		return false;
 	}
 	
@@ -201,22 +223,28 @@ public class LDAPCertificateStore extends CertificateStore implements
     		// the certificate is not in the cache, so now hit the real server
     		if (retVal == null || retVal.size() == 0) {
     			retVal = ldapCertUtil.ldapSearch(realSubjectName);
-    			// add or update the cache and the local cert store 
-    			if (retVal != null && retVal.size() > 0) {	
-    				try
-    				{
-    					// first add the certificates to the cache 
-    					cache.putSafe(realSubjectName, retVal);
-    				}
-    				catch (CacheException e)
-    				{
-    					// TODO: handle exception
-    					LOGGER.error("Error adding certificates to the cache: " + e.getMessage(), e);
-    				}
+    			
+    			// add or update the cache and the local cert store
+    			if (retVal != null && retVal.size() > 0 ) {
     				
-    				// now add or update the local cert store
-    				if(localStoreDelegate != null) {
-    					addOrUpdateLocalStoreDelegate(retVal);
+        			// don't cache wildcard searches
+    				if (!subjectName.contains("*"))
+    				{
+	    				try
+	    				{
+	    					// first add the certificates to the cache 
+	    					cache.putSafe(realSubjectName, retVal);
+	    				}
+	    				catch (CacheException e)
+	    				{
+	    					// TODO: handle exception
+	    					LOGGER.error("Error adding certificates to the cache: " + e.getMessage(), e);
+	    				}
+	    				
+	    				// now add or update the local cert store
+	    				if(localStoreDelegate != null) {
+	    					addOrUpdateLocalStoreDelegate(retVal);
+	    				}
     				}
     			}
     			// couldn't retrieve the certificate from the real server, so have to go to the bootstrap
@@ -234,7 +262,8 @@ public class LDAPCertificateStore extends CertificateStore implements
     			if (retVal == null ||  retVal.size() == 0) {
     				retVal = localStoreDelegate.getCertificates(realSubjectName); // last ditch effort is to go to the bootstrap cache
     			}
-    			else {
+    			else if (!subjectName.contains("*"))
+    			{
     				// now add or update the local cert store
     				addOrUpdateLocalStoreDelegate(retVal);
     			}
@@ -256,39 +285,49 @@ public class LDAPCertificateStore extends CertificateStore implements
     }
 
 	@Override
-	public Collection<X509Certificate> getAllCertificates() {
-		return (localStoreDelegate == null) ? null : localStoreDelegate.getAllCertificates(); 
+	public Collection<X509Certificate> getAllCertificates() 
+	{
+		/*
+		 * don't hit the cache for this... need to go back
+		 * to the orignal source
+		 */
+		return getCertificates("*");
 	}
 
 	@Override
-	public void remove(X509Certificate cert) {
+	public void remove(X509Certificate cert) 
+	{
 		// TODO Auto-generated method stub
 
 	}
 
-	public void flush(boolean purgeBootStrap) {
+	public void flush(boolean purgeBootStrap) 
+	{
 		// TODO Auto-generated method stub
 
 	}
 
-	public void loadBootStrap() {
+	public void loadBootStrap() 
+	{
 		// TODO Auto-generated method stub
 
 	}
 
-	public void loadBootStrap(CertificateStore bootstrapStore) {
+	public void loadBootStrap(CertificateStore bootstrapStore) 
+	{
 		// TODO Auto-generated method stub
 
 	}
 
-	public void setBootStrap(CertificateStore bootstrapStore) {
+	public void setBootStrap(CertificateStore bootstrapStore) 
+	{
 		// TODO Auto-generated method stub
 
 	}
 
-	public void setCachePolicy(CertStoreCachePolicy policy) {
-		// TODO Auto-generated method stub
-
+	public void setCachePolicy(CertStoreCachePolicy policy) 
+	{
+		
 	}
 	
 	private static class DefaultLDAPCachePolicy implements CertStoreCachePolicy
