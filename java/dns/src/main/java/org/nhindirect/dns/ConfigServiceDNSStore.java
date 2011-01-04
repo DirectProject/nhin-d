@@ -65,7 +65,7 @@ public class ConfigServiceDNSStore implements DNSStore
 {
 	
 	private static final String DEFAULT_JCE_PROVIDER_STRING = "BC";
-	private static final String JCE_PROVIDER_STRING_SYS_PARAM = "org.nhindirect.stagent.cryptography.JCEProviderName";	
+	private static final String JCE_PROVIDER_STRING_SYS_PARAM = "org.nhindirect.dns.JCEProviderName";	
 	
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(ConfigServiceDNSStore.class);
 	
@@ -73,7 +73,7 @@ public class ConfigServiceDNSStore implements DNSStore
 	
 	/**
 	 * Gets the configured JCE crypto provider string for crypto operations.  This is configured using the
-	 * -Dorg.nhindirect.stagent.cryptography.JCEProviderName JVM parameters.  If the parameter is not set or is empty,
+	 * -Dorg.nhindirect.dns.JCEProviderName JVM parameters.  If the parameter is not set or is empty,
 	 * then the default string "BC" (BouncyCastle provider) is returned.  By default the agent installs the BouncyCastle provider.
 	 * @return The name of the JCE provider string.
 	 */

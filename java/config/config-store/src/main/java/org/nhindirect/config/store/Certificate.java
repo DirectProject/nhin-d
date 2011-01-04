@@ -50,11 +50,44 @@ import org.apache.commons.logging.LogFactory;
 /**
  * The JPA Certificate class
  */
-public class Certificate {
+public class Certificate 
+{
 
+	private static final String DEFAULT_JCE_PROVIDER_STRING = "BC";
+	private static final String JCE_PROVIDER_STRING_SYS_PARAM = "org.nhindirect.config.JCEProviderName";	
+	
 	static
 	{
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+	}	
+	
+	/**
+	 * Gets the configured JCE crypto provider string for crypto operations.  This is configured using the
+	 * -Dorg.nhindirect.config.JCEProviderName JVM parameters.  If the parameter is not set or is empty,
+	 * then the default string "BC" (BouncyCastle provider) is returned.  By default the agent installs the BouncyCastle provider.
+	 * @return The name of the JCE provider string.
+	 */
+	public static String getJCEProviderName()
+	{
+		String retVal = System.getProperty(JCE_PROVIDER_STRING_SYS_PARAM);
+		
+		if (retVal == null || retVal.isEmpty())
+			retVal = DEFAULT_JCE_PROVIDER_STRING;
+		
+		return retVal;
+	}
+	
+	/**
+	 * Overrides the configured JCE crypto provider string.  If the name is empty or null, the default string "BC" (BouncyCastle provider)
+	 * is used.
+	 * @param name The name of the JCE provider.
+	 */
+	public static void setJCEProviderName(String name)
+	{
+		if (name == null || name.isEmpty())
+			System.setProperty(JCE_PROVIDER_STRING_SYS_PARAM, DEFAULT_JCE_PROVIDER_STRING);
+		else
+			System.setProperty(JCE_PROVIDER_STRING_SYS_PARAM, name);
 	}	
 	
     private static final Log log = LogFactory.getLog(Certificate.class);
@@ -312,7 +345,7 @@ public class Certificate {
             // lets try this a as a PKCS12 data stream first
             try
             {
-            	KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+            	KeyStore localKeyStore = KeyStore.getInstance("PKCS12", getJCEProviderName());
             	
             	localKeyStore.load(bais, "".toCharArray());
             	Enumeration<String> aliases = localKeyStore.aliases();
