@@ -93,7 +93,7 @@ public class NotificationProducer implements NotificationCreator
         }
 
         
-        if (!settings.isAutoResponse() || !envelope.hasDomainRecipients() || !NotificationHelper.shouldIssueNotification(envelope.getMessage()))
+        if (!settings.isAutoResponse() || !envelope.hasDomainRecipients() || NotificationHelper.isMDN(envelope.getMessage()))
         {
         	LOGGER.info("No MDN messages to send.");
             return Collections.emptyList();

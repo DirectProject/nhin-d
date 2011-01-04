@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{1.1.0}
+
+    Changes included with release 1.0.1.
+    
+    []
+    
+    Enhancements
+    
+    * Updated MDN policy.  MDN acks can be sent even if the sender did not request one.  Controlled by gateway preference. 
+
+    [] 
+     
+    Bug Fixes
+
+    * N/A
+
 {1.0.1}
 
     Changes included with release 1.0.1.
