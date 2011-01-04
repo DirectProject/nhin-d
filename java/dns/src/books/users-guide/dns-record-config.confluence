@@ -8,7 +8,13 @@ h2. Managing Records
 
 The configuration UI and DNS management command console tools are used to add, update, and delete all record types.
 
-h3. Config UI TDB
+h3. Config UI
+
+The Configuration UI tool is used to managed DNS records in the web UI.  To managed records load the Configuration UI tool is a browser, login, and press the DNS Entries button.
+
+!images/WSConfigDomainSearch.png!
+
+!images/WSConfigDNSHome.png!
 
 h3. DNS Management Console
 
@@ -31,7 +37,11 @@ h3. SOA Records
 
 The [SOA|http://support.microsoft.com/kb/163971] (start of authority) record defines (amongst other attributes) the host that is the authoritative server for a DNS zone/domain.  Each domain managed by the DNS server should have a SOA record associated with it.
 
-*Config UI TDB*
+*Config UI*
+
+SOA records are added by entering the required SOA record information in the Config UI tool on the _DNS Resolver Configuration_ page.
+
+!images/WSConfigSOARecords.png!
 
 *Management Console*
 
@@ -56,7 +66,11 @@ h3. A Records
 
 A records maps a host name to an IP4 address.
 
-*Config UI TDB*
+*Config UI*
+
+A records are added by entering the required A record information in the Config UI tool on the _DNS Resolver Configuration_ page.
+
+!images/WSConfigARecords.png!
 
 *Management Console*
 
@@ -76,7 +90,11 @@ h3. MX Records
 
 MX records map a domain to one of more servers or message transfer agents for that domain.  The records are returned are generally are cononical names which means they must have A or CNAME records in the DNS server.  
 
-*Config UI TDB*
+*Config UI*
+
+MX records are added by entering the required MX record information in the Config UI tool on the _DNS Resolver Configuration_ page.
+
+!images/WSConfigMXRecords.png!
 
 *Management Console*
 
