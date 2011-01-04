@@ -20,7 +20,7 @@
     
     Enhancements
     
-    * A certificates can be validated for trust by using itself as a trust anchor.
+    * Updated MDN policy.  MDN acks can be sent even if the sender did not request one.  Controlled by gateway preference. 
 
     [] 
      

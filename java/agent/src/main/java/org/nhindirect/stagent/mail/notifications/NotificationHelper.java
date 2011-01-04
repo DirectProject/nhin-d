@@ -82,6 +82,12 @@ public class NotificationHelper
      * agents should never issue an MDN in response to an MDN
      * @param message The message to test.
      * @return true if the a notification should be issued.  false otherwise
+     * @deprecated as of version 1.1.  
+     * The Direct Project model infers that a notification message should be sent regardless if
+     * a notification request is requested.  The gateway agent model should now determine whether or not to send a notification
+     * based on the following criteria:
+     * <b>1)<b> A preference in the gateway indicates that the agent/gateway should send notifications.
+     * <b>2)<b> This message is not a MDN messages.  This can be determined by calling  {@link #isMDN(Message)}.
      */
     public static boolean shouldIssueNotification(Message message)
     {
@@ -90,7 +96,8 @@ public class NotificationHelper
     
     /**
      * Gets the value of the Disposition-Notification-To header, which indicates where
-     * the original UA requested notification be sent.
+     * the original UA requested notification be sent.  If the header is not present, then
+     * the From header is used.
      * @param message The message to get the destination from.
      * @return The value of the header (which will be a comma separated list of addresses)
      */
@@ -101,6 +108,11 @@ public class NotificationHelper
     	try
     	{
     		retVal = message.getHeader(MDNStandard.Headers.DispositionNotificationTo, ",");
+    		
+    		if (retVal == null || retVal.isEmpty())
+    		{
+    			retVal = message.getHeader(MDNStandard.Headers.From, ",");
+    		}
     	}
     	catch (MessagingException e) {/* no-op */}
     	
@@ -174,7 +186,7 @@ public class NotificationHelper
             throw new IllegalArgumentException();
         }
 
-        if (!shouldIssueNotification(message))
+        if (isMDN(message))
         {
             return null;
         }
@@ -212,7 +224,7 @@ public class NotificationHelper
             throw new IllegalArgumentException();
         }
         
-        if (!shouldIssueNotification(message))
+        if (isMDN(message))
         {
             return Collections.emptyList();
         }
