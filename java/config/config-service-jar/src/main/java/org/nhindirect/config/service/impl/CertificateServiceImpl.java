@@ -226,7 +226,7 @@ public class CertificateServiceImpl implements CertificateService {
             // lets try this a as a PKCS12 data stream first
             try
             {
-            	KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+            	KeyStore localKeyStore = KeyStore.getInstance("PKCS12", Certificate.getJCEProviderName());
             	
             	localKeyStore.load(bais, "".toCharArray());
             	Enumeration<String> aliases = localKeyStore.aliases();

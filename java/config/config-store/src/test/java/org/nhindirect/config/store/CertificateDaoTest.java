@@ -66,7 +66,7 @@ public class CertificateDaoTest
 		byte[] retVal = null;
 		try
 		{
-			KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+			KeyStore localKeyStore = KeyStore.getInstance("PKCS12", Certificate.getJCEProviderName());
 			
 			localKeyStore.load(null, null);
 			
