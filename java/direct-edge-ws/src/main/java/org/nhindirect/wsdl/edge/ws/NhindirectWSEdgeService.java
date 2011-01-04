@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.1
  * 
  */
-@WebServiceClient(name = "nhindirectWSEdgeService", targetNamespace = "http://nhindirect.org/wsdl/edge/ws", wsdlLocation = "file:/Users/ppyette/dev/NHIN-Direct/clean/nhin-d/java/direct-edge-ws/src/main/webapp/WEB-INF/wsdl/directprojectEdgeProtocol.wsdl")
+@WebServiceClient(name = "nhindirectWSEdgeService", targetNamespace = "http://nhindirect.org/wsdl/edge/ws", wsdlLocation = "file:/Users/ppyette/dev/NHIN-Direct/connectathon/nhin-d/java/direct-edge-ws/src/main/webapp/WEB-INF/wsdl/directprojectEdgeProtocol.wsdl")
 public class NhindirectWSEdgeService
     extends Service
 {
@@ -30,9 +30,9 @@ public class NhindirectWSEdgeService
         try {
             URL baseUrl;
             baseUrl = org.nhindirect.wsdl.edge.ws.NhindirectWSEdgeService.class.getResource(".");
-            url = new URL(baseUrl, "file:/Users/ppyette/dev/NHIN-Direct/clean/nhin-d/java/direct-edge-ws/src/main/webapp/WEB-INF/wsdl/directprojectEdgeProtocol.wsdl");
+            url = new URL(baseUrl, "file:/Users/ppyette/dev/NHIN-Direct/connectathon/nhin-d/java/direct-edge-ws/src/main/webapp/WEB-INF/wsdl/directprojectEdgeProtocol.wsdl");
         } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: 'file:/Users/ppyette/dev/NHIN-Direct/clean/nhin-d/java/direct-edge-ws/src/main/webapp/WEB-INF/wsdl/directprojectEdgeProtocol.wsdl', retrying as a local file");
+            logger.warning("Failed to create URL for the wsdl Location: 'file:/Users/ppyette/dev/NHIN-Direct/connectathon/nhin-d/java/direct-edge-ws/src/main/webapp/WEB-INF/wsdl/directprojectEdgeProtocol.wsdl', retrying as a local file");
             logger.warning(e.getMessage());
         }
         NHINDIRECTWSEDGESERVICE_WSDL_LOCATION = url;
