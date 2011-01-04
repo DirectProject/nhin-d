@@ -35,14 +35,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
-
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSSecurityEngineResult;
 import org.apache.ws.security.WSUsernameTokenPrincipal;
 import org.apache.ws.security.handler.WSHandlerConstants;
 import org.apache.ws.security.handler.WSHandlerResult;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -56,45 +54,46 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * 
  */
 public class WSAuthenticationInInterceptor extends WSS4JInInterceptor implements
-		InitializingBean 
+        InitializingBean 
 {
-	private static final Log _log = LogFactory.getLog(WSAuthenticationInInterceptor.class);
-	
-	private AuthenticationManager authenticationManager;
-	
+    private static final Log _log = LogFactory.getLog(WSAuthenticationInInterceptor.class);
+    
+    private AuthenticationManager authenticationManager;
+    
     public WSAuthenticationInInterceptor(Map<String, Object> properties)
     {
-    	super(properties);
+        super(properties);
     }
     
     @Override
     public void afterPropertiesSet() throws Exception 
     {
-    	if (_log.isDebugEnabled()) _log.debug("Initialized Authentication Interceptor");
+        if (_log.isDebugEnabled()) _log.debug("Initialized Authentication Interceptor");
+        super.getSecurityEngine().getWssConfig().setAllowNamespaceQualifiedPasswordTypes(true); 
     }
 
 
     public AuthenticationManager getAuthenticationManager()
     {
-    	return authenticationManager;
+        return authenticationManager;
     }
     
     public void setAuthenticationManager(AuthenticationManager aMgr)
     {
-    	authenticationManager = aMgr;
+        authenticationManager = aMgr;
     }
     
     @SuppressWarnings("unchecked")
-	@Override
-	/**
-	 * Extract the username/password from the incoming message, 
-	 * validate it, and store the user context where CXF can get at it.
-	 */
+    @Override
+    /**
+     * Extract the username/password from the incoming message, 
+     * validate it, and store the user context where CXF can get at it.
+     */
     public void handleMessage(SoapMessage message) throws Fault 
     {
         try 
         {
-        	// Let the WSS4J parent do it's thing first
+            // Let the WSS4J parent do it's thing first
             super.handleMessage(message);
             
             Vector<WSHandlerResult> results = (Vector<WSHandlerResult>) message.getContextualProperty(WSHandlerConstants.RECV_RESULTS);
@@ -122,7 +121,7 @@ public class WSAuthenticationInInterceptor extends WSS4JInInterceptor implements
 
                             if (auth.isAuthenticated()) 
                             {
-                            	_log.info("Authentication succeeds for request: User: " + principal.getName());
+                                _log.info("Authentication succeeds for request: User: " + principal.getName());
                             }
                             else
                             {
@@ -137,8 +136,9 @@ public class WSAuthenticationInInterceptor extends WSS4JInInterceptor implements
         } 
         catch (RuntimeException ex) 
         {
-            _log.error(ex.getMessage(), ex);
-            throw ex;
+            _log.error("Runtime Exception caught:", ex);
+            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(null, null));
         }
+        
     }
 }
