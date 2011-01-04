@@ -175,7 +175,7 @@ public class DefaultNHINDAgent_DecryptSignedContent_Test extends TestCase {
 			MimeBodyPart partToSign = new MimeBodyPart(new ByteArrayInputStream(
 						messageBytes));
 			SMIMESignedGenerator gen = new SMIMESignedGenerator();
-			MimeMultipart retVal = gen.generate(partToSign, "BC");
+			MimeMultipart retVal = gen.generate(partToSign, CryptoExtensions.getJCEProviderName());
 			ByteArrayOutputStream oStream = new ByteArrayOutputStream();
 			retVal.writeTo(oStream);
 			oStream.flush();

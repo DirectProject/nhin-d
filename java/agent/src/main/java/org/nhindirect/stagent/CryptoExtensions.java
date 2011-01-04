@@ -56,10 +56,13 @@ import org.nhindirect.stagent.cert.Thumbprint;
 @SuppressWarnings("unchecked")
 public class CryptoExtensions 
 {
+	private static final String DEFAULT_JCE_PROVIDER_STRING = "BC";
+	private static final String JCE_PROVIDER_STRING_SYS_PARAM = "org.nhindirect.stagent.cryptography.JCEProviderName";
+	
 	private static final int RFC822Name_TYPE = 1; // name type constant for Subject Alternative name email address
 	private static final int DNSName_TYPE = 2; // name type constant for Subject Alternative name domain name	
 	
-	private static CertificateFactory certFactory;
+	private static CertificateFactory certFactory;		
 	
 	static 
 	{
@@ -73,6 +76,35 @@ public class CryptoExtensions
 			 * TODO: Handle Exception
 			 */
 		}
+	}
+	
+	/**
+	 * Gets the configured JCE crypto provider string for crypto operations.  This is configured using the
+	 * -Dorg.nhindirect.stagent.cryptography.JCEProviderName JVM parameters.  If the parameter is not set or is empty,
+	 * then the default string "BC" (BouncyCastle provider) is returned.  By default the agent installs the BouncyCastle provider.
+	 * @return The name of the JCE provider string.
+	 */
+	public static String getJCEProviderName()
+	{
+		String retVal = System.getProperty(JCE_PROVIDER_STRING_SYS_PARAM);
+		
+		if (retVal == null || retVal.isEmpty())
+			retVal = DEFAULT_JCE_PROVIDER_STRING;
+		
+		return retVal;
+	}
+	
+	/**
+	 * Overrides the configured JCE crypto provider string.  If the name is empty or null, the default string "BC" (BouncyCastle provider)
+	 * is used.
+	 * @param name The name of the JCE provider.
+	 */
+	public static void setJCEProviderName(String name)
+	{
+		if (name == null || name.isEmpty())
+			System.setProperty(JCE_PROVIDER_STRING_SYS_PARAM, DEFAULT_JCE_PROVIDER_STRING);
+		else
+			System.setProperty(JCE_PROVIDER_STRING_SYS_PARAM, name);
 	}
 	
 	/**
@@ -186,7 +218,7 @@ public class CryptoExtensions
         
         try
         {
-	        CertStore certs = signedData.getCertificatesAndCRLs("Collection", "BC");
+	        CertStore certs = signedData.getCertificatesAndCRLs("Collection", CryptoExtensions.getJCEProviderName());
 	        SignerInformationStore  signers = signedData.getSignerInfos();
 	        Collection<SignerInformation> c = signers.getSigners();
 	        

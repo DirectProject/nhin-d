@@ -31,6 +31,7 @@ import org.bouncycastle.mail.smime.CMSProcessableBodyPartInbound;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.nhindirect.stagent.AgentError;
 import org.nhindirect.stagent.AgentException;
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.DefaultMessageSignatureImpl;
 import org.nhindirect.stagent.IncomingMessage;
 import org.nhindirect.stagent.NHINDAddress;
@@ -342,10 +343,10 @@ public class TrustModel_EnforceIncomingMessage_Test extends TestCase {
 			MimeMultipart retVal = null;
 
 			CertStore certsAndcrls = CertStore.getInstance("Collection",
-					new CollectionCertStoreParameters(certList), "BC");
+					new CollectionCertStoreParameters(certList), CryptoExtensions.getJCEProviderName());
 			gen.addCertificatesAndCRLs(certsAndcrls);
 
-			retVal = gen.generate(partToSign, "BC");
+			retVal = gen.generate(partToSign, CryptoExtensions.getJCEProviderName());
 
 			ByteArrayOutputStream oStream = new ByteArrayOutputStream();
 			retVal.writeTo(oStream);

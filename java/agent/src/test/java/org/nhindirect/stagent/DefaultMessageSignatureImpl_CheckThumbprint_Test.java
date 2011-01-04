@@ -140,10 +140,10 @@ public class DefaultMessageSignatureImpl_CheckThumbprint_Test extends TestCase {
 			MimeMultipart retVal = null;
 
 			CertStore certsAndcrls = CertStore.getInstance("Collection",
-					new CollectionCertStoreParameters(certList), "BC");
+					new CollectionCertStoreParameters(certList), CryptoExtensions.getJCEProviderName());
 			gen.addCertificatesAndCRLs(certsAndcrls);
 
-			retVal = gen.generate(partToSign, "BC");
+			retVal = gen.generate(partToSign, CryptoExtensions.getJCEProviderName());
 
 			ByteArrayOutputStream oStream = new ByteArrayOutputStream();
 			retVal.writeTo(oStream);

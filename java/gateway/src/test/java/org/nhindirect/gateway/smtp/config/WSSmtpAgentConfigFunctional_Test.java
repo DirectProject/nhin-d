@@ -43,6 +43,7 @@ import org.nhindirect.gateway.smtp.config.cert.impl.ConfigServiceCertificateStor
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.ldap.PrivkeySchema;
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.impl.DNSCertificateStore;
@@ -858,7 +859,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
 		byte[] retVal = null;
 		try
 		{
-			KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+			KeyStore localKeyStore = KeyStore.getInstance("PKCS12", CryptoExtensions.getJCEProviderName());
 			
 			localKeyStore.load(null, null);
 			
