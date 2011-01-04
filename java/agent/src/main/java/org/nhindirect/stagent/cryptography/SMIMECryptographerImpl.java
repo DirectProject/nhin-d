@@ -58,6 +58,7 @@ import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.mail.smime.CMSProcessableBodyPart;
 import org.bouncycastle.mail.smime.SMIMEEnveloped;
 import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.SignatureValidationException;
 import org.nhindirect.stagent.cert.X509CertificateEx;
@@ -298,7 +299,7 @@ public class SMIMECryptographerImpl implements Cryptographer
         
         try
         {
-        	retVal =  gen.generate(bodyPart, toEncyAlgorithmOid(this.m_encryptionAlgorithm), "BC");
+        	retVal =  gen.generate(bodyPart, toEncyAlgorithmOid(this.m_encryptionAlgorithm), CryptoExtensions.getJCEProviderName());
         }
         catch (Exception e)
         {
@@ -391,7 +392,7 @@ public class SMIMECryptographerImpl implements Cryptographer
 	        RecipientInformation recipient = recipients.get(recId);	
 	        	        	        	       
 
-	        byte[] decryptedPayload = recipient.getContent(decryptCert.getPrivateKey(), "BC");
+	        byte[] decryptedPayload = recipient.getContent(decryptCert.getPrivateKey(), CryptoExtensions.getJCEProviderName());
 	        
             if (LOGGER.isDebugEnabled())
             {	
@@ -506,11 +507,11 @@ public class SMIMECryptographerImpl implements Cryptographer
 	    		}
 	    	}    	  	    		    	
 	    	
-	    	CertStore certsAndcrls = CertStore.getInstance("Collection", new CollectionCertStoreParameters(certList), "BC");   
+	    	CertStore certsAndcrls = CertStore.getInstance("Collection", new CollectionCertStoreParameters(certList), CryptoExtensions.getJCEProviderName());   
 	    	generator.addCertificatesAndCRLs(certsAndcrls);
 	    	CMSProcessableBodyPart content = new CMSProcessableBodyPart(signedContent);
 	    	
-	    	CMSSignedData signedData = generator.generate(content, false, "BC");
+	    	CMSSignedData signedData = generator.generate(content, false, CryptoExtensions.getJCEProviderName());
 	    	  	    	
 	        String  header = "signed; protocol=\"application/pkcs7-signature\"; micalg=" + toDigestAlgorithmMicalg(this.m_digestAlgorithm);           
 	        
@@ -566,7 +567,7 @@ public class SMIMECryptographerImpl implements Cryptographer
     	{
 	    	for (SignerInformation sigInfo : (Collection<SignerInformation>)signatureEnvelope.getSignerInfos().getSigners())
 	    	{	    		
-	    		sigInfo.verify(signerCertificate, "BC");
+	    		sigInfo.verify(signerCertificate, CryptoExtensions.getJCEProviderName());
 	    	}
     	}
     	catch (Throwable e)

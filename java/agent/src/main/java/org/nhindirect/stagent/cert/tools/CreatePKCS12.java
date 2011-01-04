@@ -44,6 +44,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.io.FileUtils;
+import org.nhindirect.stagent.CryptoExtensions;
 
 public class CreatePKCS12 
 {
@@ -171,7 +172,7 @@ public class CreatePKCS12
 		// load cert file
 		try
 		{
-			KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+			KeyStore localKeyStore = KeyStore.getInstance("PKCS12", CryptoExtensions.getJCEProviderName());
 			localKeyStore.load(null, null);
 			
 			byte[] certData = loadFileData(certFile);
@@ -182,7 +183,7 @@ public class CreatePKCS12
 			java.security.cert.Certificate cert = cf.generateCertificate(inStr);
 			inStr.close();
 			
-			KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
+			KeyFactory kf = KeyFactory.getInstance("RSA", CryptoExtensions.getJCEProviderName());
 			PKCS8EncodedKeySpec keysp = null;
 			if (password != null && !password.isEmpty())
 			{
@@ -190,9 +191,9 @@ public class CreatePKCS12
 				PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
 				String alg = encInfo.getAlgName();
 				
-				SecretKeyFactory secFactory = SecretKeyFactory.getInstance(alg, "BC"); 
+				SecretKeyFactory secFactory = SecretKeyFactory.getInstance(alg, CryptoExtensions.getJCEProviderName()); 
 				SecretKey secKey = secFactory.generateSecret(keySpec);
-				keysp = encInfo.getKeySpec(secKey, "BC");
+				keysp = encInfo.getKeySpec(secKey, CryptoExtensions.getJCEProviderName());
 			}
 			else
 			{

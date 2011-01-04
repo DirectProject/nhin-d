@@ -114,7 +114,7 @@ public class DefaultMessageSignatureImpl implements MessageSignature
 	{		
         try
         {
-        	signatureValid = signer.verify(signerCert, "BC");     		    	
+        	signatureValid = signer.verify(signerCert, CryptoExtensions.getJCEProviderName());     		    	
         }
         catch (Exception e)
         {     
