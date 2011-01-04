@@ -29,6 +29,7 @@ import org.nhindirect.gateway.smtp.config.ConfigServiceRunner;
 import org.nhindirect.gateway.smtp.james.mailet.NHINDSecurityAndTrustMailet;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.mail.Message;
@@ -212,7 +213,7 @@ public class NHINDSecurityAndTrustMailet_functionalTest extends TestCase
 			byte[] retVal = null;
 			try
 			{
-				KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+				KeyStore localKeyStore = KeyStore.getInstance("PKCS12", CryptoExtensions.getJCEProviderName());
 				
 				localKeyStore.load(null, null);
 				

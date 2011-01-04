@@ -21,6 +21,7 @@ import org.apache.jcs.access.exception.CacheException;
 import org.apache.jcs.engine.behavior.ICompositeCacheAttributes;
 import org.apache.jcs.engine.behavior.IElementAttributes;
 import org.nhind.config.ConfigurationServiceProxy;
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.CacheableCertStore;
 import org.nhindirect.stagent.cert.CertStoreCachePolicy;
@@ -361,7 +362,7 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
             // lets try this a as a PKCS12 data stream first
             try
             {
-            	KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+            	KeyStore localKeyStore = KeyStore.getInstance("PKCS12", CryptoExtensions.getJCEProviderName());
             	
             	localKeyStore.load(bais, "".toCharArray());
             	Enumeration<String> aliases = localKeyStore.aliases();

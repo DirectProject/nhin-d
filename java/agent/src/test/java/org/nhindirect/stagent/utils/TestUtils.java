@@ -44,7 +44,8 @@ public class TestUtils
 	{
 		try
 		{
-			Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+			int pos = Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+			System.out.println(pos);
 			
 			keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 			File fl = new File("testfile");
