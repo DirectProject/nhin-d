@@ -16,7 +16,7 @@ ul.tabs {
 	height: 32px;
 	border-bottom: 1px solid #999;
 	border-left: 1px solid #999;
-	width: 100%;
+	width: 110%;
 }
 
 ul.tabs li {
@@ -57,7 +57,7 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 	border-top: none;
 	clear: both;
 	float: left;
-	width: 100%;
+	width: 110%;
 	background: #fff;
 	-moz-border-radius-bottomright: 5px;
 	-khtml-border-radius-bottomright: 5px;
@@ -241,7 +241,7 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 </c:choose>
 
 <c:if test="${not empty addressesResults}">
-	<fieldset style="width: 90%;" title="Addresses"><spring:url
+	<fieldset style="width: 95%;" title="Addresses"><spring:url
 		value="/config/domain/removeaddresses" var="formUrlremove" /> <form:form
 		modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}"
 		cssClass="cleanform" method="POST">

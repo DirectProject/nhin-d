@@ -10,13 +10,13 @@
     <body>
     <%@ include file="/WEB-INF/jsp/header.jsp" %>
     <div id="form">
-    <fieldset>
+    <fieldset style="width: 97%;" >
     <h3>NHIN Direct Java Reference Implementation - Manage Agent Settings</h3>
     <form action="<c:url value="/j_spring_security_logout"/>">
            <button style="float:right;" name="logoutBtn" id="logoutBtn" type="submit">Log out</button></td>
        </form>
     </fieldset>
-<fieldset style="width: 100%;" title="Setting">
+<fieldset style="width: 97%;" title="Setting">
 	<spring:url	value="/config/settings/addsetting" var="formUrladdsetting" /> 
 	<form:form	modelAttribute="settingsForm" action="${fn:escapeXml(formUrladdsetting)}" cssClass="cleanform" method="POST">
 	<table cellpadding="1px" cellspacing="1px" id="settingsTable">
@@ -39,7 +39,7 @@
 	<button name="submitType" id="submitType" type="submit" value="cancel">Cancel</button>
 </form:form></fieldset>
 <c:if test="${not empty settingsResults}">
-<fieldset style="width: 100%;" title="Settings">
+<fieldset style="width: 97%;" title="Settings">
 	<spring:url value="/config/settings/removesettings" var="formUrlremove" /> 
 		<form:form modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST">
 		<form:hidden path="id" />

@@ -319,13 +319,13 @@ Records</legend>
 
 <c:if test="${not empty dnsMxRecordResults}">
 
-	<div id="mxList" style="width: 100%; overflow: auto;">
 	<fieldset style="width: 95%;"><spring:url
 		value="/config/dns/removesettings" var="formUrlRemoveDns" /> <form:form
 		id="RemoveMxEntries" modelAttribute="MXdnsForm"
 		action="${fn:escapeXml(formUrlRemoveDns)}" cssClass="cleanform"
 		method="POST" enctype="multipart/form-data">
 		<form:hidden path="type" value="MX" />
+	<div id="mxList" style="width: 100%; overflow: auto;">
 		<table cellpadding="1px" cellspacing="1px" id="dnsMXList"
 			class="tablesorter">
 			<thead>
@@ -361,11 +361,12 @@ Records</legend>
 				</tr>
 			</tfoot>
 		</table>
+		</div>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
 			value="deleteMXDnsEntries">Remove Selected</button>
 	</form:form></fieldset>
-	</div>
+	
 </c:if>
 
 </fieldset>
