@@ -37,11 +37,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ServiceInvocationFault }
+     * Create an instance of {@link AttachmentType }
      * 
      */
-    public ServiceInvocationFault createServiceInvocationFault() {
-        return new ServiceInvocationFault();
+    public AttachmentType createAttachmentType() {
+        return new AttachmentType();
+    }
+
+    /**
+     * Create an instance of {@link ErrorType }
+     * 
+     */
+    public ErrorType createErrorType() {
+        return new ErrorType();
     }
 
     /**
@@ -53,19 +61,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link EmailType }
+     * Create an instance of {@link ServiceInvocationFault }
      * 
      */
-    public EmailType createEmailType() {
-        return new EmailType();
+    public ServiceInvocationFault createServiceInvocationFault() {
+        return new ServiceInvocationFault();
     }
 
     /**
-     * Create an instance of {@link ErrorType }
+     * Create an instance of {@link AddressType }
      * 
      */
-    public ErrorType createErrorType() {
-        return new ErrorType();
+    public AddressType createAddressType() {
+        return new AddressType();
     }
 
     /**
@@ -85,14 +93,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AttachmentType }
-     * 
-     */
-    public AttachmentType createAttachmentType() {
-        return new AttachmentType();
-    }
-
-    /**
      * Create an instance of {@link HeadType }
      * 
      */
@@ -109,11 +109,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AddressType }
+     * Create an instance of {@link EmailType }
      * 
      */
-    public AddressType createAddressType() {
-        return new AddressType();
+    public EmailType createEmailType() {
+        return new EmailType();
     }
 
     /**
