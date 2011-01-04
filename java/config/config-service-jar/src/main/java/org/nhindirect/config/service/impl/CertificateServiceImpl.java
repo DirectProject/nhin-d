@@ -328,8 +328,8 @@ public class CertificateServiceImpl implements CertificateService {
     	if (!address.isEmpty())
     		return address;
     	
-    	// can't find issuer address in alt names... try the principal 
-    	X500Principal issuerPrin = certificate.getIssuerX500Principal();
+    	// can't find subject address in alt names... try the principal 
+    	X500Principal issuerPrin = certificate.getSubjectX500Principal();
     	
     	// get the domain name
 		Map<String, String> oidMap = new HashMap<String, String>();
