@@ -42,6 +42,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.security.auth.x500.X500Principal;
 
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.Thumbprint;
 
@@ -129,7 +130,7 @@ public class TrustChainValidator
             PKIXParameters params = new PKIXParameters(trustAnchorSet); 
             params.setRevocationEnabled(false); // NHIND Revocations are handled using CertificateStore.getCertificate
         	certPath = factory.generateCertPath(certs);
-        	CertPathValidator pathValidator = CertPathValidator.getInstance("PKIX", "BC");    		
+        	CertPathValidator pathValidator = CertPathValidator.getInstance("PKIX", CryptoExtensions.getJCEProviderName());    		
     		
 
         	pathValidator.validate(certPath, params);

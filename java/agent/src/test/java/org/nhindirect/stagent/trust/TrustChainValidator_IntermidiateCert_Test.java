@@ -14,6 +14,7 @@ import java.util.Enumeration;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.X509CertificateEx;
@@ -44,7 +45,7 @@ public class TrustChainValidator_IntermidiateCert_Test extends TestCase
             // lets try this a as a PKCS12 data stream first
             try
             {
-            	KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+            	KeyStore localKeyStore = KeyStore.getInstance("PKCS12", CryptoExtensions.getJCEProviderName());
             	
             	localKeyStore.load(bais, "".toCharArray());
             	Enumeration<String> aliases = localKeyStore.aliases();

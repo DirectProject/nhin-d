@@ -41,6 +41,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.io.FileUtils;
+import org.nhindirect.stagent.CryptoExtensions;
 
 /**
  * Loads certificates and associated private key files from the file system.  Passwords are optional, but must be presend
@@ -66,7 +67,7 @@ class CertLoader
 		X509Certificate cert = (X509Certificate)holdCert;
 		inStr.close();
 		
-		KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
+		KeyFactory kf = KeyFactory.getInstance("RSA", CryptoExtensions.getJCEProviderName());
 		PKCS8EncodedKeySpec keysp = null;
 		if (password != null && password.length > 0)
 		{
@@ -74,9 +75,9 @@ class CertLoader
 			PBEKeySpec keySpec = new PBEKeySpec(password);
 			String alg = encInfo.getAlgName();
 			
-			SecretKeyFactory secFactory = SecretKeyFactory.getInstance(alg, "BC"); 
+			SecretKeyFactory secFactory = SecretKeyFactory.getInstance(alg, CryptoExtensions.getJCEProviderName()); 
 			SecretKey secKey = secFactory.generateSecret(keySpec);
-			keysp = encInfo.getKeySpec(secKey, "BC");
+			keysp = encInfo.getKeySpec(secKey, CryptoExtensions.getJCEProviderName());
 		}
 		else
 		{

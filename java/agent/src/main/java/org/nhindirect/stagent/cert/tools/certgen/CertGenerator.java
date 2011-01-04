@@ -50,6 +50,7 @@ import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.bouncycastle.x509.extension.AuthorityKeyIdentifierStructure;
 import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
+import org.nhindirect.stagent.CryptoExtensions;
 
 /**
  * Engine for generating self signed certificates and leaf node certificates.
@@ -75,7 +76,7 @@ class CertGenerator
 	public static CertCreateFields createCertificate(CertCreateFields fields, boolean addAltNames) throws Exception
 	{
 		// generate a key pair first using RSA and a key strength provided by the user
-		KeyPairGenerator kpg = (KeyPairGenerator) KeyPairGenerator.getInstance("RSA", "BC");
+		KeyPairGenerator kpg = (KeyPairGenerator) KeyPairGenerator.getInstance("RSA", CryptoExtensions.getJCEProviderName());
 		
 		kpg.initialize(fields.getKeyStrength(), new SecureRandom());
 		
@@ -164,7 +165,7 @@ class CertGenerator
 
         }
         
-        X509Certificate newCACert = v1CertGen.generate(keyPair.getPrivate(), "BC");
+        X509Certificate newCACert = v1CertGen.generate(keyPair.getPrivate(), CryptoExtensions.getJCEProviderName());
         
         // validate the certificate 
         newCACert.verify(keyPair.getPublic());
@@ -253,7 +254,7 @@ class CertGenerator
         }        
         
         // use the CA's private key to sign the certificate
-        X509Certificate newCACert = v1CertGen.generate((PrivateKey)fields.getSignerKey(), "BC");
+        X509Certificate newCACert = v1CertGen.generate((PrivateKey)fields.getSignerKey(), CryptoExtensions.getJCEProviderName());
         
         // validate the certificate 
         newCACert.verify(fields.getSignerCert().getPublicKey());
@@ -289,10 +290,10 @@ class CertGenerator
 			   
 
 			PBEKeySpec pbeKeySpec = new PBEKeySpec(fields.getNewPassword());
-			SecretKey sKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES", "BC").generateSecret(pbeKeySpec); 
+			SecretKey sKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES", CryptoExtensions.getJCEProviderName()).generateSecret(pbeKeySpec); 
 			
 			// encrypt
-			Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES", "BC");
+			Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES", CryptoExtensions.getJCEProviderName());
 			cipher.init(Cipher.ENCRYPT_MODE, sKey, pbeSpec, null);
 			byte[] plain = (byte[])key.getEncoded();
 			byte[] encrKey = cipher.doFinal(plain, 0, plain.length);

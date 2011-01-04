@@ -122,16 +122,12 @@ public class SigTest extends TestCase
     	
     	MimeMultipart retVal = null;
 
-        CertStore certsAndcrls = CertStore.getInstance("Collection", new CollectionCertStoreParameters(certList), "BC");        	        	
+        CertStore certsAndcrls = CertStore.getInstance("Collection", new CollectionCertStoreParameters(certList), CryptoExtensions.getJCEProviderName());        	        	
     	gen.addCertificatesAndCRLs(certsAndcrls);    		
 		
-		//retVal = gen.generate(partToSign, "BC");
-    	
-    	
-    	
     	 _certStores.add(certsAndcrls);
         _signers.add(new Signer(internalCert.getPrivateKey(), internalCert, SMIMESignedGenerator.DIGEST_SHA1, new AttributeTable(signedAttrs), null));    	
-    	retVal = generate(partToSign, "BC");
+    	retVal = generate(partToSign, CryptoExtensions.getJCEProviderName());
     	
     	for (int i = 0; i < 10; ++ i)
     	{
@@ -153,7 +149,7 @@ public class SigTest extends TestCase
 			CMSSignedData signeddata = new CMSSignedData(new CMSProcessableBodyPartInbound(partToSign), verifyMM.getBodyPart(1).getInputStream());
 	    	
 	    	int verified = 0;
-	    	CertStore certs = signeddata.getCertificatesAndCRLs("Collection", "BC");
+	    	CertStore certs = signeddata.getCertificatesAndCRLs("Collection", CryptoExtensions.getJCEProviderName());
 	    	SignerInformationStore  signers = signeddata.getSignerInfos();
 	    	Collection              c = signers.getSigners();
 	    	Iterator                it = c.iterator();	    	
@@ -180,7 +176,7 @@ public class SigTest extends TestCase
 	    		  Iterator        certIt = certCollection.iterator();
 	    		  try
 	    		  {
-	    			  assertTrue(signer.verify(internalCert, "BC"));
+	    			  assertTrue(signer.verify(internalCert, CryptoExtensions.getJCEProviderName()));
 	    		  }
 	    		  catch (Exception e) {e.printStackTrace();}
 	    		  

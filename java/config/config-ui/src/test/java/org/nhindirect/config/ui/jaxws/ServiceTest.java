@@ -349,7 +349,7 @@ public class ServiceTest
 		byte[] retVal = null;
 		try
 		{
-			KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+			KeyStore localKeyStore = KeyStore.getInstance("PKCS12", Certificate.getJCEProviderName());
 			
 			localKeyStore.load(null, null);
 			
@@ -425,7 +425,7 @@ public class ServiceTest
             // lets try this a as a PKCS12 data stream first
             try
             {
-                KeyStore localKeyStore = KeyStore.getInstance("PKCS12", "BC");
+                KeyStore localKeyStore = KeyStore.getInstance("PKCS12", Certificate.getJCEProviderName());
 
                 localKeyStore.load(bais, "".toCharArray());
                 Enumeration<String> aliases = localKeyStore.aliases();
