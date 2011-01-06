@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nhind</groupId>
 	<artifactId>config-ui</artifactId>
 	<packaging>war</packaging>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 	<name>NHIN Direct Java Configuration UI</name>
 	<description>NHIN Direct Java Configuration UI</description>
 	<url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-ui/${project.version}</url>
@@ -117,7 +116,7 @@
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>config-store</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<version>1.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 			<exclusions>
@@ -142,7 +141,7 @@
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>config-service-jar</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<version>1.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -356,6 +355,44 @@
 					</requestLog>
 				</configuration>
 			</plugin>
+			<!--  for releases only 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.6.1</version>
+				<configuration>
+					<charset>UTF-8</charset>
+					<docencoding>UTF-8</docencoding>
+					<docfilessubdirs>true</docfilessubdirs>
+					<detectJavaApiLink>true</detectJavaApiLink>
+					<detectLinks>true</detectLinks>
+					<source>1.6</source>
+					<show>protected</show>
+				</configuration>
+	            <executions>
+	              <execution>
+	                <phase>package</phase>
+	                <id>attach-javadocs</id>
+	                <goals>
+	                  <goal>jar</goal>
+	                </goals>
+	              </execution>
+	            </executions>					
+			</plugin>			
+	        <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-gpg-plugin</artifactId>
+               <executions>
+                 <execution>
+                    <id>sign-artifacts</id>
+                    <phase>package</phase>
+                    <goals>
+                       <goal>sign</goal>
+                    </goals>
+                 </execution>
+               </executions>
+            </plugin>
+            -->				
 		</plugins>
 		<pluginManagement>
 			<plugins>
