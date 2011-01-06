@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nhind</groupId>
 	<artifactId>config-store</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 	<packaging>jar</packaging>
 	<name>NHIN Direct Java RI - Configuration Persistence Layer</name>
     <description>NHIN Direct Security And Trust Agent</description>
@@ -362,6 +362,7 @@
 					</execution>
 				</executions>
 			</plugin>	
+			<!--  for release only 
 	        <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-gpg-plugin</artifactId>
@@ -374,7 +375,8 @@
                     </goals>
                  </execution>
                </executions>
-            </plugin>				
+            </plugin>		
+            -->		
 		</plugins>
         <pluginManagement>
            <plugins>
