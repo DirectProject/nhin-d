@@ -4,7 +4,7 @@
 	<groupId>org.nhind</groupId>
 	<artifactId>config-ui</artifactId>
 	<packaging>war</packaging>
-	<version>1.1</version>
+	<version>1.2-SNAPSHOT</version>
 	<name>NHIN Direct Java Configuration UI</name>
 	<description>NHIN Direct Java Configuration UI</description>
 	<url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-ui/${project.version}</url>
