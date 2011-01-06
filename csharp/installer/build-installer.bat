@@ -25,13 +25,11 @@ msbuild %msbuild_verbosity% installer-build.xml -p:VERSION=%VERSION% -t:build-in
 if ERRORLEVEL 1 goto :done
 
 if "%1" NEQ "test" (
-  hg commit -m "Advancing version number to %VERSION%..." ..\GlobalAssemblyInfo.cs .\DirectGateway.iss
-  if ERRORLEVEL 1 goto :done
-
-  hg tag -m "Tagging CSharp as dotnet-%VERSION%" dotnet-%VERSION%
-  if ERRORLEVEL 1 goto :done
-
-  hg archive -r dotnet-%VERSION% -t zip -X certs -X java DirectGateway-%VERSION%-NET35-Source.zip -X .hg*
+  hg commit --message "Advancing version number to %VERSION%..." ..\GlobalAssemblyInfo.cs .\DirectGateway.iss
+  hg tag --force --message "Tagging CSharp as dotnet-%VERSION%" dotnet-%VERSION%
+  pushd ..\..
+  hg archive --rev dotnet-%VERSION% --type zip --exclude certs --exclude java --exclude .hg* csharp\installer\DirectGateway-%VERSION%-NET35-Source.zip
+  popd
 )
 
 goto :done
@@ -59,5 +57,6 @@ echo.
 exit /B
 
 :done
+if ERRORLEVEL 1 echo ErrorLevel=%ERRORLEVEL%
 endlocal
 goto :eof
