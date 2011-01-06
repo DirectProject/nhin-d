@@ -441,7 +441,37 @@
                   </configuration>                    
                </execution>                
             </executions>
-         </plugin>   			    
+         </plugin>   
+	     <plugin>
+	      	<groupId>org.apache.maven.plugins</groupId> 
+	        <artifactId>maven-javadoc-plugin</artifactId>
+	        <version>2.6.1</version>
+	        <configuration>
+	          <charset>UTF-8</charset>
+	          <docencoding>UTF-8</docencoding>
+	          <docfilessubdirs>true</docfilessubdirs>
+              <detectJavaApiLink>true</detectJavaApiLink>
+              <detectLinks>true</detectLinks>
+	          <source>1.6</source>
+	          <show>public</show>    
+	          <excludePackageNames>
+	              org.nhindirect.dns.tools.utils
+	          </excludePackageNames>	           	          
+	        </configuration>
+	     </plugin>  
+	     <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>sign-artifacts</id>
+                     <phase>package</phase>
+                     <goals>
+                        <goal>sign</goal>
+                     </goals>
+              </execution>
+            </executions>
+        </plugin>	          			    
     </plugins>
     <pluginManagement>
        <plugins>
