@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dns</artifactId>    
     <name>Direct Project DNS services</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <description>Direct Project DNS services</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/dns/${project.version}</url> 
@@ -74,12 +74,12 @@
 		<dependency>
 		    <groupId>org.nhind</groupId>
 		    <artifactId>config-service-client</artifactId>
-		    <version>1.1-SNAPSHOT</version>   
+		    <version>1.1</version>   
 		</dependency>	
 		<dependency>
 		    <groupId>org.nhind</groupId>
 		    <artifactId>config-store</artifactId>
-		    <version>1.1-SNAPSHOT</version>   
+		    <version>1.1</version>   
 		</dependency>				
 		<dependency>
 		    <groupId>org.apache.mina</groupId>
@@ -160,7 +160,7 @@
                 <artifactItem>
                   <groupId>org.nhind</groupId>
                   <artifactId>config-service</artifactId>
-                  <version>1.1-SNAPSHOT</version>
+                  <version>1.1</version>
                   <type>war</type>
                   <overWrite>true</overWrite>
                   <destFileName>config-service.war</destFileName>
@@ -231,7 +231,8 @@
             <configuration>
                <archive>
                   <index>true</index>
-                  <!--<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile> -->
+                  <!--<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+-->
                </archive>
             </configuration>
          </plugin>
@@ -345,7 +346,8 @@
         <!-- DOXIA does not yet copy resources to the generated-site or site location.  Bug
         DOXIA-355 was submitted in July of 09 and is listed to be resolved in DOXIA 1.2.
         This plugin a is work around for copying the resources from the book source to 
-        the generate site. -->
+        the generate site.
+-->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
@@ -356,7 +358,7 @@
               <configuration>
                 <tasks>
                   <copy todir="${project.build.directory}/appassembler/jsw/DirectDNSServer/logs">
-                    <fileset dir="${basedir}/src/logs/"/>
+                    <fileset dir="${basedir}/src/logs/" />
                   </copy>                  
                 </tasks>
               </configuration>
@@ -370,10 +372,10 @@
               <configuration>
                 <tasks>
                   <copy todir="${project.build.directory}/generated-site/xdoc/users-guide/images/">
-                    <fileset dir="${basedir}/src/books/users-guide/images/"/>
+                    <fileset dir="${basedir}/src/books/users-guide/images/" />
                   </copy>
                   <copy todir="${project.build.directory}/site/users-guide/images/">
-                    <fileset dir="${basedir}/src/books/users-guide/images/"/>
+                    <fileset dir="${basedir}/src/books/users-guide/images/" />
                   </copy>                  
                 </tasks>
               </configuration>
@@ -442,6 +444,7 @@
                </execution>                
             </executions>
          </plugin>   
+         <!--  for releases only
 	     <plugin>
 	      	<groupId>org.apache.maven.plugins</groupId> 
 	        <artifactId>maven-javadoc-plugin</artifactId>
@@ -458,6 +461,15 @@
 	              org.nhindirect.dns.tools.utils
 	          </excludePackageNames>	           	          
 	        </configuration>
+	        <executions>
+	            <execution>
+	                <phase>package</phase>
+	                <id>attach-javadocs</id>
+	                <goals>
+	                  <goal>jar</goal>
+	                </goals>
+	            </execution>
+	        </executions>		        
 	     </plugin>  
 	     <plugin>
              <groupId>org.apache.maven.plugins</groupId>
@@ -471,7 +483,8 @@
                      </goals>
               </execution>
             </executions>
-        </plugin>	          			    
+        </plugin>	    
+         -->      			    
     </plugins>
     <pluginManagement>
        <plugins>
