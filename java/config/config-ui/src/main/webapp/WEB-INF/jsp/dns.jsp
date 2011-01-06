@@ -295,20 +295,27 @@ Records</legend>
                              <form:errors path="priority"
 					cssClass="error" />
 			</form:label></th>
+			<td><form:input maxlength="5" path="priority" /></td>
+		</tr>
+		<tr>
+			
 			<th><form:label path="name">Host
                             <form:errors path="name" cssClass="error" />
 			</form:label></th>
+			<td><form:input path="name" /></td>
+		</tr>
+		<tr>
+			
 			<th><form:label path="dest">Points To
                               <form:errors path="dest" cssClass="error" />
 			</form:label></th>
+			<td><form:input id="dest" path="dest" /></td>
+		</tr>
+		<tr>
+			
 			<th><form:label title="In seconds" path="ttl">TTL 
                              <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
-		</tr>
-		<tr>
-			<td><form:input maxlength="5" path="priority" /></td>
-			<td><form:input path="name" /></td>
-			<td><form:input id="dest" path="dest" /></td>
 			<td><form:input maxlength="8" id="ttl" path="ttl" /></td>
 		</tr>
 	</table>
