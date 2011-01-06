@@ -68,6 +68,12 @@
 	<property name="config.ui.orig.war" value="config-ui-1.1.war"></property>
 	<property name="config.ui.dest.war" value="config-ui.war"></property>
 
+	<!-- xd server files -->
+	<property name="xd.root" value="${config.root}/../xd"></property>
+	<property name="xd.service.dir" value="${config.root}/xd/target"></property>
+	<property name="xd.service.orig.war" value="xd-1.0-SNAPSHOT.war"></property>
+	<property name="xd.service.dest.war" value="xd.war"></property>
+	
 	<!-- Support libraries -->
 	<property name="lib.activation" value="${install.root.dir}/lib/activation-1.1.jar"></property>
 	<property name="lib.aopalliance" value="${install.root.dir}/lib/aopalliance-1.0.jar"></property>
@@ -98,9 +104,11 @@
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
+	<property name="xd-common.dir" value="${install.root.dir}/../xd-common"></property>	
 	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.1.jar"></property>
 	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-1.1.jar"></property>
 	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.0-SNAPSHOT.jar"></property>
+	<property name="lib.xd-common" value="${install.root.dir}/lib/xd-common-1.0-SNAPSHOT.jar"></property>
 	
 	<!-- Stylesheet to edit the config file -->
 	<property name="edit.config.stylesheet" value="${src}/scripts/edit-config.xsl"></property>
@@ -244,6 +252,7 @@
 		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.xd-common}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
 		<copy file="${lib.jcs}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.concurrent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.wsdl4j}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
@@ -287,11 +296,14 @@
 		<property name="config.service.dest.war" value="config-service.war"></property>
 		<property name="config.ui.orig.war" value="config-ui.war"></property>
 		<property name="config.ui.dest.war" value="config-ui.war"></property>
-
+		<property name="xd.service.orig.war" value="xd-1.0-SNAPSHOT.war"></property>
+		<property name="xd.service.dest.war" value="xd.war"></property>
+		
 		<!-- Copy war files -->
 		<copy file="${install.root.dir}/lib/${config.service.orig.war}" tofile="${tomcat.webapp.dir}/${config.service.dest.war}"></copy>
 		<copy file="${install.root.dir}/lib/${config.ui.orig.war}" tofile="${tomcat.webapp.dir}/${config.ui.dest.war}"></copy>
-
+		<copy file="${install.root.dir}/lib/${xd.service.orig.war}" tofile="${tomcat.webapp.dir}/${xd.service.dest.war}"></copy>
+		
 		<xslt style="${edit.tomcat.stylesheet}" in="${tomcat.stage.config}" out="${tomcat.stage.config.new}">
 		    <param name="port" expression="8081"></param>
 		</xslt>
