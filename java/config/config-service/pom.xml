@@ -1,14 +1,9 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<artifactId>config</artifactId>
-		<groupId>org.nhind</groupId>
-		<version>1.1-SNAPSHOT</version>
-	</parent>
 	<groupId>org.nhind</groupId>
 	<artifactId>config-service</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 	<packaging>war</packaging>
 	<name>NHIN-Direct Configuration Service</name>
 	<description>NHIN-Direct Configuration Web Services</description>
@@ -61,7 +56,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-asm</artifactId>
-			<version>${spring-version}</version>
+			<version>3.0.4.RELEASE</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -84,7 +79,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>${spring-version}</version>
+			<version>3.0.4.RELEASE</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
@@ -95,7 +90,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>${spring-version}</version>
+			<version>3.0.4.RELEASE</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
@@ -106,7 +101,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>${spring-version}</version>
+			<version>3.0.4.RELEASE</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
@@ -161,7 +156,7 @@
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>config-store</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<version>1.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 			<exclusions>
@@ -174,7 +169,7 @@
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>config-service-jar</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<version>1.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -280,7 +275,7 @@
 							<maxIdleTime>60000</maxIdleTime>                
 						</connector> 
 			        </connectors>
-			        <webApp>${basedir}/target/config-service-1.1-SNAPSHOT</webApp>
+			        <webApp>${basedir}/target/config-service-1.1</webApp>
 			        <requestLog implementation="org.mortbay.jetty.NCSARequestLog">
 			            <filename>target/yyyy_mm_dd.request.log</filename>
 			            <retainDays>90</retainDays>
@@ -289,7 +284,46 @@
 			            <logTimeZone>GMT</logTimeZone>
 			        </requestLog>
 			    </configuration>
-		    </plugin>				
+		    </plugin>	
+			<!--  for releases only 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.6.1</version>
+				<configuration>
+					<charset>UTF-8</charset>
+					<docencoding>UTF-8</docencoding>
+					<docfilessubdirs>true</docfilessubdirs>
+					<detectJavaApiLink>true</detectJavaApiLink>
+					<detectLinks>true</detectLinks>
+					<source>1.6</source>
+					<show>protected</show>
+				</configuration>
+	            <executions>
+	              <execution>
+	                <phase>package</phase>
+	                <id>attach-javadocs</id>
+	                <goals>
+	                  <goal>jar</goal>
+	                </goals>
+	              </execution>
+	            </executions>					
+			</plugin>			
+	        <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-gpg-plugin</artifactId>
+               <executions>
+                 <execution>
+                    <id>sign-artifacts</id>
+                    <phase>package</phase>
+                    <goals>
+                       <goal>sign</goal>
+                    </goals>
+                 </execution>
+               </executions>
+            </plugin>
+            -->	
+		    			
 		</plugins>
 	</build>
 	<dependencyManagement>
@@ -297,7 +331,7 @@
 			<dependency>
 				<groupId>org.nhind</groupId>
 				<artifactId>config-store</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<version>1.1</version>
 				<type>jar</type>
 				<scope>compile</scope>
 			</dependency>
