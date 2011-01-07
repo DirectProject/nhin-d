@@ -6,6 +6,28 @@
         Greg Meyer
         ---
 
+{1.1.1}
+
+    Changes included with release 1.1.1
+	
+    []
+    
+    General
+    
+    * N/A 
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=97}97}}: Fixed issue where MIME-Version header is missing in MDN messages.
+
 {1.1}
 
     Changes included with release 1.1
