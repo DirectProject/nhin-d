@@ -60,6 +60,23 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + "The anchor is used for both incoming & outgoing trust."
               + Constants.CRLF + "    owner options"
               + Constants.CRLF + CertificateFileInfo.Usage;
+
+        /// <summary>
+        /// Import and add an anchor
+        /// </summary>
+        [Command(Name = "Anchor_Ensure", Usage = AnchorAddUsage)]
+        public void AnchorEnsure(string[] args)
+        {
+            string owner = args.GetRequiredValue(0);
+            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(1, args);
+            PushCerts(owner, certFileInfo.LoadCerts(), true, certFileInfo.Status);
+        }
+        
+        private const string AnchorEnsureUsage
+            = "Import an anchor certificate from a file and push it into the config store - if not already there."
+              + Constants.CRLF + "The anchor is used for both incoming & outgoing trust."
+              + Constants.CRLF + "    owner options"
+              + Constants.CRLF + CertificateFileInfo.Usage;
         
         [Command(Name="Anchor_Add_Machine", Usage=AnchorAddMachineUsage)]
         public void AnchorAddMachine(string[] args)

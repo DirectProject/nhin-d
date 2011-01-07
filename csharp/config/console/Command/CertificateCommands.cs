@@ -64,6 +64,24 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + CertificateFileInfo.Usage;
 
         /// <summary>
+        /// Import and add an anchor
+        /// </summary>
+        [Command(Name = "Certificate_Ensure", Usage = CertificateAddUsage)]
+        public void CertificateEnsure(string[] args)
+        {
+            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(0, args);
+            MemoryX509Store certStore = certFileInfo.LoadCerts();
+            //
+            // This checks for duplicates...(using thumbprints)
+            //
+            PushCerts(certStore, true, certFileInfo.Status);
+        }
+    
+        
+        const X509KeyStorageFlags MachineKeyFlags = X509KeyStorageFlags.MachineKeySet
+                                    | X509KeyStorageFlags.Exportable
+                                    | X509KeyStorageFlags.PersistKeySet;
+        /// <summary>
         /// Import a certificate file and add it to the machine store
         /// </summary>
         [Command(Name = "Certificate_Add_Machine", Usage = CertificateAddMachineUsage)]
@@ -72,11 +90,31 @@ namespace Health.Direct.Config.Console.Command
             using (SystemX509Store store = OpenStore(args.GetRequiredValue(0)))
             {
                 CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(1, args);
+                store.ImportKeyFile(certFileInfo.FilePath, certFileInfo.Password, MachineKeyFlags);
+            }
+        }
 
-                store.ImportKeyFile(certFileInfo.FilePath, certFileInfo.Password,
-                                    X509KeyStorageFlags.MachineKeySet
-                                    | X509KeyStorageFlags.Exportable
-                                    | X509KeyStorageFlags.PersistKeySet);
+        /// <summary>
+        /// Import a certificate file and add it to the machine store
+        /// </summary>
+        [Command(Name = "Certificate_Ensure_Machine", Usage = CertificateAddMachineUsage)]
+        public void CertificateEnsureMachine(string[] args)
+        {
+            using (SystemX509Store store = OpenStore(args.GetRequiredValue(0)))
+            {
+                CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(1, args);
+                MemoryX509Store certs = certFileInfo.LoadCerts(MachineKeyFlags);
+                foreach(X509Certificate2 cert in certs)
+                {
+                    string comment = "EXISTS";
+                    if (!store.Contains(cert))
+                    {
+                        store.Add(cert);
+                        comment = "ADDED";
+                    }
+                    
+                    WriteLine("{0}: {1}, Thumbprint:{2}", comment, cert.Subject, cert.Thumbprint);
+                }
             }
         }
 
