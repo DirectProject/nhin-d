@@ -14,7 +14,7 @@
     
     General
     
-    * N/A 
+    * CertGen allows certs to create leaf certs if they do not have the basic constraint flag set so as long as they are self signed certs.
     
     []
     
