@@ -30,6 +30,7 @@ import javax.mail.internet.InternetHeaders;
 
 import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.mail.Message;
+import org.nhindirect.stagent.mail.MimeStandard;
 
 /**
  * Represents a message disposition notification (MDN) sent to a message sender, as per <a href="http://tools.ietf.org/html/rfc3798">RFC 3798</a> 
@@ -72,6 +73,8 @@ public class NotificationMessage extends Message
     	
     	if (from != null && !from.isEmpty())
     		headers.addHeader(MailStandard.Headers.From, from);
+    	
+    	headers.addHeader(MimeStandard.VersionHeader, "1.0");
     	
     	// get the boundary
     	ContentType type = new ContentType(notification.getAsMultipart().getContentType());

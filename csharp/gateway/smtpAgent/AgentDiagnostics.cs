@@ -42,6 +42,18 @@ namespace Health.Direct.SmtpAgent
             }
         }
 
+        internal void OnGeneralError(DirectAgent agent, Exception error)
+        {
+            if (Logger.IsDebugEnabled)
+            {
+                Logger.Error(error);
+            }
+            else
+            {
+                Logger.Error(error.Message);
+            }
+        }
+
         internal void OnOutgoingError(OutgoingMessage message, Exception error)
         {
             if (Logger.IsDebugEnabled)
@@ -50,7 +62,7 @@ namespace Health.Direct.SmtpAgent
             }
             else
             {
-                Logger.Error("OnOutgoingError", error);
+                Logger.Error("OUTGOING_ERROR {0}", error.Message);
             }
         }
 
@@ -62,13 +74,13 @@ namespace Health.Direct.SmtpAgent
             }
             else
             {
-                Logger.Error("OnIncomingError", error);
+                Logger.Error("INCOMING_ERROR {0}", error.Message);
             }
         }
 
         internal void OnDnsError(ICertificateResolver resolver, Exception error)
         {
-            Logger.Error("OnDnsError", error);
+            Logger.Error("DNS_ERROR = {0}", error.Message);
         }
         
         internal void OnCertificateProblem(X509ChainElement chainElement)
