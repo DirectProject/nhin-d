@@ -544,12 +544,17 @@ class CAPanel extends JPanel
 		}
  
 		// make sure this cert has privs to act as a CA and sign other CERTs		
-		if (retCert.getSignerCert().getBasicConstraints() < 0)
+		if (retCert.getSignerCert().getBasicConstraints() < 0)			
 		{
-			JOptionPane.showMessageDialog(this,"This certificate's policy does not allowed it to sign other certificates.", 
+			// may be a self signed cert
+			if (!retCert.getSignerCert().getSubjectX500Principal().equals(retCert.getSignerCert().getIssuerX500Principal()))
+			{
+				JOptionPane.showMessageDialog(this,"This certificate's policy does not allowed it to sign other certificates.", 
 		 		    "Policy Validation Error", JOptionPane.ERROR_MESSAGE);
-		 
-		    return;
+				
+				return;
+			}
+		    
 		}
 
 		// get the attributes
