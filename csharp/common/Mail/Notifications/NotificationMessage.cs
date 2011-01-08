@@ -25,8 +25,6 @@ namespace Health.Direct.Common.Mail.Notifications
     /// </summary>
     public class NotificationMessage : Message
     {        
-        const string DefaultSubject = "Message Disposition Notification"; 
-        
         /// <summary>
         /// Initializes an MDN to the specified recipient.
         /// </summary>
@@ -61,7 +59,7 @@ namespace Health.Direct.Common.Mail.Notifications
             }
             
             this.SetParts(notification);
-            this.Subject = new Header(MailStandard.Headers.Subject, DefaultSubject);
+            this.Subject = new Header(MailStandard.Headers.Subject, notification.Disposition.Notification.AsString());
         }                
         
         /// <summary>
