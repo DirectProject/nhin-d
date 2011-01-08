@@ -1,6 +1,6 @@
 <project name="install" default="assemble" basedir=".">
 	<description>
-	    Install the apache-james mail server for use with NHIN Direct
+	    Install the apache-james mail server for use with the Direct Project
 	</description>
 	
 	<!-- check the os -->
@@ -28,6 +28,7 @@
 	<!-- set global properties for this build -->
 	<property environment="env"></property>
 	<property name="install.root.dir" value="${env.DIRECT_INSTALL_CD}"></property>
+
 	<property name="src" value="${install.root.dir}/src"></property>
 	<property name="resources.dir" value="${src}/main/resources"></property>
 	<property name="build.dir" value="${install.root.dir}/build"></property>
@@ -35,6 +36,7 @@
 	<property name="apache.james.binary.url" value="http://ftp.wayne.edu/apache//james/server/apache-james-2.3.2.zip"></property>
 	<property name="apache.james.binary.zip" value="${build.download.dir}/apache-james-2.3.2.zip"></property>
 
+	<!-- James properties -->
 	<property name="james.stage.dir" value="${env.DIRECT_INSTALL_DIR}/james-2.3.2"></property>
 	<property name="james.stage.apps.dir" value="${james.stage.dir}/apps/james"></property>
 	<property name="james.stage.config" value="${james.stage.apps.dir}/SAR-INF/config.xml"></property>
@@ -43,6 +45,7 @@
 	<property name="james.stage.apps.SAR-INF.lib.dir" value="${james.stage.apps.dir}/SAR-INF/lib"></property>
 	<property name="james.stage.apps.james.sar.path" value="${james.stage.dir}/apps/james.sar"></property>
 	
+	<!-- Tomcat properties -->
 	<property name="tomcat.binary.url" value="http://mirrors.ibiblio.org/pub/mirrors/apache/tomcat/tomcat-6/v6.0.29/bin/apache-tomcat-6.0.29.tar.gz"></property>
 	<property name="tomcat.binary.compressed.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar.gz"></property>
 	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-6.0.29"></property>
@@ -50,6 +53,14 @@
 	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
 	<property name="tomcat.stage.config.save" value="${tomcat.stage.config}.save"></property>
 	<property name="tomcat.stage.config.new" value="${tomcat.stage.config}.new"></property>
+
+	<!-- Dns properties -->
+	<property name="dns.root" value="${install.root.dir}/../dns"></property>
+	<property name="dnsserver.dir" value="${dns.root}/target/appassembler/jsw/DirectDNSServer"></property>
+	<property name="dnsmgmt.dir" value="${dns.root}/target/appassembler/app/DNSMgmtConsole"></property>
+	<property name="dns.stage.dir" value="${env.DIRECT_INSTALL_DIR}/DirectDNSServices"></property>
+	<property name="dnsserver.stage.dir" value="${dns.stage.dir}/DirectDNSServer"></property>
+	<property name="dnsmgmt.stage.dir" value="${dns.stage.dir}/DNSMgmtConsole"></property>
 
 	<!-- Maven repository -->
 	<property name="maven.repo" value="${env.HOME}/.m2/repository"></property>
@@ -62,6 +73,12 @@
 	<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
 	<property name="config.ui.orig.war" value="config-ui-1.2-SNAPSHOT.war"></property>
 	<property name="config.ui.dest.war" value="config-ui.war"></property>
+
+	<!-- xd server files -->
+	<property name="xd.root" value="${install.root.dir}/../xd"></property>
+	<property name="xd.service.dir" value="${xd.root}/target"></property>
+	<property name="xd.service.orig.war" value="xd-1.0-SNAPSHOT.war"></property>
+	<property name="xd.service.dest.war" value="xd.war"></property>
 
 	<!-- Support libraries -->
 	<property name="lib.activation" value="${maven.repo}/javax/activation/activation/1.1/activation-1.1.jar"></property>
@@ -87,14 +104,14 @@
 	<property name="lib.jaxrpc-api" value="${maven.repo}/javax/xml/jaxrpc-api/1.1/jaxrpc-api-1.1.jar"></property>
 	<property name="lib.commons-discovery" value="${maven.repo}/commons-discovery/commons-discovery/0.4/commons-discovery-0.4.jar"></property>
 	<property name="lib.axis" value="${maven.repo}/org/apache/axis/axis/1.4/axis-1.4.jar"></property>
-    <property name="lib.config.proxy" value="${config.root}/config-service-client/target/config-service-client-1.2-SNAPSHOT.jar"></property>
+	<property name="lib.config.proxy" value="${config.root}/config-service-client/target/config-service-client-1.2-SNAPSHOT.jar"></property>
 
 	<!-- Package libraries -->
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xdcommon.dir" value="${install.root.dir}/../xd-common"></property>	
-	<property name="lib.agent" value="${agent.dir}/target/agent-1.2-SNAPSHOT.jar"></property>
+	<property name="lib.agent" value="${agent.dir}/target/agent-1.1.1-SNAPSHOT.jar"></property>
 	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.2-SNAPSHOT.jar"></property>
 	<property name="lib.xdmail" value="${xdmail.dir}/target/xdmail-1.0-SNAPSHOT.jar"></property>
 	<property name="lib.xdcommon" value="${xdcommon.dir}/target/xd-common-1.0-SNAPSHOT.jar"></property>
@@ -204,6 +221,10 @@
 		<!-- unpack -->
 		<delete dir="${james.stage.dir}"></delete>
 		<delete dir="${tomcat.stage.dir}"></delete>
+		<delete dir="${dns.stage.dir}"></delete>
+
+		<!-- copy dns -->
+		<antcall target="copy-dns"></antcall>
 
 		<!-- unpack james -->
 		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${apache.james.binary.zip}"></unzip>
@@ -260,6 +281,19 @@
 	  	</exec>
 	</target>
 
+	<target name="copy-dns">
+		<delete dir="${dnsserver.stage.dir}"></delete>
+		<delete dir="${dnsmgmt.stage.dir}"></delete>
+
+		<copy todir="${dnsserver.stage.dir}">
+			<fileset dir="${dnsserver.dir}"/>
+		</copy>
+
+		<copy todir="${dnsmgmt.stage.dir}">
+			<fileset dir="${dnsmgmt.dir}"/>
+		</copy>
+	</target>
+
 	<target name="configure" depends="configure-james,configure-tomcat"></target>
 
 	<target name="configure-james">
@@ -287,7 +321,7 @@
 		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
-	    <copy file="${lib.xdcommon}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.xdcommon}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.jcs}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.concurrent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.wsdl4j}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
@@ -295,7 +329,7 @@
 		<copy file="${lib.jaxrpc-api}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.commons-discovery}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.axis}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
-	    <copy file="${lib.config.proxy}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.config.proxy}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		
 		<!-- edit the config.xml file -->
 		<copy file="${james.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
@@ -316,10 +350,13 @@
 		<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
 		<property name="config.ui.orig.war" value="config-ui.war"></property>
 		<property name="config.ui.dest.war" value="config-ui.war"></property>
+		<property name="xd.service.orig.war" value="xd-1.0-SNAPSHOT.war"></property>
+		<property name="xd.service.dest.war" value="xd.war"></property>
 
 		<!-- Copy war files -->
 		<copy file="${config.service.dir}/${config.service.orig.war}" tofile="${tomcat.webapp.dir}/${config.service.dest.war}"></copy>
 		<copy file="${config.ui.dir}/${config.ui.orig.war}" tofile="${tomcat.webapp.dir}/${config.ui.dest.war}"></copy>
+		<copy file="${xd.service.dir}/${xd.service.orig.war}" tofile="${tomcat.webapp.dir}/${xd.service.dest.war}"></copy>
 
 		<!-- edit the tomcat server.xml file -->
 		<xslt style="${edit.tomcat.stylesheet}" in="${tomcat.stage.config}" out="${tomcat.stage.config.new}">
@@ -336,12 +373,30 @@
 		<exec executable="sh">
 			<arg line="-c 'cd ${james.stage.dir}/bin; chmod a+x *.sh'"></arg>
 		</exec>
+		<exec executable="sh">
+			<arg line="-c 'cd ${tomcat.stage.dir}/bin; chmod a+x *.sh'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x wrapper-linux-x86-32'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x wrapper-linux-x86-64'"></arg>
+		</exec>				
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x wrapper-solaris-x86-32'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x DirectDNSServer'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsmgmt.stage.dir}/bin; chmod a+x DNSMgmtConsole'"></arg>
+		</exec>		
 	</target>
 
 	<!-- clean up -->
 	<target name="clean" depends="init" description="clean up">
 	    <!-- Delete the ${build} directory tree -->
-	    <delete dir="${build.dir}/download"></delete>
+	    <!-- <delete dir="${build.dir}/download"></delete> -->
 	</target>
 	
 </project>
