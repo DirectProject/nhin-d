@@ -112,7 +112,13 @@ namespace Health.Direct.Common.Mail.Notifications
                        
             NotificationMessage notificationMessage = new NotificationMessage(notifyTo, from.ToString(), notification);
             notificationMessage.IDValue = StringExtensions.UniqueString();
-            
+
+            string originalSubject = message.SubjectValue;
+            if (!string.IsNullOrEmpty(originalSubject))
+            {
+                notificationMessage.SubjectValue = string.Format("{0}:{1}", notification.Disposition.Notification.AsString(), originalSubject);
+            }
+
             return notificationMessage;
         }       
     }

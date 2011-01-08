@@ -96,13 +96,13 @@ namespace Health.Direct.DnsResponder.WinSrv
             {
                 if (m_logger.IsTraceEnabled)
                 {
-                    m_logger.Error("Socket Error", se.ToString());
+                    m_logger.Error("Socket Error {0}", se.ToString());
                 }
                 
                 return;
             }
                         
-            m_logger.Error("Dns Server", ex.ToString());
+            m_logger.Error("Dns Server {0}", ex.ToString());
         }
         
         void OnUdpRequest(DnsRequest request)
