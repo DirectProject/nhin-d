@@ -85,12 +85,12 @@ namespace Health.Direct.SmtpAgent
         {
             ADODB._Stream stream = message.GetStream();
             
-            int size = stream.Size;
+            int size = (int) stream.Size;
             if (size <= blockSize)
             {
                 return stream.ReadText(size);
             }
-
+    
             int countRead = 0;
             string block = null;
             StringBuilder builder = new StringBuilder(blockSize);
