@@ -16,9 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.IO;
 using System.Net.Mail;
-
+using System.Text;
 using Health.Direct.Common.Mail;
-
 using CDO;
 using ADODB;
 
@@ -73,8 +72,40 @@ namespace Health.Direct.SmtpAgent
         
         public static string GetMessageText(this CDO.Message message)
         {
+            return message.GetMessageText(128 * 1024);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="blockSize">Avoid increasing this too much. Keep below 128K (optimal). See MSDN notes for ReadText</param>
+        /// <returns></returns>
+        public static string GetMessageText(this CDO.Message message, int blockSize)
+        {
             ADODB._Stream stream = message.GetStream();
-            return stream.ReadText((int) stream.Size);
+            
+            int size = (int) stream.Size;
+            if (size <= blockSize)
+            {
+                return stream.ReadText(size);
+            }
+    
+            int countRead = 0;
+            string block = null;
+            StringBuilder builder = new StringBuilder(blockSize);
+            while (countRead < size)
+            {
+                block = stream.ReadText(blockSize);
+                if (string.IsNullOrEmpty(block))
+                {
+                    break;
+                }
+                builder.Append(block);
+                countRead += block.Length;
+            }
+
+            return builder.ToString();
         }
 
         public static void SetMessageText(this CDO.Message message, string messageText, bool save)

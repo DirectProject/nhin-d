@@ -374,12 +374,23 @@ namespace Health.Direct.Common.Certificates
         /// <returns>The <c>E</c> value, or the <c>CN</c> value if <c>E</c> is not found or <c>null</c> if neither are found</returns>
         public static string ExtractEmailNameOrName(this X509Certificate2 cert)
         {
-            string name = cert.GetNameInfo(X509NameType.EmailName, false);
+            return cert.ExtractEmailNameOrName(false);
+        }
+
+        /// <summary>
+        /// Extracts the email (<c>E</c> (by preference) or subject name (<c>CN</c>) value from this certificate.
+        /// </summary>
+        /// <param name="cert">The certificate from which to extract the name</param>
+        /// <param name="issuer">issuer</param>
+        /// <returns>The <c>E</c> value, or the <c>CN</c> value if <c>E</c> is not found or <c>null</c> if neither are found</returns>
+        public static string ExtractEmailNameOrName(this X509Certificate2 cert, bool issuer)
+        {
+            string name = cert.GetNameInfo(X509NameType.EmailName, issuer);
             if (string.IsNullOrEmpty(name))
             {
-                name = cert.GetNameInfo(X509NameType.SimpleName, false);
+                name = cert.GetNameInfo(X509NameType.SimpleName, issuer);
             }
-            
+
             return name;
         }
         
@@ -607,15 +618,30 @@ namespace Health.Direct.Common.Certificates
         /// Returns null if exceptions
         /// </summary>
         /// <param name="resolver">certificate resolver</param>
-        /// <param name="domain">Retrieve certificates for this domain</param>
+        /// <param name="emailOrDomain">Retrieve certificates for this domain</param>
         /// <returns>
         /// A <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2Collection"/> or null if there are no matches.
         /// </returns>
-        public static X509Certificate2Collection SafeGetCertificates(this ICertificateResolver resolver, string domain)
+        public static X509Certificate2Collection SafeGetCertificates(this ICertificateResolver resolver, string emailOrDomain)
         {
             try
             {
-                return resolver.GetCertificatesForDomain(domain);
+                MailAddress address = new MailAddress(emailOrDomain);
+                X509Certificate2Collection matches = resolver.GetCertificates(address);
+                if (!matches.IsNullOrEmpty())
+                {
+                    return matches;
+                }
+
+                emailOrDomain = address.Host;
+            }
+            catch
+            {
+            }
+ 
+            try
+            {
+                return resolver.GetCertificatesForDomain(emailOrDomain);
             }
             catch
             {
