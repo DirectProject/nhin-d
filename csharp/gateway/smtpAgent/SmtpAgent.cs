@@ -158,7 +158,7 @@ namespace Health.Direct.SmtpAgent
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("While initializing", ex.ToString());
+                    Logger.Error("While initializing {0}", ex.ToString());
                     throw;
                 }
             }
@@ -238,6 +238,7 @@ namespace Health.Direct.SmtpAgent
             {
                 m_agent.PreProcessOutgoing += this.OnPreProcessOutgoing;
                 m_agent.PreProcessIncoming += this.OnPreProcessIncoming;
+                m_agent.Error += m_diagnostics.OnGeneralError;
                 m_agent.ErrorIncoming += m_diagnostics.OnIncomingError;
                 m_agent.ErrorOutgoing += m_diagnostics.OnOutgoingError;
 
@@ -309,7 +310,7 @@ namespace Health.Direct.SmtpAgent
             catch (Exception ex)
             {
                 this.RejectMessage(message);
-                Logger.Error("While processing message", ex.ToString());
+                Logger.Error("While processing message {0}", ex.ToString());
                 throw;
             }
         }
@@ -587,7 +588,7 @@ namespace Health.Direct.SmtpAgent
             }
             catch (Exception ex)
             {
-                Logger.Error("While sending notification", ex.ToString());
+                Logger.Error("While sending notification {0}", ex.ToString());
             }
         }
 
@@ -659,7 +660,7 @@ namespace Health.Direct.SmtpAgent
             }
             catch (Exception ex)
             {
-                Logger.Error("While copying message", ex.ToString());
+                Logger.Error("While copying message {0}", ex.ToString());
                 Logger.Debug(ex);
             }
         }

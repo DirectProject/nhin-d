@@ -330,9 +330,11 @@ namespace Health.Direct.Agent
             // only look at simpleNames because intermediates are always going to be org-level, not email, certs
             //
             string issuerName = certificate.GetNameInfo(X509NameType.SimpleName, true); // true == "for issuer"
+            //
+            // If the issuer name matches the Cert name, we have a self-signed cert
+            //
             if (certificate.MatchName(issuerName))
             {
-                // Self issued certificate 
                 return;
             }
             //
@@ -353,7 +355,7 @@ namespace Health.Direct.Agent
             //
             // Retrieve the issuer's certificate
             //
-            X509Certificate2Collection issuerCertificates = m_certResolver.SafeGetCertificates(issuerName);
+            X509Certificate2Collection issuerCertificates = m_certResolver.SafeGetCertificates(certificate.ExtractEmailNameOrName(true));
             if (CollectionExtensions.IsNullOrEmpty(issuerCertificates))
             {
                 return;
