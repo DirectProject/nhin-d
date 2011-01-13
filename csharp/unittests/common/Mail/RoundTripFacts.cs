@@ -111,5 +111,21 @@ namespace Health.Direct.Common.Tests.Mail
                              .ElementAt(1)
                              .Body.Text);
         }
+        
+        [Fact]
+        public void CheckDate()
+        {
+            Message m = new Message();
+            m.To = new Header("To", "drsmith@exchange.example.org");
+            m.Subject = new Header("Subject", "Hello, world!");
+            m.Body = new Body("This is a test.");
+            
+            m.Timestamp();
+            Assert.True(m.HasHeader(MailStandard.Headers.Date));
+
+            string messageText = MimeSerializer.Default.Serialize(m);
+            Message m2 = MailParser.ParseMessage(messageText);
+            Assert.True(m.HasHeader(MailStandard.Headers.Date));
+        }
     }
 }

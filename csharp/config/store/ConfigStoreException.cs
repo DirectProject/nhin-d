@@ -52,11 +52,16 @@ namespace Health.Direct.Config.Store
         InvalidMXSMTPName,
         MXSMTPNameLength,
         InvalidMX,
-        InvaildDnsRecord,
+        InvalidDnsRecord,
         NotesLength,
         InvalidAdministrator,
         InvalidUsername,
-        InvalidPassword
+        InvalidPassword,
+        InvalidPropertyName,
+        InvalidPropertyNameLength,
+        InvalidTextBlobName,
+        InvalidTextBlobNameLength,
+        InvalidBlob
     }
 
     public class ConfigStoreException : DirectException<ConfigStoreError>
@@ -191,7 +196,7 @@ namespace Health.Direct.Config.Store
             ChangeConflictException conflict = ex as ChangeConflictException;
             if (conflict != null)
             {
-                return new ConfigStoreFault(ConfigStoreError.Conflict);
+                return new ConfigStoreFault(ConfigStoreError.Conflict, conflict.Message);
             }
             
             SqlException sqlex = ex as SqlException;

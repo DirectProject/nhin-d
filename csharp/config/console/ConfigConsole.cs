@@ -15,9 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.ServiceModel;
-
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Client.SettingsManager;
 using Health.Direct.Config.Console.Command;
 using Health.Direct.Config.Store;
 using Health.Direct.Config.Tools.Command;
@@ -34,6 +34,8 @@ namespace Health.Direct.Config.Console
         private CertificateStoreClient m_certificateClient;
         private AnchorStoreClient m_anchorClient;
         private DnsRecordManagerClient m_dnsRecordClient;
+        private PropertyManagerClient m_propertyClient;
+        private BlobManagerClient m_blobClient;
         
         internal ConfigConsole(ConsoleSettings settings)
         {
@@ -49,6 +51,8 @@ namespace Health.Direct.Config.Console
             m_commands.Register(new CertificateCommands(this, () => m_certificateClient));
             m_commands.Register(new DomainCommands(this, () => m_domainClient, () => m_addressClient));
             m_commands.Register(new DnsRecordCommands(this, () => m_dnsRecordClient));
+            m_commands.Register(new PropertyCommands(this, () => m_propertyClient));
+            m_commands.Register(new BlobCommands(this, () => m_blobClient));
             m_commands.Register(new SettingsCommands(this));
             m_commands.Register(new TestCommands(this));
 
@@ -72,6 +76,14 @@ namespace Health.Direct.Config.Console
             m_certificateClient = m_settings.CertificateManager.CreateCertificateStoreClient();
             m_dnsRecordClient = m_settings.DnsRecordManager.CreateDnsRecordManagerClient();
             m_anchorClient = m_settings.AnchorManager.CreateAnchorStoreClient();
+            if (m_settings.PropertyManager != null)
+            {
+                m_propertyClient = m_settings.PropertyManager.CreatePropertyManagerClient();
+            }
+            if (m_settings.BlobManager != null)
+            {
+                m_blobClient = m_settings.BlobManager.CreateBlobManagerClient();
+            }
         }
         
         bool Run(string[] args)

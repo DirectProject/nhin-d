@@ -70,6 +70,7 @@
     <Compile Include="ConfigStore.cs" />
     <Compile Include="ConfigDatabase.cs" />
     <Compile Include="ConfigStoreException.cs" />
+    <Compile Include="PropertyManager.cs" />
     <Compile Include="DateTimeHelper.cs" />
     <Compile Include="DnsRecord.cs" />
     <Compile Include="DnsRecordManager.cs" />
@@ -79,8 +80,15 @@
     <Compile Include="DomainQueries.cs" />
     <Compile Include="EntityStatus.cs" />
     <Compile Include="PasswordHash.cs" />
+    <Compile Include="Property.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NamedBlobManager.cs" />
+    <Compile Include="PropertyQueries.cs" />
     <Compile Include="Queries.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NamedBlob.cs" />
+    <Compile Include="NamedBlobQueries.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
