@@ -63,7 +63,7 @@ namespace Health.Direct.Common.Mail
         /// <param name="from">The <c>From</c> header value.</param>
         public Message(string to, string from)
         {
-            this.AddToFromHeaders(to, from);
+            this.EnsureHeaders(to, from);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Health.Direct.Common.Mail
         public Message(string to, string from, string bodyText, string contentType)
             : base(bodyText, contentType)
         {
-            this.AddToFromHeaders(to, from);
+            this.EnsureHeaders(to, from);
         }
 
         /// <summary>
@@ -97,13 +97,7 @@ namespace Health.Direct.Common.Mail
         {
             get
             {
-                HeaderCollection headers = base.Headers;
-                if (headers.Count == 0)
-                {
-                    headers.Add(MailStandard.VersionHeader, "1.0");
-                }
-                
-                return base.Headers;
+                return base.Headers;                
             }
             set
             {
@@ -386,8 +380,29 @@ namespace Health.Direct.Common.Mail
             return signableEntity;
         }                        
         
-        void AddToFromHeaders(string to, string from)
+        /// <summary>
+        /// Inject a timestamp (Date header) into the message.
+        /// This will overrwrite any existing Date header
+        /// </summary>        
+        public void Timestamp()
         {
+            this.DateValue = DateTime.Now.ToString("d MMM yyyy HH:mm:ss.ffffzzz");
+        }
+        
+        /// <summary>
+        /// Ensure that the message has the appropriate h
+        /// </summary>
+        public void EnsureMimeVersion()
+        {
+            if (!this.Headers.Contains(MailStandard.VersionHeader))
+            {
+                this.Headers.Add(MailStandard.VersionHeader, "1.0");
+            }
+        }
+        
+        void EnsureHeaders(string to, string from)
+        {
+            this.EnsureMimeVersion();            
             if (!string.IsNullOrEmpty(to))
             {
                 this.Headers.Add(MailStandard.Headers.To, to);

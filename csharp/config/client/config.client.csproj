@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Health.Direct.Config.Store, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -84,6 +85,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="Service References\SettingsManager\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -106,6 +112,7 @@
     <WCFMetadataStorage Include="Service References\CertificateService\" />
     <WCFMetadataStorage Include="Service References\DomainManager\" />
     <WCFMetadataStorage Include="Service References\RecordRetrieval\" />
+    <WCFMetadataStorage Include="Service References\SettingsManager\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Service References\CertificateService\CertificateService.wsdl" />
@@ -195,6 +202,29 @@
   <ItemGroup>
     <None Include="Properties\DataSources\Health.Direct.Config.Store.Administrator.datasource" />
     <None Include="Service References\AuthManager\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\SettingsManager\SettingsManager.wsdl" />
+    <None Include="Service References\SettingsManager\SettingsManager.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\SettingsManager\SettingsManager.disco" />
+    <None Include="Service References\SettingsManager\SettingsManager1.wsdl" />
+    <None Include="Service References\SettingsManager\SettingsManager1.xsd" />
+    <None Include="Service References\SettingsManager\SettingsManager2.xsd" />
+    <None Include="Service References\SettingsManager\SettingsManager3.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\SettingsManager\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\SettingsManager\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.NamedBlob.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Property.datasource" />
+    <None Include="Service References\SettingsManager\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
