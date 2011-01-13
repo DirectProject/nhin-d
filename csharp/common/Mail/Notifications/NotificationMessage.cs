@@ -117,6 +117,8 @@ namespace Health.Direct.Common.Mail.Notifications
                 notificationMessage.SubjectValue = string.Format("{0}:{1}", notification.Disposition.Notification.AsString(), originalSubject);
             }
 
+            notificationMessage.Timestamp();
+            
             return notificationMessage;
         }       
     }

@@ -167,6 +167,16 @@ namespace Health.Direct.Common.Mime
         }
         
         /// <summary>
+        /// Returns true if the collection contains a header with the given name
+        /// </summary>
+        /// <param name="name">The name of the header to look for</param>
+        /// <returns>true if a header was found else false</returns>
+        public bool Contains(string name)
+        {
+            return (this.IndexOf(name) >= 0);
+        }
+        
+        /// <summary>
         /// Adds a named header with an associated value to this collection.
         /// </summary>
         /// <example>

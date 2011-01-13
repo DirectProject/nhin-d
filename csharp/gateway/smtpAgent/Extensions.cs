@@ -93,7 +93,7 @@ namespace Health.Direct.SmtpAgent
     
             int countRead = 0;
             string block = null;
-            StringBuilder builder = new StringBuilder(blockSize);
+            StringBuilder builder = new StringBuilder(size);
             while (countRead < size)
             {
                 block = stream.ReadText(blockSize);

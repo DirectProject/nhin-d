@@ -100,7 +100,7 @@ namespace Health.Direct.Config.Store
             set;
         }
 
-        [Column(Name = "CertificateData", DbType = "varbinary(MAX)", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "CertificateData", DbType = "varbinary(MAX)", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public byte[] Data
         {

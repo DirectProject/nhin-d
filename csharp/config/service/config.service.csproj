@@ -64,6 +64,7 @@
     <Content Include="AuthManagerService.svc" />
     <Content Include="DomainManagerService.svc" />
     <Content Include="CertificateService.svc" />
+    <Content Include="SettingsManager.svc" />
     <Content Include="TestService.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -77,6 +78,7 @@
     <Compile Include="CertificateGetOptions.cs" />
     <Compile Include="ConfigServiceBase.cs" />
     <Compile Include="IAuthManager.cs" />
+    <Compile Include="IBlobManager.cs" />
     <Compile Include="IDnsRecordManager.cs" />
     <Compile Include="DomainManagerService.svc.cs">
       <DependentUpon>DomainManagerService.svc</DependentUpon>
@@ -86,11 +88,15 @@
     </Compile>
     <Compile Include="IAddressManager.cs" />
     <Compile Include="IDomainManager.cs" />
+    <Compile Include="IPropertyManager.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="IAnchorStore.cs" />
     <Compile Include="ICertificateStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceSettings.cs" />
+    <Compile Include="SettingsManager.svc.cs">
+      <DependentUpon>SettingsManager.svc</DependentUpon>
+    </Compile>
     <Compile Include="TestService.aspx.cs">
       <DependentUpon>TestService.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

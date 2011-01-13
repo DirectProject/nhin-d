@@ -16,6 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections;
 using System.Text;
+using System.Xml.Serialization;
+using System.IO;
+using System.Xml;
 
 namespace Health.Direct.Common.Extensions
 {
@@ -127,6 +130,92 @@ namespace Health.Direct.Common.Extensions
         public static void Append<T>(this StringBuilder builder, T value)
         {
             builder.Append(value.ToString());
+        }
+    }
+    
+    /// <summary>
+    /// Extensions for the <see cref="XmlSerializer"/>
+    /// </summary>
+    public static class XmlSerializerExtensions
+    {
+        static XmlWriterSettings s_settings = new XmlWriterSettings()
+        {
+            Indent = false,
+            OmitXmlDeclaration = true            
+        };
+
+        /// <summary>
+        /// Serialize the given object to a byte array
+        /// </summary>
+        /// <param name="serializer">This serializer</param>
+        /// <param name="obj">object to serialize</param>
+        /// <returns>Serialized bytes</returns>
+        public static byte[] ToBytes(this XmlSerializer serializer, object obj)
+        {
+            using(MemoryStream stream = new MemoryStream())
+            {
+                using (XmlWriter xmlWriter = XmlWriter.Create(stream, s_settings))
+                {
+                    serializer.Serialize(stream, obj);
+                }
+                return stream.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Serialize the given object to a string
+        /// </summary>
+        /// <param name="serializer">This serializer</param>
+        /// <param name="obj">object to serialize</param>
+        /// <returns>Serialized bytes</returns>
+        public static string ToXml(this XmlSerializer serializer, object obj)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                using(XmlWriter xmlWriter = XmlWriter.Create(writer, s_settings))
+                {
+                    serializer.Serialize(writer, obj);
+                }
+                return writer.ToString();
+            }
+        }
+        
+        /// <summary>
+        /// Deserialize the given  object from a byte array
+        /// </summary>
+        /// <param name="serializer">This serializer</param>
+        /// <param name="bytes">bytes from which to deserialize the object</param>
+        /// <returns>deserialized object</returns>
+        public static object FromBytes(this XmlSerializer serializer, byte[] bytes)
+        {
+            if (bytes.IsNullOrEmpty())
+            {
+                throw new ArgumentException("bytes");
+            }
+            
+            using(MemoryStream stream = new MemoryStream(bytes))
+            {
+                return serializer.Deserialize(stream);
+            }
+        }
+
+        /// <summary>
+        /// Deserialize the given  object from an Xml
+        /// </summary>
+        /// <param name="serializer">This serializer</param>
+        /// <param name="xml">xml from which to deserialize the object</param>
+        /// <returns>deserialized object</returns>
+        public static object FromXml(this XmlSerializer serializer, string xml)
+        {
+            if (string.IsNullOrEmpty(xml))
+            {
+                throw new ArgumentException("xml");
+            }
+
+            using (StringReader reader = new StringReader(xml))
+            {
+                return serializer.Deserialize(reader);
+            }
         }
     }
 }
