@@ -56,7 +56,7 @@ namespace Health.Direct.Config.Store
 
             if (record == null)
             {
-                throw new ConfigStoreException(ConfigStoreError.InvaildDnsRecord);
+                throw new ConfigStoreException(ConfigStoreError.InvalidDnsRecord);
             }
             db.DnsRecords.InsertOnSubmit(record);
         }
@@ -309,7 +309,7 @@ namespace Health.Direct.Config.Store
 
             if (dnsRecord == null)
             {
-                throw new ConfigStoreException(ConfigStoreError.InvaildDnsRecord);
+                throw new ConfigStoreException(ConfigStoreError.InvalidDnsRecord);
             }
 
             DnsRecord update = new DnsRecord();

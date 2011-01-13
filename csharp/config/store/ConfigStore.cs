@@ -23,14 +23,16 @@ namespace Health.Direct.Config.Store
 
         public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
 
-        readonly string m_connectString;
+        string m_connectString;
         TimeSpan m_timeout;
-        readonly DomainManager m_domains;
-        readonly AddressManager m_addresses;
-        readonly CertificateManager m_certificates;
-        readonly AnchorManager m_anchors;
-        readonly DnsRecordManager m_dnsRecords;
-        readonly AdministratorManager m_administrators;
+        DomainManager m_domains;
+        AddressManager m_addresses;
+        CertificateManager m_certificates;
+        AnchorManager m_anchors;
+        DnsRecordManager m_dnsRecords;
+        AdministratorManager m_administrators;
+        PropertyManager m_properties;
+        NamedBlobManager m_blobs;
         
         public ConfigStore(string connectString)
             : this(connectString, DefaultTimeout)
@@ -56,6 +58,8 @@ namespace Health.Direct.Config.Store
             m_anchors = new AnchorManager(this);
             m_dnsRecords = new DnsRecordManager(this);
             m_administrators = new AdministratorManager(this);
+            m_properties = new PropertyManager(this);
+            m_blobs = new NamedBlobManager(this);
         }
 
         public TimeSpan Timeout
@@ -130,7 +134,23 @@ namespace Health.Direct.Config.Store
                 return m_administrators;
             }
         }
-                
+        
+        public PropertyManager Properties
+        {
+            get
+            {
+                return m_properties;
+            }
+        }
+        
+        public NamedBlobManager Blobs
+        {
+            get
+            {
+                return m_blobs;
+            }
+        }
+        
         public ConfigDatabase CreateContext()
         {
             return new ConfigDatabase(m_connectString) {CommandTimeout = this.TimeoutSeconds};

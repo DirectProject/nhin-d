@@ -16,10 +16,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Xml.Serialization;
 using System.ServiceModel;
-
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Client.RecordRetrieval;
+using Health.Direct.Config.Client.SettingsManager;
 
 namespace Health.Direct.Config.Client
 {
@@ -208,6 +208,16 @@ namespace Health.Direct.Config.Client
         {
             return new RecordRetrievalServiceClient(this.Binding
                 , this.Endpoint);
+        }
+        
+        public PropertyManagerClient CreatePropertyManagerClient()
+        {
+            return new PropertyManagerClient(this.Binding, this.Endpoint);
+        }
+
+        public BlobManagerClient CreateBlobManagerClient()
+        {
+            return new BlobManagerClient(this.Binding, this.Endpoint);
         }
     }
 }
