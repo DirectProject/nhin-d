@@ -78,6 +78,14 @@ namespace Health.Direct.Config.Console.Command
             = "Add a new NS dns record if an identical one does not exist."
               + Constants.CRLF + DnsRecordParser.ParseNSUsage;
 
+        private const string AddCNAMEUsage
+            = "Add a new NS dns record."
+              + Constants.CRLF + DnsRecordParser.ParseCNAMEUsage;
+
+        private const string EnsureCNAMEUsage
+            = "Add a new NS dns record if an identical one does not exist."
+              + Constants.CRLF + DnsRecordParser.ParseCNAMEUsage;
+
         private const string RemoveRecordUsage
              = "Remove an existing record by its ID."
               + Constants.CRLF + "  recordid"
@@ -104,6 +112,12 @@ namespace Health.Direct.Config.Console.Command
              = "Gets an existing NS record by ID."
               + Constants.CRLF + "  recordid"
               + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
+
+        private const string GetCNAMEUsage
+             = "Gets an existing CName record by ID."
+              + Constants.CRLF + "  recordid"
+              + Constants.CRLF + "\t recordid: record id to be retrieved from the database";
+              
         #endregion
 
         DnsRecordPrinter m_printer;
@@ -299,6 +313,29 @@ namespace Health.Direct.Config.Console.Command
         }
 
         /// <summary>
+        /// Add a new NS DnsRecord entry to the db
+        /// </summary>
+        /// <param name="args"></param>
+        [Command(Name = "Dns_CNAME_Add", Usage = AddCNAMEUsage)]
+        public void AddCNAME(string[] args)
+        {
+            DnsRecord record = m_parser.ParseCNAME(args);
+            Client.AddDnsRecord(record);
+        }
+
+        [Command(Name = "Dns_CNAME_Ensure", Usage = EnsureCNAMEUsage)]
+        public void EnsureCNAME(string[] args)
+        {
+            DnsRecord record = m_parser.ParseCNAME(args);
+            if (!this.VerifyIsUnique(record, false))
+            {
+                return;
+            }
+
+            Client.AddDnsRecord(record);
+        }
+
+        /// <summary>
         /// Removes an existing MX DnsRecord entry to the db
         /// </summary>
         /// <param name="args"></param>
@@ -347,6 +384,16 @@ namespace Health.Direct.Config.Console.Command
         public void GetNS(string[] args)
         {
             this.Get<NSRecord>(args.GetRequiredValue<long>(0));
+        }
+
+        /// <summary>
+        /// Gets an existing ANAME DnsRecord entry from the db
+        /// </summary>
+        /// <param name="args"></param>
+        [Command(Name = "Dns_CNAME_Get", Usage = GetCNAMEUsage)]
+        public void GetCNAME(string[] args)
+        {
+            this.Get<CNameRecord>(args.GetRequiredValue<long>(0));
         }
         
         void Get<T>(long recordID)
@@ -398,6 +445,12 @@ namespace Health.Direct.Config.Console.Command
         public void MatchNS(string[] args)
         {
             this.Match(args.GetRequiredValue(0), DnsStandard.RecordType.NS);
+        }
+
+        [Command(Name = "Dns_CNAME_Match", Usage = "Resolve CNAME records for the given domain")]
+        public void MatchCNAME(string[] args)
+        {
+            this.Match(args.GetRequiredValue(0), DnsStandard.RecordType.CNAME);
         }
         
         void Match(string domain, DnsStandard.RecordType type)
@@ -530,9 +583,16 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + "\t [notes]: description for the record";
 
         public const string ParseNSUsage =
-              "  domainname nameserver [notes]"
+              "  domainname nameserver [ttl] [notes]"
               + Constants.CRLF + "\t domainname: domain name for the record"
               + Constants.CRLF + "\t nameserver: nameserver"
+              + Constants.CRLF + "\t [ttl]: time to live in seconds"
+              + Constants.CRLF + "\t [notes]: description for the record";
+
+        public const string ParseCNAMEUsage =
+              "  domainname cname [ttl] [notes]"
+              + Constants.CRLF + "\t domainname: domain name for the record"
+              + Constants.CRLF + "\t cname: alias for this domain"
               + Constants.CRLF + "\t [ttl]: time to live in seconds"
               + Constants.CRLF + "\t [notes]: description for the record";
         
@@ -597,6 +657,15 @@ namespace Health.Direct.Config.Console.Command
             return dnsRecord;
         }
         
+        /// <summary>
+        /// Arguments:
+        /// 0: domainName
+        /// 1: nameServer
+        /// 2: ttl (optional)
+        /// 3: notes (optional)
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public DnsRecord ParseNS(string[] args)
         {
             string domainName = args.GetRequiredValue(0);
@@ -604,14 +673,26 @@ namespace Health.Direct.Config.Console.Command
             int ttl = this.ValidateTTL(args.GetOptionalValue<int>(2, 0));
             string notes = args.GetOptionalValue(3, string.Empty);
             
-            NSRecord nsRecord = new NSRecord(domainName, nameServer);
+            NSRecord nsRecord = new NSRecord(domainName, nameServer) {TTL = ttl};
             DnsRecord dnsRecord = new DnsRecord(domainName, DnsStandard.RecordType.NS, nsRecord.Serialize(), notes);
             return dnsRecord;
         }
         
+        public DnsRecord ParseCNAME(string[] args)
+        {
+            string domainName = args.GetRequiredValue(0);
+            string cname = args.GetRequiredValue(1);
+            int ttl = this.ValidateTTL(args.GetOptionalValue<int>(2, 0));
+            string notes = args.GetOptionalValue(3, string.Empty);
+
+            CNameRecord cnameRecord = new CNameRecord(domainName, cname) {TTL = ttl};
+            DnsRecord dnsRecord = new DnsRecord(domainName, DnsStandard.RecordType.CNAME, cnameRecord.Serialize(), notes);
+            return dnsRecord;
+        }
+                
         int ValidateTTL(int ttl)
         {
-            if (ttl <= 0)
+            if (ttl < 0)
             {
                 throw new ArgumentException(string.Format("Invalid TTL {0}", ttl));
             }

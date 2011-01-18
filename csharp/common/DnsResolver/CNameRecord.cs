@@ -40,6 +40,17 @@ namespace Health.Direct.Common.DnsResolver
         }
         
         /// <summary>
+        /// Create a new CNameRecord
+        /// </summary>
+        /// <param name="name">the domain name for which this is a record</param>
+        /// <param name="cname">the cname (alias) for this domain</param>
+        public CNameRecord(string name, string cname)
+            : base(name, DnsStandard.RecordType.CNAME)
+        {
+            this.CName = cname;
+        }
+        
+        /// <summary>
         /// Gets and sets the CName as a string (a dotted domain name)
         /// </summary>
         public string CName
@@ -58,6 +69,28 @@ namespace Health.Direct.Common.DnsResolver
                 m_name = value;
             }
         }
+
+        /// <summary>
+        /// Tests equality between this CName record and the other <paramref name="record"/>.
+        /// </summary>
+        /// <param name="record">The other record.</param>
+        /// <returns><c>true</c> if the RRs are equal, <c>false</c> otherwise.</returns>
+        public override bool Equals(DnsResourceRecord record)
+        {
+            if (!base.Equals(record))
+            {
+                return false;
+            }
+
+            CNameRecord cnameRecord = record as CNameRecord;
+            if (cnameRecord == null)
+            {
+                return false;
+            }
+
+            return (DnsStandard.Equals(m_name, cnameRecord.CName));
+        }
+        
         /// <summary>
         /// Serialize the CName record
         /// </summary>

@@ -75,7 +75,7 @@ namespace Health.Direct.Common.DnsResolver
                 || header.IsTruncated
                 )                
             {
-                throw new DnsProtocolException(DnsProtocolError.InvalidRequest);
+                throw new DnsProtocolException(DnsProtocolError.InvalidRequest, this.CollectLogInfo());
             }
         }
              
@@ -147,6 +147,20 @@ namespace Health.Direct.Common.DnsResolver
         public static DnsRequest CreateSOA(string domain)
         {
             return new DnsRequest(DnsStandard.RecordType.SOA, domain);
+        }
+        
+        internal string CollectLogInfo()       
+        {
+            try
+            {
+                DnsHeader header = this.Header;
+                return string.Format("{0};IsRequest={1};IsTruncated={2}", this.Question.CollectLogInfo(), header.IsRequest, header.IsTruncated);
+            }
+            catch
+            {
+            }
+            
+            return string.Empty;
         }
     }
 }
