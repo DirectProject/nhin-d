@@ -176,6 +176,7 @@ namespace Health.Direct.Common.DnsResolver
         /// Intializes an exception with the specified <paramref name="error"/>
         /// </summary>
         /// <param name="error">The specific error subtype.</param>
+        /// <param name="message">message associated with this exception</param>
         public DnsProtocolException(DnsProtocolError error, string message)
             : base(message)
         {
