@@ -167,5 +167,10 @@ namespace Health.Direct.Common.DnsResolver
             buffer.AddShort((short)Type);
             buffer.AddShort((short)Class);
         }
+
+        internal string CollectLogInfo()
+        {
+            return string.Format("{0};{1}", this.Type, this.Domain);
+        }
     }
 }

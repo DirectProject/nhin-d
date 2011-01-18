@@ -171,6 +171,16 @@ namespace Health.Direct.Common.DnsResolver
         {
             m_error = error;
         }
+
+        /// <summary>
+        /// Intializes an exception with the specified <paramref name="error"/>
+        /// </summary>
+        /// <param name="error">The specific error subtype.</param>
+        public DnsProtocolException(DnsProtocolError error, string message)
+            : base(message)
+        {
+            m_error = error;
+        }
         
         /// <summary>
         /// The error subtype.
