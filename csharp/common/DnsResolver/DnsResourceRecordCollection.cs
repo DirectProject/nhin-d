@@ -200,7 +200,7 @@ namespace Health.Direct.Common.DnsResolver
                 }
             }
             
-            return (ttl == int.MaxValue) ? 0 : ttl;
+            return (ttl == int.MaxValue || ttl < 0) ? 0 : ttl;
         }
     }
 }
