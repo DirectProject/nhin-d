@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  */
 using System;
 using System.Collections.Generic;
-
+using Health.Direct.Common.Caching;
 using Health.Direct.Common.Dns;
 using Health.Direct.Common.DnsResolver;
 
@@ -28,7 +28,7 @@ namespace Health.Direct.Common.Tests.Caching
     {
         // set this to true if dump statements are needed for debugging purposes
         private const bool DumpIsEnabled = false;
-
+        DnsResponseCache m_cache;
         private readonly DnsClientWithCache m_client;
         private readonly DnsClient m_clientNoCache;
 
@@ -62,7 +62,8 @@ namespace Health.Direct.Common.Tests.Caching
         public DnsClientWithCacheFacts()
             : base(DumpIsEnabled)
         {
-            m_client = new DnsClientWithCache(PublicDns) { Timeout = TimeSpan.FromSeconds(10) };
+            m_cache = new DnsResponseCache(Guid.NewGuid().ToString("D"));
+            m_client = new DnsClientWithCache(PublicDns) { Timeout = TimeSpan.FromSeconds(10), Cache = m_cache};
             m_clientNoCache = new DnsClient(PublicDns) { Timeout = TimeSpan.FromSeconds(10) };
         }
 
@@ -71,6 +72,7 @@ namespace Health.Direct.Common.Tests.Caching
         /// </summary>
         public void Dispose()
         {
+            m_cache.RemoveAll();
             m_client.Dispose();
         }
 
@@ -89,7 +91,7 @@ namespace Health.Direct.Common.Tests.Caching
         public void ResolveAEnsureInCache(string domain)
         {
             // try with ResolveCert
-            Dump("Attempting to resolve CERT records for [{0}]", domain);
+            Dump("Attempting to resolve A records for [{0}]", domain);
 
             IEnumerable<AddressRecord> results = m_client.ResolveA(domain);
             Assert.True(results != null, domain);
@@ -99,7 +101,7 @@ namespace Health.Direct.Common.Tests.Caching
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }
-
+        
         /// <summary>
         /// Confirms ability of code to resolve certs using the dns caching client method ResolveCERT, ensures items are in cache
         /// </summary>
@@ -174,7 +176,7 @@ namespace Health.Direct.Common.Tests.Caching
         public void ResolveTXTEnsureInCache(string domain)
         {
             // try with ResolveCert
-            Dump("Attempting to resolve MX records for [{0}]", domain);
+            Dump("Attempting to resolve TXT records for [{0}]", domain);
 
             IEnumerable<TextRecord> results = m_client.ResolveTXT(domain);
             Dump("ensuring that results were returned");
@@ -197,7 +199,7 @@ namespace Health.Direct.Common.Tests.Caching
         public void ResolvePTREnsureInCache(string domain)
         {
             // try with ResolveCert
-            Dump("Attempting to resolve MX records for [{0}]", domain);
+            Dump("Attempting to resolve PTR records for [{0}]", domain);
 
             IEnumerable<PtrRecord> results = m_client.ResolvePTR(domain);
             Dump("ensuring that results were returned");
@@ -220,7 +222,7 @@ namespace Health.Direct.Common.Tests.Caching
         public void ResolveNSEnsureInCache(string domain)
         {
             // try with ResolveCert
-            Dump("Attempting to resolve MX records for [{0}]", domain);
+            Dump("Attempting to resolve NS records for [{0}]", domain);
 
             IEnumerable<NSRecord> results = m_client.ResolveNS(domain);
             Dump("ensuring that results were returned");
@@ -243,7 +245,7 @@ namespace Health.Direct.Common.Tests.Caching
         public void ResolveSOAEnsureInCache(string domain)
         {
             // try with ResolveCert
-            Dump("Attempting to resolve MX records for [{0}]", domain);
+            Dump("Attempting to resolve SOA records for [{0}]", domain);
             IEnumerable<SOARecord> results = m_client.ResolveSOA(domain);
             Dump("ensuring that results were returned");
             Assert.True(results != null, domain);

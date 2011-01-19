@@ -4,7 +4,8 @@
 
  Authors:
     Chris Lomonico chris.lomonico@surescripts.com
-  
+    Umesh Madan     umeshma@microsoft.com
+ 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -22,13 +23,6 @@ using System.Web.Caching;
 namespace Health.Direct.Common.Caching
 {
     /// <summary>
-    /// Delegate used for simple event signature
-    /// </summary>
-    /// <param name="sender">Object that fired the event</param>
-    /// <param name="key">String value intended to denote the key of the item</param>
-    public delegate void SimplestringEventDel(Object sender, string key);
-
-    /// <summary>
     /// Provides abstract, base implementation for typed cache class
     /// </summary>
     /// <typeparam name="T">Type of Class which will be stored in the cache</typeparam>
@@ -38,29 +32,33 @@ namespace Health.Direct.Common.Caching
         /// Dictionary used for local resolution of keys as opposed to having to hit 
         /// the cache for related counts, contains etc
         /// </summary>
-        protected Dictionary<string, string> m_keys;
-
+        HashSet<string> m_keys;
         /// <summary>
         /// Locking mechanism used to enforce thread saftey
         /// </summary>
-        protected ReaderWriterLockSlim m_lock;
-
-        /// <summary>
-        /// Event for notification of an item's expiration from the cache
-        /// </summary>
-        public event SimplestringEventDel CacheItemExpired;
-
-        /// <summary>
-        /// Flag for indicating whether or not to ignore expiration during cleansing of cache
-        /// </summary>
-        protected bool m_ignoreExpiration = false;
+        ReaderWriterLockSlim m_lock;
+        CacheItemRemovedCallback m_removeCallback;        
+        CacheItemPriority m_priority;
         
         /// <summary>
-        /// Implementation for this property should be provided by the extending class to set the class-level 
-        /// TTL timepsane for items stored in the cache
+        /// Initializes a new instance of CachingBase
         /// </summary>
-        protected abstract TimeSpan TimeToLive { get; }
-
+        protected CachingBase()
+            : this(CacheItemPriority.Normal)
+        {
+        }
+                
+        /// <summary>
+        /// Initializes a new instance of the <b>CachingBase[V];</b> class.
+        /// </summary>
+        protected CachingBase(CacheItemPriority priority)
+        {
+            m_keys = new HashSet<string>();
+            m_lock = new ReaderWriterLockSlim();
+            m_removeCallback = new CacheItemRemovedCallback(this.OnCachedItemRemoved);
+            m_priority = priority;
+        }
+        
         /// <summary>
         /// Gets the CacheCount of the CachingBase
         /// </summary>
@@ -72,32 +70,34 @@ namespace Health.Direct.Common.Caching
                 return m_keys.Count;
             }
         }
-
+        
         /// <summary>
-        /// Initializes a new instance of the <b>CachingBase[V];</b> class.
+        /// Event for notification of an item's expiration from the cache
         /// </summary>
-        protected CachingBase()
-        {
-            m_keys = new Dictionary<string,string>();
-            m_lock = new ReaderWriterLockSlim();
-        }
-
+        public event Action<CachingBase<T>, string> CacheItemExpired;
+        
         /// <summary>
         /// Gets a value out of the cache denoted by the key suffix supplied
         /// </summary>
         /// <param name="key">String containing the suffix of the key for the desired item in the cache</param>
         /// <returns>Instance of type <typeparamref name="T"/> if found in cache; otherwise <c>null</c></returns>
-        protected virtual T Get(string key)
+        public virtual T Get(string key)
         {
             if (key == null)
             {
                 throw new ArgumentNullException("key");
             }
-
-            key = CanonicalKey(key);
-
-            // attempt to return the value from the cache;
-            return HttpRuntime.Cache[key] as T;
+        
+            m_lock.EnterReadLock();
+            try
+            {
+                // attempt to return the value from the cache;
+                return HttpRuntime.Cache[key] as T;
+            }
+            finally
+            {
+                m_lock.ExitReadLock();
+            }
         }
 
         /// <summary>
@@ -108,10 +108,9 @@ namespace Health.Direct.Common.Caching
         /// </remarks>
         /// <param name="key">string containing the unqiue key of the item</param>
         /// <param name="value">value to be stored in the cache</param>
-        protected virtual void Put(string key
-                                   , T value)
+        protected virtual void Put(string key, T value)
         {
-            Put(key, value, TimeToLive);
+            Put(key, value, null);
         }
 
         /// <summary>
@@ -124,9 +123,7 @@ namespace Health.Direct.Common.Caching
         /// <param name="key">String suffix for the key referencing the item in the cache</param>
         /// <param name="value">Instance of the type <typeparamref name="T"/> to be added to the cache</param>
         /// <param name="ttl">Timepsan used to denote the duration of an items existence in the cache</param>
-        protected virtual void Put(string key
-                                   , T value
-                                   , TimeSpan ttl)
+        protected virtual void Put(string key, T value, TimeSpan? ttl)
         {
             if (key == null)
             {
@@ -137,40 +134,28 @@ namespace Health.Direct.Common.Caching
                 throw new ArgumentNullException("value");
             }
 
-            key = CanonicalKey(key);
-            m_lock.EnterUpgradeableReadLock();
-
+            m_lock.EnterWriteLock();
             try
             {
                 // make use of insert to replace an existing item matching the key in the cache
                 HttpRuntime.Cache.Insert(key
                                          , value
                                          , null
-                                         , DateTime.Now.Add(ttl)
+                                         , (ttl != null) ? DateTime.UtcNow.Add(ttl.Value) : Cache.NoAbsoluteExpiration
                                          , Cache.NoSlidingExpiration
-                                         , CacheItemPriority.High
-                                         , new CacheItemRemovedCallback(CachedItemRemovedCallBack))
+                                         , m_priority
+                                         , m_removeCallback)
                     ;
 
                 // check to see if the item exists already in the list of keys, if not add it in
-                if (!m_keys.ContainsKey(key))
+                if (!m_keys.Contains(key))
                 {
-                    // enter write lock mode
-                    m_lock.EnterWriteLock();
-                    try
-                    {
-                        m_keys.Add(key, key);
-                    }
-                    finally
-                    {
-                        m_lock.ExitWriteLock();
-                    }
+                    m_keys.Add(key);
                 }
             }
             finally
             {
-                // exit out of the upgradeable lock
-                m_lock.ExitUpgradeableReadLock();
+                m_lock.ExitWriteLock();
             }
         }
 
@@ -183,7 +168,7 @@ namespace Health.Direct.Common.Caching
         /// <param name="key">String containing the key of the item that was removed</param>
         /// <param name="value">Object that was removed from the cache</param>
         /// <param name="reason">Reason as to why object was invalidated in the cache</param>
-        protected void CachedItemRemovedCallBack(string key
+        protected void OnCachedItemRemoved(string key
                                                  , object value
                                                  , CacheItemRemovedReason reason)
         {
@@ -191,22 +176,24 @@ namespace Health.Direct.Common.Caching
             {
                 throw new ArgumentNullException("key");
             }
-
-            // if remove all has been called ignore expiration
-            if (m_ignoreExpiration || reason != CacheItemRemovedReason.Expired) { return; }
-
-            m_lock.EnterWriteLock();
-
-            try
+            
+            if (reason != CacheItemRemovedReason.Removed) 
             {
-                m_keys.Remove(key);
+                m_lock.EnterWriteLock();
+                try
+                {
+                    m_keys.Remove(key);
+                }
+                catch
+                {
+                }
+                finally
+                {
+                    m_lock.ExitWriteLock();
+                }
+                
+                NotifyExpired(key);
             }
-            finally
-            {
-                m_lock.ExitWriteLock();
-            }
-
-            OnCacheItemExpired(key);
         }
 
         /// <summary>
@@ -220,14 +207,14 @@ namespace Health.Direct.Common.Caching
                 throw new ArgumentNullException("key");
             }
 
-            key = CanonicalKey(key);
-
             m_lock.EnterWriteLock();
-
             try
             {
-                m_keys.Remove(key);
                 HttpRuntime.Cache.Remove(key);
+                m_keys.Remove(key);
+            }
+            catch
+            {
             }
             finally
             {
@@ -247,18 +234,18 @@ namespace Health.Direct.Common.Caching
         public virtual void RemoveAll()
         {
             m_lock.EnterWriteLock();
-            m_ignoreExpiration = true;
-
             try
             {
                 // remove each matching item from the cache
-                foreach (string key in m_keys.Keys)
+                foreach (string key in m_keys)
                 {
                     try
                     {
                         HttpRuntime.Cache.Remove(key);
                     }
-                    catch { }
+                    catch 
+                    { 
+                    }
                 }
 
                 // clear out the list of keys
@@ -266,7 +253,6 @@ namespace Health.Direct.Common.Caching
             }
             finally
             {
-                m_ignoreExpiration = false;
                 m_lock.ExitWriteLock();
             }
         }
@@ -275,28 +261,24 @@ namespace Health.Direct.Common.Caching
         /// Method to raise event if event is subscribed to
         /// </summary>
         /// <param name="key">String containing the key of the item in the cache that expired</param>
-        protected void OnCacheItemExpired(string key)
+        void NotifyExpired(string key)
         {
             if (key == null)
             {
                 throw new ArgumentNullException("key");
             }
-
-            SimplestringEventDel cacheItemExpired = CacheItemExpired;
+            
+            Action<CachingBase<T>, string> cacheItemExpired = CacheItemExpired;
             if (cacheItemExpired != null)
             {
-                cacheItemExpired(this, key);
+                try
+                {
+                    cacheItemExpired(this, key);
+                }
+                catch
+                {
+                }
             }
-        }
-
-        /// <summary>
-        /// Returns the string key in lower case and extra whitespace has been trimmed.
-        /// </summary>
-        /// <param name="key">The key to change</param>
-        /// <returns>The lowercase and trimmed version of <paramref name="key"/></returns>
-        private static string CanonicalKey(string key)
-        {
-            return key.ToLower().Trim();
         }
     }
 }

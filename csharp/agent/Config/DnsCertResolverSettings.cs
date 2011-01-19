@@ -119,13 +119,11 @@ namespace Health.Direct.Agent.Config
         public override ICertificateResolver CreateResolver()
         {
             this.Validate();
-            //----------------------------------------------------------------------------------------------------
-            //---add property to toggle cache awareness; if true pass in cache instance
 
             return new DnsCertResolver(IPAddress.Parse(this.ServerIP), 
                                        TimeSpan.FromMilliseconds(this.TimeoutMilliseconds)
                                        , this.FallbackDomain
-                                       , m_cache);
+                                       , m_cache) {ResolveUsingRootServer = m_resolveFromRoot};
         }
     }
 }
