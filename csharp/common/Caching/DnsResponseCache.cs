@@ -113,17 +113,7 @@ namespace Health.Direct.Common.Caching
                 return;
             }
             
-            DnsResourceRecordCollection answers = response.AnswerRecords;
-            int ttl = int.MaxValue;
-            if (answers.Count == 1)
-            {
-                ttl = answers[0].TTL;
-            }
-            else
-            {
-                ttl = answers.GetMinTTL();
-            }
-            
+            int ttl = response.GetMinTTL(response.Question.Type);
             if (ttl <= 0)
             {
                 //
