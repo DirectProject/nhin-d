@@ -23,7 +23,6 @@ namespace Health.Direct.Common.DnsResolver
     /// </summary>
     public class DnsResourceRecordCollection : List<DnsResourceRecord>
     {
-
         /// <summary>
         /// Initializes an empty collection.
         /// </summary>
@@ -187,6 +186,21 @@ namespace Health.Direct.Common.DnsResolver
             {
                 this.Capacity = capacity;
             }
+        }
+        
+        internal int GetMinTTL()
+        {
+            int ttl = int.MaxValue;
+            for (int i = 0, count = this.Count; i < count; ++i)
+            {
+                int newTTL = this[i].TTL;
+                if (newTTL < ttl)
+                {
+                    ttl = newTTL;
+                }
+            }
+            
+            return (ttl == int.MaxValue) ? 0 : ttl;
         }
     }
 }
