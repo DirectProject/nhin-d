@@ -138,12 +138,17 @@ namespace Health.Direct.Common.Extensions
     /// </summary>
     public static class XmlSerializerExtensions
     {
-        static XmlWriterSettings s_settings = new XmlWriterSettings()
+        static XmlWriterSettings s_writerSettings = new XmlWriterSettings()
         {
             Indent = false,
             OmitXmlDeclaration = true            
         };
-
+        
+        static XmlReaderSettings s_readerSettings = new XmlReaderSettings()
+        {
+            ConformanceLevel = ConformanceLevel.Fragment
+        };
+        
         /// <summary>
         /// Serialize the given object to a byte array
         /// </summary>
@@ -154,7 +159,7 @@ namespace Health.Direct.Common.Extensions
         {
             using(MemoryStream stream = new MemoryStream())
             {
-                using (XmlWriter xmlWriter = XmlWriter.Create(stream, s_settings))
+                using (XmlWriter xmlWriter = XmlWriter.Create(stream, s_writerSettings))
                 {
                     serializer.Serialize(stream, obj);
                 }
@@ -172,7 +177,7 @@ namespace Health.Direct.Common.Extensions
         {
             using (StringWriter writer = new StringWriter())
             {
-                using(XmlWriter xmlWriter = XmlWriter.Create(writer, s_settings))
+                using(XmlWriter xmlWriter = XmlWriter.Create(writer, s_writerSettings))
                 {
                     serializer.Serialize(writer, obj);
                 }
@@ -195,7 +200,10 @@ namespace Health.Direct.Common.Extensions
             
             using(MemoryStream stream = new MemoryStream(bytes))
             {
-                return serializer.Deserialize(stream);
+                using(XmlReader reader = XmlReader.Create(stream, s_readerSettings))
+                {
+                    return serializer.Deserialize(reader);
+                }
             }
         }
 
@@ -214,7 +222,10 @@ namespace Health.Direct.Common.Extensions
 
             using (StringReader reader = new StringReader(xml))
             {
-                return serializer.Deserialize(reader);
+                using(XmlReader xmlReader = XmlReader.Create(reader, s_readerSettings))
+                {
+                    return serializer.Deserialize(xmlReader);
+                }
             }
         }
     }
