@@ -64,6 +64,7 @@
     <Compile Include="AdministratorManagerFacts.cs" />
     <Compile Include="AnchorFacts.cs" />
     <Compile Include="AnchorManagerFacts.cs" />
+    <Compile Include="BlobFacts.cs" />
     <Compile Include="CertificateFacts.cs" />
     <Compile Include="CertificateManagerFacts.cs" />
     <Compile Include="ConfigStoreTestBase.cs" />
