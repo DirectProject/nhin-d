@@ -127,7 +127,25 @@ namespace Health.Direct.Common.Caching
             // store the record in the cache
             Put(response, ts);
         }
-
+        
+        /// <summary>
+        /// Find a cached response based on the given Dns question
+        /// </summary>
+        /// <param name="question">dns question</param>
+        /// <returns>cached response, or null</returns>
+        public DnsResponse Get(DnsQuestion question)
+        {
+            try
+            {
+                return base.Get(this.BuildKey(question));
+            }
+            catch
+            {
+            }
+            
+            return null;
+        }
+        
         /// <summary>
         /// Gets an item from the cache using the DnsRequest to find the item
         /// </summary>
@@ -139,7 +157,8 @@ namespace Health.Direct.Common.Caching
             {
                 throw new ArgumentNullException("request");
             }
-            return base.Get(BuildKey(request.Question));
+            
+            return this.Get(request.Question);
         }
 
         /// <summary>
@@ -153,21 +172,8 @@ namespace Health.Direct.Common.Caching
             {
                 throw new ArgumentNullException("response");
             }
-            return base.Get(BuildKey(response.Question));
-        }
-
-        /// <summary>
-        /// Gets an item from the cache using the DnsResponse to find the item
-        /// </summary>
-        /// <param name="question">DnsQuestion instance used to build the key to find the item in the cache</param>
-        /// <returns>DnsResponse instance that was found in the cache; if not found, <c>null</c> is returned</returns>
-        public DnsResponse Get(DnsQuestion question)
-        {
-            if (question == null)
-            {
-                throw new ArgumentNullException("question");
-            }
-            return base.Get(BuildKey(question));
+            
+            return this.Get(response.Question);
         }
 
         /// <summary>

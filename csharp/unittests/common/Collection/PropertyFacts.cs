@@ -34,7 +34,7 @@ namespace Health.Direct.Common.Tests.Collection
         {
             get
             {
-                for (int i = 0; i < 100; ++i)
+                for (int i = 0; i < 10; ++i)
                 {
                     string istring = i.ToString();
                     yield return new KeyValuePair<string, string>("key_" + istring, "value_" + istring);

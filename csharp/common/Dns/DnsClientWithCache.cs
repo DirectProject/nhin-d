@@ -165,6 +165,7 @@ namespace Health.Direct.Common.Dns
 
             using (DnsClientWithCache client = new DnsClientWithCache(nameserver))
             {
+                client.Cache = m_cache;
                 client.UseUDPFirst = false;
                 return client.ResolveCERT(domain);
             }
