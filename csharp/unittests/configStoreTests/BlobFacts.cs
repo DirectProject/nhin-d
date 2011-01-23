@@ -114,6 +114,41 @@ namespace Health.Direct.Config.Store.Tests
             
             Assert.True(settingsSrc.Compare(settingsDest));
         }
+        
+        [Fact, AutoRollback]
+        public void TestContains()
+        {
+            TestUserSettings settingsSrc = TestUserSettings.Create();
+            string name = Guid.NewGuid().ToString("D");
+
+            NamedBlob blobSrc = new NamedBlob(name, settingsSrc);
+            m_store.Blobs.Add(blobSrc);
+            
+            using(System.IO.StreamWriter log = new System.IO.StreamWriter(@"C:\junk\linq.log"))
+            {
+                log.AutoFlush = true;
+                                
+                using(ConfigDatabase db = m_store.CreateReadContext())
+                {
+                    db.Log = log;
+                    Assert.True(m_store.Blobs.Contains(db, name));            
+                }
+                
+                //
+                // Add an additional 3 blobs. Then, when we list by prefix, we'll get 4
+                //                
+                for (int i = 0; i < 3; ++i)
+                {
+                    NamedBlob blob = new NamedBlob(name + "_" + i.ToString(), settingsSrc);
+                    m_store.Blobs.Add(blob);
+                }
+
+                using (ConfigDatabase db = m_store.CreateReadContext())
+                {
+                    Assert.True(m_store.Blobs.ListNamesStartWith(db, name).Count() == 4);
+                }
+            }
+        }
     }
     
     public class TestUserSettings
