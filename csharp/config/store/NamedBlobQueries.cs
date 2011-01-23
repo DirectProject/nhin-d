@@ -34,6 +34,19 @@ namespace Health.Direct.Config.Store
             where blob.Name.StartsWith(name)  // This translates to 'Like'
             select blob
             );
+        static readonly Func<ConfigDatabase, string, IQueryable<string>> NamesStartsWith = CompiledQuery.Compile(
+            (ConfigDatabase db, string name) =>
+            from blob in db.Blobs
+            where blob.Name.StartsWith(name)  // This translates to 'Like'
+            select blob.Name
+            );
+        static readonly Func<ConfigDatabase, string, IQueryable<string>> GetName = CompiledQuery.Compile(
+            (ConfigDatabase db, string name) =>
+            from blob in db.Blobs
+            where blob.Name == name  
+            select blob.Name
+            );        
+        
         const string Sql_DeleteBlob = "DELETE from Blobs where Name = {0}";
 
         public static ConfigDatabase GetDB(this Table<NamedBlob> table)
@@ -50,7 +63,17 @@ namespace Health.Direct.Config.Store
         {
             return BlobByNameStartsWith(table.GetDB(), blobNamePrefix);
         }
-        
+
+        public static bool ContainsBlob(this Table<NamedBlob> table, string blobName)
+        {
+            return (GetName(table.GetDB(), blobName).SingleOrDefault() != null);
+        }
+
+        public static IQueryable<string> EnumerateNamesStartsWith(this Table<NamedBlob> table, string blobNamePrefix)
+        {
+            return NamesStartsWith(table.GetDB(), blobNamePrefix);
+        }
+                
         public static void ExecDelete(this Table<NamedBlob> table, string name)
         {
             table.Context.ExecuteCommand(Sql_DeleteBlob, name);

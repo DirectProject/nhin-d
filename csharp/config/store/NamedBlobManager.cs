@@ -183,6 +183,47 @@ namespace Health.Direct.Config.Store
             db.Blobs.ExecDelete(name);
         }
         
+        public string[] ListNamesStartWith(string prefix)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.ListNamesStartWith(db, prefix).ToArray();
+            }            
+        }
+                
+        public IEnumerable<string> ListNamesStartWith(ConfigDatabase db, string prefix)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+
+            if (string.IsNullOrEmpty(prefix))
+            {
+                throw new ArgumentException("prefix");
+            }
+
+            return db.Blobs.EnumerateNamesStartsWith(prefix);
+        }
+
+        public bool Contains(string blobName)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Contains(db, blobName);
+            }
+        }
+        
+        public bool Contains(ConfigDatabase db, string blobName)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            
+            return db.Blobs.ContainsBlob(blobName);
+        }
+
         public IEnumerator<NamedBlob> GetEnumerator()
         {
             using (ConfigDatabase db = this.Store.CreateContext())
