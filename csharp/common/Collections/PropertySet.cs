@@ -142,15 +142,16 @@ namespace Health.Direct.Common.Collections
                 throw new ArgumentNullException();
             }
 
-            reader.Read();
+            reader.ReadStartElement();
             int depth = reader.Depth;
-            do
+            reader.MoveToContent();
+            while (reader.Depth == depth)
             {
                 string name = reader.LocalName;
                 string value = reader.ReadElementString();
                 collection.Add(name, value);
+                reader.MoveToContent();
             }
-            while (reader.Depth == depth);
         }
         
         /// <summary>
