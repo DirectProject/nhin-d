@@ -22,6 +22,7 @@
 		<url>http://code.google.com/p/nhin-d/issues/list</url>
 	</issueManagement>  	    
     <modules>
+        <module>./direct-common</module>
         <module>./config</module>
         <module>./agent</module>
         <module>./gateway</module>
