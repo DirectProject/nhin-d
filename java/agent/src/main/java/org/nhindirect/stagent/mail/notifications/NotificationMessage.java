@@ -22,6 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.mail.notifications;
 
+import java.util.Calendar;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
@@ -61,6 +62,7 @@ public class NotificationMessage extends Message
     public NotificationMessage(String to, String from, Notification notification) throws MessagingException 
     {
     	super(createHeaders(to, from, notification), notification.serializeToBytes());
+    	setSentDate(Calendar.getInstance().getTime());
     	
     } 
     

@@ -23,6 +23,23 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.dns;
 
+import java.lang.management.ManagementFactory;
+import java.util.UUID;
+
+import javax.management.JMException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.StandardMBean;
+import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.CompositeDataSupport;
+import javax.management.openmbean.CompositeType;
+import javax.management.openmbean.OpenDataException;
+import javax.management.openmbean.OpenType;
+import javax.management.openmbean.SimpleType;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.google.inject.Inject;
 
 /**
@@ -33,10 +50,14 @@ import com.google.inject.Inject;
  * @author Greg Meyer
  * @since 1.0
  */
-public class DNSServer 
+public class DNSServer implements DNSServerMBean
 {	
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(DNSServer.class);	
+	
 	private DNSResponder tcpResponder;
 	private DNSResponder updResponder;
+	private CompositeData settingsData;
+	private final String dnsStoreImplName;
 	
 	/**
 	 * Create a new DNSServer
@@ -52,7 +73,7 @@ public class DNSServer
 		}
 		catch (DNSException e)
 		{
-			e.printStackTrace();
+			LOGGER.error("Failed to create TCP responder: " + e.getLocalizedMessage(), e);
 		}
 		
 		try
@@ -61,9 +82,61 @@ public class DNSServer
 		}
 		catch (DNSException e)
 		{
-			e.printStackTrace();
+			LOGGER.error("Failed to create UDP responder: " + e.getLocalizedMessage(), e);
 		}
+
+		dnsStoreImplName = store.getClass().getName();
+		
+		registerMBean(settings);
 	}
+	
+	/**
+	 * Register the MBean
+	 */
+	private void registerMBean(DNSServerSettings settings)
+	{
+		String[] itemNames = {"Port", "Bind Address", "Max Request Size", "Max Outstanding Accepts", "Max Active Accepts", "Max Connection Backlog", 
+				"Read Buffer Size", "Send Timeout", "Receive Timeout", "Socket Close Timeout"};
+		
+		String[] itemDesc = {"Port", "Bind Address", "Max Request Size", "Max Outstanding Accepts", "Max Active Accepts", "Max Connection Backlog", 
+				"Read Buffer Size", "Send Timeout", "Receive Timeout", "Socket Close Timeout"};
+		
+		OpenType<?>[] types = {SimpleType.INTEGER, SimpleType.STRING, SimpleType.INTEGER, SimpleType.INTEGER, SimpleType.INTEGER, SimpleType.INTEGER, SimpleType.INTEGER,
+				SimpleType.INTEGER, SimpleType.INTEGER, SimpleType.INTEGER};
+		
+		Object[] settingsValues = {settings.getPort(), settings.getBindAddress(), settings.getMaxRequestSize(), settings.getMaxOutstandingAccepts(), 
+				settings.getMaxActiveRequests(), settings.getMaxConnectionBacklog(), settings.getReadBufferSize(), settings.getSendTimeout(), 
+				settings.getReceiveTimeout(), settings.getSocketCloseTimeout()};
+		
+		try
+		{
+			CompositeType settingsType = new CompositeType(DNSServerSettings.class.getSimpleName(), "DNS server settings.", itemNames, itemDesc, types);
+			settingsData = new CompositeDataSupport(settingsType, itemNames, settingsValues);
+		}
+		catch (OpenDataException e)
+		{
+			LOGGER.error("Failed to create settings composite type: " + e.getLocalizedMessage(), e);
+			return;
+		}
+		 		
+		
+		Class<?> clazz = this.getClass();
+		final StringBuilder objectNameBuilder = new StringBuilder(clazz.getPackage().getName());
+		objectNameBuilder.append(":type=").append(clazz.getSimpleName());
+		objectNameBuilder.append(",name=").append(UUID.randomUUID());
+				
+		try
+		{			
+			final StandardMBean mbean = new StandardMBean(this, DNSServerMBean.class);
+		
+			final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+			mbeanServer.registerMBean(mbean, new ObjectName(objectNameBuilder.toString()));
+		}
+		catch (JMException e)
+		{
+			LOGGER.error("Unable to register the DNSServer MBean", e);
+		}
+	}	
 	
 	/**
 	 * Starts the DNS server by initializing and launching the TCP and UDP listeners.
@@ -83,5 +156,58 @@ public class DNSServer
 	{
 		tcpResponder.stop();
 		updResponder.stop();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CompositeData getServerSettings() 
+	{
+
+		return settingsData;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */	
+	@Override
+	public void startServer() 
+	{
+		LOGGER.info("Received request to start server.");
+		try
+		{
+			start();
+		}
+		catch (DNSException e)
+		{
+			LOGGER.error("Failed to start server: " + e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */	
+	@Override
+	public void stopServer() 
+	{
+		LOGGER.info("Received request to stop server.");
+		try
+		{
+			stop();
+		}
+		catch (DNSException e)
+		{
+			LOGGER.error("Failed to stop server: " + e.getMessage(), e);
+		}		
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */	
+	@Override
+	public String getDNSStoreImplName()
+	{
+		return dnsStoreImplName;
 	}
 }

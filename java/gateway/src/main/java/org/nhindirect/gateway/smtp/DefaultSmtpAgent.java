@@ -166,6 +166,7 @@ public class DefaultSmtpAgent implements SmtpAgent
 	 * Sets the auditor used to log auditable events.
 	 * @param auditor The auditor used to log auditable events.
 	 */
+    @Inject(optional=true)
 	public void setAuditor(Auditor auditor)
 	{
 		this.auditor = auditor;
@@ -260,7 +261,7 @@ public class DefaultSmtpAgent implements SmtpAgent
 	/*
 	 * Determines if the message is outgoing or incoming.  Need to take in account that the sender and recipient may be from the same domain.
 	 */
-	private boolean isOutgoing(MessageEnvelope envelope)
+	public boolean isOutgoing(MessageEnvelope envelope)
 	{		
 		// if the sender is not from our domain, then is has to be an incoming message
 		if (!envelope.getSender().isInDomain(agent.getDomains()))
@@ -287,33 +288,29 @@ public class DefaultSmtpAgent implements SmtpAgent
     	MessageEnvelope processedMessage = null;
     	boolean isOutgoing = isOutgoing(envelope);
     	
-	
-		if (LOGGER.isDebugEnabled())
+		if (isOutgoing)
 		{
-			if (isOutgoing)
+			if (auditor != null)
 			{
-				if (auditor != null)
-				{
-					Collection<AuditContext> contexts = createContextCollectionFromMessage(envelope,
-							Arrays.asList(DEFAULT_HEADER_CONTEXT));
-					
-					auditor.audit(PRINICPAL, new AuditEvent(EVENT_NAME, OUTGOING_MESSAGE_TYPE), contexts);
-				}	
-				LOGGER.debug("Sending outgoing message from " + envelope.getSender().toString() + " to STAgent");
-			}
-			else
-			{
-				if (auditor != null)
-				{
-					Collection<AuditContext> contexts = createContextCollectionFromMessage(envelope,
-							Arrays.asList(DEFAULT_HEADER_CONTEXT));
-					
-					auditor.audit(PRINICPAL, new AuditEvent(EVENT_NAME, INCOMING_MESSAGE_TYPE), contexts);
-				}				
-				LOGGER.debug("Sending incoming message from " + envelope.getSender().toString() + " to STAgent");
-			}
-			
+				Collection<AuditContext> contexts = createContextCollectionFromMessage(envelope,
+						Arrays.asList(DEFAULT_HEADER_CONTEXT));
+				
+				auditor.audit(PRINICPAL, new AuditEvent(EVENT_NAME, OUTGOING_MESSAGE_TYPE), contexts);
+			}	
+			LOGGER.debug("Sending outgoing message from " + envelope.getSender().toString() + " to STAgent");
 		}
+		else
+		{
+			if (auditor != null)
+			{
+				Collection<AuditContext> contexts = createContextCollectionFromMessage(envelope,
+						Arrays.asList(DEFAULT_HEADER_CONTEXT));
+				
+				auditor.audit(PRINICPAL, new AuditEvent(EVENT_NAME, INCOMING_MESSAGE_TYPE), contexts);
+			}				
+			LOGGER.debug("Sending incoming message from " + envelope.getSender().toString() + " to STAgent");
+		}
+
 		
 		processedMessage = (isOutgoing) ? agent.processOutgoing(envelope) : agent.processIncoming(envelope);
 		if  (processedMessage == null)
