@@ -23,6 +23,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.gateway.smtp;
 
 import java.net.URL;
+import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +33,7 @@ import org.nhindirect.stagent.NHINDAgent;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.google.inject.Provider;
 
 /**
@@ -55,7 +57,7 @@ public class SmtpAgentFactory
 	 */
 	public synchronized static SmtpAgent createAgent(URL configLocation) throws SmtpAgentException
 	{
-		return createAgent(configLocation, null, null);
+		return createAgent(configLocation, null, null, null);
 	}
 	
 	/**
@@ -70,12 +72,35 @@ public class SmtpAgentFactory
 	public synchronized static SmtpAgent createAgent(URL configLocation, Provider<SmtpAgentConfig> configProvider, 
 			Provider<NHINDAgent> agentProvider) throws SmtpAgentException
 	{
+		return createAgent(configLocation, configProvider, agentProvider, null);
+	}
+		
+	/**
+	 * Creates an instance of an {@link SmtpAgent} using the configuration information stored at the configuration location.  Optional 
+	 * SmptAgentConfig and security and trust providers can be passed to create specific types of these components.  Additional Guice 
+	 * {@link Modules Modules} can be provided for additional dependency creation and injection.
+	 * @param configLocation The URL of the configuration information.  The URL may refer to any addressable resource.
+	 * @param configProvider A provider used to create the SmtpAgentConfig component that parses and the configuration.
+	 * @param agentProvider A provider used to create the security and trust agent component.
+	 * @param modules A collection of modules used for creating additional Guice bindings.
+	 * @return An initialized instance of an SmtpAgent.
+	 * @throws SmtpAgentException Thrown if an error occurs while creating the SmtpAgent.
+	 */
+	public synchronized static SmtpAgent createAgent(URL configLocation, Provider<SmtpAgentConfig> configProvider, 
+			Provider<NHINDAgent> agentProvider, Collection<? extends Module> modules) throws SmtpAgentException
+	{	
 		SmtpAgent retVal = null;
 		
 		try
 		{
 			Injector agentInjector = buildAgentInjector(configLocation, configProvider, agentProvider);
+			
+			if (modules != null && modules.size() > 0)
+				agentInjector = agentInjector.createChildInjector(modules);
+						
 			retVal = agentInjector.getInstance(SmtpAgent.class);
+			
+			agentInjector.injectMembers(retVal);
 				
 		}
 		catch (SmtpAgentException e)
@@ -96,9 +121,8 @@ public class SmtpAgentFactory
 			throw new SmtpAgentException(SmtpAgentError.Unknown, "SmtpAgent creation failed: " + t.getMessage());
 		}
 		
-		return retVal;
+		return retVal;		
 	}
-		
 	/*
 	 * Creates an injector for getting SmtpAgent instances
 	 */

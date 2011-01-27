@@ -48,6 +48,8 @@ import org.nhindirect.stagent.cert.impl.annotation.DNSCertStoreCachePolicy;
 import org.nhindirect.stagent.cert.impl.annotation.DNSCertStoreServers;
 import org.xbill.DNS.CERTRecord;
 import org.xbill.DNS.CNAMERecord;
+import org.xbill.DNS.Cache;
+import org.xbill.DNS.DClass;
 import org.xbill.DNS.ExtendedResolver;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.NSRecord;
@@ -84,6 +86,12 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	private JCS cache;
 	private CertStoreCachePolicy cachePolicy;
 
+	static 
+	{
+		Cache ch = Lookup.getDefaultCache(DClass.IN);
+		ch.clearCache();
+	}
+	
 	/**
 	 * Constructs a service using the machines local DNS server configuration and a default key store implementation for
 	 * local lookups.
