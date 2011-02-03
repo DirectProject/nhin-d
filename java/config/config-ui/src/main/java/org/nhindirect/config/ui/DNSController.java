@@ -158,7 +158,7 @@ public class DNSController
         
         ModelAndView mav = new ModelAndView();
         
-        if ("gotodomains".equalsIgnoreCase(actionPath))
+        if ("gotodomains".equalsIgnoreCase(actionPath) || "domains".equalsIgnoreCase(actionPath))
         {
             SearchDomainForm form2 = (SearchDomainForm) session
                     .getAttribute("searchDomainForm");
@@ -169,7 +169,7 @@ public class DNSController
             mav.setViewName("main");
             mav.addObject("statusList", EntityStatus.getEntityStatusList());
         }
-        else if ("gotosettings".equalsIgnoreCase(actionPath))
+        else if ("gotosettings".equalsIgnoreCase(actionPath) || "settings".equalsIgnoreCase(actionPath))
         {
             String action = "add";
             model.addAttribute("action", action);
@@ -197,7 +197,7 @@ public class DNSController
             model.addAttribute("simpleForm",new SimpleForm());
             model.addAttribute("settingsResults", results);
         }
-        else if (actionPath.equalsIgnoreCase("gotocertificates"))
+        else if (actionPath.equalsIgnoreCase("gotocertificates") || actionPath.equalsIgnoreCase("certificates"))
         {           
             String action = "Update";
             model.addAttribute("action", action);
@@ -720,7 +720,7 @@ public class DNSController
 			String strid = "" + AdnsForm.getId();
 			Collection<DNSRecord> arecords = null;
 			if (configSvc != null && AdnsForm != null && actionPath != null
-					&& actionPath.equalsIgnoreCase("deleteADnsEntries")
+					&& (actionPath.equalsIgnoreCase("deleteADnsEntries") || actionPath.equalsIgnoreCase("Remove Selected As"))
 					&& AdnsForm.getRemove() != null) {
 
 				int cnt = AdnsForm.getRemove().size();
@@ -744,7 +744,7 @@ public class DNSController
 			String strid = "" + AAdnsForm.getId();
 			Collection<DNSRecord> a4records = null;
 			if (configSvc != null && AAdnsForm != null && actionPath != null
-					&& actionPath.equalsIgnoreCase("deleteA4DnsEntries")
+					&& (actionPath.equalsIgnoreCase("deleteA4DnsEntries") || actionPath.equalsIgnoreCase("Remove Selected A4s"))
 					&& AAdnsForm.getRemove() != null) {
 
 				int cnt = AAdnsForm.getRemove().size();
@@ -770,7 +770,7 @@ public class DNSController
 			String strid = "" + CdnsForm.getId();
 			Collection<DNSRecord> a4records = null;
 			if (configSvc != null && CdnsForm != null && actionPath != null
-					&& actionPath.equalsIgnoreCase("deleteCNAMEDnsEntries")
+					&& (actionPath.equalsIgnoreCase("deleteCNAMEDnsEntries") || actionPath.equalsIgnoreCase("Remove Selected CNAMEs"))
 					&& CdnsForm.getRemove() != null) {
 
 				int cnt = AAdnsForm.getRemove().size();
@@ -795,7 +795,7 @@ public class DNSController
 			String strid = "" + MXdnsForm.getId();
 			Collection<DNSRecord> a4records = null;
 			if (configSvc != null && MXdnsForm != null && actionPath != null
-					&& actionPath.equalsIgnoreCase("deleteMXDnsEntries")
+					&& (actionPath.equalsIgnoreCase("deleteMXDnsEntries") || actionPath.equalsIgnoreCase("Remove Selected MXs"))
 					&& MXdnsForm.getRemove() != null) {
 
 				int cnt = MXdnsForm.getRemove().size();
@@ -820,7 +820,7 @@ public class DNSController
 			String strid = "" + CertdnsForm.getId();
 			Collection<DNSRecord> a4records = null;
 			if (configSvc != null && CertdnsForm != null && actionPath != null
-					&& actionPath.equalsIgnoreCase("deleteCERTDnsEntries")
+					&& (actionPath.equalsIgnoreCase("deleteCERTDnsEntries") || actionPath.equalsIgnoreCase("Remove Selected CERTs"))
 					&& CertdnsForm.getRemove() != null) {
 
 				int cnt = CertdnsForm.getRemove().size();
@@ -845,7 +845,7 @@ public class DNSController
 			String strid = "" + SrvdnsForm.getId();
 			Collection<DNSRecord> a4records = null;
 			if (configSvc != null && SrvdnsForm != null && actionPath != null
-					&& actionPath.equalsIgnoreCase("deleteSRVDnsEntries")
+					&& (actionPath.equalsIgnoreCase("deleteSRVDnsEntries") || actionPath.equalsIgnoreCase("Remove Selected SRVs"))
 					&& SrvdnsForm.getRemove() != null) {
 
 				int cnt = SrvdnsForm.getRemove().size();
@@ -870,7 +870,7 @@ public class DNSController
 			String strid = "" + SoadnsForm.getId();
 			Collection<DNSRecord> soarecords = null;
 			if (configSvc != null && SoadnsForm != null && actionPath != null
-					&& actionPath.equalsIgnoreCase("deleteSOADnsEntries")
+					&& (actionPath.equalsIgnoreCase("deleteSOADnsEntries") || actionPath.equalsIgnoreCase("Remove Selected SOAs"))
 					&& SoadnsForm.getRemove() != null) {
 
 				int cnt = SoadnsForm.getRemove().size();
@@ -895,7 +895,7 @@ public class DNSController
 			String strid = "" + NSdnsForm.getId();
 			Collection<DNSRecord> nsrecords = null;
 			if (configSvc != null && NSdnsForm != null && actionPath != null
-					&& actionPath.equalsIgnoreCase("deleteNSDnsEntries")
+					&& (actionPath.equalsIgnoreCase("deleteNSDnsEntries") || actionPath.equalsIgnoreCase("Remove Selected NSs"))
 					&& NSdnsForm.getRemove() != null) {
 
 				int cnt = NSdnsForm.getRemove().size();

@@ -10,7 +10,7 @@
 <script type="text/javascript">
 $(document).ready(function()
 {
-    $("#domain-table").tablesorter(); 
+     
 });
 </script>
 <body>

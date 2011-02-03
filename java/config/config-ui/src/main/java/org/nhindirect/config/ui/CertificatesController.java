@@ -94,7 +94,7 @@ public class CertificatesController {
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 			return mav;
 		}
-		if(actionPath.equalsIgnoreCase("newcertificate")){
+		if(actionPath.equalsIgnoreCase("newcertificate") || actionPath.equalsIgnoreCase("add certificate")){
 			strid = ""+certificateForm.getId();
 			// insert the new address into the Domain list of Addresses
 			EntityStatus estatus = certificateForm.getStatus();
@@ -168,7 +168,7 @@ public class CertificatesController {
 			if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
 		}
 		
-		if (configSvc != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deletecertificate") && simpleForm.getRemove() != null) {
+		if (configSvc != null && simpleForm != null && actionPath != null && (actionPath.equalsIgnoreCase("deletecertificate") || actionPath.equalsIgnoreCase("Remove Selected")) && simpleForm.getRemove() != null) {
 			int cnt = simpleForm.getRemove().size();
 			if (log.isDebugEnabled()) log.debug("removing certificates");
 			try{
