@@ -187,7 +187,7 @@
 		</div>
 		<!-- Wire this up to jQuery to add an input row to the table.  
                                      Don't submit it all until the final submit is done -->
-		<button name="submitType" id="submitType" type="submit" value="delete">Remove Selected</button>
+		<button name="submitType" id="submitType" type="submit" value="delete">Remove Selected Addresses</button>
 	</form:form></fieldset>
 </c:if>
 </div>
@@ -302,7 +302,7 @@
 		</div>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteanchors">Remove Selected</button>
+			value="deleteanchors">Remove Selected Anchors</button>
 	</form:form></fieldset>
 </c:if>
 </div>
@@ -482,7 +482,7 @@
         </div>
         <!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
         <button name="submitType" id="submitType" type="submit"
-            value="deleteDnsEntries">Remove Selected</button>
+            value="deleteDnsEntries">Remove Selected DNSs</button>
     </form:form></fieldset>
 </c:if>
 </div>

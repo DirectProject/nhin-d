@@ -93,7 +93,7 @@ public class SettingsController {
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 			return mav;
 		}
-		if(actionPath.equalsIgnoreCase("newsetting")){
+		if(actionPath.equalsIgnoreCase("newsetting") || actionPath.equalsIgnoreCase("add setting")){
 			if (log.isDebugEnabled()) log.debug("trying to get/set settings");
 			strid = ""+settingsForm.getId();
 			key = ""+settingsForm.getKey();
@@ -144,7 +144,7 @@ public class SettingsController {
 		}
 		
 		String strid = ""+simpleForm.getId();
-		if (configSvc != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("delete") && simpleForm.getRemove() != null) {
+		if (configSvc != null && simpleForm != null && actionPath != null && (actionPath.equalsIgnoreCase("delete") || actionPath.equalsIgnoreCase("remove selected")) && simpleForm.getRemove() != null) {
 			int cnt = simpleForm.getRemove().size();
 			try{
 				Collection<String> settingstoberemovedlist = simpleForm.getRemove();

@@ -120,7 +120,7 @@ Configuration</h3>
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteADnsEntries">Remove Selected</button>
+			value="deleteADnsEntries">Remove Selected As</button>
 	</form:form></div>
 	</fieldset>
 </c:if></fieldset>
@@ -197,7 +197,7 @@ Configuration</h3>
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteA4DnsEntries">Remove Selected</button>
+			value="deleteA4DnsEntries">Remove Selected A4s</button>
 	</form:form></fieldset>
 	</div>
 </c:if></fieldset>
@@ -274,7 +274,7 @@ Configuration</h3>
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteCNAMEDnsEntries">Remove Selected</button>
+			value="deleteCNAMEDnsEntries">Remove Selected CNAMEs</button>
 	</form:form></fieldset>
 	</div>
 </c:if></fieldset>
@@ -371,7 +371,7 @@ Records</legend>
 		</div>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteMXDnsEntries">Remove Selected</button>
+			value="deleteMXDnsEntries">Remove Selected MXs</button>
 	</form:form></fieldset>
 	
 </c:if>
@@ -503,7 +503,7 @@ Records</legend>
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteSRVDnsEntries">Remove Selected</button>
+			value="deleteSRVDnsEntries">Remove Selected SRVs</button>
 	</form:form></fieldset>
 	</div>
 </c:if>
@@ -646,7 +646,7 @@ Records</legend>
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteSOADnsEntries">Remove Selected</button>
+			value="deleteSOADnsEntries">Remove Selected SOAs</button>
 	</form:form></fieldset>
 	</div>
 </c:if>
@@ -723,7 +723,7 @@ Records</legend>
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteNSDnsEntries">Remove Selected</button>
+			value="deleteNSDnsEntries">Remove Selected NSs</button>
 	</form:form></div>
 	</fieldset>
 </c:if></fieldset>

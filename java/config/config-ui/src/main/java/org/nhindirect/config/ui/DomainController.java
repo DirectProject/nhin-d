@@ -158,7 +158,7 @@ public class DomainController {
 		String strid = "";
 		if (log.isDebugEnabled()) log.debug("Enter domain/addanchor");
 		
-		if(actionPath.equalsIgnoreCase("newanchor")){
+		if(actionPath.equalsIgnoreCase("newanchor") || actionPath.equalsIgnoreCase("add anchor")){
 			strid = ""+anchorForm.getId();
 			Domain dom = configSvc.getDomain(Long.parseLong(strid));
 			String owner = "";
@@ -214,22 +214,33 @@ public class DomainController {
 			try {
 				Collection<Certificate> certs = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 				model.addAttribute("certificatesResults", certs);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			try {
 				 
 				Collection<Anchor> anchors = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 				// convert Anchor to AnchorForm
 				Collection<AnchorForm> convertedanchors = convertAnchors(anchors);					
 				// now set anchorsResults
 				model.addAttribute("anchorsResults", convertedanchors);
-				
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			try {
 				CertificateForm cform = new CertificateForm();
 				cform.setId(dom.getId());
 				model.addAttribute("certificateForm",cform);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			try {
 				
 				AnchorForm aform = new AnchorForm();
 				aform.setId(dom.getId());
 				model.addAttribute("anchorForm",aform);
 				
-			} catch (ConfigurationServiceException e1) {
+			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
@@ -289,7 +300,7 @@ public class DomainController {
 			domname = dom.getDomainName();
 			owner = domname;
 		}
-		if (configSvc != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deleteanchors") && simpleForm.getRemove() != null) {
+		if (configSvc != null && simpleForm != null && actionPath != null && (actionPath.equalsIgnoreCase("deleteanchors") || actionPath.equalsIgnoreCase("Remove Selected Anchors")) && simpleForm.getRemove() != null) {
 			int cnt = simpleForm.getRemove().size();
 			if (log.isDebugEnabled()) log.debug("removing anchors for domain with name: " + domname);
 			try{
@@ -363,7 +374,7 @@ public class DomainController {
 		Collection<Anchor> anchorlist = null;
 		try {
 			anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-		} catch (ConfigurationServiceException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
@@ -398,7 +409,7 @@ public class DomainController {
 		String strid = "";
 		if (log.isDebugEnabled()) log.debug("Enter domain/addcertificate");
 	
-		if(actionPath.equalsIgnoreCase("newcertificate")){
+		if(actionPath.equalsIgnoreCase("newcertificate") || actionPath.equalsIgnoreCase("add certificate")){
 			strid = ""+certificateForm.getId();
 			Domain dom = configSvc.getDomain(Long.parseLong(strid));
 			String owner = "";
@@ -512,7 +523,7 @@ public class DomainController {
 			domname = dom.getPostMasterEmail();
 			owner = domname;
 		}
-		if (configSvc != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("deletecertificate") && simpleForm.getRemove() != null) {
+		if (configSvc != null && simpleForm != null && actionPath != null && (actionPath.equalsIgnoreCase("deletecertificate") || actionPath.equalsIgnoreCase("remove selected")) && simpleForm.getRemove() != null) {
 			int cnt = simpleForm.getRemove().size();
 			if (log.isDebugEnabled()) log.debug("removing certificates for domain with name: " + domname);
 			try{
@@ -586,7 +597,7 @@ public class DomainController {
 		Collection<Anchor> anchorlist = null;
 		try {
 			anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-		} catch (ConfigurationServiceException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
@@ -618,7 +629,7 @@ public class DomainController {
 		String strid = "";
 		if (log.isDebugEnabled()) log.debug("Enter domain/addaddress");
 		
-		if(actionPath.equalsIgnoreCase("newaddress")){
+		if(actionPath.equalsIgnoreCase("newaddress") || actionPath.equalsIgnoreCase("add address")){
 			strid = ""+addressForm.getId();
 			Domain dom = configSvc.getDomain(Long.parseLong(strid));
 			String owner = dom.getPostMasterEmail();
@@ -650,13 +661,19 @@ public class DomainController {
 			try {
 				Collection<Certificate> certs = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
 				model.addAttribute("certificatesResults", certs);
+			} catch (ConfigurationServiceException e1) {
+			}
 				 
+			try {
 				Collection<Anchor> anchors = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
 				// convert Anchor to AnchorForm
 				Collection<AnchorForm> convertedanchors = convertAnchors(anchors);					
 				// now set anchorsResults
 				model.addAttribute("anchorsResults", convertedanchors);
+			} catch (Exception e1) {
+			}
 				
+			try {
 				CertificateForm cform = new CertificateForm();
 				cform.setId(dom.getId());
 				model.addAttribute("certificateForm",cform);
@@ -665,8 +682,7 @@ public class DomainController {
 				aform.setId(dom.getId());
 				model.addAttribute("anchorForm",aform);
 				
-			} catch (ConfigurationServiceException e1) {
-				e1.printStackTrace();
+			} catch (Exception e1x) {
 			}
 			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 			SimpleForm simple = new SimpleForm();
@@ -720,89 +736,102 @@ public class DomainController {
 		String strid = ""+simpleForm.getId();
 		Domain dom = configSvc.getDomain(Long.parseLong(strid));
 		String domname = "";
-		if( dom != null){
+		if (dom != null) {
 			domname = dom.getDomainName();
-		}
-		if (configSvc != null && simpleForm != null && actionPath != null && actionPath.equalsIgnoreCase("delete") && simpleForm.getRemove() != null) {
-			int cnt = simpleForm.getRemove().size();
-			if (log.isDebugEnabled()) log.debug("removing addresses for domain with name: " + domname);
-			try{
-				for (int x = 0; x < cnt; x++) {
-					String removeid = simpleForm.getRemove().get(x);
-				    for (Address t : dom.getAddresses()){
-				    	if(t.getId() == Long.parseLong(removeid)){
-					    	if (log.isDebugEnabled()){
-					    		log.debug(" ");
-					    		log.debug("domain address id: " + t.getId());
-					    		log.debug(" ");
-					    	}
-				    		dom.getAddresses().remove(t);
-				    		if(configSvc != null){
-				    			if (log.isDebugEnabled()) log.debug("Address Service is not null. Now trying to remove address: "+t.getEmailAddress());
-				    			configSvc.removeAddress(t.getEmailAddress());
-				    		}
-					    	if (log.isDebugEnabled()){
-					    		log.debug(" REMOVED ");
-					    		log.debug(" ");
-					    		break;
-					    	}
-				    	}
-					}			
-				}
-				if (log.isDebugEnabled()) log.debug(" Trying to update the domain with removed addresses");
-				configSvc.updateDomain(dom);
-				dom = configSvc.getDomain(Long.parseLong(strid));
-	    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update the domain with removed addresses");
-				AddressForm addrform = new AddressForm();
-				addrform.setId(dom.getId());
-				model.addAttribute("addressForm",addrform);
-				// BEGIN: temporary code for mocking purposes
-				String owner = "";
-				owner = dom.getPostMasterEmail();
-				model.addAttribute("addressesResults", dom.getAddresses());
+			if (configSvc != null
+					&& simpleForm != null
+					&& actionPath != null
+					&& (actionPath.equalsIgnoreCase("delete") || actionPath
+							.equalsIgnoreCase("remove selected Addresses"))
+					&& simpleForm.getRemove() != null) {
+				int cnt = simpleForm.getRemove().size();
+				if (log.isDebugEnabled())
+					log.debug("removing addresses for domain with name: "
+							+ domname);
+				try {
+					
+					for (int x = 0; x < cnt; x++) {
+						String removeid = simpleForm.getRemove().get(x);
+						System.out.println("TRYING TO REMOVE ID: "+removeid);
+						Collection<Address> t = dom.getAddresses();
+						for (Iterator iter = t.iterator(); iter.hasNext();) {
+							Address ts = (Address) iter.next();
+							if (ts.getId() == Long.parseLong(removeid)) {
+								dom.getAddresses().remove(ts);
+								if (configSvc != null) {
+									configSvc.removeAddress(ts.getEmailAddress());
+									dom = configSvc.getDomain(Long.parseLong(strid));
+									break;
+								}
+							}
+						}
+					}
+					if (log.isDebugEnabled())
+						log
+								.debug(" Trying to update the domain with removed addresses");
+					configSvc.updateDomain(dom);
+					dom = configSvc.getDomain(Long.parseLong(strid));
+					if (log.isDebugEnabled())
+						log
+								.debug(" SUCCESS Trying to update the domain with removed addresses");
+					AddressForm addrform = new AddressForm();
+					addrform.setId(dom.getId());
+					model.addAttribute("addressForm", addrform);
+					// BEGIN: temporary code for mocking purposes
+					String owner = "";
+					owner = dom.getPostMasterEmail();
+					model.addAttribute("addressesResults", dom.getAddresses());
 
-				Collection<Certificate> certlist = null;
-				try {
-					certlist = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+					Collection<Certificate> certlist = null;
+					try {
+						certlist = configSvc.getCertificatesForOwner(owner,
+								CertificateGetOptions.DEFAULT);
+					} catch (ConfigurationServiceException e) {
+						e.printStackTrace();
+					}
+
+					Collection<Anchor> anchorlist = null;
+					try {
+						anchorlist = configSvc.getAnchorsForOwner(owner,CertificateGetOptions.DEFAULT);
+					} catch (Exception e) {
+						
+					}
+
+					model.addAttribute("certificatesResults", certlist);
+					// convert Anchor to AnchorForm
+					Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);
+					// now set anchorsResults
+					model.addAttribute("anchorsResults", convertedanchors);
+
+					// END: temporary code for mocking purposes
+
 				} catch (ConfigurationServiceException e) {
-					e.printStackTrace();
+					if (log.isDebugEnabled())
+						log.error(e);
 				}
-				
-				Collection<Anchor> anchorlist = null;
+			} else if (configSvc != null
+					&& (actionPath.equalsIgnoreCase("newaddress") || actionPath
+							.equalsIgnoreCase("add address"))) {
+				// insert the new address into the Domain list of Addresses
+				String anEmail = simpleForm.getPostmasterEmail();
+				if (log.isDebugEnabled())
+					log.debug(" Trying to add address: " + anEmail);
+				Address e = new Address();
+				e.setEmailAddress(anEmail);
+				dom.getAddresses().add(e);
+				simpleForm.setPostmasterEmail("");
 				try {
-					anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-				} catch (ConfigurationServiceException e) {
-					e.printStackTrace();
+					configSvc.updateDomain(dom);
+					if (log.isDebugEnabled())
+						log
+								.debug(" After attempt to insert new email address ");
+				} catch (ConfigurationServiceException ed) {
+					if (log.isDebugEnabled())
+						log.error(ed);
 				}
-				
-				model.addAttribute("certificatesResults", certlist);
-				// convert Anchor to AnchorForm
-				Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);					
-				// now set anchorsResults
-				model.addAttribute("anchorsResults", convertedanchors);
-			
-				// END: temporary code for mocking purposes			
-				
-			} catch (ConfigurationServiceException e) {
-				if (log.isDebugEnabled())
-					log.error(e);
-			}
-		}else if (configSvc != null && actionPath.equalsIgnoreCase("newaddress")) {
-			// insert the new address into the Domain list of Addresses
-			String anEmail = simpleForm.getPostmasterEmail();
-			if (log.isDebugEnabled()) log.debug(" Trying to add address: "+anEmail);
-			Address e = new Address();
-			e.setEmailAddress(anEmail);
-			dom.getAddresses().add(e);
-			simpleForm.setPostmasterEmail("");
-			try{
-				configSvc.updateDomain(dom);
-				if (log.isDebugEnabled()) log.debug(" After attempt to insert new email address ");
-			} catch (ConfigurationServiceException ed) {
-				if (log.isDebugEnabled())
-					log.error(ed);
 			}
 		}
+
 		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 		mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		String action = "Update";
@@ -817,14 +846,16 @@ public class DomainController {
 		String owner = dom.getPostMasterEmail();
 		// certificate and anchor forms and results
 		try {
-			Collection<Certificate> certs = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
-			model.addAttribute("certificatesResults", certs);
-			 
-			Collection<Anchor> anchors = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-			// convert Anchor to AnchorForm
-			Collection<AnchorForm> convertedanchors = convertAnchors(anchors);					
-			// now set anchorsResults
-			model.addAttribute("anchorsResults", convertedanchors);
+			if(owner != null && !owner.equalsIgnoreCase("")){
+				Collection<Certificate> certs = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+				model.addAttribute("certificatesResults", certs);
+				 
+				Collection<Anchor> anchors = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+				// convert Anchor to AnchorForm
+				Collection<AnchorForm> convertedanchors = convertAnchors(anchors);					
+				// now set anchorsResults
+				model.addAttribute("anchorsResults", convertedanchors);
+			}
 			
 			CertificateForm cform = new CertificateForm();
 			cform.setId(dom.getId());
@@ -872,16 +903,25 @@ public class DomainController {
 					try{
 						// get list of certificates for this domain
 						Collection<Anchor> certs = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-						ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
-						// now iterate over each one and remove the appropriate ones
-						for (Iterator iter = certs.iterator(); iter.hasNext();) {
-							Anchor t = (Anchor) iter.next();
-					    	certtoberemovedlist.add(t.getId());
-						}			
-						// with the collection of anchor ids now remove them from the configSvc
-						if (log.isDebugEnabled()) log.debug(" Trying to remove anchors from database");
-						configSvc.removeAnchors(certtoberemovedlist);
-			    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to remove anchors");
+						if (certs != null) {
+							ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
+							// now iterate over each one and remove the
+							// appropriate ones
+							for (Iterator iter = certs.iterator(); iter
+									.hasNext();) {
+								Anchor t = (Anchor) iter.next();
+								certtoberemovedlist.add(t.getId());
+							}
+							// with the collection of anchor ids now remove them
+							// from the configSvc
+							if (log.isDebugEnabled())
+								log
+										.debug(" Trying to remove anchors from database");
+							configSvc.removeAnchors(certtoberemovedlist);
+							if (log.isDebugEnabled())
+								log.debug(" SUCCESS Trying to remove anchors");
+
+						}
 					} catch (ConfigurationServiceException e) {
 						if (log.isDebugEnabled())
 							log.error(e);
@@ -1054,7 +1094,7 @@ public class DomainController {
 
 			if (log.isDebugEnabled()) log.debug("Form passed validation");
 			try {
-				if (actionPath.equals("add")) {
+				if (actionPath.equalsIgnoreCase("add")) {
 					configSvc.addDomain(form.getDomainFromForm());
 					List<Domain> result = new ArrayList<Domain>(
 							configSvc.searchDomain(form.getDomainName(),
@@ -1064,7 +1104,7 @@ public class DomainController {
 						form.populate(result.get(0));
 						msgs.put("msg", "domain.add.success");
 					}
-				} else if (actionPath.equals("update")) {
+				} else if (actionPath.equalsIgnoreCase("update")) {
 					configSvc.updateDomain(form.getDomainFromForm());
 					List<Domain> result = new ArrayList<Domain>(
 							configSvc.searchDomain(form.getDomainName(),
@@ -1096,27 +1136,29 @@ public class DomainController {
 				// begin: add these dummy records too
 				String owner = form.getDomainFromForm().getPostMasterEmail();
 
-				// BEGIN: temporary code for mocking purposes
-				Collection<Certificate> certlist = null;
 				try {
-					certlist = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
-				} catch (ConfigurationServiceException e) {
+					if(owner != null && !owner.equalsIgnoreCase("")){
+						// BEGIN: temporary code for mocking purposes
+						Collection<Certificate> certlist = null;
+						try {
+							certlist = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+							model.addAttribute("certificatesResults", certlist);
+							
+						} catch (ConfigurationServiceException e) {
+							e.printStackTrace();
+						}
+						
+						Collection<Anchor> anchorlist = null;
+						anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+						// convert Anchor to AnchorForm
+						Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);
+						// now set anchorsResults
+						model.addAttribute("anchorsResults", convertedanchors);
+					}
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				
-				Collection<Anchor> anchorlist = null;
-				try {
-					anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-				} catch (ConfigurationServiceException e) {
-					e.printStackTrace();
-				}
-				
-				model.addAttribute("certificatesResults", certlist);
-				
-				// convert Anchor to AnchorForm
-				Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);					
-				// now set anchorsResults
-				model.addAttribute("anchorsResults", convertedanchors);
 			
 				// END: temporary code for mocking purposes			
 

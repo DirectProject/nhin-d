@@ -111,8 +111,6 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 	});
 	$(document).ready(function() 
 		    { 
-		        $("#addressTable").tablesorter();
-		        $("#anchorsTable").tablesorter(); 
 		    } 
 	); 
 		
@@ -297,7 +295,7 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 		<!-- Wire this up to jQuery to add an input row to the table.  
 					                 Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit" value="delete">Remove
-		Selected</button>
+		Selected Addresses</button>
 	</form:form></fieldset>
 </c:if>
 </fieldset>
@@ -429,7 +427,7 @@ html ul.tabs li.active,html ul.tabs li.active a:hover {
 		</div>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteanchors">Remove Selected</button>
+			value="deleteanchors">Remove Selected Anchors</button>
 	</form:form></fieldset>
 </c:if></fieldset>
 </div>
