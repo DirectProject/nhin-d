@@ -131,13 +131,11 @@
       <mailetpackage>org.apache.james.transport.mailets</mailetpackage>
       <mailetpackage>org.apache.james.transport.mailets.smime</mailetpackage>
       <mailetpackage>org.nhindirect.gateway.smtp.james.mailet</mailetpackage>
-      <mailetpackage>org.nhind.james.mailet</mailetpackage>
    </mailetpackages>
    <matcherpackages>
       <matcherpackage>org.apache.james.transport.matchers</matcherpackage>
       <matcherpackage>org.apache.james.transport.matchers.smime</matcherpackage>
       <matcherpackage>org.nhindirect.gateway.smtp.james.matcher</matcherpackage>
-      <matcherpackage>org.nhind.james.matcher</matcherpackage>
    </matcherpackages>
 
    <!-- The James Spool Manager block  -->
@@ -522,18 +520,8 @@ Regards, Postmaster XXX.YYY
          </mailet>
          -->
          
-         <mailet match="RecipientIsXdAndNotSMIME=http://localhost:8081/config-service/ConfigurationService" class="DirectXdMailet">
-            <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>
-            <EndpointURL>http://localhost:8081/xd/services/DocumentRepository_Service</EndpointURL>
-         </mailet>
-         <mailet match="RecipientIsLocalAndSMTPAuthUserIs=direct" class="LocalDelivery" />
          <mailet match="RecipAndSenderIsNotLocal=mydomain.com" class="NHINDSecurityAndTrustMailet">
             <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>
-         </mailet>
-
-         <mailet match="RecipientIsXdAndNotSMIME=http://localhost:8081/config-service/ConfigurationService" class="DirectXdMailet">
-            <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>
-            <EndpointURL>http://localhost:8081/xd/services/DocumentRepository_Service</EndpointURL>
          </mailet>
 
          <!-- Is the recipient is for a local account, deliver it locally -->
@@ -576,7 +564,7 @@ Regards, Postmaster XXX.YYY
 
          <!-- Attempt remote delivery using the specified repository for the spool, -->
          <!-- using delay time to retry delivery and the maximum number of retries -->
-         <mailet match="RecipientIsNotXd=http://localhost:8081/config-service/ConfigurationService" class="RemoteDelivery">
+         <mailet match="All" class="RemoteDelivery">
             <outgoing> file://var/mail/outgoing/ </outgoing>
             <!-- alternative database repository example below -->
             <!--

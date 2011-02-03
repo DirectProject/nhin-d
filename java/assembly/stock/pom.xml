@@ -5,7 +5,7 @@
     <artifactId>direct-project-stock</artifactId>    
     <packaging>pom</packaging>
     <name>The direct project stock assembly.</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RC</version>
     <description>Stock assembly for the direct project using the Apache James mail server and the Apache Jetty web container.</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/direct-project-stock/${project.version}</url> 
@@ -72,17 +72,11 @@
 	      <artifactId>config-ui</artifactId>
 	      <type>war</type>
 	      <version>1.1</version>
-	   </dependency>  
-	   <dependency>
-	      <groupId>org.nhind</groupId>
-	      <artifactId>xd</artifactId>
-	      <type>war</type>
-	      <version>1.0-SNAPSHOT</version>
-	   </dependency>  	   	         
+	   </dependency>     	         
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>agent</artifactId>
-	      <version>1.1.1</version>
+	      <version>1.1.2</version>
 	   </dependency>  	
 	   <dependency>
 	      <groupId>org.nhind</groupId>
@@ -93,12 +87,12 @@
 	      <groupId>org.nhind</groupId>
 	      <artifactId>dns</artifactId>
 	      <version>1.0</version>
-       </dependency>       
-	   <dependency>
-	      <groupId>org.nhind</groupId>
-	      <artifactId>xdmail</artifactId>
-	      <version>1.0-SNAPSHOT</version>
-       </dependency>         	         	
+       </dependency>  
+       <dependency>
+          <groupId>commons-lang</groupId>
+          <artifactId>commons-lang</artifactId>
+          <version>2.5</version>
+       </dependency>                   	         	
    </dependencies>   
    <build>
       <extensions>
@@ -141,7 +135,7 @@
                   </configuration>
                </execution>               
             </executions>
-         </plugin> 	
+         </plugin>          	
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
@@ -202,7 +196,45 @@
                   </configuration>                    
                </execution>                
             </executions>
-         </plugin>        
+         </plugin>   
+<!-- for releases only          
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-javadoc-plugin</artifactId>
+			<version>2.6.1</version>
+			<configuration>
+				<charset>UTF-8</charset>
+				<docencoding>UTF-8</docencoding>
+				<docfilessubdirs>true</docfilessubdirs>
+				<detectJavaApiLink>true</detectJavaApiLink>
+				<detectLinks>true</detectLinks>
+				<source>1.6</source>
+				<show>protected</show>
+			</configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>					
+		</plugin>			
+        <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-gpg-plugin</artifactId>
+              <executions>
+                <execution>
+                   <id>sign-artifacts</id>
+                   <phase>package</phase>
+                   <goals>
+                      <goal>sign</goal>
+                   </goals>
+                </execution>
+              </executions>
+        </plugin>     
+-->                 
       </plugins>
       <pluginManagement>
        <plugins>
