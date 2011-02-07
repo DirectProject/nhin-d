@@ -6,7 +6,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<link rel="shortcut icon" type="image/x-icon" href="/config-ui/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="/resources/favicon.ico">
 
 <link href="<c:url value="/resources/jqueryts/themes/blue/style.css" />" rel="stylesheet" type="text/css"/>
 <link href="<c:url value="/resources/jqueryui/1.8/themes/sunny/jquery-ui-1.8.4.custom.css" />" rel="stylesheet"  type="text/css" />
