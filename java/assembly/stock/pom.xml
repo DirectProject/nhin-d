@@ -5,7 +5,7 @@
     <artifactId>direct-project-stock</artifactId>    
     <packaging>pom</packaging>
     <name>The direct project stock assembly.</name>
-    <version>1.0-RC</version>
+    <version>1.1-SNAPSHOT</version>
     <description>Stock assembly for the direct project using the Apache James mail server and the Apache Jetty web container.</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/direct-project-stock/${project.version}</url> 
@@ -72,7 +72,13 @@
 	      <artifactId>config-ui</artifactId>
 	      <type>war</type>
 	      <version>1.1.1</version>
-	   </dependency>     	         
+	   </dependency>  
+	   <dependency>
+	      <groupId>org.nhind</groupId>
+	      <artifactId>xd</artifactId>
+	      <type>war</type>
+	      <version>1.0-SNAPSHOT</version>
+	   </dependency>  	   	         
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>agent</artifactId>
@@ -87,12 +93,12 @@
 	      <groupId>org.nhind</groupId>
 	      <artifactId>dns</artifactId>
 	      <version>1.0</version>
-       </dependency>  
-       <dependency>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
-          <version>2.5</version>
-       </dependency>                   	         	
+       </dependency>       
+	   <dependency>
+	      <groupId>org.nhind</groupId>
+	      <artifactId>xdmail</artifactId>
+	      <version>1.0-SNAPSHOT</version>
+       </dependency>         	         	
    </dependencies>   
    <build>
       <extensions>
