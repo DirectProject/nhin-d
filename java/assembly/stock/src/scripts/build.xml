@@ -64,7 +64,7 @@
 	<property name="config.service.orig.war" value="config-service-1.1.war"></property>
 	<property name="config.service.dest.war" value="config-service.war"></property>
 	<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
-	<property name="config.ui.orig.war" value="config-ui-1.1.war"></property>
+	<property name="config.ui.orig.war" value="config-ui-1.1.1.war"></property>
 	<property name="config.ui.dest.war" value="config-ui.war"></property>
 
 	
