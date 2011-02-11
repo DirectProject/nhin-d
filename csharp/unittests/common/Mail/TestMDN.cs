@@ -89,7 +89,10 @@ namespace Health.Direct.Common.Tests.Mail
             Assert.True(notificationMessage.ToValue == source.Headers.GetValue(MDNStandard.Headers.DispositionNotificationTo));
             
             Assert.True(!string.IsNullOrEmpty(notificationMessage.SubjectValue));
-                                    
+            
+            Assert.True(notificationMessage.HasHeader(MimeStandard.VersionHeader));
+            Assert.True(notificationMessage.HasHeader(MailStandard.Headers.Date));
+            
             MimeEntity[] mdnEntities = notificationMessage.GetParts().ToArray();
             this.Verify(mdnEntities);
             
@@ -128,6 +131,9 @@ namespace Health.Direct.Common.Tests.Mail
                 Assert.True(loadedMessage.IsMDN());
                 Assert.Equal(notificationMessage.ParsedContentType.MediaType, loadedMessage.ParsedContentType.MediaType);
                 Assert.Equal(notificationMessage.SubjectValue, loadedMessage.SubjectValue);
+                Assert.True(loadedMessage.HasHeader(MimeStandard.VersionHeader));
+                Assert.True(loadedMessage.HasHeader(MailStandard.Headers.Date));
+                Assert.True(loadedMessage.Headers.Count(x => (MimeStandard.Equals(x.Name, MimeStandard.VersionHeader))) == 1);
             }
             finally
             {

@@ -89,6 +89,10 @@
 		<xunitproject ProjectFile="unittests\xd.xunit" />
 	</Target>
 
+	<Target Name="test-store" DependsOnTargets="build-xd">
+		<xunitproject ProjectFile="unittests\store.xunit" />
+	</Target>
+
 	<Target Name="publish-configui">
 		<MSBuild Targets="clean-configui" Projects="$(MSBuildProjectFile)" Properties="state=pre" />
 		<AspNetCompiler

@@ -24,6 +24,8 @@ import java.net.Inet4Address;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xbill.DNS.Message;
+import org.xbill.DNS.Rcode;
+import org.xbill.DNS.Section;
 
 /**
  * UDP socket server that handled DNS requests over UDP.
@@ -36,6 +38,10 @@ public class UDPServer extends DNSSocketServer
 	
 	private DatagramSocket serverSock;
 	
+	private volatile long missCount = 0;
+	private volatile long errorCount = 0;
+	private volatile long successCount = 0;	
+	
 	/**
 	 * Creates a UDP server that listens to datagram packets.  The server will not start accepting messages until the {@link #start()} method is called.
 	 * @param settings  The server settings.  The settings contain specific IP and socket configuration parameters.
@@ -44,7 +50,9 @@ public class UDPServer extends DNSSocketServer
 	 */
 	public UDPServer(DNSServerSettings settings, DNSResponder responder) throws DNSException
 	{
-		super(settings, responder);			
+		super(settings, responder);		
+		
+		registerMBean(this.getClass());
 	}
 	
 	/**
@@ -211,13 +219,27 @@ public class UDPServer extends DNSSocketServer
 						response = responder.processError(query, e.getError());
 				}
 
-				byte[] writeBytes = response.toWire();
-				outPacket = new DatagramPacket(writeBytes,
-						writeBytes.length,
-						inPacket.getAddress(),
-						inPacket.getPort());
-				
-				serverSock.send(outPacket);				
+				if (response != null)
+				{
+					if (response.getRcode() == Rcode.NOERROR || response.getRcode() == Rcode.NXDOMAIN)
+					{
+						++successCount;
+						if (response.getSectionArray(Section.ANSWER).length == 0)
+							++missCount;	
+					}
+					else
+						++errorCount;					
+					
+					byte[] writeBytes = response.toWire();
+					outPacket = new DatagramPacket(writeBytes,
+							writeBytes.length,
+							inPacket.getAddress(),
+							inPacket.getPort());
+					
+					serverSock.send(outPacket);
+				}
+				else
+					++errorCount;				
 			}
 			catch (IOException e)
 			{
@@ -225,5 +247,32 @@ public class UDPServer extends DNSSocketServer
 			}
 		}
 			
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long getMissedRequestCount() 
+	{
+		return missCount;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long getSuccessfulRequestCount() 
+	{
+		return successCount;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long getErrorRequestCount()
+	{
+		return errorCount;
 	}
 }

@@ -272,7 +272,7 @@ namespace Health.Direct.Common.DnsResolver
         /// <param name="cname">The RR to print</param>
         public void Print(CNameRecord cname)
         {
-            this.Print(cname.CName);
+            this.Print("CName", cname.CName);
         }
         
         /// <summary>

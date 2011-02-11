@@ -22,9 +22,11 @@ using System.Net.Mail;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.DnsResolver;
+using Health.Direct.Common.Dns;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
+using Health.Direct.Common.Caching;
 
 namespace Health.Direct.Tools.Agent
 {
@@ -33,6 +35,7 @@ namespace Health.Direct.Tools.Agent
         IPAddress m_dnsServer;
         string m_fallbackDomain;
         DnsRecordPrinter m_recordPrinter;
+        bool m_useCache;
         
         public DnsCommands()
         {
@@ -113,7 +116,7 @@ namespace Health.Direct.Tools.Agent
             
             try
             {
-                using(DnsClient client = new DnsClient(m_dnsServer))
+                using(DnsClient client = CreateClient())
                 {
                     DnsResponse response = client.Resolve(new DnsRequest(recordType, domain));
                     if (response == null)
@@ -134,6 +137,30 @@ namespace Health.Direct.Tools.Agent
             "Resolve records for the given domain"
             + Constants.CRLF + "    domain recordType"
             + Constants.CRLF + "\tdomain"
-            + Constants.CRLF + "\trecordType: ANAME | CERT | MX | SOA | NS | SRV | AAAA | PTR";
+            + Constants.CRLF + "\trecordType: ANAME | CERT | MX | SOA | NS | SRV | AAAA | PTR | CNAME";
+        
+        [Command(Name = "Dns_Cache_Set", Usage="true | false")]
+        public void SetCache(string[] args)
+        {
+            m_useCache = args.GetRequiredValue<bool>(0);            
+            if (!m_useCache)
+            {
+                DnsResponseCache.Current.RemoveAll();
+            }
+        }            
+        
+        [Command(Name = "Dns_Cache_Clear")]
+        public void ClearCache(string[] args)
+        {
+            if (m_useCache)
+            {
+                DnsResponseCache.Current.RemoveAll();
+            }
+        }
+        
+        DnsClient CreateClient()
+        {
+            return m_useCache ? new DnsClientWithCache (m_dnsServer) : new DnsClient(m_dnsServer);
+        }
     }
 }

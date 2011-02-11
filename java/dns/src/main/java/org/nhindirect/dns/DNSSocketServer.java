@@ -18,12 +18,22 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 package org.nhindirect.dns;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.Socket;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import javax.management.JMException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.StandardMBean;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -32,8 +42,10 @@ import java.util.concurrent.TimeUnit;
  * @author Greg Meyer
  * @since 1.0
  */
-public abstract class DNSSocketServer 
+public abstract class DNSSocketServer implements DNSSocketServerMBean
 {
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(DNSSocketServer.class);	
+	
 	protected final DNSServerSettings settings;
 	protected final DNSResponder responder;
 	
@@ -41,6 +53,13 @@ public abstract class DNSSocketServer
 	protected ThreadPoolExecutor dnsRequestService;
 	
 	protected boolean running = false;  
+	
+	private long serverStartTime = Long.MAX_VALUE;
+	private volatile long rejectedCount = 0;
+	private volatile long requestCount = 0;
+	private TemporalCountBucket countBuckets[] = {new TemporalCountBucket(), new TemporalCountBucket(), 
+			new TemporalCountBucket(), new TemporalCountBucket(), new TemporalCountBucket()};
+	
 	
 	/**
 	 * Creates a socket server.  The server will not start accepting messages until the {@link #start()} method is called.
@@ -57,6 +76,25 @@ public abstract class DNSSocketServer
 		createServerSocket();
 	}
 	
+	protected void registerMBean(Class<?> clazz)
+	{
+		final StringBuilder objectNameBuilder = new StringBuilder(clazz.getPackage().getName());
+		objectNameBuilder.append(":type=").append(clazz.getSimpleName());
+		objectNameBuilder.append(",name=").append(UUID.randomUUID());
+		
+		try
+		{			
+			final StandardMBean mbean = new StandardMBean(this, DNSSocketServerMBean.class);
+		
+			final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+			mbeanServer.registerMBean(mbean, new ObjectName(objectNameBuilder.toString()));
+		}
+		catch (JMException e)
+		{
+			LOGGER.error("Unable to register the DNSSocketServer MBean", e);
+		}
+	}
+	
 	/**
 	 * Starts the socket server and initializes the dispatch threads.  After this method has been called, the server will start accepting
 	 * DNS requests.
@@ -64,16 +102,23 @@ public abstract class DNSSocketServer
 	 */
 	public void start() throws DNSException
 	{
-		// create the accept thread
-		running = true;
-		
-		dnsRequestService = new ThreadPoolExecutor(0, settings.getMaxActiveRequests(), 
-				120L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
-		
-		
-		socketAcceptService = Executors.newSingleThreadExecutor();
-		socketAcceptService.execute(getSocketAcceptTask());
-		
+		if (running != true)
+		{
+			// create the accept thread
+			running = true;
+			
+			dnsRequestService = new ThreadPoolExecutor(0, settings.getMaxActiveRequests(), 
+					120L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+			
+			
+			socketAcceptService = Executors.newSingleThreadExecutor();
+			socketAcceptService.execute(getSocketAcceptTask());
+			
+			serverStartTime = System.currentTimeMillis();
+		}
+		else
+			LOGGER.info("Start requested, but socket server is already running.");
+	
 	}
 	
 	/**
@@ -118,10 +163,14 @@ public abstract class DNSSocketServer
 	 */
 	protected void submitDNSRequest(Object s)
 	{
+		
+		updateCountMetrics();
 		if (dnsRequestService.getActiveCount() < settings.getMaxActiveRequests())
 			dnsRequestService.execute(getDNSRequestTask(s));
 		else
-		{			
+		{		
+			
+			++rejectedCount;
 			// just close the socket... we're too busy to handle anything
 			try
 			{
@@ -130,5 +179,110 @@ public abstract class DNSSocketServer
 			}
 			catch (IOException e) {}
 		}
+	}
+	
+	private void updateCountMetrics()
+	{
+		++requestCount;
+		long curTime = System.currentTimeMillis();
+		int bucketIndex = (int)((curTime / 1000) % 5);
+		
+		synchronized (countBuckets)
+		{
+			TemporalCountBucket bucket = countBuckets[bucketIndex];
+			bucket.increment(curTime);
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long getUptime() 
+	{
+		if (running == false || serverStartTime == Long.MAX_VALUE)
+			return -1L;
+		else
+			return (System.currentTimeMillis() - serverStartTime);
+	}		
+	
+	/**
+	 * {@inheritDoc}
+	 */	
+	@Override
+	public Long getRejectedRequestCount() 
+	{
+		return rejectedCount;
+	}	
+	
+	/**
+	 * {@inheritDoc}
+	 */		
+	@Override
+	public Long getResourceRequestCount() 
+	{
+		return requestCount;
+	}	
+	
+	/**
+	 * {@inheritDoc}
+	 */		
+	@Override
+	public String getResourceRequestLoad() 
+	{
+		// this is an approximation over the last 5 seconds converted to requests per second
+		long curTime = System.currentTimeMillis();
+		int numTransactions = 0;
+		synchronized (countBuckets)
+		{			
+			for (TemporalCountBucket bucket : countBuckets)
+			{
+				numTransactions += bucket.getCount(curTime);
+			}
+		}
+		
+		// can get a little better accuracy if we take into consideration that the last full second of the 5 second time range has not yet passed
+		double div = 4.0 + ((curTime % 1000) / 1000);
+		
+		int aveTransLoad = (int)((double)(numTransactions) / (div));
+		
+		return aveTransLoad + "/sec";
+	}
+	
+	/*
+	 * class used to hold request count within a 1 second time range
+	 */
+	private static class TemporalCountBucket
+	{
+		private volatile long count = 0;
+		private volatile long firstAddedTime = 0;
+		
+		/*
+		 * increment the access count... if the access time is outside
+		 * of the 5 second time range, then reset the counter 
+		 */
+		public synchronized void increment(long accessTime)
+		{			
+			if ((accessTime - firstAddedTime) > 5000)
+			{
+				// round down to nearest 1000
+				firstAddedTime = accessTime - (accessTime % 1000);
+				count = 1;
+			}
+			else
+				++count;
+		}
+
+		/*
+		 * get the access count... if the access time is outside of the
+		 * 5 second range, then return 0
+		 */
+		public synchronized long getCount(long accessTime)
+		{
+			if (firstAddedTime == 0)
+				return 0;
+			
+			return ((accessTime - firstAddedTime) > 5000) ? 0 : count;
+		}		
 	}
 }

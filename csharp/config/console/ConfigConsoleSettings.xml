@@ -13,8 +13,14 @@
   </CertificateManager>
   <AnchorManager>
     <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
-  </AnchorManager>  
-  <!--
+  </AnchorManager>
+  <PropertyManager>
+    <Url>http://localhost/ConfigService/SettingsManager.svc/Properties</Url>
+  </PropertyManager>
+  <BlobManager>
+    <Url>http://localhost/ConfigService/SettingsManager.svc/Blobs</Url>
+  </BlobManager>
+<!--
   <DomainManager>
     <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
   </DomainManager>
@@ -30,5 +36,11 @@
   <AnchorManager>
     <Url>http://localhost:6692/CertificateService.svc/Anchors</Url>
   </AnchorManager>
-  -->
+  <PropertyManager>
+    <Url>http://localhost:6692/SettingsManager.svc/Properties</Url>
+  </PropertyManager>
+  <BlobManager>
+    <Url>http://localhost:6692/SettingsManager.svc/Blobs</Url>
+  </BlobManager>
+ -->
 </ConsoleSettings>

@@ -4,7 +4,8 @@
 
  Authors:
     Chris Lomonico chris.lomonico@surescripts.com
-  
+    Umesh Madan umeshma@microsoft.com
+ 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -22,22 +23,48 @@ using Health.Direct.Common.Extensions;
 namespace Health.Direct.Common.Caching
 {
     /// <summary>
-    /// extends the base 
+    /// Dns Response Cache - a single, app-domain wide Singleton
     /// </summary>
     public class DnsResponseCache : CachingBase<DnsResponse>
     {
+        static DnsResponseCache s_cache;
+        
+        static DnsResponseCache()
+        {
+            s_cache = new DnsResponseCache();
+        }
+        
+        string m_uniqueName = null;
+        
         /// <summary>
-        /// Provides implementation for base class property for setting a default ttl value
+        /// The Singleton App Domain Wide Dns Response Cache
         /// </summary>
-        protected override TimeSpan TimeToLive
+        public static DnsResponseCache Current
         {
             get
             {
-                // default to 20 seconds for global expiration
-                return TimeSpan.FromSeconds(20);
+                return s_cache;
             }
         }
-
+        
+        private DnsResponseCache()
+        {
+        }
+        
+        /// <summary>
+        /// Caches use a common memory store where each object in the store has a key.
+        /// To keep your custom cache from stomping on other Dns Caches, use a unique name.
+        /// </summary>
+        /// <param name="uniqueName">unique name for this Dns Cache</param>
+        public DnsResponseCache(string uniqueName)
+        {
+            if (string.IsNullOrEmpty(uniqueName))
+            {
+                throw new ArgumentException("uniqueName");
+            }
+            m_uniqueName = uniqueName;
+        }
+           
         /// <summary>
         /// Builds a common key format given the dnsquestion passed in
         /// </summary>
@@ -49,10 +76,14 @@ namespace Health.Direct.Common.Caching
             {
                 throw new ArgumentNullException("question");
             }
+            
+            string domain = question.Domain.ToLower();
+            if (m_uniqueName == null)
+            {
+                return string.Format("DnsCache.{0}.{1}" , question.Type, domain);
+            }
 
-            return string.Format("{0}.{1}"
-                                 , question.Type
-                                 , question.Domain ?? "unknown").ToLower();
+            return string.Format("{0}.DnsCache.{1}.{2}", m_uniqueName, question.Type, domain);
         }
         
         /// <summary>
@@ -60,40 +91,61 @@ namespace Health.Direct.Common.Caching
         /// </summary>
         /// <param name="response">DnsResponse instace to be stored in the cache; DnsQuestion from this instance is used for the key</param>
         /// <param name="ttl">Timespan specifying the ttl for the DnsResponse object that is to be stored in the cache</param>
-        public void Put(DnsResponse response
-                        , TimeSpan ttl)
+        public void Put(DnsResponse response, TimeSpan ttl)
         {
-            if (response == null || response.AnswerRecords.IsNullOrEmpty())
+            if (response == null || !response.HasAnyRecords)
             {
                 return;
             }
 
-            base.Put(BuildKey(response.Question)
-                     , response
-                     , ttl);
+            base.Put(BuildKey(response.Question), response, ttl);
         }
 
         /// <summary>
         /// Puts an object into the cache after building the key by calling the base method Put
         /// </summary>
-        /// <param name="reponse">DnsResponse instace to be stored in the cache; DnsQuestion from this instance is used for the key</param>
-        public void Put(DnsResponse reponse)
+        /// <param name="response">DnsResponse instace to be stored in the cache; DnsQuestion from this instance is used for the key</param>
+        public void Put(DnsResponse response)
         {
             // no sense in storing nothing
-            if (reponse == null || reponse.AnswerRecords.Count() == 0)
+            if (response == null || !response.HasAnyRecords)
             {
                 return;
             }
-
-            // get the minimum ttl from the records (int for the total seconds)
-            var val = reponse.AnswerRecords.Select(r => r.TTL).Min();
-            TimeSpan ts = TimeSpan.FromSeconds(val);
+            
+            int ttl = response.GetMinTTL(response.Question.Type);
+            if (ttl <= 0)
+            {
+                //
+                // Don't cache
+                //
+                return;
+            }
+            
+            TimeSpan ts = TimeSpan.FromSeconds(ttl);
 
             // store the record in the cache
-            Put(reponse
-                , ts);
+            Put(response, ts);
         }
-
+        
+        /// <summary>
+        /// Find a cached response based on the given Dns question
+        /// </summary>
+        /// <param name="question">dns question</param>
+        /// <returns>cached response, or null</returns>
+        public DnsResponse Get(DnsQuestion question)
+        {
+            try
+            {
+                return base.Get(this.BuildKey(question));
+            }
+            catch
+            {
+            }
+            
+            return null;
+        }
+        
         /// <summary>
         /// Gets an item from the cache using the DnsRequest to find the item
         /// </summary>
@@ -105,7 +157,8 @@ namespace Health.Direct.Common.Caching
             {
                 throw new ArgumentNullException("request");
             }
-            return base.Get(BuildKey(request.Question));
+            
+            return this.Get(request.Question);
         }
 
         /// <summary>
@@ -119,21 +172,8 @@ namespace Health.Direct.Common.Caching
             {
                 throw new ArgumentNullException("response");
             }
-            return base.Get(BuildKey(response.Question));
-        }
-
-        /// <summary>
-        /// Gets an item from the cache using the DnsResponse to find the item
-        /// </summary>
-        /// <param name="question">DnsQuestion instance used to build the key to find the item in the cache</param>
-        /// <returns>DnsResponse instance that was found in the cache; if not found, <c>null</c> is returned</returns>
-        public DnsResponse Get(DnsQuestion question)
-        {
-            if (question == null)
-            {
-                throw new ArgumentNullException("question");
-            }
-            return base.Get(BuildKey(question));
+            
+            return this.Get(response.Question);
         }
 
         /// <summary>

@@ -38,6 +38,15 @@ namespace Health.Direct.Common.DnsResolver
             : base(null, inner)
         {
         }
+        
+        /// <summary>
+        /// Initializes an instance that was triggered by the provided original exception.
+        /// </summary>
+        /// <param name="message">message for this exception</param>
+        public DnsException(string message)
+            : base(message)
+        {
+        }
     }
 
     /// <summary>
