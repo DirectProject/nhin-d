@@ -149,8 +149,7 @@ namespace Health.Direct.Config.Store
         {
             return table.GetDB().ExecuteQuery<Address>(Sql_SelectByDomainName, maxResults, domainName);
         }
-
-        
+       
         public static void ExecDelete(this Table<Address> table, string emailAddress)
         {
             table.Context.ExecuteCommand(Sql_DeleteAddress, emailAddress);

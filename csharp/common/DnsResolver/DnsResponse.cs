@@ -15,6 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Health.Direct.Common.DnsResolver
 {
@@ -144,6 +146,37 @@ namespace Health.Direct.Common.DnsResolver
             get
             {
                 return (this.HasAnswerRecords || this.HasNameServerRecords || this.HasAdditionalRecords);
+            }
+        }
+        
+        /// <summary>
+        /// An enumeration of all records - Answer, NameServer and Additional
+        /// </summary>
+        public IEnumerable<DnsResourceRecord> AllRecords
+        {
+            get
+            {
+                if (this.HasAnswerRecords)
+                {
+                    foreach(DnsResourceRecord record in this.AnswerRecords)
+                    {
+                        yield return record;
+                    }
+                }
+                if (this.HasNameServerRecords)
+                {
+                    foreach (DnsResourceRecord record in this.NameServerRecords)
+                    {
+                        yield return record;
+                    }                
+                }
+                if (this.HasAdditionalRecords)
+                {
+                    foreach (DnsResourceRecord record in this.AdditionalRecords)
+                    {
+                        yield return record;
+                    }
+                }
             }
         }
         
@@ -307,6 +340,35 @@ namespace Health.Direct.Common.DnsResolver
         {
             this.Header.IsTruncated = true;
             this.ClearAnswers();
+        }
+
+        internal int GetMinTTL(DnsStandard.RecordType recordType)
+        {
+            int minTTL = int.MaxValue;          // overall min ttl
+            int minTTLType = int.MaxValue;      // min ttl for the given record type
+            
+            foreach(DnsResourceRecord record in this.AllRecords)
+            {
+                int newTTL = record.TTL;
+                if (recordType == record.Type)
+                {
+                    if (newTTL < minTTLType)
+                    {
+                        minTTLType = newTTL;
+                    }
+                }
+                if (newTTL < minTTL)
+                {
+                    minTTL = newTTL;
+                }
+            }
+            
+            if (minTTLType == int.MaxValue)
+            {
+                minTTLType = minTTL;
+            }
+
+            return (minTTLType == int.MaxValue || minTTLType < 0) ? 0 : minTTLType;
         }
     }
 }

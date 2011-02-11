@@ -25,11 +25,15 @@ import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.Domain;
 import org.nhind.config.Setting;
+import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.config.ConfigServiceRunner;
 import org.nhindirect.gateway.smtp.james.mailet.NHINDSecurityAndTrustMailet;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
+import org.nhindirect.stagent.AgentError;
+import org.nhindirect.stagent.AgentException;
 import org.nhindirect.stagent.CryptoExtensions;
+import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.mail.Message;
@@ -313,15 +317,128 @@ public class NHINDSecurityAndTrustMailet_functionalTest extends TestCase
 
 				Message compareMessage = new Message(theMessage.getMessage());
 				
-				// remove the MDN before comparison
+				// remove the MDN before comparison				
 				compareMessage.removeHeader(MDNStandard.Headers.DispositionNotificationTo);
 				
 				assertEquals(originalMessage, compareMessage.toString());
+				
+
 				
 			}				
 					
 		}.perform();
 	}
+	
+	public void testProcessMDNMessageEndToEnd() throws Exception 
+	{
+		new TestPlan() 
+		{			
+			protected String getMessageToProcess() throws Exception
+			{
+				return TestUtils.readMessageResource("MDNMessage.txt");
+			}	
+
+			
+			protected void performInner() throws Exception
+			{
+
+				// encrypt
+				String originalMessage = getMessageToProcess();
+				
+				MimeMessage msg = EntitySerializer.Default.deserialize(originalMessage);
+				
+				MockMail theMessage = new MockMail(msg);
+				
+				Mailet theMailet = getMailet("ValidConfigStateLine.txt");	
+				
+				
+				theMailet.service(theMessage);
+				
+				
+				assertNotNull(theMessage);
+				assertNotNull(theMessage.getMessage());
+				
+				msg = theMessage.getMessage();
+				
+				assertTrue(SMIMEStandard.isEncrypted(msg));
+				assertEquals(theMessage.getState(), Mail.TRANSPORT);
+				
+				
+				// decrypt
+				theMailet = getMailet("ValidConfig.xml");			
+				
+				theMessage = new MockMail(msg);
+				
+				theMailet.service(theMessage);
+				
+				assertNotNull(theMessage);
+				assertNotNull(theMessage.getMessage());
+				
+				
+				msg = theMessage.getMessage();
+				assertFalse(SMIMEStandard.isEncrypted(msg));
+				assertEquals(theMessage.getState(), Mail.TRANSPORT);
+				
+			}				
+					
+		}.perform();
+	}
+		
+	
+	public void testProcessOutgoingMessage_NoTrustedRecipients() throws Exception 
+	{
+		new TestPlan() 
+		{			
+			protected String getMessageToProcess() throws Exception
+			{
+				return TestUtils.readMessageResource("PlainUntrustedOutgoingMessage.txt");
+			}	
+
+			
+			protected void performInner() throws Exception
+			{
+
+				// encrypt
+				String originalMessage = getMessageToProcess();
+				
+				MimeMessage msg = EntitySerializer.Default.deserialize(originalMessage);
+				
+				// add an MDN request
+				msg.setHeader(MDNStandard.Headers.DispositionNotificationTo, msg.getHeader(MailStandard.Headers.From, ","));
+				
+				MockMail theMessage = new MockMail(msg);
+				
+				Mailet theMailet = getMailet("ValidConfig.xml");
+				
+				theMailet.service(theMessage);
+				
+			}				
+					
+			protected void assertException(Exception exception) throws Exception 
+			{
+				assertNotNull(exception);
+				
+				assertTrue(exception instanceof SmtpAgentException);
+				SmtpAgentException ex = (SmtpAgentException)exception;
+				assertNotNull(ex.getCause());
+				assertTrue(ex.getCause() instanceof NHINDException);
+				
+				NHINDException nEx = (NHINDException)ex.getCause();
+				
+				assertNotNull(nEx.getError());
+				assertTrue(nEx.getError() instanceof AgentException);
+				
+				AgentException aEx = (AgentException)nEx.getError();				
+				AgentError err = (AgentError)aEx.getError();
+				assertNotNull(err);
+				
+				assertEquals(AgentError.NoTrustedRecipients, err);
+			}			
+			
+		}.perform();
+		
+		
+	}	
 	
 	public void testProcessOutgoingMessageWSEndToEnd() throws Exception 
 	{

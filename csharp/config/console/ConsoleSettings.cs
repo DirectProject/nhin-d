@@ -67,38 +67,67 @@ namespace Health.Direct.Config.Console
             set;
         }
 
+        [XmlElement]
+        public ClientSettings PropertyManager
+        {
+            get;
+            set;
+        }
+
+        [XmlElement]
+        public ClientSettings BlobManager
+        {
+            get;
+            set;
+        }
+
         public void SetHost(string host, int port)
         {
             this.DomainManager.SetHost(host, port);
             this.AddressManager.SetHost(host, port);
             this.CertificateManager.SetHost(host, port);
             this.AnchorManager.SetHost(host, port);
+            if (this.PropertyManager != null)
+            {
+                this.PropertyManager.SetHost(host, port);
+            }
+            if (this.BlobManager != null)
+            {
+                this.BlobManager.SetHost(host, port);
+            }
 
             InvokeHostAndPortChanged();
         }
         
         public void Validate()
         {
-            if (this.DomainManager == null)
+            Validate(this.DomainManager, "DomainManager", true);
+            Validate(this.AddressManager, "AddressManager", true);
+            Validate(this.AnchorManager, "AnchorManager", true);
+            Validate(this.CertificateManager, "CertificateManager", true);
+            Validate(this.PropertyManager, "PropertyManager", false);
+            Validate(this.BlobManager, "BlobManager", false);
+        }
+        
+        void Validate(ClientSettings settings, string name, bool required)
+        {
+            if (settings == null && !required)
             {
-                throw new ArgumentException("Invalid DomainManager Config");
+                return;
             }
-            this.DomainManager.Validate();
-            if (this.AddressManager == null)
+            
+            if (settings == null)
             {
-                throw new ArgumentException("Invalid AddressManager Config");
+                throw new ArgumentException(string.Format("Invalid {0} Config", name));
             }
-            this.AddressManager.Validate();
-            if (this.AnchorManager == null)
+            try
             {
-                throw new ArgumentException("Invalid AnchorManager Config");
+                settings.Validate();
             }
-            this.AnchorManager.Validate();
-            if (this.CertificateManager == null)
+            catch(Exception ex)
             {
-                throw new ArgumentException("Invalid CertificateManager Config");
+                throw new ArgumentException(name, ex);
             }
-            this.CertificateManager.Validate();
         }
         
         public static ConsoleSettings Load()

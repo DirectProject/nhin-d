@@ -65,7 +65,12 @@ namespace Health.Direct.Config.Console.Command
         {
             get
             {
-                return m_clientResolver();
+                T client = m_clientResolver();
+                if (client == null)
+                {
+                    throw new NotSupportedException("No WCF client for this Command configured");
+                }
+                return client;
             }
         }
 

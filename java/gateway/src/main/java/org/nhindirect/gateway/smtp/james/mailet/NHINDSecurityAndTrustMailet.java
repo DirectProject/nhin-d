@@ -40,11 +40,12 @@ import org.nhindirect.gateway.smtp.MessageProcessResult;
 import org.nhindirect.gateway.smtp.SmtpAgent;
 import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.SmtpAgentFactory;
-import org.nhindirect.gateway.smtp.SmtpAgentSettings;
 import org.nhindirect.stagent.AddressSource;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.mail.notifications.NotificationMessage;
+
+import com.google.inject.Module;
 
 /**
  * Apache James mailet for the enforcing the NHINDirect security and trust specification.  The mailed sits between
@@ -91,7 +92,9 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		 */		
 		try
 		{
-			agent = SmtpAgentFactory.createAgent(configURL);
+			Collection<Module> modules = getInitModules();
+			
+			agent = SmtpAgentFactory.createAgent(configURL, null, null, modules);
 			
 		}
 		catch (SmtpAgentException e)
@@ -121,6 +124,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	{ 		
 		LOGGER.trace("Entering service(Mail mail)");
 		
+		onPreprocessMessage(mail);
 		
 		NHINDAddressCollection recipients = new NHINDAddressCollection();		
 		
@@ -151,36 +155,45 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		NHINDAddress sender = new NHINDAddress(mail.getSender().toInternetAddress(), AddressSource.From);				
 		
 		LOGGER.info("Proccessing incoming message from sender " + mail.getSender().toInternetAddress());
-		
-		// process the message with the agent stack
-		LOGGER.trace("Calling agent.processMessage");
-		MessageProcessResult result = agent.processMessage(msg, recipients, sender);
-		LOGGER.trace("Finished calling agent.processMessage");
-		
+		MessageProcessResult result = null;
+				
 		try
 		{
+			// process the message with the agent stack
+			LOGGER.trace("Calling agent.processMessage");
+			result = agent.processMessage(msg, recipients, sender);
+			LOGGER.trace("Finished calling agent.processMessage");
+			
 			if (result == null)
-			{
-				/*
-				 * TODO: Handle exception... GHOST the message for now and eat it
-				 */
-				LOGGER.error("Failed to process message.  processMessage returned null.");				
+			{				
+				LOGGER.error("Failed to process message.  processMessage returned null.");		
+				
+				onMessageRejected(mail, recipients, sender, null);
+				
 				mail.setState(Mail.GHOST);
 				
 				LOGGER.trace("Exiting service(Mail mail)");
 				return;
 			}
 		}	
-		catch (Throwable e)
+		catch (Exception e)
 		{
 			// catch all
-			/*
-			 * TODO: Handle exception... GHOST the message for now and eat it
-			 */
+			
 			LOGGER.error("Failed to process message: " + e.getMessage(), e);					
+			
+			onMessageRejected(mail, recipients, sender, e);
+			
 			mail.setState(Mail.GHOST);
 			LOGGER.trace("Exiting service(Mail mail)");
-			return;			
+			
+			if (e instanceof MessagingException)
+				throw (MessagingException)e;
+			else if (e instanceof SmtpAgentException)
+				throw (SmtpAgentException)e;
+			
+			throw new MessagingException("Failed to process message: " + e.getMessage());
+
 		}
 		
 		
@@ -237,6 +250,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			}
 		}
 		
+		onPostprocessMessage(mail, result);
 		
 		LOGGER.trace("Exiting service(Mail mail)");
 	}
@@ -277,5 +291,48 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 				return true;
 		
 		return false;
+	}
+	
+	/**
+	 * Gets a collection of Guice {@link @Module Modules} to create custom bindings for Agent creation.  If this method returns null,
+	 * the Mailet will use the simple {@link SmtpAgentFactory#createAgent(URL)} method to create the {@link SmtpAgent) and 
+	 * {@link NHINDAgent}.
+	 * @return A collection of Guice Modules.
+	 */
+	protected Collection<Module> getInitModules()
+	{
+		return null;
+	}
+	
+	/**
+	 * Overridable method for custom processing before the message is submitted to the SMTP agent.  
+	 * @param mail The incoming mail message.
+	 */
+	protected void onPreprocessMessage(Mail mail)
+	{
+		/* no-op */
+	}
+	
+	/**
+	 * Overridable method for custom processing when a message is rejected by the SMTP agent.
+	 * @param message The mail message that the agent attempted to process. 
+	 * @param recipients A collection of recipients that this message was intended to be delievered to.
+	 * @param sender The sender of the message.
+	 * @param t Exception thrown by the agent when the message was rejected.  May be null;
+	 */
+	protected void onMessageRejected(Mail mail, NHINDAddressCollection recipients, NHINDAddress sender, Throwable t)
+	{
+		/* no-op */
+	}
+	
+	/**
+	 * Overridable method for custom processing after the message has been processed by the SMTP agent.  
+	 * @param mail The incoming mail message.  The contents of the message may have changed from when it was originally
+	 * received. 
+	 * @param result Contains results of the message processing including the resulting message.
+	 */
+	protected void onPostprocessMessage(Mail mail, MessageProcessResult result)
+	{
+		/* no-op */
 	}
 }

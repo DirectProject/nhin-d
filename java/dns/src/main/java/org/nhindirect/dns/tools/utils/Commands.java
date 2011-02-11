@@ -527,7 +527,7 @@ public class Commands
 	            line = line.trim();
 	            if ((line != null && !line.isEmpty()) && !line.startsWith("//"))
 	            {
-	                if (echo && !line.toUpperCase(Locale.getDefault()).startsWith("ECHO"));
+	                if (echo && !line.toUpperCase(Locale.getDefault()).startsWith("ECHO"))
 	                {
 	                    System.out.println(line);
 	                }

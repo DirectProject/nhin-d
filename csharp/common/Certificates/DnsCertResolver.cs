@@ -32,13 +32,12 @@ namespace Health.Direct.Common.Certificates
     public class DnsCertResolver : ICertificateResolver
     {
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
-        private readonly DnsResponseCache m_cache;
-        private readonly IPAddress m_serverIP;
-        private readonly string m_fallbackDomain = string.Empty;
-        private readonly bool m_cacheEnabled;
-        //bool m_useRootForCertResolve = false;
-        private readonly TimeSpan m_timeout;
-        private int m_maxRetries = 1;
+        IPAddress m_serverIP;
+        string m_fallbackDomain = string.Empty;
+        bool m_cacheEnabled = false;
+        bool m_useRootForCertResolve = false;
+        TimeSpan m_timeout;
+        int m_maxRetries = 1;
         
         /// <summary>
         /// Create a DNS certificate resolver, using default timeout
@@ -96,10 +95,6 @@ namespace Health.Direct.Common.Certificates
             m_timeout = timeout;
             m_fallbackDomain = fallbackDomain;
             m_cacheEnabled = cacheEnabled;
-            if (m_cacheEnabled)
-            {
-                m_cache = new DnsResponseCache();
-            }
         }
 
         /// <summary>
@@ -172,6 +167,21 @@ namespace Health.Direct.Common.Certificates
         }
         
         /// <summary>
+        /// Resolve certs directly from the root server
+        /// </summary>
+        public bool ResolveUsingRootServer
+        {
+            get
+            {
+                return m_useRootForCertResolve;
+            }
+            set
+            {
+                m_useRootForCertResolve = value;
+            }
+        }
+        
+        /// <summary>
         /// Resolves X509 certificates for a mail address.
         /// </summary>
         /// <param name="address">The <see cref="MailAddress"/> instance to resolve. Will try the
@@ -233,7 +243,16 @@ namespace Health.Direct.Common.Certificates
             name = name.Replace('@', '.');
             try
             {
-                IEnumerable<CertRecord> records = client.ResolveCERT(name);
+                IEnumerable<CertRecord> records = null;
+                
+                if (m_useRootForCertResolve)
+                {
+                    records = client.ResolveCERTFromNameServer(name);
+                }
+                else
+                {
+                    records = client.ResolveCERT(name);
+                }
                 if (records != null)
                 {  
                     return CollectCerts(null, records);
@@ -278,7 +297,7 @@ namespace Health.Direct.Common.Certificates
         
         DnsClient CreateDnsClient()
         {
-            DnsClient client = (m_cacheEnabled) ? new DnsClientWithCache(m_serverIP, m_cache) : new DnsClient(m_serverIP);
+            DnsClient client = (m_cacheEnabled) ? new DnsClientWithCache(m_serverIP) : new DnsClient(m_serverIP);
             if (Timeout.Ticks > 0)
             {
                 client.Timeout = Timeout;

@@ -104,6 +104,9 @@ namespace Health.Direct.DnsResponder
                 case DnsStandard.RecordType.CERT:
                     ProcessCERTQuestion(response);
                     break;
+                case DnsStandard.RecordType.CNAME:
+                    ProcessCNAMEQuestion(response);
+                    break;                    
             }
             
             return response;
@@ -129,6 +132,10 @@ namespace Health.Direct.DnsResponder
             using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
             {
                 client.GetANAMERecords(response.Question.Domain, response.AnswerRecords);
+                if (!response.HasAnswerRecords)
+                {
+                    client.GetCNAMERecords(response.Question.Domain, response.AnswerRecords);
+                }
             }            
         }
 
@@ -203,6 +210,19 @@ namespace Health.Direct.DnsResponder
                     client.GetANAMERecords(record.NameServer, response.AdditionalRecords);
                 }
             }
-        }        
+        }
+
+        /// <summary>
+        /// processes a CNAME Question, populated the response with any matching results pulled from the database store
+        /// </summary>
+        /// <param name="response">DnsResponse instance containing information about the question that will
+        /// have any corresponding answer records populated upon return</param>
+        protected void ProcessCNAMEQuestion(DnsResponse response)
+        {
+            using (RecordRetrievalServiceClient client = m_recordRetrievalServiceSettings.CreateRecordRetrievalClient())
+            {
+                client.GetCNAMERecords(response.Question.Domain, response.AnswerRecords);
+            }
+        }
     }
 }

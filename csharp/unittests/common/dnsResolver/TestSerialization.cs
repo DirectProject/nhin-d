@@ -84,6 +84,15 @@ namespace Health.Direct.Common.Tests.DnsResolver
             Assert.True(parsedRecord.Equals(record));
         }
         
+        [Fact]
+        public void TestValidation()
+        {
+            DnsRequest request = DnsRequest.CreateA("foo.com");
+            Assert.DoesNotThrow(() => request.Validate());
+            request.Header.IsRequest = false;
+            Assert.Throws<DnsProtocolException>(() => request.Validate());
+        }
+               
         T Roundtrip<T>(T record)
             where T : DnsResourceRecord
         {

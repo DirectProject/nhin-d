@@ -29,6 +29,9 @@ namespace Health.Direct.Config.Store
         Table<Domain> m_domains;
         Table<Address> m_addresses;
         Table<DnsRecord> m_dnsRecords;
+        Table<Property> m_properties;
+        Table<NamedBlob> m_blobs;
+        
         DbTransaction m_transaction;
                           
         public ConfigDatabase(string connectString)
@@ -112,7 +115,33 @@ namespace Health.Direct.Config.Store
                 return m_domains;
             }
         }
+        
+        public Table<Property> Properties
+        {
+            get
+            {
+                if (m_properties == null)
+                {
+                    m_properties = this.GetTable<Property>();
+                }
 
+                return m_properties;
+            }
+        }
+
+        public Table<NamedBlob> Blobs
+        {
+            get
+            {
+                if (m_blobs == null)
+                {
+                    m_blobs = this.GetTable<NamedBlob>();
+                }
+
+                return m_blobs;
+            }
+        }
+        
         public void BeginTransaction()
         {
             if (this.Connection == null || this.Connection.State == ConnectionState.Closed)
