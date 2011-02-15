@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
-
+using System.Net.Sockets;
 using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.DnsResponder.Tests
@@ -114,9 +114,14 @@ namespace Health.Direct.DnsResponder.Tests
                         
         public void Start(IEnumerable<string> domains)
         {
+            this.Start(domains, this.ThreadProc);
+        }
+
+        public void Start(IEnumerable<string> domains, ParameterizedThreadStart proc)
+        {
             Debug.Assert(m_thread == null);
-            
-            m_thread = new Thread(this.ThreadProc);
+
+            m_thread = new Thread(proc);
             m_thread.Start(domains);
         }
         
@@ -151,6 +156,34 @@ namespace Health.Direct.DnsResponder.Tests
                     {
                         m_failure++;
                     }
+                }
+            }
+        }
+
+        public void TcpSocketDropper(object state)
+        {
+            IEnumerable<string> domains = (IEnumerable<string>)state;
+            Random random = new Random();
+            byte[] sizeBlock = new byte[2] {0, 32};
+            foreach (string domain in domains)
+            {
+                try
+                {
+                    using(Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+                    {
+                        socket.NoDelay = true;
+                        socket.Connect(m_server.Server.Settings.Address, m_server.Server.Settings.Port);
+                        if (random.NextDouble() > 0.5)
+                        {
+                            socket.Send(sizeBlock);
+                        }
+                        m_success++;
+                        socket.Close(0);
+                    }
+                }
+                catch
+                {
+                    m_failure++;
                 }
             }
         }

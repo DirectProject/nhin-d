@@ -84,6 +84,7 @@ namespace Health.Direct.DnsResponder
         
         void ReceiveCompleted(object sender, SocketAsyncEventArgs args)
         {
+            bool synchronousCompletion = true;
             int countRead = args.BytesTransferred;
             SocketError socketError = args.SocketError;
             IPEndPoint remoteEndpoint = (IPEndPoint) args.RemoteEndPoint;
@@ -106,10 +107,10 @@ namespace Health.Direct.DnsResponder
                 {
                     context.BytesTransfered = countRead;
                     context.RemoteEndPoint = remoteEndpoint;
-                    if (!m_requestHandler.Process(context))
-                    {
-                        context = null; // Completion will be asynchronous
-                    }
+                    synchronousCompletion = m_requestHandler.Process(context);
+                    //
+                    // If completion is async, handler will call ProcessingComplete
+                    //
                 }
             }
             catch (SocketException)
@@ -125,7 +126,10 @@ namespace Health.Direct.DnsResponder
             }
             finally
             {
-                this.ProcessingComplete(context);
+                if (synchronousCompletion)
+                {
+                    this.ProcessingComplete(context);
+                }
             }
         }
 
@@ -141,6 +145,7 @@ namespace Health.Direct.DnsResponder
             {
                 context = new DnsUdpContext();
             }
+            context.Init();
             
             return context;
         }
@@ -149,7 +154,10 @@ namespace Health.Direct.DnsResponder
         {
             try
             {
-                this.ReleaseContext(context);
+                if (context != null)
+                {
+                    this.ReleaseContext(context);
+                }
             }
             catch(Exception ex)
             {
