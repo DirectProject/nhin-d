@@ -69,8 +69,8 @@ namespace Health.Direct.DnsResponder.Tests
             Assert.True(matches == null || matches.Count() == 0);
         }
 
-        const int MultithreadThreadCount = 4;
-        const int MultithreadRepeat = 250;
+        const int MultithreadThreadCount = 16;  
+        const int MultithreadRepeat = 500;
 
         [Theory]
         [InlineData(UseUdp)]
@@ -94,7 +94,14 @@ namespace Health.Direct.DnsResponder.Tests
             }
             for (int i = 0; i < threads.Length; ++i)
             {
-                threads[i].Start(domains);
+                if (!udp && i == threads.Length - 1)
+                {
+                    threads[i].Start(domains, threads[i].TcpSocketDropper);
+                }
+                else
+                {
+                    threads[i].Start(domains);
+                }
             }
             for (int i = 0; i < threads.Length; ++i)
             {

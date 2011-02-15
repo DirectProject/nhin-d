@@ -72,7 +72,8 @@ namespace Health.Direct.DnsResponder
             {
                 throw new ArgumentNullException();
             }
-            
+
+            this.Clear();
             m_responder = responder;
             this.ReserveCapacity(responder.Settings.TcpServerSettings.ReadBufferSize);
         }
