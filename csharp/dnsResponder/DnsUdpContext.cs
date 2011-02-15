@@ -76,6 +76,11 @@ namespace Health.Direct.DnsResponder
             }
         }
         
+        public void Init()
+        {
+            m_buffer.Clear();
+        }
+        
         public void Clear()
         {
             m_buffer.Clear();
