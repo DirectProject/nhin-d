@@ -138,10 +138,6 @@ namespace Health.Direct.DnsResponder
                 //
                 this.ConnectionAccepted.SafeInvoke(socket);
                 //
-                // Configure the socket for timeouts before dispatch
-                // 
-                this.Settings.ConfigureSocket(socket); 
-                //
                 // Ok, we can do some work now
                 //
                 this.Dispatch(socket);
@@ -154,10 +150,6 @@ namespace Health.Direct.DnsResponder
                 // Eat these socket exceptions silently, as they happen all the time
                 // including when the client randomly closes the socket, etc..
                 //
-            }
-            catch(Exception ex)
-            {
-                this.NotifyError(ex);
             }
             finally
             {
@@ -180,21 +172,25 @@ namespace Health.Direct.DnsResponder
         /// <param name="socket"></param>
         void Dispatch(Socket socket)
         {
+            bool synchronousCompletion = true;
             TContext context = null;
             long socketID = 0;
 
-            socketID = m_activeSockets.Add(socket);                
             try
             {
+                this.Settings.ConfigureSocket(socket); 
+                
+                socketID = m_activeSockets.Add(socket);
+                
                 context = this.CreateContext(socket, socketID);                    
                 socketID = 0;                
                 
-                bool completed = m_handler.Process(context);
-                if (!completed)
-                {  
-                    // Processing will be completed asynchronously. Application will call ProcessingComplete
-                    context = null;
-                }
+                synchronousCompletion = m_handler.Process(context);
+                //
+                // If synchronousCompletion is false, then:
+                // Processing will be completed ASYNCHRONOUSLY. 
+                // Application will call ProcessingComplete
+                //
             }
             finally
             {
@@ -202,7 +198,7 @@ namespace Health.Direct.DnsResponder
                 // The socket table is safe - it will not throw if we try to shut down an already shutdown socket. 
                 // In the very very rare case if that happens
                 //
-                if (context != null)
+                if (synchronousCompletion)
                 {
                     this.ProcessingComplete(context);
                 }
@@ -215,19 +211,17 @@ namespace Health.Direct.DnsResponder
         
         public void ProcessingComplete(TContext context)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException("context");
-            }
-            
             try
             {
-                if (context.HasValidSocket)
+                if (context != null)
                 {
-                    m_activeSockets.Shutdown(context.SocketID, this.Settings.SocketCloseTimeout);
-                    this.ConnectionClosed.SafeInvoke(context.Socket);
+                    if (context.HasValidSocket)
+                    {
+                        m_activeSockets.Shutdown(context.SocketID, this.Settings.SocketCloseTimeout);
+                        this.ConnectionClosed.SafeInvoke(context.Socket);
+                    }
+                    this.ReleaseContext(context);
                 }
-                this.ReleaseContext(context);
             }
             catch (Exception ex)
             {

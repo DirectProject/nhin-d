@@ -32,7 +32,10 @@ namespace Health.Direct.DnsResponder.Tests
             DefaultSettings = new DnsServerSettings();
             DefaultSettings.Address = "127.0.0.1";
             DefaultSettings.Port = 5353;
-            DefaultSettings.UdpServerSettings.MaxOutstandingAccepts = 1;
+            DefaultSettings.TcpServerSettings.MaxOutstandingAccepts = 4;
+            DefaultSettings.TcpServerSettings.MaxActiveRequests = 16;
+            DefaultSettings.UdpServerSettings.MaxOutstandingAccepts = 4;
+            DefaultSettings.UdpServerSettings.MaxActiveRequests = 16;
 
             Default = new TestServer(TestStore.Default.Store);
             Default.Server.Start();
