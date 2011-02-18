@@ -15,6 +15,7 @@ import java.util.UUID;
 import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.nhindirect.common.audit.AuditContext;
 import org.nhindirect.common.audit.AuditEvent;
@@ -31,7 +32,7 @@ public class FileAuditorTest
 	
 
 	static
-	{
+	{		
 		auditFile = new File("target" + fileSep + "testAuditFile.txt");
 		
 		if (auditFile.exists())

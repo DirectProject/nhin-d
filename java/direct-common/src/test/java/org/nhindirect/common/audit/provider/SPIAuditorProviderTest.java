@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nhindirect.common.audit.Auditor;
 import org.nhindirect.common.audit.impl.LoggingAuditor;
 import org.nhindirect.common.audit.impl.MultiProviderAuditor;
 import org.nhindirect.common.audit.impl.NoOpAuditor;
@@ -83,6 +84,32 @@ public class SPIAuditorProviderTest
 		assertNotNull(prov.get());
 		assertTrue(prov.get() instanceof MultiProviderAuditor);
 	}
+	
+	@Test
+	public void testCreateSingleAuditorFromSPI_NullConstructor_AssertMutliProviderAuditorCreated() throws Exception
+	{
+		setupSPIImplementation(LoggingAuditor.class);
+		setupSPIImplementation(NoOpAuditor.class);
+		
+		SPIAuditorProvider prov = new SPIAuditorProvider(null);
+		
+		assertTrue(prov.isImplementationAvailable());
+		assertNotNull(prov.get());
+		assertTrue(prov.get() instanceof MultiProviderAuditor);
+	}	
+	
+	@Test
+	public void testCreateSingleAuditorFromSPI_NonNullConstructor_AssertMutliProviderAuditorCreated() throws Exception
+	{
+		setupSPIImplementation(LoggingAuditor.class);
+		setupSPIImplementation(NoOpAuditor.class);
+		
+		SPIAuditorProvider prov = new SPIAuditorProvider(Auditor.class.getClassLoader());
+		
+		assertTrue(prov.isImplementationAvailable());
+		assertNotNull(prov.get());
+		assertTrue(prov.get() instanceof MultiProviderAuditor);
+	}		
 	
 	@Test
 	public void testNoSPIAvailable_AssertNullAuditor() throws Exception

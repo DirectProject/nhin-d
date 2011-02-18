@@ -279,7 +279,7 @@
 	            <configuration>
 	                <dates>
 	                    <!-- Insert the date of the most recent release -->
-                        <date>2010-01-24</date>
+                        <date>2011-01-15</date>
 	                </dates>
 	                <outputEncoding>UTF-8</outputEncoding>
 	                <type>date</type>

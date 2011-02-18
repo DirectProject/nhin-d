@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <bannerLeft>
-        <name>The Direct Project: Common Library</name>
+        <name>The Direct Project: Commons Library</name>
         <src>images/logo.png</src>
         <href>http://nhindirect.org/</href>
     </bannerLeft>  

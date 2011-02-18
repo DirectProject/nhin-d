@@ -54,7 +54,7 @@ public class LoggingAuditor extends AbstractAuditor
 	 */
 	public LoggingAuditor()
 	{
-		
+
 	}
 
 	/**
@@ -62,13 +62,7 @@ public class LoggingAuditor extends AbstractAuditor
 	 */
 	@Override
 	public void writeEvent(UUID eventId, Calendar eventTimeStamp, String principal, AuditEvent event, Collection<? extends AuditContext> contexts)
-	{
-		if (principal == null || principal.isEmpty())
-			throw new IllegalArgumentException("Principal cannot be null or empty");
-		
-		if (event == null)
-			throw new IllegalArgumentException("Event cannot be null");			
-		
+	{		
 		writer.info(buildEventString(eventId, principal, event, contexts));		
 	}
 

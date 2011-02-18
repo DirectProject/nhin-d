@@ -6,7 +6,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertFalse;
 
-public class AuditEventClass 
+public class AuditEventTest 
 {
 	@Test
 	public void testConstructAuditEvent() throws Exception

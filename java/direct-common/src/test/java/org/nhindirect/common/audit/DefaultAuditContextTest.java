@@ -89,4 +89,11 @@ public class DefaultAuditContextTest
 		
 		assertTrue(exceptionOccured);
 	}		
+	
+	@Test
+	public void testAuditContextToString() throws Exception
+	{
+		DefaultAuditContext context = new DefaultAuditContext("name", "value");
+		assertEquals("name:value", context.toString());
+	}	
 }

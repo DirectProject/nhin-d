@@ -295,6 +295,7 @@ public class FileAuditor extends AbstractAuditor implements AuditorMBean
 	@Override
 	public void writeEvent(UUID eventId, Calendar eventTimeStamp, String principal, AuditEvent event, Collection<? extends AuditContext> contexts)
 	{
+		///CLOVER:OFF
 		if (LOGGER.isDebugEnabled())
 		{
 			StringBuilder builder = new StringBuilder("Attempting to write new event to the audit store.");
@@ -305,6 +306,7 @@ public class FileAuditor extends AbstractAuditor implements AuditorMBean
 			builder.append("\r\n\t Event Type: ").append(event.getType());
 			LOGGER.trace(builder.toString());
 		}
+		///CLOVER:ON
 		
 		String recordText = buildRecordText(eventId, eventTimeStamp, principal, event, contexts);
 		

@@ -17,15 +17,22 @@ public class FileAuditorProvider implements Provider<Auditor>
 	 */
 	public FileAuditorProvider(String fileLoc)
 	{
-		this(new File(fileLoc));
+		if (fileLoc == null || fileLoc.isEmpty())
+			throw new IllegalArgumentException("File location cannot be null or empty");
+		
+		auditFile = new File(fileLoc);
 	}
+	
 	
 	/**
 	 * Constructor with a file descriptor of the logging file.
 	 * @param fileLoc File descriptor of the logging file.
 	 */
 	public FileAuditorProvider(File file)
-	{
+	{	
+		if (file == null)
+			throw new IllegalArgumentException("File cannot be null");
+		
 		auditFile = file;
 	}
 	
