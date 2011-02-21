@@ -57,18 +57,17 @@ public class NotificationProducer implements NotificationCreator
 	 */
 	public NotificationProducer(NotificationSettings settings)
 	{
+		if (settings == null)
+			throw new IllegalArgumentException("Settings cannot be null");
 		
 		this.settings = settings;
 		
-		if (LOGGER.isInfoEnabled() && settings != null)
-		{
-			StringBuilder builder = new StringBuilder("Notification settings:");
-			builder.append("\n\r\tMDN Auto Response: " + settings.isAutoResponse());
-			builder.append("\n\r\tMDN Producer Name: " + settings.getProductName());
-			builder.append("\n\r\tMDN Response Test: " + settings.getText());
-			
-			LOGGER.info(builder.toString());
-		}
+		StringBuilder builder = new StringBuilder("Notification settings:");
+		builder.append("\n\r\tMDN Auto Response: " + settings.isAutoResponse());
+		builder.append("\n\r\tMDN Producer Name: " + settings.getProductName());
+		builder.append("\n\r\tMDN Response Test: " + settings.getText());
+		
+		LOGGER.info(builder.toString());
 	}
 	
 	/**

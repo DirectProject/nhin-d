@@ -1,17 +1,33 @@
 package org.nhindirect.gateway.testutils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.spec.PKCS8EncodedKeySpec;
+
+import org.apache.commons.io.FileUtils;
+import org.nhindirect.stagent.CryptoExtensions;
 
 import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
 
+
+
 public class TestUtils 
 {
+	
+	private static final String certBasePath = "src/test/resources/certs/";
+	
 	public static String getTestConfigFile(String fileName)
 	{
 		File fl = new File("dummy");
@@ -85,4 +101,63 @@ public class TestUtils
 		return new String(ouStream.toByteArray());		
 	}
 	 
+	public static X509Certificate loadCertificate(String certFileName, String keyFileName) throws Exception
+	{
+		
+		if (keyFileName == null || keyFileName.isEmpty())
+		{
+			File fl = new File(certBasePath + certFileName);
+			return (X509Certificate)CertificateFactory.getInstance("X509", "BC").generateCertificate(FileUtils.openInputStream(fl));
+		}	
+		else
+		{
+			return (X509Certificate)CertificateFactory.getInstance("X509", "BC").generateCertificate(new ByteArrayInputStream(loadPkcs12FromCertAndKey(certFileName, keyFileName)));
+		}
+	}	
+	
+    private static byte[] loadPkcs12FromCertAndKey(String certFileName, String keyFileName) throws Exception
+	{
+		byte[] retVal = null;
+		try
+		{
+			KeyStore localKeyStore = KeyStore.getInstance("PKCS12", CryptoExtensions.getJCEProviderName());
+			
+			localKeyStore.load(null, null);
+			
+			byte[] certData = loadCertificateData(certFileName);
+			byte[] keyData = loadCertificateData(keyFileName);
+			
+			CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			InputStream inStr = new ByteArrayInputStream(certData);
+			java.security.cert.Certificate cert = cf.generateCertificate(inStr);
+			inStr.close();
+			
+			KeyFactory kf = KeyFactory.getInstance("RSA");
+			PKCS8EncodedKeySpec keysp = new PKCS8EncodedKeySpec ( keyData );
+			Key privKey = kf.generatePrivate (keysp);
+			
+			char[] array = "".toCharArray();
+			
+			localKeyStore.setKeyEntry("privCert", privKey, array,  new java.security.cert.Certificate[] {cert});
+			
+			ByteArrayOutputStream outStr = new ByteArrayOutputStream();
+			localKeyStore.store(outStr, array);
+			
+			retVal = outStr.toByteArray();
+			
+			outStr.close();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return retVal;
+	}   
+    
+    private static byte[] loadCertificateData(String certFileName) throws Exception
+	{
+		File fl = new File(certBasePath + certFileName);
+		
+		return FileUtils.readFileToByteArray(fl);
+	}    
 }
