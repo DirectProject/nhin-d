@@ -55,7 +55,7 @@ import com.google.inject.Module;
 public class NHINDSecurityAndTrustMailet extends GenericMailet 
 {
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(NHINDSecurityAndTrustMailet.class);	
-	private SmtpAgent agent;
+	protected SmtpAgent agent;
 	
 	/**
 	 * {@inheritDoc}
@@ -187,9 +187,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			mail.setState(Mail.GHOST);
 			LOGGER.trace("Exiting service(Mail mail)");
 			
-			if (e instanceof MessagingException)
-				throw (MessagingException)e;
-			else if (e instanceof SmtpAgentException)
+			if (e instanceof SmtpAgentException)
 				throw (SmtpAgentException)e;
 			
 			throw new MessagingException("Failed to process message: " + e.getMessage());
@@ -207,7 +205,12 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			 * TODO: Handle exception... GHOST the message for now and eat it
 			 */		
 			LOGGER.debug("Processed message is null.  GHOST and eat the message.");
+
+			onMessageRejected(mail, recipients, sender, null);
+
 			mail.setState(Mail.GHOST);
+
+			return;
 		}
 		
 		// remove reject recipients from the RCTP headers

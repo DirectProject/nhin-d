@@ -39,7 +39,7 @@ public class NotificationSettings
 	
 	public NotificationSettings()
 	{
-		this(false, DEFAULT_TEXT, "");
+		this(true, DEFAULT_TEXT, "");
 	}
 	
 	public NotificationSettings(boolean autoResponse)

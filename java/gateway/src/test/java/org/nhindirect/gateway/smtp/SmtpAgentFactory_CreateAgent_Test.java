@@ -13,6 +13,7 @@ import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.gateway.smtp.provider.XMLSmtpAgentConfigProvider;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.MockNHINDAgent;
+import org.nhindirect.stagent.module.FileAuditorModule;
 import org.nhindirect.stagent.provider.MockNHINDAgentProvider;
 
 import com.google.inject.Provider;

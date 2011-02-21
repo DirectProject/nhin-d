@@ -39,10 +39,10 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 {
 	private static final String CACHE_NAME = "CONFIG_SERVICE_CERT_CACHE";
 	
-	private CertificateStore localStoreDelegate;
-	private JCS cache;
-	private CertStoreCachePolicy cachePolicy;
-	private ConfigurationServiceProxy proxy;
+	protected CertificateStore localStoreDelegate;
+	protected JCS cache;
+	protected CertStoreCachePolicy cachePolicy;
+	protected ConfigurationServiceProxy proxy;
 	
 	static
 	{
@@ -74,12 +74,14 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 			CertificateStore bootstrapStore, CertStoreCachePolicy policy)
 	{
 		if (bootstrapStore == null)
-			throw new IllegalArgumentException();
+			localStoreDelegate = createDefaultLocalStore();
+		else
+			this.localStoreDelegate = bootstrapStore;
 		
 		setConfigurationServiceProxy(proxy);
 		
 		this.cachePolicy = policy;			
-		this.localStoreDelegate = bootstrapStore;			
+					
 		loadBootStrap();
 	}	
 	
@@ -88,7 +90,7 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 		this.proxy = proxy;
 	}	
 	
-	private synchronized JCS getCache()
+	protected synchronized JCS getCache()
 	{
 		if (cache == null)
 			createCache();
@@ -101,8 +103,11 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 		try
 		{
 			// create instance
-			cache = JCS.getInstance(CACHE_NAME);		
-			applyCachePolicy(cachePolicy == null ? getDefaultPolicy() : cachePolicy);
+			cache = JCS.getInstance(CACHE_NAME);	
+			if (cachePolicy == null)
+				cachePolicy = getDefaultPolicy();
+			
+			applyCachePolicy(cachePolicy);
 			cache.clear();
 					
 		}
@@ -171,28 +176,29 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 	
 	/**
 	 * {@inheritDoc}
+	 * Not supported in this certificate store implementation.
 	 */
     public boolean contains(X509Certificate cert)
     {
-    	return localStoreDelegate == null ? false : localStoreDelegate.contains(cert);
+    	throw new UnsupportedOperationException("Contains is not supported.");
     }	
     
 	/**
 	 * {@inheritDoc}
+	 * Not supported in this certificate store implementation.
 	 */
     public void add(X509Certificate cert)
     {
-    	if (localStoreDelegate != null)
-    		localStoreDelegate.add(cert);
+    	throw new UnsupportedOperationException("Add is not supported.");
     }    
 	
 	/**
 	 * {@inheritDoc}
+	 * Not supported in this certificate store implementation.
 	 */
     public void remove(X509Certificate cert)
     {
-    	if (localStoreDelegate != null)
-    		localStoreDelegate.remove(cert);
+    	throw new UnsupportedOperationException("Remove is not supported.");
     }    
 
 	/**
@@ -432,6 +438,7 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 	
 	public void loadBootStrap() 
 	{
+		///CLOVER:OFF
 		if (localStoreDelegate == null)
 			throw new IllegalStateException("The boot strap store has not been set.");
 		
@@ -461,11 +468,12 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 				}
 			}
 		}
+		///CLOVER:ON
 	}
 
 	public void loadBootStrap(CertificateStore bootstrapStore) 
 	{
-		if (localStoreDelegate == null)
+		if (bootstrapStore == null)
 		{
 			throw new IllegalArgumentException();
 		}
@@ -475,11 +483,7 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 
 	public void setBootStrap(CertificateStore bootstrapStore) 
 	{
-		if (localStoreDelegate == null)
-		{
-			throw new IllegalArgumentException();
-		}
-		this.localStoreDelegate = bootstrapStore;		
+		loadBootStrap(bootstrapStore);
 	}
 
 	public void setCachePolicy(CertStoreCachePolicy policy) 
