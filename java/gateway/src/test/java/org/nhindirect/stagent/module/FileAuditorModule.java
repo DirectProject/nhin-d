@@ -1,4 +1,4 @@
-package org.nhindirect.gateway.smtp;
+package org.nhindirect.stagent.module;
 
 import org.nhindirect.common.audit.Auditor;
 import org.nhindirect.common.audit.provider.FileAuditorProvider;

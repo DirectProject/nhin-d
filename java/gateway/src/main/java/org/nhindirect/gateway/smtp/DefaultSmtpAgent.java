@@ -313,8 +313,6 @@ public class DefaultSmtpAgent implements SmtpAgent
 
 		
 		processedMessage = (isOutgoing) ? agent.processOutgoing(envelope) : agent.processIncoming(envelope);
-		if  (processedMessage == null)
-			throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
 		
 		return processedMessage;		
     }

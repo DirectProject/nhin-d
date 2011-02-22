@@ -37,8 +37,8 @@ namespace Health.Direct.DnsResponder
             m_settings = settings;
             m_store = store;
 
-            m_tcpResponder = new DnsResponderTCP(this);
-            m_udpResponder = new DnsResponderUDP(this);
+            m_tcpResponder = new DnsResponderTCP(this.Store, this.Settings);
+            m_udpResponder = new DnsResponderUDP(this.Store, this.Settings);
 
             m_tcpResponder.Server.Error += InvokeError;
             m_udpResponder.Server.Error += InvokeError;
@@ -46,8 +46,7 @@ namespace Health.Direct.DnsResponder
 
         private void InvokeError(Exception ex)
         {
-            Action<Exception> action = Error;
-            if (action != null) action(ex);
+            this.Error.SafeInvoke(ex);
         }
 
         public DnsServerSettings Settings

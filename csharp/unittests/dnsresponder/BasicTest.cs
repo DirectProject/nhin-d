@@ -25,29 +25,26 @@ using Xunit.Extensions;
 namespace Health.Direct.DnsResponder.Tests
 {
     public class BasicTest : Tester
-    {        
-        private const bool UseUdp = true;
-        private const bool UseTcp = false;
-
+    {
         public static IEnumerable<object[]> Domains
         {
             get
             {
-                foreach(string domain in TestStore.Default.Domains)
+                foreach (string domain in TestStore.Default.Domains)
                 {
-                    yield return new object[] {domain, UseUdp};
-                    yield return new object[] {domain, UseTcp};
+                    yield return new object[] { domain, UseUdp };
+                    yield return new object[] { domain, UseTcp };
                 }
             }
         }
-        
+
         public static IEnumerable<object[]> UnknownDomains
         {
             get
             {
-                yield return new object[] {"adljflakd", UseUdp };
+                yield return new object[] { "adljflakd", UseUdp };
                 yield return new object[] { "lasdkjfal", UseUdp };
-                yield return new object[] {"adljflakd", UseTcp };
+                yield return new object[] { "adljflakd", UseTcp };
                 yield return new object[] { "lasdkjfal", UseTcp };
             }
         }
@@ -68,7 +65,7 @@ namespace Health.Direct.DnsResponder.Tests
             IEnumerable<AddressRecord> matches = ResolveA(TestServer.Default, domain, useUDP);
             Assert.True(matches == null || matches.Count() == 0);
         }
-
+                
         const int MultithreadThreadCount = 16;  
         const int MultithreadRepeat = 500;
 

@@ -17,6 +17,8 @@ public class MockMail implements Mail
 {
 	private MimeMessage mimeMessage;
 	private String state = Mail.TRANSPORT;
+	private Collection<MailAddress> recipAddr;	
+	
 	
 	public MockMail(MimeMessage mimeMessage)
 	{
@@ -61,6 +63,11 @@ public class MockMail implements Mail
 
 	public Collection getRecipients() 
 	{
+	
+		if (recipAddr != null)
+			return recipAddr;
+		
+		
 		Collection<MailAddress> addrs = new ArrayList<MailAddress>();
 		
 		try
@@ -161,7 +168,7 @@ public class MockMail implements Mail
 
 	public void setRecipients(Collection arg0) 
 	{
-		// TODO Auto-generated method stub
+		recipAddr = arg0;
 		
 	}
 
