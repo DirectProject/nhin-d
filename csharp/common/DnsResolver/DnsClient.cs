@@ -315,10 +315,6 @@ namespace Health.Direct.Common.DnsResolver
             bool useUDPFirst = this.UseUDPFirst;
             int attempt = 0;
             int maxAttempts = this.m_maxRetries + 1;
-            if (!useUDPFirst)
-            {
-                attempt = maxAttempts - 1;
-            }
             while (attempt < maxAttempts)
             {
                 attempt++;
@@ -361,7 +357,26 @@ namespace Health.Direct.Common.DnsResolver
                     }
                     
                     useUDPFirst = false;
-                    attempt = maxAttempts - 1; // We're dropping to TCP, which is more robust...
+                }
+                catch(DnsServerException se)
+                {
+                    //
+                    // Server failures deserve a retry
+                    //
+                    if (se.ResponseCode != DnsStandard.ResponseCode.ServerFailure)
+                    {
+                        throw;
+                    }
+                }
+                catch(DnsProtocolException pe)
+                {
+                    //
+                    // Random failures also deserve a retry
+                    //
+                    if (pe.Error != DnsProtocolError.Failed)
+                    {
+                        throw;
+                    }
                 }
                 catch(DnsException)
                 {

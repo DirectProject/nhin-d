@@ -50,8 +50,11 @@ public class DomainPostmaster
 	 */
 	public DomainPostmaster(String domain, InternetAddress postmaster)
 	{
-		this.domain = domain;
-		this.postmaster = postmaster;
+		if (domain == null)
+			throw new IllegalArgumentException();
+		
+		this.domain = domain;		
+		this.postmaster = postmaster != null ? postmaster : new InternetAddress();
 	}
 
 	/**

@@ -101,5 +101,9 @@ namespace Health.Direct.Agent
         /// Could not resolve private keys for the an address
         /// </summary>
         CouldNotResolvePrivateKey,
+        /// <summary>
+        /// The MaxDomainRecipients limit was exceeded
+        /// </summary>
+        MaxDomainRecipients
     }
 }

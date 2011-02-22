@@ -29,6 +29,7 @@ import java.util.Collection;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.logging.Log;
@@ -55,7 +56,7 @@ import com.google.inject.Module;
 public class NHINDSecurityAndTrustMailet extends GenericMailet 
 {
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(NHINDSecurityAndTrustMailet.class);	
-	private SmtpAgent agent;
+	protected SmtpAgent agent;
 	
 	/**
 	 * {@inheritDoc}
@@ -105,12 +106,14 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		
 		// this should never happen because an exception should be thrown by Guice or one of the providers, but check
 		// just in case...
+		///CLOVER:OFF
 		if (agent == null)
 		{
 			LOGGER.error("Failed to create the SMTP agent. Reason unknown.");
 			throw new MessagingException("Failed to create the SMTP agent.  Reason unknown.");
 		}	
-
+		///CLOVER:ON
+		
 		LOGGER.info("NHINDSecurityAndTrustMailet initialization complete.");
 	}
 
@@ -139,14 +142,14 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			for (Address addr : recipsAddr)
 			{
 				
-				recipients.add(new NHINDAddress(addr.toString(), getAddressSource(addr)));
+				recipients.add(new NHINDAddress(addr.toString(), (AddressSource)null));
 			}
 		}
 		else
 		{
 			for (MailAddress addr : recips)
 			{
-				recipients.add(new NHINDAddress(addr.toString(), getAddressSource(addr.toInternetAddress())));
+				recipients.add(new NHINDAddress(addr.toString(), (AddressSource)null));
 			}
 		}
 		
@@ -187,9 +190,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			mail.setState(Mail.GHOST);
 			LOGGER.trace("Exiting service(Mail mail)");
 			
-			if (e instanceof MessagingException)
-				throw (MessagingException)e;
-			else if (e instanceof SmtpAgentException)
+			if (e instanceof SmtpAgentException)
 				throw (SmtpAgentException)e;
 			
 			throw new MessagingException("Failed to process message: " + e.getMessage());
@@ -207,7 +208,12 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			 * TODO: Handle exception... GHOST the message for now and eat it
 			 */		
 			LOGGER.debug("Processed message is null.  GHOST and eat the message.");
+
+			onMessageRejected(mail, recipients, sender, null);
+
 			mail.setState(Mail.GHOST);
+
+			return;
 		}
 		
 		// remove reject recipients from the RCTP headers
@@ -253,30 +259,6 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		onPostprocessMessage(mail, result);
 		
 		LOGGER.trace("Exiting service(Mail mail)");
-	}
-	
-	/*
-	 * Convert the address type to an AddressSource 
-	 */
-	private AddressSource getAddressSource(Address addr)
-	{
-		
-		String type = addr.getType();
-		
-		if (type.equalsIgnoreCase(Message.RecipientType.TO.toString()))
-		{
-			return AddressSource.To;
-		}
-		else if (type.equalsIgnoreCase(Message.RecipientType.CC.toString()))
-		{
-			return AddressSource.CC;
-		}
-		else if (type.equalsIgnoreCase(Message.RecipientType.BCC.toString()))
-		{
-			return AddressSource.BCC;
-		}
-		else
-			return null;
 	}
 	
 	/*

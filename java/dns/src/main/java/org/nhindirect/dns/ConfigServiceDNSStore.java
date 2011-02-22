@@ -209,14 +209,14 @@ public class ConfigServiceDNSStore implements DNSStore
         		throw new DNSException(DNSError.newError(Rcode.NOTIMP), "Query Type " + type + " not implemented"); 
         	}        	
         }
-        
-        
-    	LOGGER.debug("No records found.");
      
         
         if (lookupRecords == null || lookupRecords.size() == 0)
+        {
+        	LOGGER.debug("No records found.");
         	return null;
-        
+        }
+        	
         Message response = new Message(request.getHeader().getID());
         response.getHeader().setFlag(Flags.QR);
     	if (request.getHeader().getFlag(Flags.RD))
