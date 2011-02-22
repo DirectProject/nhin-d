@@ -21,7 +21,7 @@ using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.DnsResponder
 {
-    public class DnsTcpContext : TcpContext
+    public class DnsTcpContext : TcpContext, IDnsContext
     {
         DnsResponderTCP m_responder;
         DnsBuffer m_buffer;

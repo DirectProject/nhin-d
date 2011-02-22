@@ -55,6 +55,26 @@ namespace Health.Direct.DnsResponder
             {
             }
         }
+
+        public static void SafeShutdown(this Socket socket, SocketShutdown type)
+        {
+            try
+            {
+                if (socket != null)
+                {
+                    socket.Shutdown(type);
+                }
+            }
+            catch
+            {
+            }
+        }
+        
+        public static void SafeShutdownAndClose(this Socket socket, SocketShutdown shutdown, int timeout)
+        {
+            socket.SafeShutdown(shutdown);
+            socket.SafeClose(timeout);
+        }
         
         public static IPAddress GetIPAddress(this Socket socket)
         {
@@ -63,22 +83,22 @@ namespace Health.Direct.DnsResponder
         
         public static int GetReceiveTimeout(this Socket socket)
         {
-            return (int) socket.GetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.ReceiveTimeout);
+            return (int) socket.GetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout);
         }
 
         public static void SetReceiveTimeout(this Socket socket, int timeout)
         {
-            socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.ReceiveTimeout, timeout);
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, timeout);
         }
 
         public static int GetSendTimeout(this Socket socket)
         {
-            return (int) socket.GetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.SendTimeout);
+            return (int) socket.GetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout);
         }
 
         public static void SetSendTimeout(this Socket socket, int timeout)
         {
-            socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.SendTimeout, timeout);
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, timeout);
         }
         
         public static void ClearBuffer(this SocketAsyncEventArgs args)

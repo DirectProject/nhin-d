@@ -21,7 +21,7 @@ using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.DnsResponder
 {
-    public class DnsUdpContext
+    public class DnsUdpContext : IDnsContext
     {
         DnsBuffer m_buffer;
         Socket m_socket;
@@ -32,7 +32,7 @@ namespace Health.Direct.DnsResponder
             m_buffer = new DnsBuffer(DnsStandard.MaxUdpMessageLength);
         }
 
-        public DnsBuffer Buffer
+        public DnsBuffer DnsBuffer
         {
             get
             {
@@ -91,6 +91,11 @@ namespace Health.Direct.DnsResponder
             this.Clear();
             m_socket = null;
             m_remoteEndpoint = null;
+        }
+        
+        public void ReceiveRequest()
+        {
+        
         }
         
         public void SendResponse()

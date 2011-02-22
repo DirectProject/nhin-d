@@ -55,6 +55,7 @@ namespace Health.Direct.DnsResponder.Tests
         [PropertyData("Domains")]
         public void TestClientRetrySuccess(string domain, bool useUDP)
         {
+            SetTimeout(5000, useUDP);
             s_failureStore.SuccessInterval = 2;
             s_failureStore.ThrowDnsException = true;
             
@@ -72,8 +73,91 @@ namespace Health.Direct.DnsResponder.Tests
         [PropertyData("Domains")]
         public void TestClientRetryFail(string domain, bool useUDP)
         {
+            SetTimeout(5000, useUDP);
             s_failureStore.SuccessInterval = 0; // Force universal failures
             Assert.Throws<DnsProtocolException>(() => ResolveA(s_failureServer, domain, useUDP));
+        }
+
+        [Fact]
+        public void ForceServerTCPTimeoutSlowClient()
+        {
+            string[] domains = TestStore.Default.Domains.ToArray();
+            
+            s_failureServer.Counters.InitWait(domains.Length);
+
+            s_failureStore.SuccessInterval = 1; // Always succeed
+            SetTimeout(100, false);
+            
+            foreach(string domain in domains)
+            {
+                using(BadTcpClient client = s_failureServer.CreateBadTcpClient())
+                {
+                    try
+                    {
+                        client.Connect();
+                        client.SendLength(100);
+                        client.SendSlowGarbage(100, 10);
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+
+            Assert.DoesNotThrow(() => TestServer.Default.Counters.Wait.WaitOne(20 * 1000));
+            Assert.True(s_failureServer.Counters.IsConnectionBalanced);
+        }
+
+        [Fact]
+        public void ForceServerTCPTimeout()
+        {
+            string[] domains = TestStore.Default.Domains.ToArray();
+
+            s_failureServer.Counters.InitWait(domains.Length);
+
+            s_failureStore.SuccessInterval = 1; // Always succeed
+            SetTimeout(100, false);
+
+            foreach (string domain in domains)
+            {
+                using(BadTcpClient client = s_failureServer.CreateBadTcpClient())
+                {
+                    try
+                    {
+                        client.ConnectAndPause(1000);
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+
+            Assert.DoesNotThrow(() => TestServer.Default.Counters.Wait.WaitOne(20 * 1000));
+            Assert.True(s_failureServer.Counters.IsConnectionBalanced);
+        }
+        
+        void SetTimeout(int ms, bool useUDP)
+        {
+            if (useUDP)
+            {
+                SetUdpTimeout(ms);
+            }
+            else
+            {
+                SetTcpTimeout(ms);
+            }
+        }
+        
+        void SetTcpTimeout(int ms)
+        {
+            s_failureServer.Server.Settings.TcpServerSettings.ReceiveTimeout = ms;
+            s_failureServer.Server.Settings.TcpServerSettings.SendTimeout = ms;            
+        }
+
+        void SetUdpTimeout(int ms)
+        {
+            s_failureServer.Server.Settings.UdpServerSettings.ReceiveTimeout = ms;
+            s_failureServer.Server.Settings.UdpServerSettings.SendTimeout = ms;
         }
     }
 }

@@ -26,15 +26,17 @@ namespace Health.Direct.DnsResponder
         public const short DefaultMaxActiveRequests = 64;
         public const short DefaultMaxOutstandingAccepts = 16;
         public const short DefaultReadBufferSize = 1024;
+        public const short DefaultSendTimeoutMs = 15 * 1000;
+        public const short DefaultReceiveTimeoutMs = 15 * 1000;
 
         short m_maxOutstandingAccepts = DefaultMaxOutstandingAccepts;
         short m_maxConnectionBacklog = DefaultMaxConnectionBacklog;
         short m_maxActiveRequests = DefaultMaxActiveRequests;
         short m_readBufferSize = DefaultReadBufferSize;
 
-        int m_sendTimeout;
-        int m_receiveTimeout;
-        int m_socketClostTimeout;
+        int m_sendTimeout = DefaultSendTimeoutMs;
+        int m_receiveTimeout = DefaultReceiveTimeoutMs;
+        int m_socketCloseTimeout;
         
         public SocketServerSettings()
         {
@@ -160,11 +162,11 @@ namespace Health.Direct.DnsResponder
         {
             get
             {
-                return m_socketClostTimeout;
+                return m_socketCloseTimeout;
             }
             set
             {
-                m_socketClostTimeout = value;
+                m_socketCloseTimeout = value;
             }
         }
         
