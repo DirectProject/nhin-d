@@ -94,9 +94,10 @@ namespace Health.Direct.DnsResponder
 
         void AcceptConnection(object sender, SocketAsyncEventArgs args)
         {
+            Socket socket = null;
             try
             {
-                Socket socket = args.AcceptSocket;
+                socket = args.AcceptSocket;
                 SocketError socketError = args.SocketError;
                             
                 if (sender != null)
@@ -120,42 +121,24 @@ namespace Health.Direct.DnsResponder
                     base.ProcessingComplete();
                     return;
                 }
-        
-                this.AcceptConnection(socket);
+
+                this.ConnectionAccepted.SafeInvoke(socket);
+                //
+                // Dispatch handles exceptions
+                //
+                this.Dispatch(socket);
+                
+                socket = null;
             }
             catch(Exception ex)
             {
                 this.NotifyError(ex);
             }
-        }
-
-        void AcceptConnection(Socket socket)
-        {
-            try
-            {
-                //
-                // Fire the connection accepted event
-                //
-                this.ConnectionAccepted.SafeInvoke(socket);
-                //
-                // Ok, we can do some work now
-                //
-                this.Dispatch(socket);
-
-                socket = null;
-            }
-            catch(SocketException)
-            {
-                //
-                // Eat these socket exceptions silently, as they happen all the time
-                // including when the client randomly closes the socket, etc..
-                //
-            }
             finally
             {
-                if (socket != null)  // This is non-null if there was an exception and we could not dispatch the socket cleanly
+                if (socket != null)
                 {
-                    socket.SafeClose();
+                    socket.SafeShutdownAndClose(SocketShutdown.Both, 0);
                     this.ConnectionClosed.SafeInvoke(socket);
                 }
             }
@@ -181,16 +164,26 @@ namespace Health.Direct.DnsResponder
                 this.Settings.ConfigureSocket(socket); 
                 
                 socketID = m_activeSockets.Add(socket);
-                
                 context = this.CreateContext(socket, socketID);                    
                 socketID = 0;                
-                
+
                 synchronousCompletion = m_handler.Process(context);
                 //
                 // If synchronousCompletion is false, then:
                 // Processing will be completed ASYNCHRONOUSLY. 
                 // Application will call ProcessingComplete
                 //
+            }
+            catch (SocketException)
+            {
+                //
+                // Eat these socket exceptions silently, as they happen all the time
+                // including when the client randomly closes the socket, etc..
+                //
+            }
+            catch(Exception ex)
+            {
+                this.NotifyError(ex);
             }
             finally
             {
@@ -205,6 +198,7 @@ namespace Health.Direct.DnsResponder
                 if (socketID > 0)
                 {
                     m_activeSockets.Shutdown(socketID);
+                    this.ConnectionClosed.SafeInvoke(socket);
                 }
             }
         }
@@ -217,7 +211,7 @@ namespace Health.Direct.DnsResponder
                 {
                     if (context.HasValidSocket)
                     {
-                        m_activeSockets.Shutdown(context.SocketID, this.Settings.SocketCloseTimeout);
+                        m_activeSockets.Shutdown(context.SocketID);
                         this.ConnectionClosed.SafeInvoke(context.Socket);
                     }
                     this.ReleaseContext(context);
@@ -245,9 +239,15 @@ namespace Health.Direct.DnsResponder
         }
         
         void ReleaseContext(TContext context)
-        {            
-            context.Clear();
-            m_contextPool.Put(context);
+        {    
+            try
+            {        
+                context.Clear();
+                m_contextPool.Put(context);
+            }
+            catch
+            {
+            }
         }
 
         SocketAsyncEventArgs AllocNewAsyncArgs()

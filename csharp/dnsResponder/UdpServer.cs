@@ -61,7 +61,7 @@ namespace Health.Direct.DnsResponder
             DnsUdpContext context = this.CreateContext();
             context.Socket = this.Socket;
                   
-            args.SetBuffer(context.Buffer.Buffer, 0, context.Buffer.Capacity);
+            args.SetBuffer(context.DnsBuffer.Buffer, 0, context.DnsBuffer.Capacity);
             args.UserToken = context;
             
             if (!this.Socket.ReceiveFromAsync(args))
@@ -85,24 +85,26 @@ namespace Health.Direct.DnsResponder
         void ReceiveCompleted(object sender, SocketAsyncEventArgs args)
         {
             bool synchronousCompletion = true;
-            int countRead = args.BytesTransferred;
-            SocketError socketError = args.SocketError;
-            IPEndPoint remoteEndpoint = (IPEndPoint) args.RemoteEndPoint;
-            DnsUdpContext context = (DnsUdpContext)args.UserToken;
-            //
-            // Release the accept throttle so the listener thread can resume accepting connections
-            //
-            if (sender != null)
-            {
-                base.AcceptCompleted(args); //async completion. Free the args..
-            }            
-            else
-            {
-                this.ReleaseAsyncArgs(args);
-            }
+            DnsUdpContext context = null;
             
             try
             {
+                int countRead = args.BytesTransferred;
+                SocketError socketError = args.SocketError;
+                IPEndPoint remoteEndpoint = (IPEndPoint)args.RemoteEndPoint;
+                context = (DnsUdpContext)args.UserToken;
+                //
+                // Release the accept throttle so the listener thread can resume accepting connections
+                //
+                if (sender != null)
+                {
+                    base.AcceptCompleted(args); //async completion. Free the args..
+                }
+                else
+                {
+                    this.ReleaseAsyncArgs(args);
+                }
+
                 if (socketError == SocketError.Success && countRead > 0)
                 {
                     context.BytesTransfered = countRead;
