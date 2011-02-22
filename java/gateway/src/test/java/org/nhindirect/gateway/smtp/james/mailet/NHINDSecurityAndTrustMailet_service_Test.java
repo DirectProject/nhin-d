@@ -282,7 +282,8 @@ public class NHINDSecurityAndTrustMailet_service_Test extends TestCase
 					{
 						
 						usedRecipients = (NHINDAddressCollection)invocation.getArguments()[1];	
-						usedRecipients.get(0).setStatus(TrustEnforcementStatus.Failed);						
+						usedRecipients.get(0).setStatus(TrustEnforcementStatus.Failed);
+						usedRecipients.get(1).setStatus(TrustEnforcementStatus.Success);		
 						usedSender = (NHINDAddress)invocation.getArguments()[2];
 						MyMessageEnvelope env = new MyMessageEnvelope(new Message(mimeMsg), usedRecipients, usedSender);
 						env.setAgent(new MockNHINDAgent(Arrays.asList("cerner.com")));
@@ -296,7 +297,7 @@ public class NHINDSecurityAndTrustMailet_service_Test extends TestCase
 
 		
 		final Mail mockMail = mock(MockMail.class, CALLS_REAL_METHODS);
-		mockMail.setRecipients(Arrays.asList(new MailAddress("you@cerner.com")));
+		mockMail.setRecipients(Arrays.asList(new MailAddress("you@cerner.com"), new MailAddress("they@cerner.com")));
 		when(mockMail.getSender()).thenReturn(new MailAddress("me@cerner.com"));
 
 		mockMail.setMessage(mimeMsg);
@@ -307,7 +308,7 @@ public class NHINDSecurityAndTrustMailet_service_Test extends TestCase
 		
 		mailet.service(mockMail);
 		
-		assertEquals(0, mockMail.getRecipients().size());
+		assertEquals(1, mockMail.getRecipients().size());
 		
 	}			
 	
