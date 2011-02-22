@@ -17,7 +17,7 @@ $(document).ready(function()
 <div id="form">
     <%@ include file="/WEB-INF/jsp/header.jsp" %>
 	<fieldset>
-	<h3>NHIN Direct Java Reference Implementation - Manage Domains</h3>
+	<h3><fmt:message key="project.name" /> Java Reference Implementation - Manage Domains</h3>
 	   <form action="<c:url value="/j_spring_security_logout"/>">
 	       <button style="float:right;" name="logoutBtn" id="logoutBtn" type="submit">Log out</button></td>
 	   </form>
