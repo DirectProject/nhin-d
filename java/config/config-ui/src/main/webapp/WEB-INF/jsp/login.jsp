@@ -11,11 +11,11 @@
 	<%@ include file="/WEB-INF/jsp/header.jsp" %>
 	<div id="form">
 	    <fieldset class="formInfo">
-	      <h3>NHIN Direct Java Reference Implementation - Login</h3>
+	      <h3><fmt:message key="project.name" /> Configuration Login</h3>
 	    </fieldset>
 	    <c:if test="${param.login_error == 1}">
 		    <div class="error">
-		       <p class="error">Invalid user name or password supplied</p>
+		       <p class="error">Invalid username or password</p>
 		    </div>
 	    </c:if>
 	    <!-- 
@@ -27,10 +27,10 @@
           -->
 	    <fieldset>
 			<form:form id="loginForm" action="j_spring_security_check" cssClass="cleanform" method="PUT">
-			   <p>Please enter your userid and password to continue.</p>  
+			   <p>Please enter your username and password to continue.</p>
 			   <table border="0">
 			     <tr>
-			         <td align="right">Userid:</td>
+			         <td align="right">Username</td>
 			         <td><input type="text" name="j_username"/></td>
 			     </tr>
 			     <tr>
