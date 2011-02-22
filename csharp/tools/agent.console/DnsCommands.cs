@@ -118,6 +118,7 @@ namespace Health.Direct.Tools.Agent
             {
                 using(DnsClient client = CreateClient())
                 {
+                    client.UseUDPFirst = (recordType != DnsStandard.RecordType.CERT);
                     DnsResponse response = client.Resolve(new DnsRequest(recordType, domain));
                     if (response == null)
                     {
