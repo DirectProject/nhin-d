@@ -60,6 +60,7 @@
     <Compile Include="BasicTest.cs" />
     <Compile Include="DnsRecordStoreageServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RetryTester.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="Tester.cs" />
     <Compile Include="TestServer.cs" />

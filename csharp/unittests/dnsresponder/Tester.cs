@@ -19,11 +19,16 @@ using System.Threading;
 using System.Diagnostics;
 using System.Net.Sockets;
 using Health.Direct.Common.DnsResolver;
+using Xunit;
+using Xunit.Extensions;
 
 namespace Health.Direct.DnsResponder.Tests
 {
     public class Tester
     {
+        public const bool UseUdp = true;
+        public const bool UseTcp = false;
+        
         public static IEnumerable<T> Repeater<T>(IEnumerable<T> inner, int count)
         {
             for (int i = 0; i < count; ++i)

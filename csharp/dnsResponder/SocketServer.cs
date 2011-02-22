@@ -272,7 +272,7 @@ namespace Health.Direct.DnsResponder
             m_asyncArgsPool.Put(args);
         }
             
-        protected void NotifyError(Exception ex)
+        public void NotifyError(Exception ex)
         {
             if (this.Error != null)
             {
