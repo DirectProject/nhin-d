@@ -57,6 +57,8 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BadClient.cs" />
+    <Compile Include="BadClientTests.cs" />
     <Compile Include="BasicTest.cs" />
     <Compile Include="DnsRecordStoreageServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

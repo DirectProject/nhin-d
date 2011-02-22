@@ -14,18 +14,35 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-
+using System.Net.Sockets;
+using System.Threading;
 using Health.Direct.Common.DnsResolver;
+using Xunit;
+using Xunit.Extensions;
 
 namespace Health.Direct.DnsResponder.Tests
 {
     public class TestServer
     {
+        public static readonly DnsStandard.RecordType[] NotSupported = new DnsStandard.RecordType[]
+        {
+            DnsStandard.RecordType.AXFR,
+            DnsStandard.RecordType.HINFO,
+            DnsStandard.RecordType.AAAA,
+            DnsStandard.RecordType.MAILA,
+            DnsStandard.RecordType.MB,
+            DnsStandard.RecordType.PTR,
+            DnsStandard.RecordType.SRV,
+            DnsStandard.RecordType.WKS
+        };
+        
         public static readonly DnsServerSettings DefaultSettings;
         public static TestServer Default;
-        
+
         DnsServerSettings m_settings;
         DnsServer m_server;
+        
+        public Counters Counters = new Counters();
         
         static TestServer()
         {
@@ -34,8 +51,13 @@ namespace Health.Direct.DnsResponder.Tests
             DefaultSettings.Port = 5353;
             DefaultSettings.TcpServerSettings.MaxOutstandingAccepts = 4;
             DefaultSettings.TcpServerSettings.MaxActiveRequests = 16;
+            DefaultSettings.TcpServerSettings.ReceiveTimeout = 60 * 1000;
+            DefaultSettings.TcpServerSettings.SendTimeout= 60 * 1000;
+            
             DefaultSettings.UdpServerSettings.MaxOutstandingAccepts = 4;
             DefaultSettings.UdpServerSettings.MaxActiveRequests = 16;
+            DefaultSettings.UdpServerSettings.ReceiveTimeout = 60 * 1000;
+            DefaultSettings.UdpServerSettings.SendTimeout = 60 * 1000;
 
             Default = new TestServer(TestStore.Default.Store);
             Default.Server.Start();
@@ -53,6 +75,8 @@ namespace Health.Direct.DnsResponder.Tests
             m_server = new DnsServer(store, settings);
             m_server.UDPResponder.Server.Error += UDPServer_Error;
             m_server.TCPResponder.Server.Error += TCPServer_Error;
+            m_server.TCPResponder.Server.ConnectionAccepted += TCP_Accept;
+            m_server.TCPResponder.Server.ConnectionClosed += TCP_Complete;
         }
         
         public DnsServer Server
@@ -70,14 +94,99 @@ namespace Health.Direct.DnsResponder.Tests
             return client;
         }
         
+        public BadTcpClient CreateBadTcpClient()
+        {
+            return new BadTcpClient(this.Server.Settings.Address, this.Server.Settings.Port);
+        }
+        
         void TCPServer_Error(Exception ex)
         {
             //Console.WriteLine("TCP ERROR {0}", ex);
+            Interlocked.Increment(ref this.Counters.TCPErrors);
         }
 
         void UDPServer_Error(Exception ex)
         {
             //Console.WriteLine("UDP ERROR {0}", ex);
+            Interlocked.Increment(ref this.Counters.UDPErrors);
+        }
+        
+        void TCP_Accept(Socket socket)
+        {
+            this.Counters.Accepted();
+        }
+
+        void TCP_Complete(Socket socket)
+        {
+            this.Counters.Completed();
+        }
+        
+        public bool AreMaxTcpAcceptsOutstanding()
+        {
+            return (this.Server.Settings.TcpServerSettings.MaxOutstandingAccepts  == 
+                        this.Server.TCPResponder.Server.OutstandingAcceptCount);
+        }
+
+        public bool AreMaxUdpAcceptsOutstanding()
+        {
+            return (this.Server.Settings.UdpServerSettings.MaxOutstandingAccepts ==
+                        this.Server.UDPResponder.Server.OutstandingAcceptCount);
+        }
+    }
+    
+    public class Counters
+    {
+        public long CountAccepted = 0;
+        public long CountClosed = 0;
+        public long CountExpected = 0;
+        public long UDPErrors = 0;
+        public long TCPErrors = 0;
+        public AutoResetEvent Wait;
+               
+        public bool IsConnectionBalanced
+        {
+            get {return (CountAccepted == CountClosed);}
+        }
+        
+        public void Clear()
+        {
+            CountAccepted = 0;
+            CountClosed = 0;
+            CountExpected = 0;
+            UDPErrors = 0;
+            TCPErrors = 0;
+        }
+        
+        public void InitWait(int requestCount)
+        {
+            this.Clear();
+            this.CountExpected = requestCount;
+            if (this.Wait != null)
+            {
+                this.Wait.Reset();
+            }
+            else
+            {
+                this.Wait = new AutoResetEvent(false);
+            }
+        }
+        
+        public void Accepted()
+        {
+            Interlocked.Increment(ref CountAccepted);
+        }
+        
+        public void Completed()
+        {
+            if (Interlocked.Increment(ref CountClosed) == this.CountExpected)
+            {
+                this.Wait.Set();
+            }
+        }
+        
+        public void AssertConnectionBalanced()
+        {
+            Assert.True(this.IsConnectionBalanced);
         }
     }
 }

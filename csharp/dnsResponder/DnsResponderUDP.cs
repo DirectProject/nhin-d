@@ -52,17 +52,9 @@ namespace Health.Direct.DnsResponder
             if (context == null)
             {
                 throw new ArgumentNullException();
-            }            
-            
-            DnsResponse response = base.ProcessRequest(context.Buffer);            
-            if (response != null)
-            {
-                context.Clear();
-                base.Serialize(response, context.Buffer, DnsStandard.MaxUdpMessageLength);
-
-                context.SendResponse();
             }
-            
+
+            base.RequestResponse(context, DnsStandard.MaxUdpMessageLength);
             return true;
         }
 

@@ -48,7 +48,22 @@ namespace Health.Direct.DnsResponder.Tests
                 yield return new object[] { "lasdkjfal", UseTcp };
             }
         }
-        
+
+        public static IEnumerable<object[]> NotSupported
+        {
+            get
+            {
+                foreach (string domain in TestStore.Default.Domains)
+                {
+                    foreach(DnsStandard.RecordType type in TestServer.NotSupported)
+                    {
+                        yield return new object[] { domain, type, UseUdp };
+                        yield return new object[] { domain, type, UseTcp };
+                    }
+                }
+            }
+        }
+
         [Theory]
         [PropertyData("Domains")]
         public void TestLookupA(string domain, bool useUDP)
@@ -68,7 +83,17 @@ namespace Health.Direct.DnsResponder.Tests
                 
         const int MultithreadThreadCount = 16;  
         const int MultithreadRepeat = 500;
-
+        
+        [Theory]
+        [PropertyData("NotSupported")]
+        public void TestNotSupported(string domain, DnsStandard.RecordType type, bool useUDP)
+        {
+            DnsClient client = TestServer.Default.CreateClient();
+            client.UseUDPFirst = !useUDP;
+            DnsResponse response = client.Resolve(new DnsRequest(type, domain));
+            Assert.True(!response.IsSuccess);
+        }
+        
         [Theory]
         [InlineData(UseUdp)]
         [InlineData(UseTcp)]
@@ -108,7 +133,16 @@ namespace Health.Direct.DnsResponder.Tests
             {
                 Assert.True(threads[i].Failure == 0);
                 Assert.True(threads[i].Success == expectedSuccess);
+            }
+            
+            if (udp)
+            {
+                TestServer.Default.AreMaxUdpAcceptsOutstanding();
             }            
+            else
+            {
+                TestServer.Default.AreMaxTcpAcceptsOutstanding();
+            }
         }
     }
 }
