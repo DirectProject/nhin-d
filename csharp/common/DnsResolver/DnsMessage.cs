@@ -148,6 +148,17 @@ namespace Health.Direct.Common.DnsResolver
         }
         
         /// <summary>
+        /// Returns true if this message indicates a server failure
+        /// </summary>
+        public bool IsServerFailure
+        {
+            get
+            {
+                return (this.m_header != null && m_header.ResponseCode == DnsStandard.ResponseCode.ServerFailure);
+            }
+        }
+        
+        /// <summary>
         /// Reset...
         /// </summary>
         public virtual void Clear()

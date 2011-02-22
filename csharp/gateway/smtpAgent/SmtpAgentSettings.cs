@@ -28,6 +28,8 @@ namespace Health.Direct.SmtpAgent
     [XmlType("SmtpAgentConfig")]
     public class SmtpAgentSettings : AgentSettings
     {
+        public const int DefaultMaxDomainRecipients = 10;
+        
         RawMessageSettings m_rawMessageSettings;
         ProcessIncomingSettings m_incomingSettings;
         ProcessOutgoingSettings m_outgoingSettings;
@@ -35,6 +37,7 @@ namespace Health.Direct.SmtpAgent
         InternalMessageSettings m_internalMessageSettings;
         NotificationSettings m_notificationSettings;
         MessageRoute[] m_incomingRoutes;
+        int m_maxDomainRecipients = DefaultMaxDomainRecipients;
         
         //--------------------------------------------------------
         //
@@ -116,7 +119,22 @@ namespace Health.Direct.SmtpAgent
                 return (this.AddressManager != null);
             }
         }
-
+        
+        /// <summary>
+        /// Limit the # of domain recipients on an incoming message - to prevent DOS attacks
+        /// </summary>
+        public int MaxIncomingDomainRecipients
+        {
+            get
+            {
+                return m_maxDomainRecipients;
+            }
+            set
+            {
+                m_maxDomainRecipients = value;
+            }
+        }
+        
         //--------------------------------------------------------
         //
         // Message Processing
