@@ -56,22 +56,9 @@ namespace Health.Direct.DnsResponder
             {
                 throw new ArgumentNullException();
             }
-
-            context.Init(this);
             
-            //
-            // If we fail at parsing or receiving the request, then any exceptions will get logged and
-            // the socket will be silently closed
-            // 
-            context.ReceiveRequest();
-                                        
-            DnsResponse response = base.ProcessRequest(context.DnsBuffer);
-            if (response != null)
-            {
-                base.Serialize(response, context.DnsBuffer, ushort.MaxValue);
-                context.SendResponse();
-            }
-            
+            context.Init(this);            
+            base.RequestResponse(context, ushort.MaxValue);
             return true;
         }
 

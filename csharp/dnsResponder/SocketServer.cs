@@ -113,7 +113,15 @@ namespace Health.Direct.DnsResponder
                 return m_asyncArgsPool;
             }
         }
-                        
+        
+        public int OutstandingAcceptCount
+        {
+            get
+            {
+                return m_outstandingAcceptThrottle.WaitCount;
+            }
+        }
+        
         public void Start()
         {
             this.Starting.SafeInvoke();
@@ -169,7 +177,6 @@ namespace Health.Direct.DnsResponder
                 }
                 catch (ThreadInterruptedException)
                 {
-                    m_running = false;
                 }
                 catch (ThreadAbortException)
                 {
@@ -266,10 +273,16 @@ namespace Health.Direct.DnsResponder
         
         protected void ReleaseAsyncArgs(SocketAsyncEventArgs args)
         {
-            args.AcceptSocket = null;
-            args.ClearBuffer();
-            args.RemoteEndPoint = null;
-            m_asyncArgsPool.Put(args);
+            try
+            {
+                args.AcceptSocket = null;
+                args.ClearBuffer();
+                args.RemoteEndPoint = null;
+                m_asyncArgsPool.Put(args);
+            }
+            catch
+            {
+            }
         }
             
         public void NotifyError(Exception ex)

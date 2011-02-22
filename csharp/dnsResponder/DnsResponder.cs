@@ -19,6 +19,17 @@ using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.DnsResponder
 {
+    public interface IDnsContext
+    {
+        DnsBuffer DnsBuffer
+        {
+            get;
+        }
+        
+        void ReceiveRequest();
+        void SendResponse();
+    }
+    
     public abstract class DnsResponder
     {
         IDnsStore m_store;
@@ -102,7 +113,41 @@ namespace Health.Direct.DnsResponder
             
             return response;
         }
+        
+        public void RequestResponse(IDnsContext context, ushort maxBufferLength)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException();
+            }
 
+            try
+            {
+                //
+                // If we fail at parsing or receiving the request, then any exceptions will get logged and
+                // the socket will be silently closed
+                // 
+                context.ReceiveRequest();
+
+                DnsResponse response = this.ProcessRequest(context.DnsBuffer);
+                if (response != null)
+                {
+                    this.Serialize(response, context.DnsBuffer, maxBufferLength);
+                    context.SendResponse();
+                }
+            }
+            catch (IndexOutOfRangeException)
+            {
+                // Valid exception thrown during processing when bad requests are sent...
+                // We won't dignify bad requests with a response
+            }
+            catch (DnsServerException)
+            {
+                // Valid exception thrown during processing when bad requests are sent...
+                // We won't dignify bad requests with a response
+            }
+        }
+        
         DnsResponse ProcessError(DnsRequest request, DnsStandard.ResponseCode code)
         {
             DnsResponse errorResponse = new DnsResponse(request);
