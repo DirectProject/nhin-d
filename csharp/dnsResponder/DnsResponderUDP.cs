@@ -23,10 +23,10 @@ namespace Health.Direct.DnsResponder
     {
         DnsUdpServer m_server; 
               
-        public DnsResponderUDP(DnsServer server)
-            : base(server)
+        public DnsResponderUDP(IDnsStore store, DnsServerSettings settings)
+            : base(store, settings)
         {
-            m_server = new DnsUdpServer(server.Settings.Endpoint, server.Settings.UdpServerSettings, this);
+            m_server = new DnsUdpServer(this.Settings.Endpoint, this.Settings.UdpServerSettings, this);
         }
 
         public DnsUdpServer Server
@@ -64,6 +64,11 @@ namespace Health.Direct.DnsResponder
             }
             
             return true;
+        }
+
+        protected override void HandleException(Exception ex)
+        {
+            m_server.NotifyError(ex);
         }
     }
 }
