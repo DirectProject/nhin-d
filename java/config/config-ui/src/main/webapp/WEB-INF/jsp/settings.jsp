@@ -9,13 +9,11 @@
     </head>
     <body>
     <%@ include file="/WEB-INF/jsp/header.jsp" %>
-    <div id="form">
-    <fieldset style="width: 97%;" >
-    <h3>NHIN Direct Java Reference Implementation - Manage Agent Settings</h3>
-    <form action="<c:url value="/j_spring_security_logout"/>">
-           <button style="float:right;" name="logoutBtn" id="logoutBtn" type="submit">Log out</button></td>
-       </form>
-    </fieldset>
+
+  
+    
+    <h3>Manage Agent Settings</h3>
+   
 <fieldset style="width: 97%;" title="Setting">
 	<spring:url	value="/config/settings/addsetting" var="formUrladdsetting" /> 
 	<form:form	modelAttribute="settingsForm" action="${fn:escapeXml(formUrladdsetting)}" cssClass="cleanform" method="POST">
@@ -87,5 +85,6 @@
 </fieldset>
 </div>
 </c:if>
+</div>
 </body>
 </html>

@@ -14,14 +14,11 @@ $(document).ready(function()
 });
 </script>
 <body>
-<div id="form">
+
     <%@ include file="/WEB-INF/jsp/header.jsp" %>
-	<fieldset>
-	<h3><fmt:message key="project.name" /> Java Reference Implementation - Manage Domains</h3>
-	   <form action="<c:url value="/j_spring_security_logout"/>">
-	       <button style="float:right;" name="logoutBtn" id="logoutBtn" type="submit">Log out</button></td>
-	   </form>
-	</fieldset>
+	<h3>Manage Domains</h3>
+
+
 	<fieldset>
 	<spring:url value="/config/main/search" var="formUrl"/>
 	<form:form id="searchDomainForm" action="${fn:escapeXml(formUrl)}" cssClass="cleanform" commandName="searchDomainForm" method="GET">
@@ -40,17 +37,16 @@ $(document).ready(function()
 		<button name="submitType" id="submitType" type="submit" value="search">Search</button>		
         <button name="submitType" id="submitType" type="submit" value="newdomain">New Domain</button>
         </p>
-        <hr>
-        <p>
-		<button name="submitType" id="submitType" type="submit" value="gotosettings">Settings</button>
-		<button name="submitType" id="submitType" type="submit" value="gotocertificates">Certificates</button>
-		<button name="submitType" id="submitType" type="submit" value="gotodns">DNS Entries</button>
-		</p>
-		<hr>
-	</form:form>
+        
+        <br><br>
+
+        </form:form>
 	</fieldset>
-	</div>
+	
 	<c:if test="${not empty searchResults}">
+
+        <h3>Domain Search Results</h3>
+
 	<div id="dynamic">
 		<spring:url value="/config/domain/remove" var="formUrlremove"/>
 	    <form:form name="removeForm" modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST" >
@@ -95,5 +91,6 @@ $(document).ready(function()
 		</form:form>
 	</div>
 	</c:if>
+        </div>
 </body>
 </html>

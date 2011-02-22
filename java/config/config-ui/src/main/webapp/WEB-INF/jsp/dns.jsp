@@ -21,27 +21,10 @@ $(document).ready(function()
 <body>
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
 
-<fieldset>
-<h3>NHIN Direct Java Reference Implementation - DNS Resolver
-Configuration</h3>
-<form action="<c:url value="/j_spring_security_logout"/>">
-<button style="float: right;" name="logoutBtn" id="logoutBtn"
-	type="submit">Log out</button>
+<h3>DNS Resolver Configuration</h3>
 
-</form>
-</fieldset>
-<hr>
-<spring:url value="/config/dns/navigate" var="formUrl" /> <form:form
-	id="navForm" action="${fn:escapeXml(formUrl)}" cssClass="cleanform"
-	commandName="searchDomainForm" method="GET">
-	<button name="submitType" id="submitType" type="submit"
-		value="gotosettings">Settings</button>
-	<button name="submitType" id="submitType" type="submit"
-		value="gotocertificates">Certificates</button>
-	<button name="submitType" id="submitType" type="submit"
-		value="gotodomains">Domains</button>
-</form:form>
-<hr>
+<br><br>
+
 <c:if test="${param.serviceError == 1}">
 	<div class="error">
 	<p class="error">An internal service error has occurred. Error
@@ -728,6 +711,6 @@ Records</legend>
 	</fieldset>
 </c:if></fieldset>
 
-
+</div>
 </body>
 </html>
