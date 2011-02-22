@@ -33,7 +33,7 @@
 	<property name="resources.dir" value="${src}/main/resources"></property>
 	<property name="build.dir" value="${install.root.dir}/build"></property>
 	<property name="build.download.dir" value="${build.dir}/download"></property>
-	<property name="apache.james.binary.url" value="http://ftp.wayne.edu/apache//james/server/apache-james-2.3.2.zip"></property>
+	<property name="apache.james.binary.url" value="http://archive.apache.org/dist/james/server/apache-james-2.3.2.zip"></property>
 	<property name="apache.james.binary.zip" value="${build.download.dir}/apache-james-2.3.2.zip"></property>
 
 	<!-- James properties -->
@@ -111,7 +111,7 @@
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xdcommon.dir" value="${install.root.dir}/../xd-common"></property>	
-	<property name="lib.agent" value="${agent.dir}/target/agent-1.1.1-SNAPSHOT.jar"></property>
+	<property name="lib.agent" value="${agent.dir}/target/agent-1.2-SNAPSHOT.jar"></property>
 	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.2-SNAPSHOT.jar"></property>
 	<property name="lib.xdmail" value="${xdmail.dir}/target/xdmail-1.0-SNAPSHOT.jar"></property>
 	<property name="lib.xdcommon" value="${xdcommon.dir}/target/xd-common-1.0-SNAPSHOT.jar"></property>
