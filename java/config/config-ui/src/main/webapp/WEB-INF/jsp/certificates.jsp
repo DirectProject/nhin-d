@@ -58,6 +58,7 @@
 				<thead>
 					<tr>
 						<th width="30%">Owner</th>
+                                                <th width="40">Private</th>
 						<th width="15%">Thumb</th>
 						<th width="15%">create Time</th>
 						<th width="15%">Start Date</th>
@@ -80,8 +81,15 @@
 						</c:choose>
 						<td width="30%"><a
 							href='../certificate?id=<c:out value="${certificates.id}"/>'>'${certificates.owner}'</a></td>
-						<td width="15%"><c:out value="${certificates.thumbprint}" /></td>
-						<td width="15%"><fmt:formatDate
+                                                        <td>
+                                                            <c:choose>
+                                                                <c:when test="${certificates.privateKey}">Yes</c:when>
+                                                                <c:otherwise>No</c:otherwise>
+                                                            </c:choose>
+                                                        </td>
+                                                        <td width="15%"><c:out value="${certificates.thumbprint}" /></td>
+
+                                                <td width="15%"><fmt:formatDate
 							value="${certificates.createTime.time}"
 							pattern="MM/dd/yyyy, hh:mm" /></td>
 						<td width="15%"><fmt:formatDate
@@ -99,6 +107,7 @@
 				<tfoot>
 					<tr>
 						<th width="30%"></th>
+						<th></th>
 						<th width="15%"></th>
 						<th width="15%"></th>
 						<th width="15%"></th>
