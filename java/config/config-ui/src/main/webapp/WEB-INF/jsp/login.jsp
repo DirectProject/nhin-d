@@ -8,43 +8,51 @@
         <title><fmt:message key="welcome.title" /></title>
     </head>
     <body>
-        <%@ include file="/WEB-INF/jsp/header.jsp" %>
-        <div id="form">
-            <fieldset class="formInfo">
-                <h3><fmt:message key="project.name" /> Configuration Login</h3>
-            </fieldset>
-            <c:if test="${param.login_error == 1}">
-                <div class="error">
-                    <p class="error">Invalid username or password</p>
-                </div>
-            </c:if>
-            <!--
-            <c:if test="${((param.logout == 1) && (param.login_error != 1))}">
+
+        <div style="text-align:center;width:600px;margin:0 auto;margin-top:50px;">
+            <img src="<c:url value="/resources/images/direct_logo.png" />" alt="Direct Project" border="0" />
+            <br/>
+
+
+
+
+
+        <fieldset class="formInfo">
+            <h3>Configuration Login</h3>
+        </fieldset>
+        <c:if test="${param.login_error == 1}">
+            <div class="error">
+                <p class="error">Invalid username or password</p>
+            </div>
+        </c:if>
+        <!--
+        <c:if test="${((param.logout == 1) && (param.login_error != 1))}">
 	        <div class="info">
 	           <p>Successfully logged out</p>
 	        </div>
-            </c:if>
-            -->
-            <fieldset>
-                <form:form id="loginForm" action="j_spring_security_check" cssClass="cleanform" method="PUT">
-                    <p>Please enter your username and password to continue.</p>
-                    <table border="0">
-                        <tr>
-                            <td align="right">Username</td>
-                            <td><input type="text" name="j_username"/></td>
-                        </tr>
-                        <tr>
-                            <td align="right">Password:</td>
-                            <td><input type="password" name="j_password"/></td>
-                        </tr>
-                    </table>
-                    <p>
-                        <button type="submit">Submit</button>
-                    </p>
-                </form:form>
-            </fieldset>
+        </c:if>
+        -->
+        <fieldset>
+            <form:form id="loginForm" action="j_spring_security_check" method="PUT">
+
+                <table border="0" align="center">
+                    <tr>
+                        <td align="right">Username</td>
+                        <td><input type="text" name="j_username"/></td>
+                    </tr>
+                    <tr>
+                        <td align="right">Password:</td>
+                        <td><input type="password" name="j_password"/></td>
+                    </tr>
+                    <tr>
+                        <td colspan="100%" align="right"><button type="submit">Login</button></td>
+                    </tr>
+                </table>
+
+            </form:form>
+        </fieldset>
+
         </div>
-        <c:if test="${!ajaxRequest}">
-        </body>
-    </html>
-</c:if>
+
+    </body>
+</html>

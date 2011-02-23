@@ -30,7 +30,7 @@
 	<form:hidden path="postmasterEmailAddressId" />
 	<table>
 		<tr>
-			<td><form:label path="domainName">Domain Name: 
+			<td><form:label path="domainName">Domain Name:
                         <form:errors path="domainName" cssClass="error" />
 			</form:label></td>
 			<td><form:input path="domainName" /></td>
@@ -49,7 +49,7 @@
 			</c:otherwise>
 		</c:choose>
 		<tr>
-			<td><form:label path="status">Status: 
+			<td><form:label path="status">Status:
                     <form:errors path="status" cssClass="error" />
 			</form:label></td>
 			<td><form:select path="status">
@@ -111,7 +111,7 @@
 							<td>(an XD* endpoint, or actual email destination)</td>
 						</tr>
 						<tr>
-							<th><form:label path="aStatus">Status: 
+							<th><form:label path="aStatus">Status:
 		                                        <form:errors path="aStatus"
 									cssClass="error" />
 							</form:label></th>
@@ -136,7 +136,7 @@
 </c:if>
 
 <c:if test="${not empty addressesResults}">
-    <spring:url value="/config/domain/removeaddresses" var="formUrlremove" /> 
+    <spring:url value="/config/domain/removeaddresses" var="formUrlremove" />
     <form:form
 		modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}"
 		cssClass="cleanform" method="POST">
@@ -156,7 +156,7 @@
 				</thead>
 				<tbody>
 					<!--  Put the data from the searchResults attribute here -->
-					<c:forEach var="address" items="${addressesResults}" varStatus="rowCounter">		
+					<c:forEach var="address" items="${addressesResults}" varStatus="rowCounter">
 					    <tr>
 							<td width="25%"><a href="../address?id=${address.id}">${address.emailAddress}</a></td>
 							<td width="18%">${address.displayName}" /></td>
@@ -179,7 +179,7 @@
 				</tfoot>
 			</table>
 		</div>
-		<!-- Wire this up to jQuery to add an input row to the table.  
+		<!-- Wire this up to jQuery to add an input row to the table.
                                      Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit" value="delete">Remove Selected Addresses</button>
 	</form:form></fieldset>
@@ -215,7 +215,7 @@
 						<th><form:checkbox path="outgoing" /></th>
 					</tr>
 					<tr>
-						<th><form:label path="status">Status: 
+						<th><form:label path="status">Status:
 	                                                    <form:errors
 								path="status" cssClass="error" />
 						</form:label></th>
@@ -234,7 +234,7 @@
     </c:if>
 <c:if test="${not empty anchorsResults}">
 	<fieldset style="width: 95%;" title="anchors">
-	<spring:url value="/config/domain/removeanchors" var="formUrlremoveanchor" /> 
+	<spring:url value="/config/domain/removeanchors" var="formUrlremoveanchor" />
 	<form:form
 		modelAttribute="anchorForm"
 		action="${fn:escapeXml(formUrlremoveanchor)}" cssClass="cleanform"
@@ -304,7 +304,7 @@
 <div id="tabs-3">
 <c:if test='${not empty action && action != "Add" }'>
         <fieldset style="width: 95%;" title="DNS">
-        <spring:url value="/config/domain/addDNSEntry" var="formUrladdDNSEntry" /> 
+        <spring:url value="/config/domain/addDNSEntry" var="formUrladdDNSEntry" />
         <form:form modelAttribute="dnsForm" action="${fn:escapeXml(formUrladdDNSEntry)}" cssClass="cleanform"
             method="POST" enctype="multipart/form-data">
             <form:hidden path="id" />
@@ -331,7 +331,7 @@
                               <form:select id="dnsTypeSelector" path="type" onchange="dnsTypeSelected();">
                                   <form:option value="-" label="--Please Select"/>
                                   <form:options items="${dnsTypes}"/>
-                              </form:select>     
+                              </form:select>
                           </td>
                           <td>&nbsp;</td>
                         </tr>
@@ -342,13 +342,13 @@
                                 </form:label>
                             </td>
                             <td>
-                              <form:input id="dnsHost" path="name"/> 
+                              <form:input id="dnsHost" path="name"/>
                             </td>
                             <td>&nbsp;</td>
                         </tr>
                         <tr>
                             <td>
-                               <form:label path="dest">Destination: 
+                               <form:label path="dest">Destination:
                                   <form:errors path="aStatus" cssClass="error" />
                                </form:label>
                             </td>
@@ -359,7 +359,7 @@
                         </tr>
                         <tr>
                             <td>
-                               <form:label path="ttl">Time to Live: 
+                               <form:label path="ttl">Time to Live:
                                   <form:errors path="ttl" cssClass="error" />
                                </form:label>
                             </td>
@@ -408,7 +408,7 @@
                             </td>
                             <td><form:input id="weight" disabled="true" path="weight"/></td>
                             <td>&nbsp;</td>
-                        </tr>                        
+                        </tr>
                         <tr>
                             <td>
                                 <form:label path="port">Port:
@@ -417,7 +417,7 @@
                             </td>
                             <td><form:input id="port" disabled="true" path="port"/></td>
                             <td>&nbsp;</td>
-                        </tr>                         
+                        </tr>
                     </table>
                     <button name="submitType" id="submitType" type="submit"
                             value="newDNSRecord">Add Record</button>
@@ -426,7 +426,7 @@
     </c:if>
 <c:if test="${not empty dnsResults}">
     <fieldset style="width: 95%;" title="dnsEntries">
-	    <spring:url value="/config/domain/removeDnsEntries" var="formUrlremoveDns" /> 
+	    <spring:url value="/config/domain/removeDnsEntries" var="formUrlremoveDns" />
 	    <form:form
 	        modelAttribute="dnsForm"
 	        action="${fn:escapeXml(formUrlremoveDns)}" cssClass="cleanform"
@@ -455,7 +455,7 @@
 	                        <td width="15%">${entry.ttl}</td>
 	                        <td width="10%">${entry.priority}</td>
 	                        <td width="20%">${entry.srvName}</td>
-	                        <td width="15%">${entry.weight}</td>	                        
+	                        <td width="15%">${entry.weight}</td>
 	                        <td width="5%"><form:checkbox path="remove"
 	                            value="${anchors.id}" /></td>
 	                    </tr>
@@ -486,6 +486,4 @@
     </div>
 </c:if>
 
-</div>
-</body>
-</html>
+<%@ include file="/WEB-INF/jsp/footer.jsp"%>

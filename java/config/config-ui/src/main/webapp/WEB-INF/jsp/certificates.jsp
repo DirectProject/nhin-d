@@ -9,9 +9,9 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
-    
+
     <h3>Manage Public and Private Certificates</h3>
-    
+
 <c:choose>
 	<c:when test='${empty action || action == "Add" }'>
 	</c:when>
@@ -33,7 +33,7 @@
 					</th>
 				</tr>
 				<tr>
-					<th><form:label path="status">Status: 
+					<th><form:label path="status">Status:
 											                <form:errors path="status" cssClass="error" />
 					</form:label></th>
 					<th><form:select path="status">
@@ -42,7 +42,7 @@
 				</tr>
 			</table>
 			<button name="submitType" id="submitType" type="submit" value="newcertificate">Add Certificate</button>
-			<button name="submitType" id="submitType" type="submit" value="cancel">Cancel</button>			
+			<button name="submitType" id="submitType" type="submit" value="cancel">Cancel</button>
 		</form:form></fieldset>
 	</c:otherwise>
 </c:choose> <c:if test="${not empty certificatesResults}">
@@ -109,15 +109,13 @@
 				</tfoot>
 			</table>
 		</div>
-		<!-- Wire this up to jQuery to add an input row to the table.  
+		<!-- Wire this up to jQuery to add an input row to the table.
 					                 Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
 			value="deletecertificate">Remove Selected</button>
 	</form:form></fieldset>
-	
+
 </c:if>
 </fieldset>
 
-    </div>
-</body>
-</html>
+<%@ include file="/WEB-INF/jsp/footer.jsp"%>

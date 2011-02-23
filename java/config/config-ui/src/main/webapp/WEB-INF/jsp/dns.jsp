@@ -7,8 +7,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title><fmt:message key="dns.title" /></title>
 <script>
-$(document).ready(function() 
-	{ 
+$(document).ready(function()
+	{
 	    $("#dnsAList").tablesorter();
 	    $("#dnsA4List").tablesorter();
 	    $("#dnsCnameList").tablesorter();
@@ -47,7 +47,7 @@ $(document).ready(function()
 			<th><form:label path="dest">IP Address
 	                          <form:errors path="dest" cssClass="error" />
 			</form:label></th>
-			<th><form:label title="In seconds" path="ttl">TTL 
+			<th><form:label title="In seconds" path="ttl">TTL
 	                         <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 		</tr>
@@ -123,7 +123,7 @@ $(document).ready(function()
 			<th><form:label path="dest">IP Address
                               <form:errors path="dest" cssClass="error" />
 			</form:label></th>
-			<th><form:label title="In seconds" path="ttl">TTL 
+			<th><form:label title="In seconds" path="ttl">TTL
                              <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 		</tr>
@@ -201,7 +201,7 @@ $(document).ready(function()
 			<th><form:label path="dest">Alias for
                               <form:errors path="dest" cssClass="error" />
 			</form:label></th>
-			<th><form:label title="In seconds" path="ttl">TTL 
+			<th><form:label title="In seconds" path="ttl">TTL
                              <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 		</tr>
@@ -281,22 +281,22 @@ Records</legend>
 			<td><form:input maxlength="5" path="priority" /></td>
 		</tr>
 		<tr>
-			
+
 			<th><form:label path="name">Host
                             <form:errors path="name" cssClass="error" />
 			</form:label></th>
 			<td><form:input path="name" /></td>
 		</tr>
 		<tr>
-			
+
 			<th><form:label path="dest">Points To
                               <form:errors path="dest" cssClass="error" />
 			</form:label></th>
 			<td><form:input id="dest" path="dest" /></td>
 		</tr>
 		<tr>
-			
-			<th><form:label title="In seconds" path="ttl">TTL 
+
+			<th><form:label title="In seconds" path="ttl">TTL
                              <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 			<td><form:input maxlength="8" id="ttl" path="ttl" /></td>
@@ -356,7 +356,7 @@ Records</legend>
 		<button name="submitType" id="submitType" type="submit"
 			value="deleteMXDnsEntries">Remove Selected MXs</button>
 	</form:form></fieldset>
-	
+
 </c:if>
 
 </fieldset>
@@ -384,13 +384,13 @@ Records</legend>
 		</tr>
 		<tr>
 			<th><form:label title="Domain Name for which this is valid"
-				path="name">Domain 
+				path="name">Domain
                             <form:errors path="name" cssClass="error" />
 			</form:label></th>
 			<td><form:input path="name" /></td>
 		</tr>
 		<tr>
-			<th><form:label title="In seconds" path="ttl">TTL 
+			<th><form:label title="In seconds" path="ttl">TTL
                             <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 			<td><form:input maxlength="8" path="ttl" /></td>
@@ -517,13 +517,13 @@ Records</legend>
 		</tr>
 		<tr>
 			<th><form:label title="Name Server"
-				path="domain">Name Server 
+				path="domain">Name Server
                             <form:errors path="domain" cssClass="error" />
 			</form:label></th>
 			<td><form:input path="domain" /></td>
 		</tr>
 		<tr>
-			<th><form:label title="In seconds" path="ttl">TTL 
+			<th><form:label title="In seconds" path="ttl">TTL
                             <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 			<td><form:input maxlength="8" path="ttl" /></td>
@@ -650,7 +650,7 @@ Records</legend>
 			<th><form:label path="dest">Target
 	                          <form:errors path="dest" cssClass="error" />
 			</form:label></th>
-			<th><form:label title="In seconds" path="ttl">TTL 
+			<th><form:label title="In seconds" path="ttl">TTL
 	                         <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 		</tr>
@@ -710,7 +710,4 @@ Records</legend>
 	</form:form></div>
 	</fieldset>
 </c:if></fieldset>
-
-</div>
-</body>
-</html>
+<%@ include file="/WEB-INF/jsp/footer.jsp"%>
