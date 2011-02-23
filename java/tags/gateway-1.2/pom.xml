@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>gateway</artifactId>    
     <name>NHIN Direct Agent Gateways.</name>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.2</version>
     <description>NHIN Direct security agent gateways and bridges.</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/gateway/${project.version}</url>        
