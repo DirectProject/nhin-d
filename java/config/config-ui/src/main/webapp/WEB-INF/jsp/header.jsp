@@ -10,8 +10,8 @@
         <table width="100%">
             <tr>
                 <td align="left">
-                    <a href="<c:url value="/config/main"/>">Manage Domains</a> &middot;
-                    <a href="<c:url value="/config/main/search?domainName=&submitType=gotosettings"/>">Settings</a> &middot;
+                    <a href="<c:url value="/config/main"/>">Domains</a> &middot;
+                    <a href="<c:url value="/config/main/search?domainName=&submitType=gotosettings"/>">Agent Settings</a> &middot;
                     <a href="<c:url value="/config/main/search?domainName=&submitType=gotocertificates"/>">Manage Certificates</a> &middot;
                     <a href="<c:url value="/config/main/search?domainName=&submitType=gotodns"/>">DNS Entries</a>
                 </td>
