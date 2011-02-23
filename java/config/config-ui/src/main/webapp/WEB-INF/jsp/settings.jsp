@@ -4,18 +4,18 @@
 <html>
     <head>
     <%@ include file="/WEB-INF/jsp/include.jsp"%>
-    <META  http-equiv="Content-Type"  content="text/html;charset=UTF-8">
+    <META ?http-equiv="Content-Type" ?content="text/html;charset=UTF-8">
     <title><fmt:message key="settings.title" /></title>
     </head>
     <body>
     <%@ include file="/WEB-INF/jsp/header.jsp" %>
 
-  
-    
+
+
     <h3>Manage Agent Settings</h3>
-   
+
 <fieldset style="width: 97%;" title="Setting">
-	<spring:url	value="/config/settings/addsetting" var="formUrladdsetting" /> 
+	<spring:url	value="/config/settings/addsetting" var="formUrladdsetting" />
 	<form:form	modelAttribute="settingsForm" action="${fn:escapeXml(formUrladdsetting)}" cssClass="cleanform" method="POST">
 	<table cellpadding="1px" cellspacing="1px" id="settingsTable">
 		<tr>
@@ -38,7 +38,7 @@
 </form:form></fieldset>
 <c:if test="${not empty settingsResults}">
 <fieldset style="width: 97%;" title="Settings">
-	<spring:url value="/config/settings/removesettings" var="formUrlremove" /> 
+	<spring:url value="/config/settings/removesettings" var="formUrlremove" />
 		<form:form modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST">
 		<form:hidden path="id" />
 		<table cellpadding="1px" cellspacing="1px" id="settingsTable"
@@ -77,7 +77,7 @@
 				</tr>
 			</tfoot>
 		</table>
-		<!-- Wire this up to jQuery to add an input row to the table.  
+		<!-- Wire this up to jQuery to add an input row to the table.
 					                 Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit" value="delete">Remove
 		Selected</button>
@@ -85,6 +85,4 @@
 </fieldset>
 </div>
 </c:if>
-</div>
-</body>
-</html>
+<%@ include file="/WEB-INF/jsp/footer.jsp"%>

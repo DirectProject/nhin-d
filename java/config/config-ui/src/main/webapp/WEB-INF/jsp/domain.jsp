@@ -56,8 +56,8 @@
                 border: 1px solid #999;
                 border-top: none;
                 clear: both;
-                
-                
+
+
                 background: #fff;
                 -moz-border-radius-bottomright: 5px;
                 -khtml-border-radius-bottomright: 5px;
@@ -349,7 +349,7 @@
                     </c:choose>
                     <c:if test="${not empty anchorsResults}">
 
-                        
+
 
                         <fieldset style="width: 95%;" title="anchors"><spring:url
                                 value="/config/domain/removeanchors" var="formUrlremoveanchor" /> <form:form
@@ -436,7 +436,4 @@
         </c:otherwise>
     </c:choose>
 
-</div>
-
-</body>
-</html>
+<%@ include file="/WEB-INF/jsp/footer.jsp"%>

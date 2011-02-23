@@ -126,7 +126,9 @@ public class MainController {
 						        HttpSession session,
 						        @ModelAttribute SimpleForm simpleForm,
 						        Model model,
-						        @RequestParam(value="submitType") String actionPath)  { 		
+						        @RequestParam(value="submitType") String actionPath,
+                                                        @RequestParam(value="domainName", required=false) String searchDomainName,
+                                                        @RequestParam(value="status", required=false) EntityStatus searchStatus)  {
 		if (log.isDebugEnabled()) log.debug("Enter search");
 
 		String message = "Search complete";
@@ -269,17 +271,21 @@ public class MainController {
             
             model.addAttribute("simpleForm",new SimpleForm());            
 		}
-		else
+	else
 		{
-    		SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
+    		
+                
+
+                SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
     		if (form == null) { 
     			form = new SearchDomainForm();
     		}
     		model.addAttribute(form);
     		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
     		
-    		String domain = form.getDomainName();
-    		EntityStatus status = form.getStatus();
+    		String domain = (!searchDomainName.isEmpty()) ? searchDomainName : "%";
+    		EntityStatus status = searchStatus;
+                
     		List<Domain> results = null;
     		if (configSvc != null) {
     		    Collection<Domain> domains = configSvc.searchDomain(domain, status);

@@ -5,6 +5,8 @@
 
 /* General */
 
+a { color:#0085C3; }
+
 .logout-bar a { color:white; }
 
 body {
@@ -22,6 +24,18 @@ fieldset {
     padding:10px 5px 5px 10px;
     border-top:none;
     margin-bottom:0;
+}
+
+#footer {
+    text-align:center;
+    margin-top:5px;
+}
+
+.domain-status-picker {
+    border:none;
+}
+
+.domain-status-picker input {
 }
 
 #main {
@@ -83,12 +97,13 @@ text-align:right;
 }
 
 .cleanform label {
-    font-weight:bold
 }
 
+.text-input {
+    padding: 2px 4px;
+
+}
 .cleanform fieldset input {
-    width:75%;
-    line-height:1.5em;
     padding:0.15em;
     display:inline;
 }
@@ -102,7 +117,6 @@ text-align:right;
 
 .cleanform input, .cleanform textarea, .cleanform select {
     display:inline;
-    margin-bottom:1em;
     font-size:1em;
     border:1px solid #bbb;
     padding:0.15em;
