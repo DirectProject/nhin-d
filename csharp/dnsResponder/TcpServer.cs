@@ -123,9 +123,7 @@ namespace Health.Direct.DnsResponder
                 }
 
                 this.ConnectionAccepted.SafeInvoke(socket);
-                //
-                // Dispatch handles exceptions
-                //
+
                 this.Dispatch(socket);
                 
                 socket = null;
@@ -138,7 +136,7 @@ namespace Health.Direct.DnsResponder
             {
                 if (socket != null)
                 {
-                    socket.SafeShutdownAndClose(SocketShutdown.Both, 0);
+                    socket.SafeShutdownAndClose(SocketShutdown.Both, this.Settings.SocketCloseTimeout);
                     this.ConnectionClosed.SafeInvoke(socket);
                 }
             }
@@ -159,11 +157,12 @@ namespace Health.Direct.DnsResponder
             TContext context = null;
             long socketID = 0;
 
+            socketID = m_activeSockets.Add(socket);
+
             try
             {
-                this.Settings.ConfigureSocket(socket); 
-                
-                socketID = m_activeSockets.Add(socket);
+                this.Settings.ConfigureSocket(socket);
+                               
                 context = this.CreateContext(socket, socketID);                    
                 socketID = 0;                
 
@@ -197,7 +196,7 @@ namespace Health.Direct.DnsResponder
                 }
                 if (socketID > 0)
                 {
-                    m_activeSockets.Shutdown(socketID);
+                    m_activeSockets.Shutdown(socketID, this.Settings.SocketCloseTimeout);
                     this.ConnectionClosed.SafeInvoke(socket);
                 }
             }
@@ -211,7 +210,7 @@ namespace Health.Direct.DnsResponder
                 {
                     if (context.HasValidSocket)
                     {
-                        m_activeSockets.Shutdown(context.SocketID);
+                        m_activeSockets.Shutdown(context.SocketID, this.Settings.SocketCloseTimeout);
                         this.ConnectionClosed.SafeInvoke(context.Socket);
                     }
                     this.ReleaseContext(context);
