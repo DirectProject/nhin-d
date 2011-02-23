@@ -19,24 +19,29 @@
 	<form:form	modelAttribute="settingsForm" action="${fn:escapeXml(formUrladdsetting)}" cssClass="cleanform" method="POST">
 	<table cellpadding="1px" cellspacing="1px" id="settingsTable">
 		<tr>
-			<th>
+			<td width=50>
 				<form:label path="key">Key:
 					<form:errors path="key" cssClass="error" />
 				</form:label>
-			</th>
-			<th><form:input path="key" /></th>
+			</td>
+			<td><form:input path="key" cssStyle="width:300px" /></td>
 		</tr>
 		<tr>
-			<th><form:label path="value">Value:
+			<td><form:label path="value">Value:
 							            <form:errors path="value" cssClass="error" />
-			</form:label></th>
-			<th><form:input path="value" /></th>
+			</form:label></td>
+			<td><form:input path="value"  cssStyle="width:300px"/></td>
 		</tr>
 	</table>
 	<button name="submitType" id="submitType" type="submit" value="newsetting">Add Setting</button>
 	<button name="submitType" id="submitType" type="submit" value="cancel">Cancel</button>
 </form:form></fieldset>
-<c:if test="${not empty settingsResults}">
+
+
+<h3>Settings</h3>
+<c:choose>
+
+	<c:when test="${not empty settingsResults}">
 <fieldset style="width: 97%;" title="Settings">
 	<spring:url value="/config/settings/removesettings" var="formUrlremove" />
 		<form:form modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST">
@@ -45,9 +50,10 @@
 			class="tablesorter">
 			<thead>
 				<tr>
-					<th width="45%">name</th>
-					<th width="45%">value</th>
-					<th width="10%">remove</th>
+					<th width=20></th>
+					<th width="400">name</th>
+					<th width="">value</th>
+
 				</tr>
 			</thead>
 			<tbody>
@@ -62,20 +68,15 @@
 							<tr class="oddRow">
 						</c:otherwise>
 					</c:choose>
-					<td width="45%"><a
+					<td><form:checkbox path="remove" value="${setting.name}" /></td>
+					<td ><a
 						href='../setting?id=<c:out value="${setting.id}"/>'>'${setting.name}'</a></td>
-					<td width="45%"><c:out value="${setting.value}" /></td>
-					<td width="15%"><form:checkbox path="remove" value="${setting.name}" /></td>
+					<td><c:out value="${setting.value}" /></td>
+
 					</tr>
 				</c:forEach>
 			</tbody>
-			<tfoot>
-				<tr>
-					<th width="45%"></th>
-					<th width="45%"></th>
-					<th width="10%"></th>
-				</tr>
-			</tfoot>
+
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table.
 					                 Don't submit it all until the final submit is done -->
@@ -84,5 +85,13 @@
 	</form:form>
 </fieldset>
 </div>
-</c:if>
+</c:when>
+
+<c:otherwise>There are no settings yet.</c:otherwise>
+
+
+</c:choose>
+
+<br/><br/>
+
 <%@ include file="/WEB-INF/jsp/footer.jsp"%>
