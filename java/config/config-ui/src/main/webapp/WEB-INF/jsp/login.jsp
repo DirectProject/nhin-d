@@ -9,7 +9,7 @@
     </head>
     <body>
 
-        <div style="text-align:center;width:600px;margin:0 auto;margin-top:50px;">
+        <div style="text-align:center;width:325px;margin:0 auto;margin-top:50px;">
             <img src="<c:url value="/resources/images/direct_logo.png" />" alt="Direct Project" border="0" />
             <br/>
 
@@ -35,13 +35,13 @@
         <fieldset>
             <form:form id="loginForm" action="j_spring_security_check" method="PUT">
 
-                <table border="0" align="center">
+                <table border="0" align="center" width=200>
                     <tr>
-                        <td align="right">Username</td>
+                        <td width=75>Username:</td>
                         <td><input type="text" name="j_username"/></td>
                     </tr>
                     <tr>
-                        <td align="right">Password:</td>
+                        <td width=75>Password:</td>
                         <td><input type="password" name="j_password"/></td>
                     </tr>
                     <tr>
