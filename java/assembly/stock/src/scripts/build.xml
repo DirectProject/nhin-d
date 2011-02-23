@@ -102,10 +102,12 @@
 	<!-- Package libraries -->
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
+	<property name="direct-common.dir" value="${install.root.dir}/../direct-common"></property>	
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xd-common.dir" value="${install.root.dir}/../xd-common"></property>	
 	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.1.2.jar"></property>
-	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-1.1.jar"></property>
+	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-1.2.jar"></property>
+	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.0.jar"></property>	
 	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.0-SNAPSHOT.jar"></property>
 	<property name="lib.xd-common" value="${install.root.dir}/lib/xd-common-1.0-SNAPSHOT.jar"></property>
 	
@@ -238,6 +240,7 @@
 		<copy file="${lib.mail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.direct-common}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
 		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.xd-common}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
 		<copy file="${lib.jcs}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
