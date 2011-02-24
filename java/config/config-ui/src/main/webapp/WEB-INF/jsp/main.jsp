@@ -45,7 +45,7 @@
 
 			</td>
 		</tr>
-		<tr><td colspan=100% style="padding-top:5px"><button name="submitType" id="submitType" type="submit" value="search">Search</button> &nbsp;&nbsp; <a href="/config-ui/config/main/search?domainName=&submitType=newdomain">Create New Domain</a></td></tr>
+		<tr><td colspan=100% style="padding-top:5px"><button name="submitType" id="submitType" type="submit" value="search">Search</button> &nbsp; <a href="/config-ui/config/main/search?domainName=&submitType=newdomain">Create New Domain</a></td></tr>
 
 </table>
                     	<!--<form:radiobuttons path="status" items="${statusList}"/>-->
