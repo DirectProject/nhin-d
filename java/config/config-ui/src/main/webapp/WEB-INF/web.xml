@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
 	                    http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-	<display-name>NHIN Direct HISP Configuration UI</display-name>
+	<display-name>Direct Project HISP Configuration UI</display-name>
 	<session-config>
 		<session-timeout>30</session-timeout>
 	</session-config>
@@ -66,5 +66,6 @@
             /WEB-INF/config-servlet.xml
         </param-value>
     </context-param>
+    
     
 </web-app>

@@ -69,9 +69,6 @@ namespace Health.Direct.Common.DnsResolver
             DnsHeader header = this.Header;
             if (
                 !header.IsRequest
-                || header.AnswerCount != 0
-                || header.AdditionalAnswerCount != 0
-                || header.NameServerAnswerCount != 0
                 || header.IsTruncated
                 )                
             {
@@ -148,18 +145,17 @@ namespace Health.Direct.Common.DnsResolver
         {
             return new DnsRequest(DnsStandard.RecordType.SOA, domain);
         }
-        
-        internal string CollectLogInfo()       
+
+        internal string CollectLogInfo()
         {
             try
             {
-                DnsHeader header = this.Header;
-                return string.Format("{0};IsRequest={1};IsTruncated={2}", this.Question.CollectLogInfo(), header.IsRequest, header.IsTruncated);
+                return string.Format("{0};{1}", this.Question.CollectLogInfo(), this.Header.CollectLogInfo());
             }
             catch
             {
             }
-            
+
             return string.Empty;
         }
     }

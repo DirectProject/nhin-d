@@ -490,13 +490,7 @@ namespace Health.Direct.SmtpAgent
         /// </summary>
         /// <param name="message"></param>
         void VerifyDomainRecipientsRegistered(IncomingMessage message)
-        {
-            if (!m_settings.HasAddressManager)
-            {
-                // Address validation is turned off
-                return;
-            }
-            
+        {            
             message.EnsureRecipientsCategorizedByDomain(this.SecurityAgent.Domains);
             if (!message.HasDomainRecipients)
             {
@@ -504,6 +498,17 @@ namespace Health.Direct.SmtpAgent
             }
             
             DirectAddressCollection recipients = message.DomainRecipients;
+            if (this.Settings.MaxIncomingDomainRecipients > 0 && recipients.Count > this.Settings.MaxIncomingDomainRecipients)
+            {
+                throw new AgentException(AgentError.MaxDomainRecipients);
+            }
+
+            if (!m_settings.HasAddressManager)
+            {
+                // Address validation is turned off
+                return;
+            }
+
             Address[] resolved = m_configService.GetAddresses(recipients);
             if (resolved.IsNullOrEmpty())
             {
