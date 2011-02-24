@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:jaxws="http://cxf.apache.org/jaxws"
+  xmlns:cxf="http://cxf.apache.org/core"
+  xmlns:security="http://www.springframework.org/schema/security" 
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	  http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+	  http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+	  http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+   
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+    <security:authentication-manager alias="authenticationManager">
+    <!-- 
+        To change IdP just change the authentication-provider
+    -->
+    <security:authentication-provider>
+        <security:user-service>
+            <security:user name="practice1.hin1.us" password="test1" authorities="ROLE_ORG"/>
+            <security:user name="test1@practice1.hin1.us" password="test1" authorities="ROLE_USER"/>
+            <security:user name="test2@practice2.hin1.us" password="test2" authorities="ROLE_USER"/>
+            <security:user name="test3@practice3.hin1.us" password="test3" authorities="ROLE_USER"/>
+            <security:user name="test1@polaris.hin1.us" password="northstar" authorities="ROLE_USER"/>
+        </security:user-service>
+    </security:authentication-provider>
+    <!-- 
+        <security:ldap-user-service server-ref="ldapServer"
+			group-search-filter="member={0}"
+			group-role-attribute="cn"
+			user-search-base=""
+			user-search-filter="uid={0}"
+			group-search-base="" />
+			<securitypassword-encoder ref="passwordEncoderBean" />
+    </security:authentication-provider>
+
+    <security:ldap-server id="ldapServer"
+		url="ldap://localhost:389/o=IEXTRA"
+		manager-dn="cn=Directory Manager"
+		manager-password="c31c|us1063"/>
+ 	-->
+ 	</security:authentication-manager>
+	
+    <bean id="inboundLoggingInterceptor" class="org.apache.cxf.interceptor.LoggingInInterceptor"/>
+    <bean id="outboundLoggingInterceptor" class="org.apache.cxf.interceptor.LoggingOutInterceptor"/>
+
+    <cxf:bus name="CxfMsgBus" >
+        <cxf:inFaultInterceptors>
+            <ref bean="inboundLoggingInterceptor"/>
+        </cxf:inFaultInterceptors>
+        <cxf:outFaultInterceptors>
+            <ref bean="outboundLoggingInterceptor"/>
+        </cxf:outFaultInterceptors>
+    </cxf:bus>
+
+	<!-- WS-Security is set to use UsernameToken.  PasswordText is used as this is expected
+	     to be exposed to the outside world via a TLS connection
+	     
+	     NOTE:  In order to use TLS, the server certificate must reside in a trust store
+	     provided via the System property javax.net.ssl.trustStore.  The container has to be
+	     invoked with a -Djavax.net.ssl.trustStore=<trustStoreURI> -Djavax.net.ssl.trustStorePassword=<pwd>
+	 -->	
+	<jaxws:endpoint id="nhindirectWSEdgePort"
+                    address="/MessageService"
+                    publishedEndpointUrl="http://localhost:8081/direct-edge-ws/MessageService">
+	    <jaxws:implementor>
+	       <bean id="WSEdgeService" class="org.directproject.edge.ws.impl.MessageServiceImplService">
+		        <property name="smtpHost" value="mail.hin1.us"/>
+		        <property name="imapHost" value="mail.hin1.us"/>
+		        <property name="smtpPort" value="465"/>
+		        <property name="imapPort" value="993"/>
+		       
+		        <!-- Acceptable values for useTLS: "NONE" "SOCKET", "STARTTLS" or can be removed if not needed -->
+		        <property name="useTLSforSMTP" value="SOCKET"/>
+		        <property name="useTLSforIMAP" value="STARTTLS"/>  
+		    </bean>
+	    </jaxws:implementor>
+        <jaxws:properties>
+            <entry key="mtom-enabled" value="true"/>
+        </jaxws:properties>
+        <jaxws:inInterceptors>
+            <ref bean="wsAuthenticationInterceptor"/>
+        </jaxws:inInterceptors> 
+    </jaxws:endpoint>
+    
+    
+    <bean id="wsAuthenticationInterceptor" class="org.directproject.edge.ws.security.cxf.WSAuthenticationInInterceptor">
+        <constructor-arg index="0">
+            <map key-type="java.lang.String" value-type="java.lang.Object">
+                <entry key="action" value="UsernameToken" />
+                <entry key="passwordType" value="PasswordText" />
+                <entry key="passwordCallbackClass" value="org.directproject.edge.ws.security.cxf.ServerPasswordCallback"/>
+            </map>
+        </constructor-arg>
+        <property name="authenticationManager" ref="authenticationManager"/>
+    </bean>
+</beans>
