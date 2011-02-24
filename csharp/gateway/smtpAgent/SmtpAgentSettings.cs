@@ -197,7 +197,7 @@ namespace Health.Direct.SmtpAgent
             {
                 if (m_incomingRoutes == null)
                 {
-                    m_incomingRoutes = new MessageRoute[0];
+                    m_incomingRoutes = new Route[0];
                 }
 
                 return m_incomingRoutes;

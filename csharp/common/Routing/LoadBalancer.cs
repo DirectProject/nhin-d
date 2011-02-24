@@ -52,7 +52,7 @@ namespace Health.Direct.Common.Routing
             }
             
             this.DataCopier = dataCopier;
-            m_receivers = receivers;
+            this.Receivers = receivers;
         }
         
         /// <summary>
