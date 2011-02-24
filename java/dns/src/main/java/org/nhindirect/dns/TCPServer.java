@@ -26,6 +26,8 @@ import java.net.Socket;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xbill.DNS.Message;
+import org.xbill.DNS.Rcode;
+import org.xbill.DNS.Section;
 
 /**
  * TCP socket server that handled DNS requests over TCP.
@@ -34,9 +36,14 @@ import org.xbill.DNS.Message;
  */
 public class TCPServer extends DNSSocketServer 
 {
+
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(TCPServer.class);
 	
 	private ServerSocket serverSocket;
+	
+	private volatile long missCount = 0;
+	private volatile long errorCount = 0;
+	private volatile long successCount = 0;	
 	
 	/**
 	 * Creates a TCP socket server.  The server will not start accepting messages until the {@link #start()} method is called.
@@ -46,7 +53,9 @@ public class TCPServer extends DNSSocketServer
 	 */
 	public TCPServer(DNSServerSettings settings, DNSResponder responder) throws DNSException
 	{
-		super(settings, responder);			
+		super(settings, responder);		
+		
+		registerMBean(this.getClass());
 	}
 	
 	/**
@@ -218,15 +227,29 @@ public class TCPServer extends DNSSocketServer
 					response = responder.processRequest(query);
 				}
 				catch (DNSException e) 
-				{
+				{					
 					if (query != null)
 						response = responder.processError(query, e.getError());
 				}
 
-				dataOut = new DataOutputStream(requestSocket.getOutputStream());
-				byte[] writeBytes = response.toWire();
-				dataOut.writeShort(writeBytes.length);
-				dataOut.write(writeBytes);
+				if (response != null)
+				{
+					if (response.getRcode() == Rcode.NOERROR || response.getRcode() == Rcode.NXDOMAIN)
+					{
+						++successCount;
+						if (response.getSectionArray(Section.ANSWER).length == 0)
+							++missCount;	
+					}
+					else
+						++errorCount;	
+						
+					dataOut = new DataOutputStream(requestSocket.getOutputStream());
+					byte[] writeBytes = response.toWire();
+					dataOut.writeShort(writeBytes.length);
+					dataOut.write(writeBytes);
+				}
+				else
+					++errorCount;
 			}
 			catch (IOException e)
 			{
@@ -244,4 +267,30 @@ public class TCPServer extends DNSSocketServer
 			
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long getMissedRequestCount() 
+	{
+		return missCount;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long getSuccessfulRequestCount() 
+	{
+		return successCount;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long getErrorRequestCount()
+	{
+		return errorCount;
+	}
 }

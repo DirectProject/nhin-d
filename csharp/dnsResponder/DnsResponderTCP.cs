@@ -25,9 +25,9 @@ namespace Health.Direct.DnsResponder
     public class DnsResponderTCP : DnsResponder, IHandler<DnsTcpContext>
     {
         readonly TcpServer<DnsTcpContext> m_tcpServer;
-        
-        public DnsResponderTCP(DnsServer server)
-            : base(server)
+
+        public DnsResponderTCP(IDnsStore store, DnsServerSettings settings)
+            : base(store, settings)
         {
             m_tcpServer = new TcpServer<DnsTcpContext>(this.Settings.Endpoint, this.Settings.TcpServerSettings, this);
         }
@@ -56,23 +56,15 @@ namespace Health.Direct.DnsResponder
             {
                 throw new ArgumentNullException();
             }
-
-            context.Init(this);
             
-            //
-            // If we fail at parsing or receiving the request, then any exceptions will get logged and
-            // the socket will be silently closed
-            // 
-            context.ReceiveRequest();
-                                        
-            DnsResponse response = base.ProcessRequest(context.DnsBuffer);
-            if (response != null)
-            {
-                base.Serialize(response, context.DnsBuffer, ushort.MaxValue);
-                context.SendResponse();
-            }
-            
+            context.Init(this);            
+            base.RequestResponse(context, ushort.MaxValue);
             return true;
+        }
+
+        protected override void HandleException(Exception ex)
+        {
+            m_tcpServer.NotifyError(ex);
         }
     }
 }

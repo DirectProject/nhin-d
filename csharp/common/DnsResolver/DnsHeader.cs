@@ -155,9 +155,9 @@ namespace Health.Direct.Common.DnsResolver
         }
 
         /// <summary>
-        /// Gets and sets the number of entries in the answer section (ADCOUNT header value)
+        /// Gets and sets the number of entries in the answer section (ANCOUNT header value)
         /// </summary>
-        /// <remarks>RFC 1035, Section 4.1.1, ADCOUNT</remarks>
+        /// <remarks>RFC 1035, Section 4.1.1, ANCOUNT</remarks>
         public short AnswerCount
         {
             get
@@ -272,6 +272,16 @@ namespace Health.Direct.Common.DnsResolver
             buffer.AddShort(this.AnswerCount);
             buffer.AddShort(this.NameServerAnswerCount);
             buffer.AddShort(this.AdditionalAnswerCount);
+        }
+
+        internal string CollectLogInfo()
+        {
+            return string.Format("IsRequest={0};IsTruncated={1};ANCOUNT={2};NSCOUNT={3};ARCOUNT={4}",
+                                    this.IsRequest,
+                                    this.IsTruncated,
+                                    this.AnswerCount,
+                                    this.NameServerAnswerCount,
+                                    this.AdditionalAnswerCount);
         }
     }
 }

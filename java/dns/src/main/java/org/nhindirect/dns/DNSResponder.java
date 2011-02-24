@@ -103,10 +103,13 @@ public abstract class DNSResponder
 		try
 		{
 			response = store.get(request);
-            if (response == null || response.getHeader() == null || response.getHeader().getRcode() != Rcode.NOERROR)
+            if (response == null || response.getHeader() == null)
             {
+            	
             	response = processError(request, DNSError.newError(Rcode.NXDOMAIN));	
-            }   			
+            }   
+            else if (response.getHeader().getRcode() != Rcode.NOERROR)
+            	response = processError(request, DNSError.newError(response.getHeader().getRcode()));
 		}
 		catch (DNSException e)
 		{
