@@ -73,6 +73,7 @@
     <Compile Include="Caching\DnsResponseCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseToBinExample.cs" />
     <Compile Include="Collection\PropertyFacts.cs" />
+    <Compile Include="Diagnostics\AuditFacts.cs" />
     <Compile Include="Diagnostics\RolloverFacts.cs" />
     <Compile Include="DnsResolver\BasicResolverTests.cs" />
     <Compile Include="DnsResolver\TestSerialization.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Container\SimpleContainerSectionFacts.cs" />
     <Compile Include="Mime\StringSegmentFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Routing\LoadBalancerFacts.cs" />
     <Compile Include="TestingBase.cs" />
   </ItemGroup>
   <ItemGroup>

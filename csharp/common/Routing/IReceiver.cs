@@ -13,35 +13,24 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using Health.Direct.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace Health.Direct.SmtpAgent
+namespace Health.Direct.Common.Routing
 {
-    public enum SmtpAgentError
+    /// <summary>
+    /// Routes and loadbalancers forward data to receivers
+    /// </summary>
+    /// <typeparam name="T">Type of data to receive</typeparam>
+    public interface IReceiver<T>
     {
-        Unknown = 0,
-        NotInitialized,
-        MissingPostmaster,
-        MissingLogSettings,
-        InvalidEnvelopeFromAgent,
-        EmptyResultFromAgent,
-        MissingMailPickupFolder,
-        MailPickupFolderDoesNotExist,
-        MissingCertResolverClientSettings,
-        MissingAnchorResolverClientSettings,
-        NoAddressManager,
-        ConfiguredDomainsMismatch,   // Domains in Xml file not found in config
-        NoSenderInEnvelope,
-        NoRecipientsInEnvelope,
-        MissingAddressTypeInRoute,
-        NoFoldersInRoute,
-    }
-
-    public class SmtpAgentException : DirectException<SmtpAgentError>
-    {
-        public SmtpAgentException(SmtpAgentError error)
-            : base(error)
-        {
-        }
+        /// <summary>
+        /// Receive data.  
+        /// </summary>
+        /// <param name="data">data to receive</param>
+        /// <returns>true if successful, else false</returns>
+        bool Receive(T data);
     }
 }

@@ -110,8 +110,6 @@ namespace Health.Direct.Common.Mime
             return new KeyValuePair<string, string>(name, value);
         }
 
-
-
         /// <summary>
         /// Parses the supplied string providing a valid block of headers into an enumeration of <see cref="Header"/> instances.
         /// </summary>
@@ -305,8 +303,6 @@ namespace Health.Direct.Common.Mime
             }
         }
         
-        //TODO: naming here is confusing. Must meditate on multipart spec....
-
         /// <summary>
         /// Tests the supplied line against <paramref name="boundary"/> to see if the line is the multipart boundary
         /// </summary>
