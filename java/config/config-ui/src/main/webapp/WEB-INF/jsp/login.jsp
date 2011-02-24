@@ -35,7 +35,7 @@
         <fieldset>
             <form:form id="loginForm" action="j_spring_security_check" method="PUT">
 
-                <table border="0" align="center" width=200>
+                <table border="0" align="center">
                     <tr>
                         <td width=75>Username:</td>
                         <td><input type="text" name="j_username"/></td>
@@ -45,7 +45,7 @@
                         <td><input type="password" name="j_password"/></td>
                     </tr>
                     <tr>
-                        <td colspan="100%" align="right"><button type="submit">Login</button></td>
+                        <td colspan="2" align="right"><button type="submit">Login</button></td>
                     </tr>
                 </table>
 

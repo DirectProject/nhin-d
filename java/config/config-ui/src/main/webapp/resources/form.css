@@ -77,7 +77,7 @@ ul.ul-navbar a:hover { color:#ddd; }
 table { margin-bottom:5px;}
 
 table.data { width:100%; border:1px solid #bbb; background-color:#fff; border-spacing:1px; text-align:left; margin-bottom:5px; }
-table.data th, table.data td { padding: 2px 3px; }
+table.data th, table.data td { padding: 2px 3px; text-align:left; }
 table.data th { background-color:#ddd; font-weight:normal;}
 table.data td { background-color:white; border:none; }
 
@@ -133,7 +133,7 @@ color:#fff;
 text-align:right;
     border:1px solid #039;
     border-top:none;
-   
+
 }
 
 #anchorsTable {
