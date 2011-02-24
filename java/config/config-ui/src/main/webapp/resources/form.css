@@ -1,24 +1,103 @@
-@import url("messages/messages.css");
+
+div.info,div.success,div.warning,div.error {
+	border: 1px solid;
+	margin: 10px 0px;
+	padding: 15px 10px 15px 50px;
+	background-repeat: no-repeat;
+	background-position: 10px center;
+}
+
+div.info {
+	color: #00529B;
+	background-color: #BDE5F8;
+	background-image: url('messages/info.png');
+}
+
+div.success {
+	color: #4F8A10;
+	background-color: #DFF2BF;
+	background-image: url('messages/success.png');
+}
+
+div.warning {
+	color: #9F6000;
+	background-color: #FEEFB3;
+	background-image: url('messages/warning.png');
+}
+
+div.error {
+	color: #D8000C;
+	background-color: #FFBABA;
+	background-image: url('messages/error.png');
+}
+
+span {
+	margin: 5px 5px 5px 5px;
+}
+
+span.success {
+	color: #4F8A10;
+}
+
+span.error {
+	color: #D8000C;
+}
+
+body {
+	font-family: Lucida Grande, sans-serif;
+	font-size: .75em;
+	margin: 1em auto;
+	width: 763px;
+}
+
+ul li {
+	padding: 5px;
+}
+
 
 /* CLEAN FORM
 /////////////////////////////*/
 
 /* General */
 
+
+
 a { color:#0085C3; }
+a:hover { color:#1d2f5e; }
+h1 {}
+h2 { font-size:18px;}
+h3 { font-size:16px; margin-bottom:10px;  }
+h4 { font-size:16px; margin-bottom:10px; padding:0;  font-weight:normal; }
+option, input, select { font-size: 12px; }
+
+ul.ul-navbar { list-style:none; padding:0; margin:0; }
+ul.ul-navbar li { float:left; margin-right:20px; padding:0;}
+ul.ul-navbar a:hover { color:#ddd; }
+
+table { margin-bottom:5px;}
+
+table.data { width:100%; border:1px solid #bbb; background-color:#fff; border-spacing:1px; text-align:left; margin-bottom:5px; }
+table.data th, table.data td { padding: 2px 3px; }
+table.data th { background-color:#ddd; font-weight:normal;}
+table.data td { background-color:white; border:none; }
 
 .logout-bar a { color:white; }
 
 body {
     margin:0 auto;
-    padding:0;
+    padding:0 15px;
     margin-bottom:10px;
-    width:1024px;
+    width:90%;
+	font-size:12px;
 }
 
 fieldset {
     border:none;
+	padding:5px;
+	margin:0;
 }
+
+.text-input { padding: 2px; font-size: 12px;}
 
 #header {
     padding:10px 5px 5px 10px;
@@ -28,7 +107,7 @@ fieldset {
 
 #footer {
     text-align:center;
-    margin-top:5px;
+    margin:5px 0;
 }
 
 .domain-status-picker {
@@ -47,126 +126,18 @@ border-top:none;
 
 .logout-bar
 {
-    padding:3px 5px;
+    padding:0px 5px;
     background-color:#0085C3;
     margin:0 0 0px 0;
 color:#fff;
 text-align:right;
     border:1px solid #039;
     border-top:none;
-    min-height: 20px;
+   
 }
 
 #anchorsTable {
 	border:none;
-}
-
-
-.cleanform {
-    font-size:1em;
-    color:#1b1b1b;
-    text-align:left;
-}
-
-.cleanform table th {
-    color:black;
-    font-weight:bold;
-    padding:0;
-    margin:0.3em 0
-}
-
-.cleanform table tr #evenRow {
-    background-color:#C2C2C2;
-}
-
-.cleanform table tr #oddRow {
-    background-color:#B2B2B2;
-}
-
-/* Elements */
-
-.cleanform  label,.cleanform legend {
-    padding:0;
-    margin:0.3em 0
-}
-
-.cleanform fieldset {
-    padding:0.7em;
-    border:1px solid #ddd;
-    margin:0 0 0.5em 0
-}
-
-.cleanform label {
-}
-
-.text-input {
-    padding: 2px 4px;
-
-}
-.cleanform fieldset input {
-    padding:0.15em;
-    display:inline;
-}
-
-.cleanform .radio input,
-.cleanform .checkbox input {
-    width:30px;
-    border:none;
-    margin:0 1.5em 0 0
-}
-
-.cleanform input, .cleanform textarea, .cleanform select {
-    display:inline;
-    font-size:1em;
-    border:1px solid #bbb;
-    padding: 2px 5px;
-    margin-right:1em
-}
-
-.cleanform .radio label, .cleanform .radio input,
-.cleanform .checkbox label, .cleanform .checkbox input {
-    display:inline;
-    margin:0 1.5em 0 0
-}
-
-.cleanform .radio input, .cleanform .checkbox input {
-    margin:0 0.3em 0 0
-}
-
-.cleanform .multiple label{
-    float:left;
-    width:29%;
-    overflow:hidden;
-    padding-left:0.1em;
-}
-
-.cleanform .multiple input {
-    cursor:pointer
-}
-
-/* information */
-
-.cleanform .formInfo {
-    margin-bottom:1em;
-    padding-bottom:0.5em;
-    border-bottom:0.1em solid #ddd
-}
-
-.cleanform .formInfo h2 {
-    color:#00889e;
-    font-weight:bold;
-    font-size:1.2em;
-    margin-bottom:1em
-}
-
-.cleanform .formInfo p{
-    text-align:justify
-}
-
-.cleanform .required {
-    color:#ff3838;
-    font-weight:bold;
-    font-size:0.8em
 }
 
 .error {

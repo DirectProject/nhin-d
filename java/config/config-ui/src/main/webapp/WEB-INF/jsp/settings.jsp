@@ -12,7 +12,7 @@
 
 
 
-    <h3>Manage Agent Settings</h3>
+    <h2>Agent Settings</h2>
 
 <fieldset style="width: 97%;" title="Setting">
 	<spring:url	value="/config/settings/addsetting" var="formUrladdsetting" />
@@ -38,22 +38,22 @@
 </form:form></fieldset>
 
 
-<h3>Settings</h3>
-<c:choose>
+<h4>Saved Settings</h4>
 
+<c:choose>
+	
 	<c:when test="${not empty settingsResults}">
-<fieldset style="width: 97%;" title="Settings">
+
 	<spring:url value="/config/settings/removesettings" var="formUrlremove" />
 		<form:form modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST">
 		<form:hidden path="id" />
-		<table cellpadding="1px" cellspacing="1px" id="settingsTable"
-			class="tablesorter">
+		<table id="settingsTable" class="data">
 			<thead>
 				<tr>
 					<th width=20></th>
-					<th width="400">name</th>
-					<th width="">value</th>
-
+					<th width="400">Name</th>
+					<th width="">Value</th>
+					
 				</tr>
 			</thead>
 			<tbody>
@@ -69,21 +69,21 @@
 						</c:otherwise>
 					</c:choose>
 					<td><form:checkbox path="remove" value="${setting.name}" /></td>
-					<td ><a
-						href='../setting?id=<c:out value="${setting.id}"/>'>'${setting.name}'</a></td>
+					<td ><!--<a
+						href='../setting?id=<c:out value="${setting.id}"/>'>-->${setting.name}<!--</a>--></td>
 					<td><c:out value="${setting.value}" /></td>
-
+					
 					</tr>
 				</c:forEach>
 			</tbody>
-
+			
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table.
 					                 Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit" value="delete">Remove
 		Selected</button>
 	</form:form>
-</fieldset>
+
 </div>
 </c:when>
 
