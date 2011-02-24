@@ -79,6 +79,11 @@ namespace Health.Direct.Common.Routing
         /// </summary>        
         public void EnsureReceivers()
         {
+            if (this.Receivers.IsNullOrEmpty())
+            {
+                return;
+            }
+            
             foreach (string folderPath in this.Receivers)
             {
                 try
