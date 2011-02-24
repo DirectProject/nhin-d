@@ -10,61 +10,78 @@
 <body>
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
 
-    <h3>Manage Public and Private Certificates</h3>
-
+    <h2>Manage Certificates</h2>
+	
+		<p style="padding:5px;border:1px solid #bbb;background-color:#fcfccf;"><strong>NOTE:</strong> Please select a DER encoded certificate. Private certificate files should be pkcs12 encoded files with no encryption on both the file and private key stored in the file.</p>
+	
 <c:choose>
 	<c:when test='${empty action || action == "Add" }'>
 	</c:when>
 	<c:otherwise>
-		<fieldset style="width: 99%;" title="certificategroup"><legend>Certificates:</legend>
-		<fieldset style="width: 95%;" title="certificate"><spring:url
+		
+		<h4>Upload New Certificate</h4>
+		
+	
+		
+		<div style="padding:0 10px;">
+		
+		<spring:url
 			value="/config/certificates/addcertificate" var="formUrladdcertificate" />
 		<form:form modelAttribute="certificateForm"
 			action="${fn:escapeXml(formUrladdcertificate)}" cssClass="cleanform"
 			method="POST" enctype="multipart/form-data">
 			<form:hidden path="id" />
-			<table cellpadding="1px" cellspacing="1px" id="certificateTable">
+			<table id="certificateTable"  border="0" style="margin:10px;">
 				<tr>
-					<th>
+					<td width="100">
 						<form:label for="fileData" path="fileData">Certificate:</form:label>
-					</th>
-					<th>
+					</td>
+					<td align=left>
 						<form:input path="fileData" id="certificatefile" type="file"/>
-					</th>
+					</td>
 				</tr>
 				<tr>
-					<th><form:label path="status">Status:
+					<td><form:label path="status">Status:
 											                <form:errors path="status" cssClass="error" />
-					</form:label></th>
-					<th><form:select path="status">
+					</form:label></td>
+					<td><form:select path="status">
 						<form:options items="${statusList}" />
-					</form:select></th>
+					</form:select></td>
 				</tr>
 			</table>
 			<button name="submitType" id="submitType" type="submit" value="newcertificate">Add Certificate</button>
-			<button name="submitType" id="submitType" type="submit" value="cancel">Cancel</button>
-		</form:form></fieldset>
+			
+		</form:form>
+
+	</div>
+		
 	</c:otherwise>
+	
+	
+	
 </c:choose> <c:if test="${not empty certificatesResults}">
-	<fieldset style="width: 95%;" title="certificates"><spring:url
+
+	<h4>Stored Certificates</h4>
+
+	<spring:url
 		value="/config/certificates/removecertifcates" var="formUrlcertificates" />
 	<form:form modelAttribute="certificateForm"
 		action="${fn:escapeXml(formUrlcertificates)}" cssClass="cleanform"
 		method="POST">
 		<form:hidden path="id" />
 		<div id="tablelist" style="width:100%;overflow:auto;">
-			<table cellpadding="1px" cellspacing="1px" id="certificatesTable"
-				class="tablesorter">
+			<table  id="certificatesTable" class="data" style="font-size:10px">
 				<thead>
 					<tr>
-						<th width="30%">Owner</th>
-                                                <th width="40">Private</th>
-						<th width="15%">Thumb</th>
-						<th width="15%">create Time</th>
-						<th width="15%">Start Date</th>
-						<th width="15%">End Date</th>
-						<th width="7%">Stat</th>
-						<th width="3%">Sel</th>
+						<th width="10"></th>
+						<th width="200">Owner</th>
+                        <th width="40">Private</th>
+						<th width="">Thumb</th>
+						<th width="" nowrap>Created</th>
+						<th width="" nowrap>Start Date</th>
+						<th width="" nowrap>End Date</th>
+						<th width="">Status</th>
+						
 					</tr>
 				</thead>
 				<tbody>
@@ -79,43 +96,32 @@
 								<tr class="oddRow">
 							</c:otherwise>
 						</c:choose>
-						<td width="30%"><a
-							href='../certificate?id=<c:out value="${certificates.id}"/>'>'${certificates.owner}'</a></td>
+						<td><form:checkbox path="remove"
+							value="${certificates.id}" /></td>
+						
+						<td>${certificates.owner}</td>
                                                         <td>
                                                             <c:choose>
                                                                 <c:when test="${certificates.privateKey}">Yes</c:when>
                                                                 <c:otherwise>No</c:otherwise>
                                                             </c:choose>
                                                         </td>
-                                                        <td width="15%"><c:out value="${certificates.thumbprint}" /></td>
-
-                                                <td width="15%"><fmt:formatDate
+                                                        <td><c:out value="${certificates.thumbprint}" /></td>
+                                                
+                                                <td><fmt:formatDate
 							value="${certificates.createTime.time}"
 							pattern="MM/dd/yyyy, hh:mm" /></td>
-						<td width="15%"><fmt:formatDate
+						<td><fmt:formatDate
 							value="${certificates.validStartDate.time}"
 							pattern="MM/dd/yyyy, hh:mm" /></td>
-						<td width="15%"><fmt:formatDate
+						<td><fmt:formatDate
 							value="${certificates.validEndDate.time}"
 							pattern="MM/dd/yyyy, hh:mm" /></td>
-						<td width="7%"><c:out value="${certificates.status}" /></td>
-						<td width="3%"><form:checkbox path="remove"
-							value="${certificates.id}" /></td>
+						<td><c:out value="${certificates.status}" /></td>
 						</tr>
 					</c:forEach>
 				</tbody>
-				<tfoot>
-					<tr>
-						<th width="30%"></th>
-						<th></th>
-						<th width="15%"></th>
-						<th width="15%"></th>
-						<th width="15%"></th>
-						<th width="15%"></th>
-						<th width="7%"></th>
-						<th width="3%"></th>
-					</tr>
-				</tfoot>
+			
 			</table>
 		</div>
 		<!-- Wire this up to jQuery to add an input row to the table.
@@ -125,6 +131,6 @@
 	</form:form></fieldset>
 
 </c:if>
-</fieldset>
+
 
 <%@ include file="/WEB-INF/jsp/footer.jsp"%>
