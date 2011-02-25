@@ -14,48 +14,56 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-
+using System.IO;
 using Health.Direct.Agent;
+using Health.Direct.Common.Diagnostics;
 using Health.Direct.Config.Store;
+using Health.Direct.Common.Extensions;
+using System.Threading;
 
 namespace Health.Direct.SmtpAgent
 {
-    public class MessageRoute : MessageProcessingSettings
-    {
-        [XmlElement]
-        public string AddressType
-        {
-            get;          
-            set;
-        }
-
-        public override void Validate()
-        {
-            base.Validate();
-            if (string.IsNullOrEmpty(this.AddressType))
-            {
-                throw new ArgumentException("Missing address type");
-            }
-        }
-    }
-
-    public class MessageRouter : IEnumerable<MessageRoute>
+    /// <summary>
+    /// A simple Message Router
+    ///  Currently, aps AddressType ==> Route
+    ///  
+    /// The router assumes that you are NOT going to alter routes or tables at runtime, so it eschews locks
+    /// If you need to update the routing tables on the fly, then you will need to rework this or write a new router
+    /// </summary>
+    public class MessageRouter : IEnumerable<Route>
     {
         AgentDiagnostics m_diagnostics;
-        Dictionary<string, MessageRoute> m_routes;   // addressType, messageRouteSettings
-
+        Dictionary<string, Route> m_routes;   // addressType, messageRouteSettings
+        
         internal MessageRouter(AgentDiagnostics diagnostics)
         {
             m_diagnostics = diagnostics;
-            m_routes = new Dictionary<string, MessageRoute>(StringComparer.OrdinalIgnoreCase);
+            m_routes = new Dictionary<string, Route>(StringComparer.OrdinalIgnoreCase);
         }
-
+        
+        internal ILogger Logger
+        {
+            get
+            {
+                return m_diagnostics.Logger;
+            }
+        }
+        
+        public int Count
+        {
+            get
+            {
+                return m_routes.Count;
+            }
+        }
+        
         /// <summary>
         /// Return the route for an address type
         /// </summary>
-        public MessageRoute this[string addressType]
+        public Route this[string addressType]
         {
             get
             {
@@ -64,33 +72,34 @@ namespace Health.Direct.SmtpAgent
                     return null;
                 }
                 
-                MessageRoute settings = null;
-                if (!m_routes.TryGetValue(addressType ?? string.Empty, out settings))
+                Route route = null;
+                if (!m_routes.TryGetValue(addressType ?? string.Empty, out route))
                 {
-                    settings = null;
+                    route = null;
                 }
-                return settings;
+                
+                return route;
             }
         }
 
-        public void SetRoutes(IEnumerable<MessageRoute> settings)
+        public void Init(IEnumerable<Route> routes)
         {
-            if (settings == null)
+            if (routes == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException("routes");
             }
 
-            foreach (MessageRoute setting in settings)
-            {
-                setting.EnsureFolders();
-                m_routes[setting.AddressType] = setting;
+            foreach(Route route in routes)
+            {                
+                m_routes[route.AddressType] = route;
+                route.Init();
             }
         }
         
         /// <summary>
         /// Outgoing messages are routed based off envelope.Recipients
         /// </summary>
-        public void Route(ISmtpMessage message, OutgoingMessage envelope, Action<ISmtpMessage, MessageRoute> action)
+        public void Route(ISmtpMessage message, OutgoingMessage envelope)
         {
             if (message == null)
             {
@@ -100,14 +109,10 @@ namespace Health.Direct.SmtpAgent
             {
                 throw new ArgumentNullException("envelope");
             }
-            if (action == null)
-            {
-                throw new ArgumentNullException("action");
-            }
 
             if (envelope.HasRecipients)
             {
-                this.Route(message, envelope.Recipients, action, null);
+                this.Route(message, envelope.Recipients, null);
             }
         }
         
@@ -116,9 +121,8 @@ namespace Health.Direct.SmtpAgent
         /// </summary>
         /// <param name="message">message</param>
         /// <param name="envelope">message envelope</param>
-        /// <param name="action">The actual routing action. Typically, just copy to a file</param>
         /// <param name="routedRecipients">(Optional) - if not null, returns a list of recipients who matched routes</param>
-        public void Route(ISmtpMessage message, IncomingMessage envelope, Action<ISmtpMessage, MessageRoute> action, DirectAddressCollection routedRecipients)
+        public void Route(ISmtpMessage message, IncomingMessage envelope, DirectAddressCollection routedRecipients)
         {
             if (message == null)
             {
@@ -127,32 +131,32 @@ namespace Health.Direct.SmtpAgent
             if (envelope == null)
             {
                 throw new ArgumentNullException("envelope");
-            }
-            if (action == null)
-            {
-                throw new ArgumentNullException("action");
-            }
-            
+            }            
             if (envelope.HasDomainRecipients)
             {
-                this.Route(message, envelope.DomainRecipients, action, routedRecipients);
+                this.Route(message, envelope.DomainRecipients, routedRecipients);
             }
         }
 
-        void Route(ISmtpMessage message, DirectAddressCollection recipients, Action<ISmtpMessage, MessageRoute> action, DirectAddressCollection routedRecipients)
+        void Route(ISmtpMessage message, DirectAddressCollection recipients, DirectAddressCollection routedRecipients)
         {
-            Dictionary<string, MessageRoute> matches = new Dictionary<string, MessageRoute>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, Route> matchedRoutes = new Dictionary<string, Route>(StringComparer.OrdinalIgnoreCase);
             int i = 0;
+            //
+            // First, find all routes that match
+            // We'll remove recipients that were routed from the recipients list so 
+            // SMTP server does not itself try to deliver to them
+            // 
             while (i < recipients.Count)
             {
                 DirectAddress recipient = recipients[i];
                 Address address = recipient.Tag as Address;
                 if (address != null)
                 {
-                    MessageRoute route = this[address.Type];
+                    Route route = this[address.Type];
                     if (route != null)
                     {
-                        matches[address.Type] = route;                        
+                        matchedRoutes[address.Type] = route;                        
                         recipients.RemoveAt(i);
                         if (routedRecipients != null)
                         {
@@ -163,15 +167,39 @@ namespace Health.Direct.SmtpAgent
                 }
 
                 ++i;
-            }
-
-            foreach (MessageRoute route in matches.Values)
+            }              
+            if (matchedRoutes.Count == 0)
             {
-                action(message, route);
+                return;
+            }
+            
+            this.Route(message, matchedRoutes.Values);          
+        }
+        
+        void Route(ISmtpMessage message, IEnumerable<Route> matchedRoutes)
+        {
+            foreach (Route route in matchedRoutes)
+            {
+                this.Route(message, route);
             }
         }
         
-        public IEnumerator<MessageRoute> GetEnumerator()
+        void Route(ISmtpMessage message, Route route)
+        {
+            try
+            {
+                if (!route.Process(message))
+                {
+                    m_diagnostics.Logger.Error("Routing Error {0}", route.AddressType);
+                }
+            }
+            catch(Exception ex)
+            {
+                m_diagnostics.Logger.Error("Routing Error {0}, {1}", route.AddressType, ex);
+            }
+        }
+        
+        public IEnumerator<Route> GetEnumerator()
         {
             return m_routes.Values.GetEnumerator();
         }
@@ -185,4 +213,5 @@ namespace Health.Direct.SmtpAgent
 
         #endregion
     }
+    
 }

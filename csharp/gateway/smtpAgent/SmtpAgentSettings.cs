@@ -36,7 +36,7 @@ namespace Health.Direct.SmtpAgent
         ProcessBadMessageSettings m_badMessageSettings;
         InternalMessageSettings m_internalMessageSettings;
         NotificationSettings m_notificationSettings;
-        MessageRoute[] m_incomingRoutes;
+        Route[] m_incomingRoutes;
         int m_maxDomainRecipients = DefaultMaxDomainRecipients;
         
         //--------------------------------------------------------
@@ -190,14 +190,14 @@ namespace Health.Direct.SmtpAgent
         /// You can set up routes for address types, where a route deposits a message in a specific folder
         /// </summary>
         [XmlArray("IncomingRoutes")]
-        [XmlArrayItem("Route")]
-        public MessageRoute[] IncomingRoutes
+        [XmlArrayItem("Route", typeof(MessageRoute))]
+        public Route[] IncomingRoutes
         {
             get
             {
                 if (m_incomingRoutes == null)
                 {
-                    m_incomingRoutes = new MessageRoute[0];
+                    m_incomingRoutes = new Route[0];
                 }
 
                 return m_incomingRoutes;
@@ -342,7 +342,7 @@ namespace Health.Direct.SmtpAgent
             }
             if (!m_incomingRoutes.IsNullOrEmpty())
             {
-                Array.ForEach<MessageRoute>(m_incomingRoutes, x => x.Validate());
+                Array.ForEach<Route>(m_incomingRoutes, x => x.Validate());
             }
         }
 

@@ -46,11 +46,27 @@
   <IncomingRoutes>
     <Route>
       <AddressType>XDR</AddressType>
-      <CopyFolder>C:\inetpub\mailroot\xdr</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\xdr</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\xdr2</CopyFolder>
     </Route>
     <Route>
       <AddressType>SMTP</AddressType>
-      <CopyFolder>C:\inetpub\mailroot\drop</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop2</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop3</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop4</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop5</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop6</CopyFolder>
+    </Route>
+    <Route>
+      <AddressType>System</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\routed\sys</CopyFolder>
+    </Route>
+    <Route>
+      <AddressType>Special</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\routed\special</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\special2</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\special3</CopyFolder>
     </Route>
   </IncomingRoutes>
   <InternalMessage>
