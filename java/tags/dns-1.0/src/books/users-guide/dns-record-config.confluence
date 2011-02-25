@@ -1,0 +1,126 @@
+h1. DNS Record Configuration
+
+The primary purpose of the DNS service is to respond to DNS queries with appropriate DNS record responses.  By design, the DNS service can store any type of DNS record defined by the DNS RFC, however it is tuned only to respond to a few types of records.  
+
+The DNS service stores all DNS records in the Direct Project configurations services and accesses them over the web service interface.  The the public facing DNS interface does not allow for records to be added or changed in anyway.  Instead, the configuration UI tool is used to manage and maintain DNS records.
+
+h2. Managing Records
+
+The configuration UI and DNS management command console tools are used to add, update, and delete all record types.
+
+h3. Config UI
+
+The Configuration UI tool is used to managed DNS records in the web UI.  To managed records load the Configuration UI tool is a browser, login, and press the DNS Entries button.
+
+!images/WSConfigDomainSearch.png!
+
+!images/WSConfigDNSHome.png!
+
+h3. DNS Management Console
+
+The DNS Management console is command line tool for managing DNS records.  To run the console:
+
+# Launch a command shell and navigate to the DNSMgmtConsole/bin directory.
+# Run the command _DNSMgmtConsole_ (./DNSMgmtConsole for unix based systems).
+
+The console connects to the Direct Project configuration service and manages records using the configuration service proxy module.  By default it uses the url _http://localhost:8081/config-service/ConfigurationService_, but can be overridden using the configURL command line parameter.
+
+{code}
+  DNSMgmtConsole configURL http://confserver/config-service/ConfigurationService
+{code}
+
+*NOTE* The configURL must be the first parameter on the command line to change the configuration service URL.
+
+The management console can either take command directly on the command line or run interactively.  If no arguments or commands are passed on the command line (with the exception of the configURL), then console runs interactively.  For a list of supported commands, simple type _help all_ either as command line arguments or when running interactively.
+
+h3. SOA Records
+
+The [SOA|http://support.microsoft.com/kb/163971] (start of authority) record defines (amongst other attributes) the host that is the authoritative server for a DNS zone/domain.  Each domain managed by the DNS server should have a SOA record associated with it.
+
+*Config UI*
+
+SOA records are added by entering the required SOA record information in the Config UI tool on the _DNS Resolver Configuration_ page.
+
+!images/WSConfigSOARecords.png!
+
+*Management Console*
+
+SOA records are added using either of the following commands:
+* DNS&#95;SOA&#95;ADD
+* DNS&#95;SOA&#95;ENSURE
+
+{code}
+ Add a new SOA dns record if an identical one does not exist.
+    domainname primarysourcedomain responsibleemail serialnumber ttl [refresh] [retry] [expire] [minimum]
+        domainname: The domain name of the name server that was the primary source for this zone
+        responsibleemail: Email mailbox of the hostmaster
+        serialnumber: Version number of the original copy of the zone.
+        ttl: time to live in seconds, 32bit int
+        [refresh]: Number of seconds before the zone should be refreshed.
+        [retry]: Number of seconds before failed refresh should be retried.
+        [expire]: Number of seconds before records should be expired if not refreshed
+        [minimum]: Minimum TTL for this zone.
+{code}
+
+h3. A Records
+
+A records maps a host name to an IP4 address.
+
+*Config UI*
+
+A records are added by entering the required A record information in the Config UI tool on the _DNS Resolver Configuration_ page.
+
+!images/WSConfigARecords.png!
+
+*Management Console*
+
+A records are added using either of the following commands:
+* DNS&#95;ANAME&#95;ADD
+* DNS&#95;ANAME&#95;ENSURE
+
+{code}
+ Add a new A dns record if an identical one does not exist.
+    hostname ipaddress ttl
+        hostname: host name for the record
+        ipaddress: IP address in dot notation
+        ttl: time to live in seconds, 32bit int
+{code}
+
+h3. MX Records
+
+MX records map a domain to one of more servers or message transfer agents for that domain.  The records are returned are generally are cononical names which means they must have A or CNAME records in the DNS server.  
+
+*Config UI*
+
+MX records are added by entering the required MX record information in the Config UI tool on the _DNS Resolver Configuration_ page.
+
+!images/WSConfigMXRecords.png!
+
+*Management Console*
+
+A records are added using either of the following commands:
+* DNS&#95;MX&#95;ADD
+* DNS&#95;MX&#95;ENSURE
+
+{code}
+ Adds a new MX dns record if an identical one does't already exist. 
+     domainname exchange ttl [priority]
+         domainname: email domain name for the record
+         exchange: smtp server host name for the domain
+         ttl: time to live in seconds
+         [priority]: short value indicating preference of the record
+{code}
+
+h3. CERT Records
+[Cert|http://tools.ietf.org/html/rfc4398] records store a certificate with a DNS name entry.  The Direct Project DNS server only stores x.509 public certificates.  *NOTE*  The DNS server does not automatically resolve organizational level certificate resolution as defined by the security and trust specification; it only responds with the exact matches to a DNS query.  The DNS client is responsibly for sending an org level query if the server does not respond with certificate to  user level certificate query.
+
+Unlike all other DNS record types, the DNS service uses the configuration services certificate store to find certificates.  Certificates are added to the store using the certificates button in the configuration UI web tool.  See the SMTP web deployment [guide|http://api.nhindirect.org/java/site/gateway/1.0.1/users-guide/smtp-depl-wsconfig.html#PrivateCertStore] for instruction on importing certificates into the configuration UI tool.  *NOTE*  Even though certificates in your domain will have the private key stored with the certificates, the DNS service only returns public certificate information for CERT record queries.
+
+h2. Required DNS Configuration
+
+Typically your domain registration service will allow you to define an NS (name service) record that will point the server running your DNS service.  Your DNS service is then responsible for handling all queries for your domain(s).  Depending on your deployment, you will need the following minimal set of DNS records for your Direct messaging implementation:
+
+* An SOA record for each domain managed by your server.
+* An A record for each of you email servers.
+* An MX record for each of you email servers server a domain.
+* Either an org level certificate for each domain or individual certificates per email address (this should already be configured as part of you SMTP agent/gateway installation).
