@@ -34,7 +34,7 @@ namespace Health.Direct.SmtpAgent
             m_logger = Log.For(this);
         }
 
-        private ILogger Logger
+        internal ILogger Logger
         {
             get
             {

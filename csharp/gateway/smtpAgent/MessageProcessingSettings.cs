@@ -41,17 +41,6 @@ namespace Health.Direct.SmtpAgent
             }
         }
         
-        internal string CreateUniqueCopyFileName()
-        {
-            if (!this.HasCopyFolder)
-            {
-                throw new InvalidOperationException();
-            }
-            
-            string uniqueFileName = Health.Direct.SmtpAgent.Extensions.CreateUniqueFileName();
-            return Path.Combine(this.CopyFolder, uniqueFileName);
-        }
-        
         public virtual void Validate()
         {
         }

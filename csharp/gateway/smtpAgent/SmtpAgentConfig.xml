@@ -6,7 +6,6 @@
 -->
 <SmtpAgentConfig>
   <Domain>redmond.hsgincubator.com</Domain>
-  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>redmondGateway</NamePrefix>
