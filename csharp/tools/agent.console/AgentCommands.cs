@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Health.Direct;
+using Health.Direct.Config.Tools;
 using Health.Direct.Agent;
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Mime;
@@ -47,8 +48,12 @@ namespace Health.Direct.Tools.Agent
                 return m_agent;
             }
         }
-        
-        [Command(Name="Agent_Start")]
+
+        const string Agent_Start_Usage =
+            "Start a DirectAgent - uses DirectAgent object directly. Used for debugging"
+            + Constants.CRLF + "path|domain [isDomain : true if treat prev parameter as domain name, otherwise it's a config file name.]";
+
+        [Command(Name="Agent_Start", Usage=Agent_Start_Usage)]
         public void StartAgent(string[] args)
         {
             if (m_agent != null)
@@ -56,14 +61,16 @@ namespace Health.Direct.Tools.Agent
                 return;
             }
             
-            string configFile = args.GetOptionalValue(0, null);            
-            if (string.IsNullOrEmpty(configFile))
+            string pathOrDomain = args.GetOptionalValue(0, "nhind.hsgincubator.com");
+            bool isDomain = args.GetOptionalValue<bool>(1, true);
+
+            if (isDomain)
             {
-                m_agent = new DirectAgent("nhind.hsgincubator.com");
+                m_agent = new DirectAgent(pathOrDomain);
             }
             else
             {
-                AgentSettings settings = AgentSettings.LoadFile(configFile);
+                AgentSettings settings = AgentSettings.LoadFile(pathOrDomain);
                 m_agent = settings.CreateAgent();
             }
         }
