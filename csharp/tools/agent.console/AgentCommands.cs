@@ -18,13 +18,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Net.Mail;
 using Health.Direct;
 using Health.Direct.Config.Tools;
+using Health.Direct.Common.Mail;
 using Health.Direct.Agent;
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Mime;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Tools.Command;
+using Health.Direct.SmtpAgent;
 
 namespace Health.Direct.Tools.Agent
 {
@@ -96,5 +99,15 @@ namespace Health.Direct.Tools.Agent
             OutgoingMessage message = this.Agent.ProcessOutgoing(files.Read());
             files.Write(message.Message);
         }
+
+        [Command(Name = "Agent_Send_Outgoing")]
+        public void SendOutgoing(string[] args)
+        {
+            string sourceFile = args.GetRequiredValue(0);
+            string smtpServer = args.GetRequiredValue(1);
+            
+            OutgoingMessage outgoing = this.Agent.ProcessOutgoing(File.ReadAllText(sourceFile));
+            outgoing.Send(smtpServer);
+        }                
     }
 }
