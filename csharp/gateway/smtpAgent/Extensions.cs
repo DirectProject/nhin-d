@@ -17,7 +17,9 @@ using System;
 using System.IO;
 using System.Net.Mail;
 using System.Text;
+using Health.Direct.Agent;
 using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mime;
 using CDO;
 using ADODB;
 
@@ -48,6 +50,54 @@ namespace Health.Direct.SmtpAgent
         {
             ADODB._Stream stream = message.GetStream();
             stream.SaveToFile(filePath, SaveOptionsEnum.adSaveCreateOverWrite);
+        }
+        
+        /// <summary>
+        /// Send this outgoing message to a remote smtp server
+        /// </summary>
+        /// <param name="message">outgoing message</param>
+        /// <param name="smtpServer">smtp server to use</param>
+        public static void Send(this OutgoingMessage message, string smtpServer)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException("message");
+            }
+            
+            message.Message.Send(smtpServer);
+        }
+
+        public static void Send(this Health.Direct.Common.Mail.Message message, string smtpServer)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException("message");
+            }
+            if (string.IsNullOrEmpty(smtpServer))
+            {
+                throw new ArgumentException("smtpServer");
+            }
+            
+            CDO.Message cdoMessage = LoadCDOMessageFromText(MimeSerializer.Default.Serialize(message));
+            cdoMessage.Send(smtpServer);
+        }
+        
+        /// <summary>
+        /// Send this message using the given Smtp Server
+        /// </summary>
+        /// <param name="message">outgoing message</param>
+        /// <param name="smtpServer">smtp server to use</param>
+        public static void Send(this CDO.Message message, string smtpServer)
+        {
+            if (string.IsNullOrEmpty(smtpServer))
+            {
+                throw new ArgumentException("smtpServer");
+            }
+            
+            Fields configFields = message.Configuration.Fields;
+            configFields.SetValue("http://schemas.microsoft.com/cdo/configuration/smtpserver", smtpServer);
+            configFields.SetValue("http://schemas.microsoft.com/cdo/configuration/sendusing", CDO.CdoSendUsing.cdoSendUsingPort);
+            message.Send();
         }
         
         public static void SetMessageStatus(this CDO.Message message, CdoMessageStat status)
