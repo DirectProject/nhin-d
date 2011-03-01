@@ -143,7 +143,7 @@
 		<property name="wget.command.options" value="" />
 		<property name="tar.command.path" value="${env.TAR_PATH}"></property>
 		<property name="gunzip.command.path" value="${env.GUNZIP_PATH}"></property>
-		<property name="tomcat.tar.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar"></property>
+		<property name="tomcat.tar.pkg" value="${build.download.dir}/apache-tomcat-6.0.323232.tar"></property>
 		<property name="tomcat.binary.pkg" value="${tomcat.tar.pkg}" />
 		<property name="tar.command.options" value="xvf" />
 	</target>
@@ -175,7 +175,7 @@
 		</exec>
 		<property name="tar.command.options" value="xvzf" />
 
-		<property name="tomcat.tar.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar"></property>
+		<property name="tomcat.tar.pkg" value="${build.download.dir}/apache-tomcat-6.0.32.tar"></property>
 		<property name="tomcat.binary.pkg" value="${tomcat.tar.pkg}" />
 
 		<!-- do we have a downloader? -->
