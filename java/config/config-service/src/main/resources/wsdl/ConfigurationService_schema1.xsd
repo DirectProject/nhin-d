@@ -357,29 +357,6 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="addAddress">
-    <xs:sequence>
-      <xs:element name="address" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="address">
-    <xs:sequence>
-      <xs:element name="createTime" type="xs:dateTime" minOccurs="0"/>
-      <xs:element name="displayName" type="xs:string" minOccurs="0"/>
-      <xs:element name="emailAddress" type="xs:string" minOccurs="0"/>
-      <xs:element name="endpoint" type="xs:string" minOccurs="0"/>
-      <xs:element name="status" type="tns:entityStatus" minOccurs="0"/>
-      <xs:element name="type" type="xs:string" minOccurs="0"/>
-      <xs:element name="updateTime" type="xs:dateTime" minOccurs="0"/>
-    </xs:sequence>
-    <xs:attribute name="id" type="xs:long"/>
-  </xs:complexType>
-
-  <xs:complexType name="addAddressResponse">
-    <xs:sequence/>
-  </xs:complexType>
-
   <xs:complexType name="searchDomain">
     <xs:sequence>
       <xs:element name="name" type="xs:string" minOccurs="0"/>
@@ -404,6 +381,29 @@
     </xs:sequence>
     <xs:attribute name="id" type="xs:long"/>
     <xs:attribute name="status" type="tns:entityStatus"/>
+  </xs:complexType>
+
+  <xs:complexType name="address">
+    <xs:sequence>
+      <xs:element name="createTime" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="displayName" type="xs:string" minOccurs="0"/>
+      <xs:element name="emailAddress" type="xs:string" minOccurs="0"/>
+      <xs:element name="endpoint" type="xs:string" minOccurs="0"/>
+      <xs:element name="status" type="tns:entityStatus" minOccurs="0"/>
+      <xs:element name="type" type="xs:string" minOccurs="0"/>
+      <xs:element name="updateTime" type="xs:dateTime" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:long"/>
+  </xs:complexType>
+
+  <xs:complexType name="addAddress">
+    <xs:sequence>
+      <xs:element name="address" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addAddressResponse">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="getDomains">

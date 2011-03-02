@@ -23,10 +23,10 @@ namespace Health.Direct.DnsResponder
     {
         DnsUdpServer m_server; 
               
-        public DnsResponderUDP(DnsServer server)
-            : base(server)
+        public DnsResponderUDP(IDnsStore store, DnsServerSettings settings)
+            : base(store, settings)
         {
-            m_server = new DnsUdpServer(server.Settings.Endpoint, server.Settings.UdpServerSettings, this);
+            m_server = new DnsUdpServer(this.Settings.Endpoint, this.Settings.UdpServerSettings, this);
         }
 
         public DnsUdpServer Server
@@ -52,18 +52,15 @@ namespace Health.Direct.DnsResponder
             if (context == null)
             {
                 throw new ArgumentNullException();
-            }            
-            
-            DnsResponse response = base.ProcessRequest(context.Buffer);            
-            if (response != null)
-            {
-                context.Clear();
-                base.Serialize(response, context.Buffer, DnsStandard.MaxUdpMessageLength);
-
-                context.SendResponse();
             }
-            
+
+            base.RequestResponse(context, DnsStandard.MaxUdpMessageLength);
             return true;
+        }
+
+        protected override void HandleException(Exception ex)
+        {
+            m_server.NotifyError(ex);
         }
     }
 }

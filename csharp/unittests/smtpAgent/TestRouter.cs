@@ -15,20 +15,20 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
+using System.IO;
 using Health.Direct.Agent;
 using Health.Direct.Agent.Tests;
 using Health.Direct.Common.Mail;
 using Health.Direct.Config.Store;
-
 using Xunit;
 
 namespace Health.Direct.SmtpAgent.Tests
 {
     public class TestRouter : SmtpAgentTester
     {
-        readonly SmtpAgent m_agent;
-        readonly Dictionary<string, int> m_routeCounts;
+        SmtpAgent m_agent;
+        Dictionary<string, int> m_routeCounts;
 
         static TestRouter()
         {
@@ -37,16 +37,26 @@ namespace Health.Direct.SmtpAgent.Tests
         
         public TestRouter()
         {
-            m_agent = SmtpAgentFactory.Create(GetSettingsPath("TestSmtpAgentConfig.xml"));
             m_routeCounts = new Dictionary<string,int>();
         }
-        
+
         [Fact]
+        public void TestSerialization()
+        {
+            Assert.DoesNotThrow(() => EnsureAgent());
+            Assert.True(m_agent.Router.Count >= 0);
+            foreach(Route route in m_agent.Router)
+            {
+                Assert.DoesNotThrow(() => route.Validate());
+            }
+        }
+        
+        [Fact]  
         public void TestBasic()
         {
-            Message message = Message.Load(MultiToMessage);            
-            IncomingMessage envelope = new IncomingMessage(message);            
-            envelope.EnsureRecipientsCategorizedByDomain(m_agent.Domains);
+            EnsureAgent();
+            
+            IncomingMessage envelope = this.CreateEnvelope();
             //
             // The idea here:
             //   1. We have multiple addresses of each type, and 1 of no type
@@ -55,15 +65,99 @@ namespace Health.Direct.SmtpAgent.Tests
             //      b. Calls the route method exactly ONCE for each message folder
             //   3. Verify that at the end, the DomainRecipients has 1 recipient
             //
+            m_agent.Router.Route(new DummySmtpMessage(), envelope, null);
+            //
+            // Verify counts
+            //
+            this.CheckRoutedCounts(1);
+            
+            Assert.True(envelope.HasDomainRecipients && envelope.DomainRecipients.Count == 1);
+        }
+        
+        [Fact]
+        public void TestRoundRobin()
+        {
+            EnsureAgent();
+            IncomingMessage envelope = this.CreateEnvelope();
+            
+            foreach(MessageRoute route in m_agent.Router)
+            {
+                TestRoundRobin(route);
+            }
+        }
+        
+        [Fact]
+        public void TestRouteFailureAll()
+        {
+            EnsureAgent();
+            this.SetRouteHandlers(this.FailCopy);
+            
+            this.RouteCannedMessage();
+            //
+            // All routing should fail
+            //
+            this.CheckRoutedCounts(0);
+            //
+            // All routing should fail again
+            //
+            m_routeCounts.Clear();
+            this.SetRouteHandlers(this.ThrowCopy);
+            this.RouteCannedMessage();
+            
+            this.CheckRoutedCounts(0);
+        }
+        
+        [Fact]
+        public void TestRouteFailure()
+        {
+            EnsureAgent();
+            m_routeCounts.Clear();
+            //
+            // We will force some routes to fail, then make sure the router can pick alternatives
+            //
+            this.SetRouteHandlers(this.ThrowCopyConditional);
+            foreach(MessageRoute route in m_agent.Router)
+            {
+                this.SetRoutesToFail(route, 2);
+            }       
+            this.RouteCannedMessage();
+            this.CheckRoutedCounts(1);
+        }
+                        
+        void TestRoundRobin(MessageRoute route)
+        {
+            int folderCount = route.CopyFolders.Length;
+            int prevFolder = -1;
+            int folderIndex = -1;
+            
+            DummySmtpMessage message = new DummySmtpMessage();
+            for (int i = 0; i <= folderCount; ++i)
+            {
+                folderIndex = -1;
+                Assert.True(route.LoadBalancer.ProcessRoundRobin(message, out folderIndex));
+                if (i == folderCount)
+                {
+                    Assert.True(folderIndex == 0);
+                }
+                else
+                {
+                    Assert.True(folderIndex > prevFolder && folderIndex < folderCount);
+                }
+                prevFolder = folderIndex;
+            }
+        }
+        
+        void AssignTypesToRecipients(DirectAddressCollection recipients)
+        {
             Address address;
-            foreach (DirectAddress recipient in envelope.DomainRecipients)
+            foreach (DirectAddress recipient in recipients)
             {
                 address = null;
-                switch(recipient.Host.ToLower())
+                switch (recipient.Host.ToLower())
                 {
                     default:
                         break;
-                        
+
                     case "nhind.hsgincubator.com":
                         if (!recipient.User.Equals("frank", StringComparison.OrdinalIgnoreCase))
                         {
@@ -71,40 +165,136 @@ namespace Health.Direct.SmtpAgent.Tests
                             address.Type = "SMTP";
                         }
                         break;
-                        
+
                     case "redmond.hsgincubator.com":
                         address = new Address();
                         address.Type = "XDR";
-                        break;                        
+                        break;
                 }
-                
+
                 recipient.Tag = address;
-            }      
-            
-            m_agent.Router.Route(new DummySmtpMessage(), envelope, this.RouteHandler, null);
-            //
-            // Verify counts
-            //
-            foreach(int count in m_routeCounts.Values)
-            {
-                Assert.True(count == 1);
             }
-            
-            Assert.True(envelope.HasDomainRecipients && envelope.DomainRecipients.Count == 1);
         }
         
-        void RouteHandler(ISmtpMessage message, MessageRoute route)
+        IncomingMessage CreateEnvelope()
+        {
+            Message message = Message.Load(MultiToMessage);
+            IncomingMessage envelope = new IncomingMessage(message);
+            envelope.EnsureRecipientsCategorizedByDomain(m_agent.Domains);
+            this.AssignTypesToRecipients(envelope.DomainRecipients);            
+            return envelope;
+        }
+                
+        void InitRouter()
+        {
+            LoadAgent();
+        }
+        
+        void SetRouteHandlers(Func<ISmtpMessage, string, bool> handler)
+        {
+            foreach (MessageRoute route in m_agent.Router)
+            {
+                route.CopyMessageHandler = handler;
+            }
+        }
+        
+        //
+        // Set routes that have backup/redundant folders to fail partially
+        //
+        void SetRoutesToFail(MessageRoute route, int failureFraction)
+        {
+            int countToFail = route.CopyFolders.Length / failureFraction;            
+            for (int i = 0; i < countToFail; ++i)
+            {
+                route.CopyFolders[i] = string.Empty;
+            }
+        }
+
+        void SetRoutesToFailRandom(MessageRoute route, int failureFraction)
+        {
+            Random random = new Random();
+            int countToFail = route.CopyFolders.Length / failureFraction;
+            for (int i = 0; i < countToFail; ++i)
+            {
+                int failIndex = random.Next(0, route.CopyFolders.Length);
+                route.CopyFolders[failIndex] = string.Empty;
+            }
+        }
+             
+        void RouteCannedMessage()
+        {
+            IncomingMessage envelope = this.CreateEnvelope();
+            m_agent.Router.Route(new DummySmtpMessage(), envelope, null);
+        }
+        
+        void CheckRoutedCounts(int expectedCount)
+        {
+            foreach (int count in m_routeCounts.Values)
+            {
+                Assert.True(count == expectedCount);
+            }
+        }
+        
+        void EnsureAgent()
+        {
+            if (m_agent == null)
+            {
+                m_agent = LoadAgent();
+            }
+            
+            this.SetRouteHandlers(this.MessageCopy);
+        }
+              
+        SmtpAgent LoadAgent()
+        {
+            return LoadAgent("TestSmtpAgentConfig.xml");
+        }
+        
+        SmtpAgent LoadAgent(string configFile)
+        {
+            return SmtpAgentFactory.Create(GetSettingsPath(configFile));
+        }
+        
+        bool MessageCopy(ISmtpMessage message, string destinationFolder)
+        {
+            this.UpdateRouteCount(destinationFolder);
+            return true;
+        }
+        
+        void UpdateRouteCount(string destinationFolder)
         {
             int count = 0;
-            if (!m_routeCounts.TryGetValue(route.CopyFolder, out count))
+            if (!m_routeCounts.TryGetValue(destinationFolder, out count))
             {
                 count = 1;
-                m_routeCounts[route.CopyFolder] = count;
+                m_routeCounts[destinationFolder] = count;
             }
             else
             {
-                m_routeCounts[route.CopyFolder] = count++;
+                m_routeCounts[destinationFolder] = count++;
             }
+
         }
+                
+        bool FailCopy(ISmtpMessage message, string destinationFolder)
+        {
+            return false;
+        }
+
+        bool ThrowCopy(ISmtpMessage message, string destinationFolder)
+        {
+            throw new DirectoryNotFoundException(destinationFolder);
+        }
+
+        bool ThrowCopyConditional(ISmtpMessage message, string destinationFolder)
+        {
+            if (string.IsNullOrEmpty(destinationFolder))
+            {
+                throw new DirectoryNotFoundException(destinationFolder);
+            }
+            
+            this.UpdateRouteCount(destinationFolder);
+            return true;
+        }   
     }
 }

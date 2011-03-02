@@ -83,6 +83,10 @@
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>config.store</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj">
+      <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
+      <Name>diagnostics.nlog</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dnsResponder\dnsResponder.csproj">
       <Project>{A0C03E4C-549D-4868-8B03-DF2C467C1A47}</Project>
       <Name>dnsResponder</Name>

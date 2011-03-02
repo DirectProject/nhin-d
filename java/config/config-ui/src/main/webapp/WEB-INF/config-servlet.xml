@@ -31,30 +31,30 @@
 
     <security:global-method-security pre-post-annotations="enabled"/>
    
-    <security:http auto-config="true"> 
+    <security:http auto-config="true">
         <security:intercept-url pattern="/resources/**" filters="none"/>
         <security:intercept-url pattern="/config/login" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
         <security:intercept-url pattern="/**" access="ROLE_ADMIN" />
         
         <!-- Override default login and logout pages -->
 
-        <security:form-login login-page="/config/login" 
+        <security:form-login login-page="/config/login"
                              login-processing-url="/config/j_spring_security_check" 
                              default-target-url="/config/main" 
                              authentication-failure-url="/config/login?login_error=1" />
-        <security:logout invalidate-session="true" logout-success-url="/config/login?logout=1"/> 
-    </security:http>  
+        <security:logout invalidate-session="true" logout-success-url="/config/login?logout=1"/>
+    </security:http>
     
     <security:authentication-manager alias="authenticationManager">
 
     <!-- 
         To change IdP just change the authentication-provider
     -->
-    <security:authentication-provider>
-        <security:user-service>
-            <security:user name="admin" password="adm1nD1r3ct" authorities="ROLE_ADMIN"/>
-        </security:user-service>
-    </security:authentication-provider>
+        <security:authentication-provider>
+            <security:user-service>
+                <security:user name="admin" password="adm1nD1r3ct" authorities="ROLE_ADMIN"/>
+            </security:user-service>
+        </security:authentication-provider>
  
     <!-- If you want to use an LDAP provider for security  
     <authentication-provider>
@@ -76,8 +76,8 @@
   
     </security:authentication-manager>
 
-	<bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
-	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
+    <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
     <bean id="handlerAdapter" class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
         <property name="alwaysUseFullPath" value="true"/>
     </bean>
@@ -88,14 +88,14 @@
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
     
 	<!-- the ResourceBundleViewResolver -->
-	<bean id="viewResolver"
+    <bean id="viewResolver"
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="viewClass"
+        <property name="viewClass"
 			value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/WEB-INF/jsp/" />
-		<property name="suffix" value=".jsp" />
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="suffix" value=".jsp" />
 	
-	</bean>
+    </bean>
 	
 	<!-- Application Message Bundle -->
     <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
@@ -106,17 +106,17 @@
     <!--  AT DEPLOYMENT TIME, THE WSDL URL WILL NEED TO BE UPDATED.  THIS IS DEFAULT ADDRESS FOR RUNNING AGAINST
           THE DEFAULT JETTY:RUN DEPLOYMENT OF THE CONFIGURATION SERVICE -->
      
-	<bean id="configWebService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
-		<property name="serviceInterface" value="org.nhindirect.config.service.ConfigurationService"/>	
-		<property name="wsdlDocumentUrl"  value="http://localhost:8081/config-service/ConfigurationService?wsdl"/>
-		<property name="namespaceUri"     value="http://impl.service.config.nhindirect.org/"/>
-		<property name="serviceName"      value="ConfigurationServiceImplService"/>
-		<property name="portName"         value="ConfigurationServiceImplPort"/>
-		<property name="lookupServiceOnStartup" value="false"/>
-	</bean>
+    <bean id="configWebService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
+        <property name="serviceInterface" value="org.nhindirect.config.service.ConfigurationService"/>
+        <property name="wsdlDocumentUrl"  value="http://localhost:8081/config-service/ConfigurationService?wsdl"/>
+        <property name="namespaceUri"     value="http://impl.service.config.nhindirect.org/"/>
+        <property name="serviceName"      value="ConfigurationServiceImplService"/>
+        <property name="portName"         value="ConfigurationServiceImplPort"/>
+        <property name="lookupServiceOnStartup" value="false"/>
+    </bean>
 
 	<!-- Configure the multipart resolver -->
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">      
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
     </bean>
 		
 </beans>

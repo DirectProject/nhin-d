@@ -117,6 +117,31 @@ namespace Health.Direct.SmtpAgent.Tests
             // This SHOULD throw an exception
             //
             Assert.Throws<AgentException>(() => m_agent.SecurityAgent.ProcessOutgoing(envelope));
-        }        
+        }
+
+        public const string MaxRecipientsTestMessage =
+            @"From: <toby@redmond.hsgincubator.com>
+To: <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>, <a@nhind.hsgincubator.com>, <b@nhind.hsgincubator.com>
+CC: <jim@nhind.hsgincubator.com>
+Subject: Simple Text Message
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?";
+        [Fact]
+        public void TestMaxRecipients()
+        {
+            OutgoingMessage outgoing = m_agent.SecurityAgent.ProcessOutgoing(MaxRecipientsTestMessage);
+
+            m_agent.Settings.MaxIncomingDomainRecipients = 3;
+            Assert.Throws<AgentException>(() => m_agent.SecurityAgent.ProcessIncoming(outgoing));
+
+            m_agent.Settings.MaxIncomingDomainRecipients = 4;
+            Assert.Throws<AgentException>(() => m_agent.SecurityAgent.ProcessIncoming(outgoing));
+
+            m_agent.Settings.MaxIncomingDomainRecipients = 5;
+            Assert.DoesNotThrow(() => m_agent.SecurityAgent.ProcessIncoming(outgoing));
+        }
     }
 }

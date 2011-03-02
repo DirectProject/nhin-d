@@ -64,7 +64,7 @@
 	<property name="config.service.orig.war" value="config-service-1.1.war"></property>
 	<property name="config.service.dest.war" value="config-service.war"></property>
 	<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
-	<property name="config.ui.orig.war" value="config-ui-1.1.war"></property>
+	<property name="config.ui.orig.war" value="config-ui-1.1.1.war"></property>
 	<property name="config.ui.dest.war" value="config-ui.war"></property>
 
 	<!-- xd server files -->
@@ -102,10 +102,12 @@
 	<!-- Package libraries -->
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
+	<property name="direct-common.dir" value="${install.root.dir}/../direct-common"></property>	
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xd-common.dir" value="${install.root.dir}/../xd-common"></property>	
-	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.1.1.jar"></property>
-	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-1.1.jar"></property>
+	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.1.2.jar"></property>
+	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-1.2.jar"></property>
+	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.0.jar"></property>	
 	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.0-SNAPSHOT.jar"></property>
 	<property name="lib.xd-common" value="${install.root.dir}/lib/xd-common-1.0-SNAPSHOT.jar"></property>
 	
@@ -191,37 +193,25 @@
 	</target>
 
 	<!-- get apache-james -->
-	<target name="get-james" depends="get-james-with-wget, get-james-with-curl" unless="apache.james.download.exists"></target>
+	<target name="get-james" depends="get-james-get" unless="apache.james.download.exists"></target>
 
-	<!-- get james with wget -->
-	<target name="get-james-with-wget" if="wget.command.path" unless="apache.james.download.exists">
-	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true" errorproperty="wget.james.erroroutput">
-	  		<arg line="--no-check-certificate -q ${apache.james.binary.url}"></arg>
-	  	</exec>
-	</target>
 	
-	<!-- get james with curl -->
-	<target name="get-james-with-curl" if="curl.command.path" unless="apache.james.download.exists">
-	  	<exec dir="${build.download.dir}" executable="${curl.command.path}" failonerror="true" errorproperty="curl.james.erroroutput">
-	  		<arg line="-o ${apache.james.binary.zip} ${apache.james.binary.url}"></arg>
-	  	</exec>
+	<!-- get james get -->
+	<target name="get-james-get" unless="apache.james.download.exists">
+        <echo>downloading ${apache.james.binary.url}</echo>
+        <mkdir dir="${build.download.dir}"/>
+        <get src="${apache.james.binary.url}" dest="${build.download.dir}" ignoreerrors="false" retries="5"/>
 	</target>
 
 	<!-- get tomcat -->
-	<target name="get-tomcat" depends="get-tomcat-with-wget, get-tomcat-with-curl" unless="tomcat.download.exists"></target>
-
-	<!-- get tomcat with wget -->
-	<target name="get-tomcat-with-wget" if="wget.command.path" unless="tomcat.download.exists">
-	  	<exec dir="${build.download.dir}" executable="${wget.command.path}" failonerror="true" errorproperty="wget.tomcat.erroroutput">
-	  		<arg line="--no-check-certificate -q ${tomcat.binary.url}"></arg>
-	  	</exec>
-	</target>
+	<target name="get-tomcat" depends="get-tomcat-get" unless="tomcat.download.exists"></target>
 	
-	<!-- get tomcat with curl -->
-	<target name="get-tomcat-with-curl" if="curl.command.path" unless="tomcat.download.exists">
-	  	<exec dir="${build.download.dir}" executable="${curl.command.path}" failonerror="true" errorproperty="curl.tomcat.erroroutput">
-	  		<arg line="-o ${tomcat.binary.zip} ${tomcat.binary.url}"></arg>
-	  	</exec>
+	<!-- get tomcat get -->
+	<target name="get-tomcat-get" unless="tomcat.download.exists">
+        <echo>downloading ${tomcat.binary.url}</echo>
+        <mkdir dir="${build.download.dir}"/>
+        <get src="${tomcat.binary.url}" dest="${build.download.dir}" ignoreerrors="false" retries="5"/>
+
 	</target>
 
 	<target name="configure" depends="configure-james,configure-tomcat"></target>
@@ -250,6 +240,7 @@
 		<copy file="${lib.mail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.direct-common}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
 		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.xd-common}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
 		<copy file="${lib.jcs}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>

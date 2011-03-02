@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>direct-common</artifactId>    
     <name>Direct Project common APIs</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <description>Direct Project common APIs.  Includes instrumentation, auditing, and other utility APIs</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/direct-common/${project.version}</url> 
@@ -163,8 +163,6 @@
             <configuration>
                <archive>
                   <index>true</index>
-                  <!--<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
--->
                </archive>
             </configuration>
          </plugin>
@@ -192,10 +190,7 @@
               <detectJavaApiLink>true</detectJavaApiLink>
               <detectLinks>true</detectLinks>
 	          <source>1.6</source>
-	          <show>public</show>    
-	          <excludePackageNames>
-	              org.nhindirect.dns.tools.utils
-	          </excludePackageNames>	           	          
+	          <show>public</show>               	          
 	        </configuration>
 	        <executions>
 	            <execution>
@@ -279,7 +274,7 @@
 	            <configuration>
 	                <dates>
 	                    <!-- Insert the date of the most recent release -->
-                        <date>2010-01-24</date>
+                        <date>2011-01-15</date>
 	                </dates>
 	                <outputEncoding>UTF-8</outputEncoding>
 	                <type>date</type>

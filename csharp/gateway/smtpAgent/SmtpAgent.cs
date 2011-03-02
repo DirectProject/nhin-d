@@ -220,7 +220,7 @@ namespace Health.Direct.SmtpAgent
 
             using (new MethodTracer(Logger))
             {
-                m_router.SetRoutes(m_settings.IncomingRoutes);
+                m_router.Init(m_settings.IncomingRoutes);
             }
         }
         
@@ -274,6 +274,8 @@ namespace Health.Direct.SmtpAgent
 
         public void ProcessMessage(ISmtpMessage message)
         {
+            bool? isIncoming = null;
+            
             try
             {
                 this.VerifyInitialized();
@@ -290,6 +292,7 @@ namespace Health.Direct.SmtpAgent
                 {
                     throw new SmtpAgentException(SmtpAgentError.InvalidEnvelopeFromAgent);
                 }
+                isIncoming = envelope is IncomingMessage;
                 //
                 // Capture envelope sender/receiver in the message
                 //
@@ -301,7 +304,7 @@ namespace Health.Direct.SmtpAgent
                 //
                 // We did well...
                 //
-                this.AcceptMessage(message);
+                this.AcceptMessage(message, isIncoming.Value);
                 //
                 // We may want want to update logs and do some final post processing
                 //
@@ -309,7 +312,7 @@ namespace Health.Direct.SmtpAgent
             }
             catch (Exception ex)
             {
-                this.RejectMessage(message);
+                this.RejectMessage(message, isIncoming);
                 Logger.Error("While processing message {0}", ex.ToString());
                 throw;
             }
@@ -487,13 +490,7 @@ namespace Health.Direct.SmtpAgent
         /// </summary>
         /// <param name="message"></param>
         void VerifyDomainRecipientsRegistered(IncomingMessage message)
-        {
-            if (!m_settings.HasAddressManager)
-            {
-                // Address validation is turned off
-                return;
-            }
-            
+        {            
             message.EnsureRecipientsCategorizedByDomain(this.SecurityAgent.Domains);
             if (!message.HasDomainRecipients)
             {
@@ -501,6 +498,17 @@ namespace Health.Direct.SmtpAgent
             }
             
             DirectAddressCollection recipients = message.DomainRecipients;
+            if (this.Settings.MaxIncomingDomainRecipients > 0 && recipients.Count > this.Settings.MaxIncomingDomainRecipients)
+            {
+                throw new AgentException(AgentError.MaxDomainRecipients);
+            }
+
+            if (!m_settings.HasAddressManager)
+            {
+                // Address validation is turned off
+                return;
+            }
+
             Address[] resolved = m_configService.GetAddresses(recipients);
             if (resolved.IsNullOrEmpty())
             {
@@ -551,7 +559,7 @@ namespace Health.Direct.SmtpAgent
             if (envelope.HasDomainRecipients)
             {
                 DirectAddressCollection routedRecipients = new DirectAddressCollection();                
-                m_router.Route(message, envelope, this.CopyMessage, routedRecipients);
+                m_router.Route(message, envelope, routedRecipients);
                 
                 this.SendNotifications(envelope, routedRecipients);
             }
@@ -622,19 +630,21 @@ namespace Health.Direct.SmtpAgent
             message.Update(messageText);
         }
                                         
-        protected virtual void AcceptMessage(ISmtpMessage message)
+        protected virtual void AcceptMessage(ISmtpMessage message, bool incoming)
         {
-            m_auditor.Log(AuditNames.Message.IncomingAccepted, message.GetMailFrom());
             message.Accept();
+
+            m_auditor.Log(AuditNames.Message.GetAcceptedMessage(incoming), message.GetMailFrom());
         }
         
-        protected virtual void RejectMessage(ISmtpMessage message)
+        protected virtual void RejectMessage(ISmtpMessage message, bool? isIncoming)
         {
             try
             {
-                m_auditor.Log(AuditNames.Message.IncomingRejected, message.GetMailFrom());
                 message.Reject();
 
+                m_auditor.Log(AuditNames.Message.GetRejectedMessage(isIncoming), message.GetMailFrom());
+                
                 Logger.Debug("Rejected Message");
                 this.CopyMessage(message, m_settings.BadMessage);
             }

@@ -27,15 +27,14 @@ namespace Health.Direct.SmtpAgent
         EmptyResultFromAgent,
         MissingMailPickupFolder,
         MailPickupFolderDoesNotExist,
-        MissingBounceTemplateOutgoing,
-        MissingBounceTemplateIncoming,
-        InvalidBounceMessageTemplate,
         MissingCertResolverClientSettings,
         MissingAnchorResolverClientSettings,
         NoAddressManager,
         ConfiguredDomainsMismatch,   // Domains in Xml file not found in config
         NoSenderInEnvelope,
-        NoRecipientsInEnvelope
+        NoRecipientsInEnvelope,
+        MissingAddressTypeInRoute,
+        NoFoldersInRoute,
     }
 
     public class SmtpAgentException : DirectException<SmtpAgentError>

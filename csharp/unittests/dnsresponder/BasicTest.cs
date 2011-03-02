@@ -25,33 +25,45 @@ using Xunit.Extensions;
 namespace Health.Direct.DnsResponder.Tests
 {
     public class BasicTest : Tester
-    {        
-        private const bool UseUdp = true;
-        private const bool UseTcp = false;
-
+    {
         public static IEnumerable<object[]> Domains
         {
             get
             {
-                foreach(string domain in TestStore.Default.Domains)
+                foreach (string domain in TestStore.Default.Domains)
                 {
-                    yield return new object[] {domain, UseUdp};
-                    yield return new object[] {domain, UseTcp};
+                    yield return new object[] { domain, UseUdp };
+                    yield return new object[] { domain, UseTcp };
                 }
             }
         }
-        
+
         public static IEnumerable<object[]> UnknownDomains
         {
             get
             {
-                yield return new object[] {"adljflakd", UseUdp };
+                yield return new object[] { "adljflakd", UseUdp };
                 yield return new object[] { "lasdkjfal", UseUdp };
-                yield return new object[] {"adljflakd", UseTcp };
+                yield return new object[] { "adljflakd", UseTcp };
                 yield return new object[] { "lasdkjfal", UseTcp };
             }
         }
-        
+
+        public static IEnumerable<object[]> NotSupported
+        {
+            get
+            {
+                foreach (string domain in TestStore.Default.Domains)
+                {
+                    foreach(DnsStandard.RecordType type in TestServer.NotSupported)
+                    {
+                        yield return new object[] { domain, type, UseUdp };
+                        yield return new object[] { domain, type, UseTcp };
+                    }
+                }
+            }
+        }
+
         [Theory]
         [PropertyData("Domains")]
         public void TestLookupA(string domain, bool useUDP)
@@ -68,10 +80,20 @@ namespace Health.Direct.DnsResponder.Tests
             IEnumerable<AddressRecord> matches = ResolveA(TestServer.Default, domain, useUDP);
             Assert.True(matches == null || matches.Count() == 0);
         }
-
-        const int MultithreadThreadCount = 4;
-        const int MultithreadRepeat = 250;
-
+                
+        const int MultithreadThreadCount = 16;  
+        const int MultithreadRepeat = 500;
+        
+        [Theory]
+        [PropertyData("NotSupported")]
+        public void TestNotSupported(string domain, DnsStandard.RecordType type, bool useUDP)
+        {
+            DnsClient client = TestServer.Default.CreateClient();
+            client.UseUDPFirst = !useUDP;
+            DnsResponse response = client.Resolve(new DnsRequest(type, domain));
+            Assert.True(!response.IsSuccess);
+        }
+        
         [Theory]
         [InlineData(UseUdp)]
         [InlineData(UseTcp)]
@@ -94,7 +116,14 @@ namespace Health.Direct.DnsResponder.Tests
             }
             for (int i = 0; i < threads.Length; ++i)
             {
-                threads[i].Start(domains);
+                if (!udp && i == threads.Length - 1)
+                {
+                    threads[i].Start(domains, threads[i].TcpSocketDropper);
+                }
+                else
+                {
+                    threads[i].Start(domains);
+                }
             }
             for (int i = 0; i < threads.Length; ++i)
             {
@@ -104,7 +133,16 @@ namespace Health.Direct.DnsResponder.Tests
             {
                 Assert.True(threads[i].Failure == 0);
                 Assert.True(threads[i].Success == expectedSuccess);
+            }
+            
+            if (udp)
+            {
+                TestServer.Default.AreMaxUdpAcceptsOutstanding();
             }            
+            else
+            {
+                TestServer.Default.AreMaxTcpAcceptsOutstanding();
+            }
         }
     }
 }

@@ -180,6 +180,9 @@
     <Compile Include="Mime\StringSegment.cs" />
     <Compile Include="DirectException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Routing\FolderBalancer.cs" />
+    <Compile Include="Routing\LoadBalancer.cs" />
+    <Compile Include="Routing\IReceiver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
