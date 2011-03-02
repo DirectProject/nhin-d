@@ -56,6 +56,7 @@ import org.nhindirect.xd.transform.impl.DefaultMimeXdsTransformer;
  * Cross-Enterprise Document Reliability (XDR) messages and transmits them to an
  * XDR Document Recipient via IHE XDS.b Provide and Register transaction
  * (ITI-41).
+ *
  */
 public class DirectXdMailet extends GenericMailet
 {
@@ -81,8 +82,8 @@ public class DirectXdMailet extends GenericMailet
 
         if (StringUtils.isBlank(endpointUrl))
         {
-            LOGGER.error("NHINDMailet endpoint URL cannot be empty or null.");
-            throw new MessagingException("NHINDMailet endpoint URL cannot be empty or null.");
+            LOGGER.error("DirectXdMailet endpoint URL cannot be empty or null.");
+            throw new MessagingException("DirectXdMailet endpoint URL cannot be empty or null.");
         }
 
         // Get recipients and create a collection of Strings
@@ -94,7 +95,7 @@ public class DirectXdMailet extends GenericMailet
         }
 
         // Service XD* addresses
-        if (getResolver().hasXdEndpoints(recipAddresses))
+       if (getResolver().hasXdEndpoints(recipAddresses))
         {
             LOGGER.info("Recipients include XD endpoints");
             
@@ -117,14 +118,14 @@ public class DirectXdMailet extends GenericMailet
 
                     if (!isSuccessful(response))
                     {
-                        LOGGER.error("NHINDMailet failed to deliver XD message.");
+                        LOGGER.error("DirectXdMailet failed to deliver XD message.");
                         LOGGER.error(response);
                     }
                 }
             }
             catch (Throwable e)
             {
-                LOGGER.error("NHINDMailet delivery failure", e);
+                LOGGER.error("DirectXdMailet delivery failure", e);
             }
         }
 
@@ -170,15 +171,15 @@ public class DirectXdMailet extends GenericMailet
     @Override
     public void init() throws MessagingException
     {
-        LOGGER.info("Initializing NHINDMailet");
+        LOGGER.info("Initializing DirectXdMailet");
 
         // Get the endpoint URL
         endpointUrl = getInitParameter("EndpointURL");
 
         if (StringUtils.isBlank(endpointUrl))
         {
-            LOGGER.error("NHINDMailet endpoint URL cannot be empty or null.");
-            throw new MessagingException("NHINDMailet endpoint URL cannot be empty or null.");
+            LOGGER.error("DirectXdMailet endpoint URL cannot be empty or null.");
+            throw new MessagingException("DirectXdMailet endpoint URL cannot be empty or null.");
         }
 
         // Get the config-service URL

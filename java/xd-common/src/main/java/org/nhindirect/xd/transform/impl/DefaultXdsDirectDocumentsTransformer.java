@@ -51,11 +51,11 @@ public class DefaultXdsDirectDocumentsTransformer implements XdsDirectDocumentsT
 
             if (doc != null)
             {
-                doc.setData(new String(data));
+                doc.setData(data);
             }
             else
             {
-                documents.getDocumentById(document.getId()).setData(new String(data));
+                documents.getDocumentById(document.getId()).setData(data);
             }
         }
         
