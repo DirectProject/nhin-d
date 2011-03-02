@@ -161,7 +161,7 @@ public class NHINDClientTest extends TestCase
         documents.getSubmissionSet().setPatientId("xxx");
         
         DirectDocument2 doc1 = new DirectDocument2();
-        doc1.setData("data1");
+        doc1.setData(new String("data1").getBytes());
         
         DirectDocument2.Metadata metadata1 = doc1.getMetadata();
         metadata1.setMimeType("1.1");
@@ -191,7 +191,7 @@ public class NHINDClientTest extends TestCase
         metadata1.setUniqueId("1.27");
         
         DirectDocument2 doc2 = new DirectDocument2();
-        doc2.setData("data2");
+        doc2.setData(new String("data2").getBytes());
         
         DirectDocument2.Metadata metadata2 = doc2.getMetadata();
         metadata2.setMimeType("2.1");
