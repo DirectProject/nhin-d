@@ -25,7 +25,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.nhindirect.xd.common;
 
 import static org.nhindirect.xd.common.DirectDocumentUtils.addSlot;
@@ -76,15 +75,13 @@ import org.nhindirect.xd.transform.util.XmlUtils;
  * 
  * @author beau
  */
-public class DirectDocuments
-{
+public class DirectDocuments {
+
     private List<DirectDocument2> documents;
     private SubmissionSet submissionSet;
-
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DirectDocuments.class);
 
-    public DirectDocuments()
-    {
+    public DirectDocuments() {
         this.documents = new ArrayList<DirectDocument2>();
         this.submissionSet = new SubmissionSet();
     }
@@ -92,8 +89,7 @@ public class DirectDocuments
     /**
      * @return the submissionSet
      */
-    public SubmissionSet getSubmissionSet()
-    {
+    public SubmissionSet getSubmissionSet() {
         return submissionSet;
     }
 
@@ -101,19 +97,18 @@ public class DirectDocuments
      * @param submissionSet
      *            the submissionSet to set
      */
-    public void setSubmissionSet(SubmissionSet submissionSet)
-    {
-        if (this.submissionSet != null && !this.submissionSet.equals(submissionSet))
+    public void setSubmissionSet(SubmissionSet submissionSet) {
+        if (this.submissionSet != null && !this.submissionSet.equals(submissionSet)) {
             LOGGER.warn("Overwriting existing SubmissionSet values");
-        
+        }
+
         this.submissionSet = submissionSet;
     }
 
     /**
      * @return the documents
      */
-    public List<DirectDocument2> getDocuments()
-    {
+    public List<DirectDocument2> getDocuments() {
         return documents;
     }
 
@@ -121,16 +116,14 @@ public class DirectDocuments
      * @param documents
      *            the documents to set
      */
-    public void setDocuments(List<DirectDocument2> documents)
-    {
+    public void setDocuments(List<DirectDocument2> documents) {
         this.documents = documents;
     }
 
     /**
      * Get the metadata represented as a SubmitObjectsRequest object.
      */
-    public SubmitObjectsRequest getSubmitObjectsRequest()
-    {
+    public SubmitObjectsRequest getSubmitObjectsRequest() {
         RegistryPackageType registryPackageType = submissionSet.generateRegistryPackageType();
         ClassificationType classificationType = submissionSet.generateClassificationType();
 
@@ -139,8 +132,7 @@ public class DirectDocuments
         // Generate ExtrinsicObjectType objects for each document
         qname = new QName(SubmitObjectsRequestEnum.EXTRINSIC_OBJECT.getNamespaceUri(), SubmitObjectsRequestEnum.EXTRINSIC_OBJECT.getName());
         List<JAXBElement<ExtrinsicObjectType>> jaxb_extrinsicObjectTypes = new ArrayList<JAXBElement<ExtrinsicObjectType>>();
-        for (DirectDocument2 document : documents)
-        {
+        for (DirectDocument2 document : documents) {
             ExtrinsicObjectType extrinsicObjectType = document.getMetadata().generateExtrinsicObjectType();
             JAXBElement<ExtrinsicObjectType> jaxb_extrinsicObjectType = new JAXBElement<ExtrinsicObjectType>(qname, ExtrinsicObjectType.class, extrinsicObjectType);
             jaxb_extrinsicObjectTypes.add(jaxb_extrinsicObjectType);
@@ -158,8 +150,7 @@ public class DirectDocuments
         // Generate AssociationType1 objects for each document
         qname = new QName(SubmitObjectsRequestEnum.ASSOCIATION.getNamespaceUri(), SubmitObjectsRequestEnum.ASSOCIATION.getName());
         List<JAXBElement<AssociationType1>> jaxb_associationType1s = new ArrayList<JAXBElement<AssociationType1>>();
-        for (DirectDocument2 document : documents)
-        {
+        for (DirectDocument2 document : documents) {
             AssociationType1 associationType = submissionSet.generateAssociationType(document.getMetadata().getId(), document.getMetadata().getSubmissionSetStatus());
             JAXBElement<AssociationType1> jaxb_AssociationType1 = new JAXBElement<AssociationType1>(qname, AssociationType1.class, associationType);
             jaxb_associationType1s.add(jaxb_AssociationType1);
@@ -179,153 +170,137 @@ public class DirectDocuments
         return submitObjectsRequest;
     }
 
-    public void setValues(String submitObjectsRequestXml) throws Exception
-    {
+    public void setValues(String submitObjectsRequestXml) throws Exception {
         SubmitObjectsRequest sor = (SubmitObjectsRequest) XmlUtils.unmarshal(new String(submitObjectsRequestXml), oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
 
         setValues(sor);
     }
 
-    public void setValues(SubmitObjectsRequest submitObjectsRequest) throws MetadataException
-    {
+    public void setValues(SubmitObjectsRequest submitObjectsRequest) throws MetadataException {
         RegistryObjectListType rol = submitObjectsRequest.getRegistryObjectList();
 
         List<JAXBElement<? extends IdentifiableType>> elements = rol.getIdentifiable();
 
-        for (JAXBElement<? extends IdentifiableType> element : elements)
-        {
-            if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType)
-            {
+        for (JAXBElement<? extends IdentifiableType> element : elements) {
+            if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType) {
                 ExtrinsicObjectType eot = (ExtrinsicObjectType) element.getValue();
-                
+
                 DirectDocument2 document = new DirectDocument2();
                 DirectDocument2.Metadata metadata = document.getMetadata();
 
                 metadata.setValues(eot);
-                
+
                 documents.add(document);
-            }
-            else if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType)
-            {
+            } else if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryPackageType) {
                 RegistryPackageType rpt = (RegistryPackageType) element.getValue();
-                
+
                 SubmissionSet submissionSet = new SubmissionSet();
 
                 submissionSet.setValues(rpt);
-                
+
                 this.submissionSet = submissionSet;
-            }
-            else if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType)
-            {
+            } else if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType) {
                 // Empty in example
             }
         }
-        
-        for (JAXBElement<? extends IdentifiableType> element : elements)
-        {
-            if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.AssociationType1)
-            {
+
+        for (JAXBElement<? extends IdentifiableType> element : elements) {
+            if (element.getValue() instanceof oasis.names.tc.ebxml_regrep.xsd.rim._3.AssociationType1) {
                 AssociationType1 at = (AssociationType1) element.getValue();
 
-                for (SlotType1 slot : at.getSlot())
-                {
-                    if (SlotType1Enum.SUBMISSION_SET_STATUS.matches(slot.getName()))
-                    {
-                        if (slotNotEmpty(slot))
+                for (SlotType1 slot : at.getSlot()) {
+                    if (SlotType1Enum.SUBMISSION_SET_STATUS.matches(slot.getName())) {
+                        if (slotNotEmpty(slot)) {
                             getDocumentById(at.getTargetObject()).getMetadata().setSubmissionSetStatus(slot.getName());
+                        }
                     }
                 }
             }
         }
     }
 
-    public DirectDocument2 getDocumentById(String targetObject)
-    {
-        for (DirectDocument2 document : documents)
-        {
-            if (StringUtils.equalsIgnoreCase(document.getMetadata().getId(), targetObject))
+    public DirectDocument2 getDocumentById(String targetObject) {
+        for (DirectDocument2 document : documents) {
+            if (StringUtils.equalsIgnoreCase(document.getMetadata().getId(), targetObject)) {
                 return document;
+            }
         }
 
         return null;
     }
-    
-    public DirectDocument2 getDocumentByUniqueId(String uniqueId)
-    {
-        for (DirectDocument2 document : documents)
-        {
-            if (StringUtils.equalsIgnoreCase(document.getMetadata().getUniqueId(), uniqueId))
+
+    public DirectDocument2 getDocumentByUniqueId(String uniqueId) {
+        for (DirectDocument2 document : documents) {
+            if (StringUtils.equalsIgnoreCase(document.getMetadata().getUniqueId(), uniqueId)) {
                 return document;
+            }
         }
-        
+
         return null;
     }
-    
-    public DirectDocument2 getDocumentByHash(String hash)
-    {
-        for (DirectDocument2 document : documents)
-        {
-            if (StringUtils.equalsIgnoreCase(document.getMetadata().getHash(), hash))
+
+    public DirectDocument2 getDocumentByHash(String hash) {
+        for (DirectDocument2 document : documents) {
+            if (StringUtils.equalsIgnoreCase(document.getMetadata().getHash(), hash)) {
                 return document;
+            }
         }
-        
-        return null;        
+
+        return null;
     }
-    
-    public DirectDocument2 getDocument(String identifier)
-    {
+
+    public DirectDocument2 getDocument(String identifier) {
         DirectDocument2 document = null;
-        
+
         document = getDocumentById(identifier);
-        if (document != null)
+        if (document != null) {
             return document;
+        }
 
         document = getDocumentByUniqueId(identifier);
-        if (document != null)
+        if (document != null) {
             return document;
-        
+        }
+
         document = getDocumentByHash(identifier);
-        if (document != null)
+        if (document != null) {
             return document;
-        
+        }
+
         return document;
     }
 
-    public String getSubmitObjectsRequestAsString()
-    {
+    public String getSubmitObjectsRequestAsString() {
         QName qname = new QName(SubmitObjectsRequestEnum.SUBMIT_OBJECTS_REQUEST.getNamespaceUri(), SubmitObjectsRequestEnum.SUBMIT_OBJECTS_REQUEST.getName());
         return XmlUtils.marshal(qname, getSubmitObjectsRequest(), ihe.iti.xds_b._2007.ObjectFactory.class);
     }
-    
-    public ProvideAndRegisterDocumentSetRequestType toProvideAndRegisterDocumentSetRequestType() throws IOException
-    {
+
+    public ProvideAndRegisterDocumentSetRequestType toProvideAndRegisterDocumentSetRequestType() throws IOException {
         ProvideAndRegisterDocumentSetRequestType request = new ProvideAndRegisterDocumentSetRequestType();
 
         request.setSubmitObjectsRequest(this.getSubmitObjectsRequest());
 
-        for (DirectDocument2 document : documents)
-        {
-            if (document.getData() != null)
-            {
+        for (DirectDocument2 document : documents) {
+            if (document.getData() != null) {
                 DataSource source = new ByteArrayDataSource(document.getData(), document.getMetadata().getMimeType());
                 DataHandler dhnew = new DataHandler(source);
-    
+
                 Document pdoc = new Document();
                 pdoc.setValue(dhnew);
-                pdoc.setId(document.getMetadata().getUniqueId());
-                
+                String id = document.getMetadata().getId();
+                pdoc.setId(id);
+
                 request.getDocument().add(pdoc);
             }
         }
 
         return request;
     }
-    
-    public XdmPackage toXdmPackage(String messageId)
-    {
+
+    public XdmPackage toXdmPackage(String messageId) {
         XdmPackage xdmPackage = new XdmPackage(messageId);
         xdmPackage.setDocuments(this);
-        
+
         return xdmPackage;
     }
 
@@ -334,41 +309,35 @@ public class DirectDocuments
      * 
      * @author beau
      */
-    static public class SubmissionSet
-    {
+    static public class SubmissionSet {
+
         private String id;
         private String name;
         private String description;
-
         private Date submissionTime;
         private List<String> intendedRecipient = new ArrayList<String>();
-
         private String authorPerson;
         private List<String> authorInstitution = new ArrayList<String>();
         private String authorRole;
         private String authorSpecialty;
         private String authorTelecommunication;
-
         private String contentTypeCode;
         private String contentTypeCode_localized;
-
         private String uniqueId;
         private String sourceId;
         private String patientId;
 
-        public SubmissionSet()
-        {
+        public SubmissionSet() {
             this.id = "SubmissionSet01";
         }
 
-        protected RegistryPackageType generateRegistryPackageType()
-        {
+        protected RegistryPackageType generateRegistryPackageType() {
             RegistryPackageType rpt = new RegistryPackageType();
 
             rpt.setId(id);
 
             List<SlotType1> slots = rpt.getSlot();
-            addSlot(slots, makeSlot(SlotType1Enum.SUBMISSION_TIME, submissionTime != null ? (new SimpleDateFormat( "yyyyMMddHHmmss")).format(submissionTime) : null));
+            addSlot(slots, makeSlot(SlotType1Enum.SUBMISSION_TIME, submissionTime != null ? (new SimpleDateFormat("yyyyMMddHHmmss")).format(submissionTime) : null));
             addSlot(slots, makeSlot(SlotType1Enum.INTENDED_RECIPIENT, intendedRecipient));
 
             rpt.setName(makeInternationalStringType(name));
@@ -436,8 +405,7 @@ public class DirectDocuments
             return rpt;
         }
 
-        protected ClassificationType generateClassificationType()
-        {
+        protected ClassificationType generateClassificationType() {
             ClassificationType ct = new ClassificationType();
 
             ct.setClassifiedObject(id);
@@ -447,8 +415,7 @@ public class DirectDocuments
             return ct;
         }
 
-        protected AssociationType1 generateAssociationType(String documentId, String submissionSetStatus)
-        {
+        protected AssociationType1 generateAssociationType(String documentId, String submissionSetStatus) {
             AssociationType1 at = new AssociationType1();
 
             at.setSourceObject(id);
@@ -461,119 +428,98 @@ public class DirectDocuments
 
             return at;
         }
-        
-        protected void setValues(RegistryPackageType rpt) throws MetadataException
-        {
+
+        protected void setValues(RegistryPackageType rpt) throws MetadataException {
             id = rpt.getId();
             name = rpt.getName().getLocalizedString().get(0).getValue();
-            description = rpt.getDescription().getLocalizedString().get(0).getValue();
+            if (rpt.getDescription() != null) {
+                description = rpt.getDescription().getLocalizedString().get(0).getValue();
+            }
 
-            for (SlotType1 slot : rpt.getSlot())
-            {
-                if (SlotType1Enum.SUBMISSION_TIME.matches(slot.getName()))
-                {
-                    if (slotNotEmpty(slot))
-                    {
-                        try
-                        {
+            for (SlotType1 slot : rpt.getSlot()) {
+                if (SlotType1Enum.SUBMISSION_TIME.matches(slot.getName())) {
+                    if (slotNotEmpty(slot)) {
+                        try {
                             submissionTime = DateUtils.parseDate(slot.getValueList().getValue().get(
-                                    0), new String[]
-                            { "yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMdd" });
-                        }
-                        catch (ParseException e)
-                        {
+                                    0), new String[]{"yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMdd"});
+                        } catch (ParseException e) {
                             LOGGER.error("Unable to parse submissionTime", e);
                             throw new MetadataException("Unable to parse submissionTime", e);
                         }
                     }
-                }
-                else if (SlotType1Enum.INTENDED_RECIPIENT.matches(slot.getName()))
-                {
-                    if (slotNotEmpty(slot))
-                        for (String value : slot.getValueList().getValue())
+                } else if (SlotType1Enum.INTENDED_RECIPIENT.matches(slot.getName())) {
+                    if (slotNotEmpty(slot)) {
+                        for (String value : slot.getValueList().getValue()) {
                             intendedRecipient.add(value);
-                }
-            }
-
-            for (ClassificationType ct : rpt.getClassification())
-            {
-                if (ClassificationTypeEnum.SS_AUTHOR.matchesScheme(ct.getClassificationScheme()))
-                {
-                    for (SlotType1 slot : ct.getSlot())
-                    {
-                        if (SlotType1Enum.AUTHOR_PERSON.matches(slot.getName()))
-                        {
-                            if (slotNotEmpty(slot))
-                                authorPerson = slot.getValueList().getValue().get(0);
-                        }
-                        else if (SlotType1Enum.AUTHOR_INSTITUTION.matches(slot.getName()))
-                        {
-                            if (slotNotEmpty(slot))
-                                for (String value : slot.getValueList().getValue())
-                                    authorInstitution.add(value);
-                        }
-                        else if (SlotType1Enum.AUTHOR_ROLE.matches(slot.getName()))
-                        {
-                            if (slotNotEmpty(slot))
-                                authorRole = slot.getValueList().getValue().get(0);
-                        }
-                        else if (SlotType1Enum.AUTHOR_SPECIALTY.matches(slot.getName()))
-                        {
-                            if (slotNotEmpty(slot))
-                                authorSpecialty = slot.getValueList().getValue().get(0);
-                        }
-                        else if (SlotType1Enum.AUTHOR_TELECOMMUNICATION.matches(slot.getName()))
-                        {
-                            if (slotNotEmpty(slot))
-                                authorTelecommunication = slot.getValueList().getValue().get(0);
                         }
                     }
                 }
-                if (ClassificationTypeEnum.SS_CONTENT_TYPE_CODE.matchesScheme(ct.getClassificationScheme()))
-                {
-                    for (SlotType1 slot : ct.getSlot())
-                    {
-                        if (SlotType1Enum.CODING_SCHEME.matches(slot.getName()))
-                        {
-                            if (slotNotEmpty(slot))
-                            {
-                                @SuppressWarnings("unused") String codingScheme = slot.getValueList().getValue().get(0);
+            }
+
+            for (ClassificationType ct : rpt.getClassification()) {
+                if (ClassificationTypeEnum.SS_AUTHOR.matchesScheme(ct.getClassificationScheme())) {
+                    for (SlotType1 slot : ct.getSlot()) {
+                        if (SlotType1Enum.AUTHOR_PERSON.matches(slot.getName())) {
+                            if (slotNotEmpty(slot)) {
+                                authorPerson = slot.getValueList().getValue().get(0);
+                            }
+                        } else if (SlotType1Enum.AUTHOR_INSTITUTION.matches(slot.getName())) {
+                            if (slotNotEmpty(slot)) {
+                                for (String value : slot.getValueList().getValue()) {
+                                    authorInstitution.add(value);
+                                }
+                            }
+                        } else if (SlotType1Enum.AUTHOR_ROLE.matches(slot.getName())) {
+                            if (slotNotEmpty(slot)) {
+                                authorRole = slot.getValueList().getValue().get(0);
+                            }
+                        } else if (SlotType1Enum.AUTHOR_SPECIALTY.matches(slot.getName())) {
+                            if (slotNotEmpty(slot)) {
+                                authorSpecialty = slot.getValueList().getValue().get(0);
+                            }
+                        } else if (SlotType1Enum.AUTHOR_TELECOMMUNICATION.matches(slot.getName())) {
+                            if (slotNotEmpty(slot)) {
+                                authorTelecommunication = slot.getValueList().getValue().get(0);
+                            }
+                        }
+                    }
+                }
+                if (ClassificationTypeEnum.SS_CONTENT_TYPE_CODE.matchesScheme(ct.getClassificationScheme())) {
+                    for (SlotType1 slot : ct.getSlot()) {
+                        if (SlotType1Enum.CODING_SCHEME.matches(slot.getName())) {
+                            if (slotNotEmpty(slot)) {
+                                @SuppressWarnings("unused")
+                                String codingScheme = slot.getValueList().getValue().get(0);
                             }
                         }
                     }
 
                     contentTypeCode = ct.getNodeRepresentation();
 
-                    if (ct.getName() != null && ct.getName().getLocalizedString() != null && !ct.getName().getLocalizedString().isEmpty())
+                    if (ct.getName() != null && ct.getName().getLocalizedString() != null && !ct.getName().getLocalizedString().isEmpty()) {
                         contentTypeCode_localized = ct.getName().getLocalizedString().get(0).getValue();
+                    }
                 }
             }
 
-            for (ExternalIdentifierType eit : rpt.getExternalIdentifier())
-            {
-                if (ExternalIdentifierTypeEnum.SS_UNIQUE_ID.matchesScheme(eit.getIdentificationScheme()))
-                {
+            for (ExternalIdentifierType eit : rpt.getExternalIdentifier()) {
+                if (ExternalIdentifierTypeEnum.SS_UNIQUE_ID.matchesScheme(eit.getIdentificationScheme())) {
                     uniqueId = eit.getValue();
-                }
-                else if (ExternalIdentifierTypeEnum.SS_SOURCE_ID.matchesScheme(eit.getIdentificationScheme()))
-                {
+                } else if (ExternalIdentifierTypeEnum.SS_SOURCE_ID.matchesScheme(eit.getIdentificationScheme())) {
                     sourceId = eit.getValue();
-                }
-                else if (ExternalIdentifierTypeEnum.SS_PATIENT_ID.matchesScheme(eit.getIdentificationScheme()))
-                {
+                } else if (ExternalIdentifierTypeEnum.SS_PATIENT_ID.matchesScheme(eit.getIdentificationScheme())) {
                     patientId = eit.getValue();
                 }
             }
         }
-        
+
         /*
          * (non-Javadoc)
          * 
          * @see java.lang.Object#toString()
          */
         @Override
-        public String toString()
-        {
+        public String toString() {
             QName qname = new QName(SubmitObjectsRequestEnum.REGISTRY_PACKAGE.getNamespaceUri(), SubmitObjectsRequestEnum.REGISTRY_PACKAGE.getName());
             return XmlUtils.marshal(qname, generateRegistryPackageType(), ihe.iti.xds_b._2007.ObjectFactory.class);
         }
@@ -581,8 +527,7 @@ public class DirectDocuments
         /**
          * @return the id
          */
-        public String getId()
-        {
+        public String getId() {
             return id;
         }
 
@@ -590,16 +535,14 @@ public class DirectDocuments
          * @param id
          *            the id to set
          */
-        public void setId(String id)
-        {
+        public void setId(String id) {
             this.id = id;
         }
 
         /**
          * @return the name
          */
-        public String getName()
-        {
+        public String getName() {
             return name;
         }
 
@@ -607,16 +550,14 @@ public class DirectDocuments
          * @param name
          *            the name to set
          */
-        public void setName(String name)
-        {
+        public void setName(String name) {
             this.name = name;
         }
 
         /**
          * @return the description
          */
-        public String getDescription()
-        {
+        public String getDescription() {
             return description;
         }
 
@@ -624,16 +565,14 @@ public class DirectDocuments
          * @param description
          *            the description to set
          */
-        public void setDescription(String description)
-        {
+        public void setDescription(String description) {
             this.description = description;
         }
 
         /**
          * @return the submissionTime
          */
-        public Date getSubmissionTime()
-        {
+        public Date getSubmissionTime() {
             return submissionTime;
         }
 
@@ -641,16 +580,14 @@ public class DirectDocuments
          * @param submissionTime
          *            the submissionTime to set
          */
-        public void setSubmissionTime(Date submissionTime)
-        {
+        public void setSubmissionTime(Date submissionTime) {
             this.submissionTime = submissionTime;
         }
 
         /**
          * @return the intendedRecipient
          */
-        public List<String> getIntendedRecipient()
-        {
+        public List<String> getIntendedRecipient() {
             return intendedRecipient;
         }
 
@@ -658,16 +595,14 @@ public class DirectDocuments
          * @param intendedRecipient
          *            the intendedRecipient to set
          */
-        public void setIntendedRecipient(List<String> intendedRecipient)
-        {
+        public void setIntendedRecipient(List<String> intendedRecipient) {
             this.intendedRecipient = intendedRecipient;
         }
 
         /**
          * @return the authorPerson
          */
-        public String getAuthorPerson()
-        {
+        public String getAuthorPerson() {
             return authorPerson;
         }
 
@@ -675,16 +610,14 @@ public class DirectDocuments
          * @param authorPerson
          *            the authorPerson to set
          */
-        public void setAuthorPerson(String authorPerson)
-        {
+        public void setAuthorPerson(String authorPerson) {
             this.authorPerson = authorPerson;
         }
 
         /**
          * @return the authorInstitution
          */
-        public List<String> getAuthorInstitution()
-        {
+        public List<String> getAuthorInstitution() {
             return authorInstitution;
         }
 
@@ -692,16 +625,14 @@ public class DirectDocuments
          * @param authorInstitution
          *            the authorInstitution to set
          */
-        public void setAuthorInstitution(List<String> authorInstitution)
-        {
+        public void setAuthorInstitution(List<String> authorInstitution) {
             this.authorInstitution = authorInstitution;
         }
 
         /**
          * @return the authorRole
          */
-        public String getAuthorRole()
-        {
+        public String getAuthorRole() {
             return authorRole;
         }
 
@@ -709,16 +640,14 @@ public class DirectDocuments
          * @param authorRole
          *            the authorRole to set
          */
-        public void setAuthorRole(String authorRole)
-        {
+        public void setAuthorRole(String authorRole) {
             this.authorRole = authorRole;
         }
 
         /**
          * @return the authorSpecialty
          */
-        public String getAuthorSpecialty()
-        {
+        public String getAuthorSpecialty() {
             return authorSpecialty;
         }
 
@@ -726,16 +655,14 @@ public class DirectDocuments
          * @param authorSpecialty
          *            the authorSpecialty to set
          */
-        public void setAuthorSpecialty(String authorSpecialty)
-        {
+        public void setAuthorSpecialty(String authorSpecialty) {
             this.authorSpecialty = authorSpecialty;
         }
 
         /**
          * @return the authorTelecommunication
          */
-        public String getAuthorTelecommunication()
-        {
+        public String getAuthorTelecommunication() {
             return authorTelecommunication;
         }
 
@@ -743,16 +670,14 @@ public class DirectDocuments
          * @param authorTelecommunication
          *            the authorTelecommunication to set
          */
-        public void setAuthorTelecommunication(String authorTelecommunication)
-        {
+        public void setAuthorTelecommunication(String authorTelecommunication) {
             this.authorTelecommunication = authorTelecommunication;
         }
 
         /**
          * @return the contentTypeCode
          */
-        public String getContentTypeCode()
-        {
+        public String getContentTypeCode() {
             return contentTypeCode;
         }
 
@@ -760,8 +685,7 @@ public class DirectDocuments
          * @param contentTypeCode
          *            the contentTypeCode to set
          */
-        public void setContentTypeCode(String contentTypeCode)
-        {
+        public void setContentTypeCode(String contentTypeCode) {
             setContentTypeCode(contentTypeCode, false);
         }
 
@@ -772,19 +696,18 @@ public class DirectDocuments
          *            whether or not to set the localized field with the same
          *            value
          */
-        public void setContentTypeCode(String contentTypeCode, boolean setLocalized)
-        {
+        public void setContentTypeCode(String contentTypeCode, boolean setLocalized) {
             this.contentTypeCode = contentTypeCode;
 
-            if (setLocalized)
+            if (setLocalized) {
                 this.contentTypeCode_localized = contentTypeCode;
+            }
         }
 
         /**
          * @return the contentTypeCode_localized
          */
-        public String getContentTypeCode_localized()
-        {
+        public String getContentTypeCode_localized() {
             return contentTypeCode_localized;
         }
 
@@ -792,16 +715,14 @@ public class DirectDocuments
          * @param contentTypeCodeLocalized
          *            the contentTypeCode_localized to set
          */
-        public void setContentTypeCode_localized(String contentTypeCodeLocalized)
-        {
+        public void setContentTypeCode_localized(String contentTypeCodeLocalized) {
             contentTypeCode_localized = contentTypeCodeLocalized;
         }
 
         /**
          * @return the uniqueId
          */
-        public String getUniqueId()
-        {
+        public String getUniqueId() {
             return uniqueId;
         }
 
@@ -809,16 +730,14 @@ public class DirectDocuments
          * @param uniqueId
          *            the uniqueId to set
          */
-        public void setUniqueId(String uniqueId)
-        {
+        public void setUniqueId(String uniqueId) {
             this.uniqueId = uniqueId;
         }
 
         /**
          * @return the sourceId
          */
-        public String getSourceId()
-        {
+        public String getSourceId() {
             return sourceId;
         }
 
@@ -826,16 +745,14 @@ public class DirectDocuments
          * @param sourceId
          *            the sourceId to set
          */
-        public void setSourceId(String sourceId)
-        {
+        public void setSourceId(String sourceId) {
             this.sourceId = sourceId;
         }
 
         /**
          * @return the patientId
          */
-        public String getPatientId()
-        {
+        public String getPatientId() {
             return patientId;
         }
 
@@ -843,8 +760,7 @@ public class DirectDocuments
          * @param patientId
          *            the patientId to set
          */
-        public void setPatientId(String patientId)
-        {
+        public void setPatientId(String patientId) {
             this.patientId = patientId;
         }
 
@@ -854,8 +770,7 @@ public class DirectDocuments
          * @see java.lang.Object#hashCode()
          */
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             final int prime = 31;
             int result = 1;
             result = prime * result + ((authorInstitution == null) ? 0 : authorInstitution.hashCode());
@@ -882,120 +797,122 @@ public class DirectDocuments
          * @see java.lang.Object#equals(java.lang.Object)
          */
         @Override
-        public boolean equals(Object obj)
-        {
-            if (this == obj)
+        public boolean equals(Object obj) {
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (!(obj instanceof SubmissionSet))
+            }
+            if (!(obj instanceof SubmissionSet)) {
                 return false;
+            }
             SubmissionSet other = (SubmissionSet) obj;
-            if (authorInstitution == null)
-            {
-                if (other.authorInstitution != null)
+            if (authorInstitution == null) {
+                if (other.authorInstitution != null) {
                     return false;
-            }
-            else if (!authorInstitution.equals(other.authorInstitution))
+                }
+            } else if (!authorInstitution.equals(other.authorInstitution)) {
                 return false;
-            if (authorPerson == null)
-            {
-                if (other.authorPerson != null)
+            }
+            if (authorPerson == null) {
+                if (other.authorPerson != null) {
                     return false;
-            }
-            else if (!authorPerson.equals(other.authorPerson))
+                }
+            } else if (!authorPerson.equals(other.authorPerson)) {
                 return false;
-            if (authorRole == null)
-            {
-                if (other.authorRole != null)
+            }
+            if (authorRole == null) {
+                if (other.authorRole != null) {
                     return false;
-            }
-            else if (!authorRole.equals(other.authorRole))
+                }
+            } else if (!authorRole.equals(other.authorRole)) {
                 return false;
-            if (authorSpecialty == null)
-            {
-                if (other.authorSpecialty != null)
+            }
+            if (authorSpecialty == null) {
+                if (other.authorSpecialty != null) {
                     return false;
-            }
-            else if (!authorSpecialty.equals(other.authorSpecialty))
+                }
+            } else if (!authorSpecialty.equals(other.authorSpecialty)) {
                 return false;
-            if (authorTelecommunication == null)
-            {
-                if (other.authorTelecommunication != null)
+            }
+            if (authorTelecommunication == null) {
+                if (other.authorTelecommunication != null) {
                     return false;
-            }
-            else if (!authorTelecommunication.equals(other.authorTelecommunication))
+                }
+            } else if (!authorTelecommunication.equals(other.authorTelecommunication)) {
                 return false;
-            if (contentTypeCode == null)
-            {
-                if (other.contentTypeCode != null)
+            }
+            if (contentTypeCode == null) {
+                if (other.contentTypeCode != null) {
                     return false;
-            }
-            else if (!contentTypeCode.equals(other.contentTypeCode))
+                }
+            } else if (!contentTypeCode.equals(other.contentTypeCode)) {
                 return false;
-            if (contentTypeCode_localized == null)
-            {
-                if (other.contentTypeCode_localized != null)
+            }
+            if (contentTypeCode_localized == null) {
+                if (other.contentTypeCode_localized != null) {
                     return false;
-            }
-            else if (!contentTypeCode_localized.equals(other.contentTypeCode_localized))
+                }
+            } else if (!contentTypeCode_localized.equals(other.contentTypeCode_localized)) {
                 return false;
-            if (description == null)
-            {
-                if (other.description != null)
+            }
+            if (description == null) {
+                if (other.description != null) {
                     return false;
-            }
-            else if (!description.equals(other.description))
+                }
+            } else if (!description.equals(other.description)) {
                 return false;
-            if (id == null)
-            {
-                if (other.id != null)
+            }
+            if (id == null) {
+                if (other.id != null) {
                     return false;
-            }
-            else if (!id.equals(other.id))
+                }
+            } else if (!id.equals(other.id)) {
                 return false;
-            if (intendedRecipient == null)
-            {
-                if (other.intendedRecipient != null)
+            }
+            if (intendedRecipient == null) {
+                if (other.intendedRecipient != null) {
                     return false;
-            }
-            else if (!intendedRecipient.equals(other.intendedRecipient))
+                }
+            } else if (!intendedRecipient.equals(other.intendedRecipient)) {
                 return false;
-            if (name == null)
-            {
-                if (other.name != null)
+            }
+            if (name == null) {
+                if (other.name != null) {
                     return false;
-            }
-            else if (!name.equals(other.name))
+                }
+            } else if (!name.equals(other.name)) {
                 return false;
-            if (patientId == null)
-            {
-                if (other.patientId != null)
+            }
+            if (patientId == null) {
+                if (other.patientId != null) {
                     return false;
-            }
-            else if (!patientId.equals(other.patientId))
+                }
+            } else if (!patientId.equals(other.patientId)) {
                 return false;
-            if (sourceId == null)
-            {
-                if (other.sourceId != null)
+            }
+            if (sourceId == null) {
+                if (other.sourceId != null) {
                     return false;
-            }
-            else if (!sourceId.equals(other.sourceId))
+                }
+            } else if (!sourceId.equals(other.sourceId)) {
                 return false;
-            if (submissionTime == null)
-            {
-                if (other.submissionTime != null)
+            }
+            if (submissionTime == null) {
+                if (other.submissionTime != null) {
                     return false;
-            }
-            else if (!submissionTime.equals(other.submissionTime))
+                }
+            } else if (!submissionTime.equals(other.submissionTime)) {
                 return false;
-            if (uniqueId == null)
-            {
-                if (other.uniqueId != null)
+            }
+            if (uniqueId == null) {
+                if (other.uniqueId != null) {
                     return false;
-            }
-            else if (!uniqueId.equals(other.uniqueId))
+                }
+            } else if (!uniqueId.equals(other.uniqueId)) {
                 return false;
+            }
             return true;
         }
     }

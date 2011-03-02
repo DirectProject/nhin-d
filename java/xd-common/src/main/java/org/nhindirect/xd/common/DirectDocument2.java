@@ -78,7 +78,7 @@ import org.nhindirect.xd.transform.util.XmlUtils;
  */
 public class DirectDocument2
 {
-    private String data;
+    private byte[] data;
     private Metadata metadata;
 
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DirectDocument2.class);
@@ -97,7 +97,7 @@ public class DirectDocument2
      */
     public DirectDocument2(File file) throws IOException
     {
-        this.data = FileUtils.readFileToString(file);
+        this.data = FileUtils.readFileToByteArray(file);
         this.metadata = new Metadata(file);
     }
 
@@ -127,7 +127,7 @@ public class DirectDocument2
      * 
      * @return the data The value of data.
      */
-    public String getData()
+    public byte[] getData()
     {
         return data;
     }
@@ -138,12 +138,12 @@ public class DirectDocument2
      * @param data
      *            The data to set;
      */
-    public void setData(String data)
+    public void setData(byte[] data)
     {
         this.data = data;
         
         this.metadata.setHash(getSha1Hash(data));
-        this.metadata.setSize(new Long(data.length()));
+        this.metadata.setSize(new Long(data.length));
     }
 
     /**
@@ -487,6 +487,7 @@ public class DirectDocument2
                     }
                 }
                 else if (SlotType1Enum.SOURCE_PATIENT_INFO.matches(slot.getName()))
+                
                 {
                     if (slotNotEmpty(slot))
                     {

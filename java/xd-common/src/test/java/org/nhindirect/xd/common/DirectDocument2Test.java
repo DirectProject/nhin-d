@@ -228,7 +228,7 @@ public class DirectDocument2Test extends TestCase
      * 
      * @throws Exception
      */
-    public void testSourcePatient() throws Exception
+/*    public void testSourcePatient() throws Exception
     {
         DirectDocument2 document = new DirectDocument2();
         DirectDocument2.Metadata metadata = document.getMetadata();
@@ -265,7 +265,7 @@ public class DirectDocument2Test extends TestCase
         assertEquals("Output does not match expected", sourcePatient.getState(), metadata.getSourcePatient().getState());
         assertEquals("Output does not match expected", sourcePatient.getZipCode(), metadata.getSourcePatient().getZipCode());
     }
-
+*/
     /**
      * Test authorPerson.
      * 

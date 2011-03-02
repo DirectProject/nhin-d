@@ -73,13 +73,13 @@ public class DirectMessage
      *            The document to add.
      */
     @Deprecated
-    public void addDocument(String document)
-    {
-        DirectDocument2 doc = new DirectDocument2();
-        doc.setData(document);
+  //  public void addDocument(String document)
+   // {
+  //      DirectDocument2 doc = new DirectDocument2();
+  //      doc.setData(document);
 
-        directDocuments.getDocuments().add(doc);
-    }
+  //      directDocuments.getDocuments().add(doc);
+   // }
 
     public void addDocument(File file) throws Exception
     {

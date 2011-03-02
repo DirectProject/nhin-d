@@ -25,7 +25,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.nhind.james.matcher;
 
 import java.util.ArrayList;
@@ -49,17 +48,17 @@ import org.nhindirect.xd.routing.impl.RoutingResolverImpl;
  * 
  * @author beau
  */
-public class RecipientIsXdAndNotSMIME extends GenericMatcher
-{
+public class RecipientIsXdAndNotSMIME extends GenericMatcher {
+
     private static final Log LOGGER = LogFactory.getFactory().getInstance(RecipientIsXdAndNotSMIME.class);
     private RoutingResolver routingResolver;
+   
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void init()
-    {
+    public void init() {
         LOGGER.info("Initializing RecipientIsXdAndNotSMIME matcher");
 
         String condition = getCondition();
@@ -73,8 +72,7 @@ public class RecipientIsXdAndNotSMIME extends GenericMatcher
      */
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<MailAddress> match(Mail mail) throws MessagingException
-    {
+    public Collection<MailAddress> match(Mail mail) throws MessagingException {
         LOGGER.info("Attempting to match XD recipients");
 
         Collection<MailAddress> recipients = new ArrayList<MailAddress>();
@@ -82,26 +80,27 @@ public class RecipientIsXdAndNotSMIME extends GenericMatcher
         MimeMessage message = mail.getMessage();
 
         if ((message.isMimeType("application/x-pkcs7-mime") || message.isMimeType("application/pkcs7-mime"))
-                && (StringUtils.contains(message.getContentType(), "smime-type=enveloped-data")))
-        {
+                && (StringUtils.contains(message.getContentType(), "smime-type=enveloped-data"))) {
             LOGGER.info("MimeMessage is SMIME, skipping");
-            return Collections.<MailAddress> emptyList();
+            return Collections.<MailAddress>emptyList();
         }
 
-        for (MailAddress addr : (Collection<MailAddress>) mail.getRecipients())
-        {
-            if (routingResolver.isXdEndpoint(addr.toString()))
-            {
+        for (MailAddress addr : (Collection<MailAddress>) mail.getRecipients()) {
+            if (routingResolver.isXdEndpoint(addr.toString())) {
                 recipients.add(addr);
+            }       
+        }
+
+        if (recipients.isEmpty()) {
+            LOGGER.info("Matched no recipients");
+        } else {
+            for (MailAddress addr : recipients) {
+                LOGGER.info("Matched recipient " + addr.toString());
             }
         }
 
-        if (recipients.isEmpty())
-            LOGGER.info("Matched no recipients");
-        else
-            for (MailAddress addr : recipients)
-                LOGGER.info("Matched recipient " + addr.toString());
-
-        return mail.getRecipients();
+        return recipients;
     }
+
+  
 }

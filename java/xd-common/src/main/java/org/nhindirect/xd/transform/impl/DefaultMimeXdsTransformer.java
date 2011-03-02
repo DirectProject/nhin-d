@@ -25,7 +25,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.nhindirect.xd.transform.impl;
 
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
@@ -58,20 +57,18 @@ import org.nhindirect.xd.transform.util.type.MimeType;
  * 
  * @author vlewis
  */
-public class DefaultMimeXdsTransformer implements MimeXdsTransformer
-{
+public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
+
     private byte[] xdsDocument = null;
     private String xdsMimeType = null;
     private FormatCodeEnum xdsFormatCode = null;
     private DirectDocumentType documentType = null;
-
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultMimeXdsTransformer.class);
 
     /**
      * Construct a new DefaultMimeXdsTransformer object.
      */
-    public DefaultMimeXdsTransformer()
-    {
+    public DefaultMimeXdsTransformer() {
         super();
     }
 
@@ -81,63 +78,62 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      * @see org.nhindirect.transform.MimeXdsTransformer#transform(javax.mail.internet.MimeMessage)
      */
     @Override
-    public ProvideAndRegisterDocumentSetRequestType transform(MimeMessage mimeMessage) throws TransformationException
-    {
+    public ProvideAndRegisterDocumentSetRequestType transform(MimeMessage mimeMessage) throws TransformationException {
         ProvideAndRegisterDocumentSetRequestType request;
         DirectDocuments documents = new DirectDocuments();
 
-        try
-        {
-            Date sentDate        = mimeMessage.getSentDate();
-            String subject       = mimeMessage.getSubject();
-            String from          = mimeMessage.getFrom()[0].toString();
+        try {
+            Date sentDate = mimeMessage.getSentDate();
+            String subject = mimeMessage.getSubject();
+            String from = mimeMessage.getFrom()[0].toString();
             Address[] recipients = mimeMessage.getAllRecipients();
-            
+
             // Plain mail (no attachments)
-            if (MimeType.TEXT_PLAIN.matches(mimeMessage.getContentType()))
-            {
+            if (MimeType.TEXT_PLAIN.matches(mimeMessage.getContentType())) {
                 LOGGER.info("Handling plain mail (no attachments)");
 
                 // Get the document type
                 documentType = DirectDocumentType.lookup(mimeMessage);
-                
+
                 // Get the format code and MIME type
                 xdsFormatCode = documentType.getFormatCode();
                 xdsMimeType = documentType.getMimeType().getType();
-                
+
                 // Get the contents
                 xdsDocument = ((String) mimeMessage.getContent()).getBytes();
 
                 // Add document to the collection of documents
                 documents.getDocuments().add(getDocument(sentDate, from));
                 documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
-            }
-            // Multipart/mixed (attachments)
-            else if (MimeType.MULTIPART_MIXED.matches(mimeMessage.getContentType()))
-            {
+            } // Multipart/mixed (attachments)
+            else if (MimeType.MULTIPART_MIXED.matches(mimeMessage.getContentType())) {
                 LOGGER.info("Handling multipart/mixed");
 
                 MimeMultipart mimeMultipart = (MimeMultipart) mimeMessage.getContent();
 
                 // For each BodyPart
-                for (int i = 0; i < mimeMultipart.getCount(); i++)
-                {
+                for (int i = 0; i < mimeMultipart.getCount(); i++) {
                     BodyPart bodyPart = mimeMultipart.getBodyPart(i);
 
                     // Skip empty BodyParts
-                    if (bodyPart.getSize() <= 0)
-                    {
+                    if (bodyPart.getSize() <= 0) {
                         LOGGER.warn("Empty body, skipping");
                         continue;
                     }
-                    
+
                     // Get the document type
                     documentType = DirectDocumentType.lookup(bodyPart);
 
-                    if (LOGGER.isInfoEnabled()) LOGGER.info("File name: " + bodyPart.getFileName());
-                    if (LOGGER.isInfoEnabled()) LOGGER.info("Content type: " + bodyPart.getContentType());
-                    if (LOGGER.isInfoEnabled()) LOGGER.info("DocumentType: " + documentType.toString());
-                    
+                    if (LOGGER.isInfoEnabled()) {
+                        LOGGER.info("File name: " + bodyPart.getFileName());
+                    }
+                    if (LOGGER.isInfoEnabled()) {
+                        LOGGER.info("Content type: " + bodyPart.getContentType());
+                    }
+                    if (LOGGER.isInfoEnabled()) {
+                        LOGGER.info("DocumentType: " + documentType.toString());
+                    }
+
                     /*
                      * Special handling for XDM attachments.
                      * 
@@ -146,8 +142,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
                      * 
                      * Overwrite all documents with XDM content and then break
                      */
-                    if (DirectDocumentType.XDM.equals(documentType))
-                    {
+                    if (DirectDocumentType.XDM.equals(documentType)) {
                         XdmPackage xdmPackage = XdmPackage.fromXdmZipDataHandler(bodyPart.getDataHandler());
 
                         // Spec says if XDM package is present, this will be the only attachment
@@ -156,62 +151,58 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
 
                         break;
                     }
-                    
-                    // Get the formata code and MIME type
-                    xdsFormatCode = documentType.getFormatCode();
-                    xdsMimeType = documentType.getMimeType().getType();
-                    
-                    // Best guess for UNKNOWN MIME type
-                    if (DirectDocumentType.UNKNOWN.equals(documentType))
-                        xdsMimeType = bodyPart.getContentType();
-                    
-                    // Get the contents
-                    xdsDocument = read(bodyPart).getBytes();
-                    
-                    // Add the document to the collection of documents
-                    documents.getDocuments().add(getDocument(sentDate, from));
-                    documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
+                    if (DirectDocumentType.CCD.equals(documentType)) {
+                        // Get the formata code and MIME type
+                        xdsFormatCode = documentType.getFormatCode();
+                        xdsMimeType = documentType.getMimeType().getType();
+
+                        // Best guess for UNKNOWN MIME type
+                        if (DirectDocumentType.UNKNOWN.equals(documentType)) {
+                            xdsMimeType = bodyPart.getContentType();
+                        }
+
+                        // Get the contents
+                        xdsDocument = read(bodyPart).getBytes();
+
+                        // Add the document to the collection of documents
+                        documents.getDocuments().add(getDocument(sentDate, from));
+                        documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
+                    }
+                }
+            } else {
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn("Message content type (" + mimeMessage.getContentType() + ") is not supported, skipping");
                 }
             }
-            else
-            {
-                if (LOGGER.isWarnEnabled())
-                    LOGGER.warn("Message content type (" + mimeMessage.getContentType() + ") is not supported, skipping");
-            }
-        }
-        catch (MessagingException e)
-        {
-            if (LOGGER.isErrorEnabled())
+        } catch (MessagingException e) {
+            if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("Unexpected MessagingException occured while handling MimeMessage", e);
+            }
             throw new TransformationException("Unable to complete transformation.", e);
-        }
-        catch (IOException e)
-        {
-            if (LOGGER.isErrorEnabled())
+        } catch (IOException e) {
+            if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("Unexpected IOException occured while handling MimeMessage", e);
+            }
             throw new TransformationException("Unable to complete transformation.", e);
-        }
-        catch (Exception e)
-        {
-            if (LOGGER.isErrorEnabled())
+        } catch (Exception e) {
+            if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("Unexpected Exception occured while handling MimeMessage", e);
+            }
             throw new TransformationException("Unable to complete transformation", e);
         }
-        
-        try
-        {
+
+        try {
             request = documents.toProvideAndRegisterDocumentSetRequestType();
-        }
-        catch (IOException e)
-        {
-            if (LOGGER.isErrorEnabled())
+        } catch (IOException e) {
+            if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("Unexpected IOException occured while transforming to ProvideAndRegisterDocumentSetRequestType", e);
+            }
             throw new TransformationException("Unable to complete transformation", e);
         }
-        
+
         return request;
     }
-  
+
     /*
      * Metadata Attribute           XDS     Minimal Metadata
      * -----------------------------------------------------
@@ -226,27 +217,27 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      * uniqueId                     R       R
      */
     private DirectDocuments.SubmissionSet getSubmissionSet(String subject, Date sentDate, String auth,
-            Address[] recipients) throws Exception
-    {
+            Address[] recipients) throws Exception {
         DirectDocuments.SubmissionSet submissionSet = new DirectDocuments.SubmissionSet();
-        
+
         // (R) Minimal Metadata Source
         submissionSet.setAuthorTelecommunication(auth); // TODO: format this correctly
         submissionSet.setSourceId("TODO"); // TODO: "UUID URN mapped by configuration to sending organization"
         submissionSet.setSubmissionTime(sentDate);
         submissionSet.setUniqueId(UUID.randomUUID().toString());
-        for (Address address : recipients)
+        for (Address address : recipients) {
             submissionSet.getIntendedRecipient().add("||^^Internet^" + address.toString());
-        
+        }
+
         // (R2) Minimal Metadata Source
         // --
-        
+
         // (O) Minimal Metadata Source
         // TODO: title (subject)
-            
+
         // Additional metadata from document parsing
         documentType.parse(new String(xdsDocument), submissionSet);
-        
+
         return submissionSet;
     }
 
@@ -268,8 +259,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
      * typeCode                     R       R2
      * uniqueId                     R       R
      */
-    private DirectDocument2 getDocument(Date sentDate, String auth) throws Exception
-    {
+    private DirectDocument2 getDocument(Date sentDate, String auth) throws Exception {
         DirectDocument2 document = new DirectDocument2();
         DirectDocument2.Metadata metadata = document.getMetadata();
 
@@ -278,30 +268,28 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer
         metadata.setUniqueId(UUID.randomUUID().toString());
 
         // (R2) Minimal Metadata Source
-        if (xdsFormatCode != null)
+        if (xdsFormatCode != null) {
             metadata.setFormatCode(xdsFormatCode);
+        }
 
         // Additional metadata from document parsing
         documentType.parse(new String(xdsDocument), metadata);
-        
-        document.setData(new String(xdsDocument));
+
+        document.setData(xdsDocument);
 
         return document;
     }
-       
-    private static String read(BodyPart bodyPart) throws MessagingException, IOException
-    {
+
+    private static String read(BodyPart bodyPart) throws MessagingException, IOException {
         InputStream inputStream = bodyPart.getInputStream();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         int data = 0;
         byte[] buffer = new byte[1024];
-        while ((data = inputStream.read(buffer)) != -1)
-        {
+        while ((data = inputStream.read(buffer)) != -1) {
             outputStream.write(buffer, 0, data);
         }
 
         return new String(outputStream.toByteArray());
     }
-
 }

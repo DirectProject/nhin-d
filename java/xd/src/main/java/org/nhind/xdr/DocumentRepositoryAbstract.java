@@ -68,6 +68,7 @@ import org.nhindirect.xd.transform.impl.DefaultXdsDirectDocumentsTransformer;
 
 import com.gsihealth.auditclient.AuditMessageGenerator;
 import com.gsihealth.auditclient.type.AuditMethodEnum;
+import org.nhindirect.xd.transform.parse.ParserHL7;
 
 /**
  * Base class for handling incoming XDR requests.
@@ -155,11 +156,8 @@ public abstract class DocumentRepositoryAbstract
                 forwards = Arrays.asList((new URI(directTo).getSchemeSpecificPart()));
             else
             {
-                for (String recipient : documents.getSubmissionSet().getIntendedRecipient())
-                {
-                    String address = StringUtils.remove(recipient, "|");
-                    forwards.add(StringUtils.splitPreserveAllTokens(address, "^")[0]);
-                }
+                forwards = ParserHL7.parseRecipients(documents);
+               
             }
 
             messageId = UUID.randomUUID().toString();

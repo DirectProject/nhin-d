@@ -127,6 +127,7 @@ public enum DirectDocumentType
             
             // (R2) XDS Source
             // TODO: author (We should be able to get this out of the CCD)
+           // for now dont even send it
             metadata.setSourcePatient(sourcePatient);
         }
     },
