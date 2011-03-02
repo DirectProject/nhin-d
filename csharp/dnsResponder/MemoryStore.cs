@@ -71,10 +71,12 @@ namespace Health.Direct.DnsResponder
         {
             DnsStandard.RecordType questionType = request.Question.Type;
             DnsResponse response = new DnsResponse(request);
+            int matchCount = 0;
             foreach (DnsResourceRecord record in matches)
             {
                 if (record.Type == questionType)
                 {
+                    ++matchCount;
                     switch (record.Type)
                     {
                         default:
@@ -87,6 +89,11 @@ namespace Health.Direct.DnsResponder
                             break;
                     }
                 }
+            }
+            
+            if (matchCount == 0)
+            {
+                throw new DnsServerException(DnsStandard.ResponseCode.NameError);
             }
             
             return response;

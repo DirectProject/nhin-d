@@ -5,13 +5,13 @@
     <head>
 <%@ include file="./WEB-INF/jsp/include.jsp" %>
 
-		<%-- Redirected because we can't set the welcome page to a virtual URL. --%>
-		<c:redirect url="config/main"/>
+	<%-- Redirected because we can't set the welcome page to a virtual URL. --%>
+	<c:redirect url="config/main"/>
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>NHIN Direct RI Java Configurtion UI - Welcome Page</title>
+        <title><fmt:message key="project.name" /> RI Java Configuration UI</title>
     </head>
     <body>	    
-        <h1>Hello NHIN-Direct Administrator!</h1>
+        <h1>Hello <fmt:message key="project.name" /> Administrator!</h1>
     </body>
 </html>

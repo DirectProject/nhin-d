@@ -20,25 +20,39 @@ namespace Health.Direct.DnsResponder
 {
     public interface IWorkLoadThrottle
     {
+        int WaitCount {get;}
         void Wait();
         void Completed();
     }
 
     public class NullThrottle : IWorkLoadThrottle
     {
+        int m_waitCount = 0;
+        
+        public NullThrottle()
+        {
+        }
+        
+        public int WaitCount
+        {
+            get { return m_waitCount;}
+        }
+        
         public void Wait()
-        {            
+        {
+            Interlocked.Increment(ref m_waitCount);
         }
 
         public void Completed()
         {
+            Interlocked.Decrement(ref m_waitCount);
         }
     }
 
     public class WorkThrottle : IWorkLoadThrottle
     {
         Semaphore m_semaphore;
-        //int m_waitCalls;
+        int m_waitCount;
         
         public WorkThrottle(int maxParallel)
         {
@@ -46,26 +60,25 @@ namespace Health.Direct.DnsResponder
         }        
         
         public event Action<WorkThrottle, Exception> Error;
-        /*        
-        public int WaitCalls
+
+        public int WaitCount
         {
             get
             {
-                return m_waitCalls;
+                return m_waitCount;
             }
         }
-        */
                 
         public void Wait()
         {
             m_semaphore.WaitOne();
-            //Interlocked.Increment(ref m_waitCalls);
+            Interlocked.Increment(ref m_waitCount);
         }
         
         public void Wait(int timeout)
         {
             m_semaphore.WaitOne(timeout);
-            //Interlocked.Increment(ref m_waitCalls);
+            Interlocked.Increment(ref m_waitCount);
         }
 
         public void Completed()
@@ -73,7 +86,7 @@ namespace Health.Direct.DnsResponder
             try
             {
                 m_semaphore.Release();
-                //Interlocked.Decrement(ref m_waitCalls);
+                Interlocked.Decrement(ref m_waitCount);
             }
             catch (Exception ex)
             {

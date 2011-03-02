@@ -19,20 +19,35 @@ using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.DnsResponder
 {
+    public interface IDnsContext
+    {
+        DnsBuffer DnsBuffer
+        {
+            get;
+        }
+        
+        void ReceiveRequest();
+        void SendResponse();
+    }
+    
     public abstract class DnsResponder
     {
-        DnsServer m_server;
+        IDnsStore m_store;
         DnsServerSettings m_settings;
-        
-        public DnsResponder(DnsServer server)
+                
+        public DnsResponder(IDnsStore store, DnsServerSettings settings)
         {
-            if (server == null)
+            if (store == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("store");
+            }
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
             }
             
-            m_server = server;
-            m_settings = server.Settings;
+            m_store = store;
+            m_settings = settings;
         }
                 
         public DnsServerSettings Settings
@@ -72,7 +87,7 @@ namespace Health.Direct.DnsResponder
             {
                 this.Validate(request);
 
-                response = m_server.Store.Get(request);
+                response = m_store.Get(request);
                 if (response == null || !response.IsSuccess)
                 {
                     throw new DnsServerException(DnsStandard.ResponseCode.NameError);
@@ -88,19 +103,58 @@ namespace Health.Direct.DnsResponder
             {
                 response = this.ProcessError(request, serverEx.ResponseCode);
             }
-
+            catch(Exception ex)
+            {
+                this.HandleException(ex);
+                response = this.ProcessError(request, DnsStandard.ResponseCode.ServerFailure);
+            }
+            
             this.Responding.SafeInvoke(response);
             
             return response;
         }
+        
+        public void RequestResponse(IDnsContext context, ushort maxBufferLength)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException();
+            }
 
+            try
+            {
+                //
+                // If we fail at parsing or receiving the request, then any exceptions will get logged and
+                // the socket will be silently closed
+                // 
+                context.ReceiveRequest();
+
+                DnsResponse response = this.ProcessRequest(context.DnsBuffer);
+                if (response != null)
+                {
+                    this.Serialize(response, context.DnsBuffer, maxBufferLength);
+                    context.SendResponse();
+                }
+            }
+            catch (IndexOutOfRangeException)
+            {
+                // Valid exception thrown during processing when bad requests are sent...
+                // We won't dignify bad requests with a response
+            }
+            catch (DnsServerException)
+            {
+                // Valid exception thrown during processing when bad requests are sent...
+                // We won't dignify bad requests with a response
+            }
+        }
+        
         DnsResponse ProcessError(DnsRequest request, DnsStandard.ResponseCode code)
         {
             DnsResponse errorResponse = new DnsResponse(request);
             errorResponse.Header.ResponseCode = code;
             return errorResponse;
         }
-
+        
         protected DnsRequest DeserializeRequest(byte[] buffer, int requestSize)
         {
             if (requestSize <= 0 || requestSize > this.Settings.MaxRequestSize)
@@ -131,7 +185,7 @@ namespace Health.Direct.DnsResponder
                 throw new DnsProtocolException(DnsProtocolError.InvalidQuestionCount);
             }
 
-            if (request.Header.QuestionCount > m_server.Settings.MaxQuestionCount)
+            if (request.Header.QuestionCount > this.Settings.MaxQuestionCount)
             {
                 throw new DnsServerException(DnsStandard.ResponseCode.Refused);
             }
@@ -168,6 +222,10 @@ namespace Health.Direct.DnsResponder
                     match.TTL = this.Settings.DefaultTTL;
                 }
             } 
+        }
+        
+        protected virtual void HandleException(Exception ex)
+        {
         }
     }
 }

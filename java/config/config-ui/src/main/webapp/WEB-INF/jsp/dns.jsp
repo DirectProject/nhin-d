@@ -7,8 +7,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title><fmt:message key="dns.title" /></title>
 <script>
-$(document).ready(function() 
-	{ 
+$(document).ready(function()
+	{
 	    $("#dnsAList").tablesorter();
 	    $("#dnsA4List").tablesorter();
 	    $("#dnsCnameList").tablesorter();
@@ -21,27 +21,10 @@ $(document).ready(function()
 <body>
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
 
-<fieldset>
-<h3>NHIN Direct Java Reference Implementation - DNS Resolver
-Configuration</h3>
-<form action="<c:url value="/j_spring_security_logout"/>">
-<button style="float: right;" name="logoutBtn" id="logoutBtn"
-	type="submit">Log out</button>
+<h3>DNS Resolver Configuration</h3>
 
-</form>
-</fieldset>
-<hr>
-<spring:url value="/config/dns/navigate" var="formUrl" /> <form:form
-	id="navForm" action="${fn:escapeXml(formUrl)}" cssClass="cleanform"
-	commandName="searchDomainForm" method="GET">
-	<button name="submitType" id="submitType" type="submit"
-		value="gotosettings">Settings</button>
-	<button name="submitType" id="submitType" type="submit"
-		value="gotocertificates">Certificates</button>
-	<button name="submitType" id="submitType" type="submit"
-		value="gotodomains">Domains</button>
-</form:form>
-<hr>
+<br><br>
+
 <c:if test="${param.serviceError == 1}">
 	<div class="error">
 	<p class="error">An internal service error has occurred. Error
@@ -64,7 +47,7 @@ Configuration</h3>
 			<th><form:label path="dest">IP Address
 	                          <form:errors path="dest" cssClass="error" />
 			</form:label></th>
-			<th><form:label title="In seconds" path="ttl">TTL 
+			<th><form:label title="In seconds" path="ttl">TTL
 	                         <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 		</tr>
@@ -120,7 +103,7 @@ Configuration</h3>
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteADnsEntries">Remove Selected</button>
+			value="deleteADnsEntries">Remove Selected As</button>
 	</form:form></div>
 	</fieldset>
 </c:if></fieldset>
@@ -140,7 +123,7 @@ Configuration</h3>
 			<th><form:label path="dest">IP Address
                               <form:errors path="dest" cssClass="error" />
 			</form:label></th>
-			<th><form:label title="In seconds" path="ttl">TTL 
+			<th><form:label title="In seconds" path="ttl">TTL
                              <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 		</tr>
@@ -197,7 +180,7 @@ Configuration</h3>
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteA4DnsEntries">Remove Selected</button>
+			value="deleteA4DnsEntries">Remove Selected A4s</button>
 	</form:form></fieldset>
 	</div>
 </c:if></fieldset>
@@ -218,7 +201,7 @@ Configuration</h3>
 			<th><form:label path="dest">Alias for
                               <form:errors path="dest" cssClass="error" />
 			</form:label></th>
-			<th><form:label title="In seconds" path="ttl">TTL 
+			<th><form:label title="In seconds" path="ttl">TTL
                              <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 		</tr>
@@ -274,7 +257,7 @@ Configuration</h3>
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteCNAMEDnsEntries">Remove Selected</button>
+			value="deleteCNAMEDnsEntries">Remove Selected CNAMEs</button>
 	</form:form></fieldset>
 	</div>
 </c:if></fieldset>
@@ -298,22 +281,22 @@ Records</legend>
 			<td><form:input maxlength="5" path="priority" /></td>
 		</tr>
 		<tr>
-			
+
 			<th><form:label path="name">Host
                             <form:errors path="name" cssClass="error" />
 			</form:label></th>
 			<td><form:input path="name" /></td>
 		</tr>
 		<tr>
-			
+
 			<th><form:label path="dest">Points To
                               <form:errors path="dest" cssClass="error" />
 			</form:label></th>
 			<td><form:input id="dest" path="dest" /></td>
 		</tr>
 		<tr>
-			
-			<th><form:label title="In seconds" path="ttl">TTL 
+
+			<th><form:label title="In seconds" path="ttl">TTL
                              <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 			<td><form:input maxlength="8" id="ttl" path="ttl" /></td>
@@ -371,9 +354,9 @@ Records</legend>
 		</div>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteMXDnsEntries">Remove Selected</button>
+			value="deleteMXDnsEntries">Remove Selected MXs</button>
 	</form:form></fieldset>
-	
+
 </c:if>
 
 </fieldset>
@@ -401,13 +384,13 @@ Records</legend>
 		</tr>
 		<tr>
 			<th><form:label title="Domain Name for which this is valid"
-				path="name">Domain 
+				path="name">Domain
                             <form:errors path="name" cssClass="error" />
 			</form:label></th>
 			<td><form:input path="name" /></td>
 		</tr>
 		<tr>
-			<th><form:label title="In seconds" path="ttl">TTL 
+			<th><form:label title="In seconds" path="ttl">TTL
                             <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 			<td><form:input maxlength="8" path="ttl" /></td>
@@ -503,7 +486,7 @@ Records</legend>
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteSRVDnsEntries">Remove Selected</button>
+			value="deleteSRVDnsEntries">Remove Selected SRVs</button>
 	</form:form></fieldset>
 	</div>
 </c:if>
@@ -534,13 +517,13 @@ Records</legend>
 		</tr>
 		<tr>
 			<th><form:label title="Name Server"
-				path="domain">Name Server 
+				path="domain">Name Server
                             <form:errors path="domain" cssClass="error" />
 			</form:label></th>
 			<td><form:input path="domain" /></td>
 		</tr>
 		<tr>
-			<th><form:label title="In seconds" path="ttl">TTL 
+			<th><form:label title="In seconds" path="ttl">TTL
                             <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 			<td><form:input maxlength="8" path="ttl" /></td>
@@ -646,7 +629,7 @@ Records</legend>
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteSOADnsEntries">Remove Selected</button>
+			value="deleteSOADnsEntries">Remove Selected SOAs</button>
 	</form:form></fieldset>
 	</div>
 </c:if>
@@ -667,7 +650,7 @@ Records</legend>
 			<th><form:label path="dest">Target
 	                          <form:errors path="dest" cssClass="error" />
 			</form:label></th>
-			<th><form:label title="In seconds" path="ttl">TTL 
+			<th><form:label title="In seconds" path="ttl">TTL
 	                         <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 		</tr>
@@ -723,11 +706,8 @@ Records</legend>
 		</table>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
-			value="deleteNSDnsEntries">Remove Selected</button>
+			value="deleteNSDnsEntries">Remove Selected NSs</button>
 	</form:form></div>
 	</fieldset>
 </c:if></fieldset>
-
-
-</body>
-</html>
+<%@ include file="/WEB-INF/jsp/footer.jsp"%>

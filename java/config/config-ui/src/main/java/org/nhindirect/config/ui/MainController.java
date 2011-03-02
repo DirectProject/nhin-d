@@ -126,20 +126,22 @@ public class MainController {
 						        HttpSession session,
 						        @ModelAttribute SimpleForm simpleForm,
 						        Model model,
-						        @RequestParam(value="submitType") String actionPath)  { 		
+						        @RequestParam(value="submitType") String actionPath,
+                                                        @RequestParam(value="domainName", required=false) String searchDomainName,
+                                                        @RequestParam(value="status", required=false) EntityStatus searchStatus)  {
 		if (log.isDebugEnabled()) log.debug("Enter search");
 
 		String message = "Search complete";
 		ModelAndView mav = new ModelAndView();
 		// check to see if new domain requested
-		if (actionPath.equalsIgnoreCase("gotosettings"))
+		if (actionPath.equalsIgnoreCase("gotosettings") || actionPath.equalsIgnoreCase("settings"))
 		{
 			if (log.isDebugEnabled()) log.debug("trying to go to the settings page");
 			String action = "add";
 			model.addAttribute("action", action);
 			
 			mav.setViewName("settings");
-			mav.addObject("actionPath", actionPath);
+			mav.addObject("actionPath", "gotosettings");
 			SettingsForm form = (SettingsForm) session.getAttribute("settingsForm");
 			if (form == null) {
 				form = new SettingsForm();
@@ -161,14 +163,14 @@ public class MainController {
 			model.addAttribute("simpleForm",new SimpleForm());
 			model.addAttribute("settingsResults", results);			
 		}	
-		else if (actionPath.equalsIgnoreCase("gotocertificates"))
+		else if (actionPath.equalsIgnoreCase("gotocertificates") || actionPath.equalsIgnoreCase("certificates"))
 		{
 			if (log.isDebugEnabled()) log.debug("trying to go to the certificates page");
 			String action = "Update";
 			model.addAttribute("action", action);
 			
 			mav.setViewName("certificates");
-			mav.addObject("actionPath", actionPath);
+			mav.addObject("actionPath", "gotocertificates");
 			CertificateForm form = (CertificateForm) session.getAttribute("certificateForm");
 			if (form == null) {
 				form = new CertificateForm();
@@ -190,7 +192,7 @@ public class MainController {
 			model.addAttribute("simpleForm",new SimpleForm());
 			model.addAttribute("certificatesResults", results);
 		}
-		else if (actionPath.equalsIgnoreCase("newdomain"))
+		else if (actionPath.equalsIgnoreCase("newdomain") || actionPath.equalsIgnoreCase("new domain"))
 		{
 			if (log.isDebugEnabled()) log.debug("trying to go to the new domain page");
 			HashMap<String, String> msgs = new HashMap<String, String>();
@@ -218,10 +220,10 @@ public class MainController {
 			model.addAttribute("action", action);
 			
 			mav.setViewName("domain");
-			mav.addObject("actionPath", actionPath);
+			mav.addObject("actionPath", "newdomain");
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		}		
-		else if (actionPath.equalsIgnoreCase("gotodns"))
+		else if (actionPath.equalsIgnoreCase("gotodns") || actionPath.equalsIgnoreCase("DNS Entries"))
 		{
 		    if (log.isDebugEnabled()) log.debug("trying to go to the DNS page");
             HashMap<String, String> msgs = new HashMap<String, String>();
@@ -256,7 +258,7 @@ public class MainController {
         	
             mav.setViewName("dns");
             
-            mav.addObject("actionPath", actionPath);
+            mav.addObject("actionPath", "gotodns");
 
 			model.addAttribute("AdnsForm", new DNSEntryForm());
             model.addAttribute("AAdnsForm", new DNSEntryForm());
@@ -269,17 +271,21 @@ public class MainController {
             
             model.addAttribute("simpleForm",new SimpleForm());            
 		}
-		else
+	else
 		{
-    		SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
+    		
+                
+
+                SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
     		if (form == null) { 
     			form = new SearchDomainForm();
     		}
     		model.addAttribute(form);
     		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
     		
-    		String domain = form.getDomainName();
-    		EntityStatus status = form.getStatus();
+    		String domain = (!searchDomainName.isEmpty()) ? searchDomainName : "%";
+    		EntityStatus status = searchStatus;
+                
     		List<Domain> results = null;
     		if (configSvc != null) {
     		    Collection<Domain> domains = configSvc.searchDomain(domain, status);

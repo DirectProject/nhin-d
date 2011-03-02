@@ -117,7 +117,7 @@ namespace Health.Direct.DnsResponder
             
             if (socket != null)
             {
-                socket.SafeClose(timeout);
+                socket.SafeShutdownAndClose(SocketShutdown.Both, timeout);
             }
         }
         

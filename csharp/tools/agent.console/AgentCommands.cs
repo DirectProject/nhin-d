@@ -18,12 +18,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Net.Mail;
 using Health.Direct;
+using Health.Direct.Config.Tools;
+using Health.Direct.Common.Mail;
 using Health.Direct.Agent;
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Mime;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Tools.Command;
+using Health.Direct.SmtpAgent;
 
 namespace Health.Direct.Tools.Agent
 {
@@ -47,8 +51,12 @@ namespace Health.Direct.Tools.Agent
                 return m_agent;
             }
         }
-        
-        [Command(Name="Agent_Start")]
+
+        const string Agent_Start_Usage =
+            "Start a DirectAgent - uses DirectAgent object directly. Used for debugging"
+            + Constants.CRLF + "path|domain [isDomain : true if treat prev parameter as domain name, otherwise it's a config file name.]";
+
+        [Command(Name="Agent_Start", Usage=Agent_Start_Usage)]
         public void StartAgent(string[] args)
         {
             if (m_agent != null)
@@ -56,14 +64,16 @@ namespace Health.Direct.Tools.Agent
                 return;
             }
             
-            string configFile = args.GetOptionalValue(0, null);            
-            if (string.IsNullOrEmpty(configFile))
+            string pathOrDomain = args.GetOptionalValue(0, "nhind.hsgincubator.com");
+            bool isDomain = args.GetOptionalValue<bool>(1, true);
+
+            if (isDomain)
             {
-                m_agent = new DirectAgent("nhind.hsgincubator.com");
+                m_agent = new DirectAgent(pathOrDomain);
             }
             else
             {
-                AgentSettings settings = AgentSettings.LoadFile(configFile);
+                AgentSettings settings = AgentSettings.LoadFile(pathOrDomain);
                 m_agent = settings.CreateAgent();
             }
         }
@@ -89,5 +99,15 @@ namespace Health.Direct.Tools.Agent
             OutgoingMessage message = this.Agent.ProcessOutgoing(files.Read());
             files.Write(message.Message);
         }
+
+        [Command(Name = "Agent_Send_Outgoing")]
+        public void SendOutgoing(string[] args)
+        {
+            string sourceFile = args.GetRequiredValue(0);
+            string smtpServer = args.GetRequiredValue(1);
+            
+            OutgoingMessage outgoing = this.Agent.ProcessOutgoing(File.ReadAllText(sourceFile));
+            outgoing.Send(smtpServer);
+        }                
     }
 }

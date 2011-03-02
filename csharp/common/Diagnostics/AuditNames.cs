@@ -44,6 +44,41 @@ namespace Health.Direct.Common.Diagnostics
             /// Audit message indicating the outgoing STMP Message has been sent.
             /// </summary>
             public const string OutgoingSent = "Outgoing Message Sent";
+
+            /// <summary>
+            /// Audit message indicating the outgoing STMP Message has been rejected.
+            /// </summary>
+            public const string OutgoingRejected = "Outgoing Message Rejected";
+
+            /// <summary>
+            /// Audit message indicating the message was rejected before we could determine what it is
+            /// </summary>
+            public const string MessageRejected = "Message Rejected";
+            
+            /// <summary>
+            /// Return the appropriate Audit message for accepted messages
+            /// </summary>
+            /// <param name="isIncoming">Incoming message?</param>
+            /// <returns>audit text</returns>
+            public static string GetAcceptedMessage(bool isIncoming)
+            {
+                return isIncoming ? IncomingAccepted : OutgoingSent;
+            }
+            
+            /// <summary>
+            /// Returns the appropriate Audit message for rejected messages
+            /// </summary>
+            /// <param name="isIncoming">Incoming message?</param>
+            /// <returns>audit text</returns>
+            public static string GetRejectedMessage(bool? isIncoming)
+            {
+                if (isIncoming == null)
+                {
+                    return MessageRejected;
+                }
+                
+                return isIncoming.Value ? IncomingRejected : OutgoingRejected;
+            }
         }
     }
 }

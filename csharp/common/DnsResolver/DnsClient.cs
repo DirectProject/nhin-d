@@ -103,7 +103,7 @@ namespace Health.Direct.Common.DnsResolver
         /// <summary>
         /// Default Receive Timeout
         /// </summary>
-        public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(2);
+        public static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
         
         IPEndPoint m_dnsServer;
         Socket m_udpSocket;
@@ -315,10 +315,6 @@ namespace Health.Direct.Common.DnsResolver
             bool useUDPFirst = this.UseUDPFirst;
             int attempt = 0;
             int maxAttempts = this.m_maxRetries + 1;
-            if (!useUDPFirst)
-            {
-                attempt = maxAttempts - 1;
-            }
             while (attempt < maxAttempts)
             {
                 attempt++;
@@ -361,7 +357,26 @@ namespace Health.Direct.Common.DnsResolver
                     }
                     
                     useUDPFirst = false;
-                    attempt = maxAttempts - 1; // We're dropping to TCP, which is more robust...
+                }
+                catch(DnsServerException se)
+                {
+                    //
+                    // Server failures deserve a retry
+                    //
+                    if (se.ResponseCode != DnsStandard.ResponseCode.ServerFailure)
+                    {
+                        throw;
+                    }
+                }
+                catch(DnsProtocolException pe)
+                {
+                    //
+                    // Random failures also deserve a retry
+                    //
+                    if (pe.Error != DnsProtocolError.Failed)
+                    {
+                        throw;
+                    }
                 }
                 catch(DnsException)
                 {
@@ -836,36 +851,45 @@ namespace Health.Direct.Common.DnsResolver
         {
             using(Socket tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
+                tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, this.TimeoutInMilliseconds);
                 tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, this.TimeoutInMilliseconds);
+                
                 tcpSocket.Connect(m_dnsServer);
                 
-                m_lengthBuffer.Clear();
-                m_lengthBuffer.AddUshort((ushort)m_requestBuffer.Count);
-                
-                tcpSocket.Send(m_lengthBuffer.Buffer, m_lengthBuffer.Count, SocketFlags.None);
-                tcpSocket.Send(m_requestBuffer.Buffer, m_requestBuffer.Count, SocketFlags.None);
+                try
+                {
+                    m_lengthBuffer.Clear();
+                    m_lengthBuffer.AddUshort((ushort)m_requestBuffer.Count);
+                    
+                    tcpSocket.Send(m_lengthBuffer.Buffer, m_lengthBuffer.Count, SocketFlags.None);
+                    tcpSocket.Send(m_requestBuffer.Buffer, m_requestBuffer.Count, SocketFlags.None);
 
-                //
-                // First, receive the response message length
-                //
-                m_lengthBuffer.Clear();
-                m_lengthBuffer.Count = tcpSocket.Receive(m_lengthBuffer.Buffer, m_lengthBuffer.Capacity, SocketFlags.None);
-                if (m_lengthBuffer.Count == 0)
-                {
-                    throw new DnsProtocolException(DnsProtocolError.Failed);
+                    //
+                    // First, receive the response message length
+                    //
+                    m_lengthBuffer.Clear();
+                    m_lengthBuffer.Count = tcpSocket.Receive(m_lengthBuffer.Buffer, m_lengthBuffer.Capacity, SocketFlags.None);
+                    if (m_lengthBuffer.Count == 0)
+                    {
+                        throw new DnsProtocolException(DnsProtocolError.Failed);
+                    }
+                    
+                    DnsBufferReader reader = m_lengthBuffer.CreateReader();
+                    ushort responseSize = reader.ReadUShort();
+                    m_responseBuffer.ReserveCapacity(responseSize);
+                    //
+                    // Now receive the real response
+                    //
+                    m_responseBuffer.Count = tcpSocket.Receive(m_responseBuffer.Buffer, responseSize, SocketFlags.None);
+                    if (m_responseBuffer.Count != responseSize)
+                    {
+                        throw new DnsProtocolException(DnsProtocolError.Failed);
+                    }                
                 }
-                
-                DnsBufferReader reader = m_lengthBuffer.CreateReader();
-                ushort responseSize = reader.ReadUShort();
-                m_responseBuffer.ReserveCapacity(responseSize);
-                //
-                // Now receive the real response
-                //
-                m_responseBuffer.Count = tcpSocket.Receive(m_responseBuffer.Buffer, responseSize, SocketFlags.None);
-                if (m_responseBuffer.Count != responseSize)
+                finally
                 {
-                    throw new DnsProtocolException(DnsProtocolError.Failed);
-                }                
+                    tcpSocket.Shutdown(SocketShutdown.Both);
+                }
             }
         }
                 

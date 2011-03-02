@@ -13,9 +13,9 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.DnsResponder.Tests
@@ -102,6 +102,48 @@ namespace Health.Direct.DnsResponder.Tests
             store.Add(new AddressRecord("bar.com", "192.168.0.1"));
             store.Add(new AddressRecord("goo.com", "192.167.0.1"));
             store.Add(new AddressRecord("goo.com", "192.167.0.2"));
+        }
+    }
+    
+    /// <summary>
+    /// VERY basic MOCK store, to test out Client retry
+    /// </summary>
+    public class FailureStore : IDnsStore
+    {
+        IDnsStore m_innerStore;
+        long m_requestCount = 0;
+        
+        public FailureStore(IDnsStore innerStore)
+        {
+            m_innerStore = innerStore;            
+        }
+        
+        public IDnsStore Inner
+        {
+            get { return m_innerStore; }
+        }
+        
+        /// <summary>
+        /// Success for every second request by default
+        /// </summary>
+        public int SuccessInterval = 2;
+        public DnsStandard.ResponseCode ErrorCode = DnsStandard.ResponseCode.ServerFailure;
+        public bool ThrowDnsException = true;
+               
+        public DnsResponse Get(DnsRequest request)
+        {
+            long requestNumber = System.Threading.Interlocked.Increment(ref m_requestCount);
+            if (this.SuccessInterval <= 0 || (requestNumber % this.SuccessInterval) != 0)
+            {
+                if (this.ThrowDnsException)
+                {
+                    throw new DnsServerException(ErrorCode);
+                }
+                
+                throw new InvalidOperationException();
+            }
+            
+            return m_innerStore.Get(request);
         }
     }
 }

@@ -53,6 +53,8 @@ namespace Health.Direct.DnsResponder
         
         internal void Init(Socket socket, long socketID)
         {
+            this.Clear();
+            
             m_socket = socket;
             m_socketID = socketID;
         }

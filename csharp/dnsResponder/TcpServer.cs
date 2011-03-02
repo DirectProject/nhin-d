@@ -94,9 +94,10 @@ namespace Health.Direct.DnsResponder
 
         void AcceptConnection(object sender, SocketAsyncEventArgs args)
         {
+            Socket socket = null;
             try
             {
-                Socket socket = args.AcceptSocket;
+                socket = args.AcceptSocket;
                 SocketError socketError = args.SocketError;
                             
                 if (sender != null)
@@ -120,40 +121,12 @@ namespace Health.Direct.DnsResponder
                     base.ProcessingComplete();
                     return;
                 }
-        
-                this.AcceptConnection(socket);
-            }
-            catch(Exception ex)
-            {
-                this.NotifyError(ex);
-            }
-        }
 
-        void AcceptConnection(Socket socket)
-        {
-            try
-            {
-                //
-                // Fire the connection accepted event
-                //
                 this.ConnectionAccepted.SafeInvoke(socket);
-                //
-                // Configure the socket for timeouts before dispatch
-                // 
-                this.Settings.ConfigureSocket(socket); 
-                //
-                // Ok, we can do some work now
-                //
-                this.Dispatch(socket);
 
+                this.Dispatch(socket);
+                
                 socket = null;
-            }
-            catch(SocketException)
-            {
-                //
-                // Eat these socket exceptions silently, as they happen all the time
-                // including when the client randomly closes the socket, etc..
-                //
             }
             catch(Exception ex)
             {
@@ -161,9 +134,9 @@ namespace Health.Direct.DnsResponder
             }
             finally
             {
-                if (socket != null)  // This is non-null if there was an exception and we could not dispatch the socket cleanly
+                if (socket != null)
                 {
-                    socket.SafeClose();
+                    socket.SafeShutdownAndClose(SocketShutdown.Both, this.Settings.SocketCloseTimeout);
                     this.ConnectionClosed.SafeInvoke(socket);
                 }
             }
@@ -180,21 +153,36 @@ namespace Health.Direct.DnsResponder
         /// <param name="socket"></param>
         void Dispatch(Socket socket)
         {
+            bool synchronousCompletion = true;
             TContext context = null;
             long socketID = 0;
 
-            socketID = m_activeSockets.Add(socket);                
+            socketID = m_activeSockets.Add(socket);
+
             try
             {
+                this.Settings.ConfigureSocket(socket);
+                               
                 context = this.CreateContext(socket, socketID);                    
                 socketID = 0;                
-                
-                bool completed = m_handler.Process(context);
-                if (!completed)
-                {  
-                    // Processing will be completed asynchronously. Application will call ProcessingComplete
-                    context = null;
-                }
+
+                synchronousCompletion = m_handler.Process(context);
+                //
+                // If synchronousCompletion is false, then:
+                // Processing will be completed ASYNCHRONOUSLY. 
+                // Application will call ProcessingComplete
+                //
+            }
+            catch (SocketException)
+            {
+                //
+                // Eat these socket exceptions silently, as they happen all the time
+                // including when the client randomly closes the socket, etc..
+                //
+            }
+            catch(Exception ex)
+            {
+                this.NotifyError(ex);
             }
             finally
             {
@@ -202,32 +190,31 @@ namespace Health.Direct.DnsResponder
                 // The socket table is safe - it will not throw if we try to shut down an already shutdown socket. 
                 // In the very very rare case if that happens
                 //
-                if (context != null)
+                if (synchronousCompletion)
                 {
                     this.ProcessingComplete(context);
                 }
                 if (socketID > 0)
                 {
-                    m_activeSockets.Shutdown(socketID);
+                    m_activeSockets.Shutdown(socketID, this.Settings.SocketCloseTimeout);
+                    this.ConnectionClosed.SafeInvoke(socket);
                 }
             }
         }
         
         public void ProcessingComplete(TContext context)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException("context");
-            }
-            
             try
             {
-                if (context.HasValidSocket)
+                if (context != null)
                 {
-                    m_activeSockets.Shutdown(context.SocketID, this.Settings.SocketCloseTimeout);
-                    this.ConnectionClosed.SafeInvoke(context.Socket);
+                    if (context.HasValidSocket)
+                    {
+                        m_activeSockets.Shutdown(context.SocketID, this.Settings.SocketCloseTimeout);
+                        this.ConnectionClosed.SafeInvoke(context.Socket);
+                    }
+                    this.ReleaseContext(context);
                 }
-                this.ReleaseContext(context);
             }
             catch (Exception ex)
             {
@@ -251,9 +238,15 @@ namespace Health.Direct.DnsResponder
         }
         
         void ReleaseContext(TContext context)
-        {            
-            context.Clear();
-            m_contextPool.Put(context);
+        {    
+            try
+            {        
+                context.Clear();
+                m_contextPool.Put(context);
+            }
+            catch
+            {
+            }
         }
 
         SocketAsyncEventArgs AllocNewAsyncArgs()

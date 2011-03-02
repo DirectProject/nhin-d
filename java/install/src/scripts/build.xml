@@ -33,7 +33,7 @@
 	<property name="resources.dir" value="${src}/main/resources"></property>
 	<property name="build.dir" value="${install.root.dir}/build"></property>
 	<property name="build.download.dir" value="${build.dir}/download"></property>
-	<property name="apache.james.binary.url" value="http://ftp.wayne.edu/apache//james/server/apache-james-2.3.2.zip"></property>
+	<property name="apache.james.binary.url" value="http://archive.apache.org/dist/james/server/apache-james-2.3.2.zip"></property>
 	<property name="apache.james.binary.zip" value="${build.download.dir}/apache-james-2.3.2.zip"></property>
 
 	<!-- James properties -->
@@ -46,9 +46,9 @@
 	<property name="james.stage.apps.james.sar.path" value="${james.stage.dir}/apps/james.sar"></property>
 	
 	<!-- Tomcat properties -->
-	<property name="tomcat.binary.url" value="http://mirrors.ibiblio.org/pub/mirrors/apache/tomcat/tomcat-6/v6.0.29/bin/apache-tomcat-6.0.29.tar.gz"></property>
-	<property name="tomcat.binary.compressed.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar.gz"></property>
-	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-6.0.29"></property>
+	<property name="tomcat.binary.url" value="http://mirrors.ibiblio.org/pub/mirrors/apache/tomcat/tomcat-6/v6.0.32/bin/apache-tomcat-6.0.32.tar.gz"></property>
+	<property name="tomcat.binary.compressed.pkg" value="${build.download.dir}/apache-tomcat-6.0.32.tar.gz"></property>
+	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-6.0.32"></property>
 	<property name="tomcat.webapp.dir" value="${tomcat.stage.dir}/webapps"></property>
 	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
 	<property name="tomcat.stage.config.save" value="${tomcat.stage.config}.save"></property>
@@ -111,8 +111,8 @@
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xdcommon.dir" value="${install.root.dir}/../xd-common"></property>	
-	<property name="lib.agent" value="${agent.dir}/target/agent-1.1.1-SNAPSHOT.jar"></property>
-	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.2-SNAPSHOT.jar"></property>
+	<property name="lib.agent" value="${agent.dir}/target/agent-1.2-SNAPSHOT.jar"></property>
+	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.3-SNAPSHOT.jar"></property>
 	<property name="lib.xdmail" value="${xdmail.dir}/target/xdmail-1.0-SNAPSHOT.jar"></property>
 	<property name="lib.xdcommon" value="${xdcommon.dir}/target/xd-common-1.0-SNAPSHOT.jar"></property>
 	
@@ -143,7 +143,7 @@
 		<property name="wget.command.options" value="" />
 		<property name="tar.command.path" value="${env.TAR_PATH}"></property>
 		<property name="gunzip.command.path" value="${env.GUNZIP_PATH}"></property>
-		<property name="tomcat.tar.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar"></property>
+		<property name="tomcat.tar.pkg" value="${build.download.dir}/apache-tomcat-6.0.323232.tar"></property>
 		<property name="tomcat.binary.pkg" value="${tomcat.tar.pkg}" />
 		<property name="tar.command.options" value="xvf" />
 	</target>
@@ -175,7 +175,7 @@
 		</exec>
 		<property name="tar.command.options" value="xvzf" />
 
-		<property name="tomcat.tar.pkg" value="${build.download.dir}/apache-tomcat-6.0.29.tar"></property>
+		<property name="tomcat.tar.pkg" value="${build.download.dir}/apache-tomcat-6.0.32.tar"></property>
 		<property name="tomcat.binary.pkg" value="${tomcat.tar.pkg}" />
 
 		<!-- do we have a downloader? -->
