@@ -41,4 +41,9 @@ pause
 
 :done
 powershell -Command "set-executionpolicy default -force"
-if "%DEBUGINSTALLER%" == "1" pause
+echo ******************
+echo.
+echo Script complete. Please review status messages.
+echo.
+echo ******************
+pause
