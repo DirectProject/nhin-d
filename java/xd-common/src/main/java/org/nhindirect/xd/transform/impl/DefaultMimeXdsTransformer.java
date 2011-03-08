@@ -90,7 +90,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
 
             // Plain mail (no attachments)
             if (MimeType.TEXT_PLAIN.matches(mimeMessage.getContentType())) {
-                LOGGER.info("Handling plain mail (no attachments)");
+                LOGGER.info("Handling plain mail (no attachments) - " + mimeMessage.getContentType());
 
                 // Get the document type
                 documentType = DirectDocumentType.lookup(mimeMessage);
@@ -106,8 +106,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
                 documents.getDocuments().add(getDocument(sentDate, from));
                 documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
             } // Multipart/mixed (attachments)
-            else if (MimeType.MULTIPART_MIXED.matches(mimeMessage.getContentType())) {
-                LOGGER.info("Handling multipart/mixed");
+            else if (MimeType.MULTIPART.matches(mimeMessage.getContentType())) {
+                LOGGER.info("Handling multipart/mixed - " + mimeMessage.getContentType());
 
                 MimeMultipart mimeMultipart = (MimeMultipart) mimeMessage.getContent();
 
@@ -151,23 +151,22 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
 
                         break;
                     }
-                    if (DirectDocumentType.CCD.equals(documentType)) {
-                        // Get the formata code and MIME type
-                        xdsFormatCode = documentType.getFormatCode();
-                        xdsMimeType = documentType.getMimeType().getType();
 
-                        // Best guess for UNKNOWN MIME type
-                        if (DirectDocumentType.UNKNOWN.equals(documentType)) {
-                            xdsMimeType = bodyPart.getContentType();
-                        }
+                    // Get the format code and MIME type
+                    xdsFormatCode = documentType.getFormatCode();
+                    xdsMimeType = documentType.getMimeType().getType();
 
-                        // Get the contents
-                        xdsDocument = read(bodyPart).getBytes();
-
-                        // Add the document to the collection of documents
-                        documents.getDocuments().add(getDocument(sentDate, from));
-                        documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
+                    // Best guess for UNKNOWN MIME type
+                    if (DirectDocumentType.UNKNOWN.equals(documentType)) {
+                        xdsMimeType = bodyPart.getContentType();
                     }
+
+                    // Get the contents
+                    xdsDocument = read(bodyPart).getBytes();
+
+                    // Add the document to the collection of documents
+                    documents.getDocuments().add(getDocument(sentDate, from));
+                    documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
                 }
             } else {
                 if (LOGGER.isWarnEnabled()) {
