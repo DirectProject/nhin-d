@@ -8,7 +8,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.0.0.5
+AppVerName=Direct Project .NET Gateway 1.0.0.6
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -17,10 +17,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=DirectGateway-1.0.0.5-NET35
+OutputBaseFilename=DirectGateway-1.0.0.6-NET35
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.0.0.5
+VersionInfoVersion=1.0.0.6
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

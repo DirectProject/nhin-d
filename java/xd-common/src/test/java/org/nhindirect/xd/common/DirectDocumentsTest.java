@@ -111,7 +111,7 @@ public class DirectDocumentsTest extends TestCase
         documents.getSubmissionSet().setPatientId("xxx");
         
         DirectDocument2 doc1 = new DirectDocument2();
-        doc1.setData("this is some data for document 1");
+        doc1.setData(new String("this is some data for document 1").getBytes());
         
         DirectDocument2.Metadata metadata1 = doc1.getMetadata();
         metadata1.setMimeType(MimeType.TEXT_PLAIN.getType());
@@ -141,7 +141,7 @@ public class DirectDocumentsTest extends TestCase
         metadata1.setUniqueId("1.27");
         
         DirectDocument2 doc2 = new DirectDocument2();
-        doc2.setData("and this is some data for document 2");
+        doc2.setData(new String("and this is some data for document 2").getBytes());
         
         DirectDocument2.Metadata metadata2 = doc2.getMetadata();
         metadata1.setMimeType(MimeType.TEXT_XML.getType());

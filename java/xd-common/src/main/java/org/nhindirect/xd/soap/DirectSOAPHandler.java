@@ -134,7 +134,7 @@ public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
                 getHeaderData();
 
                 SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
-
+                dumpSOAPMessage(msg);
                 SOAPPart sp = msg.getSOAPPart();
 
                 // edit Envelope
@@ -345,6 +345,7 @@ public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
         Set<QName> set = new HashSet<QName>();
 
         set.add(new QName("http://www.w3.org/2005/08/addressing", "Action"));
+        set.add(new QName("http://www.w3.org/2005/08/addressing", "MessageID"));
         set.add(new QName("http://www.w3.org/2005/08/addressing", "To"));
         set.add(new QName("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", "Security"));
 

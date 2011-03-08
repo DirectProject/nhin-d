@@ -86,13 +86,17 @@ public class DirectSOAPHandlerTest extends TestCase
         DirectSOAPHandler handler = new DirectSOAPHandler();
 
         Set<QName> headers = handler.getHeaders();
-        assertEquals("Number of elements does not match expected", 3, headers.size());
+        assertEquals("Number of elements does not match expected", 4, headers.size());
 
         if (!headers.contains(new QName("http://www.w3.org/2005/08/addressing", "Action")))
         {
             fail("Headers missing expected object");
         }
         if (!headers.contains(new QName("http://www.w3.org/2005/08/addressing", "To")))
+        {
+            fail("Headers missing expected object");
+        }
+         if (!headers.contains(new QName("http://www.w3.org/2005/08/addressing", "MessageID")))
         {
             fail("Headers missing expected object");
         }
