@@ -20,7 +20,7 @@ echo Generate a Root cert.
 echo.
 echo genca name outputFilePath
 echo    name: Your CA's cert's name. Sets the CN= property
-echo    outputFilePath: Write a cer file containing the certificate here
+echo    outputFolderPath: Write a cer file containing the certificate to this Folder
 echo.
 echo The private key for your cert is placed in your LocalMachine Cert Store
 echo That lets you use the CA cert to issue new end certificates by using genca.bat
