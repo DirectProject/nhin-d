@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="2275cdf6-9b59-4b24-bad7-a35932893fe1" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <ReferenceAllAssemblies>false</ReferenceAllAssemblies>
+    <ReferencedAssemblies>
+      <ReferencedAssembly AssemblyName="Health.Direct.Config.Store" />
+      <ReferencedAssembly AssemblyName="mscorlib" />
+      <ReferencedAssembly AssemblyName="System" />
+      <ReferencedAssembly AssemblyName="System.Configuration" />
+      <ReferencedAssembly AssemblyName="System.Core" />
+      <ReferencedAssembly AssemblyName="System.Data" />
+      <ReferencedAssembly AssemblyName="System.Data.DataSetExtensions" />
+      <ReferencedAssembly AssemblyName="System.Runtime.Serialization" />
+      <ReferencedAssembly AssemblyName="System.ServiceModel" />
+      <ReferencedAssembly AssemblyName="System.Xml" />
+      <ReferencedAssembly AssemblyName="System.Xml.Linq" />
+    </ReferencedAssemblies>
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:6692/AuthManagerService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="AuthManagerService.wsdl" MetadataType="Wsdl" ID="1ab007e1-bd66-45f8-b8d0-367cdd3c65d6" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?wsdl" />
+    <MetadataFile FileName="AuthManagerService.xsd" MetadataType="Schema" ID="badf8f5d-0e79-4217-b28a-ee7661e96001" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?xsd=xsd2" />
+    <MetadataFile FileName="AuthManagerService.disco" MetadataType="Disco" ID="7fa21286-1ddd-49fe-be05-d8fc8f5c5458" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?disco" />
+    <MetadataFile FileName="AuthManagerService1.xsd" MetadataType="Schema" ID="f9df0142-f611-4276-9d92-5748eeac43e7" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?xsd=xsd1" />
+    <MetadataFile FileName="AuthManagerService2.xsd" MetadataType="Schema" ID="9a48d8e1-4aaf-421d-a283-a57cbbeb98d2" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?xsd=xsd0" />
+    <MetadataFile FileName="AuthManagerService1.wsdl" MetadataType="Wsdl" ID="d99cedaf-960c-48e8-ab2c-b461971ff4ff" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?wsdl=wsdl0" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>
