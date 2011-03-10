@@ -78,10 +78,6 @@ namespace Health.Direct.Common.Caching
             }
             
             string domain = question.Domain.ToLower();
-            if (m_uniqueName == null)
-            {
-                return string.Format("DnsCache.{0}.{1}" , question.Type, domain);
-            }
 
             return string.Format("{0}.DnsCache.{1}.{2}", m_uniqueName, question.Type, domain);
         }
