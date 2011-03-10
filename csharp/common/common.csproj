@@ -70,8 +70,10 @@
     <Compile Include="Container\ConfigurationSectionBase.cs" />
     <Compile Include="Container\IDependencyContainer.cs" />
     <Compile Include="Container\IocContainerSection.cs" />
+    <Compile Include="Container\PluginDefinition.cs" />
     <Compile Include="Container\SimpleContainerSection.cs" />
     <Compile Include="Container\IoC.cs" />
+    <Compile Include="Container\SimpleContainerSettings.cs" />
     <Compile Include="Container\SimpleDependencyResolver.cs" />
     <Compile Include="Cryptography\CryptographicException.cs" />
     <Compile Include="Cryptography\DigestAlgorithm.cs" />

@@ -80,6 +80,7 @@
     <Compile Include="NotificationProducer.cs" />
     <Compile Include="NotificationSettings.cs" />
     <Compile Include="MessageRouter.cs" />
+    <Compile Include="PluginRoute.cs" />
     <Compile Include="ResolverSettings.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="MessageProcessingSettings.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="MessageArrivalHandler.cs" />
     <Compile Include="SmtpAgent.cs" />
     <Compile Include="ExtensibleXmlSerializer.cs" />
+    <Compile Include="SmtpMessageForwarder.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="ADODB">
