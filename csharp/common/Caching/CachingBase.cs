@@ -5,6 +5,7 @@
  Authors:
     Chris Lomonico chris.lomonico@surescripts.com
     Umesh Madan     umeshma@microsoft.com
+    Ali Emami       aliemami@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -30,7 +31,7 @@ namespace Health.Direct.Common.Caching
     ///  - when there is memory pressure and the cache must be trimmed
     /// </summary>
     /// <typeparam name="T">Type of Class which will be stored in the cache</typeparam>
-    public abstract class CachingBase <T> where T : class
+    public class CachingBase <T> where T : class
     {
         HashSet<string> m_keys;  // Set of keys added to the cache
         CacheItemRemovedCallback m_removeCallback;        
@@ -39,7 +40,7 @@ namespace Health.Direct.Common.Caching
         /// <summary>
         /// Initializes a new instance of CachingBase
         /// </summary>
-        protected CachingBase()
+        public CachingBase()
             : this(CacheItemPriority.Normal)
         {
         }
@@ -106,7 +107,7 @@ namespace Health.Direct.Common.Caching
         /// </remarks>
         /// <param name="key">string containing the unqiue key of the item</param>
         /// <param name="value">value to be stored in the cache</param>
-        protected void Put(string key, T value)
+        public void Put(string key, T value)
         {
             Put(key, value, null);
         }
@@ -121,7 +122,7 @@ namespace Health.Direct.Common.Caching
         /// <param name="key">key referencing the item in the cache</param>
         /// <param name="value">Instance of the type <typeparamref name="T"/> to be added to the cache</param>
         /// <param name="ttl">Timepsan used to denote the duration of an items existence in the cache</param>
-        protected void Put(string key, T value, TimeSpan? ttl)
+        public void Put(string key, T value, TimeSpan? ttl)
         {
             //
             // Http Cache has its own thread safety logic
@@ -162,7 +163,7 @@ namespace Health.Direct.Common.Caching
         /// Removes an item from the cache denoted by the key suffix
         /// </summary>
         /// <param name="key">String containing the suffis of the key for the item to be removed</param>
-        protected bool Remove(string key)
+        public bool Remove(string key)
         {
             try
             {

@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Text;
+using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Agent;
 using Health.Direct.Common.Certificates;
@@ -142,8 +143,37 @@ namespace Health.Direct.SmtpAgent
             {
                 builder.Append("OTHER RECIPIENTS=").AppendLine(envelope.OtherRecipients);
             }
+
+            IncomingMessage incoming = envelope as IncomingMessage;
+            if (incoming != null)
+            {
+                CollectSignatures(builder, incoming); 
+            }
         }
-        
+
+        void CollectSignatures(StringBuilder builder, IncomingMessage message)
+        {
+            if (!message.HasSignatures)
+            {
+                return;
+            }
+
+            SignerInfoCollection allSigners = message.Signatures.SignerInfos;
+            foreach (SignerInfo signer in allSigners)
+            {
+                X509Certificate2 cert = signer.Certificate;
+                string output = string.Format(
+                    "E/CN={0},ValidFrom={1},ValidTo={2},IssuerName={3},Version={4},Thumbprint={5}",
+                    cert.ExtractEmailNameOrName(), 
+                    cert.GetEffectiveDateString(), 
+                    cert.GetExpirationDateString(), 
+                    cert.Issuer,
+                    cert.Version,
+                    cert.Thumbprint);
+
+                builder.Append("CERT:").AppendLine(output);                
+            }
+        }
         string CollectNoCertInformation(DirectAddressCollection recipients)
         {
             if (recipients.IsNullOrEmpty())

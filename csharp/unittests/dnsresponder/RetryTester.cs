@@ -104,7 +104,7 @@ namespace Health.Direct.DnsResponder.Tests
                 }
             }
 
-            Assert.DoesNotThrow(() => TestServer.Default.Counters.Wait.WaitOne(20 * 1000));
+            Assert.DoesNotThrow(() => s_failureServer.Counters.Wait.WaitOne(20 * 1000));
             Assert.True(s_failureServer.Counters.IsConnectionBalanced);
         }
 
@@ -132,7 +132,7 @@ namespace Health.Direct.DnsResponder.Tests
                 }
             }
 
-            Assert.DoesNotThrow(() => TestServer.Default.Counters.Wait.WaitOne(20 * 1000));
+            Assert.DoesNotThrow(() => s_failureServer.Counters.Wait.WaitOne(20 * 1000));
             Assert.True(s_failureServer.Counters.IsConnectionBalanced);
         }
         

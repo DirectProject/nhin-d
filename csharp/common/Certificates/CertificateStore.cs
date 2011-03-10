@@ -356,7 +356,7 @@ namespace Health.Direct.Common.Certificates
         /// <returns>A <see cref="CertificateResolver">CerticateResolver</see> for this store</returns>
         public ICertificateResolver CreateResolver()
         {
-            return new CertificateResolver(this.Index());
+            return new CertificateResolver(this.Index(), null /* disable caching */);
         }
 
         /// <summary>
