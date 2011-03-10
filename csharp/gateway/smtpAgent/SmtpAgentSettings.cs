@@ -17,11 +17,11 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
-
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client;
+using Health.Direct.Common.Container;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -38,6 +38,7 @@ namespace Health.Direct.SmtpAgent
         NotificationSettings m_notificationSettings;
         Route[] m_incomingRoutes;
         int m_maxDomainRecipients = DefaultMaxDomainRecipients;
+        
         
         //--------------------------------------------------------
         //
@@ -60,17 +61,6 @@ namespace Health.Direct.SmtpAgent
         /// </summary>
         [XmlIgnore]
         public bool LogVerbose
-        {
-            get; set;
-        }
-                
-        /// <summary>
-        /// A list of postmasters for the domain.
-        /// NOTE: This is now DEPRECATED
-        /// </summary>
-        //[XmlElement("Postmaster")]
-        [XmlIgnore]
-        public string[] Postmasters
         {
             get; set;
         }
@@ -191,6 +181,7 @@ namespace Health.Direct.SmtpAgent
         /// </summary>
         [XmlArray("IncomingRoutes")]
         [XmlArrayItem("Route", typeof(MessageRoute))]
+        [XmlArrayItem("PluginRoute", typeof(PluginRoute))]
         public Route[] IncomingRoutes
         {
             get
@@ -315,6 +306,30 @@ namespace Health.Direct.SmtpAgent
             }
         }
         
+        //--------------------------------------------------------
+        //
+        // IOC Container
+        //
+        //--------------------------------------------------------
+        /// <summary>
+        /// Use this to drop in extensions
+        /// </summary>
+        [XmlElement]
+        public SimpleContainerSettings Container
+        {
+            get;
+            set;
+        }
+        
+        [XmlIgnore]
+        public bool HasContainer
+        {
+            get
+            {
+                return (this.Container != null);
+            }
+        }
+                       
         public override void Validate()
         {
             base.Validate();

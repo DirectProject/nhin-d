@@ -21,6 +21,8 @@ using Health.Direct.Agent;
 using Health.Direct.Agent.Tests;
 using Health.Direct.Common.Mail;
 using Health.Direct.Config.Store;
+using Health.Direct.Common.Container;
+using Health.Direct.Common.Routing;
 using Xunit;
 
 namespace Health.Direct.SmtpAgent.Tests
@@ -296,5 +298,115 @@ namespace Health.Direct.SmtpAgent.Tests
             this.UpdateRouteCount(destinationFolder);
             return true;
         }   
+    }
+    
+    public class TestExtendedRoutes : SmtpAgentTester
+    {
+        [Fact]
+        public void TestSmtpValidation()
+        {
+            SmtpMessageForwarder forwarder = new SmtpMessageForwarder();
+            SmtpSettings settings = new SmtpSettings();
+            Assert.Throws<SmtpAgentException>(() => forwarder.Settings = null);
+            Assert.Throws<SmtpAgentException>(() => forwarder.Settings = settings);
+            settings.Server = "foo";
+            Assert.DoesNotThrow(() => forwarder.Settings = settings);
+        }
+
+        [Fact]
+        public void TestPluginValidation()
+        {
+            PluginRoute plugin = new PluginRoute();
+            Assert.Throws<SmtpAgentException>(() => plugin.Validate());
+        }
+
+        [Fact]
+        public void TestFromXml()
+        {
+            SmtpAgent agent = null;
+            
+            Assert.DoesNotThrow(() => agent = SmtpAgentFactory.Create(GetSettingsPath("TestPlugin.xml")));
+            Assert.True(agent.Router.Count == 3);
+            
+            Route[] routes = agent.Router.ToArray();
+            
+            ValidateHttpReceivers(routes[0], 2, "http://foo/one");
+            ValidateHttpReceivers(routes[1], 1, "http://bar/one");
+            ValidateSmtpReceivers(routes[2], 2, "foo.xyz");
+            
+            //
+            // Pump a few messages through 
+            //
+            CDOSmtpMessage message = new CDOSmtpMessage(base.LoadMessage(MultiToMessage));
+            for (int i = 0; i < 4; ++i)
+            {
+                for (int j = 0; j < routes.Length - 1; ++j) // Not testing the last route, which is Smtp
+                {
+                    Assert.True(routes[j].Process(message));
+                }
+            }
+        }
+        
+        void ValidateSmtpReceivers(Route route, int count, string server)
+        {
+            PluginRoute pluginRoute = route as PluginRoute;
+            Assert.NotNull(pluginRoute);
+            Assert.NotNull(pluginRoute.Receivers);
+            Assert.True(pluginRoute.Receivers.Length == count);
+            for (int i = 0; i < pluginRoute.Receivers.Length; ++i)
+            {
+                SmtpMessageForwarder smtp = pluginRoute.Receivers[i] as SmtpMessageForwarder;
+                Assert.NotNull(smtp);
+                Assert.NotNull(smtp.Settings);
+                if (i == 0)
+                {
+                    Assert.True(smtp.Settings.Server == server);
+                }
+            }
+        }
+        
+        void ValidateHttpReceivers(Route route, int count, string url)
+        {
+            PluginRoute pluginRoute = route as PluginRoute;
+            Assert.NotNull(pluginRoute);            
+            Assert.NotNull(pluginRoute.Receivers);
+            Assert.True(pluginRoute.Receivers.Length == count);
+            for (int i = 0; i < pluginRoute.Receivers.Length; ++i)
+            {
+                HttpReceiver httpReceiver = pluginRoute.Receivers[i] as HttpReceiver;
+                Assert.NotNull(httpReceiver);
+                Assert.NotNull(httpReceiver.Settings);
+                if (i == 0)
+                {
+                    Assert.True(httpReceiver.Settings.Url == url);
+                }
+            }
+        }
+    }
+    
+    public class HttpReceiver : IPlugin, IReceiver<ISmtpMessage>
+    {
+        public HttpReceiver()
+        {
+        }
+        
+        public HttpSettings Settings;
+
+        public void Init(PluginDefinition pluginDef)
+        {
+            this.Settings = pluginDef.DeserializeSettings<HttpSettings>();
+        }
+
+        public bool Receive(ISmtpMessage data)
+        {
+            return (this.Settings.Succeed && !string.IsNullOrEmpty(data.GetMessageText()));
+        }
+    }
+    
+    public class HttpSettings
+    {
+        public string Url;
+        public int Timeout;
+        public bool Succeed = true;
     }
 }

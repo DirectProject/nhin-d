@@ -4,7 +4,8 @@
 
  Authors:
     John Theisen     jtheisen@kryptiq.com
-  
+    Umesh Madan      umeshma@microsoft.com
+ 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -39,16 +40,7 @@ namespace Health.Direct.SmtpAgent
             }
             catch (Exception ex)
             {
-                // if we blow up here we should write out to the EventLog w/o any logger
-                // dependencies, etc...
-                string source = settings == null 
-                                || settings.LogSettings == null 
-                                || string.IsNullOrEmpty(settings.LogSettings.EventLogSource)
-                                    ? null 
-                                    : settings.LogSettings.EventLogSource;
-
-                EventLogHelper.WriteError(source, "While loading SmtpAgent settings - " + ex);
-
+                LogError(settings, ex);
                 throw;
             }
         }
@@ -59,12 +51,47 @@ namespace Health.Direct.SmtpAgent
             {
                 if (!m_initialized)
                 {
-                    IoC.Initialize(new SimpleDependencyResolver())
-                        .Register<ILogFactory>(new NLogFactory(settings.LogSettings))
-                        .Register<IAuditor>(new EventLogAuditor())
-                        ;
+                    SimpleDependencyResolver dependencyResolver = new SimpleDependencyResolver();
+                    if (settings.HasContainer && settings.Container.HasComponents)
+                    {
+                        try
+                        {
+                            dependencyResolver.Register(settings.Container);
+                        }
+                        catch(Exception ex)
+                        {
+                            LogError(settings, ex);
+                        }
+                    }
+                    EnsureDefaults(dependencyResolver, settings);
+                    IoC.Initialize(dependencyResolver);
                     m_initialized = true;
                 }
+            }
+        }
+        
+        static void LogError(SmtpAgentSettings settings, Exception ex)
+        {
+            // if we blow up here we should write out to the EventLog w/o any logger
+            // dependencies, etc...
+            string source = settings == null
+                            || settings.LogSettings == null
+                            || string.IsNullOrEmpty(settings.LogSettings.EventLogSource)
+                                ? null
+                                : settings.LogSettings.EventLogSource;
+
+            EventLogHelper.WriteError(source, "While loading SmtpAgent settings - " + ex);
+        }
+                
+        static void EnsureDefaults(SimpleDependencyResolver dependencyResolver, SmtpAgentSettings settings)
+        {
+            if (!dependencyResolver.IsRegistered<ILogFactory>())
+            {
+                dependencyResolver.Register<ILogFactory>(new NLogFactory(settings.LogSettings));
+            }
+            if (!dependencyResolver.IsRegistered<IAuditor>())
+            {
+                dependencyResolver.Register<IAuditor>(new EventLogAuditor());
             }
         }
     }

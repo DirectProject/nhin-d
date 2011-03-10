@@ -15,8 +15,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System.Collections.Generic;
 using System.IO;
-
+using Xunit;
 using Xunit.Extensions;
+using Health.Direct.Common.Container;
+using Health.Direct.Common.Diagnostics;
 
 namespace Health.Direct.SmtpAgent.Tests
 {
@@ -48,10 +50,40 @@ namespace Health.Direct.SmtpAgent.Tests
             m_handler.InitFromConfigFile(Fullpath(fileName));            
         }
         
+        [Fact]
+        public void TestContainer()
+        {
+            SmtpAgentSettings settings = null;
+
+            Assert.DoesNotThrow(() => settings = SmtpAgentSettings.LoadSettings(Fullpath("TestPlugin.xml")));
+            Assert.NotNull(settings.Container);
+            Assert.True(settings.Container.HasComponents);
+            
+            SmtpAgent agent = SmtpAgentFactory.Create(Fullpath("TestPlugin.xml"));
+            
+            ILogFactory logFactory = null;
+            Assert.DoesNotThrow(() => logFactory = IoC.Resolve<ILogFactory>());
+            
+            IAuditor auditor = null;
+            Assert.DoesNotThrow(() => auditor = IoC.Resolve<IAuditor>());
+            Assert.True(auditor is DummyAuditor);
+        }
+              
         string Fullpath(string fileName)
         {
             string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "SmtpAgentTestFiles");
             return Path.Combine(folderPath, fileName);
+        }
+    }
+    
+    public class DummyAuditor : IAuditor
+    {
+        public void Log(string category)
+        {
+        }
+
+        public void Log(string category, string message)
+        {
         }
     }
 }
