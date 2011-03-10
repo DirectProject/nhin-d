@@ -49,8 +49,11 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Caching\Cache.cs" />
+    <Compile Include="Caching\CacheSettings.cs" />
     <Compile Include="Caching\CachingBase.cs" />
     <Compile Include="Caching\DnsResponseCache.cs" />
+    <Compile Include="Certificates\CertificateCache.cs" />
     <Compile Include="Certificates\CertificateIndex.cs" />
     <Compile Include="Certificates\CertificateResolver.cs" />
     <Compile Include="Certificates\CertificateResolverCollection.cs" />
