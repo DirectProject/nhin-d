@@ -25,13 +25,19 @@ using Health.Direct.Config.Tools.Command;
 
 namespace Health.Direct.Tools.Agent
 {
+    /// <summary>
+    /// Commands that are really useful for debugging
+    /// Start the SMTP Agent - all of it - but hosted within a .NET Console
+    /// You don't have to run SMTP Server to be able to step through the code. 
+    /// Of course, you have to "push" messages through the agent manually by using the SmtpAgent_Process command
+    /// </summary>
     public class SmtpAgentCommands
     {
-        Health.Direct.SmtpAgent.SmtpAgent m_agent;        
-        
+        Health.Direct.SmtpAgent.SmtpAgent m_agent;
+
         public SmtpAgentCommands()
         {
-        
+
         }
 
         public Health.Direct.SmtpAgent.SmtpAgent Agent
@@ -47,7 +53,7 @@ namespace Health.Direct.Tools.Agent
             }
         }
 
-        [Command(Name = "SmtpAgent_Start")]
+        [Command(Name = "SmtpAgent_Start", Usage = "configFilePath")]
         public void StartAgent(string[] args)
         {
             if (m_agent != null)
@@ -65,13 +71,30 @@ namespace Health.Direct.Tools.Agent
             m_agent = null;
         }
 
-        [Command(Name = "SmtpAgent_Process")]
+        [Command(Name = "SmtpAgent_Process", Usage = "messageFilepath")]
         public void ProcessMessage(string[] args)
         {
             IOFiles files = new IOFiles(args);
             CDO.Message message = Extensions.LoadCDOMessageFromText(files.Read());
             this.Agent.ProcessMessage(message);
             files.Write(message.GetMessageText());
+        }
+
+        [Command(Name = "Mail_Send", Usage = "messageFilePath server port")]
+        public void SendMail(string[] args)
+        {
+            CDOSmtpMessage smtpMessage = new CDOSmtpMessage(Extensions.LoadCDOMessage(args.GetRequiredValue(0)));
+            //
+            // Use SmtpRoute to get some free code coverage/easy test
+            //
+            SmtpMessageForwarder route = new SmtpMessageForwarder();
+            SmtpSettings settings = new SmtpSettings()
+            {
+                Server = args.GetRequiredValue(1),
+                Port = args.GetOptionalValue(2, -1)
+            };
+            route.Settings = settings;
+            route.Receive(smtpMessage);
         }
     }
 }

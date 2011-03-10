@@ -17,11 +17,11 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
-
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client;
+using Health.Direct.Common.Container;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -29,7 +29,7 @@ namespace Health.Direct.SmtpAgent
     public class SmtpAgentSettings : AgentSettings
     {
         public const int DefaultMaxDomainRecipients = 10;
-        
+
         RawMessageSettings m_rawMessageSettings;
         ProcessIncomingSettings m_incomingSettings;
         ProcessOutgoingSettings m_outgoingSettings;
@@ -38,7 +38,8 @@ namespace Health.Direct.SmtpAgent
         NotificationSettings m_notificationSettings;
         Route[] m_incomingRoutes;
         int m_maxDomainRecipients = DefaultMaxDomainRecipients;
-        
+
+
         //--------------------------------------------------------
         //
         // Log Settings
@@ -53,7 +54,7 @@ namespace Health.Direct.SmtpAgent
             get;
             set;
         }
-        
+
         /// <summary>
         /// Used to fine tune the level of logging details.
         /// NOTE: This is now DEPRECATED - use the Level attribute of <see cref="LogFileSettings.Level"/>
@@ -61,18 +62,8 @@ namespace Health.Direct.SmtpAgent
         [XmlIgnore]
         public bool LogVerbose
         {
-            get; set;
-        }
-                
-        /// <summary>
-        /// A list of postmasters for the domain.
-        /// NOTE: This is now DEPRECATED
-        /// </summary>
-        //[XmlElement("Postmaster")]
-        [XmlIgnore]
-        public string[] Postmasters
-        {
-            get; set;
+            get;
+            set;
         }
 
         //--------------------------------------------------------
@@ -81,7 +72,7 @@ namespace Health.Direct.SmtpAgent
         // See interfaces in configService
         //
         //--------------------------------------------------------
-        
+
         /// <summary>
         /// If this gateway is configured to interact with a DomainManager web Service. 
         /// </summary>
@@ -99,8 +90,8 @@ namespace Health.Direct.SmtpAgent
             {
                 return (this.DomainManagerService != null);
             }
-        }        
-        
+        }
+
         /// <summary>
         /// If this gateway is configured to interact with an AddressManager web service
         /// </summary>
@@ -119,7 +110,7 @@ namespace Health.Direct.SmtpAgent
                 return (this.AddressManager != null);
             }
         }
-        
+
         /// <summary>
         /// Limit the # of domain recipients on an incoming message - to prevent DOS attacks
         /// </summary>
@@ -134,13 +125,13 @@ namespace Health.Direct.SmtpAgent
                 m_maxDomainRecipients = value;
             }
         }
-        
+
         //--------------------------------------------------------
         //
         // Message Processing
         //
         //--------------------------------------------------------
-        
+
         /// <summary>
         /// Configure if the Agent should automatically issue MDN messages in reponse
         /// to MDN requests
@@ -162,7 +153,7 @@ namespace Health.Direct.SmtpAgent
                 m_notificationSettings = value;
             }
         }
-        
+
         /// <summary>
         /// Does this server allow messaging WITHIN the domain?
         /// If not, then all messages originating from within the domain are considered OUTGOING
@@ -183,7 +174,7 @@ namespace Health.Direct.SmtpAgent
                 m_internalMessageSettings = value;
             }
         }
-        
+
         /// <summary>
         /// Message Routes: 
         /// If working with an Address Service: an address can have an associated Type
@@ -191,6 +182,7 @@ namespace Health.Direct.SmtpAgent
         /// </summary>
         [XmlArray("IncomingRoutes")]
         [XmlArrayItem("Route", typeof(MessageRoute))]
+        [XmlArrayItem("PluginRoute", typeof(PluginRoute))]
         public Route[] IncomingRoutes
         {
             get
@@ -225,7 +217,7 @@ namespace Health.Direct.SmtpAgent
                 return this.InternalMessage.EnableRelay;
             }
         }
-        
+
         //--------------------------------------------------------
         //
         // Debugging
@@ -243,7 +235,7 @@ namespace Health.Direct.SmtpAgent
                 {
                     m_rawMessageSettings = new RawMessageSettings();
                 }
-                
+
                 return m_rawMessageSettings;
             }
             set
@@ -251,7 +243,7 @@ namespace Health.Direct.SmtpAgent
                 m_rawMessageSettings = value;
             }
         }
-        
+
         /// <summary>
         /// (OPTIONAL) Configure how incoming messages are processed
         /// </summary>
@@ -264,7 +256,7 @@ namespace Health.Direct.SmtpAgent
                 {
                     m_incomingSettings = new ProcessIncomingSettings();
                 }
-                
+
                 return m_incomingSettings;
             }
             set
@@ -272,7 +264,7 @@ namespace Health.Direct.SmtpAgent
                 m_incomingSettings = value;
             }
         }
-        
+
         /// <summary>
         /// OPTIONAL: Configure how outgoing messages are processed
         /// </summary>
@@ -285,7 +277,7 @@ namespace Health.Direct.SmtpAgent
                 {
                     m_outgoingSettings = new ProcessOutgoingSettings();
                 }
-                
+
                 return m_outgoingSettings;
             }
             set
@@ -314,28 +306,52 @@ namespace Health.Direct.SmtpAgent
                 m_badMessageSettings = value;
             }
         }
-        
+
+        //--------------------------------------------------------
+        //
+        // IOC Container
+        //
+        //--------------------------------------------------------
+        /// <summary>
+        /// Use this to drop in extensions
+        /// </summary>
+        [XmlElement]
+        public SimpleContainerSettings Container
+        {
+            get;
+            set;
+        }
+
+        [XmlIgnore]
+        public bool HasContainer
+        {
+            get
+            {
+                return (this.Container != null);
+            }
+        }
+
         public override void Validate()
         {
             base.Validate();
-            
+
             if (this.LogSettings == null)
             {
                 throw new SmtpAgentException(SmtpAgentError.MissingLogSettings);
             }
-            
-            this.LogSettings.Validate();      
+
+            this.LogSettings.Validate();
             this.InternalMessage.Validate();
             this.Notifications.Validate();
-            this.RawMessage.Validate();            
+            this.RawMessage.Validate();
             this.BadMessage.Validate();
             this.Incoming.Validate();
             this.Outgoing.Validate();
-            
+
             if (this.HasDomainManagerService)
             {
                 this.DomainManagerService.Validate();
-            }                        
+            }
             if (this.HasAddressManager)
             {
                 this.AddressManager.Validate();
@@ -358,9 +374,9 @@ namespace Health.Direct.SmtpAgent
         {
             ExtensibleXmlSerializer serializer = new ExtensibleXmlSerializer();
             serializer.AddElementOption<CertificateSettings>("Resolvers", "ServiceResolver", typeof(CertServiceResolverSettings));
-            serializer.AddElementOption<TrustAnchorSettings>("Resolver", "ServiceResolver", typeof(AnchorServiceResolverSettings));            
+            serializer.AddElementOption<TrustAnchorSettings>("Resolver", "ServiceResolver", typeof(AnchorServiceResolverSettings));
 
-            using(Stream stream = File.OpenRead(configFilePath))
+            using (Stream stream = File.OpenRead(configFilePath))
             {
                 return serializer.Deserialize<SmtpAgentSettings>(stream);
             }

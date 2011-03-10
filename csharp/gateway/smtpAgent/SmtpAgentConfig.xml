@@ -8,7 +8,7 @@
   <Domain>redmond.hsgincubator.com</Domain>
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
-    <NamePrefix>redmondGateway</NamePrefix>
+    <NamePrefix>gateway__${date:format=yyyyMMdd}</NamePrefix>
     <RolloverFrequency>Day</RolloverFrequency>
     <Level>Debug</Level>
   </Log>

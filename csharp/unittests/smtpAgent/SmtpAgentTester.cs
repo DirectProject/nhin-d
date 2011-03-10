@@ -132,7 +132,12 @@ Yo. Wassup?";
         {
             throw new NotImplementedException();
         }
-
+        
+        public string GetMessageText()
+        {
+            throw new NotImplementedException();
+        }
+        
         public string GetMailFrom()
         {
             throw new NotImplementedException();

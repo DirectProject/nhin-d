@@ -22,6 +22,9 @@ using ADODB;
 
 namespace Health.Direct.SmtpAgent
 {
+    /// <summary>
+    /// Puts an ISmtpMessage wrapper around a a CDO.Message
+    /// </summary>
     public class CDOSmtpMessage : ISmtpMessage
     {
         CDO.Message m_message;
@@ -50,6 +53,14 @@ namespace Health.Direct.SmtpAgent
             }
         }
         
+        public CDO.Message InnerMessage
+        {
+            get
+            {
+                return m_message;
+            }
+        }
+        
         public string GetMailFrom()
         {
             if (!this.HasEnvelope)
@@ -73,6 +84,11 @@ namespace Health.Direct.SmtpAgent
         public MessageEnvelope GetEnvelope()
         {
             return this.CreateEnvelope(m_message);
+        }
+        
+        public string GetMessageText()
+        {
+            return m_message.GetMessageText();
         }
         
         public void SetRcptTo(DirectAddressCollection recipients)

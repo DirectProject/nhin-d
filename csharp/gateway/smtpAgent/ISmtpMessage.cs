@@ -25,7 +25,8 @@ namespace Health.Direct.SmtpAgent
         }
         
         MessageEnvelope GetEnvelope();
-        
+        string GetMessageText();
+               
         string GetMailFrom();
         string GetRcptTo();        
         void SetRcptTo(DirectAddressCollection recipients);
