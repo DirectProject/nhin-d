@@ -95,6 +95,6 @@ namespace Health.Direct.Tools.Agent
             };
             route.Settings = settings;
             route.Receive(smtpMessage);
-        }
+        }        
     }
 }

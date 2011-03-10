@@ -39,7 +39,7 @@ namespace Health.Direct.SmtpAgent
         Route[] m_incomingRoutes;
         int m_maxDomainRecipients = DefaultMaxDomainRecipients;
 
-
+        
         //--------------------------------------------------------
         //
         // Log Settings
@@ -50,17 +50,6 @@ namespace Health.Direct.SmtpAgent
         /// </summary>
         [XmlElement("Log")]
         public LogFileSettings LogSettings
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Used to fine tune the level of logging details.
-        /// NOTE: This is now DEPRECATED - use the Level attribute of <see cref="LogFileSettings.Level"/>
-        /// </summary>
-        [XmlIgnore]
-        public bool LogVerbose
         {
             get;
             set;
@@ -321,7 +310,7 @@ namespace Health.Direct.SmtpAgent
             get;
             set;
         }
-
+        
         [XmlIgnore]
         public bool HasContainer
         {
@@ -330,7 +319,7 @@ namespace Health.Direct.SmtpAgent
                 return (this.Container != null);
             }
         }
-
+                       
         public override void Validate()
         {
             base.Validate();
