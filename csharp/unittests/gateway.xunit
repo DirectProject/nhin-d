@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xunit>
+  <assemblies>
+    <assembly filename=".\configstoretests\bin\debug\health.direct.config.store.tests.dll" shadow-copy="true" />
+    <assembly filename=".\dnsresponder\bin\debug\health.direct.dnsresponder.tests.dll" shadow-copy="true" />
+    <assembly filename=".\smtpagent\bin\debug\health.direct.smtpagent.tests.dll" shadow-copy="true" />
+  </assemblies>
+</xunit>
