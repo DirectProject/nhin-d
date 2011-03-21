@@ -80,12 +80,12 @@ public interface DomainService {
     /**
      * Remove a Domain.
      * 
-     * @param domainName
-     *            The name of the Domain to remove.
+     * @param domainId
+     *            The id of the Domain to remove.
      * @throws ConfigurationServiceException
      */
     @WebMethod(operationName = "removeDomain", action = "urn:RemoveDomain")
-    void removeDomain(@WebParam(name = "name") String domainName) throws ConfigurationServiceException;
+    void removeDomain(@WebParam(name = "id") Long domainId) throws ConfigurationServiceException;
 
     /**
      * Return a list of Domains matching the parameters.

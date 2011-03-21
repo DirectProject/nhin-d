@@ -383,12 +383,12 @@ public class ConfigurationServiceTest extends MockObjectTestCase
     {
         final DomainService domainService = context.mock(DomainService.class);
 
-        final String domain = "domain";
+        final long domainId = 1;
 
         context.checking(new Expectations()
         {
             {
-                oneOf(domainService).removeDomain(domain);
+                oneOf(domainService).removeDomain(domainId);
             }
         });
 
@@ -397,7 +397,7 @@ public class ConfigurationServiceTest extends MockObjectTestCase
 
         try
         {
-            service.removeDomain(domain);
+            service.removeDomain(domainId);
         }
         catch (Exception e)
         {

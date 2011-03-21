@@ -670,7 +670,7 @@
 
   <xs:complexType name="removeDomain">
     <xs:sequence>
-      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="id" type="xs:long" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
