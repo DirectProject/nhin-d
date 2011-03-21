@@ -21,7 +21,9 @@
 		
 		<h4>Upload New Certificate</h4>
 		
-	
+                <c:when test='${certerror == true}'>
+                    <p style="color:red;">Please upload only DER encoded certificates</p>
+                </c:when>
 		
 		<div style="padding:0 10px;">
 		

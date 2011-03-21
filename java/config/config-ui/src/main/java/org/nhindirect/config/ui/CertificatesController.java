@@ -109,7 +109,7 @@ public class CertificatesController {
                                         if(!fileType.matches("application/x-x509-ca-cert") && !fileType.matches("application/octet-stream"))
                                         {
 
-                                            model.addAttribute("certerror", (String) "Error");
+                                            model.addAttribute("certerror", true);
 
                                         } else {
 
