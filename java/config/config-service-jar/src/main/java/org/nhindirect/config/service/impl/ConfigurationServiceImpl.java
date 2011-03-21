@@ -124,7 +124,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     /*
      * (non-Javadoc)
      * 
-     * @see org.nhindirect.config.service.AddressService#removeAddress(java.lang.String)
+     * @see org.nhindirect.config.service.AddressService#removeAddress(java.lang.Long)
      */
     @Override
     @FaultAction(className = ConfigurationFault.class)
@@ -193,13 +193,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     /*
      * (non-Javadoc)
      * 
-     * @see org.nhindirect.config.service.DomainService#removeDomain(java.lang.String
+     * @see org.nhindirect.config.service.DomainService#removeDomain(java.lang.Integer
      * )
      */
     @Override
     @FaultAction(className = ConfigurationFault.class)
-    public void removeDomain(String domainName) throws ConfigurationServiceException {
-        domainSvc.removeDomain(domainName);
+    public void removeDomain(Long domainId) throws ConfigurationServiceException {
+        domainSvc.removeDomain(domainId);
     }
 
     /*

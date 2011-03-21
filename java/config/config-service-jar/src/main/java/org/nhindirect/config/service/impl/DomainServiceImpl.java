@@ -109,14 +109,14 @@ public class DomainServiceImpl implements DomainService {
     /*
      * (non-Javadoc)
      * 
-     * @see org.nhindirect.config.service.DomainService#removeDomain(java.lang.String)
+     * @see org.nhindirect.config.service.DomainService#removeDomain(java.lang.Long)
      */
-    public void removeDomain(String domainName) throws ConfigurationServiceException {
+    public void removeDomain(Long domainId) throws ConfigurationServiceException {
         if (log.isDebugEnabled())
             log.debug("Enter");
 
-        dao.delete(domainName);
-        log.info("Modified Domain: " + domainName);
+        dao.delete(domainId);
+        log.info("Modified Domain: " + domainId);
 
         if (log.isDebugEnabled())
             log.debug("Exit");
