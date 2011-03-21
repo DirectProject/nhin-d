@@ -68,7 +68,7 @@
 	<!-- Config server files -->
 	<property name="config.root" value="${install.root.dir}/../config"></property>
 	<property name="config.service.dir" value="${config.root}/config-service/target"></property>
-	<property name="config.service.orig.war" value="config-service-1.2-SNAPSHOT.war"></property>
+	<property name="config.service.orig.war" value="config-service-1.1-SNAPSHOT.war"></property>
 	<property name="config.service.dest.war" value="config-service.war"></property>
 	<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
 	<property name="config.ui.orig.war" value="config-ui-1.2-SNAPSHOT.war"></property>
