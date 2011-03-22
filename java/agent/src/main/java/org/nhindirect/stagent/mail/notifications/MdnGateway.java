@@ -116,7 +116,7 @@ public class MdnGateway
 	 */
     public String toString()
     {
-		return type + ";" + domain;
+		return type + "; " + domain;
     }
 
 }

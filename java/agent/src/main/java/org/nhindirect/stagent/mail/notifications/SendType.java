@@ -22,6 +22,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.mail.notifications;
 
+import org.apache.jsieve.mailet.mdn.DispositionSendingMode;
+
 /**
  * Specifies how user was involved in sending notfication.
  * <p>
@@ -30,15 +32,27 @@ package org.nhindirect.stagent.mail.notifications;
  * @author Umesh Madan
  *
  */
-public enum SendType 
+public enum SendType implements DispositionSendingMode
 {
 	/**
 	 * Notification was sent automatically.
 	 */
-	Automatic,
+	Automatic
+	{
+	    public String toString() 
+	    {
+	    	return NotificationHelper.asString(this);
+	    }
+	},
 	
 	/**
 	 * Notification was sent based on user action.
 	 */
 	UserMediated
+	{
+	    public String toString() 
+	    {
+	    	return NotificationHelper.asString(this);
+	    }
+	}	
 }

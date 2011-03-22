@@ -26,15 +26,22 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.mail.BodyPart;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetHeaders;
+import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 
+import org.nhindirect.stagent.NHINDException;
+import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.mail.MimeEntity;
-import org.nhindirect.stagent.mail.MimeStandard;
+
+import org.apache.mailet.base.mail.MimeMultipartReport;
+
 
 /**
  * Represents notification (MDN) content.
@@ -46,15 +53,18 @@ import org.nhindirect.stagent.mail.MimeStandard;
  */
 public class Notification
 {   
-	private static final String DefaultExplanation = "Your message was successfully ";
+	private static final String DefaultExplanation = "Your message was successfully processed.";
 	
-	private MimeEntity explanation;
-	private MimeEntity notification;
-    private ReportingUserAgent reportingAgent;
+    private String explanation;
+	private Disposition disposition;
+    
+	private ReportingUserAgent reportingAgent;
     private MdnGateway gateway;
-    private Disposition disposition;
-    private MimeMultipart mmRep;
+    private String originalMsgId;
     private String finalRecipient;
+    private String error;
+    
+    private MimeMultipartReport report;
     
     /**
      * Initializes a new instance of the supplied notification type.
@@ -70,20 +80,32 @@ public class Notification
      * @param disposition The notification disposition for this instance.
      */
     public Notification(Disposition disposition)
-	{    	
-    	try
-    	{
-		    explanation = new MimeEntity();
-		    explanation.setHeader(MimeStandard.ContentTypeHeader, MimeStandard.MediaType.TextPlain);
-		    
-		    notification = new MimeEntity();
-		    notification.setHeader(MimeStandard.ContentTypeHeader, MDNStandard.MediaType.DispositionNotification);		    
-    	}
-    	catch (MessagingException e) { /* no-op */}
+	{    
+    	this.explanation = DefaultExplanation;
+    	this.disposition = disposition;
+    	this.originalMsgId = "";
+    	this.finalRecipient = "";
+    	this.error = "";
     	
-	    this.setDisposition(disposition, true);
+    	updateReport();
 	}	
 
+    private void updateReport()
+    {
+    	try
+    	{
+    		report = MDNFactory.create(explanation, this.reportingAgent != null ? reportingAgent.getName() : "", 
+    				this.reportingAgent != null ? reportingAgent.getProduct() : "", "",
+    						this.finalRecipient != null ? finalRecipient : "", 
+    						this.originalMsgId != null ? this.originalMsgId : "", 
+    						this.error != null ? this.error : "", 
+    						gateway, disposition);
+    		
+        	report.getBodyPart(1).setHeader(MailStandard.Headers.ContentType, MDNStandard.MediaType.DispositionNotification);
+    	}
+    	catch (MessagingException e) { /* no-op */}
+    }
+    
     /**
      * Gets the body part corresponding to the notification explanation.
      * <p>
@@ -96,19 +118,7 @@ public class Notification
      */
     public String getExplanation() 
     {
-    	String retVal = "";
-    	try
-    	{
-    		ByteArrayOutputStream os = new ByteArrayOutputStream();
-    		explanation.writeTo(os);
-    		
-    		retVal = new String(os.toByteArray(), "ASCII").trim();
-    	}
-    	catch (UnsupportedEncodingException e) {/* no-op */}
-		catch (MessagingException e) {/* no-op */}
-		catch (IOException e) {/* no-op */}
-    	
-    	return retVal;
+    	return explanation;
 	}
 
     /**
@@ -117,13 +127,8 @@ public class Notification
      */
 	public void setExplanation(String explanation) 
 	{		
-		// only use this because the content type is already text/plain
-		try
-		{
-			this.explanation.setText(explanation);			
-			genMMRep();
-		}
-		catch (MessagingException e) {/* no-op */}
+		this.explanation = explanation;
+		updateReport();
 	}
 
 	/**
@@ -140,19 +145,9 @@ public class Notification
 	 * @param reportingAgent The reporting agent that triggered this notification
 	 */
 	public void setReportingAgent(ReportingUserAgent reportingAgent) 
-	{
-		try
-		{
-			if (reportingAgent != null)
-				notification.setHeader(MDNStandard.Headers.ReportingAgent, reportingAgent.toString());
-			else
-				notification.removeHeader(MDNStandard.Headers.ReportingAgent);
-			
-			genMMRep();
-		}
-		catch (MessagingException e) {/* no-op */}
-		
+	{		
 		this.reportingAgent = reportingAgent;
+		updateReport();
 	}
 
 	/**
@@ -170,18 +165,9 @@ public class Notification
 	 */
 	public void setGateway(MdnGateway gateway) 
 	{
-		try
-		{
-			if (gateway != null)
-				notification.setHeader(MDNStandard.Headers.Gateway, gateway.toString());
-			else
-				notification.removeHeader(MDNStandard.Headers.Gateway);
-			
-			genMMRep();
-		}
-		catch (MessagingException e) {/* no-op */}
-		
+
 		this.gateway = gateway;
+		updateReport();
 	}
 
 	/**
@@ -190,15 +176,7 @@ public class Notification
 	 */
 	public String getOriginalMessageId()
 	{
-		String retVal = null;
-	
-		try
-		{
-			retVal = notification.getHeader(MDNStandard.Headers.OriginalMessageID, null);
-		}
-		catch (MessagingException e) {/* no-op */}
-		
-		return retVal != null ? retVal : "";
+		return originalMsgId;
 	}
 	
 	/**
@@ -207,13 +185,9 @@ public class Notification
 	 */
 	public void setOriginalMessageId(String messageId)
 	{
-		if (messageId != null && !messageId.isEmpty())
-			try
-			{
-				notification.setHeader(MDNStandard.Headers.OriginalMessageID, messageId);
-				genMMRep();
-			}
-			catch (MessagingException e) {/* no-op */}
+		this.originalMsgId = messageId;
+		updateReport();
+		
 	}
 	
 	/**
@@ -231,18 +205,8 @@ public class Notification
 	 */
 	public void setFinalRecipient(String recip)
 	{
-		try
-		{
-			if (recip != null && !recip.isEmpty())
-				notification.setHeader(MDNStandard.Headers.FinalRecipient, recip);
-			else
-				notification.removeHeader(MDNStandard.Headers.FinalRecipient);
-			
-			genMMRep();
-		}
-		catch (MessagingException e) {/* no-op */}
-		
 		this.finalRecipient = recip;
+		updateReport();
 	}
 	
 	/**
@@ -254,28 +218,6 @@ public class Notification
 		return disposition;
 	}	
 	
-	/*
-	 * set the disposition but optionally suppress generating the multipart... this
-	 * is mainly used because of the constructor not setting all attributes before
-	 * generating the mutlipart
-	 */
-	private void setDisposition(Disposition disposition, boolean supressMMGen)
-	{
-        if (disposition == null)
-        {
-            throw new IllegalArgumentException("value");
-        }
-        
-		try
-		{
-			notification.setHeader(MDNStandard.Headers.Disposition, disposition.toString());
-			if (!supressMMGen)
-				genMMRep();
-		}
-		catch (MessagingException e) {/* no-op */}
-		
-		this.disposition = disposition;
-	}
 	
 	/**
 	 * Sets the {@link Disposition} for this instance.
@@ -283,7 +225,9 @@ public class Notification
 	 */
 	public void setDisposition(Disposition disposition) 
 	{
-		setDisposition(disposition, false);
+		//setDisposition(disposition, false);
+		this.disposition = disposition;
+		updateReport();
 	}
 
 	/**
@@ -292,17 +236,8 @@ public class Notification
 	 */
 	public String getError()
 	{
-		String retVal = null;
-		
-		try
-		{
-			String headers[] = notification.getHeader(MDNStandard.Headers.Error);
-			if (headers != null && headers.length > 0)
-				retVal = headers[0];
-		}
-		catch (MessagingException e) {/* no-op */}
-		
-		return retVal;
+
+		return error;
 	}
 	
 	/**
@@ -311,13 +246,8 @@ public class Notification
 	 */
 	public void setError(String error)
 	{
-		if (error != null && !error.isEmpty())
-			try
-			{
-				notification.setHeader(MDNStandard.Headers.Error, error);
-				genMMRep();
-			}
-			catch (MessagingException e) {/* no-op */}
+	   this.error = error;
+	   updateReport();
 	}
 	
 	/**
@@ -326,15 +256,31 @@ public class Notification
 	 */
 	public Collection<MimeEntity> getParts()
 	{
+		
+		if (report == null)
+			updateReport();
+		
 		Collection<MimeEntity> retVal = new ArrayList<MimeEntity>();
 		
-		if (getExplanation().trim().isEmpty())
+		try
 		{
-			setExplanation(DefaultExplanation + disposition.getNotification());
+			for (int i = 0; i < report.getCount(); ++i)
+			{
+		    	ByteArrayOutputStream oStream = null;
+		    	try
+		    	{    	
+		    		oStream = new ByteArrayOutputStream();
+		    		report.getBodyPart(i).writeTo(oStream);
+		    		oStream.flush();    		
+		    	}
+				catch (MessagingException e) {}
+				catch (IOException e) {}
+				
+				InputStream str = new ByteArrayInputStream(oStream.toByteArray());					
+				retVal.add(new MimeEntity(str));
+			}
 		}
-		
-		retVal.add(explanation);
-		retVal.add(notification);
+		catch (MessagingException e) {/* */}	
 		
 		return retVal;
 	}
@@ -345,10 +291,11 @@ public class Notification
 	 */
 	public MimeMultipart getAsMultipart()
 	{
-    	if (mmRep == null)
-    		genMMRep();
-    	
-    	return mmRep;
+
+		if (report == null)
+			updateReport();
+		
+		return report;
 	}
 	
 	/**
@@ -356,23 +303,22 @@ public class Notification
 	 * @return byte array serialized form on this notification.
 	 */
 	public byte[] serializeToBytes()
-	{
-    	if (mmRep == null)
-    		genMMRep();
-    	
-   	
+	{		
+		if (report == null)
+			updateReport();
+		
     	ByteArrayOutputStream oStream = null;
     	try
     	{    	
     		
     		oStream = new ByteArrayOutputStream();
-    		mmRep.writeTo(oStream);
+    		report.writeTo(oStream);
     		oStream.flush();    		
     	}
-		catch (MessagingException e) {/* no-op */}
-		catch (IOException e) {/* no-op */}
+		catch (MessagingException e) {}
+		catch (IOException e) {}
 		
-		return oStream.toByteArray();
+		return oStream.toByteArray();		
 	}
 	
 	/**
@@ -381,37 +327,139 @@ public class Notification
 	 */
 	public InputStream getInputStream()
 	{
-    	if (mmRep == null)
-    		genMMRep();
-    	
+		if (report == null)
+			updateReport();
+		
     	ByteArrayOutputStream oStream = null;
     	try
     	{    	
     		oStream = new ByteArrayOutputStream();
-    		mmRep.writeTo(oStream);
+    		report.writeTo(oStream);
     		oStream.flush();    		
     	}
-		catch (MessagingException e) {/* no-op */}
-		catch (IOException e) {/* no-op */}
+		catch (MessagingException e) {}
+		catch (IOException e) {}
 		
-		return new ByteArrayInputStream(oStream.toByteArray());
+		return new ByteArrayInputStream(oStream.toByteArray());		
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
+	{
+		return new String(serializeToBytes());
+	}
+	
+	/**
+	 * Parses the notification part fields into InternetHeaders.
+	 * @return The notification part fields as a set of Internet headers. 
+	 */
+	public InternetHeaders getNotificationFieldsAsHeaders()
+	{
+		if (report == null)
+			updateReport();
+		
+		return getNotificationFieldsAsHeaders(report);
+	}
+	
+	/**
+	 * Parses the notification part fields of a MDN MimeMessage message.  The message is expected to conform to the MDN specification
+	 * as described in RFC3798.
+	 * @return The notification part fields as a set of Internet headers. 
+	 */		
+	public static InternetHeaders getNotificationFieldsAsHeaders(MimeMessage message)
+	{
+		if (message == null)
+			throw new IllegalArgumentException("Message can not be null");
+		
+		MimeMultipart mm = null;
+		
+		try
+		{
+			ByteArrayDataSource dataSource = new ByteArrayDataSource(message.getRawInputStream(), message.getContentType());
+			mm = new MimeMultipart(dataSource);
+		}
+		catch (Exception e)
+		{
+			throw new NHINDException("Failed to parse notification fields.", e);
+		}
+		
+		return getNotificationFieldsAsHeaders(mm);
+	}	
+	
+	/**
+	 * Parses the notification part fields of the MimeMultipart body of a MDN message.  The multipart is expected to conform to the MDN specification
+	 * as described in RFC3798.
+	 * @return The notification part fields as a set of Internet headers. 
+	 */	
+	public static InternetHeaders getNotificationFieldsAsHeaders(MimeMultipart mm)
+	{
+		InternetHeaders retVal = null;
+		
+		if (mm == null)
+			throw new IllegalArgumentException("Multipart can not be null");
+		
+		try
+		{
+			if (mm.getCount() < 2)
+				throw new IllegalArgumentException("Multipart can not be null");
+			
+			// the second part should be the notification
+			BodyPart part = mm.getBodyPart(1);
+			
+			if (!part.getContentType().equalsIgnoreCase(MDNStandard.MediaType.DispositionNotification))
+				throw new IllegalArgumentException("Notification part content type is not " + MDNStandard.MediaType.DispositionNotification);
+				
+			// parse fields
+			retVal = new InternetHeaders();	
+			String[] fields = getPartContentBodyAsString(part).split("\r\n");
+			for (String field : fields)
+			{
+				int idx = field.indexOf(":");
+				if (idx > -1)
+				{
+					String name = field.substring(0, idx);
+					String value = field.substring(idx + 1).trim();
+					retVal.setHeader(name, value);
+				}
+			}
+
+		}
+		catch (MessagingException e)
+		{
+			throw new NHINDException("Failed to parse notification fields.", e);
+		}
+		
+		return retVal;
+		
+	}	
 	
 	/*
-	 * Generates the multipart MIME representation of this object
+	 * Gets the content of a body part as a string.  The content may internally be stored using several constructs such as a stream.
 	 */
-	private void genMMRep()
+	protected static String getPartContentBodyAsString(BodyPart part)
 	{
-		mmRep = new MimeMultipart();
-
-    	Collection<MimeEntity> parts = getParts();
-    	try
-    	{    	
-    		for (MimeEntity part : parts)
-    			mmRep.addBodyPart(part);
- 		
-    	}
-		catch (MessagingException e) {/* no-op */}
+		try
+		{
+			Object content = part.getContent();
+		
+			if (content instanceof String)
+				return content.toString();
+			else if (content instanceof InputStream)
+			{
+				InputStream str = (InputStream)part.getContent();
+				byte[] bytes = new byte[str.available()];
+				str.read(bytes);
+				return new String(bytes);
+			}
+			else
+				return content.toString();
+		}
+		catch (Exception e) 
+		{
+			throw new NHINDException("Unable to handle get notification body as a string.", e);
+		}
 	}
-	
 }
