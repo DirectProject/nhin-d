@@ -100,13 +100,17 @@ public class CertificatesController {
 			EntityStatus estatus = certificateForm.getStatus();
 			if (log.isDebugEnabled()) log.debug("beginning to evaluate filedata");		
 			try{
-				if (!certificateForm.getFileData().isEmpty()) {
+                            model.addAttribute("certerror", false);
+
+                            if (!certificateForm.getFileData().isEmpty()) {
 					byte[] bytes = certificateForm.getFileData().getBytes();
 					String owner = "";
                                         String fileType = certificateForm.getFileData().getContentType();
 
 
-                                        if(!fileType.matches("application/x-x509-ca-cert") && !fileType.matches("application/octet-stream"))
+                                        if(!fileType.matches("application/x-x509-ca-cert") && 
+                                                !fileType.matches("application/octet-stream") &&
+                                                !fileType.matches("application/x-pkcs12"))
                                         {
 
                                             model.addAttribute("certerror", true);
