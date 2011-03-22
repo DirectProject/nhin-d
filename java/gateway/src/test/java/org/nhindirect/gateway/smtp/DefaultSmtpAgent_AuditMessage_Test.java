@@ -18,6 +18,7 @@ import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.DefaultMessageEnvelope;
 import org.nhindirect.stagent.NHINDAgent;
+import org.nhindirect.stagent.mail.notifications.MDNStandard;
 import org.nhindirect.stagent.module.AuditorModule;
 import org.nhindirect.stagent.provider.InstanceAuditorProvider;
 import org.nhindirect.stagent.provider.MockNHINDAgentProvider;
@@ -115,16 +116,50 @@ public class DefaultSmtpAgent_AuditMessage_Test extends TestCase
 				assertTrue(auditor.getEvents().size() > 0);
 				
 				boolean foundIncomingType = false;
+				boolean foundMDNType = false;
 				for (Entry<AuditEvent, Collection<? extends AuditContext>> entry : auditor.getEvents().entrySet())
 				{
 					AuditEvent event = entry.getKey();
-					assertEquals(event.getName(), "SMTP Direct Message Processing");
+					assertEquals(event.getType(), "SMTP Direct Message Processing");
 					
-					if (event.getType().equals("Incoming Direct Message"))
+					if (event.getName().equals(AuditEvents.INCOMING_MESSAGE_NAME))
 						foundIncomingType = true;
+					else if (event.getName().equals(AuditEvents.PRODUCE_MDN_NAME))
+					{
+						boolean foundFinalRecip = false;
+						boolean foundOrigMsgId = false;		
+						boolean foundDisp = false;
+						
+						for (AuditContext ctx : entry.getValue())
+						{
+							if (ctx.getContextName().equals(MDNStandard.Headers.FinalRecipient))
+							{
+								foundFinalRecip = true;
+							}
+							else if (ctx.getContextName().equals(MDNStandard.Headers.OriginalMessageID))
+							{
+								foundOrigMsgId = true;
+							}
+							else if (ctx.getContextName().equals(MDNStandard.Headers.Disposition))
+							{
+								assertEquals("automatic-action/MDN-sent-automatically;processed", ctx.getContextValue());
+								foundDisp = true;
+							}							
+							
+						}
+						
+						assertTrue(foundFinalRecip);
+						assertTrue(foundOrigMsgId);
+						assertTrue(foundDisp);
+						
+						foundMDNType = true;
+						// assert attributes of the event
+						
+					}
 				}
 				
 				assertTrue(foundIncomingType);
+				assertTrue(foundMDNType);
 			}
 			
 		}.perform();
@@ -152,9 +187,9 @@ public class DefaultSmtpAgent_AuditMessage_Test extends TestCase
 				for (Entry<AuditEvent, Collection<? extends AuditContext>> entry : auditor.getEvents().entrySet())
 				{
 					AuditEvent event = entry.getKey();
-					assertEquals(event.getName(), "SMTP Direct Message Processing");
+					assertEquals(event.getType(), "SMTP Direct Message Processing");
 					
-					if (event.getType().equals("Outgoing Direct Message"))
+					if (event.getName().equals("Outgoing Direct Message"))
 						foundOutgoingType = true;
 				}
 				

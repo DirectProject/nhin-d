@@ -22,6 +22,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.mail.notifications;
 
+import org.apache.jsieve.mailet.mdn.DispositionActionMode;
+
 /**
  * Specifies how notification was triggered.
  * <p>
@@ -30,15 +32,27 @@ package org.nhindirect.stagent.mail.notifications;
  * @author Umesh Madan
  *
  */
-public enum TriggerType 
+public enum TriggerType implements DispositionActionMode
 {
 	/**
 	 * Notification was triggered automatically.
 	 */
-	Automatic,
+	Automatic
+	{
+	    public String toString() 
+	    {
+	    	return NotificationHelper.asString(this);
+	    }
+	},
 	
 	/**
 	 * Notification was triggered based on user action.
 	 */
 	UserInitiated
+	{
+	    public String toString() 
+	    {
+	    	return NotificationHelper.asString(this);
+	    }
+	}
 }
