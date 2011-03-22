@@ -108,7 +108,9 @@ public class CertificatesController {
                                         String fileType = certificateForm.getFileData().getContentType();
 
 
-                                        if(!fileType.matches("application/x-x509-ca-cert") && !fileType.matches("application/octet-stream"))
+                                        if(!fileType.matches("application/x-x509-ca-cert") && 
+                                                !fileType.matches("application/octet-stream") &&
+                                                !fileType.matches("application/x-pkcs12"))
                                         {
 
                                             model.addAttribute("certerror", true);
