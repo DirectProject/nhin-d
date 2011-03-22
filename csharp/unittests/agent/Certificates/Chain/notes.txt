@@ -1,0 +1,11 @@
+http://blogs.technet.com/b/jhoward/archive/2005/02/02/365323.aspx
+
+// generate a certificate root
+makecert -pe -n "CN=root.xyz" -ss my -sr LocalMachine -a sha1 -sky signature -r "root.cer"
+makecert -pe -n "CN=inter1.xyz" -ss my -sr LocalMachine -a sha1 -sky signature -in "root.xyz" -is MY -ir LocalMachine inter1.cer 
+makecert -pe -n "CN=inter11.xyz" -ss my -sr LocalMachine -a sha1 -sky signature -in "inter1.xyz" -is MY -ir LocalMachine inter11.cer 
+
+
+-cy certType
+ Specifies the certificate type. Valid values are end for end-entity, authority for certification authority.
+ 
