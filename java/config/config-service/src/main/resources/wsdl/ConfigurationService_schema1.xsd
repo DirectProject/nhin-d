@@ -175,6 +175,10 @@
 
   <xs:element name="removeDomain" type="tns:removeDomain"/>
 
+  <xs:element name="removeDomainById" type="tns:removeDomainById"/>
+
+  <xs:element name="removeDomainByIdResponse" type="tns:removeDomainByIdResponse"/>
+
   <xs:element name="removeDomainResponse" type="tns:removeDomainResponse"/>
 
   <xs:element name="searchDomain" type="tns:searchDomain"/>
@@ -321,6 +325,16 @@
   </xs:complexType>
 
   <xs:complexType name="deleteSettingResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="removeDomainById">
+    <xs:sequence>
+      <xs:element name="id" type="xs:long" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="removeDomainByIdResponse">
     <xs:sequence/>
   </xs:complexType>
 
@@ -670,7 +684,7 @@
 
   <xs:complexType name="removeDomain">
     <xs:sequence>
-      <xs:element name="id" type="xs:long" minOccurs="0"/>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -786,19 +800,6 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="getAddresss">
-    <xs:sequence>
-      <xs:element name="emailAddress" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="status" type="tns:entityStatus" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="getAddresssResponse">
-    <xs:sequence>
-      <xs:element name="return" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
   <xs:complexType name="listAddresss">
     <xs:sequence>
       <xs:element name="lastEmailAddress" type="xs:string" minOccurs="0"/>
@@ -807,6 +808,19 @@
   </xs:complexType>
 
   <xs:complexType name="listAddresssResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getAddresss">
+    <xs:sequence>
+      <xs:element name="emailAddress" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="status" type="tns:entityStatus" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getAddresssResponse">
     <xs:sequence>
       <xs:element name="return" type="tns:address" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
