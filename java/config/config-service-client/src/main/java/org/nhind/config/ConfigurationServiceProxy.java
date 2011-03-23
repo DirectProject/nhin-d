@@ -260,10 +260,10 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     configurationService.updateSetting(name, value);
   }
   
-  public void removeDomain(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+  public void removeDomain(java.lang.Long domainId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
-    configurationService.removeDomain(name);
+    configurationService.removeDomain(domainId);
   }
   
   public org.nhind.config.Certificate[] getCertificates(long[] certificateIds, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{

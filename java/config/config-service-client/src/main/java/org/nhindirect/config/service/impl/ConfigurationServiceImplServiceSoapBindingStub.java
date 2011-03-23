@@ -2495,7 +2495,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public void removeDomain(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+    public void removeDomain(java.lang.Long domainId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -2511,7 +2511,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {name});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {domainId});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;

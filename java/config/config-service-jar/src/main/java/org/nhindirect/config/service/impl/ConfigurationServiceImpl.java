@@ -193,7 +193,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     /*
      * (non-Javadoc)
      * 
-     * @see org.nhindirect.config.service.DomainService#removeDomain(java.lang.Integer
+     * @see org.nhindirect.config.service.DomainService#removeDomain(java.lang.Long
      * )
      */
     @Override
