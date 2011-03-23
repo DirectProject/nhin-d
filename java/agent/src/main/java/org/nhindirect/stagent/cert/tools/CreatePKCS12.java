@@ -104,7 +104,7 @@ public class CreatePKCS12
                 }
                 keyFile = new File(argv[++i]);
             }
-            else if (arg.equals("-password"))
+            else if (arg.equals("-pass"))
             {
                 if (i == argv.length - 1 || argv[i + 1].startsWith("-"))
                 {
@@ -137,7 +137,7 @@ public class CreatePKCS12
 
         if (validateParameters())        
         	if (create(certFile, keyFile, password, createFile) != null)
-        		System.out.println("Create pcks12 file " + createFile.getAbsolutePath());
+        		System.out.println("Created pcks12 file " + createFile.getAbsolutePath());
         
         System.exit(0);
     }
@@ -255,7 +255,7 @@ public class CreatePKCS12
 				fileName = fileName.substring(0, index);
 			
 			fileName += ".p12";
-			createFile = new File(fileName);
+			CreatePKCS12.createFile = createFile = new File(fileName);
 		}		
 
 		if (createFile.exists())
