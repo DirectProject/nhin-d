@@ -49,8 +49,11 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Caching\Cache.cs" />
+    <Compile Include="Caching\CacheSettings.cs" />
     <Compile Include="Caching\CachingBase.cs" />
     <Compile Include="Caching\DnsResponseCache.cs" />
+    <Compile Include="Certificates\CertificateCache.cs" />
     <Compile Include="Certificates\CertificateIndex.cs" />
     <Compile Include="Certificates\CertificateResolver.cs" />
     <Compile Include="Certificates\CertificateResolverCollection.cs" />
@@ -70,8 +73,10 @@
     <Compile Include="Container\ConfigurationSectionBase.cs" />
     <Compile Include="Container\IDependencyContainer.cs" />
     <Compile Include="Container\IocContainerSection.cs" />
+    <Compile Include="Container\PluginDefinition.cs" />
     <Compile Include="Container\SimpleContainerSection.cs" />
     <Compile Include="Container\IoC.cs" />
+    <Compile Include="Container\SimpleContainerSettings.cs" />
     <Compile Include="Container\SimpleDependencyResolver.cs" />
     <Compile Include="Cryptography\CryptographicException.cs" />
     <Compile Include="Cryptography\DigestAlgorithm.cs" />

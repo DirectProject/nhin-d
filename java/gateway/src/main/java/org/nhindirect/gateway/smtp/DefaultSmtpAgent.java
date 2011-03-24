@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
@@ -45,6 +46,8 @@ import org.nhindirect.common.audit.AuditEvent;
 import org.nhindirect.common.audit.Auditor;
 import org.nhindirect.common.audit.AuditorFactory;
 import org.nhindirect.common.audit.DefaultAuditContext;
+import org.nhindirect.stagent.AgentError;
+import org.nhindirect.stagent.AgentException;
 import org.nhindirect.stagent.DefaultMessageEnvelope;
 import org.nhindirect.stagent.IncomingMessage;
 import org.nhindirect.stagent.NHINDAgent;
@@ -57,6 +60,7 @@ import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.mail.notifications.MDNStandard;
+import org.nhindirect.stagent.mail.notifications.Notification;
 import org.nhindirect.stagent.mail.notifications.NotificationHelper;
 import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 import org.nhindirect.stagent.parser.EntitySerializer;
@@ -75,22 +79,7 @@ public class DefaultSmtpAgent implements SmtpAgent
 	
 	private static final String PRINICPAL;
 	
-	private static final String EVENT_NAME = "SMTP Direct Message Processing";
-	
-	private static final String INCOMING_MESSAGE_TYPE = "Incoming Direct Message";
-	private static final String OUTGOING_MESSAGE_TYPE = "Outgoing Direct Message";
-	private static final String PRODUCE_MDN_TYPE = "Produce Direct MDN Message";
-	private static final String MDN_RECEIVED_TYPE = "Received Direct MDN Message";
-	private static final String REJECTED_RECIP_TYPE = "Rejected Direct Message Recipients";
-	private static final String REJECTED_MESSAGE_TYPE = "Rejected Direct Message";
-	
-	private static final String[] DEFAULT_HEADER_CONTEXT = {MailStandard.Headers.MessageID, MailStandard.Headers.From, MailStandard.Headers.To};
-	
-	private static final String[] MDN_HEADER_CONTEXT = {MailStandard.Headers.MessageID, MailStandard.Headers.From, 
-		MailStandard.Headers.To, MDNStandard.Headers.Disposition};
-	
-	private static final String[] MDN_RECEIVED_CONTEXT = {MailStandard.Headers.MessageID, MailStandard.Headers.From, 
-		MailStandard.Headers.To, MDNStandard.Headers.OriginalMessageID, MDNStandard.Headers.Disposition, MDNStandard.Headers.FinalRecipient,};
+
 	
 	private final NHINDAgent agent;
 	private final SmtpAgentSettings settings;
@@ -200,6 +189,8 @@ public class DefaultSmtpAgent implements SmtpAgent
 		
 		preProcessMessage(message, sender);
 
+		Collection<NHINDAddress> originalRecipList = new ArrayList<NHINDAddress>(recipients);
+		
 		DefaultMessageEnvelope envelopeToProcess = null;
 		try
 		{
@@ -225,14 +216,34 @@ public class DefaultSmtpAgent implements SmtpAgent
 			if (envelopeToProcess != null)
 			{
 				Collection<AuditContext> contexts = createContextCollectionFromMessage(envelopeToProcess,
-					Arrays.asList(DEFAULT_HEADER_CONTEXT));
+					Arrays.asList(AuditEvents.DEFAULT_HEADER_CONTEXT));
 				
 				if (e instanceof NHINDException)
-				{
-					if (((NHINDException)e).getError() != null)
-						contexts.add(new DefaultAuditContext("rejected reason", ((NHINDException)e).getError().toString()));
+				{					
+					NHINDException exception = (NHINDException)e;
+					if (exception.getError() != null)
+					{						
+						contexts.add(new DefaultAuditContext(AuditEvents.REJECTED_MESSAGE_REASON_CONTEXT, exception.getError().toString()));
+						
+						if (exception.getError() != null && exception.getError() instanceof AgentException
+								&& ((AgentException)exception.getError()).getError() == AgentError.NoTrustedRecipients)
+						{
+							StringBuilder rejectedRecips = new StringBuilder();
+				        	int cnt = 0;
+				        	for (NHINDAddress address : originalRecipList)
+				        	{
+				        		rejectedRecips.append(address.getAddress());
+				        		
+				        		if (++cnt < originalRecipList.size())
+				        			rejectedRecips.append(", ");
+				        	}
+				        	contexts.add(new DefaultAuditContext(AuditEvents.REJECTED_RECIPIENTS_CONTEXT, rejectedRecips.toString()));							
+						}
+						
+					}
+		
 				}
-				auditor.audit(PRINICPAL, new AuditEvent(EVENT_NAME, REJECTED_MESSAGE_TYPE), contexts);
+				auditor.audit(PRINICPAL, new AuditEvent(AuditEvents.REJECTED_MESSAGE_NAME, AuditEvents.EVENT_TYPE), contexts);
 			}
 			
 			LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress", e);
@@ -293,9 +304,9 @@ public class DefaultSmtpAgent implements SmtpAgent
 			if (auditor != null)
 			{
 				Collection<AuditContext> contexts = createContextCollectionFromMessage(envelope,
-						Arrays.asList(DEFAULT_HEADER_CONTEXT));
+						Arrays.asList(AuditEvents.DEFAULT_HEADER_CONTEXT));
 				
-				auditor.audit(PRINICPAL, new AuditEvent(EVENT_NAME, OUTGOING_MESSAGE_TYPE), contexts);
+				auditor.audit(PRINICPAL, new AuditEvent(AuditEvents.OUTGOING_MESSAGE_NAME, AuditEvents.EVENT_TYPE), contexts);
 			}	
 			LOGGER.debug("Sending outgoing message from " + envelope.getSender().toString() + " to STAgent");
 		}
@@ -304,9 +315,9 @@ public class DefaultSmtpAgent implements SmtpAgent
 			if (auditor != null)
 			{
 				Collection<AuditContext> contexts = createContextCollectionFromMessage(envelope,
-						Arrays.asList(DEFAULT_HEADER_CONTEXT));
+						Arrays.asList(AuditEvents.DEFAULT_HEADER_CONTEXT));
 				
-				auditor.audit(PRINICPAL, new AuditEvent(EVENT_NAME, INCOMING_MESSAGE_TYPE), contexts);
+				auditor.audit(PRINICPAL, new AuditEvent(AuditEvents.INCOMING_MESSAGE_NAME, AuditEvents.EVENT_TYPE), contexts);
 			}				
 			LOGGER.debug("Sending incoming message from " + envelope.getSender().toString() + " to STAgent");
 		}
@@ -329,7 +340,7 @@ public class DefaultSmtpAgent implements SmtpAgent
         		&& result.getProcessedMessage().getRejectedRecipients().size() > 0)
         {
 			Collection<AuditContext> contexts = createContextCollectionFromMessage(result.getProcessedMessage(),
-					Arrays.asList(DEFAULT_HEADER_CONTEXT));
+					Arrays.asList(AuditEvents.DEFAULT_HEADER_CONTEXT));
         	StringBuffer rejectedRecips = new StringBuffer();
         	
         	int cnt = 0;
@@ -341,8 +352,8 @@ public class DefaultSmtpAgent implements SmtpAgent
         			rejectedRecips.append(", ");
         	}
         	
-        	contexts.add(new DefaultAuditContext("rejected recipients", rejectedRecips.toString()));
-        	auditor.audit(PRINICPAL, new AuditEvent(EVENT_NAME, REJECTED_RECIP_TYPE), contexts);
+        	contexts.add(new DefaultAuditContext(AuditEvents.REJECTED_RECIPIENTS_CONTEXT, rejectedRecips.toString()));
+        	auditor.audit(PRINICPAL, new AuditEvent(AuditEvents.REJECTED_RECIP_NAME, AuditEvents.EVENT_TYPE), contexts);
         }
         
         if (isOutgoing)
@@ -373,8 +384,8 @@ public class DefaultSmtpAgent implements SmtpAgent
         		{
         			for (NotificationMessage noteMsg : result.getNotificationMessages())
         			{
-                		Collection<AuditContext> contexts = createContextCollectionFromMessage(noteMsg, Arrays.asList(MDN_HEADER_CONTEXT));
-                		auditor.audit(PRINICPAL, new AuditEvent(EVENT_NAME, PRODUCE_MDN_TYPE), contexts);
+                		Collection<AuditContext> contexts = createContextCollectionFromMessage(noteMsg, Arrays.asList(AuditEvents.MDN_HEADER_CONTEXT));
+                		auditor.audit(PRINICPAL, new AuditEvent(AuditEvents.PRODUCE_MDN_NAME, AuditEvents.EVENT_TYPE), contexts);
         			}
         		}
 
@@ -389,8 +400,8 @@ public class DefaultSmtpAgent implements SmtpAgent
     	// check if this is an incoming MDN message... is so, audit it
     	if (NotificationHelper.isMDN(result.getProcessedMessage().getMessage()))
     	{
-    		Collection<AuditContext> contexts = createContextCollectionFromMessage(result.getProcessedMessage(), Arrays.asList(MDN_RECEIVED_CONTEXT));
-    		auditor.audit(PRINICPAL, new AuditEvent(EVENT_NAME, MDN_RECEIVED_TYPE), contexts);
+    		Collection<AuditContext> contexts = createContextCollectionFromMessage(result.getProcessedMessage(), Arrays.asList(AuditEvents.MDN_RECEIVED_CONTEXT));
+    		auditor.audit(PRINICPAL, new AuditEvent(AuditEvents.MDN_RECEIVED_NAME, AuditEvents.EVENT_TYPE), contexts);
     	}        
     }
     
@@ -452,13 +463,19 @@ public class DefaultSmtpAgent implements SmtpAgent
 						header.equals(MDNStandard.Headers.FinalRecipient))
 				{
 					Message msg = env.getMessage();
-					MimeBodyPart part = getNotificationPart(msg);
-					if (part != null)
+					InternetHeaders notHeaders = null;
+					try
 					{
-						theHeader = part.getHeader(header, ",");
+						notHeaders = Notification.getNotificationFieldsAsHeaders(msg);
+					}
+					catch (Exception e) {/* no-op */}
+
+					if (notHeaders != null)
+					{
+						theHeader = notHeaders.getHeader(header, ",");
 					}
 					else
-						theHeader = env.getMessage().getHeader(header, ",");
+						theHeader = msg.getHeader(header, ",");
 				}			
 				else
 					theHeader = env.getMessage().getHeader(header, ",");

@@ -214,12 +214,12 @@ public class DomainServiceTest extends MockObjectTestCase
     {
         final DomainDao domainDao = context.mock(DomainDao.class);
 
-        final String domainName = "domain.com";
+        final String domain = "domain.com";
 
         context.checking(new Expectations()
         {
             {
-                oneOf(domainDao).delete(domainName);
+                oneOf(domainDao).delete(domain);
             }
         });
 
@@ -228,7 +228,36 @@ public class DomainServiceTest extends MockObjectTestCase
 
         try
         {
-            service.removeDomain(domainName);
+            service.removeDomain(domain);
+        }
+        catch (Exception e)
+        {
+            fail("Exception thrown");
+        }
+    }
+    
+    /**
+     * Test the removeDomainById method.
+     */
+    public void testRemoveDomainById()
+    {
+        final DomainDao domainDao = context.mock(DomainDao.class);
+
+        final long domainId = 1;
+
+        context.checking(new Expectations()
+        {
+            {
+                oneOf(domainDao).delete(domainId);
+            }
+        });
+
+        DomainServiceImpl service = new DomainServiceImpl();
+        service.setDao(domainDao);
+
+        try
+        {
+            service.removeDomainById(domainId);
         }
         catch (Exception e)
         {

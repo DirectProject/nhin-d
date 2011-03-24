@@ -101,6 +101,6 @@ public class ReportingUserAgent
 	@Override
 	public String toString()
 	{
-		return name + ";" + product;		
+		return name + "; " + product;		
 	}
 }

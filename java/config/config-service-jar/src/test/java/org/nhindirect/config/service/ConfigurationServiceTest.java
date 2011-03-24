@@ -377,9 +377,9 @@ public class ConfigurationServiceTest extends MockObjectTestCase
     }
 
     /**
-     * Test the removeDomains method.
+     * Test the removeDomain method.
      */
-    public void testRemoveDomains() throws Exception
+    public void testRemoveDomain() throws Exception
     {
         final DomainService domainService = context.mock(DomainService.class);
 
@@ -398,6 +398,35 @@ public class ConfigurationServiceTest extends MockObjectTestCase
         try
         {
             service.removeDomain(domain);
+        }
+        catch (Exception e)
+        {
+            fail("Exception thrown");
+        }
+    }
+    
+    /**
+     * Test the removeDomainById method.
+     */
+    public void testRemoveDomainById() throws Exception
+    {
+        final DomainService domainService = context.mock(DomainService.class);
+
+        final long domainId = 1;
+
+        context.checking(new Expectations()
+        {
+            {
+                oneOf(domainService).removeDomainById(domainId);
+            }
+        });
+
+        ConfigurationServiceImpl service = new ConfigurationServiceImpl();
+        service.setDomainSvc(domainService);
+
+        try
+        {
+            service.removeDomainById(domainId);
         }
         catch (Exception e)
         {

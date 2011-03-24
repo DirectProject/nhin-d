@@ -47,7 +47,6 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.xd.transform.util.XmlUtils;
 
 /**
  * Wrapper class for handling calls to the Document Repository WS (XD*). The

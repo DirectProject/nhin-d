@@ -111,8 +111,8 @@
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xdcommon.dir" value="${install.root.dir}/../xd-common"></property>	
-	<property name="lib.agent" value="${agent.dir}/target/agent-1.2-SNAPSHOT.jar"></property>
-	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.3-SNAPSHOT.jar"></property>
+	<property name="lib.agent" value="${agent.dir}/target/agent-1.1.3-SNAPSHOT.jar"></property>
+	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.2.1-SNAPSHOT.jar"></property>
 	<property name="lib.xdmail" value="${xdmail.dir}/target/xdmail-1.0-SNAPSHOT.jar"></property>
 	<property name="lib.xdcommon" value="${xdcommon.dir}/target/xd-common-1.0-SNAPSHOT.jar"></property>
 	

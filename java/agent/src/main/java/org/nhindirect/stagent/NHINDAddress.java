@@ -95,7 +95,8 @@ public class NHINDAddress extends InternetAddress
     	{
     		throw new MimeException(MimeError.InvalidHeader, e);
     	}    	
-    	this.source = source;    	
+    	this.source = source;    
+    	this.m_trustStatus = TrustEnforcementStatus.Failed;
     }    
     
     /**

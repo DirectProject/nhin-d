@@ -411,7 +411,7 @@ public class TrustModel_EnforceIncomingMessage_Test extends TestCase {
 			}
 
 			protected void doAssertions() throws Exception {
-				assertEquals(1, findTrustedSignatureCalls);
+				assertEquals(0, findTrustedSignatureCalls);
 				assertEquals(TrustEnforcementStatus.Failed, recip.getStatus());
 			}		
 			
@@ -432,30 +432,12 @@ public class TrustModel_EnforceIncomingMessage_Test extends TestCase {
 			
 
 			protected void doAssertions() throws Exception {
-				assertEquals(1, findTrustedSignatureCalls);
-				assertEquals(TrustEnforcementStatus.Success_ThumbprintMismatch, recip.getStatus());
+				assertEquals(0, findTrustedSignatureCalls);
+				assertEquals(TrustEnforcementStatus.Failed, recip.getStatus());
 			}		
 			
 		}.perform();
 	}
 	
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	public void testThumbprintIsVerified_SetsTrustEnforcementStatusAsSuccess() throws Exception {
-		new MessageHasSenderSignatures() {
-			
-			protected boolean isThumbprintVerified_Internal(){
-				  theIsThumbprintVerified=true;
-				  return theIsThumbprintVerified;
-			}
 
-			protected void doAssertions() throws Exception {
-				assertEquals(1, findTrustedSignatureCalls);
-				assertEquals(TrustEnforcementStatus.Success, recip.getStatus());
-			}		
-			
-		}.perform();
-	}
 }

@@ -4,6 +4,7 @@
 
  Authors:
     John Theisen
+    Umesh Madan
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -36,7 +37,17 @@ namespace Health.Direct.Common.Container
         {
             m_types = new Dictionary<Type, Func<object>>();
         }
-
+        
+        /// <summary>
+        /// Returns true if the given type is registered...
+        /// </summary>
+        /// <typeparam name="T">type to check</typeparam>
+        /// <returns>true if registered</returns>
+        public bool IsRegistered<T>()
+        {
+            return m_types.ContainsKey(typeof(T));
+        }
+        
         ///<summary>
         /// Given a specific type, return an instance of that type.
         ///</summary>
@@ -102,7 +113,31 @@ namespace Health.Direct.Common.Container
 
             return this;
         }
+        
+        /// <summary>
+        /// Register components
+        /// </summary>
+        /// <param name="containerSettings">A component settings object, typically deserialized using XmlSerializer</param>
+        ///<returns>An instance of self so the Register calls can be chained.</returns>
+        public IDependencyContainer Register(SimpleContainerSettings containerSettings)
+        {
+            if (containerSettings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }            
+            
+            if (containerSettings.HasComponents)
+            {
+                foreach(SimpleComponentSettings component in containerSettings.Components)
+                {
+                    component.Validate();
+                    Register(component.ServiceType, GetCreator(component));
+                }
+            }
 
+            return this;            
+        }
+        
         private static Func<object> GetCreator(SimpleComponentElement component)
         {
             if (component.Scope == InstanceScope.Transient)
@@ -110,6 +145,17 @@ namespace Health.Direct.Common.Container
                 return component.CreateInstance;
             }
             
+            object instance = component.CreateInstance();
+            return () => instance;
+        }
+
+        private static Func<object> GetCreator(SimpleComponentSettings component)
+        {
+            if (component.Scope == InstanceScope.Transient)
+            {
+                return component.CreateInstance;
+            }
+
             object instance = component.CreateInstance();
             return () => instance;
         }

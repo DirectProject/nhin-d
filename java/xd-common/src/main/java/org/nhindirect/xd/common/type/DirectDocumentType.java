@@ -147,6 +147,19 @@ public enum DirectDocumentType
     },
     PDF(null, MimeType.APPLICATION_PDF),
     XML(null, MimeType.TEXT_XML),
+    HTML(null, MimeType.TEXT_HTML)
+    {
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.nhindirect.xd.common.type.DirectDocumentType#matches(java.lang.String, java.lang.String, java.lang.String)
+         */
+        @Override
+        public boolean matches(String data, String contentType, String fileName)
+        {
+            return StringUtils.contains(contentType, MimeType.TEXT_HTML.getType());
+        }  
+    },
     TEXT(null, MimeType.TEXT_PLAIN),
     UNKNOWN(null, MimeType.TEXT_PLAIN)
     {

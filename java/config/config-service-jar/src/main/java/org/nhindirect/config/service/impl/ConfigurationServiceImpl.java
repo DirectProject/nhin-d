@@ -193,13 +193,25 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     /*
      * (non-Javadoc)
      * 
-     * @see org.nhindirect.config.service.DomainService#removeDomain(java.lang.String
-     * )
+     * @see org.nhindirect.config.service.DomainService#removeDomain(java.lang.String)
      */
     @Override
+    @Deprecated
     @FaultAction(className = ConfigurationFault.class)
     public void removeDomain(String domainName) throws ConfigurationServiceException {
         domainSvc.removeDomain(domainName);
+    }
+    
+
+    /* 
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.config.service.DomainService#removeDomainById(java.lang.Long)
+     */
+    @Override
+    @FaultAction(className = ConfigurationFault.class)
+    public void removeDomainById(Long domainId) throws ConfigurationServiceException {
+        domainSvc.removeDomainById(domainId);
     }
 
     /*

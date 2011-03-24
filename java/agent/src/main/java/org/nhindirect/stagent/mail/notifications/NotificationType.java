@@ -22,6 +22,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.mail.notifications;
 
+import org.apache.jsieve.mailet.mdn.DispositionType;
+
 /**
  * Indicates what this disposition notification means.
  * <p>
@@ -30,20 +32,38 @@ package org.nhindirect.stagent.mail.notifications;
  * @author Greg Meyer
  * @author Umesh Madan
  */
-public enum NotificationType 
+public enum NotificationType implements DispositionType 
 {
 	/**
 	 * Indicates message has been received but not displayed to user.
 	 */
-	Processed,
+	Processed
+	{
+	    public String toString() 
+	    {
+	    	return NotificationHelper.asString(this);
+	    }
+	},
 	
 	/**
 	 * Indicates message has been displayed to user (does not imply the message was read, understood, etc.)
 	 */
-	Displayed,
+	Displayed
+	{
+	    public String toString() 
+	    {
+	    	return NotificationHelper.asString(this);
+	    }
+	},
 	
 	/**
 	 * Indicates message was deleted.
 	 */
 	Deleted
+	{
+	    public String toString() 
+	    {
+	    	return NotificationHelper.asString(this);
+	    }
+	}	
 }

@@ -93,7 +93,7 @@ The PublicCertStore element describes the medium used to store public certificat
 Attributes:  
 
 ||Attribute||Description||
-|type|The storage media of the trust anchors.  Valid types: DNS, Keystore|
+|type|The storage media of the public certs.  Valid types: DNS, Keystore|
 |file|For keystore store types, the name of the file that contains the certificates|
 |filePass|For keystore store types, an optional password used to encrypt the file.|
 |privKeyPass|For keystore store types, an optional password used to encrypt private keys.|
@@ -105,7 +105,7 @@ The PrivateCertStore element describes the medium used to store private certific
 Attributes:  
 
 ||Attribute||Description||
-|type|The storage media of the trust anchors.  Valid types: LDAP, Keystore|
+|type|The storage media of the private certs.  Valid types: LDAP, Keystore|
 |ldapUser|The user name credential for connecting to the LDAP store.  May be empty if the LDAP server allows anonymous binding.|
 |ldapPassword|The password credential for connecting to the LDAP store.|
 |ldapConnTimeout|Optional timeout in seconds before the connection is failed.|
