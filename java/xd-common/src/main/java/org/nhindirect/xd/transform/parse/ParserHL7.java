@@ -5,6 +5,7 @@
 package org.nhindirect.xd.transform.parse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.nhindirect.xd.common.DirectDocuments;
@@ -14,6 +15,17 @@ import org.nhindirect.xd.common.DirectDocuments;
  * @author vlewis
  */
 public class ParserHL7 {
+     private static final HashMap<String, String> siemens = new HashMap<String, String>();
+    static {
+        siemens.put("07210", "Ferdinand.Vendetti@allscript.direct.com");
+        siemens.put("07311", "Mary.Ehlers@allscript.direct.com");
+        siemens.put("100001", "Eddy.Ropside@allscript.direct.com");
+        siemens.put("100002", "Joseph.Hoffman@allscript.direct.com");
+        siemens.put("100003", "Knapp.Julie@allscript.direct.com");
+        siemens.put("100004", "McDermott.Thomas@allscript.direct.com");
+        siemens.put("pknapp", "Patrick.Knapp@allscript.direct.com");
+    }
+
 
     public static List<String> parseRecipients(DirectDocuments documents) {
 
@@ -57,6 +69,11 @@ public class ParserHL7 {
         }
         System.out.println("about to test ret " + ret);
 
+         //vpl strictly test
+
+        if(siemens.containsKey(ret)){
+            ret=siemens.get(ret);
+        }
        
         return ret;
     }
