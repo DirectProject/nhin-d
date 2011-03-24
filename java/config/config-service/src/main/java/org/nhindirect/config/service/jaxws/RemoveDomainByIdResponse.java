@@ -6,10 +6,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement(name = "getAllSettings", namespace = "http://nhind.org/config")
+@XmlRootElement(name = "removeDomainByIdResponse", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "getAllSettings", namespace = "http://nhind.org/config")
-public class GetAllSettings {
+@XmlType(name = "removeDomainByIdResponse", namespace = "http://nhind.org/config")
+public class RemoveDomainByIdResponse {
 
 
 }

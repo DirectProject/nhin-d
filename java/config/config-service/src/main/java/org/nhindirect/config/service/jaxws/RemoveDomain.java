@@ -12,25 +12,25 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "removeDomain", namespace = "http://nhind.org/config")
 public class RemoveDomain {
 
-    @XmlElement(name = "id", namespace = "")
-    private Long id;
+    @XmlElement(name = "name", namespace = "")
+    private String name;
 
     /**
      * 
      * @return
-     *     returns Long
+     *     returns String
      */
-    public Long getId() {
-        return this.id;
+    public String getName() {
+        return this.name;
     }
 
     /**
      * 
-     * @param id
-     *     the value for the id property
+     * @param name
+     *     the value for the name property
      */
-    public void setId(Long id) {
-        this.id = id;
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

@@ -900,7 +900,7 @@ public class DomainController {
 					//String domname = dom.getDomainName();
 					if (log.isDebugEnabled()) log.debug("removing domain with id: " + domainId);
 
-                    configSvc.removeDomain(domainId);
+                    configSvc.removeDomainById(domainId);
 					// now delete anchors
 					try{
 						// get list of certificates for this domain
