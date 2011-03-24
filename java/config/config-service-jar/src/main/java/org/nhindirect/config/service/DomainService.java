@@ -80,13 +80,26 @@ public interface DomainService {
     /**
      * Remove a Domain.
      * 
+     * @param domainName
+     *            The name of the Domain to remove.
+     * @throws ConfigurationServiceException
+     * 
+     * @deprecated Use of removeDomain(Long domainId) is preferred.
+     */
+    @Deprecated
+    @WebMethod(operationName = "removeDomain", action = "urn:RemoveDomain")
+    void removeDomain(@WebParam(name = "name") String domainName) throws ConfigurationServiceException;
+
+    /**
+     * Remove a Domain.
+     * 
      * @param domainId
      *            The id of the Domain to remove.
      * @throws ConfigurationServiceException
      */
-    @WebMethod(operationName = "removeDomain", action = "urn:RemoveDomain")
-    void removeDomain(@WebParam(name = "id") Long domainId) throws ConfigurationServiceException;
-
+    @WebMethod(operationName = "removeDomainById", action = "urn:RemoveDomainById")
+    void removeDomainById(@WebParam(name = "id") Long domainId) throws ConfigurationServiceException;
+    
     /**
      * Return a list of Domains matching the parameters.
      * 

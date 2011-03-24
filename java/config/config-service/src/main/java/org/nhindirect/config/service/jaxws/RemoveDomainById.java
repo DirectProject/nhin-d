@@ -7,10 +7,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement(name = "getDomain", namespace = "http://nhind.org/config")
+@XmlRootElement(name = "removeDomainById", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "getDomain", namespace = "http://nhind.org/config")
-public class GetDomain {
+@XmlType(name = "removeDomainById", namespace = "http://nhind.org/config")
+public class RemoveDomainById {
 
     @XmlElement(name = "id", namespace = "")
     private Long id;

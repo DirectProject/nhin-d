@@ -242,7 +242,11 @@ public abstract class DocumentRepositoryAbstract
                 String test = rrt.getStatus();
                 if (test.indexOf("Failure") >= 0) 
                 {
-                    throw new Exception("Failure Returned from XDR forward");
+                    String error = "";
+                    try{
+                        error = rrt.getRegistryErrorList().getRegistryError().get(0).getCodeContext();
+                    }catch(Exception x){}
+                    throw new Exception("Failure Returned from XDR forward:" + error);
                 }
                 
                 getAuditMessageGenerator().provideAndRegisterAuditSource( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);

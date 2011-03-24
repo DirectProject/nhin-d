@@ -151,22 +151,23 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
 
                         break;
                     }
+                    if (DirectDocumentType.CCD.equals(documentType) || DirectDocumentType.PDF.equals(documentType)) {
+                        // Get the format code and MIME type
+                        xdsFormatCode = documentType.getFormatCode();
+                        xdsMimeType = documentType.getMimeType().getType();
 
-                    // Get the format code and MIME type
-                    xdsFormatCode = documentType.getFormatCode();
-                    xdsMimeType = documentType.getMimeType().getType();
+                        // Best guess for UNKNOWN MIME type
+                        if (DirectDocumentType.UNKNOWN.equals(documentType)) {
+                            xdsMimeType = bodyPart.getContentType();
+                        }
 
-                    // Best guess for UNKNOWN MIME type
-                    if (DirectDocumentType.UNKNOWN.equals(documentType)) {
-                        xdsMimeType = bodyPart.getContentType();
+                        // Get the contents
+                        xdsDocument = read(bodyPart).getBytes();
+
+                        // Add the document to the collection of documents
+                        documents.getDocuments().add(getDocument(sentDate, from));
+                        documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
                     }
-
-                    // Get the contents
-                    xdsDocument = read(bodyPart).getBytes();
-
-                    // Add the document to the collection of documents
-                    documents.getDocuments().add(getDocument(sentDate, from));
-                    documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
                 }
             } else {
                 if (LOGGER.isWarnEnabled()) {
