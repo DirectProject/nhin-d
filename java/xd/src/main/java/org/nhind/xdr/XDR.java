@@ -31,11 +31,14 @@ package org.nhind.xdr;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import java.util.List;
 import java.util.UUID;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.soap.SOAPBinding;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryError;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryErrorList;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 
@@ -69,6 +72,20 @@ public class XDR extends DocumentRepositoryAbstract{
             setHeaderData();
             resp = new RegistryResponseType();
             resp.setStatus("urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure");
+            RegistryErrorList rel = new RegistryErrorList();
+            String error = x.getMessage();
+            rel.setHighestSeverity(error);
+            List<RegistryError> rl = rel.getRegistryError();
+            RegistryError re = new RegistryError();
+
+            String errorCode = "XDSRegistryError";
+            re.setErrorCode(errorCode);
+            re.setSeverity("Error");
+            re.setCodeContext(error);
+            re.setLocation("XDSRepositoryService.java");
+            re.setValue(error);
+            rl.add(re);
+            resp.setRegistryErrorList(rel);
         }
         return resp;
     }
