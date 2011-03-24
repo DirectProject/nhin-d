@@ -17,9 +17,11 @@ using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 using System.Security.Cryptography.Pkcs;
+using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Common.Extensions;
+using Health.Direct.Common.Cryptography;
 
 namespace Health.Direct.Agent
 {
@@ -30,6 +32,10 @@ namespace Health.Direct.Agent
     {
         SignedCms m_signatures;                             // All signatures + info about the signed blob etc
         MessageSignatureCollection m_senderSignatures;      // The sender's signatures, which are a subset of m_signatures
+        //
+        // Temporary state associated with decryption of the incoming message
+        //
+        byte[] m_encryptedBytes;
         
         /// <summary>
         /// Creates an instance from an RFC 5322 format message string.
@@ -219,5 +225,15 @@ namespace Health.Direct.Agent
                                                            );
 
         }
-    }
+
+        internal byte[] GetEncryptedBytes(SMIMECryptographer cryptographer)
+        {
+            if (m_encryptedBytes == null)
+            {
+                m_encryptedBytes = cryptographer.GetEncryptedBytes(this.Message);
+            }
+            
+            return m_encryptedBytes;
+        }
+   }
 }

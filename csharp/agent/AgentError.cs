@@ -104,6 +104,10 @@ namespace Health.Direct.Agent
         /// <summary>
         /// The MaxDomainRecipients limit was exceeded
         /// </summary>
-        MaxDomainRecipients
+        MaxDomainRecipients,
+        /// <summary>
+        /// The recipients in the envelope were not found in raw message headers
+        /// </summary>
+        RecipientMismatch
     }
 }

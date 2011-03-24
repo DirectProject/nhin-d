@@ -65,6 +65,7 @@
     <Compile Include="TestCertificates.cs" />
     <Compile Include="TestCerts.cs" />
     <Compile Include="ResolverTests.cs" />
+    <Compile Include="TestEnvelope.cs" />
     <Compile Include="TrustChainTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +154,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Certificates\redmond\Public\umesh.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestMessages\Complicated.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestMessages\simple_ToOrg.eml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="TestMessages\Outgoing\untrusted_1.eml">

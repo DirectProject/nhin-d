@@ -14,10 +14,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Collections.Generic;
 using System.Net.Mail;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
-
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Mail;
@@ -537,6 +537,7 @@ namespace Health.Direct.Agent
             // The standard requires that the original message be wrapped to protect headers
             //
             message.Message = this.UnwrapMessage(message.Message);
+            this.ValidateRoutingHeaders(message);
             //
             // Enforce trust requirements, including checking signatures
             //
@@ -567,7 +568,7 @@ namespace Health.Direct.Agent
             for (int i = 0, count = recipients.Count; i < count; ++i)
             {
                 DirectAddress recipient = recipients[i];
-                recipient.Certificates = this.ResolvePrivateCerts(recipient, false);
+                recipient.Certificates = this.ResolvePrivateCerts(recipient, m_encryptionEnabled);
                 recipient.TrustAnchors = m_trustAnchors.IncomingAnchors.GetCertificates(recipient);
             }
         }
@@ -578,37 +579,41 @@ namespace Health.Direct.Agent
             MimeEntity payload = null;
             bool success = false;
             
+            
             if (m_encryptionEnabled)
             {
                 //
-                // Yes, this can be optimized for multiple certs. 
-                // But we will start with the easy to understand simple version
+                // This can be optimized for multiple private keys and recipients where the same certs
+                // are shared across recipients (org certs). But we will start with the easy to understand simple version
                 //            
                 // Decrypt and parse message body into a signature entity - the envelope that contains our data + signature
-                // We can use the cert of any ONE of the recipients to decrypt
-                // So basically, we'll try until we find one, or we just run out...
+                // If we fail to decrypt for any recipient, we are going to treat the message as possibly compromised and reject
+                // it entirely
                 //
-                foreach (X509Certificate2 cert in message.DomainRecipients.Certificates)
+                foreach(DirectAddress recipient in message.DomainRecipients)
                 {
-                    try
+                    success = false;
+                    signatures = null;
+                    payload = null;                    
+                    success = this.DecryptSignedContent(message, recipient, out signatures, out payload);
+                    if (!success)
                     {
-                        success = this.DecryptSignatures(message, cert, out signatures, out payload);
-                        if (success)
-                        {
-                            break;
-                        }
-                    }
-                    catch
-                    {
+                        // Any failures.. stop immediately. If we could not decrypt the message for any recipient,
+                        // then the message is suspicious and is rejected
+                        break;
                     }
                 }
             }
             else
             {
                 success = this.DecryptSignatures(message, null, out signatures, out payload);
+            }            
+            if (!success)
+            {
+                throw new AgentException(AgentError.InvalidEncryption);
             }
-
-            if (!success || signatures == null || payload == null)
+            
+            if (signatures == null || payload == null)
             {
                 throw new AgentException(AgentError.UntrustedMessage);
             }
@@ -622,7 +627,29 @@ namespace Health.Direct.Agent
             message.Message.Headers = headers.SelectNonMimeHeaders();
             message.Message.UpdateBody(payload); // this will merge in content + content specific mime headers
         }
-        
+
+        bool DecryptSignedContent(IncomingMessage message, DirectAddress recipient, out SignedCms signatures, out MimeEntity payload)
+        {
+            signatures = null;
+            payload = null;
+            foreach (X509Certificate2 cert in recipient.Certificates)
+            {
+                try
+                {
+                    if (this.DecryptSignatures(message, cert, out signatures, out payload))
+                    {
+                        // Decrypted and extracted signatures successfully
+                        return true;
+                    }
+                }
+                catch
+                {
+                }
+            }
+            
+            return false;
+        }
+                
         /// <summary>
         /// Decrypt (optionally) the given message and try to extract signatures
         /// </summary>
@@ -634,7 +661,7 @@ namespace Health.Direct.Agent
             
             if (certificate != null)
             {
-                decryptedEntity = m_cryptographer.Decrypt(message.Message, certificate);
+                decryptedEntity = m_cryptographer.DecryptEntity(message.GetEncryptedBytes(m_cryptographer), certificate);
             }
             else
             {
@@ -663,7 +690,15 @@ namespace Health.Direct.Agent
             
             return true;
         }
-
+        
+        void ValidateRoutingHeaders(IncomingMessage message)
+        {
+            if (!message.AreAddressesInRoutingHeaders(message.DomainRecipients))
+            {
+                throw new AgentException(AgentError.RecipientMismatch);
+            }
+        }
+        
         //-------------------------------------------------------------------
         //
         // OUTGOING MESSAGE
@@ -911,7 +946,7 @@ namespace Health.Direct.Agent
             try
             {
                 certs = m_privateCertResolver.GetCertificates(address);
-                if (certs == null && required)
+                if (required && certs.IsNullOrEmpty())
                 {
                     throw new AgentException(AgentError.CouldNotResolvePrivateKey, address.Address);
                 }

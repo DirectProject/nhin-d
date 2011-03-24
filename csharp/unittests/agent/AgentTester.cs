@@ -19,8 +19,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
-
+using Health.Direct.Common;
 using Health.Direct.Common.Certificates;
+using Xunit;
+using Xunit.Extensions;
 
 namespace Health.Direct.Agent.Tests
 {
@@ -149,6 +151,22 @@ namespace Health.Direct.Agent.Tests
             }
             
             return File.ReadAllText(messageFilePath);
+        }
+        
+        public static void CheckErrorCode<TException, TError>(Action operation, TError expected)
+            where TException : DirectException<TError>
+        {
+            TError error = default(TError);
+            try
+            {
+                operation();
+            }
+            catch (Exception ex)
+            {
+                Assert.True(ex is TException);
+                error = ((TException)ex).Error;
+            }
+            Assert.True(error.Equals(expected));
         }
         
         public static AgentTester CreateDefault()
@@ -309,7 +327,11 @@ namespace Health.Direct.Agent.Tests
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
             X509Certificate2Collection certs;
-
+            
+            //
+            // Very trivial - deliberately 'confuses' certs - returns certs meant for redmond when the caller
+            // asked for nhind and vice-versa. 
+            //
             if (address.Host.Equals("redmond.hsgincubator.com", StringComparison.OrdinalIgnoreCase))
             {
                 certs = m_b.GetCertificates(new MailAddress(address.User + '@' + "nhind.hsgincubator.com"));
@@ -336,4 +358,31 @@ namespace Health.Direct.Agent.Tests
             return null;
         }
     }
+
+
+    public class NullResolver : ICertificateResolver
+    {
+        bool m_returnEmpty = false;
+
+        public NullResolver()
+            : this(false)
+        {
+        }
+
+        public NullResolver(bool returnEmpty)
+        {
+            m_returnEmpty = returnEmpty;
+        }
+
+        public X509Certificate2Collection GetCertificates(MailAddress address)
+        {
+            return (m_returnEmpty) ? new X509Certificate2Collection() : null;
+        }
+
+        public X509Certificate2Collection GetCertificatesForDomain(string domain)
+        {
+            return (m_returnEmpty) ? new X509Certificate2Collection() : null;
+        }
+    }
+
 }

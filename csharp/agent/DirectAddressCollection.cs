@@ -256,5 +256,38 @@ namespace Health.Direct.Agent
         {
             return MailParser.ParseSMTPServerEnvelopeAddresses<DirectAddress, DirectAddressCollection>(addresses, x => new DirectAddress(x));
         }
+        
+        /// <summary>
+        /// Locate the index of the matching address
+        /// </summary>
+        /// <param name="address">address string</param>
+        /// <returns>index of the matching DirectAddress object. If not found, returns -1</returns>
+        public int IndexOf(string address)
+        {
+            if (string.IsNullOrEmpty(address))
+            {
+                throw new ArgumentException("address");
+            }
+            
+            for (int i = 0, count = this.Count; i < count; ++i)
+            {
+                if (MimeStandard.Equals(address, this[i].Address))
+                {
+                    return i;
+                }
+            }
+            
+            return -1;
+        }
+        
+        /// <summary>
+        /// Return true if this collection contains a matching address
+        /// </summary>
+        /// <param name="address">address string</param>
+        /// <returns>true or false</returns>
+        public bool Contains(string address)
+        {
+            return (this.IndexOf(address) >= 0);
+        }
     }
 }

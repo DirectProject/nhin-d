@@ -50,6 +50,28 @@ namespace Health.Direct.Agent.Tests
             m_tester.ProcessIncomingFile(fileName);
         }
 
+        [Theory]
+        [PropertyData("OutgoingFiles")]
+        public void TestOutgoing(string fileName)
+        {
+            m_tester.AgentA.Cryptographer.EncryptionAlgorithm = EncryptionAlgorithm.AES128;
+            m_tester.AgentA.Cryptographer.DigestAlgorithm = DigestAlgorithm.SHA1;            
+            
+            OutgoingMessage message = null;            
+            Assert.DoesNotThrow(() => message = m_tester.ProcessOutgoingFile(fileName));
+            Assert.NotNull(message);
+            Assert.NotNull(message.Message);
+            
+            byte[] encryptedBytes = null;
+            Assert.DoesNotThrow(() => encryptedBytes = m_tester.AgentA.Cryptographer.GetEncryptedBytes(message.Message));
+            Assert.NotNull(encryptedBytes);
+            Assert.True(encryptedBytes.Length > 0);
+            
+            encryptedBytes = null;
+            message.Message.ContentType = SMIMEStandard.SignatureContentMediaType;    
+            Assert.Throws<EncryptionException>(() => m_tester.AgentA.Cryptographer.GetEncryptedBytes(message.Message));
+        }
+
         /// <summary>
         /// Outgoing messages with Untrusted Recipients
         /// Test if the agent catches them
@@ -93,7 +115,7 @@ namespace Health.Direct.Agent.Tests
             Assert.True(SMIMEStandard.IsEncrypted(outgoing.Message));
             VerifyTrusted(outgoing.Recipients, m_tester.AgentA.MinTrustRequirement);
             Assert.True(outgoing.RejectedRecipients.Count == 0);
-            
+                        
             var incoming = new IncomingMessage(outgoing.Message);
             incoming = m_tester.AgentB.ProcessIncoming(incoming);
             
@@ -103,7 +125,7 @@ namespace Health.Direct.Agent.Tests
             VerifyTrusted(incoming.Recipients, m_tester.AgentB.MinTrustRequirement);
             Assert.True(outgoing.RejectedRecipients.Count == 0);
         }
-
+        
 
         // this allows us to easily iterate over the cross product between
         // EncryptionAlgorithm x DigestAlgorithm x EndToEndFiles
@@ -123,7 +145,10 @@ namespace Health.Direct.Agent.Tests
                 }
             }
         }
-
+        
+        /// <summary>
+        /// This is the real test - does a FULL END TO END TEST using a cross product of variations
+        /// </summary>
         [Theory]
         [PropertyData("EndToEndParameters")]
         public void TestEndToEnd(string fileName, EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
@@ -135,8 +160,21 @@ namespace Health.Direct.Agent.Tests
             m_tester.TestEndToEndFile(fileName);
         }
         
-        [Fact]
-        public void TestDecryptionFailure()
+        /// <summary>
+        /// Similar to TestEndToEnd, but we let the receiving agent run with Default settings
+        /// </summary>
+        [Theory]
+        [PropertyData("EndToEndParameters")]
+        public void TestEndToEndCompat(string fileName, EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
+        {
+            m_tester.AgentA.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
+            m_tester.AgentA.Cryptographer.DigestAlgorithm = digestAlgorithm;
+            m_tester.TestEndToEndFile(fileName);
+        }
+        
+        [Theory]
+        [PropertyData("DecryptionFailureFiles")]
+        public void TestDecryptionFailure(string filename)
         {
             //
             // Return the wrong certificate, forcing decryption to fail
@@ -147,7 +185,7 @@ namespace Health.Direct.Agent.Tests
                                                  baseAgent.PublicCertResolver, 
                                                  baseAgent.TrustAnchors);
             m_tester.AgentB = badAgent;
-            Assert.Throws<AgentException>(() => m_tester.TestEndToEndFile("simple.eml"));
+            Assert.Throws<AgentException>(() => m_tester.TestEndToEndFile(filename));
             //
             // Now, it returns BOTH wrong and right certs, so decryption should eventually succeed
             //
@@ -156,22 +194,91 @@ namespace Health.Direct.Agent.Tests
                                       baseAgent.PublicCertResolver,
                                       baseAgent.TrustAnchors);
             m_tester.AgentB = badAgent;
-            Assert.DoesNotThrow(() => m_tester.TestEndToEndFile("simple.eml"));
+            Assert.DoesNotThrow(() => m_tester.TestEndToEndFile(filename));
         }
         
-        //void TestEndToEndFail(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
-        //{
-        //    m_tester.AgentA.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
-        //    m_tester.AgentA.Cryptographer.DigestAlgorithm = digestAlgorithm;
-        //    m_tester.AgentB.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
-        //    m_tester.AgentB.Cryptographer.DigestAlgorithm = digestAlgorithm;
+        [Theory]
+        [PropertyData("ManInMiddleParams")]
+        public void TestManInMiddle(string fileName, string injectedWithPersonalKey, string injectedWithOrgKey)
+        {
+            //
+            // Take an encrypted message, add additional recipients
+            //
+            OutgoingMessage outgoing = m_tester.ProcessOutgoingFile(fileName);
+            string message = outgoing.SerializeMessage();
+            IncomingMessage incoming = new IncomingMessage(message, outgoing.Recipients, outgoing.Sender);
+            Assert.DoesNotThrow(() => m_tester.AgentB.ProcessIncoming(incoming));
+            //
+            // Add additional recipient not in original message
+            //
+            DirectAddressCollection recipients = new DirectAddressCollection(outgoing.Recipients);
+            recipients.Add(new DirectAddress(injectedWithPersonalKey));            
+            incoming = new IncomingMessage(message, recipients, outgoing.Sender);
+            Assert.Throws<AgentException>(() => m_tester.AgentB.ProcessIncoming(incoming));
+            //
+            // Replace recipient entirely
+            //
+            recipients.Clear();
+            recipients.Add(new DirectAddress(injectedWithPersonalKey));
+            incoming = new IncomingMessage(message, recipients, outgoing.Sender);
+            Assert.Throws<AgentException>(() => m_tester.AgentB.ProcessIncoming(incoming));            
+            //
+            // Inject recipient with org certs
+            //
+            recipients.Clear();
+            recipients.Add(outgoing.Recipients);
+            recipients.Add(new DirectAddress(injectedWithOrgKey));
+            incoming = new IncomingMessage(message, recipients, outgoing.Sender);
+            Assert.Throws<AgentException>(() => m_tester.AgentB.ProcessIncoming(incoming));
+        }
+        
+        [Fact]
+        public void TestPrivateKeyLookupFailure()
+        {
+            string fileName = "simple.eml";            
+            string messageText = m_tester.ReadMessageText(fileName);
+            
+            Message message = MailParser.ParseMessage(messageText);
+            message.ToValue = "foo@bar.com";  // this should force a key lookup failure            
+            AgentTester.CheckErrorCode<AgentException, AgentError>(
+                () => m_tester.AgentA.ProcessOutgoing(new OutgoingMessage(message)),
+                AgentError.NoTrustedRecipients
+            );
 
-        //    foreach (string fileName in EndToEndFiles)
-        //    {
-        //        m_tester.TestEndToEndFile(fileName);
-        //    }
-        //}
+            DirectAgent badAgent = new DirectAgent(m_tester.AgentA.Domains.Domains.ToArray(),
+                                                 new NullResolver(),  // returns null private certs
+                                                 m_tester.AgentA.PublicCertResolver,
+                                                 m_tester.AgentA.TrustAnchors);
 
+            message = MailParser.ParseMessage(messageText);
+            AgentTester.CheckErrorCode<AgentException, AgentError>(
+                () => badAgent.ProcessOutgoing(new OutgoingMessage(message)),
+                AgentError.CouldNotResolvePrivateKey
+            );
+            
+            OutgoingMessage outgoing = m_tester.AgentA.ProcessOutgoing(messageText);
+            
+            badAgent = new DirectAgent(m_tester.AgentB.Domains.Domains.ToArray(),
+                                                 new NullResolver(),  // returns null private certs
+                                                 m_tester.AgentB.PublicCertResolver,
+                                                 m_tester.AgentB.TrustAnchors);
+
+            AgentTester.CheckErrorCode<AgentException, AgentError>(
+                () => badAgent.ProcessIncoming(outgoing.SerializeMessage()),
+                AgentError.CouldNotResolvePrivateKey
+            );
+
+            badAgent = new DirectAgent(m_tester.AgentB.Domains.Domains.ToArray(),
+                                                 new NullResolver(true),  // returns empty private cert collections
+                                                 m_tester.AgentB.PublicCertResolver,
+                                                 m_tester.AgentB.TrustAnchors);
+
+            AgentTester.CheckErrorCode<AgentException, AgentError>(
+                () => badAgent.ProcessIncoming(outgoing.SerializeMessage()),
+                AgentError.CouldNotResolvePrivateKey
+            );
+        }
+                       
         static void VerifyTrusted(DirectAddress address, TrustEnforcementStatus minStatus)
         {
             Assert.True(address.IsTrusted(minStatus));
@@ -192,6 +299,7 @@ namespace Health.Direct.Agent.Tests
                 yield return "simple.eml";
                 yield return "multipart_1to.eml";
                 yield return "multipart_2to.eml";
+                yield return "Complicated.eml";
             }
         }
 
@@ -200,6 +308,25 @@ namespace Health.Direct.Agent.Tests
             get
             {
                 yield return new[] { "envelopeSignature.eml" };
+            }
+        }
+
+        public static IEnumerable<object[]> OutgoingFiles
+        {
+            get
+            {
+                yield return new[] { "simple.eml" };
+                yield return new[] { "multipart_2to.eml" };
+            }
+        }
+
+        public static IEnumerable<object[]> DecryptionFailureFiles
+        {
+            get
+            {
+                yield return new[] { "multipart_2to.eml" };
+                yield return new[] { "simple.eml" };
+                yield return new[] { "multipart_1to.eml" };
             }
         }
 
@@ -216,6 +343,16 @@ namespace Health.Direct.Agent.Tests
             get
             {
                 yield return new[] { Path.Combine("Outgoing", "fully_untrusted_1.eml") };
+            }
+        }
+
+        public static IEnumerable<object[]> ManInMiddleParams
+        {
+            get
+            {
+                yield return new object[] { "simple_ToOrg.eml", "bob@nhind.hsgincubator.com", "gussie@nhind.hsgincubator.com" };
+                yield return new object[] { "simple.eml", "bob@nhind.hsgincubator.com", "bertie@nhind.hsgincubator.com" };
+                yield return new object[] { "multipart_1to.eml", "bob@nhind.hsgincubator.com", "bertie@nhind.hsgincubator.com" };
             }
         }
     }

@@ -11,7 +11,7 @@ namespace Health.Direct.DnsResponder.Tests
     public class BadClientTests
     {
         public const int DefaultIterations = 25;
-        public const int DefaultWaitMs = 20 * 1000;
+        public const int DefaultWaitMs = 60 * 1000;
         [Fact]
         public void ConnectAndDrop()
         {

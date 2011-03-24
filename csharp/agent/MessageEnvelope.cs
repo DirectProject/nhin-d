@@ -13,9 +13,9 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System;
 using System.Collections.Generic;
 using System.Net.Mail;
-
 using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
@@ -43,7 +43,7 @@ namespace Health.Direct.Agent
         public MessageEnvelope(Message message)
         {
             this.Message = message;
-            this.Recipients = CollectRecipients();
+            this.Recipients = GetRecipientsInRoutingHeaders();
             
             Header from = message.From;
             if (from == null)
@@ -171,7 +171,7 @@ namespace Health.Direct.Agent
             {
                 if (m_recipients == null)
                 {
-                    this.CollectRecipients();
+                    this.GetRecipientsInRoutingHeaders();
                 }
                 return m_recipients;
             }
@@ -344,21 +344,25 @@ namespace Health.Direct.Agent
         internal virtual void Validate()
         {
         }        
-                
-        internal DirectAddressCollection CollectRecipients()
+        
+        /// <summary>
+        /// Return a combined collection of all recipients in routing headers (to/cc/bcc)
+        /// </summary>
+        /// <returns>A collection of recipients</returns>        
+        public DirectAddressCollection GetRecipientsInRoutingHeaders()
         {
-            var addresses = new DirectAddressCollection();
-            if (To != null)
+            DirectAddressCollection addresses = new DirectAddressCollection();
+            if (this.To != null)
             {
-                addresses.Add(To);
+                addresses.Add(this.To);
             }                
-            if (Cc != null)
+            if (this.Cc != null)
             {
-                addresses.Add(Cc);
+                addresses.Add(this.Cc);
             }
-            if (Bcc != null)
+            if (this.Bcc != null)
             {
-                addresses.Add(Bcc);
+                addresses.Add(this.Bcc);
             }
             return addresses;
         }
@@ -406,6 +410,30 @@ namespace Health.Direct.Agent
             }
             
             this.CategorizeRecipientsByDomain(domains);
+        }
+
+        /// <summary>
+        /// Verify that the recipient list in the Message Envelope matches that in the message
+        /// </summary>
+        public bool AreAddressesInRoutingHeaders(IEnumerable<DirectAddress> addresses)
+        {
+            if (addresses == null)
+            {
+                throw new ArgumentException("addresses");
+            }
+            //
+            // Get the list of recipients as specified in the message itself
+            //
+            DirectAddressCollection recipientsInHeaders = this.GetRecipientsInRoutingHeaders();
+            foreach(DirectAddress address in addresses)
+            {
+                if (!recipientsInHeaders.Contains(address.Address))
+                {
+                    return false;
+                }
+            }
+            
+            return true;
         }
         
         /// <summary>

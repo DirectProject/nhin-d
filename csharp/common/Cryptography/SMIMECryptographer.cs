@@ -18,9 +18,9 @@ using System.Net.Mime;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
-
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Common.Cryptography
 {
@@ -259,7 +259,30 @@ namespace Health.Direct.Common.Cryptography
         //
         // Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
         //
+        
+        /// <summary>
+        /// Given a MimeEntity:
+        /// - Checks that the MimeEntity is encrypted
+        /// - Converts the entity body to bytes...
+        /// The returned bytes can then be decrypted using the appropriate private key
+        /// </summary>
+        /// <param name="encryptedEntity">Entity containinng encrypted data</param>
+        /// <returns>encrypted bytes</returns>
+        public byte[] GetEncryptedBytes(MimeEntity encryptedEntity)
+        {
+            if (encryptedEntity == null)
+            {
+                throw new EncryptionException(EncryptionError.NullEntity);
+            }
 
+            if (!SMIMEStandard.IsEncrypted(encryptedEntity))
+            {
+                throw new EncryptionException(EncryptionError.NotEncrypted);
+            }
+
+            return Convert.FromBase64String(encryptedEntity.Body.Text);
+        }
+        
         /// <summary>
         /// Decrypts a <see cref="Message"/> with a certificate
         /// </summary>
@@ -279,6 +302,22 @@ namespace Health.Direct.Common.Cryptography
         /// <returns>A <see cref="MimeEntity"/> holding the decrypted message</returns>
         public MimeEntity Decrypt(MimeEntity encryptedEntity, X509Certificate2 decryptingCertificate)
         {
+            return this.DecryptEntity(this.GetEncryptedBytes(encryptedEntity), decryptingCertificate);
+        }
+        
+        /// <summary>
+        /// Decrypt the given encryptedByte array into a MimeEntity
+        /// </summary>
+        /// <param name="encryptedBytes">source encrypted bytes</param>
+        /// <param name="decryptingCertificate">The <see cref="X509Certificate2"/> that encrypted the message</param>
+        /// <returns>A <see cref="MimeEntity"/> holding the decrypted message</returns>
+        public MimeEntity DecryptEntity(byte[] encryptedBytes, X509Certificate2 decryptingCertificate)
+        {
+            if (encryptedBytes.IsNullOrEmpty())
+            {
+                throw new ArgumentException("encryptedBytes");
+            }
+            
             if (decryptingCertificate == null)
             {
                 throw new EncryptionException(EncryptionError.NoCertificates);
@@ -287,26 +326,14 @@ namespace Health.Direct.Common.Cryptography
             {
                 throw new EncryptionException(EncryptionError.NoPrivateKey);
             }
-            if (encryptedEntity == null)
-            {
-                throw new EncryptionException(EncryptionError.NullEntity);
-            }
 
-            if (!SMIMEStandard.IsEncrypted(encryptedEntity))
-            {
-                throw new EncryptionException(EncryptionError.NotEncrypted);
-            }
-
-            byte[] encryptedBytes = Convert.FromBase64String(encryptedEntity.Body.Text);
             byte[] decryptedBytes = Decrypt(encryptedBytes, decryptingCertificate);
-
             //
             // And turn the encrypted bytes back into an entity
             //
             return DefaultSerializer.Default.Deserialize<MimeEntity>(decryptedBytes);
         }
-
-
+        
         /// <summary>
         /// Decrypts encrypted raw content with a certificate
         /// </summary>
