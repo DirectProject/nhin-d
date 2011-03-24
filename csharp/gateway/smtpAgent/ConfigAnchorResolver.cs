@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Ali Emami       aliemami@microsoft.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -20,6 +21,7 @@ using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;
+using Health.Direct.Common.Caching;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -28,15 +30,18 @@ namespace Health.Direct.SmtpAgent
         CertificateResolver m_incomingResolver;
         CertificateResolver m_outgoingResolver;
 
-        public ConfigAnchorResolver(ClientSettings clientSettings)
+        public ConfigAnchorResolver(ClientSettings clientSettings, CacheSettings cacheSettings)
         {
             if (clientSettings == null)
             {
                 throw new ArgumentNullException("clientSettings");
             }
-            
-            m_incomingResolver = new CertificateResolver(new AnchorIndex(clientSettings, true));
-            m_outgoingResolver = new CertificateResolver(new AnchorIndex(clientSettings, false));
+
+            CacheSettings incomingCacheSettings = new CacheSettings(cacheSettings) { Name = "AnchorCache.incoming" };
+            CacheSettings outgoingCacheSettings = new CacheSettings(cacheSettings) { Name = "AnchorCache.outgoing" };
+
+            m_incomingResolver = new CertificateResolver(new AnchorIndex(clientSettings, true), incomingCacheSettings);
+            m_outgoingResolver = new CertificateResolver(new AnchorIndex(clientSettings, false), outgoingCacheSettings);
         }
 
         public ICertificateResolver IncomingAnchors
@@ -54,7 +59,7 @@ namespace Health.Direct.SmtpAgent
                 return m_outgoingResolver;
             }
         }        
-        
+
         internal class AnchorIndex : IX509CertificateIndex
         {
             ClientSettings m_clientSettings;
@@ -65,11 +70,11 @@ namespace Health.Direct.SmtpAgent
                 m_clientSettings = clientSettings;
                 m_incoming = incoming;
             }
-            
+
             public X509Certificate2Collection this[string subjectName]
             {
                 get 
-                { 
+                {
                     X509Certificate2Collection matches;
                     using(AnchorStoreClient client = this.CreateClient())
                     {
@@ -82,7 +87,7 @@ namespace Health.Direct.SmtpAgent
                             matches = client.GetOutgoingAnchorX509Certificates(subjectName, EntityStatus.Enabled);
                         }
                     }
-                                        
+                   
                     return matches;
                 }
             }

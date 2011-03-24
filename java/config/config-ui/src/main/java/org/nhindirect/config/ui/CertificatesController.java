@@ -100,22 +100,48 @@ public class CertificatesController {
 			EntityStatus estatus = certificateForm.getStatus();
 			if (log.isDebugEnabled()) log.debug("beginning to evaluate filedata");		
 			try{
-				if (!certificateForm.getFileData().isEmpty()) {
+                            model.addAttribute("certerror", false);
+
+                            if (!certificateForm.getFileData().isEmpty()) {
 					byte[] bytes = certificateForm.getFileData().getBytes();
 					String owner = "";
-					Certificate cert = new Certificate();
-					cert.setData(bytes);
-					cert.setOwner(owner);
-					cert.setStatus(certificateForm.getStatus());
+                                        String fileType = certificateForm.getFileData().getContentType();
 
-					ArrayList<Certificate> certlist = new ArrayList<Certificate>();
-					certlist.add(cert);
-					configSvc.addCertificates(certlist);
-					// store the bytes somewhere
-					if (log.isDebugEnabled()) log.debug("store the certificate into database");
+
+                                        if(!fileType.matches("application/x-x509-ca-cert") && 
+                                                !fileType.matches("application/octet-stream") &&
+                                                !fileType.matches("application/x-pkcs12"))
+                                        {
+
+                                            model.addAttribute("certerror", true);
+
+                                        } else {
+
+                                            Certificate cert = new Certificate();
+                                            cert.setData(bytes);
+                                            cert.setOwner(owner);
+                                            cert.setStatus(certificateForm.getStatus());
+
+                                            ArrayList<Certificate> certlist = new ArrayList<Certificate>();
+                                            certlist.add(cert);
+                                            configSvc.addCertificates(certlist);
+
+                                            
+
+                                            if (log.isDebugEnabled())
+                                            {
+                                                log.debug("store the certificate into database");
+                                            }
+
+                                        }
+
+
 				} else {
 					if (log.isDebugEnabled()) log.debug("DO NOT store the certificate into database BECAUSE THERE IS NO FILE");
 				}
+
+                                
+
 
 			} catch (ConfigurationServiceException ed) {
 				if (log.isDebugEnabled())

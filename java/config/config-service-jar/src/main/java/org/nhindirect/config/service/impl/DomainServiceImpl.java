@@ -121,6 +121,22 @@ public class DomainServiceImpl implements DomainService {
         if (log.isDebugEnabled())
             log.debug("Exit");
     }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.nhindirect.config.service.DomainService#removeDomainById(java.lang.Long)
+     */
+    public void removeDomainById(Long domainId) throws ConfigurationServiceException {
+        if (log.isDebugEnabled())
+            log.debug("Enter");
+
+        dao.delete(domainId);
+        log.info("Modified Domain: " + domainId);
+
+        if (log.isDebugEnabled())
+            log.debug("Exit");
+    }
 
     /*
      * (non-Javadoc)

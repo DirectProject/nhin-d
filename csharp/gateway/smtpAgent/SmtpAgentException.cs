@@ -30,11 +30,29 @@ namespace Health.Direct.SmtpAgent
         MissingCertResolverClientSettings,
         MissingAnchorResolverClientSettings,
         NoAddressManager,
-        ConfiguredDomainsMismatch,   // Domains in Xml file not found in config
+        //
+        // Thrown if domains in Xml file not found in Config Service
+        //
+        ConfiguredDomainsMismatch,   
         NoSenderInEnvelope,
         NoRecipientsInEnvelope,
         MissingAddressTypeInRoute,
+        /// <summary>
+        /// MessageRoute has no actual target folders specified
+        /// </summary>
         NoFoldersInRoute,
+        /// <summary>
+        /// SmtpMessageReceiver has no smtp server specified
+        /// </summary>
+        InvalidSmtpForwarderSettings,
+        /// <summary>
+        /// Empty plugin routes
+        /// </summary>
+        NoReceiversInPluginRoute,
+        /// <summary>
+        /// plugin routes not correct set up
+        /// </summary>
+        InvalidPluginRoute
     }
 
     public class SmtpAgentException : DirectException<SmtpAgentError>

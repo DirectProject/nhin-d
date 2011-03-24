@@ -27,7 +27,7 @@ package org.nhindirect.stagent.mail.notifications;
  * @author gm2552
  * @author Umesh Madan
  */
-public class Disposition
+public class Disposition extends org.apache.jsieve.mailet.mdn.Disposition
 {
 
 	private final TriggerType triggerType;
@@ -52,7 +52,9 @@ public class Disposition
 	 */
 	public Disposition(TriggerType triggerType, SendType sendType, NotificationType notification)
     {
-        this.triggerType = triggerType;
+        super(triggerType, sendType, notification);
+		
+		this.triggerType = triggerType;
         this.sendType = sendType;
         this.notification = notification;
         this.error = false;
@@ -119,7 +121,7 @@ public class Disposition
 	 */
     public String toString()
     {
-        StringBuilder notification = new StringBuilder();
+        StringBuilder notification = new StringBuilder("Disposition: ");
         //
         // Disposition Mode
         //

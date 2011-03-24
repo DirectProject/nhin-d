@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Ali Emami       aliemami@microsoft.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -18,6 +19,7 @@ using System.Xml.Serialization;
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Client;
+using Health.Direct.Common.Caching;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -54,10 +56,17 @@ namespace Health.Direct.SmtpAgent
             get;
             set;
         }
-    
+
+        [XmlElement]
+        public CacheSettings CacheSettings
+        {
+            get;
+            set; 
+        }
+
         public override ITrustAnchorResolver CreateResolver()
         {
-            return new ConfigAnchorResolver(this.ClientSettings);
+            return new ConfigAnchorResolver(this.ClientSettings, this.CacheSettings);
         }
 
         public override void Validate()
@@ -67,6 +76,11 @@ namespace Health.Direct.SmtpAgent
                 throw new SmtpAgentException(SmtpAgentError.MissingAnchorResolverClientSettings);
             }
             this.ClientSettings.Validate();
+
+            if (this.CacheSettings != null)
+            {
+                this.CacheSettings.Validate(); 
+            }
         }
-    }
+    }    
 }

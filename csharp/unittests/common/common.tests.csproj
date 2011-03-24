@@ -72,7 +72,9 @@
     <Compile Include="Caching\DnsClientWithCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseToBinExample.cs" />
+    <Compile Include="Certificates\CertificateResolverFacts.cs" />
     <Compile Include="Collection\PropertyFacts.cs" />
+    <Compile Include="Container\PluginFacts.cs" />
     <Compile Include="Diagnostics\AuditFacts.cs" />
     <Compile Include="Diagnostics\RolloverFacts.cs" />
     <Compile Include="DnsResolver\BasicResolverTests.cs" />

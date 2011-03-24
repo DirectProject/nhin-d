@@ -6,9 +6,49 @@
         Greg Meyer
         ---
 
+{1.2.1}
+
+    Changes included with release 1.2.1
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * Auditing event and type have been reversed.
+    
+    * Added consistency of fields that are audited with MDN messages.
+    
+    * Fixed parsing of notification part messages of MDN messages.
+
+{1.2.0}
+
+    Changes included with release 1.2.0
+    
+    []
+    
+    Enhancements
+    
+    * Added auditing of messages in the DefaultSMTPAgent.
+    
+    * Added ability to provide custom Guice modules in the security and trust agent.
+    
+    * Added new protected methods to handle rejected messages and rejected recipients. 
+
+    [] 
+     
+    Bug Fixes
+
+    * N/A
+
 {1.1.0}
 
-    Changes included with release 1.0.1.
+    Changes included with release 1.1.0
     
     []
     

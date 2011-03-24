@@ -108,15 +108,21 @@ public class TrustModel
         {
         	recipient.setStatus(TrustEnforcementStatus.Failed);
         	
-        	// Find a trusted signature
-        	DefaultMessageSignatureImpl trustedSignature = findTrustedSignature(message, recipient.getTrustAnchors());
-        	
-        	// verify the signature
-        	if (trustedSignature != null)
+        	// make sure the recipient has its own cert... otherwise this may
+        	// be a bogus recipient
+        	if (recipient.getCertificates() != null)
         	{
-
-                recipient.setStatus(trustedSignature.isThumbprintVerified() ? TrustEnforcementStatus.Success 
-                		: TrustEnforcementStatus.Success_ThumbprintMismatch);
+	        	
+	        	// Find a trusted signature
+	        	DefaultMessageSignatureImpl trustedSignature = findTrustedSignature(message, recipient.getTrustAnchors());
+	        	
+	        	// verify the signature
+	        	if (trustedSignature != null)
+	        	{
+	
+	                recipient.setStatus(trustedSignature.isThumbprintVerified() ? TrustEnforcementStatus.Success 
+	                		: TrustEnforcementStatus.Success_ThumbprintMismatch);
+	        	}
         	}
         }
     }

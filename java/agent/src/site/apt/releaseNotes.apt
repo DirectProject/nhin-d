@@ -6,6 +6,26 @@
         Greg Meyer
         ---
 
+{1.1.3}
+
+    Changes included with release 1.1.3
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=109}109}}: Fixed form of message/disposition-notification part of MDN message.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=111}11}}: Fixed null pointer error when the -out parameter is omitted in the CreatePKCS12 tool.
+    
+    * Trust model now enforces that all recipients have a valid certificate.
+
 {1.1.2}
 
     Changes included with release 1.1.2

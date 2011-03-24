@@ -44,11 +44,13 @@ public enum MimeType
     
     TEXT_PLAIN("text/plain", "txt"), 
     TEXT_XML("text/xml", "xml"), 
+    TEXT_HTML("text/html", "html"),
     TEXT_CDA_XML("text/cda+xml", "xml"), 
     APPLICATION_CCR("application/ccr", "xml"), 
     APPLICATION_XML("application/xml", "xml"), 
     APPLICATION_PDF("application/pdf", "pdf"), 
     MULTIPART_MIXED("multipart/mixed", "???"),
+    MULTIPART("multipart", "???"),
     UNKNOWN(null, "txt");
 
     private String type;

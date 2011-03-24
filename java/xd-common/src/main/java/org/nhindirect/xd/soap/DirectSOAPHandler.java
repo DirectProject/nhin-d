@@ -54,6 +54,7 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.xd.soap.type.MetadataLevelEnum;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -203,7 +204,7 @@ public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
 
                 SOAPElement directMetadataLevelElement = directHeader.addChildElement(new QName("metadata-level"));
                 directMetadataLevelElement.setPrefix("direct");
-                directMetadataLevelElement.setValue("medata-level"); // TODO (minimal or XDS)
+                directMetadataLevelElement.setValue(MetadataLevelEnum.MINIMAL.getLevel());
             }
             else
             {

@@ -894,11 +894,13 @@ public class DomainController {
 			for (int x = 0; x < cnt; x++) {
 				try {
 					String strid = simpleForm.getRemove().remove(x);
-					Domain dom = configSvc.getDomain(Long.parseLong(strid));
+                                        Long domainId = Long.parseLong(strid);
+                                        Domain dom = configSvc.getDomain(domainId);
 					String owner = dom.getDomainName();
-					String domname = dom.getDomainName();
-					if (log.isDebugEnabled()) log.debug("removing domain with name: " + domname);
-					configSvc.removeDomain(domname);
+					//String domname = dom.getDomainName();
+					if (log.isDebugEnabled()) log.debug("removing domain with id: " + domainId);
+
+                    configSvc.removeDomainById(domainId);
 					// now delete anchors
 					try{
 						// get list of certificates for this domain

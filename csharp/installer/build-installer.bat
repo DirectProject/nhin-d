@@ -24,6 +24,9 @@ if ERRORLEVEL 1 goto :done
 msbuild %msbuild_verbosity% installer-build.xml -p:VERSION=%VERSION% -t:build-installer
 if ERRORLEVEL 1 goto :done
 
+echo Ready to apply changes to hg
+pause
+
 if "%1" NEQ "test" (
   hg commit --message "Advancing version number to %VERSION%..." ..\GlobalAssemblyInfo.cs .\DirectGateway.iss
   hg tag --force --message "Tagging CSharp as dotnet-%VERSION%" dotnet-%VERSION%

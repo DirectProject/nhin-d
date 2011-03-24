@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Ali Emami       aliemami@microsoft.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -16,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Common.Caching;
 
 namespace Health.Direct.Common.Certificates
 {
@@ -25,6 +27,7 @@ namespace Health.Direct.Common.Certificates
     public class CertificateResolver : ICertificateResolver
     {
         IX509CertificateIndex m_certIndex;
+        CertificateCache m_certificateCache;        
 
         /// <summary>
         /// Creates a certificate resolver that retrieves certificates from the given certificate index instance. 
@@ -32,7 +35,10 @@ namespace Health.Direct.Common.Certificates
         /// <param name="index">
         /// An index instance providing <see cref="IX509CertificateIndex"/>
         /// </param>
-        public CertificateResolver(IX509CertificateIndex index)
+        /// <param name="cacheSettings">
+        /// The cache settings to use. Specify null for no caching.
+        /// </param>
+        public CertificateResolver(IX509CertificateIndex index, CacheSettings cacheSettings)
         {
             if (index == null)
             {
@@ -40,8 +46,24 @@ namespace Health.Direct.Common.Certificates
             }
 
             m_certIndex = index;
+
+            if (cacheSettings != null && cacheSettings.Cache)
+            {
+                m_certificateCache = new CertificateCache(cacheSettings); 
+            }
         }
-        
+
+        /// <summary>
+        /// This resolver's certificate cache.
+        /// </summary>
+        public CertificateCache Cache
+        {
+            get
+            {
+                return m_certificateCache;
+            }
+        }
+
         /// <summary>
         /// Create a new certificate resolver. This constructor is used by class extenders.
         /// </summary>
@@ -106,12 +128,29 @@ namespace Health.Direct.Common.Certificates
         /// </returns>
         protected virtual X509Certificate2Collection Resolve(string name)
         {
+            X509Certificate2Collection matches = null;
+
+            if (m_certificateCache != null)
+            {
+                matches = m_certificateCache.Get(name);
+
+                if (matches != null)
+                {
+                    return matches;
+                }
+            }    
+            
             if (m_certIndex != null)
             {
-                return m_certIndex[name];
+                matches = m_certIndex[name];
             }
 
-            return null;
+            if (m_certificateCache != null)
+            {
+                m_certificateCache.Put(name, matches);
+            }
+
+            return matches;
         }
     }
 }
