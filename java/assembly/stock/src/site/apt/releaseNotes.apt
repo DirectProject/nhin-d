@@ -1,0 +1,26 @@
+~~ $Id$
+
+        ---
+        Release Notes
+        ---
+        Greg Meyer
+        ---
+
+{1.0.0}
+
+    Changes included with release 1.0.0.
+
+    []
+    
+	* Initial Release Functionality
+    	    	
+	  *  {{{http://api.nhindirect.org/java/site/agent/1.1.2/}Security And Trust Agent}}
+	  
+	  *  {{{http://api.nhindirect.org/java/site/gateway/1.1/}Gateway}}
+	  
+	  *  {{{http://api.nhindirect.org/java/site/dns/1.0/}DNS Services}}	  
+	  
+	  *  {{{http://api.nhindirect.org/java/site/gateway/1.1/users-guide/smtp-depl-wsconfig.html#SMTP_Agent_WebService_Configuration}Configuration Services}}
+
+    * Requires Java SE 1.6 or greater.
+	
