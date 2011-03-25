@@ -25,6 +25,8 @@
     * Added consistency of fields that are audited with MDN messages.
     
     * Fixed parsing of notification part messages of MDN messages.
+    
+    * Fixed private and public cert documentation in XML configuration section of doxia book.    
 
 {1.2.0}
 
