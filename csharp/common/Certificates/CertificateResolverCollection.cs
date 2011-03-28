@@ -21,8 +21,25 @@ namespace Health.Direct.Common.Certificates
         /// </summary>
         public CertificateResolverCollection()
         {
+            this.CatchExceptions = true;
         }
         
+        /// <summary>
+        /// If true, will catch exceptions and fall through to the next resolver in line
+        /// Allows you to set up a pipeline of backup resolvers
+        /// True by default
+        /// </summary>
+        public bool CatchExceptions
+        {
+            get;
+            set;
+        }
+        
+        /// <summary>
+        /// Event to subscribe to for notification of errors.
+        /// </summary>
+        public event Action<ICertificateResolver, Exception> Error;
+
         /// <summary>
         /// Resolves X509 certificates for a mail address.
         /// </summary>
@@ -35,10 +52,21 @@ namespace Health.Direct.Common.Certificates
             X509Certificate2Collection matches = null;
             foreach(ICertificateResolver resolver in this)
             {
-                matches = resolver.GetCertificates(address);
-                if (!matches.IsNullOrEmpty())
+                try
                 {
-                    break;
+                    matches = resolver.GetCertificates(address);
+                    if (!matches.IsNullOrEmpty())
+                    {
+                        break;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    this.NotifyException(resolver, ex);
+                    if (!this.CatchExceptions)
+                    {
+                        throw;
+                    }
                 }
             }
             
@@ -57,14 +85,40 @@ namespace Health.Direct.Common.Certificates
             X509Certificate2Collection matches = null;
             foreach (ICertificateResolver resolver in this)
             {
-                matches = resolver.GetCertificatesForDomain(domain);
-                if (!matches.IsNullOrEmpty())
+                try
                 {
-                    break;
+                    matches = resolver.GetCertificatesForDomain(domain);
+                    if (!matches.IsNullOrEmpty())
+                    {
+                        break;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    this.NotifyException(resolver, ex);
+                    if (!this.CatchExceptions)
+                    {
+                        throw;
+                    }
                 }
             }
 
             return matches;
+        }
+
+        void NotifyException(ICertificateResolver resolver, Exception ex)
+        {
+            var errorHandler = this.Error;
+            if (errorHandler != null)
+            {
+                try
+                {
+                    errorHandler(resolver, ex);
+                }
+                catch
+                {
+                }
+            }
         }
     }
 }

@@ -75,11 +75,6 @@ namespace Health.Direct.Agent.Config
                 throw new NotSupportedException();
             }
             
-            if (this.Resolvers.Length == 1)
-            {
-                return this.Resolvers[0].CreateResolver();
-            }
-            
             CertificateResolverCollection resolvers = new CertificateResolverCollection();
             foreach (CertResolverSettings resolverSettings in this.Resolvers)
             {

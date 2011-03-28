@@ -79,9 +79,9 @@ namespace Health.Direct.SmtpAgent
             }
         }
 
-        internal void OnDnsError(ICertificateResolver resolver, Exception error)
+        internal void OnResolverError(ICertificateResolver resolver, Exception error)
         {
-            Logger.Error("DNS_ERROR = {0}", error.Message);
+            Logger.Error("RESOLVER ERROR {0}, {1}", resolver.GetType().Name, error.Message);
         }
         
         internal void OnCertificateProblem(X509ChainElement chainElement)

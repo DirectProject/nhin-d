@@ -241,16 +241,31 @@ namespace Health.Direct.SmtpAgent
                 m_agent.Error += m_diagnostics.OnGeneralError;
                 m_agent.ErrorIncoming += m_diagnostics.OnIncomingError;
                 m_agent.ErrorOutgoing += m_diagnostics.OnOutgoingError;
-
-                DnsCertResolver dnsResolver = m_agent.PublicCertResolver as DnsCertResolver;
-                if (dnsResolver != null)
-                {
-                    dnsResolver.Error += m_diagnostics.OnDnsError;
-                }
+                
+                this.SubscribeToResolverEvents(m_agent.PublicCertResolver);
+                this.SubscribeToResolverEvents(m_agent.PrivateCertResolver);
                 
                 m_agent.TrustModel.CertChainValidator.Problem += m_diagnostics.OnCertificateProblem;
                 m_agent.TrustModel.CertChainValidator.Untrusted += m_diagnostics.OnUntrustedCertificate;
             }
+        }
+        
+        void SubscribeToResolverEvents(ICertificateResolver resolver)
+        {
+            CertificateResolverCollection resolvers = resolver as CertificateResolverCollection;
+            if (resolvers != null)
+            {
+                resolvers.Error += m_diagnostics.OnResolverError;
+                return;
+            }
+
+            DnsCertResolver dnsResolver = m_agent.PublicCertResolver as DnsCertResolver;
+            if (dnsResolver != null)
+            {
+                dnsResolver.Error += m_diagnostics.OnResolverError;
+                return;
+            }
+
         }
         
         //---------------------------------------------------
