@@ -10,7 +10,7 @@
     <!-- Define input parameters -->
     <xsl:param name="port" select="'8081'"/>
 
-    <!-- Edit the config.xml file for Apache James -->
+    <!-- Edit the config.xml file for Apache Tomcat -->
     <xsl:template match="/">
         <xsl:apply-templates select="node()|@*"/>
     </xsl:template>

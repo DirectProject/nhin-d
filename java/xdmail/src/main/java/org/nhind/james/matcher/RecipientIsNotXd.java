@@ -90,6 +90,6 @@ public class RecipientIsNotXd extends GenericMatcher
             for (MailAddress addr : recipients)
                 LOGGER.info("Matched recipient " + addr.toString());
 
-        return mail.getRecipients();
+        return recipients;
     }
 }
