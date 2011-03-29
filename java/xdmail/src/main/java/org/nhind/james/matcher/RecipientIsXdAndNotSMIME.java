@@ -79,8 +79,7 @@ public class RecipientIsXdAndNotSMIME extends GenericMatcher {
 
         MimeMessage message = mail.getMessage();
 
-        if ((message.isMimeType("application/x-pkcs7-mime") || message.isMimeType("application/pkcs7-mime"))
-                && (StringUtils.contains(message.getContentType(), "smime-type=enveloped-data"))) {
+        if (message.isMimeType("application/x-pkcs7-mime") || message.isMimeType("application/pkcs7-mime")) {
             LOGGER.info("MimeMessage is SMIME, skipping");
             return Collections.<MailAddress>emptyList();
         }
