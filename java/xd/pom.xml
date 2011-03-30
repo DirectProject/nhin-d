@@ -9,6 +9,16 @@
     <inceptionYear>2010</inceptionYear>
     <packaging>war</packaging>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xd/${project.version}</url>     
+    <developers>
+        <developer>
+            <name>Vincent Lewis</name>
+            <email>vincent.lewis@gsihealth.com</email>
+        </developer>   
+        <developer>
+            <name>Beau Grantham</name>
+            <email>bgrantha@harris.com</email>
+        </developer>
+     </developers>
     <organization>
         <name>HNIN Direct</name>
         <url>http://nhindirect.org</url>
