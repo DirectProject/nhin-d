@@ -162,7 +162,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
                     }
                     
                     // Get the contents
-                    xdsDocument = read(bodyPart).getBytes();
+                    xdsDocument = read(bodyPart);
 
                     // Add the document to the collection of documents
                     documents.getDocuments().add(getDocument(sentDate, from));
@@ -279,7 +279,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
         return document;
     }
 
-    private static String read(BodyPart bodyPart) throws MessagingException, IOException {
+    private static byte[] read(BodyPart bodyPart) throws MessagingException, IOException {
         InputStream inputStream = bodyPart.getInputStream();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -289,6 +289,6 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
             outputStream.write(buffer, 0, data);
         }
 
-        return new String(outputStream.toByteArray());
+        return outputStream.toByteArray();
     }
 }
