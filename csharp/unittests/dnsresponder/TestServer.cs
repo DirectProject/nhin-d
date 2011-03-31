@@ -123,12 +123,14 @@ namespace Health.Direct.DnsResponder.Tests
         
         public bool AreMaxTcpAcceptsOutstanding()
         {
+            Thread.Sleep(1000);
             return (this.Server.Settings.TcpServerSettings.MaxOutstandingAccepts  == 
                         this.Server.TCPResponder.Server.OutstandingAcceptCount);
         }
 
         public bool AreMaxUdpAcceptsOutstanding()
         {
+            Thread.Sleep(1000);
             return (this.Server.Settings.UdpServerSettings.MaxOutstandingAccepts ==
                         this.Server.UDPResponder.Server.OutstandingAcceptCount);
         }
