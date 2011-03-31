@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
-
+using Health.Direct.Agent.Config;
 using Health.Direct.Common.Certificates;
 
 using Xunit;
@@ -41,6 +41,37 @@ namespace Health.Direct.Agent.Tests
             }
         }
         
+        [Fact]
+        public void CreateResolverTest()
+        {
+            DnsCertResolverSettings settings = new DnsCertResolverSettings()
+                    {
+                        ServerIP = "1.2.3.4",
+                        TimeoutMilliseconds = 7000
+                    };
+            
+            ICertificateResolver resolver = settings.CreateResolver();  
+            Validate(resolver, settings.ServerIP, settings.TimeoutMilliseconds);           
+            Assert.True(resolver is DnsCertResolver);
+            
+            settings.BackupServerIP = "3.4.5.6";
+            resolver = settings.CreateResolver();
+            Assert.True(resolver is CertificateResolverCollection);
+                    
+            CertificateResolverCollection resolvers = resolver as CertificateResolverCollection;
+            Assert.True(resolvers.Count == 2);
+            Validate(resolvers[0], settings.ServerIP, settings.TimeoutMilliseconds);
+            Validate(resolvers[1], settings.BackupServerIP, settings.TimeoutMilliseconds);
+        }
+        
+        void Validate(ICertificateResolver resolver, string ip, int timeout)
+        {
+            Assert.True(resolver is DnsCertResolver);
+            DnsCertResolver dnsResolver = resolver as DnsCertResolver;
+            Assert.True(dnsResolver.Server.ToString() == ip);
+            Assert.True(dnsResolver.Timeout.TotalMilliseconds == timeout);
+        }
+                      
         [Theory(Skip = "Requires Bind Server to be running on the local server")]
         [PropertyData("GoodAddresses")]
         public void GetCertificateWithGoodAddress(string address)
