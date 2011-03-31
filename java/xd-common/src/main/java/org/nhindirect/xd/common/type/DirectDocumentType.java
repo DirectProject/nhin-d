@@ -39,8 +39,6 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang.StringUtils;
 import org.nhindirect.xd.common.DirectDocument2;
 import org.nhindirect.xd.common.DirectDocuments;
-import org.nhindirect.xd.transform.parse.ccd.CcdParser;
-import org.nhindirect.xd.transform.pojo.SimplePerson;
 import org.nhindirect.xd.transform.util.type.MimeType;
 
 /**
@@ -74,19 +72,9 @@ public enum DirectDocumentType
         public void parse(String data, /* INOUT */DirectDocuments.SubmissionSet submissionSet) throws Exception
         {
             // Parse CCD for patient info
-            String sdoc = new String(data);
-            CcdParser cp = new CcdParser();
-            cp.parse(sdoc);
-
-            // Create patient object
-            SimplePerson sourcePatient = new SimplePerson();
-            sourcePatient.setLocalId(cp.getPatientId());
-            sourcePatient.setLocalOrg(cp.getOrgId());
             
             // (R) XDS
-            // TODO: contentTypeCode
-            submissionSet.setPatientId(sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg());
-            submissionSet.setSourceId(sourcePatient.getLocalOrg());
+            // --
             
             // (R2) XDS
             // --
@@ -104,14 +92,6 @@ public enum DirectDocumentType
         public void parse(String data, /* INOUT */DirectDocument2.Metadata metadata) throws Exception
         {
             // Parse CCD for patient info
-            String sdoc = new String(data);
-            CcdParser cp = new CcdParser();
-            cp.parse(sdoc);
-
-            // Create patient object
-            SimplePerson sourcePatient = new SimplePerson();
-            sourcePatient.setLocalId(cp.getPatientId());
-            sourcePatient.setLocalOrg(cp.getOrgId());
 
             // (R) XDS Source
             // TODO: Can we get any of the below values from the CCD? And does the presence of a CCD mean XDS source?
@@ -121,14 +101,11 @@ public enum DirectDocumentType
             // TODO: formatCode
             // TODO: healthcareFacilityTypeCode
             // TODO: languageCode
-            metadata.setPatientId(sourcePatient.getLocalId() + "^^^&" + sourcePatient.getLocalOrg());
             // TODO: practiceSettingCode
             // TODO: typeCode
             
             // (R2) XDS Source
             // TODO: author (We should be able to get this out of the CCD)
-           // for now dont even send it
-            metadata.setSourcePatient(sourcePatient);
         }
     },
     XDM(null, null)
@@ -147,19 +124,7 @@ public enum DirectDocumentType
     },
     PDF(null, MimeType.APPLICATION_PDF),
     XML(null, MimeType.TEXT_XML),
-    HTML(null, MimeType.TEXT_HTML)
-    {
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.nhindirect.xd.common.type.DirectDocumentType#matches(java.lang.String, java.lang.String, java.lang.String)
-         */
-        @Override
-        public boolean matches(String data, String contentType, String fileName)
-        {
-            return StringUtils.contains(contentType, MimeType.TEXT_HTML.getType());
-        }  
-    },
+    HTML(null, MimeType.TEXT_HTML),
     TEXT(null, MimeType.TEXT_PLAIN),
     UNKNOWN(null, MimeType.TEXT_PLAIN)
     {
@@ -231,7 +196,7 @@ public enum DirectDocumentType
      */
     public boolean matches(String data, String contentType, String fileName)
     {
-        if (StringUtils.contains(contentType, this.mimeType.getType()))
+        if (StringUtils.containsIgnoreCase(contentType, this.mimeType.getType()))
             return true;
 
         return false;

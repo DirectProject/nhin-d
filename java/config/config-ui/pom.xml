@@ -21,6 +21,10 @@
 				<role>owner</role>
 			</roles>
 		</developer>
+        <developer>
+            <name>Tim Jeffcoat</name>
+            <email>tjeffcoat@inpriva.com</email>
+        </developer>		
 		<developer>
 			<name>Greg Meyer</name>
 			<id>GM2552</id>

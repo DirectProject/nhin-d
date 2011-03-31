@@ -83,6 +83,7 @@
 	<!-- Support libraries -->
 	<property name="lib.activation" value="${maven.repo}/javax/activation/activation/1.1/activation-1.1.jar"></property>
 	<property name="lib.aopalliance" value="${maven.repo}/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"></property>
+    <property name="lib.apache-jsieve-mailet" value="${maven.repo}/org/apache/james/apache-jsieve-mailet/0.4/apache-jsieve-mailet-0.4.jar"></property>
 	<property name="lib.apache-mailet" value="${maven.repo}/org/apache/james/apache-mailet/2.4/apache-mailet-2.4.jar"></property>
 	<property name="lib.apache-mailet-base" value="${maven.repo}/org/apache/james/apache-mailet-base/1.1/apache-mailet-base-1.1.jar"></property>
 	<property name="lib.bcmail-jdk15" value="${maven.repo}/bouncycastle/bcmail-jdk15/140/bcmail-jdk15-140.jar"></property>
@@ -109,10 +110,12 @@
 	<!-- Package libraries -->
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
+    <property name="directcommon.dir" value="${install.root.dir}/../direct-common"></property>	
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xdcommon.dir" value="${install.root.dir}/../xd-common"></property>	
-	<property name="lib.agent" value="${agent.dir}/target/agent-1.1.3-SNAPSHOT.jar"></property>
-	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.2.1-SNAPSHOT.jar"></property>
+	<property name="lib.agent" value="${agent.dir}/target/agent-1.2-SNAPSHOT.jar"></property>
+	<property name="lib.gateway" value="${gateway.dir}/target/gateway-1.3-SNAPSHOT.jar"></property>
+    <property name="lib.directcommon" value="${directcommon.dir}/target/direct-common-1.1-SNAPSHOT.jar"></property>	
 	<property name="lib.xdmail" value="${xdmail.dir}/target/xdmail-1.0-SNAPSHOT.jar"></property>
 	<property name="lib.xdcommon" value="${xdcommon.dir}/target/xd-common-1.0-SNAPSHOT.jar"></property>
 	
@@ -308,6 +311,7 @@
 		<!-- populate new libraries -->
 		<copy file="${lib.activation}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.aopalliance}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+        <copy file="${lib.apache-jsieve-mailet}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.apache-mailet}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.apache-mailet-base}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.bcmail-jdk15}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
@@ -320,6 +324,7 @@
 		<copy file="${lib.mail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+        <copy file="${lib.directcommon}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.xdcommon}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.jcs}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
