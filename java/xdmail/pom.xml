@@ -13,7 +13,17 @@
     <version>1.0-SNAPSHOT</version>
     <name>NHIN Direct XD* Mail Gateway</name>
     <description>NHIN Direct XD* Mail Gateway</description>
-    <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xdmail/${project.version}</url>     
+    <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xdmail/${project.version}</url>  
+    <developers>
+        <developer>
+            <name>Vincent Lewis</name>
+            <email>vincent.lewis@gsihealth.com</email>
+        </developer>   
+        <developer>
+            <name>Beau Grantham</name>
+            <email>bgrantha@harris.com</email>
+        </developer>
+     </developers>    
     <scm>
         <url>https://nhin-d.googlecode.com/hg/java/xdmail/</url>
         <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/xdmail
