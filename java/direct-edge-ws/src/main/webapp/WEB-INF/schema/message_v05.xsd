@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://nhindirect.org/schema/edge/ws" 
+           elementFormDefault="unqualified" 
+           attributeFormDefault="unqualified" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:xmime="http://www.w3.org/2005/05/xmlmime" 
+           xmlns="http://nhindirect.org/schema/edge/ws">
+           
+    <!-- Message to be sent/received -->
+	<xs:element name="Message" type="Email.Type"/>
+	<xs:complexType name="Email.Type">
+		<xs:sequence>
+			<xs:element name="Head" type="Head.Type"/>
+			<xs:element name="Body" type="Body.Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Body.Type">
+		<xs:sequence>
+			<xs:element name="Text" type="xs:string"/>
+			<xs:element name="Attachment" type="Attachment.Type" minOccurs="0" maxOccurs="10"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Attachment.Type">
+		<xs:sequence>
+		<!-- Refer to IHE schema (Appendix V - WS protocols - XDS/XDR)-->
+			<xs:element name="uuid" type="xs:anyURI"/>
+			<xs:element name="filename" type="xs:anyURI"/>
+			<xs:element name="mime-type" type="xs:string"/>
+			<xs:element name="content" type="xs:base64Binary" xmime:expectedContentTypes="application/octet-stream"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Head.Type">
+		<xs:sequence>
+			<xs:element name="From" type="Address.Type"/>
+			<xs:element name="To"   type="Address.Type" minOccurs="0" maxOccurs="unbounded"/>
+		    <xs:element name="Cc"   type="Address.Type" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Bcc"  type="Address.Type" minOccurs="0" maxOccurs="unbounded"/>
+			<!-- Optional in RFC 5322, Required in NHIN-Direct - check NHIN-Direct rationale -->
+			<xs:element name="Subject" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="In-Reply-To" type="MID.Type" minOccurs="0"/>
+			<xs:element name="References"  type="MID.Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Verify -->
+	<xs:complexType name="Address.Type">
+		<xs:attribute name="name" type="xs:string" use="optional"/>
+		<xs:attribute name="address" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="[\w-]+@([\w-]+\.)+[\w-]+"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<!-- Verify -->
+	<xs:simpleType name="MID.Type">
+		<xs:restriction base="xs:string">
+			<xs:length value="36" fixed="true"/>
+			<xs:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[8-9a-bA-B][0-9a-fA-F]{3}-[0-9a-fA-F]{12}@[A-Za-z0-9_]+([-.][A-Za-z0-9_]+)*\.[A-Za-z0-9_]+([-.][A-Za-z0-9_]+)"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<!-- SendMessage Response semantics -->
+	<xs:element name="SendResponse" type="SendResponse.Type"/>
+	<xs:complexType name="SendResponse.Type">
+		<xs:choice>
+			<xs:element name="Message-ID" type="MID.Type"/>
+			<xs:element name="Error" type="Error.Type"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="Error.Type">
+	   <xs:sequence>
+	       <xs:element name="code" type="ErrorCode.Type"/>
+	       <xs:element name="message" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Status" type="StatusRef.Type"/>
+	<xs:complexType name="StatusRef.Type">
+		<xs:sequence minOccurs="0" maxOccurs="100">
+			<xs:element name="Message-ID" type="MID.Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="StatusResponse" type="StatusResponse.Type"/>
+	<xs:complexType name="StatusResponse.Type">
+	 <xs:sequence minOccurs="0" maxOccurs="100">
+	  <xs:element name="Message-ID" type="MID.Type"/>
+	  <xs:element name="Status" type="Status.Type"/>
+	 </xs:sequence>
+	</xs:complexType>	
+	<xs:simpleType name="Status.Type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="pending"/>
+			<xs:enumeration value="delivered"/>
+			<xs:enumeration value="retrieved"/>
+			<xs:enumeration value="error"/>
+		</xs:restriction>
+	</xs:simpleType>
+    <xs:simpleType name="ErrorCode.Type">         
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NOT_AUTH"/>
+            <xs:enumeration value="ADDRESSING"/>
+            <xs:enumeration value="MESSAGING"/>
+            <xs:enumeration value="SYSTEM"/>
+        </xs:restriction>
+    </xs:simpleType> 
+</xs:schema>
