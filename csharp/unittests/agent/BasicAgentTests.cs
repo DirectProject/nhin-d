@@ -17,11 +17,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
-
+using Health.Direct.Common.DnsResolver;
 using Xunit;
 using Xunit.Extensions;
 
@@ -277,6 +277,28 @@ namespace Health.Direct.Agent.Tests
                 () => badAgent.ProcessIncoming(outgoing.SerializeMessage()),
                 AgentError.CouldNotResolvePrivateKey
             );
+        }
+        
+        /// <summary>
+        /// Verify that the resolver collection falls back to a backup resolver correctly
+        /// </summary>
+        [Fact]
+        public void TestResolverCollection()
+        {
+            System.Net.Mail.MailAddress address = new System.Net.Mail.MailAddress("toby@redmond.hsgincubator.com");
+
+            CertificateResolverCollection resolvers = new CertificateResolverCollection();
+            resolvers.Add(new NullResolver());
+            Assert.True(resolvers.GetCertificates(address).IsNullOrEmpty());
+            
+            resolvers.Add(new ThrowingCertResolver());        
+            resolvers.CatchExceptions = false; // default is true    
+            Assert.Throws<InvalidOperationException>(() => resolvers.GetCertificates(address));
+            
+            resolvers.CatchExceptions = true; 
+            resolvers.Add(m_tester.AgentA.PrivateCertResolver);            
+            Assert.DoesNotThrow(() => resolvers.GetCertificates(address));
+            Assert.True(!resolvers.GetCertificates(address).IsNullOrEmpty());
         }
                        
         static void VerifyTrusted(DirectAddress address, TrustEnforcementStatus minStatus)

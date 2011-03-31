@@ -385,4 +385,20 @@ namespace Health.Direct.Agent.Tests
         }
     }
 
+    public class ThrowingCertResolver : ICertificateResolver
+    {
+        public ThrowingCertResolver()
+        {
+        }
+
+        public X509Certificate2Collection GetCertificates(MailAddress address)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public X509Certificate2Collection GetCertificatesForDomain(string domain)
+        {
+            throw new InvalidOperationException();
+        }
+    }
 }
