@@ -135,7 +135,7 @@ public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
                 getHeaderData();
 
                 SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
-                dumpSOAPMessage(msg);
+                // dumpSOAPMessage(msg);
                 SOAPPart sp = msg.getSOAPPart();
 
                 // edit Envelope
@@ -225,7 +225,7 @@ public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
                 directMetadataLevel = null;
 
                 SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
-                dumpSOAPMessage(msg);
+                // dumpSOAPMessage(msg);
 
                 ServletRequest sr = (ServletRequest) context.get(MessageContext.SERVLET_REQUEST);
                 if (sr != null)
