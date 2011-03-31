@@ -46,6 +46,16 @@ namespace Health.Direct.Agent.Config
             get;
             set;
         }
+
+        /// <summary>
+        /// The Backup IP address (in <c>string</c> form) used by the resolver.
+        /// </summary>
+        [XmlElement]
+        public string BackupServerIP
+        {
+            get;
+            set;
+        }
         
         /// <summary>
         /// The timeout interval used by the resolver.
@@ -119,11 +129,25 @@ namespace Health.Direct.Agent.Config
         public override ICertificateResolver CreateResolver()
         {
             this.Validate();
-
-            return new DnsCertResolver(IPAddress.Parse(this.ServerIP), 
+            
+            if (string.IsNullOrEmpty(this.BackupServerIP))
+            {
+                return CreateResolver(this.ServerIP);
+            }
+            
+            CertificateResolverCollection resolvers = new CertificateResolverCollection();
+            resolvers.TryNextWhen = CertificateResolverCollection.TryNextCriteria.Exception;            
+            resolvers.Add(this.CreateResolver(this.ServerIP));
+            resolvers.Add(this.CreateResolver(this.BackupServerIP));            
+            return resolvers;
+        }
+        
+        ICertificateResolver CreateResolver(string ip)
+        {
+            return new DnsCertResolver(IPAddress.Parse(ip),
                                        TimeSpan.FromMilliseconds(this.TimeoutMilliseconds)
                                        , this.FallbackDomain
-                                       , m_cache) {ResolveUsingRootServer = m_resolveFromRoot};
+                                       , m_cache) { ResolveUsingRootServer = m_resolveFromRoot };
         }
     }
 }
