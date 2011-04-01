@@ -1,0 +1,25 @@
+<Project DefaultTargets="build-installer" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<PropertyGroup>
+		<ProductName>Direct Project</ProductName>
+		<Copyright>Copyright 2010 &#169;</Copyright>
+		<Version>0.0.0.0</Version>
+		<!-- need to place this here to get around some sticky quote issues -->
+		<PsGlobalAssemblyInfo>powershell -Command "(Get-Content ..\GlobalAssemblyInfo.cs) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content ..\GlobalAssemblyInfo.cs"</PsGlobalAssemblyInfo>
+		<PsInstallerFile>powershell -Command "(Get-Content .\Direct.iss) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content .\Direct.iss"</PsInstallerFile>
+	</PropertyGroup>
+
+	<Target Name="update-version-info">
+		<Exec Command='$(PsGlobalAssemblyInfo)' />
+		<Exec Command='$(PsInstallerFile)' />
+	</Target>
+
+	<Target Name="build-installer" DependsOnTargets="update-version-info">
+		<Exec Command='"C:\Program Files (x86)\inno setup 5\iscc.exe" /Q .\Direct.iss' 
+			Condition="Exists('C:\Program Files (x86)\inno setup 5\iscc.exe')" />
+		<Exec Command='"C:\Program Files\inno setup 5\iscc.exe" /Q .\Direct.iss' 
+			Condition="Exists('C:\Program Files\inno setup 5\iscc.exe')" />
+		<MSBuild Targets="clean-configui" Projects="..\build.xml" Properties="state=post" />
+	</Target>
+	
+</Project>
