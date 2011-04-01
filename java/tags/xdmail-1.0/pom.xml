@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.nhind</groupId>
     <artifactId>xdmail</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>NHIN Direct XD* Mail Gateway</name>
     <description>NHIN Direct XD* Mail Gateway</description>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/xdmail/${project.version}</url>  
@@ -232,7 +232,7 @@
                     </dependency>
                 </dependencies>
             </plugin>
-            <!-- 
+            <!-- for release only
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -271,8 +271,8 @@
                      </goals>
                  </execution>
                </executions>
-            </plugin>       
-            -->    
+            </plugin>
+             -->           
         </plugins>
         <pluginManagement>
            <plugins>

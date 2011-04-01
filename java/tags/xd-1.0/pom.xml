@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>xd</artifactId>
     <name>NHIN Direct XD* Web Endpoint</name>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0</version>
     <description>NHIN Direct XD Component</description>
     <inceptionYear>2010</inceptionYear>
     <packaging>war</packaging>
@@ -277,7 +277,7 @@
 				          </execution>
 				        </executions>
 				    </plugin>   
-				    <!-- for release only                  
+				    <!-- for relase only                  
 		            <plugin>
 		                <groupId>org.apache.maven.plugins</groupId>
 		                <artifactId>maven-javadoc-plugin</artifactId>
@@ -316,8 +316,8 @@
 		                     </goals>
 		                 </execution>
 		               </executions>
-		            </plugin>  
-		            -->                    
+		            </plugin>     
+		            -->                 
                 </plugins>
             </build>
             <pluginRepositories>
