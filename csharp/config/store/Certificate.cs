@@ -17,7 +17,8 @@ using System;
 using System.Data.Linq.Mapping;
 using System.Security.Cryptography.X509Certificates;
 using System.Runtime.Serialization;
-
+using System.Security.Cryptography;
+using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Config.Store
@@ -42,14 +43,19 @@ namespace Health.Direct.Config.Store
         }
         
         public Certificate(string owner, X509Certificate2 certificate)
+            : this(owner, certificate, true)
+        {
+        }
+
+        public Certificate(string owner, X509Certificate2 certificate, bool includePrivateKey)
         {
             if (certificate == null)
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidX509Certificate);
             }
-            
+
             this.Owner = owner;
-            this.SetX509Certificate(certificate);
+            this.SetX509Certificate(certificate, includePrivateKey);
         }
 
         [Column(Name = "Owner", CanBeNull = false, IsPrimaryKey = true)]
@@ -168,24 +174,21 @@ namespace Health.Direct.Config.Store
         {
             if (this.HasData)
             {
-                this.SetX509Certificate(this.ToPublicX509Certificate());
+                using(DisposableX509Certificate2 cert = this.ToX509CertificateNoKeys())
+                {
+                    this.SetX509Certificate(cert, false);
+                }
             }
         }
-        
-        public X509Certificate2 ToX509Certificate()
+
+        public DisposableX509Certificate2 ToX509CertificateNoKeys()
         {
-            return new X509Certificate2(this.Data, string.Empty, X509KeyStorageFlags.MachineKeySet);
+            return new DisposableX509Certificate2(this.Data, string.Empty);
         }
 
-        public X509Certificate2 ToPublicX509Certificate()
+        public DisposableX509Certificate2 ToX509Certificate()
         {
-            X509Certificate2 certificate = this.ToX509Certificate();
-            if (certificate.HasPrivateKey)
-            {
-                certificate.PrivateKey = null;
-            }            
-            
-            return certificate;
+            return new DisposableX509Certificate2(this.Data, string.Empty, X509KeyStorageFlags.Exportable);
         }
 
         public static X509Certificate2Collection ToX509Collection(Certificate[] source)
@@ -206,13 +209,10 @@ namespace Health.Direct.Config.Store
             return x509Coll;
         }
                 
-        void SetX509Certificate(X509Certificate2 certificate)
+        void SetX509Certificate(X509Certificate2 certificate, bool includePrivateKey)
         {
             this.Thumbprint = certificate.Thumbprint;
-            //
-            // We always store the certificate as PFX
-            //
-            this.Data = certificate.Export(X509ContentType.Pfx);
+            this.Data = includePrivateKey ? certificate.Export(X509ContentType.Pfx) : certificate.Export(X509ContentType.Cert);
             this.CreateDate = DateTimeHelper.Now;
             this.ValidStartDate = certificate.NotBefore;
             this.ValidEndDate = certificate.NotAfter;

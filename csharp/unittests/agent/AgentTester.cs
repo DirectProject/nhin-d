@@ -249,11 +249,11 @@ namespace Health.Direct.Agent.Tests
                 switch(ext)
                 {
                     default:
-                        certStore.ImportKeyFile(file, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+                        certStore.ImportKeyFile(file, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
                         break;
                     
                     case ".pfx":
-                        certStore.ImportKeyFile(file, "passw0rd!", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+                        certStore.ImportKeyFile(file, "passw0rd!", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
                         break;
                 }
             } 
