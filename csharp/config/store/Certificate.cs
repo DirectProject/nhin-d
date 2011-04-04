@@ -183,12 +183,12 @@ namespace Health.Direct.Config.Store
 
         public DisposableX509Certificate2 ToX509CertificateNoKeys()
         {
-            return new DisposableX509Certificate2(this.Data, string.Empty);
+            return new DisposableX509Certificate2(this.Data, string.Empty, X509KeyStorageFlags.MachineKeySet);
         }
 
         public DisposableX509Certificate2 ToX509Certificate()
         {
-            return new DisposableX509Certificate2(this.Data, string.Empty, X509KeyStorageFlags.Exportable);
+            return new DisposableX509Certificate2(this.Data, string.Empty, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.MachineKeySet);
         }
 
         public static X509Certificate2Collection ToX509Collection(Certificate[] source)
