@@ -41,20 +41,20 @@ Name: database; Description: DirectConfig database; Types: development database;
 
 
 [Types]
-Name: development; Description: Developer Install (Single machine and development gateway version)
+Name: gateway; Description: Gateway               
 Name: dns; Description: DNS Responder; 
-Name: config; Description: Config services
-Name: gateway; Description: Gateway
+Name: config; Description: Config services             
 Name: database; Description: Database
 Name: custom; Description: Custom Install; Flags: iscustom;
+Name: development; Description: Developer Install (Single machine and development gateway version)
 
 
 [Files]
-Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Flags: ignoreversion;
-Source: "..\bin\debug\Win32\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX86;  
-Source: "..\bin\debug\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64;  
-Source: "..\bin\debug\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Flags: ignoreversion;
-Source: "..\bin\debug\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion;
+Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
+Source: "..\bin\debug\Win32\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX86;  Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
+Source: "..\bin\debug\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64; Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway;                            
+Source: "..\bin\debug\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Flags: ignoreversion; Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
+Source: "..\bin\debug\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
 Source: "..\bin\debug\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs;   Components: developergateway; 
 Source: "..\bin\debug\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: developergateway
 
@@ -86,8 +86,10 @@ Source: "*.ps1"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "event-sources.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database; 
 Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database; 
+                        
+Source: "toolutil\install.tools\bin\debug\install.tools.dll"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  Components: dnsresponder and not developergateway;  
 
-                                          
+                                 
 [UninstallDelete]
 Type: files; Name: "{app}\direct.ini"
 Type: files; Name: "{app}\Health.Direct.SmtpAgent.tlb"
@@ -106,11 +108,13 @@ Name: "{group}\{cm:UninstallProgram,Direct Gateway}"; Filename: "{uninstallexe}"
 
 [Run]
 Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: directgateway or developergateway; Check: not IsVCRT
-Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: postinstall; Components: developergateway or database;
+Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser postinstall; Components: developergateway and not database;
+Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database;
 Filename: {app}\install-dev.bat; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway; 
+Filename: {dotnet20}\RegAsm.exe; Parameters: install.tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
 Filename: {app}\installgateway.bat; Parameters:  """{app}"" >> ""{app}\installgateway.log"" 2>&1";  Description: Install Gateway; Flags: runascurrentuser ; Components: directgateway and not developergateway; 
-Filename: {app}\createadmin.bat; Description:Create Admin.  Database must exist; Flags: runascurrentuser postinstall unchecked; Components: not developergateway; 
+Filename: {app}\createadmin.bat; Description:Create Admin.  (Database must exist); Flags: runascurrentuser postinstall unchecked; Components: not developergateway; 
 Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; Components: not developergateway; 
 
 
@@ -118,6 +122,7 @@ Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\createeventlo
 Filename: {app}\uninstall.bat; Flags: runascurrentuser;  Components: developergateway;
 Filename: {app}\uninstallDnsResponder.bat;  Components: dnsresponder and not developergateway;
 Filename: {app}\uninstallGateway.bat;  Components: directgateway and not developergateway;
+Filename: {dotnet20}\RegAsm.exe; Parameters: install.tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
 
 
 [INI]
@@ -128,6 +133,8 @@ Filename: {app}\direct.ini; section: InstallSettings; key: ConfigUiWebApp_Vdir; 
 
 
 [Code]
+
+
 
 //Log file maintenance
 var
@@ -156,9 +163,105 @@ begin
   Result := VCRT_IsInstalled (VC2008_ANY_x64) = 5;
 end;
 
+procedure CheckDnsResponderServiceOnClick(Sender: TObject);
+var
+  ErrorCode: Integer;
+  Button: TButton;
+  Edit: TEdit;
+  DnsResponderPage: TWizardPage;
+begin
+  Button := TButton(Sender);
+  DnsResponderPage := TWizardPage(Button.Owner);
+  Edit := TEdit(DnsResponderPage.FindComponent('DnsResponderUrlTextbox'));
+  ShellExecAsOriginalUser('open', Edit.Text, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+end;
+
+procedure SetDnsResponderUrl(url: String);
+var
+  XpathTools: Variant;
+begin
+  try                              
+    XpathTools := CreateOleObject('Direct.XpathTools');
+  except
+    RaiseException('Cannot find Direct.XpathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    XpathTools.XmlFilePath := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
+    XpathTools.SetSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url', url);
+end;
+
+function SetDnsResponderUrlOnClick(Sender: TWizardPage): Boolean;
+var
+  Edit : TEdit;
+  url : String;
+begin         
+    Edit := TEdit(Sender.FindComponent('DnsResponderUrlTextbox'));
+    SetDnsResponderUrl(Edit.Text);
+    Result : True;
+end;
+
+function GetDnsResponderUrl(): String;
+var
+  XpathTools: Variant; 
+  dnsResponderUrl: String;
+begin
+  try                              
+    XpathTools := CreateOleObject('Direct.XpathTools');
+  except
+    RaiseException('Cannot find Direct.XpathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    XpathTools.XmlFilePath := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
+    dnsResponderUrl := XpathTools.SelectSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url');
+    Result := dnsResponderUrl;
+end;
+
+procedure SetDnsResponderUrlTextboxOnClick(Sender: TWizardPage);
+var
+  Edit : TEdit;
+  url : String;
+begin
+  Edit := TEdit(Sender.FindComponent('DnsResponderUrlTextbox'));
+  Edit.Text :=   GetDnsResponderUrl();
+end;
+
+
+
+procedure CreateTheWizardPages;
+var
+  DnsResponderPage: TWizardPage;
+  Edit: TNewEdit;
+  Button: TNewButton;
+begin
+
+  DnsResponderPage := CreateCustomPage(wpInfoAfter, 'Custom wizard page controls', 'TButton and others');
+  
+  Button := TNewButton.Create(DnsResponderPage);
+  Button.Width := ScaleX(75);
+  Button.Height := ScaleY(23);
+  Button.Caption := 'Test';
+  Button.OnClick := @CheckDnsResponderServiceOnClick;
+  Button.Parent := DnsResponderPage.Surface;
+
+  Edit := TNewEdit.Create(DnsResponderPage);
+  Edit.Name := 'DnsResponderUrlTextbox';
+  Edit.Top := Button.Top + Button.Height + ScaleY(8);
+  Edit.Width := DnsResponderPage.SurfaceWidth - ScaleX(8);
+  Edit.Text := '';
+  Edit.Parent := DnsResponderPage.Surface;
+
+  DnsResponderPage.OnActivate := @SetDnsResponderUrlTextboxOnClick;
+  DnsResponderPage.OnNextButtonClick := @SetDnsResponderUrlOnClick;
+end;
+
+
+
+
 
 //Create Virtual directories
 procedure CurStepChanged(CurStep: TSetupStep);
+
+var 
+  XpathTools: Variant;
+  dnsResponderUrl: String;
 begin
   
   //Post install step
@@ -178,7 +281,19 @@ begin
       begin
         CreateIISVirtualDir('ConfigUI', ExpandConstant('{app}') + '\ConfigUI', 'Direct Config Admin');
       end;
-  end;
+
+    //DnsResponder Config Setup (Edit  DirectDnsResponderSvc.exe.config and point to DnsWebService)
+    if (pos( 'dnsresponder', WizardSelectedComponents( false)) > 0)  and (pos( 'development', WizardSetupType( false)) = 0) then  
+      begin          
+          try                              
+            XpathTools := CreateOleObject('Direct.XpathTools');
+          except
+            RaiseException('Cannot find Direct.XpathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+          end;
+            XpathTools.XmlFilePath := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
+            dnsResponderUrl := XpathTools.SelectSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url');
+      end;
+    end;
 
   //Log file maintenance
   if CurStep = ssDone then
@@ -221,6 +336,7 @@ begin
   end;
 end;
 
+
 procedure DeinitializeSetup();
 begin
   if OkToCopyLog then
@@ -228,6 +344,12 @@ begin
     RestartReplace (ExpandConstant ('{log}'), '');   // remove the temp log file during the next system restart.
 end;
 
+procedure InitializeWizard;
+begin
+
+  CreateTheWizardPages;
+
+end;
 
 
 
