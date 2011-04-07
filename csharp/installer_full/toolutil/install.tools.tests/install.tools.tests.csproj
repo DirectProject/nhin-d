@@ -49,13 +49,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SmtpTests.cs" />
+    <Compile Include="UrlTests.cs" />
     <Compile Include="XPathTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\install.tools\install.tools.csproj">
+    <ProjectReference Include="..\install.tools\Install.Tools.csproj">
       <Project>{A1A08F64-48F9-4F6F-BB67-D4616C5102F0}</Project>
-      <Name>install.tools</Name>
+      <Name>Install.Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

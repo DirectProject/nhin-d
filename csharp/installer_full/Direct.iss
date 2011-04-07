@@ -27,6 +27,10 @@ SolidCompression=yes
 VersionInfoVersion=1.0.0.0
 SetupLogging=yes
 
+WizardImageFile=Direct.bmp
+WizardSmallImageFile=DirectSmall.bmp
+WizardImageStretch=Yes
+
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
@@ -87,7 +91,7 @@ Source: "event-sources.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database; 
 Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database; 
                         
-Source: "toolutil\install.tools\bin\debug\install.tools.dll"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  Components: dnsresponder and not developergateway;  
+Source: "toolutil\install.tools\bin\debug\Health.Direct.Install.Tools.dll"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  Components: dnsresponder and not developergateway;  
 
                                  
 [UninstallDelete]
@@ -97,6 +101,7 @@ Type: files; Name: "{app}\InstallationLogFile.log"
 Type: files; Name: "{app}\installdnsresponder.log"
 Type: files; Name: "{app}\installgateway.log"
 Type: files; Name: "{app}\createeventlogsource.log"
+Type: files; Name: "{app}\InstallTools\Health.Direct.Install.Tools.tlb"
 
 [Icons]
 Name: "{group}\Admin Console"; Filename: "{app}\AdminConsole.exe"; WorkingDir: "{app}";
@@ -112,17 +117,17 @@ Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{ap
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database;
 Filename: {app}\install-dev.bat; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway; 
-Filename: {dotnet20}\RegAsm.exe; Parameters: install.tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
+Filename: {dotnet20}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
 Filename: {app}\installgateway.bat; Parameters:  """{app}"" >> ""{app}\installgateway.log"" 2>&1";  Description: Install Gateway; Flags: runascurrentuser ; Components: directgateway and not developergateway; 
 Filename: {app}\createadmin.bat; Description:Create Admin.  (Database must exist); Flags: runascurrentuser postinstall unchecked; Components: not developergateway; 
 Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; Components: not developergateway; 
 
 
 [UninstallRun]
-Filename: {app}\uninstall.bat; Flags: runascurrentuser;  Components: developergateway;
-Filename: {app}\uninstallDnsResponder.bat;  Components: dnsresponder and not developergateway;
-Filename: {app}\uninstallGateway.bat;  Components: directgateway and not developergateway;
-Filename: {dotnet20}\RegAsm.exe; Parameters: install.tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
+Filename: {app}\uninstall.bat; Flags: runascurrentuser; RunOnceId: 'RemoveDeveloperGateway';   Components: developergateway;
+Filename: {app}\uninstallDnsResponder.bat; RunOnceId: 'RemoveDnsResponder';  Components: dnsresponder and not developergateway;
+Filename: {app}\uninstallGateway.bat; RunOnceId: 'RemoveGateway'; Components: directgateway and not developergateway;
+Filename: {dotnet20}\RegAsm.exe; RunOnceId: 'Removeinstall.tools'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
 
 
 [INI]
@@ -167,13 +172,13 @@ procedure CheckDnsResponderServiceOnClick(Sender: TObject);
 var
   ErrorCode: Integer;
   Button: TButton;
-  Edit: TEdit;
+  DnsServiceTestTextBox: TNewEdit;
   DnsResponderPage: TWizardPage;
 begin
   Button := TButton(Sender);
   DnsResponderPage := TWizardPage(Button.Owner);
-  Edit := TEdit(DnsResponderPage.FindComponent('DnsResponderUrlTextbox'));
-  ShellExecAsOriginalUser('open', Edit.Text, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+  DnsServiceTestTextBox := TNewEdit(DnsResponderPage.FindComponent('DnsServiceTestTextBox'));
+  ShellExecAsOriginalUser('open', DnsServiceTestTextBox.Text, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
 end;
 
 procedure SetDnsResponderUrl(url: String);
@@ -191,12 +196,11 @@ end;
 
 function SetDnsResponderUrlOnClick(Sender: TWizardPage): Boolean;
 var
-  Edit : TEdit;
-  url : String;
+  DnsServiceUrlLabel : TNewStaticText;
 begin         
-    Edit := TEdit(Sender.FindComponent('DnsResponderUrlTextbox'));
-    SetDnsResponderUrl(Edit.Text);
-    Result : True;
+    DnsServiceUrlLabel := TNewStaticText(Sender.FindComponent('DnsServiceUrlLabel'));
+    SetDnsResponderUrl(DnsServiceUrlLabel.Caption);
+    Result := True;
 end;
 
 function GetDnsResponderUrl(): String;
@@ -214,54 +218,182 @@ begin
     Result := dnsResponderUrl;
 end;
 
-procedure SetDnsResponderUrlTextboxOnClick(Sender: TWizardPage);
+
+procedure HostNameOnChange(Sender: TObject);
 var
-  Edit : TEdit;
-  url : String;
+  tools : Variant;
+  DnsServiceUrlLabel, ErrorLabel : TNewStaticText;
+  DnsServiceTestTextBox : TNewEdit;
+  DnsResponderPage : TWizardPage;
+  hostport : String;
 begin
-  Edit := TEdit(Sender.FindComponent('DnsResponderUrlTextbox'));
-  Edit.Text :=   GetDnsResponderUrl();
+  DnsServiceTestTextBox := TNewEdit(Sender); 
+  DnsResponderPage := TWizardPage(DnsServiceTestTextBox.Owner)
+  ErrorLabel := TNewStaticText(DnsResponderPage.FindComponent('ErrorLabel'));
+  ErrorLabel.Caption := '';
+     
+  //Update DnsService (Will be persisted to config file when finished with wizard) 
+  try                              
+    tools := CreateOleObject('Direct.UrlTools');
+  except
+    RaiseException('Cannot find Direct.UrlTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;  
+  
+    
+ if(tools.ValidUrl(DnsServiceTestTextBox.Text)) then
+ begin  
+  DnsServiceUrlLabel := TNewStaticText(DnsResponderPage.FindComponent('DnsServiceUrlLabel'));  
+  hostPort :=  tools.HostPort(DnsServiceTestTextBox.Text); 
+  DnsServiceUrlLabel.Caption :=  tools.UpdateUrlHost(DnsServiceUrlLabel.Caption, hostport).FullUrl 
+ end         
+ else
+ begin
+    ErrorLabel.Caption := 'Invalid Url.';
+ end;
 end;
 
 
+
+procedure DnsResponderPageOnActivate(Sender: TWizardPage);
+var
+  tools : Variant;
+  DnsServiceUrlLabel : TNewStaticText;
+  hostPort : String;   //both host and port; locahost:80
+  DnsServiceTestTextBox : TNewEdit;
+begin
+  //Set DnsService from config file.
+  DnsServiceUrlLabel := TNewStaticText(Sender.FindComponent('DnsServiceUrlLabel'));
+  DnsServiceUrlLabel.Caption :=   GetDnsResponderUrl();
+  
+  //Set TestService.aspx by rebuilding Url 
+  try                              
+    tools := CreateOleObject('Direct.UrlTools');
+  except
+    RaiseException('Cannot find Direct.UrlTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;  
+  DnsServiceTestTextBox := TNewEdit(Sender.FindComponent('DnsServiceTestTextBox')); 
+  hostPort :=  tools.HostPort(DnsServiceUrlLabel.Caption); 
+  DnsServiceTestTextBox.Text :=  tools.Scheme(DnsServiceUrlLabel.Caption) 
+  + '://'
+  + hostPort
+  + '/DnsService/TestService.aspx'; 
+
+  
+end;
+
+function DnsResponderPage_ShouldSkip(Page: TwizardPage): Boolean;
+begin
+  Result := (pos( 'dnsresponder', WizardSelectedComponents( false)) = 0) ;
+end;
+
+function MsSmtpServiceExists(Host: String; Port: Integer): Boolean;
+var
+      SmtpExists: Boolean;
+      SmtpTools: Variant;
+begin
+  try                              
+    SmtpTools := CreateOleObject('Direct.SmtpTools');
+  except
+    RaiseException('Cannot find Direct.SmtpTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    try
+      Log('Checking Smtp connection with host:port of ' + Host + ':' + IntToStr(Port)); 
+      SmtpExists := SmtpTools.TestConnection(Host, Port);
+    except
+      Log('Error: ' + GetExceptionMessage);       
+    end
+    Result := SmtpExists;
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+ begin
+  if(CurPageID = wpReady) then 
+    begin
+      //check for smtp
+      if (pos( 'directgateway', WizardSelectedComponents( false)) > 0)  or (pos( 'development', WizardSetupType( false)) > 0) then  
+      begin
+          if not (MsSmtpServiceExists('LocalHost', 25)) then 
+          begin
+            MsgBox('Failed to find smtp running.', mbInformation, mb_Ok);
+            Result := False;
+          end 
+          else begin
+            Result := True;
+          end;
+      end
+      else begin
+        Result := True;
+      end;   
+    end    
+    else begin
+      Result := True;
+    end;    
+end;
+
+procedure DnsServiceUrlOnClick(Sender: TObject);
+var
+  ErrorCode: Integer;
+begin
+  ShellExecAsOriginalUser('open', TNewStaticText(Sender).Caption, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+end;
 
 procedure CreateTheWizardPages;
 var
   DnsResponderPage: TWizardPage;
-  Edit: TNewEdit;
+  DnsServiceTestTextBox: TNewEdit;
   Button: TNewButton;
+  DnsServiceLabel, DnsServiceUrlLabel : TNewStaticText;
+  ErrorLabel : TNewStaticText;
 begin
 
-  DnsResponderPage := CreateCustomPage(wpInfoAfter, 'Custom wizard page controls', 'TButton and others');
-  
+  DnsResponderPage := CreateCustomPage(wpInfoAfter, 'Test and Configure Dns Responder', 'DnsService endpoint stored in DirectDnsResponderSvc.exe.config');
+    
   Button := TNewButton.Create(DnsResponderPage);
-  Button.Width := ScaleX(75);
-  Button.Height := ScaleY(23);
-  Button.Caption := 'Test';
+  Button.Height :=  ScaleY(23);
+  Button.Width := DnsResponderPage.SurfaceWidth div 3;
+  Button.Caption := 'Dns DB Connect Test: ';
   Button.OnClick := @CheckDnsResponderServiceOnClick;
   Button.Parent := DnsResponderPage.Surface;
+  
+  DnsServiceTestTextBox := TNewEdit.Create(DnsResponderPage);
+  DnsServiceTestTextBox.Name := 'DnsServiceTestTextBox';
+  DnsServiceTestTextBox.Left :=  Button.Width + ScaleX(8);
+  DnsServiceTestTextBox.Width := DnsResponderPage.SurfaceWidth - (Button.Left + Button.Width);
+  DnsServiceTestTextBox.Parent := DnsResponderPage.Surface;
+  DnsServiceTestTextBox.OnChange := @HostNameOnChange;
+            
+  DnsServiceLabel := TNewStaticText.Create(DnsResponderPage);
+  DnsServiceLabel.Top := DnsServiceTestTextBox.Top + DnsServiceTestTextBox.Height + ScaleY(16); 
+  DnsServiceLabel.Caption := 'DnsService endpoint: ';
+  DnsServiceLabel.Width := Button.Width;
+  DnsServiceLabel.Parent := DnsResponderPage.Surface;
 
-  Edit := TNewEdit.Create(DnsResponderPage);
-  Edit.Name := 'DnsResponderUrlTextbox';
-  Edit.Top := Button.Top + Button.Height + ScaleY(8);
-  Edit.Width := DnsResponderPage.SurfaceWidth - ScaleX(8);
-  Edit.Text := '';
-  Edit.Parent := DnsResponderPage.Surface;
+  DnsServiceUrlLabel := TNewStaticText.Create(DnsResponderPage);
+  DnsServiceUrlLabel.Name := 'DnsServiceUrlLabel';
+  DnsServiceUrlLabel.Cursor := crHand;
+  DnsServiceUrlLabel.OnClick := @DnsServiceUrlOnClick;
+  DnsServiceUrlLabel.Left := Button.Width + ScaleX(8);
+  DnsServiceUrlLabel.Top := DnsServiceTestTextBox.Top + DnsServiceTestTextBox.Height + ScaleY(16);
+  DnsServiceUrlLabel.Width := DnsResponderPage.SurfaceWidth - ScaleX(8);
+  DnsServiceUrlLabel.Font.Style := DnsServiceUrlLabel.Font.Style + [fsUnderline];
+  DnsServiceUrlLabel.Font.Color := clBlue;
+  DnsServiceUrlLabel.Parent := DnsResponderPage.Surface;
 
-  DnsResponderPage.OnActivate := @SetDnsResponderUrlTextboxOnClick;
+  ErrorLabel := TNewStaticText.Create(DnsResponderPage);
+  ErrorLabel.Name := 'ErrorLabel';
+  ErrorLabel.Top := DnsResponderPage.SurfaceHeight - ScaleY(16);
+  ErrorLabel.Font.Color := clRed;
+  ErrorLabel.Parent := DnsResponderPage.Surface;
+
+  DnsResponderPage.OnActivate := @DnsResponderPageOnActivate;
   DnsResponderPage.OnNextButtonClick := @SetDnsResponderUrlOnClick;
+  DnsResponderPage.OnShouldSkipPage := @DnsResponderPage_ShouldSkip;
 end;
-
-
-
 
 
 //Create Virtual directories
 procedure CurStepChanged(CurStep: TSetupStep);
-
-var 
-  XpathTools: Variant;
-  dnsResponderUrl: String;
+          
 begin
   
   //Post install step
@@ -281,20 +413,8 @@ begin
       begin
         CreateIISVirtualDir('ConfigUI', ExpandConstant('{app}') + '\ConfigUI', 'Direct Config Admin');
       end;
-
-    //DnsResponder Config Setup (Edit  DirectDnsResponderSvc.exe.config and point to DnsWebService)
-    if (pos( 'dnsresponder', WizardSelectedComponents( false)) > 0)  and (pos( 'development', WizardSetupType( false)) = 0) then  
-      begin          
-          try                              
-            XpathTools := CreateOleObject('Direct.XpathTools');
-          except
-            RaiseException('Cannot find Direct.XpathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
-          end;
-            XpathTools.XmlFilePath := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
-            dnsResponderUrl := XpathTools.SelectSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url');
-      end;
-    end;
-
+   // Exec('IISReset');
+  end;
   //Log file maintenance
   if CurStep = ssDone then
     OkToCopyLog := True;

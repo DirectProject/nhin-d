@@ -15,48 +15,27 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System.IO;
+using System.Net.Sockets;
 using Xunit;
-
 namespace Health.Direct.Install.Tools.tests
 {
-    public class XPathTests
+    public class SmtpTests
     {
-
-
         [Fact]
-        public void QueryTest()
+        public void SmtpConnectTest()
         {
-            Xpath editor = new Xpath();
-            editor.XmlFilePath = "DirectDnsResponderSvc.exe.config";
+            Smtp smtp = new Smtp();
+            Assert.Throws<SocketException>(() => smtp.TestConnection("localhost", 25));
 
-            string value = editor.SelectSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url");
-            string expected = @"http://localhost/DnsService/RecordRetrievalService.svc/Records";
-
-            Assert.Equal(expected, value);
         }
 
         [Fact]
-        public void ConnectAndDrop()
+        public void SmtpGoodConnectTest()
         {
-            
-            File.Copy("DirectDnsResponderSvc.exe.config", "DirectDnsResponderSvc.exe.config.test", true);
-            Xpath editor = new Xpath();
-            editor.XmlFilePath = "DirectDnsResponderSvc.exe.config.test";
-
-            string value = editor.SelectSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url");
-            string expected = @"http://localhost/DnsService/RecordRetrievalService.svc/Records";
-            Assert.Equal(expected, value);
-
-            editor.SetSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url",
-               @"http://SomeServer/DnsService/RecordRetrievalService.svc/Records" );
-
-
-            value = editor.SelectSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url");
-            expected = @"http://SomeServer/DnsService/RecordRetrievalService.svc/Records";
-
-            Assert.Equal(expected, value);
-
+            Smtp smtp = new Smtp();
+            //DirectGateway.South.Hobo.Lab 192.168.137.144
+            bool success = smtp.TestConnection("192.168.137.147", 25);
+            Assert.True(success);
 
         }
     }

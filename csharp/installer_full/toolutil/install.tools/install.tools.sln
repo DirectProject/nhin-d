@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "install.tools", "install.tools.csproj", "{A1A08F64-48F9-4F6F-BB67-D4616C5102F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Install.Tools", "Install.Tools.csproj", "{A1A08F64-48F9-4F6F-BB67-D4616C5102F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "install.tools.tests", "..\install.tools.tests\install.tools.tests.csproj", "{CDF4F316-8DAD-4537-93CF-3AFF4D2E25DD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Install.Tools.Tests", "..\install.tools.tests\Install.Tools.Tests.csproj", "{CDF4F316-8DAD-4537-93CF-3AFF4D2E25DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

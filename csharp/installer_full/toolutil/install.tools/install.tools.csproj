@@ -8,8 +8,8 @@
     <ProjectGuid>{A1A08F64-48F9-4F6F-BB67-D4616C5102F0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>install.tools</RootNamespace>
-    <AssemblyName>install.tools</AssemblyName>
+    <RootNamespace>Health.Direct.Install.Tools</RootNamespace>
+    <AssemblyName>Health.Direct.Install.Tools</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
@@ -51,6 +51,8 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Smtp.cs" />
+    <Compile Include="Url.cs" />
     <Compile Include="Xpath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
