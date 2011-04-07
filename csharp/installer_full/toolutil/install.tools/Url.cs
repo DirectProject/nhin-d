@@ -34,6 +34,9 @@ namespace Health.Direct.Install.Tools
         string Scheme(string url);
 
         IUrl UpdateUrlHost(string url, string host);
+        IUrl UpdateHost(string host);
+        IUrl UpdateUrlScheme(string url, string scheme);
+        IUrl UpdateScheme(string scheme);
 
         bool ValidUrl(string url);
     }
@@ -44,10 +47,10 @@ namespace Health.Direct.Install.Tools
     public class Url : IUrl
     {
         private string _url = "";
-        private const int DEFAULT_PORT = 80;
-        private const int DEFAULT_SECURE_PORT = 443;
-        private const string DEFAULT_SCHEME = "http";
-        private const string DEFAULT_SECURE_SCHEME = "https";
+        private const int DefaultPort = 80;
+        private const int DefaultSecurePort = 443;
+        private const string DefaultScheme = "http";
+        private const string DefaultSecureScheme = "https";
 
         public string FullUrl
         {
@@ -67,7 +70,7 @@ namespace Health.Direct.Install.Tools
                 Uri uri = new Uri(url);
                 return uri.Host;
             }
-            catch(UriFormatException ex)
+            catch(UriFormatException)
             {
                 return string.Empty;
             }
@@ -86,7 +89,7 @@ namespace Health.Direct.Install.Tools
                 Uri uri = new Uri(url);
                 return uri.Port.ToString();
             }
-            catch (UriFormatException ex)
+            catch (UriFormatException)
             {
                 return string.Empty;
             }
@@ -103,24 +106,9 @@ namespace Health.Direct.Install.Tools
             try
             {
                 Uri uri = new Uri(url);
-                switch (uri.Scheme)
-                {
-                    case DEFAULT_SCHEME:
-                        if (uri.Port == DEFAULT_PORT)
-                        {
-                            return uri.Host;
-                        }
-                        break;
-                    case DEFAULT_SECURE_SCHEME:
-                        if (uri.Port == DEFAULT_SECURE_PORT)
-                        {
-                            return uri.Host;
-                        }
-                        break;
-                }
                 return uri.Host + ":" + uri.Port;
             }
-            catch (UriFormatException ex)
+            catch (UriFormatException)
             {
                 return string.Empty;
             }
@@ -139,7 +127,7 @@ namespace Health.Direct.Install.Tools
                 Uri uri = new Uri(url);
                 return uri.Scheme;
             }
-            catch (UriFormatException ex)
+            catch (UriFormatException)
             {
                 return string.Empty;
             }
@@ -165,16 +153,35 @@ namespace Health.Direct.Install.Tools
             {
                 switch (uri.Scheme)
                 {
-                    case DEFAULT_SECURE_SCHEME:
-                        port = DEFAULT_SECURE_PORT;
+                    case DefaultSecureScheme:
+                        port = DefaultSecurePort;
                         break;
                     default:
-                        port = DEFAULT_PORT;
+                        port = DefaultPort;
                         break;
                 }
             }
             return UpdateUrlHost(url, host, port);
         }
+
+        public IUrl UpdateHost(string host)
+        {
+            return UpdateUrlHost(_url, host);
+        }
+
+        public IUrl UpdateUrlScheme(string url, string scheme)
+        {
+            Uri uri = new Uri(url);
+            UriBuilder uriBuilder = new UriBuilder(scheme, uri.Host, uri.Port, uri.PathAndQuery);
+            _url = uriBuilder.Uri.ToString();
+            return this;
+        }
+
+        public IUrl UpdateScheme(string scheme)
+        {
+            return UpdateUrlScheme(_url, scheme);
+        }
+
 
         private IUrl UpdateUrlHost(string url, string host, int port)
         {
@@ -188,9 +195,9 @@ namespace Health.Direct.Install.Tools
         {
             try
             {
-                Uri uri = new Uri(url);
+                new Uri(url);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
