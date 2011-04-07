@@ -17,23 +17,36 @@ namespace Health.Direct.Common.Certificates
     public class CertificateResolverCollection : ObjectCollection<ICertificateResolver>, ICertificateResolver
     {
         /// <summary>
+        /// The resolver loops through each resolver in the list until it is successful
+        /// </summary>
+        public enum TryNextCriteria
+        {
+            /// <summary>
+            /// Try the next resolver if the current one was not successful
+            /// </summary>
+            NotFound = 0x01,
+            /// <summary>
+            /// Try the next resolver if the current one through an exception
+            /// </summary>
+            Exception = 0x02,
+            /// <summary>
+            /// Continue always
+            /// </summary>
+            Always = NotFound | Exception
+        }
+        /// <summary>
         /// Creates a new CertificateResolverCollection
         /// </summary>
         public CertificateResolverCollection()
         {
-            this.CatchExceptions = true;
+            this.TryNextWhen = TryNextCriteria.NotFound;
         }
         
         /// <summary>
-        /// If true, will catch exceptions and fall through to the next resolver in line
-        /// Allows you to set up a pipeline of backup resolvers
-        /// True by default
+        /// If one resolver fails to return certificates, fall through to the next one in order and retries
+        /// This property defines when to fall through
         /// </summary>
-        public bool CatchExceptions
-        {
-            get;
-            set;
-        }
+        public TryNextCriteria TryNextWhen;
         
         /// <summary>
         /// Event to subscribe to for notification of errors.
@@ -55,7 +68,7 @@ namespace Health.Direct.Common.Certificates
                 try
                 {
                     matches = resolver.GetCertificates(address);
-                    if (!matches.IsNullOrEmpty())
+                    if (this.IsDone(matches))
                     {
                         break;
                     }
@@ -63,7 +76,7 @@ namespace Health.Direct.Common.Certificates
                 catch(Exception ex)
                 {
                     this.NotifyException(resolver, ex);
-                    if (!this.CatchExceptions)
+                    if (this.IsDone(ex))
                     {
                         throw;
                     }
@@ -88,7 +101,7 @@ namespace Health.Direct.Common.Certificates
                 try
                 {
                     matches = resolver.GetCertificatesForDomain(domain);
-                    if (!matches.IsNullOrEmpty())
+                    if (this.IsDone(matches))
                     {
                         break;
                     }
@@ -96,7 +109,7 @@ namespace Health.Direct.Common.Certificates
                 catch(Exception ex)
                 {
                     this.NotifyException(resolver, ex);
-                    if (!this.CatchExceptions)
+                    if (this.IsDone(ex))
                     {
                         throw;
                     }
@@ -105,7 +118,20 @@ namespace Health.Direct.Common.Certificates
 
             return matches;
         }
-
+        
+        bool IsDone(X509Certificate2Collection matches)
+        {
+            // Stop if we got some matches
+            // Also stop if no matches, and we were not set up to continue looking
+            return (!matches.IsNullOrEmpty() || (this.TryNextWhen & TryNextCriteria.NotFound) == 0);
+        }
+        
+        bool IsDone(Exception ex)
+        {
+            // Stop trying if we had an exception and we were not set up to continue on exceptions
+            return (ex != null && (this.TryNextWhen & TryNextCriteria.Exception) == 0);
+        }
+        
         void NotifyException(ICertificateResolver resolver, Exception ex)
         {
             var errorHandler = this.Error;

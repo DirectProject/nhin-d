@@ -68,7 +68,29 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.DoesNotThrow(() => auditor = IoC.Resolve<IAuditor>());
             Assert.True(auditor is DummyAuditor);
         }
-
+        
+        [Theory]
+        [PropertyData("ConfigFiles")]
+        public void TestLoadConfig(string fileName)
+        {
+            SmtpAgentSettings settings = null;
+            
+            Assert.DoesNotThrow(() => settings = SmtpAgentSettings.LoadSettings(Fullpath(fileName)));
+            Assert.NotNull(settings);
+            Assert.NotNull(settings.PublicCerts);
+            Assert.NotNull(settings.PrivateCerts);
+        }
+        
+        public static IEnumerable<object[]> ConfigFiles
+        {
+            get
+            {
+                yield return new[] {"TestSmtpAgentConfig.xml"};
+                yield return new[] { "TestSmtpAgentConfigService.xml" };
+                yield return new[] { "TestSmtpAgentConfigServiceProd.xml" };
+            }
+        }
+        
         string Fullpath(string fileName)
         {
             string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "SmtpAgentTestFiles");

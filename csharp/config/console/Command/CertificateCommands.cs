@@ -545,15 +545,17 @@ namespace Health.Direct.Config.Console.Command
             
             if (cert.HasData)
             {
-                X509Certificate2 x509 = cert.ToX509Certificate();
-                Print(x509);
+                using(DisposableX509Certificate2 x509 = cert.ToX509Certificate())
+                {
+                    Print(x509);
+                }
             }
         }
                 
         internal void Print(X509Certificate2Collection certs)
         {
             if (certs.IsNullOrEmpty())
-            {
+            {   
                 WriteLine("No certificates found");
                 return;
             }
