@@ -525,5 +525,28 @@ namespace Health.Direct.Config.Tools.Command
                 Console.WriteLine(arg);
             }
         }
+
+        private const string RepeatUsage
+           = "Run a series of commands repetitively."
+             + Constants.CRLF + "repeatcount command args";
+
+        /// <summary>
+        /// Run commands in a batch
+        /// </summary>
+        [Command(Name = "Repeat", Usage = RepeatUsage)]
+        public void Repeat(string[] args)
+        {
+            int count = args.GetRequiredValue<int>(0);
+            if (args.Length <= 2)
+            {
+                return;
+            }
+            string[] command = args.Skip(1).ToArray();
+            for (int i= 0; i < count; ++i)
+            {
+                Console.WriteLine(i);
+                this.Run(command);
+            }
+        }
     }
 }

@@ -65,7 +65,7 @@ namespace Health.Direct.DnsResponder.Service
 
         protected FaultException<ConfigStoreFault> CreateFault(string methodName, Exception ex)
         {
-            Logger.Error(string.Format("While performing {0}()", methodName), ex);
+            Logger.Error("While performing {0}(); {1}", methodName, ex);
 
             ConfigStoreFault fault = ConfigStoreFault.ToFault(ex);
             return new FaultException<ConfigStoreFault>(fault, new FaultReason(fault.ToString()));

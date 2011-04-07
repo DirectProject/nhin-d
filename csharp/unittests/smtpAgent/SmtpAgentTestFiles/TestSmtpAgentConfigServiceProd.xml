@@ -35,12 +35,11 @@
     </MachineResolver>
   </PrivateCerts>
   <PublicCerts>
-    <!--
     <DnsResolver>
       <ServerIP>127.0.0.1</ServerIP>
+      <BackupServerIP>127.0.0.2</BackupServerIP>
       <Timeout>5000</Timeout>
     </DnsResolver>
-    -->
     <MachineResolver>
       <Name>NHINDExternal</Name>
     </MachineResolver>
