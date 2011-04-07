@@ -346,7 +346,7 @@ var
   ErrorLabel : TNewStaticText;
 begin
 
-  DnsResponderPage := CreateCustomPage(wpInfoAfter, 'Test and Configure Dns Responder', 'DnsService endpoint stored in DirectDnsResponderSvc.exe.config');
+  DnsResponderPage := CreateCustomPage(wpInfoAfter, 'Configure DnsResponder', 'DnsService endpoint stored in DirectDnsResponderSvc.exe.config');
     
   Button := TNewButton.Create(DnsResponderPage);
   Button.Height :=  ScaleY(23);
