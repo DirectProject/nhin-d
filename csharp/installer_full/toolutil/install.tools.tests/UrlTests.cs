@@ -37,7 +37,7 @@ namespace Health.Direct.Install.Tools.tests
             Url url = new Url();
             Assert.Equal("localhost", url.Host(urlHost));
             Assert.Equal("80", url.Port(urlHost));
-            Assert.Equal("localhost", url.HostPort(urlHost));
+            Assert.Equal("localhost:80", url.HostPort(urlHost));
             Assert.Equal("http", url.Scheme(urlHost));
         }
 
@@ -47,7 +47,7 @@ namespace Health.Direct.Install.Tools.tests
             Url url = new Url();
             Assert.Equal("localhost", url.Host(urlHost2));
             Assert.Equal("80", url.Port(urlHost2));
-            Assert.Equal("localhost", url.HostPort(urlHost2));
+            Assert.Equal("localhost:80", url.HostPort(urlHost2));
             Assert.Equal("http", url.Scheme(urlHost2));
         }
 
@@ -67,7 +67,7 @@ namespace Health.Direct.Install.Tools.tests
             Url url = new Url();
             Assert.Equal("localhost", url.Host(urlSecureHost));
             Assert.Equal("443", url.Port(urlSecureHost));
-            Assert.Equal("localhost", url.HostPort(urlSecureHost));
+            Assert.Equal("localhost:443", url.HostPort(urlSecureHost));
             Assert.Equal("https", url.Scheme(urlSecureHost));
         }
 
@@ -77,7 +77,7 @@ namespace Health.Direct.Install.Tools.tests
             Url url = new Url();
             Assert.Equal("localhost", url.Host(urlSecureHost2));
             Assert.Equal("443", url.Port(urlSecureHost2));
-            Assert.Equal("localhost", url.HostPort(urlSecureHost2));
+            Assert.Equal("localhost:443", url.HostPort(urlSecureHost2));
             Assert.Equal("https", url.Scheme(urlSecureHost2));
         }
 
@@ -148,6 +148,32 @@ namespace Health.Direct.Install.Tools.tests
                 , url.UpdateUrlHost(urlSecureHost3, "North.Hobo.Lab").FullUrl);
 
 
+
+        }
+
+        [Fact]
+        public void ReplaceHostSchemeTest()
+        {
+            Url url = new Url();
+            Assert.Equal("http://north.hobo.lab:6693/DnsService/RecordRetrievalService.svc/Records"
+                         , url.UpdateUrlHost(urlHostPort, "North.Hobo.Lab:6693")
+                         .UpdateScheme("http").FullUrl);
+
+            Assert.Equal("https://north.hobo.lab:6693/DnsService/RecordRetrievalService.svc/Records"
+                         , url.UpdateUrlHost(urlHostPort, "North.Hobo.Lab:6693")
+                         .UpdateScheme("https").FullUrl);
+
+            Assert.Equal("https://north.hobo.lab/DnsService/RecordRetrievalService.svc/Records"
+                         , url.UpdateUrlHost(urlHostPort, "North.Hobo.Lab:443")
+                         .UpdateScheme("https").FullUrl);
+
+            Assert.Equal("https://north.hobo.lab:444/DnsService/RecordRetrievalService.svc/Records"
+                         , url.UpdateUrlHost(urlHostPort, "North.Hobo.Lab:444")
+                         .UpdateScheme("https").FullUrl);
+
+            Assert.Equal("https://localhost/DnsService/TestService.aspx"
+                         , url.UpdateUrlHost("http://localhost:443/DnsService/TestService.aspx"
+                                             , "localhost:443").UpdateScheme("https").FullUrl);
 
         }
 
