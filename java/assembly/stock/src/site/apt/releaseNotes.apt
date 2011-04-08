@@ -5,10 +5,27 @@
         ---
         Greg Meyer
         ---
+        
+{1.1}
 
-{1.0.0}
+    Changes included with release 1.1
+    
+    []
+    
+    Enhancements
+    
+    * Includes XD transformation in gateway and web services.
 
-    Changes included with release 1.0.0.
+    [] 
+     
+    Bug Fixes
+  
+    * Agent and Gateway fix releases
+
+
+{1.0}
+
+    Changes included with release 1.0.
 
     []
     
