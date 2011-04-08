@@ -36,8 +36,11 @@ namespace Health.Direct.Install.Tools.tests
             Assert.Equal(expected, value);
         }
 
+        /// <summary>
+        /// Query and update the XPath location. 
+        /// </summary>
         [Fact]
-        public void ConnectAndDrop()
+        public void ConnectAndDropDirectDnsResponder_Test()
         {
             
             File.Copy("DirectDnsResponderSvc.exe.config", "DirectDnsResponderSvc.exe.config.test", true);
@@ -56,8 +59,32 @@ namespace Health.Direct.Install.Tools.tests
             expected = @"http://SomeServer/DnsService/RecordRetrievalService.svc/Records";
 
             Assert.Equal(expected, value);
-
-
         }
+
+        /// <summary>
+        /// Query and update the XPath location. 
+        /// </summary>
+        [Fact]
+        public void ConnectAndDropConfigService_Test()
+        {
+
+            File.Copy("ConfigService.Web.config", "ConfigService.Web.config.test", true);
+            Xpath editor = new Xpath();
+            editor.XmlFilePath = "ConfigService.Web.config.test";
+
+            string actual = editor.SelectSingleAttribute("configuration/connectionStrings/add[@name=\"configStore\"]/@connectionString");
+            string expected = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+            Assert.Equal(expected, actual);
+
+            editor.SetSingleAttribute("configuration/connectionStrings/add[@name=\"configStore\"]/@connectionString",
+               @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;User ID=nhindUser;Password=nhindUser!10");
+
+
+            actual = editor.SelectSingleAttribute("configuration/connectionStrings/add[@name=\"configStore\"]/@connectionString");
+            expected = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;User ID=nhindUser;Password=nhindUser!10";
+
+            Assert.Equal(expected, actual);
+        }
+
     }
 }

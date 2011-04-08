@@ -29,7 +29,7 @@ namespace Health.Direct.Install.Tools.tests
         const string urlSecureHost = "https://localhost/DnsService/RecordRetrievalService.svc/Records";
         const string urlSecureHost2 = "https://localhost:443/DnsService/RecordRetrievalService.svc/Records";
         const string urlSecureHost3 = "https://localhost:444/DnsService/RecordRetrievalService.svc/Records";
-        const string urlHostPort = "https://localhost.lab:6693/DnsService/RecordRetrievalService.svc/Records";
+        const string urlHostSecurePort = "https://localhost.lab:6693/DnsService/RecordRetrievalService.svc/Records";
   
         [Fact]
         public void UrlHostTest()
@@ -95,10 +95,10 @@ namespace Health.Direct.Install.Tools.tests
         public void UrlHostPortTest()
         {
             Url url = new Url();
-            Assert.Equal("localhost.lab", url.Host(urlHostPort));
-            Assert.Equal("6693", url.Port(urlHostPort));
-            Assert.Equal("localhost.lab:6693", url.HostPort(urlHostPort));
-            Assert.Equal("https", url.Scheme(urlHostPort));
+            Assert.Equal("localhost.lab", url.Host(urlHostSecurePort));
+            Assert.Equal("6693", url.Port(urlHostSecurePort));
+            Assert.Equal("localhost.lab:6693", url.HostPort(urlHostSecurePort));
+            Assert.Equal("https", url.Scheme(urlHostSecurePort));
         }
 
         [Fact]
@@ -106,10 +106,10 @@ namespace Health.Direct.Install.Tools.tests
         {
             Url url = new Url();
             Assert.Equal("https://north.hobo.lab:6693/DnsService/RecordRetrievalService.svc/Records"
-                , url.UpdateUrlHost(urlHostPort, "North.Hobo.Lab:6693").FullUrl);
+                , url.UpdateUrlHost(urlHostSecurePort, "North.Hobo.Lab:6693").FullUrl);
 
             Assert.Equal("https://north.hobo.lab/DnsService/RecordRetrievalService.svc/Records"
-                , url.UpdateUrlHost(urlHostPort, "North.Hobo.Lab").FullUrl);
+                , url.UpdateUrlHost(urlHostSecurePort, "North.Hobo.Lab").FullUrl);
 
 
             Assert.Equal("https://north.hobo.lab/DnsService/RecordRetrievalService.svc/Records"
@@ -156,24 +156,40 @@ namespace Health.Direct.Install.Tools.tests
         {
             Url url = new Url();
             Assert.Equal("http://north.hobo.lab:6693/DnsService/RecordRetrievalService.svc/Records"
-                         , url.UpdateUrlHost(urlHostPort, "North.Hobo.Lab:6693")
+                         , url.UpdateUrlHost(urlHostSecurePort, "North.Hobo.Lab:6693")
                          .UpdateScheme("http").FullUrl);
 
             Assert.Equal("https://north.hobo.lab:6693/DnsService/RecordRetrievalService.svc/Records"
-                         , url.UpdateUrlHost(urlHostPort, "North.Hobo.Lab:6693")
+                         , url.UpdateUrlHost(urlHostSecurePort, "North.Hobo.Lab:6693")
                          .UpdateScheme("https").FullUrl);
 
             Assert.Equal("https://north.hobo.lab/DnsService/RecordRetrievalService.svc/Records"
-                         , url.UpdateUrlHost(urlHostPort, "North.Hobo.Lab:443")
+                         , url.UpdateUrlHost(urlHostSecurePort, "North.Hobo.Lab:443")
                          .UpdateScheme("https").FullUrl);
 
             Assert.Equal("https://north.hobo.lab:444/DnsService/RecordRetrievalService.svc/Records"
-                         , url.UpdateUrlHost(urlHostPort, "North.Hobo.Lab:444")
+                         , url.UpdateUrlHost(urlHostSecurePort, "North.Hobo.Lab:444")
                          .UpdateScheme("https").FullUrl);
 
             Assert.Equal("https://localhost/DnsService/TestService.aspx"
                          , url.UpdateUrlHost("http://localhost:443/DnsService/TestService.aspx"
                                              , "localhost:443").UpdateScheme("https").FullUrl);
+
+        }
+
+        [Fact]
+        public void ReplaceHostPathAndQueryTest()
+        {
+            Url url = new Url();
+            Assert.Equal("https://localhost.lab:6693/DnsService/test.aspx"
+                         , url.UpdateUrlPathAndQuery(urlHostSecurePort, "DnsService/test.aspx").FullUrl);
+
+
+            
+            Assert.Equal("http://localhost.lab:6693/DnsService/test.aspx?myvar=1"
+                         , url.UpdateUrlPathAndQuery("http://localhost.lab:6693/DnsService/RecordRetrievalService.svc/Records?myvar=1"
+                         , "DnsService/test.aspx").FullUrl);
+
 
         }
 
@@ -184,8 +200,7 @@ namespace Health.Direct.Install.Tools.tests
             Assert.Equal("", url.Host("http://lajdf;/DnsService/TestService.aspx"));
 
             Assert.Equal("", url.Port("http://lajdf:99;99/DnsService/TestService.aspx"));
-                       
-
+            
             Assert.Equal("", url.Scheme("ht;tp://lajdf/DnsService/TestService.aspx"));
 
         }
@@ -202,7 +217,7 @@ namespace Health.Direct.Install.Tools.tests
             Assert.False(url.ValidUrl("ht;tp://lajdf/DnsService/TestService.aspx"));
 
             Assert.True(url.ValidUrl(urlHost));
-            Assert.True(url.ValidUrl(urlHostPort));
+            Assert.True(url.ValidUrl(urlHostSecurePort));
 
         }
     }

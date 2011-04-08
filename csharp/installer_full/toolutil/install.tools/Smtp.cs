@@ -33,7 +33,7 @@ namespace Health.Direct.Install.Tools
     }
 
     [ComVisible(true), GuidAttribute("F15B7252-46B6-4cb1-95CA-31DEBB7E6D1C")]
-    [ProgId("Direct.SmtpTools")]
+    [ProgId("Direct.Installer.SmtpTools")]
     [ClassInterface(ClassInterfaceType.None)]
     public class Smtp : ISmtp
     {
