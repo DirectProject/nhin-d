@@ -15,63 +15,46 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
+using System.Data;
+using System.Data.SqlClient;
 using System.Runtime.InteropServices;
-using System.Xml;
 
 namespace Health.Direct.Install.Tools
 {
-    [ComVisible(true), GuidAttribute("BA15EF13-A16D-4414-9203-53EF049185ED")]
+
+    [ComVisible(true), GuidAttribute("18EC01DD-005E-4fb6-80D7-F6D96802C1A7")]
     [InterfaceType(ComInterfaceType.InterfaceIsDual)]
-    public interface IPath
+    public interface ISqlDb
     {
-        string XmlFilePath { get; set; }
-        string SelectSingleAttribute(string xpath);
-        void SetSingleAttribute(string xpath, string value);
+        bool TestConnection(string connectionString, out string exeption);
     }
 
-    [ComVisible(true), GuidAttribute("142E02A1-CEF8-4305-AB70-9A26F1ED0F41")]
-    [ProgId("Direct.Installer.XpathTools")]
+    [ComVisible(true), GuidAttribute("5991E691-A272-4e1a-AEFF-0D3E16BA6FB8")]
+    [ProgId("Direct.Installer.SqlDbTools")]
     [ClassInterface(ClassInterfaceType.None)]
-    public class Xpath : IPath
+    public class SqlDb : ISqlDb
     {
-        private XmlDocument _document;
-        private string _xmlFilePath;
-
-        public string XmlFilePath
+        public bool TestConnection(string connectionString, out string exception)
         {
-            get { return _xmlFilePath; }
-            set { _xmlFilePath = value;
-                _document.Load(_xmlFilePath);
-            }
-        }
-        
-
-        public Xpath()
-        {
-            _document = new XmlDocument();
-        }
-        public string SelectSingleAttribute(string xpath)
-        {
-            XmlNode node = _document.SelectSingleNode(xpath);
-            return node == null ? null : node.Value;
-        }
-
-        public void SetSingleAttribute(string xpath, string value)
-        {
-            XmlNode node = _document.SelectSingleNode(xpath);
-
-            switch (node.NodeType)
+            exception = string.Empty;
+            try
             {
-                case (XmlNodeType.Element):
-                    node.InnerXml = value;
-                    break;
-                default:
-                    node.Value = value;
-                    break;
+                using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+                {
+                    sqlConnection.Open();
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
             }
-
-            _document.Save(XmlFilePath);
+            catch(Exception e)
+            {
+                exception = e.Message;
+                return false;
+            }
         }
     }
 }
-

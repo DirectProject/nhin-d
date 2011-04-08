@@ -37,12 +37,13 @@ namespace Health.Direct.Install.Tools
         IUrl UpdateHost(string host);
         IUrl UpdateUrlScheme(string url, string scheme);
         IUrl UpdateScheme(string scheme);
+        IUrl UpdateUrlPathAndQuery(string url, string pathAndQuery);
 
         bool ValidUrl(string url);
     }
 
     [ComVisible(true), GuidAttribute("59934DE5-BEAF-4462-A06E-4047F64AAF3D")]
-    [ProgId("Direct.UrlTools")]
+    [ProgId("Direct.Installer.UrlTools")]
     [ClassInterface(ClassInterfaceType.None)]
     public class Url : IUrl
     {
@@ -172,7 +173,7 @@ namespace Health.Direct.Install.Tools
         public IUrl UpdateUrlScheme(string url, string scheme)
         {
             Uri uri = new Uri(url);
-            UriBuilder uriBuilder = new UriBuilder(scheme, uri.Host, uri.Port, uri.PathAndQuery);
+            UriBuilder uriBuilder = new UriBuilder(scheme, uri.Host, uri.Port, uri.PathAndQuery, uri.Query);
             _url = uriBuilder.Uri.ToString();
             return this;
         }
@@ -182,11 +183,18 @@ namespace Health.Direct.Install.Tools
             return UpdateUrlScheme(_url, scheme);
         }
 
+        public IUrl UpdateUrlPathAndQuery(string url, string pathAndQuery)
+        {
+            Uri uri = new Uri(url);
+            UriBuilder uriBuilder = new UriBuilder(uri.Scheme, uri.Host, uri.Port, pathAndQuery, uri.Query);
+            _url = uriBuilder.Uri.ToString();
+            return this;
+        }
 
         private IUrl UpdateUrlHost(string url, string host, int port)
         {
             Uri uri = new Uri(url);
-            UriBuilder uriBuilder = new UriBuilder(uri.Scheme, host, port, uri.PathAndQuery);
+            UriBuilder uriBuilder = new UriBuilder(uri.Scheme, host, port, uri.PathAndQuery, uri.Query);
             _url = uriBuilder.Uri.ToString();
             return this;
         }

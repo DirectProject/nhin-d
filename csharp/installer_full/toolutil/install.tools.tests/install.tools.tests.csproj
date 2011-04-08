@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SmtpTests.cs" />
+    <Compile Include="SqlDbTests.cs" />
     <Compile Include="UrlTests.cs" />
     <Compile Include="XPathTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -61,6 +62,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ConfigService.Web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="DirectDnsResponderSvc.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
