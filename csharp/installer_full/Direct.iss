@@ -218,6 +218,8 @@ begin
   SuccessLabel.Caption := '';
   ErrorLabel.Caption := '';
   StatusLabel.Caption := 'Checking Db Connection...';
+  StatusLabel.Update;
+  StatusLabel.BringToFront;
   try
     tools := CreateOleObject('Direct.Installer.SqlDbTools');
   except
@@ -225,29 +227,66 @@ begin
   end;
     success := tools.TestConnection(DbConnStrTextBox.Text, message);
     StatusLabel.Caption := '';
+    StatusLabel.Update;
     if(success) then
     begin
       SuccessLabel.Caption := 'Success';
+      SuccessLabel.Update;
+      SuccessLabel.BringToFront;
     end
     else
     begin
       ErrorLabel.Caption := 'Failed: ' + message;
+      ErrorLabel.Update;
+      ErrorLabel.BringToFront;
     end;         
 end;
 
 
 procedure SetDnsResponderUrl(url: String);
 var
-  XpathTools: Variant;
+  tools: Variant;
 begin
   try                              
-    XpathTools := CreateOleObject('Direct.Installer.XpathTools');
+    tools := CreateOleObject('Direct.Installer.XPathTools');
   except
-    RaiseException('Cannot find Direct.Installer.XpathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
-    XpathTools.XmlFilePath := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
-    XpathTools.SetSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url', url);
+    tools.XmlFilePath := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
+    tools.SetSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url', url);
 end;
+
+
+
+
+
+
+procedure SetDatabaseConnSting(connStr: String);
+var
+  tools : Variant;
+begin
+  try
+    tools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    if (pos( 'dnswebservice', WizardSelectedComponents( false)) > 0) and (pos( 'development', WizardSetupType( false)) = 0) then  
+    begin
+        tools.XmlFilePath := ExpandConstant('{app}') + '\DnsService\Web.Config' ;
+        tools.SetSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString', connStr);
+    end
+    else
+    if (pos( 'configwebservice', WizardSelectedComponents( false)) > 0)  and (pos( 'development', WizardSetupType( false)) = 0) then  
+    begin
+        tools.XmlFilePath := ExpandConstant('{app}') + '\ConfigService\Web.Config' ;
+        tools.SetSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString', connStr);
+    end;
+end;
+       
+
+       
+
+
 
 function SetDnsResponderUrlOnClick(Sender: TWizardPage): Boolean;
 var
@@ -259,33 +298,35 @@ begin
 end;
 
 
-
+//Save connection string
+//Determine which config files to save it to.
 function SetDatabaseConnUrlOnClick(Sender: TWizardPage): Boolean;
 var
-  Button: TButton;
+  DbConnStrTextBox : TNewEdit;
 begin  
-
+  DbConnStrTextBox := TNewEdit(Sender.FindComponent('DbConnStrTextBox')); 
+  SetDatabaseConnSting(DbConnStrTextBox.Text);
   Result := True; 
 end;
 
 
 function GetDnsResponderUrl(): String;
 var
-  XpathTools: Variant; 
+  XPathTools: Variant; 
   dnsResponderUrl: String;
 begin
   try                              
-    XpathTools := CreateOleObject('Direct.Installer.XpathTools');
+    XPathTools := CreateOleObject('Direct.Installer.XPathTools');
   except
-    RaiseException('Cannot find Direct.Installer.XpathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
-    XpathTools.XmlFilePath := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
-    dnsResponderUrl := XpathTools.SelectSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url');
+    XPathTools.XmlFilePath := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
+    dnsResponderUrl := XPathTools.SelectSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url');
     Result := dnsResponderUrl;
 end;
 
 
-procedure HostNameOnChange(Sender: TObject);
+procedure DnsServiceTestOnChange(Sender: TObject);
 var
   tools : Variant;
   DnsServiceUrlLabel, ErrorLabel : TNewStaticText;
@@ -297,6 +338,7 @@ begin
   DnsResponderPage := TWizardPage(DnsServiceTestTextBox.Owner)
   ErrorLabel := TNewStaticText(DnsResponderPage.FindComponent('ErrorLabel'));
   ErrorLabel.Caption := '';
+  ErrorLabel.Update;
      
   //Update DnsService (Will be persisted to config file when finished with wizard) 
   try                              
@@ -310,11 +352,17 @@ begin
  begin  
   DnsServiceUrlLabel := TNewStaticText(DnsResponderPage.FindComponent('DnsServiceUrlLabel'));  
   hostPort :=  tools.HostPort(DnsServiceTestTextBox.Text); 
-  DnsServiceUrlLabel.Caption :=  tools.UpdateUrlHost(DnsServiceUrlLabel.Caption, hostport).FullUrl 
+  DnsServiceUrlLabel.Caption :=  tools.UpdateUrlHost(DnsServiceUrlLabel.Caption, hostport).FullUrl
+  //Need to write a line wrap routine here to place a space in the url to allow a wrap at the correct location. 
+  WizardForm.AdjustLabelHeight(DnsServiceUrlLabel);
+  DnsServiceUrlLabel.Update;
+  
  end         
  else
  begin
     ErrorLabel.Caption := 'Invalid Url.';
+    ErrorLabel.BringToFront;
+    ErrorLabel.Update;
  end;
 end;
 
@@ -345,16 +393,16 @@ end;
 
 function GetDbConnStr(): String;
 var
-  XpathTools: Variant; 
+  XPathTools: Variant; 
   dnsResponderUrl: String;
 begin
   try                              
-    XpathTools := CreateOleObject('Direct.Installer.XpathTools');
+    XPathTools := CreateOleObject('Direct.Installer.XPathTools');
   except
-    RaiseException('Cannot find Direct.Installer.XpathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
-    XpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigService\Web.Config' ;
-    dnsResponderUrl := XpathTools.SelectSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString');
+    XPathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigService\Web.Config' ;
+    dnsResponderUrl := XPathTools.SelectSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString');
     Result := dnsResponderUrl;
 end;
 
@@ -490,7 +538,7 @@ begin
   DnsServiceTestTextBox.Left :=  Button.Width + ScaleX(8);
   DnsServiceTestTextBox.Width := DnsResponderPage.SurfaceWidth - (Button.Left + Button.Width);
   DnsServiceTestTextBox.Parent := DnsResponderPage.Surface;
-  DnsServiceTestTextBox.OnChange := @HostNameOnChange;
+  DnsServiceTestTextBox.OnChange := @DnsServiceTestOnChange;
             
   DnsServiceLabel := TNewStaticText.Create(DnsResponderPage);
   DnsServiceLabel.Top := DnsServiceTestTextBox.Top + DnsServiceTestTextBox.Height + ScaleY(16); 
@@ -502,11 +550,14 @@ begin
   DnsServiceUrlLabel.Name := 'DnsServiceUrlLabel';
   DnsServiceUrlLabel.Cursor := crHand;
   DnsServiceUrlLabel.OnClick := @DnsServiceUrlOnClick;
-  DnsServiceUrlLabel.Left := Button.Width + ScaleX(8);
-  DnsServiceUrlLabel.Top := DnsServiceTestTextBox.Top + DnsServiceTestTextBox.Height + ScaleY(16);
-  DnsServiceUrlLabel.Width := DnsResponderPage.SurfaceWidth - ScaleX(8);
+  //DnsServiceUrlLabel.Left := Button.Width + ScaleX(8);
+  //DnsServiceUrlLabel.Top := DnsServiceTestTextBox.Top + DnsServiceTestTextBox.Height + ScaleY(16);
+  DnsServiceUrlLabel.Top := DnsServiceLabel.Top + DnsServiceLabel.Height + ScaleY(16);
+  DnsServiceUrlLabel.Width := DnsResponderPage.SurfaceWidth;
+  DnsServiceUrlLabel.AutoSize := False;
   DnsServiceUrlLabel.Font.Style := DnsServiceUrlLabel.Font.Style + [fsUnderline];
   DnsServiceUrlLabel.Font.Color := clBlue;
+  DnsServiceUrlLabel.WordWrap := True;
   DnsServiceUrlLabel.Parent := DnsResponderPage.Surface;
            
 

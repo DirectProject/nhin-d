@@ -30,9 +30,9 @@ namespace Health.Direct.Install.Tools
     }
 
     [ComVisible(true), GuidAttribute("142E02A1-CEF8-4305-AB70-9A26F1ED0F41")]
-    [ProgId("Direct.Installer.XpathTools")]
+    [ProgId("Direct.Installer.XPathTools")]
     [ClassInterface(ClassInterfaceType.None)]
-    public class Xpath : IPath
+    public class XPath : IPath
     {
         private XmlDocument _document;
         private string _xmlFilePath;
@@ -46,7 +46,7 @@ namespace Health.Direct.Install.Tools
         }
         
 
-        public Xpath()
+        public XPath()
         {
             _document = new XmlDocument();
         }

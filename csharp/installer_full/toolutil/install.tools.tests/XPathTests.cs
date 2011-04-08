@@ -27,7 +27,7 @@ namespace Health.Direct.Install.Tools.tests
         [Fact]
         public void QueryTest()
         {
-            Xpath editor = new Xpath();
+            XPath editor = new XPath();
             editor.XmlFilePath = "DirectDnsResponderSvc.exe.config";
 
             string value = editor.SelectSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url");
@@ -44,7 +44,7 @@ namespace Health.Direct.Install.Tools.tests
         {
             
             File.Copy("DirectDnsResponderSvc.exe.config", "DirectDnsResponderSvc.exe.config.test", true);
-            Xpath editor = new Xpath();
+            XPath editor = new XPath();
             editor.XmlFilePath = "DirectDnsResponderSvc.exe.config.test";
 
             string value = editor.SelectSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url");
@@ -69,7 +69,7 @@ namespace Health.Direct.Install.Tools.tests
         {
 
             File.Copy("ConfigService.Web.config", "ConfigService.Web.config.test", true);
-            Xpath editor = new Xpath();
+            XPath editor = new XPath();
             editor.XmlFilePath = "ConfigService.Web.config.test";
 
             string actual = editor.SelectSingleAttribute("configuration/connectionStrings/add[@name=\"configStore\"]/@connectionString");
