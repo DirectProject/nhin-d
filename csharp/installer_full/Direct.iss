@@ -135,7 +135,8 @@ Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{ap
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database;
 Filename: {app}\install-dev.bat; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway; 
-Filename: {dotnet20}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
+Filename: {dotnet2032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
+Filename: {dotnet2064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
 Filename: {app}\installgateway.bat; Parameters:  """{app}"" >> ""{app}\installgateway.log"" 2>&1";  Description: Install Gateway; Flags: runascurrentuser ; Components: directgateway and not developergateway; 
 Filename: {app}\createadmin.bat; Description:Create Admin.  (Database must exist); Flags: runascurrentuser postinstall unchecked; Components: not developergateway; 
 Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; Components: not developergateway; 
@@ -145,7 +146,8 @@ Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\createeventlo
 Filename: {app}\uninstall.bat; Flags: runascurrentuser; RunOnceId: 'RemoveDeveloperGateway';   Components: developergateway;
 Filename: {app}\uninstallDnsResponder.bat; RunOnceId: 'RemoveDnsResponder';  Components: dnsresponder and not developergateway;
 Filename: {app}\uninstallGateway.bat; RunOnceId: 'RemoveGateway'; Components: directgateway and not developergateway;
-Filename: {dotnet20}\RegAsm.exe; RunOnceId: 'Removeinstall.tools'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
+Filename: {dotnet2064}\RegAsm.exe;  Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
+Filename: {dotnet2032}\RegAsm.exe;  Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
 
 
 [INI]
@@ -725,12 +727,13 @@ var
     SmtpTools: Variant;
 begin
   ExtractTemporaryFile('Health.Direct.Install.Tools.dll');
-  Exec(ExpandConstant('{dotnet20}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
-
-  try                              
+  Exec(ExpandConstant('{dotnet2032}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
+  Exec(ExpandConstant('{dotnet2064}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
+  
+  try                           
     SmtpTools := CreateOleObject('Direct.Installer.SmtpTools');
   except
-    RaiseException('Cannot find Direct.SmtpTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+    RaiseException('Cannot find Direct.Installer.SmtpTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
     try
       Log('Checking Smtp connection with host:port of ' + Host + ':' + IntToStr(Port)); 
