@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    Joseph Shook    JoeShook@Gmail.com
+    Joseph Shook     
    
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -99,6 +99,8 @@ namespace Health.Direct.Install.Tools.tests
             Assert.Equal("6693", url.Port(urlHostSecurePort));
             Assert.Equal("localhost.lab:6693", url.HostPort(urlHostSecurePort));
             Assert.Equal("https", url.Scheme(urlHostSecurePort));
+            
+            
         }
 
         [Fact]
@@ -203,6 +205,9 @@ namespace Health.Direct.Install.Tools.tests
             
             Assert.Equal("", url.Scheme("ht;tp://lajdf/DnsService/TestService.aspx"));
 
+            url.UpdateUrlHost("http://localhost/DnsService/TestService.aspx", "locahost:");
+            
+            
         }
 
 

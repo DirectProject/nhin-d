@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    Joseph Shook    JoeShook@Gmail.com
+    Joseph Shook     
    
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,6 @@ namespace Health.Direct.Install.Tools.tests
             //DirectGateway.South.Hobo.Lab 192.168.137.144
             bool success = smtp.TestConnection("192.168.137.147", 25);
             Assert.True(success);
-
         }
     }
 }

@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    Joseph Shook    JoeShook@Gmail.com
+    Joseph Shook     
    
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -144,12 +144,12 @@ namespace Health.Direct.Install.Tools
         {
             Uri uri = new Uri(url);
             int port;
-            string[] hostParts = host.Split(':');
+            string[] hostParts = host.Split(new string[]{":"}, StringSplitOptions.RemoveEmptyEntries);
             if (hostParts.Length == 2)
             {
-                host = hostParts[0];
                 port = int.Parse(hostParts[1]);
             }
+            
             else
             {
                 switch (uri.Scheme)
@@ -161,7 +161,8 @@ namespace Health.Direct.Install.Tools
                         port = DefaultPort;
                         break;
                 }
-            }
+            }         
+            host = hostParts[0];
             return UpdateUrlHost(url, host, port);
         }
 

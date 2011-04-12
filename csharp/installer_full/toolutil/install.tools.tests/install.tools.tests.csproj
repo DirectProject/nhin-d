@@ -49,6 +49,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EndPointTests.cs" />
     <Compile Include="SmtpTests.cs" />
     <Compile Include="SqlDbTests.cs" />
     <Compile Include="UrlTests.cs" />
