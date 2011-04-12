@@ -29,7 +29,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.0.0.0
+AppVerName=Direct Project .NET Gateway 1.0.0.7
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -38,10 +38,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.0.0.0-NET35
+OutputBaseFilename=Direct-1.0.0.7-NET35
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.0.0.0
+VersionInfoVersion=1.0.0.7
 SetupLogging=yes
 
 WizardImageFile=Direct.bmp
@@ -60,7 +60,7 @@ Name: directgateway; Description: Gateway to SMTP; Types: development gateway;
 Name: developergateway; Description: Developer gateway configuration to SMTP; Types: development; 
 Name: database; Description: DirectConfig database; Types: development database;
 
-
+     
 [Types]
 Name: gateway; Description: Gateway               
 Name: dns; Description: DNS Responder; 
@@ -139,7 +139,7 @@ Filename: {dotnet2032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /
 Filename: {dotnet2064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
 Filename: {app}\installgateway.bat; Parameters:  """{app}"" >> ""{app}\installgateway.log"" 2>&1";  Description: Install Gateway; Flags: runascurrentuser ; Components: directgateway and not developergateway; 
 Filename: {app}\createadmin.bat; Description:Create Admin.  (Database must exist); Flags: runascurrentuser postinstall unchecked; Components: not developergateway; 
-Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; Components: not developergateway; 
+Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; Components: (developergateway or dnsresponder or dnswebservice or configwebservice) and not developergateway; 
 
 
 [UninstallRun]
