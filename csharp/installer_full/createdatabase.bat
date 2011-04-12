@@ -34,9 +34,9 @@ del /F/Q %databasename%.tmp %databasename%.sql
 echo USE [%databasename%] > %databasename%.tmp
 type %databasename%.tmp > %databasename%.sql & type "%schemafile%" >> %databasename%.sql
 sqlcmd -S "%server%" %credentials% -Q "CREATE DATABASE [%databasename%]"
-sqlcmd -S "%server%" %credentials% -i %databasename%.sql
+sqlcmd -S "%server%" %credentials% -i %databasename%.sql -v DBName = %databasename%
 @if ERRORLEVEL 1 goto :error
-sqlcmd -S "%server%" %credentials% -i "%userfile%" -v DBUSER = %dbuser%
+sqlcmd -S "%server%" %credentials% -i "%userfile%" -v DBUSER = %dbuser% -v DBName = %databasename%
 @if ERRORLEVEL 1 goto :error
 @echo off
 goto :eof
