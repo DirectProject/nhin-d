@@ -79,17 +79,18 @@ Source: "..\bin\debug\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: i
 Source: "..\bin\debug\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs;   Components: developergateway; 
 Source: "..\bin\debug\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: developergateway
 
-Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
-Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
-Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
-Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags: ignoreversion recursesubdirs; Components: configwebservice; 
+Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
+Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
+Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
+Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags: ignoreversion recursesubdirs; Components: configwebservice developergateway; 
 
-Source: "..\dnsresponder.service\*.svc"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
-Source: "..\dnsresponder.service\*.aspx"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
-Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
-Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Flags: ignoreversion recursesubdirs; Components: dnswebservice; 
+Source: "..\dnsresponder.service\*.svc"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice developergateway; 
+Source: "..\dnsresponder.service\*.aspx"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice developergateway; 
+Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice developergateway; 
+Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Flags: ignoreversion recursesubdirs; Components: dnswebservice developergateway; 
 
-Source: "configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs; Components: configui; 
+Source: "configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs; Components: configui developergateway; 
+Source: "configui\config\dev.client.config"; DestDir: "{app}\ConfigUI\Config";  DestName: "client.config";  Flags: ignoreversion; Components: configui and not developergateway
 
 Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion; Components: directgateway;
 Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion; Components: directgateway;
@@ -105,8 +106,8 @@ Source: "..\external\microsoft\vcredist\vcredist_x64.exe"; DestDir: "{app}\Libra
 Source: "*.bat"; DestDir: "{app}"; Excludes: "build-installer.bat"; Flags: ignoreversion;
 Source: "*.ps1"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "event-sources.txt"; DestDir: "{app}"; Flags: ignoreversion;
-Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database; 
-Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database; 
+Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
+Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
                         
 Source: "toolutil\install.tools\bin\debug\Health.Direct.Install.Tools.dll"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  Components: dnsresponder and not developergateway;  
 
@@ -310,18 +311,64 @@ begin
 end;
 
 
-function GetDnsResponderUrl(): String;
+
+procedure SetConfigAdminEndPoint(endPoint: String; bindingConfig: String);
 var
-  XPathTools: Variant; 
-  dnsResponderUrl: String;
+  xpathTools: Variant;
+  xpath: String;                         
 begin
   try                              
-    XPathTools := CreateOleObject('Direct.Installer.XPathTools');
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
   except
     RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
-    XPathTools.XmlFilePath := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
-    dnsResponderUrl := XPathTools.SelectSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url');
+    xpath := 'client/endpoint[@bindingConfiguration="' + bindingConfig + '"]/@address'; 
+    xpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigUI\Config\client.config';
+    xpathTools.SetSingleAttribute(xpath, endPoint);         
+end;
+
+
+//Configure Config Admin client endpoint urls.
+function SetConfigAdminEndpointsOnClick(Sender: TWizardPage): Boolean;
+var
+  CertificatesUrlLabel, AnchorsUrlLabel, AddressesUrlLabel, DomainsUrlLabel, DnsRecordsUrlLabel, AuthenticationUrlLabel : TNewStaticText;
+begin  
+  CertificatesUrlLabel := TNewStaticText(Sender.FindComponent('CertificatesUrlLabel')); 
+  SetConfigAdminEndPoint(CertificatesUrlLabel.Caption, 'BasicHttpBinding_ICertificateStore');
+
+  AnchorsUrlLabel := TNewStaticText(Sender.FindComponent('AnchorsUrlLabel')); 
+  SetConfigAdminEndPoint(AnchorsUrlLabel.Caption, 'BasicHttpBinding_IAnchorStore');
+    
+  AddressesUrlLabel := TNewStaticText(Sender.FindComponent('AddressesUrlLabel')); 
+  SetConfigAdminEndPoint(AddressesUrlLabel.Caption, 'BasicHttpBinding_IAddressManager');
+
+  DomainsUrlLabel := TNewStaticText(Sender.FindComponent('DomainsUrlLabel')); 
+  SetConfigAdminEndPoint(DomainsUrlLabel.Caption, 'BasicHttpBinding_IDomainManager');
+
+  DnsRecordsUrlLabel := TNewStaticText(Sender.FindComponent('DnsRecordsUrlLabel')); 
+  SetConfigAdminEndPoint(DnsRecordsUrlLabel.Caption, 'BasicHttpBinding_IDnsRecordManager');
+  
+  AuthenticationUrlLabel := TNewStaticText(Sender.FindComponent('AuthenticationUrlLabel')); 
+  SetConfigAdminEndPoint(AuthenticationUrlLabel.Caption, 'BasicHttpBinding_IAuthManager');         
+ 
+  Result := True; 
+end;
+
+
+
+
+function GetDnsResponderUrl(): String;
+var
+  xpathTools: Variant; 
+  dnsResponderUrl: String;
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    xpathTools.XmlFilePath := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
+    dnsResponderUrl := xpathTools.SelectSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url');
     Result := dnsResponderUrl;
 end;
 
@@ -368,6 +415,162 @@ end;
 
 
 
+
+
+
+
+function GetConfigAdminEndPoint(bindConfigName : String): String;
+var
+  xpathTools: Variant; 
+  endPoint: String;
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    xpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigUI\Config\client.config' ;
+    endPoint := xpathTools.SelectSingleAttribute('/client/endpoint[@bindingConfiguration="' + bindConfigName + '"]/@address');
+    Result := endPoint;
+end;
+
+function TestConnection(endpoint : String): Boolean;
+var
+  tools: Variant; 
+  success: Boolean;
+begin
+  try                              
+    tools := CreateOleObject('Direct.Installer.EndPointTools');
+  except
+    RaiseException('Cannot find Direct.Installer.EndPointTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    success := tools.TestConnection(endpoint);
+    Result := success;
+end;
+
+procedure ConfigAdminHostNameOnClick(Sender: TObject);
+var
+  endPoint, buttonCaption : String;
+  CertificatesUrlLabel, AnchorsUrlLabel, AddressesUrlLabel, DomainsUrlLabel, DnsRecordsUrlLabel, AuthenticationUrlLabel : TNewStaticText;
+  CertificatesLabel, AnchorsLabel, AddressesLabel, DomainsLabel, DnsRecordsLabel, AuthenticationLabel : TNewStaticText;
+  HostNameTextBox : TNewEdit;
+  ConfigAdminPage : TWizardPage;
+  tools : Variant;
+  EndPointsButton : TNewButton;
+begin
+  try                              
+    tools := CreateOleObject('Direct.Installer.UrlTools');
+  except
+    RaiseException('Cannot find Direct.Installer.UrlTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;  
+  
+  EndPointsButton := TNewButton(Sender);
+  ConfigAdminPage := TWizardPage(EndPointsButton.Owner);
+  HostNameTextBox := TNewEdit(ConfigAdminPage.FindComponent('HostNameTextBox'));
+  
+  buttonCaption := EndPointsButton.Caption;
+  EndPointsButton.Caption := 'Checking...';
+    
+  CertificatesUrlLabel := TNewStaticText(ConfigAdminPage.FindComponent('CertificatesUrlLabel')); 
+  CertificatesLabel := TNewStaticText(ConfigAdminPage.FindComponent('CertificatesLabel')); 
+  endPoint := GetConfigAdminEndPoint('BasicHttpBinding_ICertificateStore');
+  CertificatesUrlLabel.Caption := tools.UpdateUrlHost(endPoint, HostNameTextBox.Text).FullUrl;     
+  CertificatesUrlLabel.Update; 
+  if(TestConnection(CertificatesUrlLabel.Caption)) then
+  begin
+    CertificatesLabel.Font.Color := clGreen;
+  end
+  else
+  begin
+    CertificatesLabel.Font.Color := clRed;
+  end;
+  CertificatesLabel.Update;
+
+  AnchorsUrlLabel := TNewStaticText(ConfigAdminPage.FindComponent('AnchorsUrlLabel')); 
+  AnchorsLabel := TNewStaticText(ConfigAdminPage.FindComponent('AnchorsLabel')); 
+  endPoint := GetConfigAdminEndPoint('BasicHttpBinding_IAnchorStore');
+  AnchorsUrlLabel.Caption := tools.UpdateUrlHost(endPoint, HostNameTextBox.Text).FullUrl
+  AnchorsUrlLabel.Update;
+  if(TestConnection(CertificatesUrlLabel.Caption)) then
+  begin
+    AnchorsLabel.Font.Color := clGreen;
+  end
+  else
+  begin
+    AnchorsLabel.Font.Color := clRed;
+  end;
+  AnchorsLabel.Update;
+    
+  AddressesUrlLabel := TNewStaticText(ConfigAdminPage.FindComponent('AddressesUrlLabel')); 
+  AddressesLabel := TNewStaticText(ConfigAdminPage.FindComponent('AddressesLabel'));
+  endPoint := GetConfigAdminEndPoint('BasicHttpBinding_IAddressManager');
+  AddressesUrlLabel.Caption := tools.UpdateUrlHost(endPoint, HostNameTextBox.Text).FullUrl
+  AddressesUrlLabel.Update;
+  if(TestConnection(CertificatesUrlLabel.Caption)) then
+  begin
+    AddressesLabel.Font.Color := clGreen;
+  end
+  else
+  begin
+    AddressesLabel.Font.Color := clRed;
+  end;
+  AddressesLabel.Update;
+
+  DomainsUrlLabel := TNewStaticText(ConfigAdminPage.FindComponent('DomainsUrlLabel'));
+  DomainsLabel := TNewStaticText(ConfigAdminPage.FindComponent('DomainsLabel')); 
+  endPoint := GetConfigAdminEndPoint('BasicHttpBinding_IDomainManager');
+  DomainsUrlLabel.Caption := tools.UpdateUrlHost(endPoint, HostNameTextBox.Text).FullUrl
+  DomainsUrlLabel.Update;
+  if(TestConnection(CertificatesUrlLabel.Caption)) then
+  begin
+    DomainsLabel.Font.Color := clGreen;
+  end
+  else
+  begin
+    DomainsLabel.Font.Color := clRed;
+  end;
+  DomainsLabel.Update;
+
+  DnsRecordsUrlLabel := TNewStaticText(ConfigAdminPage.FindComponent('DnsRecordsUrlLabel')); 
+  DnsRecordsLabel := TNewStaticText(ConfigAdminPage.FindComponent('DnsRecordsLabel')); 
+  endPoint := GetConfigAdminEndPoint('BasicHttpBinding_IDnsRecordManager');
+  DnsRecordsUrlLabel.Caption := tools.UpdateUrlHost(endPoint, HostNameTextBox.Text).FullUrl
+  DnsRecordsUrlLabel.Update;
+  if(TestConnection(CertificatesUrlLabel.Caption)) then
+  begin
+    DnsRecordsLabel.Font.Color := clGreen;
+  end
+  else
+  begin
+    DnsRecordsLabel.Font.Color := clRed;
+  end;
+  DnsRecordsLabel.Update;
+
+  AuthenticationUrlLabel := TNewStaticText(ConfigAdminPage.FindComponent('AuthenticationUrlLabel')); 
+  AuthenticationLabel := TNewStaticText(ConfigAdminPage.FindComponent('AuthenticationLabel')); 
+  endPoint := GetConfigAdminEndPoint('BasicHttpBinding_IAuthManager'); 
+  AuthenticationUrlLabel.Caption := tools.UpdateUrlHost(endPoint, HostNameTextBox.Text).FullUrl
+  AuthenticationUrlLabel.Update;
+  if(TestConnection(CertificatesUrlLabel.Caption)) then
+  begin
+    AuthenticationLabel.Font.Color := clGreen;
+  end
+  else
+  begin
+    AuthenticationLabel.Font.Color := clRed;
+  end;
+  AuthenticationLabel.Update;
+
+  EndPointsButton.Caption := buttonCaption;    
+end;
+
+
+
+
+
+
+
+
 procedure DnsResponderPageOnActivate(Sender: TWizardPage);
 var
   tools : Variant;
@@ -393,16 +596,16 @@ end;
 
 function GetDbConnStr(): String;
 var
-  XPathTools: Variant; 
+  xpathTools: Variant; 
   dnsResponderUrl: String;
 begin
   try                              
-    XPathTools := CreateOleObject('Direct.Installer.XPathTools');
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
   except
     RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
-    XPathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigService\Web.Config' ;
-    dnsResponderUrl := XPathTools.SelectSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString');
+    xpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigService\Web.Config' ;
+    dnsResponderUrl := xpathTools.SelectSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString');
     Result := dnsResponderUrl;
 end;
 
@@ -417,6 +620,78 @@ begin
 end;
 
 
+function GetConfigAdminHostName(): String;
+var
+  xpathTools, urlTools: Variant; 
+  endPointUrl, hostPort: String;
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+  try                              
+    urlTools := CreateOleObject('Direct.Installer.UrlTools');
+  except
+    RaiseException('Cannot find Direct.Installer.UrlTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;  
+
+  xpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigUI\Config\client.config' ;
+  endPointUrl := xpathTools.SelectSingleAttribute('client/endpoint/@address');
+  hostPort :=  urlTools.HostPort(endPointUrl);    
+  Result := hostPort;
+end;
+
+
+procedure UpdateConfigFileName();
+var
+  xpathTools: Variant;
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    xpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigUI\Web.Config' ;
+    xpathTools.SetSingleAttribute('configuration/system.serviceModel/client/@configSource', 'Config\Client.config');
+end;
+
+
+procedure ConfigAdminPageOnActivate(Sender: TWizardPage);
+var
+  HostNameTextBox : TNewEdit;
+  CertificatesUrlLabel, AnchorsUrlLabel, AddressesUrlLabel, DomainsUrlLabel, DnsRecordsUrlLabel, AuthenticationUrlLabel : TNewStaticText;
+begin
+  HostNameTextBox := TNewEdit(Sender.FindComponent('HostNameTextBox'));
+  UpdateConfigFileName();  //Point Web.Config to the correct client config file.
+  HostNameTextBox.Text := GetConfigAdminHostName();
+
+ 
+  CertificatesUrlLabel := TNewStaticText(Sender.FindComponent('CertificatesUrlLabel')); 
+  CertificatesUrlLabel.Caption := GetConfigAdminEndPoint('BasicHttpBinding_ICertificateStore');
+  
+
+  AnchorsUrlLabel := TNewStaticText(Sender.FindComponent('AnchorsUrlLabel')); 
+  AnchorsUrlLabel.Caption := GetConfigAdminEndPoint('BasicHttpBinding_IAnchorStore');
+  
+
+  AddressesUrlLabel := TNewStaticText(Sender.FindComponent('AddressesUrlLabel')); 
+  AddressesUrlLabel.Caption := GetConfigAdminEndPoint('BasicHttpBinding_IAddressManager');
+ 
+
+  DomainsUrlLabel := TNewStaticText(Sender.FindComponent('DomainsUrlLabel'));
+  DomainsUrlLabel.Caption := GetConfigAdminEndPoint('BasicHttpBinding_IDomainManager');
+  
+
+  DnsRecordsUrlLabel := TNewStaticText(Sender.FindComponent('DnsRecordsUrlLabel')); 
+  DnsRecordsUrlLabel.Caption := GetConfigAdminEndPoint('BasicHttpBinding_IDnsRecordManager');
+  
+
+  AuthenticationUrlLabel := TNewStaticText(Sender.FindComponent('AuthenticationUrlLabel')); 
+  AuthenticationUrlLabel.Caption := GetConfigAdminEndPoint('BasicHttpBinding_IAuthManager'); 
+ 
+
+end;
 
 function DnsResponderPage_ShouldSkip(Page: TwizardPage): Boolean;
 begin
@@ -426,10 +701,20 @@ end;
 //Skip this page if not configuring a service that relies on the database.
 function DatabaseConnPage_ShouldSkip(Page: TwizardPage): Boolean;
 begin
-  Result := ((pos( 'dnswebservice', WizardSetupType( false)) > 0)
-              or (pos( 'configwebservice', WizardSetupType( false)) > 0))
-                and (pos( 'development', WizardSetupType( false)) = 0)
+  Result := ((pos( 'dnswebservice', WizardSetupType( false)) = 0)
+              and (pos( 'configwebservice', WizardSetupType( false)) = 0))
+                or (pos( 'development', WizardSetupType( false)) > 0)
 end;
+
+//Skip this page is not configuring the Config Admin UI
+function ConfigAdminPage_ShouldSkip(Page: TwizardPage): Boolean;
+begin
+  Result := (pos( 'configui', WizardSetupType( false)) = 0)                  
+                or (pos( 'development', WizardSetupType( false)) > 0)
+end;
+
+
+
 
 //only call this once.  Notice we register the Health.Direct.Install.Tools.dll via the temp folder once then remove.
 //later it is registered when the files have been placed in their deployment location.
@@ -489,12 +774,31 @@ begin
   ShellExecAsOriginalUser('open', TNewStaticText(Sender).Caption, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
 end;
 
-procedure DnsHelpButtonOnClick(Sender: TObject);
 
+
+
+
+procedure DnsHelpButtonOnClick(Sender: TObject);     
 begin
   MsgBox('Set database connectivity at the Dns Web Service.'  #13#10 +
     'Show the resulting Dns Web Service endpoint used by the DnsResponder Windows Service.', mbInformation, mb_Ok);
 end;
+
+procedure DatabaseHelpButtonOnClick(Sender: TObject);   
+begin
+  MsgBox('Set database connection strings on the ConfigService and/or DnsService.'  #13#10 +
+    'Use the Test button to test connectivity before clicking next.  Clicking next will persist the connection string.', mbInformation, mb_Ok);
+end;
+
+
+procedure ConfigAdminHelpButtonOnClick(Sender: TObject);       
+begin
+  MsgBox('Set the web service client endpoints on the Admin Configuration web application.  '  #13#10 +
+    'The "End Point" labels will be green when they are connecting and red when failing.', mbInformation, mb_Ok);
+end;
+
+
+
 
 procedure URLLabelOnClick(Sender: TObject);
 var
@@ -589,7 +893,7 @@ begin
   HelpButton.Width := ScaleX(20);
   HelpButton.Height := ScaleY(20);   
   HelpButton.Caption := '?';
-  HelpButton.OnClick := @DnsHelpButtonOnClick;
+  HelpButton.OnClick := @DatabaseHelpButtonOnClick;
   HelpButton.Parent := DatabaseConnPage.Surface;  
 
   Button := TNewButton.Create(DatabaseConnPage);
@@ -633,6 +937,139 @@ begin
   DatabaseConnPage.OnNextButtonClick := @SetDatabaseConnUrlOnClick;
   DatabaseConnPage.OnShouldSkipPage := @DatabaseConnPage_ShouldSkip;
 
+  Result := DatabaseConnPage;
+end;
+
+function CreateUIConfigWizardPage(pageBefore: TWizardPage): TWizardPage;
+var
+  ConfigAdminPage: TWizardPage;       
+  HelpButton, EndPointsButton: TNewButton;
+  HostNameTextBox : TNewEdit;
+  HostNameLabel : TNewStaticText; 
+  CertificatesLabel, AnchorsLabel, AddressesLabel, DomainsLabel, DnsRecordsLabel, AuthenticationLabel : TNewStaticText;
+  CertificatesUrlLabel, AnchorsUrlLabel, AddressesUrlLabel, DomainsUrlLabel, DnsRecordsUrlLabel, AuthenticationUrlLabel : TNewStaticText;
+  
+begin
+
+  ConfigAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Config Admin', '');
+    
+  HelpButton := TNewButton.Create(ConfigAdminPage);      
+  HelpButton.Left := ConfigAdminPage.Surface.Width - ScaleX(20);
+  HelpButton.Width := ScaleX(20);
+  HelpButton.Height := ScaleY(20);   
+  HelpButton.Caption := '?';
+  HelpButton.OnClick := @ConfigAdminHelpButtonOnClick;
+  HelpButton.Parent := ConfigAdminPage.Surface;  
+  
+  HostNameLabel := TNewStaticText.Create(ConfigAdminPage);
+  HostNameLabel.Name := 'HostNameLabel';
+  HostNameLabel.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(14);
+  HostNameLabel.Caption := 'Host name: ';
+  HostNameLabel.Parent := ConfigAdminPage.Surface;
+                            
+  HostNameTextBox := TNewEdit.Create(ConfigAdminPage);
+  HostNameTextBox.Name := 'HostNameTextBox';
+  HostNameTextBox.Top := HelpButton.Top + HelpButton.Height + ScaleY(14);
+  HostNameTextBox.Left := HostNameLabel.Width + ScaleX(8);
+  HostNameTextBox.Width := ConfigAdminPage.SurfaceWidth - ScaleX(8);
+  HostNameTextBox.Parent := ConfigAdminPage.Surface;
+    
+  EndPointsButton := TNewButton.Create(ConfigAdminPage);
+  EndPointsButton.Top :=  HostNameLabel.Top + HostNameLabel.Height + ScaleY(14);
+  EndPointsButton.Width :=  ConfigAdminPage.Surface.Width div 4;
+  EndPointsButton.Caption := 'Test End Points:';
+  EndPointsButton.OnClick := @ConfigAdminHostNameOnClick;
+  EndPointsButton.Parent := ConfigAdminPage.Surface;
+
+  CertificatesLabel := TNewStaticText.Create(ConfigAdminPage);
+  CertificatesLabel.Name := 'CertificatesLabel'
+  CertificatesLabel.Caption := 'Certificates: ';
+  CertificatesLabel.Top := EndPointsButton.Top + EndPointsButton.Height + ScaleY(14);
+  CertificatesLabel.Parent := ConfigAdminPage.Surface;
+
+  CertificatesUrlLabel := TNewStaticText.Create(ConfigAdminPage);
+  CertificatesUrlLabel.Name := 'CertificatesUrlLabel';
+  CertificatesUrlLabel.Caption := '';
+  CertificatesUrlLabel.Top := CertificatesLabel.Top;
+  CertificatesUrlLabel.Left := HostNameTextBox.Left;
+  CertificatesUrlLabel.Parent := ConfigAdminPage.Surface;
+   
+
+  AnchorsLabel := TNewStaticText.Create(ConfigAdminPage);
+  AnchorsLabel.Name := 'AnchorsLabel';
+  AnchorsLabel.Caption := 'Anchors: ';
+  AnchorsLabel.Top := CertificatesLabel.Top + CertificatesLabel.Height + ScaleY(14);
+  AnchorsLabel.Parent := ConfigAdminPage.Surface;
+
+  AnchorsUrlLabel := TNewStaticText.Create(ConfigAdminPage);
+  AnchorsUrlLabel.Name := 'AnchorsUrlLabel';
+  AnchorsUrlLabel.Caption := '';
+  AnchorsUrlLabel.Top := AnchorsLabel.Top;
+  AnchorsUrlLabel.Left := HostNameTextBox.Left;
+  AnchorsUrlLabel.Parent := ConfigAdminPage.Surface;
+
+
+  AddressesLabel := TNewStaticText.Create(ConfigAdminPage);
+  AddressesLabel.Name := 'AddressesLabel';
+  AddressesLabel.Caption := 'Addresses: ';
+  AddressesLabel.Top := AnchorsLabel.Top + AnchorsLabel.Height + ScaleY(14);
+  AddressesLabel.Parent := ConfigAdminPage.Surface;
+
+  AddressesUrlLabel := TNewStaticText.Create(ConfigAdminPage);
+  AddressesUrlLabel.Name := 'AddressesUrlLabel';
+  AddressesUrlLabel.Caption := '';
+  AddressesUrlLabel.Top := AddressesLabel.Top;
+  AddressesUrlLabel.Left := HostNameTextBox.Left;
+  AddressesUrlLabel.Parent := ConfigAdminPage.Surface;
+  
+
+  DomainsLabel := TNewStaticText.Create(ConfigAdminPage);
+  DomainsLabel.Name := 'DomainsLabel'
+  DomainsLabel.Caption := 'Domains: ';
+  DomainsLabel.Top := AddressesLabel.Top + AddressesLabel.Height + ScaleY(14);
+  DomainsLabel.Parent := ConfigAdminPage.Surface;
+
+  DomainsUrlLabel := TNewStaticText.Create(ConfigAdminPage);
+  DomainsUrlLabel.Name := 'DomainsUrlLabel';
+  DomainsUrlLabel.Caption := '';
+  DomainsUrlLabel.Top := DomainsLabel.Top;
+  DomainsUrlLabel.Left := HostNameTextBox.Left;
+  DomainsUrlLabel.Parent := ConfigAdminPage.Surface;
+
+
+  DnsRecordsLabel := TNewStaticText.Create(ConfigAdminPage);
+  DnsRecordsLabel.Name := 'DnsRecordsLabel';
+  DnsRecordsLabel.Caption := 'DnsRecords: ';
+  DnsRecordsLabel.Top := DomainsLabel.Top + DomainsLabel.Height + ScaleY(14);
+  DnsRecordsLabel.Parent := ConfigAdminPage.Surface;
+
+  DnsRecordsUrlLabel := TNewStaticText.Create(ConfigAdminPage);
+  DnsRecordsUrlLabel.Name := 'DnsRecordsUrlLabel';
+  DnsRecordsUrlLabel.Caption := '';
+  DnsRecordsUrlLabel.Top := DnsRecordsLabel.Top;
+  DnsRecordsUrlLabel.Left := HostNameTextBox.Left;
+  DnsRecordsUrlLabel.Parent := ConfigAdminPage.Surface;
+
+
+  AuthenticationLabel := TNewStaticText.Create(ConfigAdminPage);
+  AuthenticationLabel.Name := 'AuthenticationLabel';
+  AuthenticationLabel.Caption := 'Authentication: ';
+  AuthenticationLabel.Top := DnsRecordsLabel.Top + DnsRecordsLabel.Height + ScaleY(14);
+  AuthenticationLabel.Parent := ConfigAdminPage.Surface;
+
+  AuthenticationUrlLabel := TNewStaticText.Create(ConfigAdminPage);
+  AuthenticationUrlLabel.Name := 'AuthenticationUrlLabel';
+  AuthenticationUrlLabel.Caption := '';
+  AuthenticationUrlLabel.Top := AuthenticationLabel.Top;
+  AuthenticationUrlLabel.Left := HostNameTextBox.Left;
+  AuthenticationUrlLabel.Parent := ConfigAdminPage.Surface;
+
+
+  ConfigAdminPage.OnActivate := @ConfigAdminPageOnActivate;
+  ConfigAdminPage.OnNextButtonClick := @SetConfigAdminEndpointsOnClick;
+  ConfigAdminPage.OnShouldSkipPage := @ConfigAdminPage_ShouldSkip;
+
+  Result := ConfigAdminPage;
 end;
 
 
@@ -735,6 +1172,7 @@ begin
 
   Page := CreateDnsResponderWizardPage;
   Page := CreateDatabaseConnWizardPage(Page);
+  Page := CreateUIConfigWizardPage(Page);
 
   CreateAboutButtonAndURLLabel(WizardForm, WizardForm.CancelButton);
 end;
