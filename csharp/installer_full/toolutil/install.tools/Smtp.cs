@@ -41,7 +41,7 @@ namespace Health.Direct.Install.Tools
         public bool TestConnection(string host, int port)
         {
             IPHostEntry hostEntry = Dns.GetHostEntry(host);
-            IPEndPoint smtpServer = new IPEndPoint(hostEntry.AddressList[0], port);
+            IPEndPoint smtpServer = new IPEndPoint(hostEntry.AddressList.IpV4(0), port);
             using (Socket tcpSocket = new Socket(smtpServer.AddressFamily, SocketType.Stream, ProtocolType.Tcp))
             {
                 tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, 7000);

@@ -109,7 +109,7 @@ Source: "event-sources.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
 Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
                         
-Source: "toolutil\install.tools\bin\debug\Health.Direct.Install.Tools.dll"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  Components: dnsresponder and not developergateway;  
+Source: "toolutil\install.tools\bin\debug\Health.Direct.Install.Tools.dll"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  
 
                                  
 [UninstallDelete]
@@ -135,8 +135,8 @@ Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{ap
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database;
 Filename: {app}\install-dev.bat; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway; 
-Filename: {dotnet2032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
-Filename: {dotnet2064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
+Filename: {dotnet2032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; 
+Filename: {dotnet2064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; 
 Filename: {app}\installgateway.bat; Parameters:  """{app}"" >> ""{app}\installgateway.log"" 2>&1";  Description: Install Gateway; Flags: runascurrentuser ; Components: directgateway and not developergateway; 
 Filename: {app}\createadmin.bat; Description:Create Admin.  (Database must exist); Flags: runascurrentuser postinstall unchecked; Components: not developergateway; 
 Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; Components: (developergateway or dnsresponder or dnswebservice or configwebservice) and not developergateway; 
@@ -163,7 +163,7 @@ Filename: {app}\direct.ini; section: InstallSettings; key: ConfigUiWebApp_Vdir; 
 //Log file maintenance
 var
   OkToCopyLog : Boolean;
-
+  toolsRegistered : Boolean; //Flag to indicate tools have been registered in the temp folder.
 
 
 function IsX64: Boolean;
@@ -697,22 +697,22 @@ end;
 
 function DnsResponderPage_ShouldSkip(Page: TwizardPage): Boolean;
 begin
-  Result := (pos( 'dnsresponder', WizardSelectedComponents( false)) = 0) ;
+  Result := (pos( 'dnsresponder', WizardSelectedComponents( false)) = 0) ;  
 end;
 
 //Skip this page if not configuring a service that relies on the database.
 function DatabaseConnPage_ShouldSkip(Page: TwizardPage): Boolean;
 begin
-  Result := ((pos( 'dnswebservice', WizardSetupType( false)) = 0)
-              and (pos( 'configwebservice', WizardSetupType( false)) = 0))
-                or (pos( 'development', WizardSetupType( false)) > 0)
+  Result := ((pos( 'dnswebservice', WizardSelectedComponents( false)) = 0)
+              and (pos( 'configwebservice', WizardSelectedComponents( false)) = 0))
+                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)     
 end;
 
 //Skip this page is not configuring the Config Admin UI
 function ConfigAdminPage_ShouldSkip(Page: TwizardPage): Boolean;
 begin
-  Result := (pos( 'configui', WizardSetupType( false)) = 0)                  
-                or (pos( 'development', WizardSetupType( false)) > 0)
+  Result := (pos( 'configui', WizardSelectedComponents( false)) = 0)                  
+                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
 end;
 
 
@@ -726,10 +726,14 @@ var
     SmtpExists: Boolean;
     SmtpTools: Variant;
 begin
-  ExtractTemporaryFile('Health.Direct.Install.Tools.dll');
-  Exec(ExpandConstant('{dotnet2032}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
-  Exec(ExpandConstant('{dotnet2064}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
-  
+  if(not toolsRegistered) then
+  begin
+    ExtractTemporaryFile('Health.Direct.Install.Tools.dll');     
+    Exec(ExpandConstant('{dotnet2032}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
+    Exec(ExpandConstant('{dotnet2064}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
+    toolsRegistered := true;
+  end
+
   try                           
     SmtpTools := CreateOleObject('Direct.Installer.SmtpTools');
   except
@@ -790,7 +794,8 @@ end;
 procedure DatabaseHelpButtonOnClick(Sender: TObject);   
 begin
   MsgBox('Set database connection strings on the ConfigService and/or DnsService.'  #13#10 +
-    'Use the Test button to test connectivity before clicking next.  Clicking next will persist the connection string.', mbInformation, mb_Ok);
+    'Use the Test button to test connectivity before clicking next.  Clicking next will persist the connection string.' #13#10 +
+    'When connecting across machine boundaries with only TCP/IP protocol enabled it may help to add Network Library=dbmssocn to your connection string.' , mbInformation, mb_Ok);
 end;
 
 
@@ -812,7 +817,7 @@ var
   ShellExecAsOriginalUser('open', URLLabel.Caption, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
 end;
 
-function CreateDnsResponderWizardPage(): TWizardPage;
+function CreateDnsResponderWizardPage(pageBefore: TWizardPage): TWizardPage;
 var
   DnsResponderPage: TWizardPage;
   DnsServiceTestTextBox: TNewEdit;
@@ -821,7 +826,7 @@ var
   ErrorLabel : TNewStaticText;
 begin
 
-  DnsResponderPage := CreateCustomPage(wpInfoAfter, 'Configure DnsResponder', 'DnsService endpoint stored in DirectDnsResponderSvc.exe.config');
+  DnsResponderPage := CreateCustomPage(pageBefore.ID, 'Configure DnsResponder', 'DnsService endpoint stored in DirectDnsResponderSvc.exe.config');
     
   HelpButton := TNewButton.Create(DnsResponderPage);      
   HelpButton.Left := DnsResponderPage.Surface.Width - ScaleX(20);
@@ -881,7 +886,7 @@ begin
   Result := DnsResponderPage;
 end;
 
-function CreateDatabaseConnWizardPage(pageBefore: TWizardPage): TWizardPage;
+function CreateDatabaseConnWizardPage(): TWizardPage;
 var
   DatabaseConnPage: TWizardPage;       
   Button, HelpButton: TNewButton;
@@ -889,7 +894,7 @@ var
   ErrorLabel, SuccessLabel, StatusLabel: TNewStaticText;
 begin
 
-  DatabaseConnPage := CreateCustomPage(pageBefore.ID, 'Configure database connection string', '');
+  DatabaseConnPage := CreateCustomPage(wpInfoAfter, 'Configure database connection string', '');
     
   HelpButton := TNewButton.Create(DatabaseConnPage);      
   HelpButton.Left := DatabaseConnPage.Surface.Width - ScaleX(20);
@@ -1173,8 +1178,8 @@ var
   Page : TWizardPage;
 begin
 
-  Page := CreateDnsResponderWizardPage;
-  Page := CreateDatabaseConnWizardPage(Page);
+  Page := CreateDatabaseConnWizardPage;
+  Page := CreateDnsResponderWizardPage(Page);  
   Page := CreateUIConfigWizardPage(Page);
 
   CreateAboutButtonAndURLLabel(WizardForm, WizardForm.CancelButton);
