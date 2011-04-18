@@ -16,6 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Health.Direct.Install.Tools
 {
@@ -25,7 +28,23 @@ namespace Health.Direct.Install.Tools
         {
             return source.IndexOf(toCheck, comp) >= 0;
         }
-
-        
+    
+        public static IPAddress[] IpV4(this IPAddress[] source)
+        {
+            List<IPAddress> v4Addresses = new List<IPAddress>();
+            foreach(IPAddress address in source)
+            {
+                if(address.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    v4Addresses.Add(address);
+                }    
+            }
+            return v4Addresses.ToArray();
+        }
+        public static IPAddress IpV4(this IPAddress[] source, int index)
+        {
+            IPAddress ipaddress = IpV4(source)[index];
+            return ipaddress;
+        }
     }
 }
