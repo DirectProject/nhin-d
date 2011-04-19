@@ -20,7 +20,7 @@
 
 #include "InnoScripts\IISUtils.iss"
 #include "InnoScripts\VcRuntimeInstalled.iss"
-
+#include "InnoScripts\WindowsServicesUtils.iss"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -43,6 +43,7 @@ Compression=lzma
 SolidCompression=yes
 VersionInfoVersion=1.0.0.7
 SetupLogging=yes
+PrivilegesRequired=admin
 
 WizardImageFile=Direct.bmp
 WizardSmallImageFile=DirectSmall.bmp
@@ -160,10 +161,17 @@ Filename: {app}\direct.ini; section: InstallSettings; key: ConfigUiWebApp_Vdir; 
 [Code]
 
 
-//Log file maintenance
+
 var
+  //Log file maintenance
   OkToCopyLog : Boolean;
   toolsRegistered : Boolean; //Flag to indicate tools have been registered in the temp folder.
+  
+  //Global dns variable
+  StartDnsServicePostProcessing : Boolean;
+  strDnsServiceNameToCheck : String;
+
+   
 
 
 function IsX64: Boolean;
@@ -182,10 +190,73 @@ begin
 end;
 
 //included script to test for VC redistributable
-function IsVCRT: Boolean;
+function IsVCRT: Boolean;                                                                                        
 begin
   Result := VCRT_IsInstalled (VC2008_ANY_x64) = 5;
 end;
+
+
+
+
+
+
+
+
+
+
+procedure DnsServiceStop();
+  var        
+    status: Boolean;       
+begin
+  strDnsServiceNameToCheck := 'DirectDnsResponderSvc';
+
+  if IsServiceRunning(strDnsServiceNameToCheck) then begin        
+    status := StopService(strDnsServiceNameToCheck);
+    StartDnsServicePostProcessing := true;
+    Sleep(2000);
+    if not status then
+      MsgBox('Stop the Direct Dns Service manually to continue the installation', mbError, mb_Ok);     
+  end;
+end;
+
+
+
+
+
+function InitializeSetup(): Boolean; 
+begin
+  DnsServiceStop();       
+  Result := true;      
+end;
+
+
+procedure DeinitializeSetup();
+begin
+    if StartDnsServicePostProcessing then begin
+      if not IsServiceRunning(strDnsServiceNameToCheck) then begin
+        StartService(strDnsServiceNameToCheck);
+      end;
+    end;
+
+    //log files processing
+    if OkToCopyLog then
+    FileCopy (ExpandConstant ('{log}'), ExpandConstant ('{app}\InstallationLogFile.log'), FALSE);
+    RestartReplace (ExpandConstant ('{log}'), '');   // remove the temp log file during the next system restart.
+
+
+end;
+
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  ResultCode : Integer; 
+begin
+  Exec('IISRESET','', '', SW_SHOW, ewWaitUntilTerminated, ResultCode );    
+  Result := '';   
+end;
+
+
+
 
 procedure CheckDnsResponderServiceOnClick(Sender: TObject);
 var
@@ -199,6 +270,9 @@ begin
   DnsServiceTestTextBox := TNewEdit(DnsResponderPage.FindComponent('DnsServiceTestTextBox'));
   ShellExecAsOriginalUser('open', DnsServiceTestTextBox.Text, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
 end;
+
+
+
 
 procedure CheckDatabaseConnOnClick(Sender: TObject);
 var
@@ -1122,7 +1196,7 @@ begin
       begin
         CreateIISVirtualDir('ConfigUI', ExpandConstant('{app}') + '\ConfigUI', 'Direct Config Admin');
       end;
-   // Exec('IISReset');
+   
   end;
   //Log file maintenance
   if CurStep = ssDone then
@@ -1166,12 +1240,7 @@ begin
 end;
 
 
-procedure DeinitializeSetup();
-begin
-  if OkToCopyLog then
-    FileCopy (ExpandConstant ('{log}'), ExpandConstant ('{app}\InstallationLogFile.log'), FALSE);
-    RestartReplace (ExpandConstant ('{log}'), '');   // remove the temp log file during the next system restart.
-end;
+
 
 procedure InitializeWizard;
 var
