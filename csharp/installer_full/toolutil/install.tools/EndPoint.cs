@@ -11,7 +11,7 @@ namespace Health.Direct.Install.Tools
     [InterfaceType(ComInterfaceType.InterfaceIsDual)]
     public interface IEndPoint
     {
-        bool TestConnection(string endpoint);
+        bool TestWcfSoapConnection(string endpoint);
     }
 
     [ComVisible(true), GuidAttribute("12A4410A-E00B-42b7-988D-28F73FADFC00")]
@@ -19,7 +19,7 @@ namespace Health.Direct.Install.Tools
     [ClassInterface(ClassInterfaceType.None)]
     public class EndPoint : IEndPoint
     {
-        public bool TestConnection(string endpoint)
+        public bool TestWcfSoapConnection(string endpoint)
         {
             string svcEndPoint = GetServiceAddress(endpoint);
             string wsdlUrl = svcEndPoint + "?wsdl";

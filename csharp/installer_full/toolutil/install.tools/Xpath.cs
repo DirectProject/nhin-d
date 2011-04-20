@@ -53,6 +53,10 @@ namespace Health.Direct.Install.Tools
         public string SelectSingleAttribute(string xpath)
         {
             XmlNode node = _document.SelectSingleNode(xpath);
+            if (node is XmlElement)
+            {
+                return node.InnerText;
+            }
             return node == null ? null : node.Value;
         }
 

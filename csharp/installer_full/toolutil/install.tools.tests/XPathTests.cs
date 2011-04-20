@@ -86,5 +86,29 @@ namespace Health.Direct.Install.Tools.tests
             Assert.Equal(expected, actual);
         }
 
+
+
+
+        [Fact]
+        public void GetDomain_Test()
+        {
+
+            File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
+            XPath editor = new XPath();
+            editor.XmlFilePath = "SmtpAgentConfig.xml.test";
+
+            string actual = editor.SelectSingleAttribute("/SmtpAgentConfig/Domain");
+            string expected = "Direct.North.Hobo.Lab";
+            Assert.Equal(expected, actual);
+
+            editor.SetSingleAttribute("/SmtpAgentConfig/Domain",
+               "Direct.South.Hobo.Lab");
+
+            actual = editor.SelectSingleAttribute("/SmtpAgentConfig/Domain");
+            expected = "Direct.South.Hobo.Lab";
+
+            Assert.Equal(expected, actual);
+        }
+
     }
 }
