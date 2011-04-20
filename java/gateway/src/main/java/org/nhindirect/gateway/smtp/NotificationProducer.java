@@ -120,6 +120,16 @@ public class NotificationProducer implements NotificationCreator
         notification.setReportingAgent(new ReportingUserAgent(NHINDAddress.getHost(address), settings.getProductName()));            
         return notification;
     }
+    
+    
+    /**
+     * Gets the notification settings for the producer.
+     * @return The notification settings for the producer.
+     */
+    public NotificationSettings getNotificationSettings()
+    {
+    	return settings;
+    }
 	
 }
 

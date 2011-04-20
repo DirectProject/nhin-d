@@ -26,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -53,6 +54,9 @@ import org.apache.mailet.base.mail.MimeMultipartReport;
  */
 public class Notification
 {   
+	private static Class dsnClass;
+	private static Method getHeaders;
+	
 	private static final String DefaultExplanation = "Your message was successfully processed.";
 	
     private String explanation;
@@ -65,6 +69,16 @@ public class Notification
     private String error;
     
     private MimeMultipartReport report;
+    
+    static
+    {
+    	try
+    	{
+    		dsnClass = Notification.class.getClassLoader().loadClass("com.sun.mail.dsn.DispositionNotification");
+    		getHeaders = dsnClass.getMethod("getNotifications");
+    	}
+    	catch (Exception e) {/* no-op */}
+    }
     
     /**
      * Initializes a new instance of the supplied notification type.
@@ -101,9 +115,9 @@ public class Notification
     						this.error != null ? this.error : "", 
     						gateway, disposition);
     		
-        	report.getBodyPart(1).setHeader(MailStandard.Headers.ContentType, MDNStandard.MediaType.DispositionNotification);
+        	report.getBodyPart(1).setHeader(MailStandard.Headers.ContentType, MDNStandard.MediaType.DispositionNotification);        	
     	}
-    	catch (MessagingException e) { /* no-op */}
+    	catch (MessagingException e) {/* no-op */}
     }
     
     /**
@@ -408,6 +422,17 @@ public class Notification
 			
 			// the second part should be the notification
 			BodyPart part = mm.getBodyPart(1);
+			
+			try
+			{
+				Object contecntObj = part.getContent();
+				if (dsnClass != null && dsnClass.getCanonicalName().equals(contecntObj.getClass().getCanonicalName()))
+				{
+					retVal = (InternetHeaders)getHeaders.invoke(contecntObj);
+					return retVal;
+				}
+			}
+			catch(Exception e) {/* no-op */}
 			
 			if (!part.getContentType().equalsIgnoreCase(MDNStandard.MediaType.DispositionNotification))
 				throw new IllegalArgumentException("Notification part content type is not " + MDNStandard.MediaType.DispositionNotification);

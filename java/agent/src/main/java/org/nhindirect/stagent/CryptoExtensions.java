@@ -229,14 +229,14 @@ public class CryptoExtensions
 	            {
 	            
 	            	X509Certificate cert = (X509Certificate)certCollection.iterator().next();
-	            	if (certSubjectContainsName(cert, name))
+	            	if (certSubjectContainsName(cert, name) || containsEmailAddressInSubjectAltName(cert, name))
 	            	{
 	            		boolean exclude = false;
 	            		
 	            		// check if we need to exclude anything
 	            		if (excludeNames != null)
 	            			for (String excludeStr : excludeNames)
-	            				if (certSubjectContainsName(cert, excludeStr))
+	            				if (certSubjectContainsName(cert, excludeStr) || containsEmailAddressInSubjectAltName(cert, name))
 	            				{
 	            					exclude = true;
 	            					break;
@@ -270,7 +270,7 @@ public class CryptoExtensions
     {
     	for (X509Certificate cert : certs)
     	{
-    		if (certSubjectContainsName(cert, name))
+    		if (certSubjectContainsName(cert, name) || containsEmailAddressInSubjectAltName(cert, name))
     			return cert;
     	}
     	
