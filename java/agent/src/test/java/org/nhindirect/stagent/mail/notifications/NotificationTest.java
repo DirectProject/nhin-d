@@ -9,6 +9,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.nhindirect.stagent.mail.MimeEntity;
 import org.nhindirect.stagent.utils.TestUtils;
 
@@ -31,7 +32,12 @@ public class NotificationTest extends TestCase
 			
 		part = mm.getBodyPart(1);
 		assertTrue(part.getContentType().startsWith("message/disposition-notification"));
-		assertTrue(part.getContent().toString().contains("automatic-action/MDN-sent-automatically;processed"));
+		
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+		part.writeTo(outStream);
+		String content = new String(outStream.toByteArray());
+		
+		assertTrue(content.contains("automatic-action/MDN-sent-automatically;processed"));
 	}
 	
 	public void testCreateNotification_AssertGetParts() throws Exception
@@ -103,7 +109,11 @@ public class NotificationTest extends TestCase
 		// make sure this didn't change
 		part = mm.getBodyPart(1);
 		assertTrue(part.getContentType().startsWith("message/disposition-notification"));
-		assertTrue(part.getContent().toString().contains("automatic-action/MDN-sent-automatically;processed"));		
+		
+		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+		part.writeTo(outStream);
+		String content = new String(outStream.toByteArray());		
+		assertTrue(content.contains("automatic-action/MDN-sent-automatically;processed"));		
 	}		
 	
 	

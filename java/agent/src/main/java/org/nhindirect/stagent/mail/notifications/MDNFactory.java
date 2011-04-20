@@ -21,8 +21,13 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.mail.notifications;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import javax.activation.DataHandler;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.util.ByteArrayDataSource;
 
 import org.apache.jsieve.mailet.mdn.Disposition;
 import org.apache.mailet.base.mail.MimeMultipartReport;
@@ -136,9 +141,15 @@ public class MDNFactory
         mdnReport.append(disposition.toString());
         mdnReport.append("\r\n");
         MimeBodyPart mdnPart = new MimeBodyPart();
-        mdnPart.setContent(mdnReport.toString(), "message/disposition-notification");
-        multiPart.addBodyPart(mdnPart);
-
+        try
+        {
+        	// using a DataSource gets around some of the issues with the JAF dynamically loading content handlers that may not work, speicifically
+        	// the java dsn library and the DispostionNotification class which doesn't know how to handle byte arrays
+        	ByteArrayDataSource dataSource = new ByteArrayDataSource(new ByteArrayInputStream(mdnReport.toString().getBytes()), "message/disposition-notification");
+        	mdnPart.setDataHandler(new DataHandler(dataSource));
+        	multiPart.addBodyPart(mdnPart);
+        }
+        catch (IOException e){/*no-op*/}
         // Part 3: The optional third part, the original message is omitted.
         // We don't want to propogate over-sized, virus infected or
         // other undesirable mail!
