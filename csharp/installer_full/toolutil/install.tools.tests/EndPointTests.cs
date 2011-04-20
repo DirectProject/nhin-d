@@ -28,34 +28,34 @@ namespace install.tools.tests
         public void Test()
         {
             EndPoint endPoint = new EndPoint();
-            Assert.True(endPoint.TestConnection(
+            Assert.True(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/CertificateService.svc/Certificates"));
 
-            Assert.True(endPoint.TestConnection(
+            Assert.True(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/CertificateService.svc/Anchors"));
 
-            Assert.False(endPoint.TestConnection(
+            Assert.False(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/CertificateService.svc/Addresses"));
 
-            Assert.True(endPoint.TestConnection(
+            Assert.True(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/DomainManagerService.svc/Addresses"));
 
-            Assert.True(endPoint.TestConnection(
+            Assert.True(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/DomainManagerService.svc/Domains"));
             
-            Assert.True(endPoint.TestConnection(
+            Assert.True(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/DomainManagerService.svc/DnsRecords"));
             
-            Assert.False(endPoint.TestConnection(
+            Assert.False(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/DomainManagerService.svc/Authentication"));
             
-            Assert.True(endPoint.TestConnection(
+            Assert.True(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/AuthManagerService.svc/Authentication"));
 
-            Assert.False(endPoint.TestConnection(
+            Assert.False(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/AuthManagerService.svc/Certificates"));
 
-            Assert.False(endPoint.TestConnection(
+            Assert.False(endPoint.TestWcfSoapConnection(
                "http://badhostname/ConfigService/AuthManagerService.svc/Certificates"));
             
         }
@@ -65,34 +65,34 @@ namespace install.tools.tests
         public void TestLocalhost()
         {
             EndPoint endPoint = new EndPoint();
-            Assert.True(endPoint.TestConnection(
+            Assert.True(endPoint.TestWcfSoapConnection(
                 "http://localhost/ConfigService/CertificateService.svc/Certificates"));
 
-            Assert.True(endPoint.TestConnection(
+            Assert.True(endPoint.TestWcfSoapConnection(
                 "http://localhost/ConfigService/CertificateService.svc/Anchors"));
 
-            Assert.False(endPoint.TestConnection(
+            Assert.False(endPoint.TestWcfSoapConnection(
                 "http://localhost/ConfigService/CertificateService.svc/Addresses"));
 
-            Assert.True(endPoint.TestConnection(
+            Assert.True(endPoint.TestWcfSoapConnection(
                 "http://localhost/ConfigService/DomainManagerService.svc/Addresses"));
 
-            Assert.True(endPoint.TestConnection(
+            Assert.True(endPoint.TestWcfSoapConnection(
                 "http://localhost/ConfigService/DomainManagerService.svc/Domains"));
 
-            Assert.True(endPoint.TestConnection(
+            Assert.True(endPoint.TestWcfSoapConnection(
                 "http://localhost/ConfigService/DomainManagerService.svc/DnsRecords"));
 
-            Assert.False(endPoint.TestConnection(
+            Assert.False(endPoint.TestWcfSoapConnection(
                 "http://localhost/ConfigService/DomainManagerService.svc/Authentication"));
 
-            Assert.True(endPoint.TestConnection(
+            Assert.True(endPoint.TestWcfSoapConnection(
                 "http://localhost/ConfigService/AuthManagerService.svc/Authentication"));
 
-            Assert.False(endPoint.TestConnection(
+            Assert.False(endPoint.TestWcfSoapConnection(
                 "http://localhost/ConfigService/AuthManagerService.svc/Certificates"));
 
-            Assert.False(endPoint.TestConnection(
+            Assert.False(endPoint.TestWcfSoapConnection(
                "http://badhostname/ConfigService/AuthManagerService.svc/Certificates"));
 
         }

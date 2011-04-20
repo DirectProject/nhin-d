@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <SmtpAgentConfig>
-  <Domain>Direct.North.Hobo.Lab</Domain>
-  <Postmaster>postmaster@Direct.North.Hobo.Lab</Postmaster>
+  <Domain>Direct.North.Hobo.Lab</Domain>  
   <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
@@ -35,7 +34,7 @@
   <PublicCerts>
     <DnsResolver>
       <ServerIP>0.0.0.0</ServerIP>
-      <Timeout>10000</Timeout>
+      <Timeout>5000</Timeout>
     </DnsResolver>
     <!--
     <MachineResolver>

@@ -21,6 +21,7 @@
 #include "InnoScripts\IISUtils.iss"
 #include "InnoScripts\VcRuntimeInstalled.iss"
 #include "InnoScripts\WindowsServicesUtils.iss"
+#include "InnoScripts\GetCommandLineParams.iss"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -387,50 +388,86 @@ begin
 end;
 
 
-
-procedure SetConfigAdminEndPoint(endPoint: String; bindingConfig: String);
+procedure WriteConfigItem(wizardPage : TWizardPage; configFile, xpath, objectName : String);
 var
-  xpathTools: Variant;
-  xpath: String;                         
+  xpathTools: Variant;     
+  textBox: TCustomEdit; 
+  labelText: TNewStaticText;
+  value : String; 
 begin
   try                              
     xpathTools := CreateOleObject('Direct.Installer.XPathTools');
   except
     RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
-    xpath := 'client/endpoint[@bindingConfiguration="' + bindingConfig + '"]/@address'; 
-    xpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigUI\Config\client.config';
-    xpathTools.SetSingleAttribute(xpath, endPoint);         
+    textBox := TCustomEdit(wizardPage.FindComponent(objectName));   
+    labelText := TNewStaticText(wizardPage.FindComponent(objectName));   
+    if not (textBox = nil) then
+    begin
+      value := textBox.text;
+    end
+    else
+    begin
+      value := labelText.Caption;
+    end;
+       
+    xpathTools.XmlFilePath := configFile;
+    xpathTools.SetSingleAttribute(xpath, value);  
+    
 end;
+
 
 
 //Configure Config Admin client endpoint urls.
 function SetConfigAdminEndpointsOnClick(Sender: TWizardPage): Boolean;
 var
-  CertificatesUrlLabel, AnchorsUrlLabel, AddressesUrlLabel, DomainsUrlLabel, DnsRecordsUrlLabel, AuthenticationUrlLabel : TNewStaticText;
-begin  
-  CertificatesUrlLabel := TNewStaticText(Sender.FindComponent('CertificatesUrlLabel')); 
-  SetConfigAdminEndPoint(CertificatesUrlLabel.Caption, 'BasicHttpBinding_ICertificateStore');
-
-  AnchorsUrlLabel := TNewStaticText(Sender.FindComponent('AnchorsUrlLabel')); 
-  SetConfigAdminEndPoint(AnchorsUrlLabel.Caption, 'BasicHttpBinding_IAnchorStore');
-    
-  AddressesUrlLabel := TNewStaticText(Sender.FindComponent('AddressesUrlLabel')); 
-  SetConfigAdminEndPoint(AddressesUrlLabel.Caption, 'BasicHttpBinding_IAddressManager');
-
-  DomainsUrlLabel := TNewStaticText(Sender.FindComponent('DomainsUrlLabel')); 
-  SetConfigAdminEndPoint(DomainsUrlLabel.Caption, 'BasicHttpBinding_IDomainManager');
-
-  DnsRecordsUrlLabel := TNewStaticText(Sender.FindComponent('DnsRecordsUrlLabel')); 
-  SetConfigAdminEndPoint(DnsRecordsUrlLabel.Caption, 'BasicHttpBinding_IDnsRecordManager');
+  configFile  : String;
+begin
+  configFile := ExpandConstant('{app}') + '\ConfigUI\Config\client.config';      
   
-  AuthenticationUrlLabel := TNewStaticText(Sender.FindComponent('AuthenticationUrlLabel')); 
-  SetConfigAdminEndPoint(AuthenticationUrlLabel.Caption, 'BasicHttpBinding_IAuthManager');         
+  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_ICertificateStore"]/@address', 'CertificatesUrlLabel'); 
+  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IAnchorStore"]/@address', 'AnchorsUrlLabel'); 
+  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IAddressManager"]/@address', 'AddressesUrlLabel'); 
+  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IDomainManager"]/@address', 'DomainsUrlLabel'); 
+  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IDnsRecordManager"]/@address', 'DnsRecordsUrlLabel'); 
+  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IAuthManager"]/@address', 'AuthenticationUrlLabel'); 
  
   Result := True; 
 end;
 
+   
+function SetGatewayConfigOnClick(Sender: TWizardPage): Boolean;
+var                
+  configFile  : String;
+begin
+  
+  configFile := ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
+  
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Domain', 'DomainText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/DomainManager/Url', 'DomainManagerText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/AddressManager/Url', 'AddressManagerText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url', 'PrivateCertsText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/ServiceResolver/ClientSettings/Url', 'AnchorsText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP', 'DnsResolverIpText');
+  
+  Result := True;
+end;
 
+function SetConfigSmtpAdminEndpointsOnClick(Sender: TWizardPage): Boolean;
+var                
+  configFile  : String;
+begin
+  
+  configFile := ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
+  
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/InternalMessage/PickupFolder', 'PickupText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/RawMessage/CopyFolder', 'RawMessageText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/BadMessage/CopyFolder', 'BadMessageText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/ProcessIncoming/CopyFolder', 'IncommingMessageText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/ProcessOutgoing/CopyFolder', 'OutgoingMessageText');
+ 
+  Result := True;
+end;
 
 
 function GetDnsResponderUrl(): String;
@@ -510,19 +547,93 @@ begin
     Result := endPoint;
 end;
 
+
+
+function GetGatewaySetting(xpath : String): String;
+var
+  xpathTools: Variant;    
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    xpathTools.XmlFilePath := ExpandConstant('{app}') + '\SmtpAgentConfig.xml' ;
+    Result := xpathTools.SelectSingleAttribute(xpath);
+end;
+
+
 function TestConnection(endpoint : String): Boolean;
 var
   tools: Variant; 
   success: Boolean;
 begin
+  success := false;
   try                              
     tools := CreateOleObject('Direct.Installer.EndPointTools');
   except
     RaiseException('Cannot find Direct.Installer.EndPointTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
-    success := tools.TestConnection(endpoint);
+    try
+      success := tools.TestWcfSoapConnection(endpoint);
+    except
+      RaiseException('Failed end point test for endpoint: ' + endpoint +  #13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+    end;
     Result := success;
 end;
+
+
+
+procedure RunTestConnect(wizPage: TWizardPage; labelName, textboxName : String );
+var
+  myTextBox : TCustomEdit;
+  myLabel : TNewStaticText;
+  endPoint : String;
+begin   
+  myTextBox := TCustomEdit(wizPage.FindComponent(textboxName));
+  myLabel :=  TNewStaticText(wizPage.FindComponent(labelName));       
+
+  if(TestConnection(myTextBox.Text)) then
+  begin    
+    myLabel.Font.Color := clGreen;
+  end else
+  begin
+    myLabel.Font.Color := clRed;
+  end;
+  myLabel.Update;     
+end;
+
+ 
+
+
+
+
+procedure GatewayOnClick (Sender: TObject);
+var                   
+  EndPointsButton: TNewButton;
+  buttonCaption : String;
+  GatewayAdminPage : TWizardPage;
+begin         
+  EndPointsButton := TNewButton(Sender);
+  GatewayAdminPage := TWizardPage(EndPointsButton.Owner);
+  buttonCaption := EndPointsButton.Caption;
+  EndPointsButton.Caption := 'Checking...';
+  try      
+    RunTestConnect(GatewayAdminPage, 'DomainManagerLabel', 'DomainManagerText');
+    RunTestConnect(GatewayAdminPage, 'AddressManagerLabel', 'AddressManagerText');
+    RunTestConnect(GatewayAdminPage, 'PrivateCertsLabel', 'PrivateCertsText');
+    RunTestConnect(GatewayAdminPage, 'AnchorsLabel', 'AnchorsText');
+    //RunTestConnect(GatewayAdminPage, 'DnsResolverIpLabel', 'DnsResolverIpText');    
+  except         
+    RaiseException(GetExceptionMessage);
+  finally
+    EndPointsButton.Caption := buttonCaption;
+    EndPointsButton.Update;  
+  end;   
+end;
+
+
+
 
 procedure ConfigAdminHostNameOnClick(Sender: TObject);
 var
@@ -769,6 +880,64 @@ begin
 
 end;
 
+
+
+
+procedure GatewayAdminPageOnActivate(Sender: TWizardPage);
+var
+  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText: TNewMemo;
+  DomainText: TNewEdit;
+begin
+
+ 
+  DomainText := TNewEdit(Sender.FindComponent('DomainText'));
+  DomainText.Text := GetGatewaySetting('/SmtpAgentConfig/Domain');
+
+  DomainManagerText := TNewMemo(Sender.FindComponent('DomainManagerText'));
+  DomainManagerText.Text := GetGatewaySetting('/SmtpAgentConfig/DomainManager/Url');
+
+  AddressManagerText := TNewMemo(Sender.FindComponent('AddressManagerText'));
+  AddressManagerText.Text := GetGatewaySetting('/SmtpAgentConfig/AddressManager/Url');
+  
+  PrivateCertsText := TNewMemo(Sender.FindComponent('PrivateCertsText'));
+  PrivateCertsText.Text := GetGatewaySetting('/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url');
+  
+  AnchorsText := TNewMemo(Sender.FindComponent('AnchorsText'));
+  AnchorsText.Text := GetGatewaySetting('/SmtpAgentConfig/Anchors/ServiceResolver/ClientSettings/Url');
+  
+  DnsResolverIpText := TNewMemo(Sender.FindComponent('DnsResolverIpText'));
+  DnsResolverIpText.Text := GetGatewaySetting('/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP');
+
+end; 
+
+
+
+procedure ConfigSmtpAdminPageOnActivate(Sender: TWizardPage);
+var
+  PickupText, RawMessageText, BadMessageText, IncommingMessageText, OutgoingMessageText : TNewMemo;
+begin
+   
+  PickupText := TNewMemo(Sender.FindComponent('PickupText'));
+  PickupText.Text := GetGatewaySetting('/SmtpAgentConfig/InternalMessage/PickupFolder');
+
+  RawMessageText := TNewMemo(Sender.FindComponent('RawMessageText'));
+  RawMessageText.Text := GetGatewaySetting('/SmtpAgentConfig/RawMessage/CopyFolder');
+  
+  BadMessageText := TNewMemo(Sender.FindComponent('BadMessageText'));
+  BadMessageText.Text := GetGatewaySetting('/SmtpAgentConfig/BadMessage/CopyFolder');
+  
+  IncommingMessageText := TNewMemo(Sender.FindComponent('IncommingMessageText'));
+  IncommingMessageText.Text := GetGatewaySetting('/SmtpAgentConfig/ProcessIncoming/CopyFolder');
+  
+  OutgoingMessageText := TNewMemo(Sender.FindComponent('OutgoingMessageText'));
+  OutgoingMessageText.Text := GetGatewaySetting('/SmtpAgentConfig/ProcessOutgoing/CopyFolder');
+
+end;
+
+
+
+
+
 function DnsResponderPage_ShouldSkip(Page: TwizardPage): Boolean;
 begin
   Result := (pos( 'dnsresponder', WizardSelectedComponents( false)) = 0) ;  
@@ -790,6 +959,13 @@ begin
 end;
 
 
+//Skip this page is not configuring the Config Admin UI
+function GatewayAdminPage_ShouldSkip(Page: TwizardPage): Boolean;
+begin
+  Result := (pos( 'directgateway', WizardSelectedComponents( false)) = 0)                  
+                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
+end;
+
 
 
 //only call this once.  Notice we register the Health.Direct.Install.Tools.dll via the temp folder once then remove.
@@ -799,7 +975,14 @@ var
     ResultCode: Integer;
     SmtpExists: Boolean;
     SmtpTools: Variant;
+    skipSmtpValue: String;
 begin
+  
+  if(CommandlineParamExists('SkipSmtpCheck')) then
+  begin
+    Result := true;
+    exit;
+  end
   if(not toolsRegistered) then
   begin
     ExtractTemporaryFile('Health.Direct.Install.Tools.dll');     
@@ -879,7 +1062,13 @@ begin
     'The "End Point" labels will be green when they are connecting and red when failing.', mbInformation, mb_Ok);
 end;
 
-
+procedure GatewayAdminHelpButtonOnClick(Sender: TObject);
+begin
+  MsgBox('Part I configures Domains and endpoints.'  #13#10 +
+    'Part II configures message folders and SMTP pickup up folder.' #13#10 +
+    'Note: Both sending messges to SMTP server and dropping in the pickup folder are supported for sending messages.' #13#10 +
+    'The "End Point" labels will be green when they are connecting and red when failing.', mbInformation, mb_Ok);
+end;
 
 
 procedure URLLabelOnClick(Sender: TObject);
@@ -890,6 +1079,77 @@ var
   URLLabel := TNewStaticText(Sender);
   ShellExecAsOriginalUser('open', URLLabel.Caption, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
 end;
+
+
+function CreateDatabaseConnWizardPage(): TWizardPage;
+var
+  DatabaseConnPage: TWizardPage;       
+  Button, HelpButton: TNewButton;
+  DbConnStrTextBox : TNewEdit;
+  ErrorLabel, SuccessLabel, StatusLabel: TNewStaticText;
+begin
+
+  DatabaseConnPage := CreateCustomPage(wpInfoAfter, 'Configure database connection string', '');
+    
+  HelpButton := TNewButton.Create(DatabaseConnPage);      
+  HelpButton.Left := DatabaseConnPage.Surface.Width - ScaleX(20);
+  HelpButton.Width := ScaleX(20);
+  HelpButton.Height := ScaleY(20);   
+  HelpButton.Caption := '?';
+  HelpButton.OnClick := @DatabaseHelpButtonOnClick;
+  HelpButton.Parent := DatabaseConnPage.Surface;  
+
+  Button := TNewButton.Create(DatabaseConnPage);
+  Button.Top := HelpButton.Top + HelpButton.Height + ScaleY(20);
+  Button.Height :=  WizardForm.NextButton.Height;
+  Button.Width := DatabaseConnPage.SurfaceWidth div 4;
+  Button.Caption := 'Test: ';
+  Button.OnClick := @CheckDatabaseConnOnClick;
+  Button.Parent := DatabaseConnPage.Surface;
+
+  DbConnStrTextBox := TNewEdit.Create(DatabaseConnPage);
+  DbConnStrTextBox.Name := 'DbConnStrTextBox';
+  DbConnStrTextBox.Top := Button.Top + Button.Height + ScaleY(20);
+  DbConnStrTextBox.Width := DatabaseConnPage.SurfaceWidth - ScaleX(8);
+  DbConnStrTextBox.Parent := DatabaseConnPage.Surface;
+
+  ErrorLabel := TNewStaticText.Create(DatabaseConnPage);
+  ErrorLabel.Name := 'ErrorLabel';
+  ErrorLabel.Caption := '';
+  ErrorLabel.Top := DatabaseConnPage.SurfaceHeight - ScaleY(16);  
+  ErrorLabel.Left := ScaleX(8);
+  ErrorLabel.Font.Color := clRed;
+  ErrorLabel.Parent := DatabaseConnPage.Surface;
+   
+  SuccessLabel := TNewStaticText.Create(DatabaseConnPage);
+  SuccessLabel.Name := 'SuccessLabel';
+  SuccessLabel.Caption := '';
+  SuccessLabel.Top := DatabaseConnPage.SurfaceHeight - ScaleY(16);
+  SuccessLabel.Left := ScaleX(8);
+  SuccessLabel.Font.Color := clGreen;
+  SuccessLabel.Parent := DatabaseConnPage.Surface;
+
+  StatusLabel := TNewStaticText.Create(DatabaseConnPage);
+  StatusLabel.Name := 'StatusLabel';
+  StatusLabel.Caption := '';
+  StatusLabel.Top := DatabaseConnPage.SurfaceHeight - ScaleY(16);
+  StatusLabel.Left := ScaleX(8);
+  StatusLabel.Parent := DatabaseConnPage.Surface;
+
+  DatabaseConnPage.OnActivate := @DatabaseConnPageOnActivate;
+  DatabaseConnPage.OnNextButtonClick := @SetDatabaseConnUrlOnClick;
+  DatabaseConnPage.OnShouldSkipPage := @DatabaseConnPage_ShouldSkip;
+
+  Result := DatabaseConnPage;
+end;
+
+
+
+
+
+
+
+
 
 function CreateDnsResponderWizardPage(pageBefore: TWizardPage): TWizardPage;
 var
@@ -960,67 +1220,273 @@ begin
   Result := DnsResponderPage;
 end;
 
-function CreateDatabaseConnWizardPage(): TWizardPage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+function CreateGatewayWizardPage(pageBefore: TWizardPage): TWizardPage;
 var
-  DatabaseConnPage: TWizardPage;       
-  Button, HelpButton: TNewButton;
-  DbConnStrTextBox : TNewEdit;
-  ErrorLabel, SuccessLabel, StatusLabel: TNewStaticText;
+  GatewayAdminPage: TWizardPage;
+  HelpButton, EndPointsButton: TNewButton;
+  DomainLabel, DomainManagerLabel, AddressManagerLabel, PrivateCertsLabel, AnchorsLabel, DnsResolverIpLabel: TNewStaticText;
+  DomainText : TNewEdit;
+  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText: TNewMemo;
+  hoboText : TNewMemo;
 begin
+    GatewayAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part I (SMTP)', '');
+              
 
-  DatabaseConnPage := CreateCustomPage(wpInfoAfter, 'Configure database connection string', '');
     
-  HelpButton := TNewButton.Create(DatabaseConnPage);      
-  HelpButton.Left := DatabaseConnPage.Surface.Width - ScaleX(20);
-  HelpButton.Width := ScaleX(20);
-  HelpButton.Height := ScaleY(20);   
-  HelpButton.Caption := '?';
-  HelpButton.OnClick := @DatabaseHelpButtonOnClick;
-  HelpButton.Parent := DatabaseConnPage.Surface;  
+    HelpButton := TNewButton.Create(GatewayAdminPage);      
+    HelpButton.Left := GatewayAdminPage.Surface.Width - ScaleX(20);
+    HelpButton.Width := ScaleX(20);
+    HelpButton.Height := ScaleY(20);   
+    HelpButton.Caption := '?';
+    HelpButton.OnClick := @GatewayAdminHelpButtonOnClick;
+    HelpButton.Parent := GatewayAdminPage.Surface;  
+    
+    //Set Domains
+    DomainLabel := TNewStaticText.Create(GatewayAdminPage);
+    DomainLabel.Name := 'DomainLabel';
+    DomainLabel.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(14);
+    DomainLabel.Caption := 'Domain Name: ';
+    DomainLabel.Parent := GatewayAdminPage.Surface;
+                              
+    DomainText := TNewEdit.Create(GatewayAdminPage);
+    DomainText.Name := 'DomainText';
+    DomainText.Top := HelpButton.Top + HelpButton.Height + ScaleY(14);
+    DomainText.Left := DomainLabel.Width + ScaleX(8);
+    DomainText.Width := GatewayAdminPage.SurfaceWidth - ScaleX(8);
+    DomainText.Parent := GatewayAdminPage.Surface;
 
-  Button := TNewButton.Create(DatabaseConnPage);
-  Button.Top := HelpButton.Top + HelpButton.Height + ScaleY(20);
-  Button.Height :=  WizardForm.NextButton.Height;
-  Button.Width := DatabaseConnPage.SurfaceWidth div 4;
-  Button.Caption := 'Test: ';
-  Button.OnClick := @CheckDatabaseConnOnClick;
-  Button.Parent := DatabaseConnPage.Surface;
+    //Test button
+    EndPointsButton := TNewButton.Create(GatewayAdminPage);
+    EndPointsButton.Top :=  DomainLabel.Top + DomainLabel.Height + ScaleY(14);
+    EndPointsButton.Width :=  GatewayAdminPage.Surface.Width div 4;
+    EndPointsButton.Caption := 'Test End Points:';
+    EndPointsButton.OnClick := @GatewayOnClick;
+    EndPointsButton.Parent := GatewayAdminPage.Surface;
 
-  DbConnStrTextBox := TNewEdit.Create(DatabaseConnPage);
-  DbConnStrTextBox.Name := 'DbConnStrTextBox';
-  DbConnStrTextBox.Top := Button.Top + Button.Height + ScaleY(20);
-  DbConnStrTextBox.Width := DatabaseConnPage.SurfaceWidth - ScaleX(8);
-  DbConnStrTextBox.Parent := DatabaseConnPage.Surface;
+    //Set Privates Certs.  Later it is placed in its page location.  Using its width to base all the texbox left positions.       
+    PrivateCertsLabel := TNewStaticText.Create(GatewayAdminPage);
+    PrivateCertsLabel.Caption := 'Certificate Resolver: ';
 
-  ErrorLabel := TNewStaticText.Create(DatabaseConnPage);
-  ErrorLabel.Name := 'ErrorLabel';
-  ErrorLabel.Caption := '';
-  ErrorLabel.Top := DatabaseConnPage.SurfaceHeight - ScaleY(16);  
-  ErrorLabel.Left := ScaleX(8);
-  ErrorLabel.Font.Color := clRed;
-  ErrorLabel.Parent := DatabaseConnPage.Surface;
-   
-  SuccessLabel := TNewStaticText.Create(DatabaseConnPage);
-  SuccessLabel.Name := 'SuccessLabel';
-  SuccessLabel.Caption := '';
-  SuccessLabel.Top := DatabaseConnPage.SurfaceHeight - ScaleY(16);
-  SuccessLabel.Left := ScaleX(8);
-  SuccessLabel.Font.Color := clGreen;
-  SuccessLabel.Parent := DatabaseConnPage.Surface;
+    //Set Domain Manager
+    DomainManagerLabel := TNewStaticText.Create(GatewayAdminPage);
+    DomainManagerLabel.Name := 'DomainManagerLabel';
+    DomainManagerLabel.Top :=  EndPointsButton.Top + EndPointsButton.Height + ScaleY(14);
+    DomainManagerLabel.Caption := 'Domain Manager: ';
+    DomainManagerLabel.Parent := GatewayAdminPage.Surface;
+                              
+    DomainManagerText := TNewMemo.Create(GatewayAdminPage);
+    DomainManagerText.Name := 'DomainManagerText';
+    DomainManagerText.Top := EndPointsButton.Top + EndPointsButton.Height + ScaleY(14);
+    DomainManagerText.Left := PrivateCertsLabel.Width + ScaleX(8);
+    DomainManagerText.Width := GatewayAdminPage.SurfaceWidth - DomainManagerLabel.Width - ScaleX(8);
+    DomainManagerText.Height := DomainManagerText.Height div 4;
+    DomainManagerText.WordWrap := false;
+    DomainManagerText.WantReturns := false;
+    DomainManagerText.Parent := GatewayAdminPage.Surface;
 
-  StatusLabel := TNewStaticText.Create(DatabaseConnPage);
-  StatusLabel.Name := 'StatusLabel';
-  StatusLabel.Caption := '';
-  StatusLabel.Top := DatabaseConnPage.SurfaceHeight - ScaleY(16);
-  StatusLabel.Left := ScaleX(8);
-  StatusLabel.Parent := DatabaseConnPage.Surface;
 
-  DatabaseConnPage.OnActivate := @DatabaseConnPageOnActivate;
-  DatabaseConnPage.OnNextButtonClick := @SetDatabaseConnUrlOnClick;
-  DatabaseConnPage.OnShouldSkipPage := @DatabaseConnPage_ShouldSkip;
+    //Set Address Manager
+    AddressManagerLabel := TNewStaticText.Create(GatewayAdminPage);
+    AddressManagerLabel.Name := 'AddressManagerLabel';
+    AddressManagerLabel.Top :=  DomainManagerLabel.Top + DomainManagerLabel.Height + ScaleY(14);
+    AddressManagerLabel.Caption := 'Address Manager: ';
+    AddressManagerLabel.Parent := GatewayAdminPage.Surface;
+                              
+    AddressManagerText := TNewMemo.Create(GatewayAdminPage);
+    AddressManagerText.Name := 'AddressManagerText';
+    AddressManagerText.Top := DomainManagerLabel.Top + DomainManagerLabel.Height + ScaleY(14);
+    AddressManagerText.Left := DomainManagerText.Left;
+    AddressManagerText.Width := DomainManagerText.Width;
+    AddressManagerText.Height := AddressManagerText.Height div 4;
+    AddressManagerText.WordWrap := false;
+    AddressManagerText.WantReturns := false;
+    AddressManagerText.Parent := GatewayAdminPage.Surface;
 
-  Result := DatabaseConnPage;
+    //Set Privates Certs (Created above)                
+    PrivateCertsLabel.Name := 'PrivateCertsLabel';
+    PrivateCertsLabel.Top :=  AddressManagerLabel.Top + AddressManagerLabel.Height + ScaleY(14);
+    PrivateCertsLabel.Parent := GatewayAdminPage.Surface;
+                              
+    PrivateCertsText := TNewMemo.Create(GatewayAdminPage);
+    PrivateCertsText.Name := 'PrivateCertsText';
+    PrivateCertsText.Top := AddressManagerLabel.Top + AddressManagerLabel.Height + ScaleY(14);
+    PrivateCertsText.Left := DomainManagerText.Left;
+    PrivateCertsText.Width := DomainManagerText.Width;
+    PrivateCertsText.Height := PrivateCertsText.Height div 4;
+    PrivateCertsText.WordWrap := false;
+    PrivateCertsText.WantReturns := false;
+    PrivateCertsText.Parent := GatewayAdminPage.Surface;
+
+    //Set Anchors
+    AnchorsLabel := TNewStaticText.Create(GatewayAdminPage);
+    AnchorsLabel.Name := 'AnchorsLabel';
+    AnchorsLabel.Top :=  PrivateCertsLabel.Top + PrivateCertsLabel.Height + ScaleY(14);
+    AnchorsLabel.Caption := 'Anchor Resolver: ';
+    AnchorsLabel.Parent := GatewayAdminPage.Surface;
+                              
+    AnchorsText := TNewMemo.Create(GatewayAdminPage);
+    AnchorsText.Name := 'AnchorsText';
+    AnchorsText.Top := PrivateCertsLabel.Top + PrivateCertsLabel.Height + ScaleY(14);
+    AnchorsText.Left := DomainManagerText.Left;
+    AnchorsText.Width := DomainManagerText.Width;
+    AnchorsText.Height := AnchorsText.Height div 4;
+    AnchorsText.WordWrap := false;
+    AnchorsText.WantReturns := false;
+    AnchorsText.Parent := GatewayAdminPage.Surface;
+
+    //Set DnsResolverIp
+    DnsResolverIpLabel := TNewStaticText.Create(GatewayAdminPage);
+    DnsResolverIpLabel.Name := 'DnsResolverIpLabel';
+    DnsResolverIpLabel.Top :=  AnchorsLabel.Top + AnchorsLabel.Height + ScaleY(14);
+    DnsResolverIpLabel.Caption := 'Dns Resolver IP: ';
+    DnsResolverIpLabel.Parent := GatewayAdminPage.Surface;
+                              
+    DnsResolverIpText := TNewMemo.Create(GatewayAdminPage);
+    DnsResolverIpText.Name := 'DnsResolverIpText';
+    DnsResolverIpText.Top := AnchorsLabel.Top + AnchorsLabel.Height + ScaleY(14);
+    DnsResolverIpText.Left := DomainManagerText.Left;
+    DnsResolverIpText.Width := DomainManagerText.Width;
+    DnsResolverIpText.Height := DnsResolverIpText.Height div 4;
+    DnsResolverIpText.WordWrap := false;
+    DnsResolverIpText.WantReturns := false;
+    DnsResolverIpText.Parent := GatewayAdminPage.Surface;
+
+
+    GatewayAdminPage.OnActivate := @GatewayAdminPageOnActivate;
+    GatewayAdminPage.OnNextButtonClick := @SetGatewayConfigOnClick;
+    GatewayAdminPage.OnShouldSkipPage := @GatewayAdminPage_ShouldSkip;
+
+    Result := GatewayAdminPage;
 end;
+
+
+
+
+function CreateGatewaySmtpWizardPage(pageBefore: TWizardPage): TWizardPage;
+var
+  GatewaySmtpAdminPage: TWizardPage;
+  HelpButton: TNewButton;
+  PickupLabel, RawMessageLabel, BadMessageLabel, IncommingMessageLabel, OutgoingMessageLabel : TNewStaticText;
+  PickupText, RawMessageText, BadMessageText, IncommingMessageText, OutgoingMessageText : TNewMemo;
+begin
+    GatewaySmtpAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part II', '');
+
+    HelpButton := TNewButton.Create(GatewaySmtpAdminPage);      
+    HelpButton.Left := GatewaySmtpAdminPage.Surface.Width - ScaleX(20);
+    HelpButton.Width := ScaleX(20);
+    HelpButton.Height := ScaleY(20);   
+    HelpButton.Caption := '?';
+    HelpButton.OnClick := @GatewayAdminHelpButtonOnClick;
+    HelpButton.Parent := GatewaySmtpAdminPage.Surface;  
+         
+    //Set Pickup Folder
+    PickupLabel := TNewStaticText.Create(GatewaySmtpAdminPage);
+    PickupLabel.Name := 'DomainLabel';
+    PickupLabel.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(14);
+    PickupLabel.Caption := 'SMTP Message Pickup Folder: ';
+    PickupLabel.Parent := GatewaySmtpAdminPage.Surface;
+                              
+    PickupText := TNewMemo.Create(GatewaySmtpAdminPage);
+    PickupText.Name := 'PickupText';
+    PickupText.Top := HelpButton.Top + HelpButton.Height + ScaleY(14);
+    PickupText.Left := PickupLabel.Width + ScaleX(8);
+    PickupText.Width := GatewaySmtpAdminPage.SurfaceWidth - ScaleX(8);
+    PickupText.Height := PickupText.Height div 4;
+    PickupText.WordWrap := false;
+    PickupText.WantReturns := false;
+    PickupText.Parent := GatewaySmtpAdminPage.Surface;
+
+    //Set Raw Message folder
+    RawMessageLabel := TNewStaticText.Create(GatewaySmtpAdminPage);
+    RawMessageLabel.Name := 'RawMessageLabel';
+    RawMessageLabel.Top :=  PickupLabel.Top + PickupLabel.Height + ScaleY(14);
+    RawMessageLabel.Caption := 'Raw Message Folder: ';
+    RawMessageLabel.Parent := GatewaySmtpAdminPage.Surface;
+                              
+    RawMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
+    RawMessageText.Name := 'RawMessageText';
+    RawMessageText.Top := RawMessageLabel.Top;
+    RawMessageText.Left := PickupLabel.Width + ScaleX(8);
+    RawMessageText.Width := GatewaySmtpAdminPage.SurfaceWidth - ScaleX(8);
+    RawMessageText.Height := RawMessageText.Height div 4;
+    RawMessageText.WordWrap := false;
+    RawMessageText.WantReturns := false;
+    RawMessageText.Parent := GatewaySmtpAdminPage.Surface;
+    
+    //Set Bad Message Folder
+    BadMessageLabel := TNewStaticText.Create(GatewaySmtpAdminPage);
+    BadMessageLabel.Name := 'BadMessageLabel';
+    BadMessageLabel.Top :=  RawMessageLabel.Top + RawMessageLabel.Height + ScaleY(14);
+    BadMessageLabel.Caption := 'Bad Message Folder: ';
+    BadMessageLabel.Parent := GatewaySmtpAdminPage.Surface;
+                              
+    BadMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
+    BadMessageText.Name := 'BadMessageText';
+    BadMessageText.Top := BadMessageLabel.Top;
+    BadMessageText.Left := PickupLabel.Width + ScaleX(8);
+    BadMessageText.Width := GatewaySmtpAdminPage.SurfaceWidth - ScaleX(8);
+    BadMessageText.Height := BadMessageText.Height div 4;
+    BadMessageText.WordWrap := false;
+    BadMessageText.WantReturns := false;
+    BadMessageText.Parent := GatewaySmtpAdminPage.Surface;
+
+    //Set Incomming Message Folder
+    IncommingMessageLabel := TNewStaticText.Create(GatewaySmtpAdminPage);
+    IncommingMessageLabel.Name := 'IncommingMessageLabel';
+    IncommingMessageLabel.Top :=  BadMessageLabel.Top + BadMessageLabel.Height + ScaleY(14);
+    IncommingMessageLabel.Caption := 'Incomming Message Folder: ';
+    IncommingMessageLabel.Parent := GatewaySmtpAdminPage.Surface;
+                              
+    IncommingMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
+    IncommingMessageText.Name := 'IncommingMessageText';
+    IncommingMessageText.Top := IncommingMessageLabel.Top;
+    IncommingMessageText.Left := PickupLabel.Width + ScaleX(8);
+    IncommingMessageText.Width := GatewaySmtpAdminPage.SurfaceWidth - ScaleX(8);
+    IncommingMessageText.Height := IncommingMessageText.Height div 4;
+    IncommingMessageText.WordWrap := false;
+    IncommingMessageText.WantReturns := false;
+    IncommingMessageText.Parent := GatewaySmtpAdminPage.Surface;
+
+    //Set Outgoing Message Folder
+    OutgoingMessageLabel := TNewStaticText.Create(GatewaySmtpAdminPage);
+    OutgoingMessageLabel.Name := 'OutgoingMessageLabel';
+    OutgoingMessageLabel.Top :=  IncommingMessageLabel.Top + IncommingMessageLabel.Height + ScaleY(14);
+    OutgoingMessageLabel.Caption := 'Outgoing Message Folder: ';
+    OutgoingMessageLabel.Parent := GatewaySmtpAdminPage.Surface;
+                              
+    OutgoingMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
+    OutgoingMessageText.Name := 'OutgoingMessageText';
+    OutgoingMessageText.Top := OutgoingMessageLabel.Top;
+    OutgoingMessageText.Left := PickupLabel.Width + ScaleX(8);
+    OutgoingMessageText.Width := GatewaySmtpAdminPage.SurfaceWidth - ScaleX(8);
+    OutgoingMessageText.Height := OutgoingMessageText.Height div 4;
+    OutgoingMessageText.WordWrap := false;
+    OutgoingMessageText.WantReturns := false;
+    OutgoingMessageText.Parent := GatewaySmtpAdminPage.Surface;
+
+    OutgoingMessageLabel := TNewStaticText.Create(GatewaySmtpAdminPage);
+    OutgoingMessageLabel.Caption := 'Outgoing Folder: ';
+        
+    GatewaySmtpAdminPage.OnActivate := @ConfigSmtpAdminPageOnActivate;
+    GatewaySmtpAdminPage.OnNextButtonClick := @SetConfigSmtpAdminEndpointsOnClick;
+    GatewaySmtpAdminPage.OnShouldSkipPage := @GatewayAdminPage_ShouldSkip;
+
+    Result := GatewaySmtpAdminPage;
+end;
+
 
 function CreateUIConfigWizardPage(pageBefore: TWizardPage): TWizardPage;
 var
@@ -1248,7 +1714,9 @@ var
 begin
 
   Page := CreateDatabaseConnWizardPage;
-  Page := CreateDnsResponderWizardPage(Page);  
+  Page := CreateGatewayWizardPage(Page);
+  Page := CreateGatewaySmtpWizardPage(Page);
+  Page := CreateDnsResponderWizardPage(Page); 
   Page := CreateUIConfigWizardPage(Page);
 
   CreateAboutButtonAndURLLabel(WizardForm, WizardForm.CancelButton);
