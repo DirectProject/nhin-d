@@ -12,6 +12,7 @@ namespace Health.Direct.Install.Tools
     public interface IEndPoint
     {
         bool TestWcfSoapConnection(string endpoint);
+        bool TestConnection(string endpoint, string expectedFragment);
     }
 
     [ComVisible(true), GuidAttribute("12A4410A-E00B-42b7-988D-28F73FADFC00")]
@@ -40,6 +41,30 @@ namespace Health.Direct.Install.Tools
 
                 return results.Contains(endpoint, StringComparison.OrdinalIgnoreCase)
                     || results.Contains(GetHostName(endpoint), StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool TestConnection(string endpoint, string expectedFragment)
+        {
+            HttpWebRequest request = WebRequest.Create(endpoint) as HttpWebRequest;
+            request.Method = "GET";
+            request.ContentType = "text/xml; charset=utf-8";
+
+            try
+            {
+                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                StreamReader reader = new StreamReader(response.GetResponseStream());
+
+                string results = reader.ReadToEnd();
+
+                reader.Close();
+                response.Close();
+
+                return results.Contains(expectedFragment, StringComparison.OrdinalIgnoreCase);
             }
             catch
             {

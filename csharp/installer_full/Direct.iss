@@ -91,8 +91,8 @@ Source: "..\dnsresponder.service\*.aspx"; DestDir: "{app}\DnsService"; Flags: ig
 Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice developergateway; 
 Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Flags: ignoreversion recursesubdirs; Components: dnswebservice developergateway; 
 
-Source: "configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs; Components: configui developergateway; 
-Source: "configui\config\dev.client.config"; DestDir: "{app}\ConfigUI\Config";  DestName: "client.config";  Flags: ignoreversion; Components: configui and not developergateway
+Source: "..\installer\configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs; Components: configui developergateway;
+Source: "..\installer\configui\config\dev.client.config"; DestDir: "{app}\ConfigUI\Config";  DestName: "client.config";  Flags: ignoreversion; Components: configui and not developergateway
 
 Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion; Components: directgateway;
 Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion; Components: directgateway;
@@ -199,12 +199,6 @@ end;
 
 
 
-
-
-
-
-
-
 procedure DnsServiceStop();
   var        
     status: Boolean;       
@@ -258,18 +252,103 @@ end;
 
 
 
+function TestConnection(endpoint : String): Boolean;
+var
+  tools: Variant; 
+  success: Boolean;
+begin
+  success := false;
+  try                              
+    tools := CreateOleObject('Direct.Installer.EndPointTools');
+  except
+    RaiseException('Cannot find Direct.Installer.EndPointTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    try
+      success := tools.TestWcfSoapConnection(endpoint);
+    except
+      RaiseException('Failed end point test for endpoint: ' + endpoint +  #13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+    end;
+    Result := success;
+end;
+
+
+
+procedure RunTestConnect(wizPage: TWizardPage; labelName, textboxName : String );
+var
+  myTextBox : TCustomEdit;
+  myLabel : TNewStaticText;  
+begin   
+  myTextBox := TCustomEdit(wizPage.FindComponent(textboxName));
+  myLabel :=  TNewStaticText(wizPage.FindComponent(labelName));       
+
+  if(TestConnection(myTextBox.Text)) then
+  begin    
+    myLabel.Font.Color := clGreen;
+  end else
+  begin
+    myLabel.Font.Color := clRed;
+  end;
+  myLabel.Update;     
+end;
+
+
+
+procedure RunTestServiceAspx(wizPage: TWizardPage; labelName, textboxName : String );
+var
+  tools : Variant;
+  myTextBox : TCustomEdit;
+  myLabel : TNewStaticText;
+  success : Boolean;  
+begin   
+  myTextBox := TCustomEdit(wizPage.FindComponent(textboxName));
+  myLabel :=  TNewStaticText(wizPage.FindComponent(labelName));       
+
+
+  success := false;
+  try                              
+    tools := CreateOleObject('Direct.Installer.EndPointTools');
+  except
+    RaiseException('Cannot find Direct.Installer.EndPointTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+
+  try
+    success := tools.TestConnection(myTextBox.Text, 'Database is accessible!');
+  except
+    RaiseException('Failed end point test for endpoint: ' + myTextBox.Text +  #13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    
+  if(success) then
+  begin    
+    myLabel.Font.Color := clGreen;
+  end else
+  begin
+    myLabel.Font.Color := clRed;
+  end;
+  myLabel.Update;     
+end;
+
 
 procedure CheckDnsResponderServiceOnClick(Sender: TObject);
-var
-  ErrorCode: Integer;
-  Button: TButton;
-  DnsServiceTestTextBox: TNewEdit;
-  DnsResponderPage: TWizardPage;
+var            
+  EndPointsButton : TNewButton;
+  DnsResponderPage : TWizardPage;
+  buttonCaption : String;   
 begin
-  Button := TButton(Sender);
-  DnsResponderPage := TWizardPage(Button.Owner);
-  DnsServiceTestTextBox := TNewEdit(DnsResponderPage.FindComponent('DnsServiceTestTextBox'));
-  ShellExecAsOriginalUser('open', DnsServiceTestTextBox.Text, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+  EndPointsButton := TNewButton(Sender);
+  DnsResponderPage := TWizardPage(EndPointsButton.Owner);   
+  
+  buttonCaption := EndPointsButton.Caption;
+  EndPointsButton.Caption := 'Checking...';
+  //ShellExecAsOriginalUser('open', DnsServiceTestTextBox.Text, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode); 
+  try      
+    RunTestServiceAspx(DnsResponderPage, 'DnsServiceTestLabel', 'DnsServiceTestTextBox');      
+    RunTestConnect(DnsResponderPage, 'DnsServiceLabel', 'DnsServiceUrlText');          
+  except         
+    RaiseException(GetExceptionMessage);
+  finally
+    EndPointsButton.Caption := buttonCaption;
+    EndPointsButton.Update;  
+  end;
 end;
 
 
@@ -280,43 +359,35 @@ var
   tools: Variant;
   Button: TButton;
   DbConnStrTextBox: TNewEdit;
-  DatabaseConnPage: TWizardPage;
-  ErrorLabel : TNewStaticText;
-  SuccessLabel : TNewStaticText;
+  DatabaseConnPage: TWizardPage;  
   StatusLabel : TNewStaticText;
   success : Boolean;
   message : String;
 begin
   Button := TButton(Sender);
   DatabaseConnPage := TWizardPage(Button.Owner);
-  DbConnStrTextBox := TNewEdit(DatabaseConnPage.FindComponent('DbConnStrTextBox')); 
-  SuccessLabel := TNewStaticText(DatabaseConnPage.FindComponent('SuccessLabel'));
-  ErrorLabel := TNewStaticText(DatabaseConnPage.FindComponent('ErrorLabel'));
+  DbConnStrTextBox := TNewEdit(DatabaseConnPage.FindComponent('DbConnStrTextBox'));   
   StatusLabel := TNewStaticText(DatabaseConnPage.FindComponent('StatusLabel'));
-  SuccessLabel.Caption := '';
-  ErrorLabel.Caption := '';
+  StatusLabel.Font.Color := clBlack;
   StatusLabel.Caption := 'Checking Db Connection...';
   StatusLabel.Update;
-  StatusLabel.BringToFront;
   try
     tools := CreateOleObject('Direct.Installer.SqlDbTools');
   except
     RaiseException('Cannot find Direct.Installer.SqlDbTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
-    success := tools.TestConnection(DbConnStrTextBox.Text, message);
-    StatusLabel.Caption := '';
-    StatusLabel.Update;
+    success := tools.TestConnection(DbConnStrTextBox.Text, message);     
     if(success) then
     begin
-      SuccessLabel.Caption := 'Success';
-      SuccessLabel.Update;
-      SuccessLabel.BringToFront;
+      StatusLabel.Font.Color := clGreen;
+      StatusLabel.Caption := 'Success';      
+      StatusLabel.Update;
     end
     else
     begin
-      ErrorLabel.Caption := 'Failed: ' + message;
-      ErrorLabel.Update;
-      ErrorLabel.BringToFront;
+      StatusLabel.Font.Color := clRed;
+      StatusLabel.Caption := 'Failed: ' + message;           
+      StatusLabel.Update;
     end;         
 end;
 
@@ -368,10 +439,10 @@ end;
 
 function SetDnsResponderUrlOnClick(Sender: TWizardPage): Boolean;
 var
-  DnsServiceUrlLabel : TNewStaticText;
+  DnsServiceUrlText : TNewEdit;
 begin         
-    DnsServiceUrlLabel := TNewStaticText(Sender.FindComponent('DnsServiceUrlLabel'));
-    SetDnsResponderUrl(DnsServiceUrlLabel.Caption);
+    DnsServiceUrlText := TNewEdit(Sender.FindComponent('DnsServiceUrlText'));
+    SetDnsResponderUrl(DnsServiceUrlText.Text);
     Result := True;
 end;
 
@@ -425,12 +496,12 @@ var
 begin
   configFile := ExpandConstant('{app}') + '\ConfigUI\Config\client.config';      
   
-  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_ICertificateStore"]/@address', 'CertificatesUrlLabel'); 
-  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IAnchorStore"]/@address', 'AnchorsUrlLabel'); 
-  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IAddressManager"]/@address', 'AddressesUrlLabel'); 
-  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IDomainManager"]/@address', 'DomainsUrlLabel'); 
-  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IDnsRecordManager"]/@address', 'DnsRecordsUrlLabel'); 
-  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IAuthManager"]/@address', 'AuthenticationUrlLabel'); 
+  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_ICertificateStore"]/@address', 'CertificatesUrlText'); 
+  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IAnchorStore"]/@address', 'AnchorsUrlText'); 
+  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IAddressManager"]/@address', 'AddressesUrlText'); 
+  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IDomainManager"]/@address', 'DomainsUrlText'); 
+  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IDnsRecordManager"]/@address', 'DnsRecordsUrlText'); 
+  WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IAuthManager"]/@address', 'AuthenticationUrlText'); 
  
   Result := True; 
 end;
@@ -470,6 +541,8 @@ begin
 end;
 
 
+
+
 function GetDnsResponderUrl(): String;
 var
   xpathTools: Variant; 
@@ -484,51 +557,6 @@ begin
     dnsResponderUrl := xpathTools.SelectSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url');
     Result := dnsResponderUrl;
 end;
-
-
-procedure DnsServiceTestOnChange(Sender: TObject);
-var
-  tools : Variant;
-  DnsServiceUrlLabel, ErrorLabel : TNewStaticText;
-  DnsServiceTestTextBox : TNewEdit;
-  DnsResponderPage : TWizardPage;
-  hostport : String;
-begin
-  DnsServiceTestTextBox := TNewEdit(Sender); 
-  DnsResponderPage := TWizardPage(DnsServiceTestTextBox.Owner)
-  ErrorLabel := TNewStaticText(DnsResponderPage.FindComponent('ErrorLabel'));
-  ErrorLabel.Caption := '';
-  ErrorLabel.Update;
-     
-  //Update DnsService (Will be persisted to config file when finished with wizard) 
-  try                              
-    tools := CreateOleObject('Direct.Installer.UrlTools');
-  except
-    RaiseException('Cannot find Direct.Installer.UrlTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
-  end;  
-  
-    
- if(tools.ValidUrl(DnsServiceTestTextBox.Text)) then
- begin  
-  DnsServiceUrlLabel := TNewStaticText(DnsResponderPage.FindComponent('DnsServiceUrlLabel'));  
-  hostPort :=  tools.HostPort(DnsServiceTestTextBox.Text); 
-  DnsServiceUrlLabel.Caption :=  tools.UpdateUrlHost(DnsServiceUrlLabel.Caption, hostport).FullUrl
-  //Need to write a line wrap routine here to place a space in the url to allow a wrap at the correct location. 
-  WizardForm.AdjustLabelHeight(DnsServiceUrlLabel);
-  DnsServiceUrlLabel.Update;
-  
- end         
- else
- begin
-    ErrorLabel.Caption := 'Invalid Url.';
-    ErrorLabel.BringToFront;
-    ErrorLabel.Update;
- end;
-end;
-
-
-
-
 
 
 
@@ -563,51 +591,7 @@ begin
 end;
 
 
-function TestConnection(endpoint : String): Boolean;
-var
-  tools: Variant; 
-  success: Boolean;
-begin
-  success := false;
-  try                              
-    tools := CreateOleObject('Direct.Installer.EndPointTools');
-  except
-    RaiseException('Cannot find Direct.Installer.EndPointTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
-  end;
-    try
-      success := tools.TestWcfSoapConnection(endpoint);
-    except
-      RaiseException('Failed end point test for endpoint: ' + endpoint +  #13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
-    end;
-    Result := success;
-end;
-
-
-
-procedure RunTestConnect(wizPage: TWizardPage; labelName, textboxName : String );
-var
-  myTextBox : TCustomEdit;
-  myLabel : TNewStaticText;
-  endPoint : String;
-begin   
-  myTextBox := TCustomEdit(wizPage.FindComponent(textboxName));
-  myLabel :=  TNewStaticText(wizPage.FindComponent(labelName));       
-
-  if(TestConnection(myTextBox.Text)) then
-  begin    
-    myLabel.Font.Color := clGreen;
-  end else
-  begin
-    myLabel.Font.Color := clRed;
-  end;
-  myLabel.Update;     
-end;
-
- 
-
-
-
-
+       
 procedure GatewayOnClick (Sender: TObject);
 var                   
   EndPointsButton: TNewButton;
@@ -637,9 +621,7 @@ end;
 
 procedure ConfigAdminHostNameOnClick(Sender: TObject);
 var
-  endPoint, buttonCaption : String;
-  CertificatesUrlLabel, AnchorsUrlLabel, AddressesUrlLabel, DomainsUrlLabel, DnsRecordsUrlLabel, AuthenticationUrlLabel : TNewStaticText;
-  CertificatesLabel, AnchorsLabel, AddressesLabel, DomainsLabel, DnsRecordsLabel, AuthenticationLabel : TNewStaticText;
+  buttonCaption : String;  
   HostNameTextBox : TNewEdit;
   ConfigAdminPage : TWizardPage;
   tools : Variant;
@@ -657,98 +639,20 @@ begin
   
   buttonCaption := EndPointsButton.Caption;
   EndPointsButton.Caption := 'Checking...';
-    
-  CertificatesUrlLabel := TNewStaticText(ConfigAdminPage.FindComponent('CertificatesUrlLabel')); 
-  CertificatesLabel := TNewStaticText(ConfigAdminPage.FindComponent('CertificatesLabel')); 
-  endPoint := GetConfigAdminEndPoint('BasicHttpBinding_ICertificateStore');
-  CertificatesUrlLabel.Caption := tools.UpdateUrlHost(endPoint, HostNameTextBox.Text).FullUrl;     
-  CertificatesUrlLabel.Update; 
-  if(TestConnection(CertificatesUrlLabel.Caption)) then
-  begin
-    CertificatesLabel.Font.Color := clGreen;
-  end
-  else
-  begin
-    CertificatesLabel.Font.Color := clRed;
+   
+  try      
+    RunTestConnect(ConfigAdminPage, 'CertificatesLabel', 'CertificatesUrlText');
+    RunTestConnect(ConfigAdminPage, 'AnchorsLabel', 'AnchorsUrlText');
+    RunTestConnect(ConfigAdminPage, 'AddressesLabel', 'AddressesUrlText');
+    RunTestConnect(ConfigAdminPage, 'DomainsLabel', 'DomainsUrlText');
+    RunTestConnect(ConfigAdminPage, 'DnsRecordsLabel', 'DnsRecordsUrlText');
+    RunTestConnect(ConfigAdminPage, 'AuthenticationLabel', 'AuthenticationUrlText'); 
+  except         
+    RaiseException(GetExceptionMessage);
+  finally
+    EndPointsButton.Caption := buttonCaption;
+    EndPointsButton.Update;  
   end;
-  CertificatesLabel.Update;
-
-  AnchorsUrlLabel := TNewStaticText(ConfigAdminPage.FindComponent('AnchorsUrlLabel')); 
-  AnchorsLabel := TNewStaticText(ConfigAdminPage.FindComponent('AnchorsLabel')); 
-  endPoint := GetConfigAdminEndPoint('BasicHttpBinding_IAnchorStore');
-  AnchorsUrlLabel.Caption := tools.UpdateUrlHost(endPoint, HostNameTextBox.Text).FullUrl
-  AnchorsUrlLabel.Update;
-  if(TestConnection(CertificatesUrlLabel.Caption)) then
-  begin
-    AnchorsLabel.Font.Color := clGreen;
-  end
-  else
-  begin
-    AnchorsLabel.Font.Color := clRed;
-  end;
-  AnchorsLabel.Update;
-    
-  AddressesUrlLabel := TNewStaticText(ConfigAdminPage.FindComponent('AddressesUrlLabel')); 
-  AddressesLabel := TNewStaticText(ConfigAdminPage.FindComponent('AddressesLabel'));
-  endPoint := GetConfigAdminEndPoint('BasicHttpBinding_IAddressManager');
-  AddressesUrlLabel.Caption := tools.UpdateUrlHost(endPoint, HostNameTextBox.Text).FullUrl
-  AddressesUrlLabel.Update;
-  if(TestConnection(CertificatesUrlLabel.Caption)) then
-  begin
-    AddressesLabel.Font.Color := clGreen;
-  end
-  else
-  begin
-    AddressesLabel.Font.Color := clRed;
-  end;
-  AddressesLabel.Update;
-
-  DomainsUrlLabel := TNewStaticText(ConfigAdminPage.FindComponent('DomainsUrlLabel'));
-  DomainsLabel := TNewStaticText(ConfigAdminPage.FindComponent('DomainsLabel')); 
-  endPoint := GetConfigAdminEndPoint('BasicHttpBinding_IDomainManager');
-  DomainsUrlLabel.Caption := tools.UpdateUrlHost(endPoint, HostNameTextBox.Text).FullUrl
-  DomainsUrlLabel.Update;
-  if(TestConnection(CertificatesUrlLabel.Caption)) then
-  begin
-    DomainsLabel.Font.Color := clGreen;
-  end
-  else
-  begin
-    DomainsLabel.Font.Color := clRed;
-  end;
-  DomainsLabel.Update;
-
-  DnsRecordsUrlLabel := TNewStaticText(ConfigAdminPage.FindComponent('DnsRecordsUrlLabel')); 
-  DnsRecordsLabel := TNewStaticText(ConfigAdminPage.FindComponent('DnsRecordsLabel')); 
-  endPoint := GetConfigAdminEndPoint('BasicHttpBinding_IDnsRecordManager');
-  DnsRecordsUrlLabel.Caption := tools.UpdateUrlHost(endPoint, HostNameTextBox.Text).FullUrl
-  DnsRecordsUrlLabel.Update;
-  if(TestConnection(CertificatesUrlLabel.Caption)) then
-  begin
-    DnsRecordsLabel.Font.Color := clGreen;
-  end
-  else
-  begin
-    DnsRecordsLabel.Font.Color := clRed;
-  end;
-  DnsRecordsLabel.Update;
-
-  AuthenticationUrlLabel := TNewStaticText(ConfigAdminPage.FindComponent('AuthenticationUrlLabel')); 
-  AuthenticationLabel := TNewStaticText(ConfigAdminPage.FindComponent('AuthenticationLabel')); 
-  endPoint := GetConfigAdminEndPoint('BasicHttpBinding_IAuthManager'); 
-  AuthenticationUrlLabel.Caption := tools.UpdateUrlHost(endPoint, HostNameTextBox.Text).FullUrl
-  AuthenticationUrlLabel.Update;
-  if(TestConnection(CertificatesUrlLabel.Caption)) then
-  begin
-    AuthenticationLabel.Font.Color := clGreen;
-  end
-  else
-  begin
-    AuthenticationLabel.Font.Color := clRed;
-  end;
-  AuthenticationLabel.Update;
-
-  EndPointsButton.Caption := buttonCaption;    
 end;
 
 
@@ -761,12 +665,12 @@ end;
 procedure DnsResponderPageOnActivate(Sender: TWizardPage);
 var
   tools : Variant;
-  DnsServiceUrlLabel : TNewStaticText;
+  DnsServiceUrlText : TNewEdit;
   DnsServiceTestTextBox : TNewEdit;
 begin
   //Set DnsService from config file.
-  DnsServiceUrlLabel := TNewStaticText(Sender.FindComponent('DnsServiceUrlLabel'));
-  DnsServiceUrlLabel.Caption :=   GetDnsResponderUrl();
+  DnsServiceUrlText := TNewEdit(Sender.FindComponent('DnsServiceUrlText'));
+  DnsServiceUrlText.Text :=   GetDnsResponderUrl();
   
   //Set TestService.aspx by rebuilding Url 
   try                              
@@ -775,7 +679,7 @@ begin
     RaiseException('Cannot find Direct.Installer.UrlTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;  
   DnsServiceTestTextBox := TNewEdit(Sender.FindComponent('DnsServiceTestTextBox')); 
-  DnsServiceTestTextBox.Text := tools.UpdateUrlPathAndQuery(DnsServiceUrlLabel.Caption, '/DnsService/TestService.aspx').FullUrl;
+  DnsServiceTestTextBox.Text := tools.UpdateUrlPathAndQuery(DnsServiceUrlText.Text, '/DnsService/TestService.aspx').FullUrl;
   
 end;
 
@@ -807,27 +711,7 @@ begin
 end;
 
 
-function GetConfigAdminHostName(): String;
-var
-  xpathTools, urlTools: Variant; 
-  endPointUrl, hostPort: String;
-begin
-  try                              
-    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
-  except
-    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
-  end;
-  try                              
-    urlTools := CreateOleObject('Direct.Installer.UrlTools');
-  except
-    RaiseException('Cannot find Direct.Installer.UrlTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
-  end;  
 
-  xpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigUI\Config\client.config' ;
-  endPointUrl := xpathTools.SelectSingleAttribute('client/endpoint/@address');
-  hostPort :=  urlTools.HostPort(endPointUrl);    
-  Result := hostPort;
-end;
 
 
 procedure UpdateConfigFileName();
@@ -845,37 +729,32 @@ end;
 
 
 procedure ConfigAdminPageOnActivate(Sender: TWizardPage);
-var
-  HostNameTextBox : TNewEdit;
-  CertificatesUrlLabel, AnchorsUrlLabel, AddressesUrlLabel, DomainsUrlLabel, DnsRecordsUrlLabel, AuthenticationUrlLabel : TNewStaticText;
+var               
+  CertificatesUrlText, AnchorsUrlText, AddressesUrlText, DomainsUrlText, DnsRecordsUrlText, AuthenticationUrlText : TCustomEdit;
 begin
-  HostNameTextBox := TNewEdit(Sender.FindComponent('HostNameTextBox'));
-  UpdateConfigFileName();  //Point Web.Config to the correct client config file.
-  HostNameTextBox.Text := GetConfigAdminHostName();
-
- 
-  CertificatesUrlLabel := TNewStaticText(Sender.FindComponent('CertificatesUrlLabel')); 
-  CertificatesUrlLabel.Caption := GetConfigAdminEndPoint('BasicHttpBinding_ICertificateStore');
+   
+  CertificatesUrlText := TCustomEdit(Sender.FindComponent('CertificatesUrlText')); 
+  CertificatesUrlText.Text := GetConfigAdminEndPoint('BasicHttpBinding_ICertificateStore');
   
 
-  AnchorsUrlLabel := TNewStaticText(Sender.FindComponent('AnchorsUrlLabel')); 
-  AnchorsUrlLabel.Caption := GetConfigAdminEndPoint('BasicHttpBinding_IAnchorStore');
+  AnchorsUrlText := TCustomEdit(Sender.FindComponent('AnchorsUrlText')); 
+  AnchorsUrlText.Text := GetConfigAdminEndPoint('BasicHttpBinding_IAnchorStore');
   
 
-  AddressesUrlLabel := TNewStaticText(Sender.FindComponent('AddressesUrlLabel')); 
-  AddressesUrlLabel.Caption := GetConfigAdminEndPoint('BasicHttpBinding_IAddressManager');
+  AddressesUrlText := TCustomEdit(Sender.FindComponent('AddressesUrlText')); 
+  AddressesUrlText.Text := GetConfigAdminEndPoint('BasicHttpBinding_IAddressManager');
  
 
-  DomainsUrlLabel := TNewStaticText(Sender.FindComponent('DomainsUrlLabel'));
-  DomainsUrlLabel.Caption := GetConfigAdminEndPoint('BasicHttpBinding_IDomainManager');
+  DomainsUrlText := TCustomEdit(Sender.FindComponent('DomainsUrlText'));
+  DomainsUrlText.Text := GetConfigAdminEndPoint('BasicHttpBinding_IDomainManager');
   
 
-  DnsRecordsUrlLabel := TNewStaticText(Sender.FindComponent('DnsRecordsUrlLabel')); 
-  DnsRecordsUrlLabel.Caption := GetConfigAdminEndPoint('BasicHttpBinding_IDnsRecordManager');
+  DnsRecordsUrlText := TCustomEdit(Sender.FindComponent('DnsRecordsUrlText')); 
+  DnsRecordsUrlText.Text := GetConfigAdminEndPoint('BasicHttpBinding_IDnsRecordManager');
   
 
-  AuthenticationUrlLabel := TNewStaticText(Sender.FindComponent('AuthenticationUrlLabel')); 
-  AuthenticationUrlLabel.Caption := GetConfigAdminEndPoint('BasicHttpBinding_IAuthManager'); 
+  AuthenticationUrlText := TCustomEdit(Sender.FindComponent('AuthenticationUrlText')); 
+  AuthenticationUrlText.Text := GetConfigAdminEndPoint('BasicHttpBinding_IAuthManager'); 
  
 
 end;
@@ -974,8 +853,7 @@ function MsSmtpServiceExists(Host: String; Port: Integer): Boolean;
 var
     ResultCode: Integer;
     SmtpExists: Boolean;
-    SmtpTools: Variant;
-    skipSmtpValue: String;
+    SmtpTools: Variant;       
 begin
   
   if(CommandlineParamExists('SkipSmtpCheck')) then
@@ -1031,21 +909,12 @@ function NextButtonClick(CurPageID: Integer): Boolean;
   end;    
 end;
 
-procedure DnsServiceUrlOnClick(Sender: TObject);
-var
-  ErrorCode: Integer;
-begin
-  ShellExecAsOriginalUser('open', TNewStaticText(Sender).Caption, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
-end;
-
-
-
-
 
 procedure DnsHelpButtonOnClick(Sender: TObject);     
 begin
-  MsgBox('Set database connectivity at the Dns Web Service.'  #13#10 +
-    'Show the resulting Dns Web Service endpoint used by the DnsResponder Windows Service.', mbInformation, mb_Ok);
+  MsgBox('Test connectivity to the Dns Web Service and its database connectivity.'  #13#10 +
+    'Set the Dns Web Service endpoint used by the DnsResponder Windows Service.'  #13#10 +
+    'The "End Point" labels will be green when they are connecting and red when failing.', mbInformation, mb_Ok);
 end;
 
 procedure DatabaseHelpButtonOnClick(Sender: TObject);   
@@ -1086,7 +955,7 @@ var
   DatabaseConnPage: TWizardPage;       
   Button, HelpButton: TNewButton;
   DbConnStrTextBox : TNewEdit;
-  ErrorLabel, SuccessLabel, StatusLabel: TNewStaticText;
+  StatusLabel: TNewStaticText;
 begin
 
   DatabaseConnPage := CreateCustomPage(wpInfoAfter, 'Configure database connection string', '');
@@ -1112,23 +981,7 @@ begin
   DbConnStrTextBox.Top := Button.Top + Button.Height + ScaleY(20);
   DbConnStrTextBox.Width := DatabaseConnPage.SurfaceWidth - ScaleX(8);
   DbConnStrTextBox.Parent := DatabaseConnPage.Surface;
-
-  ErrorLabel := TNewStaticText.Create(DatabaseConnPage);
-  ErrorLabel.Name := 'ErrorLabel';
-  ErrorLabel.Caption := '';
-  ErrorLabel.Top := DatabaseConnPage.SurfaceHeight - ScaleY(16);  
-  ErrorLabel.Left := ScaleX(8);
-  ErrorLabel.Font.Color := clRed;
-  ErrorLabel.Parent := DatabaseConnPage.Surface;
-   
-  SuccessLabel := TNewStaticText.Create(DatabaseConnPage);
-  SuccessLabel.Name := 'SuccessLabel';
-  SuccessLabel.Caption := '';
-  SuccessLabel.Top := DatabaseConnPage.SurfaceHeight - ScaleY(16);
-  SuccessLabel.Left := ScaleX(8);
-  SuccessLabel.Font.Color := clGreen;
-  SuccessLabel.Parent := DatabaseConnPage.Surface;
-
+  
   StatusLabel := TNewStaticText.Create(DatabaseConnPage);
   StatusLabel.Name := 'StatusLabel';
   StatusLabel.Caption := '';
@@ -1147,17 +1000,13 @@ end;
 
 
 
-
-
-
-
 function CreateDnsResponderWizardPage(pageBefore: TWizardPage): TWizardPage;
 var
   DnsResponderPage: TWizardPage;
   DnsServiceTestTextBox: TNewEdit;
   Button, HelpButton: TNewButton;
-  DnsServiceLabel, DnsServiceUrlLabel : TNewStaticText;
-  ErrorLabel : TNewStaticText;
+  DnsServiceEndPointLabel, DnsServiceLabel, DnsServiceTestLabel : TNewStaticText;
+  DnsServiceUrlText : TNewEdit;
 begin
 
   DnsResponderPage := CreateCustomPage(pageBefore.ID, 'Configure DnsResponder', 'DnsService endpoint stored in DirectDnsResponderSvc.exe.config');
@@ -1178,55 +1027,43 @@ begin
   Button.OnClick := @CheckDnsResponderServiceOnClick;
   Button.Parent := DnsResponderPage.Surface;
   
+  DnsServiceEndPointLabel := TNewStaticText.Create(DnsResponderPage);
+  DnsServiceEndPointLabel.Top := Button.Top + Button.Height + ScaleY(16); 
+  DnsServiceEndPointLabel.Caption := 'DnsService endpoint: ';
+  DnsServiceEndPointLabel.Width := Button.Width;
+  DnsServiceEndPointLabel.Parent := DnsResponderPage.Surface;
+
+  DnsServiceTestLabel := TNewStaticText.Create(DnsResponderPage);
+  DnsServiceTestLabel.Name := 'DnsServiceTestLabel';
+  DnsServiceTestLabel.Caption := 'Test DB connectivity: ';
+  DnsServiceTestLabel.Top := DnsServiceEndPointLabel.Top + DnsServiceEndPointLabel.Height + ScaleY(16);
+  DnsServiceTestLabel.Parent := DnsResponderPage.Surface;
+
   DnsServiceTestTextBox := TNewEdit.Create(DnsResponderPage);
   DnsServiceTestTextBox.Name := 'DnsServiceTestTextBox';
-  DnsServiceTestTextBox.Top := HelpButton.Top + HelpButton.Height + ScaleY(20);;
-  DnsServiceTestTextBox.Left :=  Button.Width + ScaleX(8);
-  DnsServiceTestTextBox.Width := DnsResponderPage.SurfaceWidth - (Button.Left + Button.Width);
-  DnsServiceTestTextBox.Parent := DnsResponderPage.Surface;
-  DnsServiceTestTextBox.OnChange := @DnsServiceTestOnChange;
-            
+  DnsServiceTestTextBox.Top := DnsServiceTestLabel.Top;
+  DnsServiceTestTextBox.Left :=  DnsServiceTestLabel.Width + ScaleX(8);
+  DnsServiceTestTextBox.Width := DnsResponderPage.SurfaceWidth - (DnsServiceTestLabel.Left + DnsServiceTestLabel.Width);
+  DnsServiceTestTextBox.Parent := DnsResponderPage.Surface;  
+                                             
   DnsServiceLabel := TNewStaticText.Create(DnsResponderPage);
-  DnsServiceLabel.Top := DnsServiceTestTextBox.Top + DnsServiceTestTextBox.Height + ScaleY(16); 
-  DnsServiceLabel.Caption := 'DnsService endpoint: ';
-  DnsServiceLabel.Width := Button.Width;
+  DnsServiceLabel.Name := 'DnsServiceLabel';
+  DnsServiceLabel.Caption := 'DNS Service';
+  DnsServiceLabel.Top := DnsServiceTestLabel.Top + DnsServiceTestLabel.Height + ScaleY(16); 
   DnsServiceLabel.Parent := DnsResponderPage.Surface;
 
-  DnsServiceUrlLabel := TNewStaticText.Create(DnsResponderPage);
-  DnsServiceUrlLabel.Name := 'DnsServiceUrlLabel';
-  DnsServiceUrlLabel.Cursor := crHand;
-  DnsServiceUrlLabel.OnClick := @DnsServiceUrlOnClick;
-  //DnsServiceUrlLabel.Left := Button.Width + ScaleX(8);
-  //DnsServiceUrlLabel.Top := DnsServiceTestTextBox.Top + DnsServiceTestTextBox.Height + ScaleY(16);
-  DnsServiceUrlLabel.Top := DnsServiceLabel.Top + DnsServiceLabel.Height + ScaleY(16);
-  DnsServiceUrlLabel.Width := DnsResponderPage.SurfaceWidth;
-  DnsServiceUrlLabel.AutoSize := False;
-  DnsServiceUrlLabel.Font.Style := DnsServiceUrlLabel.Font.Style + [fsUnderline];
-  DnsServiceUrlLabel.Font.Color := clBlue;
-  DnsServiceUrlLabel.WordWrap := True;
-  DnsServiceUrlLabel.Parent := DnsResponderPage.Surface;
-           
-
-  ErrorLabel := TNewStaticText.Create(DnsResponderPage);
-  ErrorLabel.Name := 'ErrorLabel';
-  ErrorLabel.Top := DnsResponderPage.SurfaceHeight - ScaleY(16);
-  ErrorLabel.Font.Color := clRed;
-  ErrorLabel.Parent := DnsResponderPage.Surface;
-                       
+  DnsServiceUrlText := TNewEdit.Create(DnsResponderPage);
+  DnsServiceUrlText.Name := 'DnsServiceUrlText';   
+  DnsServiceUrlText.Top := DnsServiceLabel.Top;
+  DnsServiceUrlText.Left :=  DnsServiceLabel.Left + DnsServiceLabel.Width + ScaleX(8);
+  DnsServiceUrlText.Width := DnsResponderPage.SurfaceWidth - DnsServiceLabel.Width - ScaleX(8);  
+  DnsServiceUrlText.Parent := DnsResponderPage.Surface;     
   
   DnsResponderPage.OnActivate := @DnsResponderPageOnActivate;
   DnsResponderPage.OnNextButtonClick := @SetDnsResponderUrlOnClick;
   DnsResponderPage.OnShouldSkipPage := @DnsResponderPage_ShouldSkip;
   Result := DnsResponderPage;
 end;
-
-
-
-
-
-
-
-
 
 
 
@@ -1240,12 +1077,10 @@ var
   DomainLabel, DomainManagerLabel, AddressManagerLabel, PrivateCertsLabel, AnchorsLabel, DnsResolverIpLabel: TNewStaticText;
   DomainText : TNewEdit;
   DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText: TNewMemo;
-  hoboText : TNewMemo;
+  
 begin
     GatewayAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part I (SMTP)', '');
-              
-
-    
+     
     HelpButton := TNewButton.Create(GatewayAdminPage);      
     HelpButton.Left := GatewayAdminPage.Surface.Width - ScaleX(20);
     HelpButton.Width := ScaleX(20);
@@ -1491,11 +1326,9 @@ end;
 function CreateUIConfigWizardPage(pageBefore: TWizardPage): TWizardPage;
 var
   ConfigAdminPage: TWizardPage;       
-  HelpButton, EndPointsButton: TNewButton;
-  HostNameTextBox : TNewEdit;
-  HostNameLabel : TNewStaticText; 
+  HelpButton, EndPointsButton: TNewButton;  
   CertificatesLabel, AnchorsLabel, AddressesLabel, DomainsLabel, DnsRecordsLabel, AuthenticationLabel : TNewStaticText;
-  CertificatesUrlLabel, AnchorsUrlLabel, AddressesUrlLabel, DomainsUrlLabel, DnsRecordsUrlLabel, AuthenticationUrlLabel : TNewStaticText;
+  CertificatesUrlText, AnchorsUrlText, AddressesUrlText, DomainsUrlText, DnsRecordsUrlText, AuthenticationUrlText : TNewEdit;
   
 begin
 
@@ -1508,22 +1341,9 @@ begin
   HelpButton.Caption := '?';
   HelpButton.OnClick := @ConfigAdminHelpButtonOnClick;
   HelpButton.Parent := ConfigAdminPage.Surface;  
-  
-  HostNameLabel := TNewStaticText.Create(ConfigAdminPage);
-  HostNameLabel.Name := 'HostNameLabel';
-  HostNameLabel.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(14);
-  HostNameLabel.Caption := 'Host name: ';
-  HostNameLabel.Parent := ConfigAdminPage.Surface;
-                            
-  HostNameTextBox := TNewEdit.Create(ConfigAdminPage);
-  HostNameTextBox.Name := 'HostNameTextBox';
-  HostNameTextBox.Top := HelpButton.Top + HelpButton.Height + ScaleY(14);
-  HostNameTextBox.Left := HostNameLabel.Width + ScaleX(8);
-  HostNameTextBox.Width := ConfigAdminPage.SurfaceWidth - ScaleX(8);
-  HostNameTextBox.Parent := ConfigAdminPage.Surface;
     
   EndPointsButton := TNewButton.Create(ConfigAdminPage);
-  EndPointsButton.Top :=  HostNameLabel.Top + HostNameLabel.Height + ScaleY(14);
+  EndPointsButton.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(14);
   EndPointsButton.Width :=  ConfigAdminPage.Surface.Width div 4;
   EndPointsButton.Caption := 'Test End Points:';
   EndPointsButton.OnClick := @ConfigAdminHostNameOnClick;
@@ -1535,12 +1355,12 @@ begin
   CertificatesLabel.Top := EndPointsButton.Top + EndPointsButton.Height + ScaleY(14);
   CertificatesLabel.Parent := ConfigAdminPage.Surface;
 
-  CertificatesUrlLabel := TNewStaticText.Create(ConfigAdminPage);
-  CertificatesUrlLabel.Name := 'CertificatesUrlLabel';
-  CertificatesUrlLabel.Caption := '';
-  CertificatesUrlLabel.Top := CertificatesLabel.Top;
-  CertificatesUrlLabel.Left := HostNameTextBox.Left;
-  CertificatesUrlLabel.Parent := ConfigAdminPage.Surface;
+  CertificatesUrlText := TNewEdit.Create(ConfigAdminPage);
+  CertificatesUrlText.Name := 'CertificatesUrlText';
+  CertificatesUrlText.Top := CertificatesLabel.Top;
+  CertificatesUrlText.Left := CertificatesLabel.Left + CertificatesLabel.Width + ScaleX(8);
+  CertificatesUrlText.Width := ConfigAdminPage.SurfaceWidth - CertificatesLabel.Width - ScaleX(8);
+  CertificatesUrlText.Parent := ConfigAdminPage.Surface;
    
 
   AnchorsLabel := TNewStaticText.Create(ConfigAdminPage);
@@ -1549,12 +1369,12 @@ begin
   AnchorsLabel.Top := CertificatesLabel.Top + CertificatesLabel.Height + ScaleY(14);
   AnchorsLabel.Parent := ConfigAdminPage.Surface;
 
-  AnchorsUrlLabel := TNewStaticText.Create(ConfigAdminPage);
-  AnchorsUrlLabel.Name := 'AnchorsUrlLabel';
-  AnchorsUrlLabel.Caption := '';
-  AnchorsUrlLabel.Top := AnchorsLabel.Top;
-  AnchorsUrlLabel.Left := HostNameTextBox.Left;
-  AnchorsUrlLabel.Parent := ConfigAdminPage.Surface;
+  AnchorsUrlText := TNewEdit.Create(ConfigAdminPage);
+  AnchorsUrlText.Name := 'AnchorsUrlText';
+  AnchorsUrlText.Top := AnchorsLabel.Top;
+  AnchorsUrlText.Left := CertificatesUrlText.Left;
+  AnchorsUrlText.Width := CertificatesUrlText.Width;
+  AnchorsUrlText.Parent := ConfigAdminPage.Surface;
 
 
   AddressesLabel := TNewStaticText.Create(ConfigAdminPage);
@@ -1563,12 +1383,12 @@ begin
   AddressesLabel.Top := AnchorsLabel.Top + AnchorsLabel.Height + ScaleY(14);
   AddressesLabel.Parent := ConfigAdminPage.Surface;
 
-  AddressesUrlLabel := TNewStaticText.Create(ConfigAdminPage);
-  AddressesUrlLabel.Name := 'AddressesUrlLabel';
-  AddressesUrlLabel.Caption := '';
-  AddressesUrlLabel.Top := AddressesLabel.Top;
-  AddressesUrlLabel.Left := HostNameTextBox.Left;
-  AddressesUrlLabel.Parent := ConfigAdminPage.Surface;
+  AddressesUrlText := TNewEdit.Create(ConfigAdminPage);
+  AddressesUrlText.Name := 'AddressesUrlText';
+  AddressesUrlText.Top := AddressesLabel.Top;
+  AddressesUrlText.Left := CertificatesUrlText.Left;
+  AddressesUrlText.Width := CertificatesUrlText.Width;
+  AddressesUrlText.Parent := ConfigAdminPage.Surface;
   
 
   DomainsLabel := TNewStaticText.Create(ConfigAdminPage);
@@ -1577,12 +1397,12 @@ begin
   DomainsLabel.Top := AddressesLabel.Top + AddressesLabel.Height + ScaleY(14);
   DomainsLabel.Parent := ConfigAdminPage.Surface;
 
-  DomainsUrlLabel := TNewStaticText.Create(ConfigAdminPage);
-  DomainsUrlLabel.Name := 'DomainsUrlLabel';
-  DomainsUrlLabel.Caption := '';
-  DomainsUrlLabel.Top := DomainsLabel.Top;
-  DomainsUrlLabel.Left := HostNameTextBox.Left;
-  DomainsUrlLabel.Parent := ConfigAdminPage.Surface;
+  DomainsUrlText := TNewEdit.Create(ConfigAdminPage);
+  DomainsUrlText.Name := 'DomainsUrlText';
+  DomainsUrlText.Top := DomainsLabel.Top;
+  DomainsUrlText.Left := CertificatesUrlText.Left;
+  DomainsUrlText.Width := CertificatesUrlText.Width;
+  DomainsUrlText.Parent := ConfigAdminPage.Surface;
 
 
   DnsRecordsLabel := TNewStaticText.Create(ConfigAdminPage);
@@ -1591,12 +1411,12 @@ begin
   DnsRecordsLabel.Top := DomainsLabel.Top + DomainsLabel.Height + ScaleY(14);
   DnsRecordsLabel.Parent := ConfigAdminPage.Surface;
 
-  DnsRecordsUrlLabel := TNewStaticText.Create(ConfigAdminPage);
-  DnsRecordsUrlLabel.Name := 'DnsRecordsUrlLabel';
-  DnsRecordsUrlLabel.Caption := '';
-  DnsRecordsUrlLabel.Top := DnsRecordsLabel.Top;
-  DnsRecordsUrlLabel.Left := HostNameTextBox.Left;
-  DnsRecordsUrlLabel.Parent := ConfigAdminPage.Surface;
+  DnsRecordsUrlText := TNewEdit.Create(ConfigAdminPage);
+  DnsRecordsUrlText.Name := 'DnsRecordsUrlText';
+  DnsRecordsUrlText.Top := DnsRecordsLabel.Top;
+  DnsRecordsUrlText.Left := CertificatesUrlText.Left;
+  DnsRecordsUrlText.Width := CertificatesUrlText.Width;
+  DnsRecordsUrlText.Parent := ConfigAdminPage.Surface;
 
 
   AuthenticationLabel := TNewStaticText.Create(ConfigAdminPage);
@@ -1605,12 +1425,12 @@ begin
   AuthenticationLabel.Top := DnsRecordsLabel.Top + DnsRecordsLabel.Height + ScaleY(14);
   AuthenticationLabel.Parent := ConfigAdminPage.Surface;
 
-  AuthenticationUrlLabel := TNewStaticText.Create(ConfigAdminPage);
-  AuthenticationUrlLabel.Name := 'AuthenticationUrlLabel';
-  AuthenticationUrlLabel.Caption := '';
-  AuthenticationUrlLabel.Top := AuthenticationLabel.Top;
-  AuthenticationUrlLabel.Left := HostNameTextBox.Left;
-  AuthenticationUrlLabel.Parent := ConfigAdminPage.Surface;
+  AuthenticationUrlText := TNewEdit.Create(ConfigAdminPage);
+  AuthenticationUrlText.Name := 'AuthenticationUrlText';
+  AuthenticationUrlText.Top := AuthenticationLabel.Top;
+  AuthenticationUrlText.Left := CertificatesUrlText.Left;
+  AuthenticationUrlText.Width := CertificatesUrlText.Width;
+  AuthenticationUrlText.Parent := ConfigAdminPage.Surface;
 
 
   ConfigAdminPage.OnActivate := @ConfigAdminPageOnActivate;
@@ -1624,9 +1444,9 @@ end;
 procedure CreateAboutButtonAndURLLabel(ParentForm: TSetupForm; CancelButton: TNewButton);
 var    
   URLLabel: TNewStaticText;
+
 begin
   
-
   URLLabel := TNewStaticText.Create(ParentForm);
   URLLabel.Caption := 'http://wiki.directproject.org/';
   URLLabel.Cursor := crHand;
@@ -1637,6 +1457,8 @@ begin
   URLLabel.Font.Color := clBlue;
   URLLabel.Top := CancelButton.Top + CancelButton.Height - CancelButton.Height - 2;
   URLLabel.Left := ScaleX(20);
+
+
 end;
 
 
