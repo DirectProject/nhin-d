@@ -30,7 +30,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.0.0.0
+AppVerName=Direct Project .NET Gateway 1.0.0.7
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -39,10 +39,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.0.0.0-NET35
+OutputBaseFilename=Direct-1.0.0.7-NET35
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.0.0.0
+VersionInfoVersion=1.0.0.7
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -54,13 +54,13 @@ WizardImageStretch=Yes
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Components]
-Name: dnsresponder; Description: Install the DNS Responder; Types: development dns; 
-Name: dnswebservice; Description: DNS Web service; Types: development config; 
-Name: configwebservice; Description: Config Web services; Types: development config; 
-Name: configui; Description: UI Web Admin; Types: development config;
-Name: directgateway; Description: Gateway to SMTP; Types: development gateway; 
+Name: dnsresponder; Description: Install the DNS Responder; Types: dns;
+Name: dnswebservice; Description: DNS Web service; Types: config;
+Name: configwebservice; Description: Config Web services; Types: config;
+Name: configui; Description: UI Web Admin; Types: config;
+Name: directgateway; Description: Gateway to SMTP; Types: gateway;
 Name: developergateway; Description: Developer gateway configuration to SMTP; Types: development; 
-Name: database; Description: DirectConfig database; Types: development database;
+Name: database; Description: DirectConfig database; Types: database;
 
      
 [Types]
@@ -71,6 +71,8 @@ Name: database; Description: Database
 Name: custom; Description: Custom Install; Flags: iscustom;
 Name: development; Description: Developer Install (Single machine and development gateway version)
 
+[Dirs]
+Name: "{app}\Log"
 
 [Files]
 Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
@@ -79,7 +81,7 @@ Source: "..\bin\debug\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignore
 Source: "..\bin\debug\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Flags: ignoreversion; Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
 Source: "..\bin\debug\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
 Source: "..\bin\debug\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs;   Components: developergateway; 
-Source: "..\bin\debug\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: developergateway
+Source: "..\bin\debug\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: ignoreversion;
 
 Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
 Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
@@ -94,9 +96,9 @@ Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Fl
 Source: "..\installer\configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs; Components: configui developergateway;
 Source: "..\installer\configui\config\dev.client.config"; DestDir: "{app}\ConfigUI\Config";  DestName: "client.config";  Flags: ignoreversion; Components: configui and not developergateway
 
-Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion; Components: directgateway;
-Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion; Components: directgateway;
-Source: "SmtpAgentConfig.xml"; DestDir: {app}; Flags: ignoreversion; Components: directgateway;
+Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion; Components: directgateway developergateway;
+Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion; Components: directgateway developergateway;
+Source: "SmtpAgentConfig.xml"; DestDir: {app}; Flags: ignoreversion; Components: directgateway developergateway;
 
 Source: "..\gateway\devInstall\DevAgentWithServiceConfig.xml"; DestDir: "{app}"; DestName: "DevAgentConfig.xml"; Flags: ignoreversion; Components: developergateway;            
 Source: "..\gateway\devInstall\setupdomains.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: developergateway;
@@ -105,7 +107,18 @@ Source: "..\gateway\devInstall\simple.eml"; DestDir: "{app}\Samples"; Flags: ign
 Source: "..\external\microsoft\vcredist\vcredist_x86.exe"; DestDir: "{app}\Libraries"; DestName: "vcredist.exe"; Flags: ignoreversion recursesubdirs; Check: IsX86; Components: directgateway developergateway;
 Source: "..\external\microsoft\vcredist\vcredist_x64.exe"; DestDir: "{app}\Libraries"; DestName: "vcredist.exe"; Flags: ignoreversion recursesubdirs; Check: IsX64 or IsIA64; Components: directgateway developergateway;
 
-Source: "*.bat"; DestDir: "{app}"; Excludes: "build-installer.bat"; Flags: ignoreversion;
+Source: "createadmin.bat"; DestDir: "{app}";  Flags: ignoreversion;
+Source: "createdatabase.bat"; DestDir: "{app}";  Flags: ignoreversion;
+Source: "createeventlogsource.bat"; DestDir: "{app}";  Flags: ignoreversion;
+Source: "InstallDnsResponder.bat"; DestDir: "{app}";  Flags: ignoreversion; Components: dnsresponder;
+Source: "installgateway.bat"; DestDir: "{app}";  Flags: ignoreversion; Components: directgateway;
+Source: "UninstallDnsResponder.bat"; DestDir: "{app}";  Flags: ignoreversion;  Components: dnsresponder;
+Source: "uninstallGateway.bat"; DestDir: "{app}";  Flags: ignoreversion;  Components: directgateway;
+
+Source: "install-dev.bat"; DestDir: "{app}";  Flags: ignoreversion;  Components: developergateway;
+Source: "uninstall.bat"; DestDir: "{app}";  Flags: ignoreversion;  Components: developergateway;
+
+
 Source: "*.ps1"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "event-sources.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
@@ -117,39 +130,40 @@ Source: "toolutil\install.tools\bin\debug\Health.Direct.Install.Tools.dll"; Dest
 [UninstallDelete]
 Type: files; Name: "{app}\direct.ini"
 Type: files; Name: "{app}\Health.Direct.SmtpAgent.tlb"
-Type: files; Name: "{app}\InstallationLogFile.log"
-Type: files; Name: "{app}\installdnsresponder.log"
-Type: files; Name: "{app}\installgateway.log"
-Type: files; Name: "{app}\createeventlogsource.log"
+Type: files; Name: "{app}\Log\InstallationLogFile.log"
+Type: files; Name: "{app}\Log\installdnsresponder.log"
+Type: files; Name: "{app}\Log\installgateway.log"
+Type: files; Name: "{app}\Log\createeventlogsource.log"
 Type: files; Name: "{app}\InstallTools\Health.Direct.Install.Tools.tlb"
 
 [Icons]
-Name: "{group}\Admin Console"; Filename: "{app}\AdminConsole.exe"; WorkingDir: "{app}";
-Name: "{group}\Config Console"; Filename: "{app}\ConfigConsole.exe"; WorkingDir: "{app}";
-Name: "{group}\Config Web UI"; Filename: "http://localhost/ConfigUI/";
-Name: "{group}\Test Database"; Filename: "http://localhost/ConfigService/TestService.aspx";
+Name: "{group}\Admin Console"; Filename: "{app}\AdminConsole.exe"; WorkingDir: "{app}";  Components: configui developergateway;
+Name: "{group}\Agent Console (DNS)"; Filename: "{app}\AgentConsole.exe"; WorkingDir: "{app}";  Components: dnsresponder developergateway;
+Name: "{group}\Config Console"; Filename: "{app}\ConfigConsole.exe"; WorkingDir: "{app}";   Components: directgateway developergateway;
+Name: "{group}\Config Web UI"; Filename: "http://localhost/ConfigUI/"; Components: configui developergateway;
+Name: "{group}\Test Database"; Filename: "http://localhost/ConfigService/TestService.aspx"; Components: configwebservice developergateway;
 Name: "{group}\{cm:UninstallProgram,Direct Gateway}"; Filename: "{uninstallexe}";
 
 
 [Run]
 Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: directgateway or developergateway; Check: not IsVCRT
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser postinstall; Components: developergateway and not database;
-Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database;
+Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database and not developergateway ;
 Filename: {app}\install-dev.bat; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
-Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway; 
-Filename: {dotnet2032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; 
-Filename: {dotnet2064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; 
-Filename: {app}\installgateway.bat; Parameters:  """{app}"" >> ""{app}\installgateway.log"" 2>&1";  Description: Install Gateway; Flags: runascurrentuser ; Components: directgateway and not developergateway; 
+Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\Log\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway;
+Filename: {dotnet2032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: not developergateway
+Filename: {dotnet2064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: not developergateway
+Filename: {app}\installgateway.bat; Parameters:  """{app}"" >> ""{app}\Log\installgateway.log"" 2>&1";  Description: Install Gateway; Flags: runascurrentuser ; Components: directgateway and not developergateway;
 Filename: {app}\createadmin.bat; Description:Create Admin.  (Database must exist); Flags: runascurrentuser postinstall unchecked; Components: not developergateway; 
-Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; Components: (developergateway or dnsresponder or dnswebservice or configwebservice) and not developergateway; 
+Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\Log\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; Components: (developergateway or dnsresponder or dnswebservice or configwebservice) and not developergateway;
 
 
 [UninstallRun]
 Filename: {app}\uninstall.bat; Flags: runascurrentuser; RunOnceId: 'RemoveDeveloperGateway';   Components: developergateway;
 Filename: {app}\uninstallDnsResponder.bat; RunOnceId: 'RemoveDnsResponder';  Components: dnsresponder and not developergateway;
 Filename: {app}\uninstallGateway.bat; RunOnceId: 'RemoveGateway'; Components: directgateway and not developergateway;
-Filename: {dotnet2064}\RegAsm.exe;  Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
-Filename: {dotnet2032}\RegAsm.exe;  Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
+Filename: {dotnet2064}\RegAsm; RunOnceId: 'RemoveTools64'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
+Filename: {dotnet2032}\RegAsm.exe; RunOnceId: 'RemoveTools32'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
 
 
 [INI]
@@ -235,7 +249,7 @@ begin
 
     //log files processing
     if OkToCopyLog then
-    FileCopy (ExpandConstant ('{log}'), ExpandConstant ('{app}\InstallationLogFile.log'), FALSE);
+    FileCopy (ExpandConstant ('{log}'), ExpandConstant ('{app}\Log\InstallationLogFile.log'), FALSE);
     RestartReplace (ExpandConstant ('{log}'), '');   // remove the temp log file during the next system restart.
 
 
@@ -410,7 +424,7 @@ end;
 
 
 
-procedure SetDatabaseConnSting(connStr: String);
+procedure SetDatabaseConnSting(page: TWizardPage; connStr: String);
 var
   tools : Variant;
 begin
@@ -419,22 +433,24 @@ begin
   except
     RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
-    if (pos( 'dnswebservice', WizardSelectedComponents( false)) > 0) and (pos( 'development', WizardSetupType( false)) = 0) then  
+    if (page.Name = 'ConfigService') then
     begin
-        tools.XmlFilePath := ExpandConstant('{app}') + '\DnsService\Web.Config' ;
-        tools.SetSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString', connStr);
-    end
-    else
-    if (pos( 'configwebservice', WizardSelectedComponents( false)) > 0)  and (pos( 'development', WizardSetupType( false)) = 0) then  
-    begin
-        tools.XmlFilePath := ExpandConstant('{app}') + '\ConfigService\Web.Config' ;
-        tools.SetSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString', connStr);
+      tools.XmlFilePath := ExpandConstant('{app}') + '\ConfigService\Web.Config'; //Set Admin UI
+      tools.SetSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString', connStr);
+      tools.XmlFilePath := ExpandConstant('{app}') + '\AdminConsole.exe.config';  //Set Admin Console
+      tools.SetSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString', connStr);
     end;
+
+    if (page.Name = 'DnsService') then
+    begin
+      tools.XmlFilePath := ExpandConstant('{app}') + '\DnsService\Web.Config';
+      tools.SetSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString', connStr);
+    end;
+
+
+
 end;
        
-
-       
-
 
 
 function SetDnsResponderUrlOnClick(Sender: TWizardPage): Boolean;
@@ -454,9 +470,10 @@ var
   DbConnStrTextBox : TNewEdit;
 begin  
   DbConnStrTextBox := TNewEdit(Sender.FindComponent('DbConnStrTextBox')); 
-  SetDatabaseConnSting(DbConnStrTextBox.Text);
+  SetDatabaseConnSting(Sender, DbConnStrTextBox.Text);
   Result := True; 
 end;
+
 
 
 procedure WriteConfigItem(wizardPage : TWizardPage; configFile, xpath, objectName : String);
@@ -502,7 +519,7 @@ begin
   WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IDomainManager"]/@address', 'DomainsUrlText'); 
   WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IDnsRecordManager"]/@address', 'DnsRecordsUrlText'); 
   WriteConfigItem(Sender, configFile, 'client/endpoint[@bindingConfiguration="BasicHttpBinding_IAuthManager"]/@address', 'AuthenticationUrlText'); 
- 
+
   Result := True; 
 end;
 
@@ -512,6 +529,7 @@ var
   configFile  : String;
 begin
   
+  // Setting SmtpAgentConfig for Gateway
   configFile := ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
   
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Domain', 'DomainText');
@@ -520,7 +538,7 @@ begin
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url', 'PrivateCertsText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/ServiceResolver/ClientSettings/Url', 'AnchorsText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP', 'DnsResolverIpText');
-  
+
   Result := True;
 end;
 
@@ -542,42 +560,30 @@ end;
 
 
 
-
-function GetDnsResponderUrl(): String;
+function SetConfigConsoleEndpointsOnClick(Sender: TwizardPage): Boolean;
 var
-  xpathTools: Variant; 
-  dnsResponderUrl: String;
+  configFile : String;
 begin
-  try                              
-    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
-  except
-    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
-  end;
-    xpathTools.XmlFilePath := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
-    dnsResponderUrl := xpathTools.SelectSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url');
-    Result := dnsResponderUrl;
+  // Setting ConfigConsoleSettings.xml
+  configFile := ExpandConstant('{app}') + '\ConfigConsoleSettings.xml';
+
+  WriteConfigItem(Sender, configFile, '/ConsoleSettings/DomainManager/Url', 'DomainManagerText');
+  WriteConfigItem(Sender, configFile, '/ConsoleSettings/AddressManager/Url', 'AddressManagerText');
+  WriteConfigItem(Sender, configFile, '/ConsoleSettings/CertificateManager/Url', 'PrivateCertsText');
+  WriteConfigItem(Sender, configFile, '/ConsoleSettings/AnchorManager/Url', 'AnchorsText');
+  WriteConfigItem(Sender, configFile, '/ConsoleSettings/DnsRecordManager/Url', 'DnsRecordManagerText');
+  WriteConfigItem(Sender, configFile, '/ConsoleSettings/PropertyManager/Url', 'PropertyText');
+  WriteConfigItem(Sender, configFile, '/ConsoleSettings/BlobManager/Url', 'BlobText');
+
+
+  Result := True;
+
 end;
 
 
 
-function GetConfigAdminEndPoint(bindConfigName : String): String;
-var
-  xpathTools: Variant; 
-  endPoint: String;
-begin
-  try                              
-    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
-  except
-    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
-  end;
-    xpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigUI\Config\client.config' ;
-    endPoint := xpathTools.SelectSingleAttribute('/client/endpoint[@bindingConfiguration="' + bindConfigName + '"]/@address');
-    Result := endPoint;
-end;
 
-
-
-function GetGatewaySetting(xpath : String): String;
+function GetConfigSetting(configFile, xpath : String): String;
 var
   xpathTools: Variant;    
 begin
@@ -586,9 +592,10 @@ begin
   except
     RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
-    xpathTools.XmlFilePath := ExpandConstant('{app}') + '\SmtpAgentConfig.xml' ;
+    xpathTools.XmlFilePath := configFile ;
     Result := xpathTools.SelectSingleAttribute(xpath);
 end;
+
 
 
        
@@ -607,7 +614,6 @@ begin
     RunTestConnect(GatewayAdminPage, 'AddressManagerLabel', 'AddressManagerText');
     RunTestConnect(GatewayAdminPage, 'PrivateCertsLabel', 'PrivateCertsText');
     RunTestConnect(GatewayAdminPage, 'AnchorsLabel', 'AnchorsText');
-    //RunTestConnect(GatewayAdminPage, 'DnsResolverIpLabel', 'DnsResolverIpText');    
   except         
     RaiseException(GetExceptionMessage);
   finally
@@ -617,6 +623,31 @@ begin
 end;
 
 
+procedure ConfigConsoleOnClick (Sender: TObject);
+var
+  EndPointsButton: TNewButton;
+  buttonCaption : String;
+  GatewayAdminPage : TWizardPage;
+begin
+  EndPointsButton := TNewButton(Sender);
+  GatewayAdminPage := TWizardPage(EndPointsButton.Owner);
+  buttonCaption := EndPointsButton.Caption;
+  EndPointsButton.Caption := 'Checking...';
+  try
+    RunTestConnect(GatewayAdminPage, 'DomainManagerLabel', 'DomainManagerText');
+    RunTestConnect(GatewayAdminPage, 'AddressManagerLabel', 'AddressManagerText');
+    RunTestConnect(GatewayAdminPage, 'DnsRecordManagerLabel', 'DnsRecordManagerText');
+    RunTestConnect(GatewayAdminPage, 'PrivateCertsLabel', 'PrivateCertsText');
+    RunTestConnect(GatewayAdminPage, 'AnchorsLabel', 'AnchorsText');
+    RunTestConnect(GatewayAdminPage, 'PropertyLabel', 'PropertyText');
+    RunTestConnect(GatewayAdminPage, 'BlobLabel', 'BlobText');
+  except
+    RaiseException(GetExceptionMessage);
+  finally
+    EndPointsButton.Caption := buttonCaption;
+    EndPointsButton.Update;
+  end;
+end;
 
 
 procedure ConfigAdminHostNameOnClick(Sender: TObject);
@@ -658,19 +689,19 @@ end;
 
 
 
-
-
-
-
 procedure DnsResponderPageOnActivate(Sender: TWizardPage);
 var
   tools : Variant;
   DnsServiceUrlText : TNewEdit;
   DnsServiceTestTextBox : TNewEdit;
+  configFile : String;
 begin
+
+  configFile := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
+  
   //Set DnsService from config file.
   DnsServiceUrlText := TNewEdit(Sender.FindComponent('DnsServiceUrlText'));
-  DnsServiceUrlText.Text :=   GetDnsResponderUrl();
+  DnsServiceUrlText.Text :=   GetConfigSetting(configFile, '/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url');
   
   //Set TestService.aspx by rebuilding Url 
   try                              
@@ -685,19 +716,28 @@ end;
 
 
 
-function GetDbConnStr(): String;
+function GetDbConnStr(page : TWizardPage): String;
 var
   xpathTools: Variant; 
-  dnsResponderUrl: String;
+  dbConnStr: String;
 begin
   try                              
     xpathTools := CreateOleObject('Direct.Installer.XPathTools');
   except
     RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
-    xpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigService\Web.Config' ;
-    dnsResponderUrl := xpathTools.SelectSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString');
-    Result := dnsResponderUrl;
+    if (page.Name = 'ConfigService') then
+    begin
+      xpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigService\Web.Config';
+    end;
+    
+    if (page.Name = 'DnsService') then
+    begin
+      xpathTools.XmlFilePath := ExpandConstant('{app}') + '\DnsService\Web.Config';
+    end;
+
+    dbConnStr := xpathTools.SelectSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString');
+    Result := dbConnStr;
 end;
 
 
@@ -707,7 +747,7 @@ var
   DbConnStrTextBox : TNewEdit;
 begin
   DbConnStrTextBox := TNewEdit(Sender.FindComponent('DbConnStrTextBox')); 
-  DbConnStrTextBox.Text := GetDbConnStr();
+  DbConnStrTextBox.Text := GetDbConnStr(Sender);
 end;
 
 
@@ -731,31 +771,30 @@ end;
 procedure ConfigAdminPageOnActivate(Sender: TWizardPage);
 var               
   CertificatesUrlText, AnchorsUrlText, AddressesUrlText, DomainsUrlText, DnsRecordsUrlText, AuthenticationUrlText : TCustomEdit;
+  configFile : String;
 begin
-   
-  CertificatesUrlText := TCustomEdit(Sender.FindComponent('CertificatesUrlText')); 
-  CertificatesUrlText.Text := GetConfigAdminEndPoint('BasicHttpBinding_ICertificateStore');
+
+  configFile :=  ExpandConstant('{app}') + '\ConfigUI\Config\client.config';
+
+  UpdateConfigFileName();  //Point Web.Config to the correct client config file.
   
+  CertificatesUrlText := TCustomEdit(Sender.FindComponent('CertificatesUrlText')); 
+  CertificatesUrlText.Text := GetConfigSetting(configFile, '/client/endpoint[@bindingConfiguration="BasicHttpBinding_ICertificateStore"]/@address');
 
   AnchorsUrlText := TCustomEdit(Sender.FindComponent('AnchorsUrlText')); 
-  AnchorsUrlText.Text := GetConfigAdminEndPoint('BasicHttpBinding_IAnchorStore');
-  
+  AnchorsUrlText.Text := GetConfigSetting(configFile, '/client/endpoint[@bindingConfiguration="BasicHttpBinding_IAnchorStore"]/@address');
 
   AddressesUrlText := TCustomEdit(Sender.FindComponent('AddressesUrlText')); 
-  AddressesUrlText.Text := GetConfigAdminEndPoint('BasicHttpBinding_IAddressManager');
- 
+  AddressesUrlText.Text := GetConfigSetting(configFile, '/client/endpoint[@bindingConfiguration="BasicHttpBinding_IAddressManager"]/@address');
 
   DomainsUrlText := TCustomEdit(Sender.FindComponent('DomainsUrlText'));
-  DomainsUrlText.Text := GetConfigAdminEndPoint('BasicHttpBinding_IDomainManager');
-  
+  DomainsUrlText.Text := GetConfigSetting(configFile, '/client/endpoint[@bindingConfiguration="BasicHttpBinding_IDomainManager"]/@address');
 
   DnsRecordsUrlText := TCustomEdit(Sender.FindComponent('DnsRecordsUrlText')); 
-  DnsRecordsUrlText.Text := GetConfigAdminEndPoint('BasicHttpBinding_IDnsRecordManager');
-  
+  DnsRecordsUrlText.Text := GetConfigSetting(configFile, '/client/endpoint[@bindingConfiguration="BasicHttpBinding_IDnsRecordManager"]/@address');
 
   AuthenticationUrlText := TCustomEdit(Sender.FindComponent('AuthenticationUrlText')); 
-  AuthenticationUrlText.Text := GetConfigAdminEndPoint('BasicHttpBinding_IAuthManager'); 
- 
+  AuthenticationUrlText.Text := GetConfigSetting(configFile, '/client/endpoint[@bindingConfiguration="BasicHttpBinding_IAuthManager"]/@address');
 
 end;
 
@@ -764,28 +803,31 @@ end;
 
 procedure GatewayAdminPageOnActivate(Sender: TWizardPage);
 var
-  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText: TNewMemo;
+  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText: TNewEdit;
   DomainText: TNewEdit;
+  configFile : String;
 begin
 
- 
+  configFile :=  ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
   DomainText := TNewEdit(Sender.FindComponent('DomainText'));
-  DomainText.Text := GetGatewaySetting('/SmtpAgentConfig/Domain');
+  DomainText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Domain');
 
-  DomainManagerText := TNewMemo(Sender.FindComponent('DomainManagerText'));
-  DomainManagerText.Text := GetGatewaySetting('/SmtpAgentConfig/DomainManager/Url');
+  DomainManagerText := TNewEdit(Sender.FindComponent('DomainManagerText'));
+  DomainManagerText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/DomainManager/Url');
 
-  AddressManagerText := TNewMemo(Sender.FindComponent('AddressManagerText'));
-  AddressManagerText.Text := GetGatewaySetting('/SmtpAgentConfig/AddressManager/Url');
+  AddressManagerText := TNewEdit(Sender.FindComponent('AddressManagerText'));
+  AddressManagerText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/AddressManager/Url');
   
-  PrivateCertsText := TNewMemo(Sender.FindComponent('PrivateCertsText'));
-  PrivateCertsText.Text := GetGatewaySetting('/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url');
+  PrivateCertsText := TNewEdit(Sender.FindComponent('PrivateCertsText'));
+  PrivateCertsText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url');
   
-  AnchorsText := TNewMemo(Sender.FindComponent('AnchorsText'));
-  AnchorsText.Text := GetGatewaySetting('/SmtpAgentConfig/Anchors/ServiceResolver/ClientSettings/Url');
+  AnchorsText := TNewEdit(Sender.FindComponent('AnchorsText'));
+  AnchorsText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Anchors/ServiceResolver/ClientSettings/Url');
   
-  DnsResolverIpText := TNewMemo(Sender.FindComponent('DnsResolverIpText'));
-  DnsResolverIpText.Text := GetGatewaySetting('/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP');
+  DnsResolverIpText := TNewEdit(Sender.FindComponent('DnsResolverIpText'));
+  DnsResolverIpText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP');
+  
+
 
 end; 
 
@@ -794,26 +836,58 @@ end;
 procedure ConfigSmtpAdminPageOnActivate(Sender: TWizardPage);
 var
   PickupText, RawMessageText, BadMessageText, IncommingMessageText, OutgoingMessageText : TNewMemo;
+  configFile : String;
 begin
-   
+  configFile :=  ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
+  
   PickupText := TNewMemo(Sender.FindComponent('PickupText'));
-  PickupText.Text := GetGatewaySetting('/SmtpAgentConfig/InternalMessage/PickupFolder');
+  PickupText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/InternalMessage/PickupFolder');
 
   RawMessageText := TNewMemo(Sender.FindComponent('RawMessageText'));
-  RawMessageText.Text := GetGatewaySetting('/SmtpAgentConfig/RawMessage/CopyFolder');
+  RawMessageText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/RawMessage/CopyFolder');
   
   BadMessageText := TNewMemo(Sender.FindComponent('BadMessageText'));
-  BadMessageText.Text := GetGatewaySetting('/SmtpAgentConfig/BadMessage/CopyFolder');
+  BadMessageText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/BadMessage/CopyFolder');
   
   IncommingMessageText := TNewMemo(Sender.FindComponent('IncommingMessageText'));
-  IncommingMessageText.Text := GetGatewaySetting('/SmtpAgentConfig/ProcessIncoming/CopyFolder');
+  IncommingMessageText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/ProcessIncoming/CopyFolder');
   
   OutgoingMessageText := TNewMemo(Sender.FindComponent('OutgoingMessageText'));
-  OutgoingMessageText.Text := GetGatewaySetting('/SmtpAgentConfig/ProcessOutgoing/CopyFolder');
+  OutgoingMessageText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/ProcessOutgoing/CopyFolder');
 
 end;
 
 
+
+procedure ConfigConsolePageOnActivate(Sender: TWizardPage);
+var
+  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText: TNewEdit;
+  configFile : String;
+begin
+  configFile :=  ExpandConstant('{app}') + '\ConfigConsoleSettings.xml';
+
+  DomainManagerText := TNewEdit(Sender.FindComponent('DomainManagerText'));
+  DomainManagerText.Text := GetConfigSetting(configFile, '/ConsoleSettings/DomainManager/Url');
+
+  AddressManagerText := TNewEdit(Sender.FindComponent('AddressManagerText'));
+  AddressManagerText.Text := GetConfigSetting(configFile, '/ConsoleSettings/AddressManager/Url');
+
+  DnsRecordManagerText := TNewEdit(Sender.FindComponent('DnsRecordManagerText'));
+  DnsRecordManagerText.Text := GetConfigSetting(configFile, '/ConsoleSettings/DnsRecordManager/Url');
+
+  PrivateCertsText := TNewEdit(Sender.FindComponent('PrivateCertsText'));
+  PrivateCertsText.Text := GetConfigSetting(configFile, '/ConsoleSettings/CertificateManager/Url');
+
+  AnchorsText := TNewEdit(Sender.FindComponent('AnchorsText'));
+  AnchorsText.Text := GetConfigSetting(configFile, '/ConsoleSettings/AnchorManager/Url');
+
+  PropertyText := TNewEdit(Sender.FindComponent('PropertyText'));
+  PropertyText.Text := GetConfigSetting(configFile, '/ConsoleSettings/PropertyManager/Url');
+
+  BlobText := TNewEdit(Sender.FindComponent('BlobText'));
+  BlobText.Text := GetConfigSetting(configFile, '/ConsoleSettings/BlobManager/Url');
+
+end;
 
 
 
@@ -822,13 +896,27 @@ begin
   Result := (pos( 'dnsresponder', WizardSelectedComponents( false)) = 0) ;  
 end;
 
+
+
+
 //Skip this page if not configuring a service that relies on the database.
 function DatabaseConnPage_ShouldSkip(Page: TwizardPage): Boolean;
 begin
-  Result := ((pos( 'dnswebservice', WizardSelectedComponents( false)) = 0)
-              and (pos( 'configwebservice', WizardSelectedComponents( false)) = 0))
-                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)     
+  if(Page.Name = 'ConfigService') then
+  begin
+    Result := (pos( 'configwebservice', WizardSelectedComponents( false)) = 0)
+                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
+  end;
+  
+  if(Page.Name = 'DnsService') then
+  begin
+    Result := (pos( 'dnswebservice', WizardSelectedComponents( false)) = 0)
+                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
+  end;
 end;
+
+
+
 
 //Skip this page is not configuring the Config Admin UI
 function ConfigAdminPage_ShouldSkip(Page: TwizardPage): Boolean;
@@ -838,10 +926,20 @@ begin
 end;
 
 
+
+
 //Skip this page is not configuring the Config Admin UI
 function GatewayAdminPage_ShouldSkip(Page: TwizardPage): Boolean;
 begin
   Result := (pos( 'directgateway', WizardSelectedComponents( false)) = 0)                  
+                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
+end;
+
+
+//Skip this page is not configuring the Config Admin UI
+function ConfigConsolePage_ShouldSkip(Page: TwizardPage): Boolean;
+begin
+  Result := (pos( 'directgateway', WizardSelectedComponents( false)) = 0)
                 or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
 end;
 
@@ -889,9 +987,9 @@ function NextButtonClick(CurPageID: Integer): Boolean;
   if(CurPageID = wpSelectComponents) then 
     begin                
       //check for smtp services
-      if (pos( 'directgateway', WizardSelectedComponents( false)) > 0)  or (pos( 'development', WizardSetupType( false)) > 0) then  
+      if (pos( 'directgateway', WizardSelectedComponents( false)) > 0)  then
       begin
-          if not (MsSmtpServiceExists('LocalHost', 25)) then //Because we are always installing locally this should suffice for now.
+          if not (MsSmtpServiceExists('LocalHost', 25)) then
           begin
             MsgBox('Failed to find smtp running.' #13#13 + 'Cannot install directgateway.', mbInformation, mb_Ok);
             Result := False;
@@ -939,6 +1037,12 @@ begin
     'The "End Point" labels will be green when they are connecting and red when failing.', mbInformation, mb_Ok);
 end;
 
+procedure ConfigConsolePageHelpButtonOnClick(Sender: TObject);
+begin
+  MsgBox('Configure endpoints for the Config Console.'  #13#10 +
+    'The "End Point" labels will be green when they are connecting and red when failing.', mbInformation, mb_Ok);
+end;
+
 
 procedure URLLabelOnClick(Sender: TObject);
 var
@@ -950,7 +1054,7 @@ var
 end;
 
 
-function CreateDatabaseConnWizardPage(): TWizardPage;
+function CreateDatabaseConnWizardPage(pageBefore: TWizardPage): TWizardPage;
 var
   DatabaseConnPage: TWizardPage;       
   Button, HelpButton: TNewButton;
@@ -958,7 +1062,7 @@ var
   StatusLabel: TNewStaticText;
 begin
 
-  DatabaseConnPage := CreateCustomPage(wpInfoAfter, 'Configure database connection string', '');
+  DatabaseConnPage := CreateCustomPage(pageBefore.ID, 'Configure database connection string', '');
     
   HelpButton := TNewButton.Create(DatabaseConnPage);      
   HelpButton.Left := DatabaseConnPage.Surface.Width - ScaleX(20);
@@ -1055,8 +1159,8 @@ begin
   DnsServiceUrlText := TNewEdit.Create(DnsResponderPage);
   DnsServiceUrlText.Name := 'DnsServiceUrlText';   
   DnsServiceUrlText.Top := DnsServiceLabel.Top;
-  DnsServiceUrlText.Left :=  DnsServiceLabel.Left + DnsServiceLabel.Width + ScaleX(8);
-  DnsServiceUrlText.Width := DnsResponderPage.SurfaceWidth - DnsServiceLabel.Width - ScaleX(8);  
+  DnsServiceUrlText.Left :=  DnsServiceTestTextBox.Left;
+  DnsServiceUrlText.Width := DnsServiceTestTextBox.Width;
   DnsServiceUrlText.Parent := DnsResponderPage.Surface;     
   
   DnsResponderPage.OnActivate := @DnsResponderPageOnActivate;
@@ -1076,10 +1180,10 @@ var
   HelpButton, EndPointsButton: TNewButton;
   DomainLabel, DomainManagerLabel, AddressManagerLabel, PrivateCertsLabel, AnchorsLabel, DnsResolverIpLabel: TNewStaticText;
   DomainText : TNewEdit;
-  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText: TNewMemo;
+  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText: TNewEdit;
   
 begin
-    GatewayAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part I (SMTP)', '');
+    GatewayAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part I', '');
      
     HelpButton := TNewButton.Create(GatewayAdminPage);      
     HelpButton.Left := GatewayAdminPage.Surface.Width - ScaleX(20);
@@ -1092,22 +1196,21 @@ begin
     //Set Domains
     DomainLabel := TNewStaticText.Create(GatewayAdminPage);
     DomainLabel.Name := 'DomainLabel';
-    DomainLabel.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(14);
     DomainLabel.Caption := 'Domain Name: ';
     DomainLabel.Parent := GatewayAdminPage.Surface;
                               
     DomainText := TNewEdit.Create(GatewayAdminPage);
     DomainText.Name := 'DomainText';
-    DomainText.Top := HelpButton.Top + HelpButton.Height + ScaleY(14);
+    DomainText.Top := HelpButton.Top;
     DomainText.Left := DomainLabel.Width + ScaleX(8);
-    DomainText.Width := GatewayAdminPage.SurfaceWidth - ScaleX(8);
+    DomainText.Width := GatewayAdminPage.SurfaceWidth - ScaleX(20) - HelpButton.Width - DomainLabel.Width;
     DomainText.Parent := GatewayAdminPage.Surface;
 
     //Test button
     EndPointsButton := TNewButton.Create(GatewayAdminPage);
-    EndPointsButton.Top :=  DomainLabel.Top + DomainLabel.Height + ScaleY(14);
-    EndPointsButton.Width :=  GatewayAdminPage.Surface.Width div 4;
+    EndPointsButton.Top :=  DomainLabel.Top + DomainLabel.Height + ScaleY(11);
     EndPointsButton.Caption := 'Test End Points:';
+    EndPointsButton.Width :=  GatewayAdminPage.SurfaceWidth div 4;
     EndPointsButton.OnClick := @GatewayOnClick;
     EndPointsButton.Parent := GatewayAdminPage.Surface;
 
@@ -1118,88 +1221,72 @@ begin
     //Set Domain Manager
     DomainManagerLabel := TNewStaticText.Create(GatewayAdminPage);
     DomainManagerLabel.Name := 'DomainManagerLabel';
-    DomainManagerLabel.Top :=  EndPointsButton.Top + EndPointsButton.Height + ScaleY(14);
+    DomainManagerLabel.Top :=  EndPointsButton.Top + EndPointsButton.Height + ScaleY(11);
     DomainManagerLabel.Caption := 'Domain Manager: ';
     DomainManagerLabel.Parent := GatewayAdminPage.Surface;
                               
-    DomainManagerText := TNewMemo.Create(GatewayAdminPage);
+    DomainManagerText := TNewEdit.Create(GatewayAdminPage);
     DomainManagerText.Name := 'DomainManagerText';
-    DomainManagerText.Top := EndPointsButton.Top + EndPointsButton.Height + ScaleY(14);
+    DomainManagerText.Top := DomainManagerLabel.Top;
     DomainManagerText.Left := PrivateCertsLabel.Width + ScaleX(8);
     DomainManagerText.Width := GatewayAdminPage.SurfaceWidth - DomainManagerLabel.Width - ScaleX(8);
-    DomainManagerText.Height := DomainManagerText.Height div 4;
-    DomainManagerText.WordWrap := false;
-    DomainManagerText.WantReturns := false;
     DomainManagerText.Parent := GatewayAdminPage.Surface;
 
 
     //Set Address Manager
     AddressManagerLabel := TNewStaticText.Create(GatewayAdminPage);
     AddressManagerLabel.Name := 'AddressManagerLabel';
-    AddressManagerLabel.Top :=  DomainManagerLabel.Top + DomainManagerLabel.Height + ScaleY(14);
+    AddressManagerLabel.Top :=  DomainManagerLabel.Top + DomainManagerLabel.Height + ScaleY(11);
     AddressManagerLabel.Caption := 'Address Manager: ';
     AddressManagerLabel.Parent := GatewayAdminPage.Surface;
                               
-    AddressManagerText := TNewMemo.Create(GatewayAdminPage);
+    AddressManagerText := TNewEdit.Create(GatewayAdminPage);
     AddressManagerText.Name := 'AddressManagerText';
-    AddressManagerText.Top := DomainManagerLabel.Top + DomainManagerLabel.Height + ScaleY(14);
+    AddressManagerText.Top := AddressManagerLabel.Top;
     AddressManagerText.Left := DomainManagerText.Left;
     AddressManagerText.Width := DomainManagerText.Width;
-    AddressManagerText.Height := AddressManagerText.Height div 4;
-    AddressManagerText.WordWrap := false;
-    AddressManagerText.WantReturns := false;
     AddressManagerText.Parent := GatewayAdminPage.Surface;
 
     //Set Privates Certs (Created above)                
     PrivateCertsLabel.Name := 'PrivateCertsLabel';
-    PrivateCertsLabel.Top :=  AddressManagerLabel.Top + AddressManagerLabel.Height + ScaleY(14);
+    PrivateCertsLabel.Top :=  AddressManagerLabel.Top + AddressManagerLabel.Height + ScaleY(11);
     PrivateCertsLabel.Parent := GatewayAdminPage.Surface;
                               
-    PrivateCertsText := TNewMemo.Create(GatewayAdminPage);
+    PrivateCertsText := TNewEdit.Create(GatewayAdminPage);
     PrivateCertsText.Name := 'PrivateCertsText';
-    PrivateCertsText.Top := AddressManagerLabel.Top + AddressManagerLabel.Height + ScaleY(14);
+    PrivateCertsText.Top := PrivateCertsLabel.Top;
     PrivateCertsText.Left := DomainManagerText.Left;
     PrivateCertsText.Width := DomainManagerText.Width;
-    PrivateCertsText.Height := PrivateCertsText.Height div 4;
-    PrivateCertsText.WordWrap := false;
-    PrivateCertsText.WantReturns := false;
     PrivateCertsText.Parent := GatewayAdminPage.Surface;
 
     //Set Anchors
     AnchorsLabel := TNewStaticText.Create(GatewayAdminPage);
     AnchorsLabel.Name := 'AnchorsLabel';
-    AnchorsLabel.Top :=  PrivateCertsLabel.Top + PrivateCertsLabel.Height + ScaleY(14);
+    AnchorsLabel.Top :=  PrivateCertsLabel.Top + PrivateCertsLabel.Height + ScaleY(11);
     AnchorsLabel.Caption := 'Anchor Resolver: ';
     AnchorsLabel.Parent := GatewayAdminPage.Surface;
                               
-    AnchorsText := TNewMemo.Create(GatewayAdminPage);
+    AnchorsText := TNewEdit.Create(GatewayAdminPage);
     AnchorsText.Name := 'AnchorsText';
-    AnchorsText.Top := PrivateCertsLabel.Top + PrivateCertsLabel.Height + ScaleY(14);
+    AnchorsText.Top := AnchorsLabel.Top;
     AnchorsText.Left := DomainManagerText.Left;
     AnchorsText.Width := DomainManagerText.Width;
-    AnchorsText.Height := AnchorsText.Height div 4;
-    AnchorsText.WordWrap := false;
-    AnchorsText.WantReturns := false;
     AnchorsText.Parent := GatewayAdminPage.Surface;
 
     //Set DnsResolverIp
     DnsResolverIpLabel := TNewStaticText.Create(GatewayAdminPage);
     DnsResolverIpLabel.Name := 'DnsResolverIpLabel';
-    DnsResolverIpLabel.Top :=  AnchorsLabel.Top + AnchorsLabel.Height + ScaleY(14);
+    DnsResolverIpLabel.Top :=  AnchorsLabel.Top + AnchorsLabel.Height + ScaleY(11);
     DnsResolverIpLabel.Caption := 'Dns Resolver IP: ';
     DnsResolverIpLabel.Parent := GatewayAdminPage.Surface;
                               
-    DnsResolverIpText := TNewMemo.Create(GatewayAdminPage);
+    DnsResolverIpText := TNewEdit.Create(GatewayAdminPage);
     DnsResolverIpText.Name := 'DnsResolverIpText';
-    DnsResolverIpText.Top := AnchorsLabel.Top + AnchorsLabel.Height + ScaleY(14);
+    DnsResolverIpText.Top := DnsResolverIpLabel.Top;
     DnsResolverIpText.Left := DomainManagerText.Left;
     DnsResolverIpText.Width := DomainManagerText.Width;
-    DnsResolverIpText.Height := DnsResolverIpText.Height div 4;
-    DnsResolverIpText.WordWrap := false;
-    DnsResolverIpText.WantReturns := false;
     DnsResolverIpText.Parent := GatewayAdminPage.Surface;
-
-
+    
     GatewayAdminPage.OnActivate := @GatewayAdminPageOnActivate;
     GatewayAdminPage.OnNextButtonClick := @SetGatewayConfigOnClick;
     GatewayAdminPage.OnShouldSkipPage := @GatewayAdminPage_ShouldSkip;
@@ -1217,7 +1304,7 @@ var
   PickupLabel, RawMessageLabel, BadMessageLabel, IncommingMessageLabel, OutgoingMessageLabel : TNewStaticText;
   PickupText, RawMessageText, BadMessageText, IncommingMessageText, OutgoingMessageText : TNewMemo;
 begin
-    GatewaySmtpAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part II', '');
+    GatewaySmtpAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part II (SMTP)', '');
 
     HelpButton := TNewButton.Create(GatewaySmtpAdminPage);      
     HelpButton.Left := GatewaySmtpAdminPage.Surface.Width - ScaleX(20);
@@ -1322,6 +1409,143 @@ begin
     Result := GatewaySmtpAdminPage;
 end;
 
+function CreateConfigConsolePage(pageBefore: TWizardPage): TWizardPage;
+var
+  ConfigConsolePage: TWizardPage;
+  HelpButton, EndPointsButton: TNewButton;
+  DomainManagerLabel, AddressManagerLabel, DnsRecordManagerLabel, PrivateCertsLabel, AnchorsLabel, PropertyLabel, BlobLabel: TNewStaticText;
+  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText: TNewEdit;
+
+begin
+    ConfigConsolePage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part I', '');
+
+    HelpButton := TNewButton.Create(ConfigConsolePage);
+    HelpButton.Left := ConfigConsolePage.Surface.Width - ScaleX(20);
+    HelpButton.Width := ScaleX(20);
+    HelpButton.Height := ScaleY(20);
+    HelpButton.Caption := '?';
+    HelpButton.OnClick := @ConfigConsolePageHelpButtonOnClick;
+    HelpButton.Parent := ConfigConsolePage.Surface;
+
+    //Test button
+    EndPointsButton := TNewButton.Create(ConfigConsolePage);
+    EndPointsButton.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(11);
+    EndPointsButton.Caption := 'Test End Points:';
+    EndPointsButton.Width :=  ConfigConsolePage.SurfaceWidth div 4;
+    EndPointsButton.OnClick := @ConfigConsoleOnClick;
+    EndPointsButton.Parent := ConfigConsolePage.Surface;
+    
+    //Set Privates Certs.  Later it is placed in its page location.  Using its width to base all the texbox left positions.
+    PrivateCertsLabel := TNewStaticText.Create(ConfigConsolePage);
+    PrivateCertsLabel.Caption := 'Certificate Resolver: ';
+    
+    //Set Domain Manager
+    DomainManagerLabel := TNewStaticText.Create(ConfigConsolePage);
+    DomainManagerLabel.Name := 'DomainManagerLabel';
+    DomainManagerLabel.Top :=  EndPointsButton.Top + EndPointsButton.Height + ScaleY(11);
+    DomainManagerLabel.Caption := 'Domain Manager: ';
+    DomainManagerLabel.Parent := ConfigConsolePage.Surface;
+
+    DomainManagerText := TNewEdit.Create(ConfigConsolePage);
+    DomainManagerText.Name := 'DomainManagerText';
+    DomainManagerText.Top := DomainManagerLabel.Top;
+    DomainManagerText.Left := PrivateCertsLabel.Width + ScaleX(8);
+    DomainManagerText.Width := ConfigConsolePage.SurfaceWidth - DomainManagerLabel.Width - ScaleX(8);
+    DomainManagerText.Parent := ConfigConsolePage.Surface;
+
+
+    //Set Address Manager
+    AddressManagerLabel := TNewStaticText.Create(ConfigConsolePage);
+    AddressManagerLabel.Name := 'AddressManagerLabel';
+    AddressManagerLabel.Top :=  DomainManagerLabel.Top + DomainManagerLabel.Height + ScaleY(11);
+    AddressManagerLabel.Caption := 'Address Manager: ';
+    AddressManagerLabel.Parent := ConfigConsolePage.Surface;
+
+    AddressManagerText := TNewEdit.Create(ConfigConsolePage);
+    AddressManagerText.Name := 'AddressManagerText';
+    AddressManagerText.Top := AddressManagerLabel.Top;
+    AddressManagerText.Left := DomainManagerText.Left;
+    AddressManagerText.Width := DomainManagerText.Width;
+    AddressManagerText.Parent := ConfigConsolePage.Surface;
+
+    //Set Privates Certs (Created above)
+    PrivateCertsLabel.Name := 'PrivateCertsLabel';
+    PrivateCertsLabel.Top :=  AddressManagerLabel.Top + AddressManagerLabel.Height + ScaleY(11);
+    PrivateCertsLabel.Parent := ConfigConsolePage.Surface;
+
+    PrivateCertsText := TNewEdit.Create(ConfigConsolePage);
+    PrivateCertsText.Name := 'PrivateCertsText';
+    PrivateCertsText.Top := PrivateCertsLabel.Top;
+    PrivateCertsText.Left := DomainManagerText.Left;
+    PrivateCertsText.Width := DomainManagerText.Width;
+    PrivateCertsText.Parent := ConfigConsolePage.Surface;
+
+    //Set Anchors
+    AnchorsLabel := TNewStaticText.Create(ConfigConsolePage);
+    AnchorsLabel.Name := 'AnchorsLabel';
+    AnchorsLabel.Top :=  PrivateCertsLabel.Top + PrivateCertsLabel.Height + ScaleY(11);
+    AnchorsLabel.Caption := 'Anchor Resolver: ';
+    AnchorsLabel.Parent := ConfigConsolePage.Surface;
+
+    AnchorsText := TNewEdit.Create(ConfigConsolePage);
+    AnchorsText.Name := 'AnchorsText';
+    AnchorsText.Top := AnchorsLabel.Top;
+    AnchorsText.Left := DomainManagerText.Left;
+    AnchorsText.Width := DomainManagerText.Width;
+    AnchorsText.Parent := ConfigConsolePage.Surface;
+    
+    
+    //Set Dns Record Manager
+    DnsRecordManagerLabel := TNewStaticText.Create(ConfigConsolePage);
+    DnsRecordManagerLabel.Name := 'DnsRecordManagerLabel';
+    DnsRecordManagerLabel.Top :=  AnchorsLabel.Top + AnchorsLabel.Height + ScaleY(11);
+    DnsRecordManagerLabel.Caption := 'Address Manager: ';
+    DnsRecordManagerLabel.Parent := ConfigConsolePage.Surface;
+
+    DnsRecordManagerText := TNewEdit.Create(ConfigConsolePage);
+    DnsRecordManagerText.Name := 'DnsRecordManagerText';
+    DnsRecordManagerText.Top := DnsRecordManagerLabel.Top;
+    DnsRecordManagerText.Left := DomainManagerText.Left;
+    DnsRecordManagerText.Width := DomainManagerText.Width;
+    DnsRecordManagerText.Parent := ConfigConsolePage.Surface;
+    
+    
+    //Set Property Service endpoint
+    PropertyLabel := TNewStaticText.Create(ConfigConsolePage);
+    PropertyLabel.Name := 'PropertyLabel';
+    PropertyLabel.Top :=  DnsRecordManagerLabel.Top + DnsRecordManagerLabel.Height + ScaleY(11);
+    PropertyLabel.Caption := 'Property (Console): ';
+    PropertyLabel.Parent := ConfigConsolePage.Surface;
+
+    PropertyText := TNewEdit.Create(ConfigConsolePage);
+    PropertyText.Name := 'PropertyText';
+    PropertyText.Top := PropertyLabel.Top;
+    PropertyText.Left := DomainManagerText.Left;
+    PropertyText.Width := DomainManagerText.Width;
+    PropertyText.Parent := ConfigConsolePage.Surface;
+
+    //Set Blob Service endpoint
+    BlobLabel := TNewStaticText.Create(ConfigConsolePage);
+    BlobLabel.Name := 'BlobLabel';
+    BlobLabel.Top :=  PropertyLabel.Top + PropertyLabel.Height + ScaleY(11);
+    BlobLabel.Caption := 'Blob (Console): ';
+    BlobLabel.Parent := ConfigConsolePage.Surface;
+
+    BlobText := TNewEdit.Create(ConfigConsolePage);
+    BlobText.Name := 'BlobText';
+    BlobText.Top := BlobLabel.Top;
+    BlobText.Left := DomainManagerText.Left;
+    BlobText.Width := DomainManagerText.Width;
+    BlobText.Parent := ConfigConsolePage.Surface;
+    
+    
+    ConfigConsolePage.OnActivate := @ConfigConsolePageOnActivate;
+    ConfigConsolePage.OnNextButtonClick := @SetConfigConsoleEndpointsOnClick;
+    ConfigConsolePage.OnShouldSkipPage := @ConfigConsolePage_ShouldSkip;
+
+    Result := ConfigConsolePage;
+end;
+
 
 function CreateUIConfigWizardPage(pageBefore: TWizardPage): TWizardPage;
 var
@@ -1332,7 +1556,7 @@ var
   
 begin
 
-  ConfigAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Config Admin', '');
+  ConfigAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Admin UI', '');
     
   HelpButton := TNewButton.Create(ConfigAdminPage);      
   HelpButton.Left := ConfigAdminPage.Surface.Width - ScaleX(20);
@@ -1344,7 +1568,7 @@ begin
     
   EndPointsButton := TNewButton.Create(ConfigAdminPage);
   EndPointsButton.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(14);
-  EndPointsButton.Width :=  ConfigAdminPage.Surface.Width div 4;
+  EndPointsButton.Width :=  (ConfigAdminPage.Surface.Width div 4)
   EndPointsButton.Caption := 'Test End Points:';
   EndPointsButton.OnClick := @ConfigAdminHostNameOnClick;
   EndPointsButton.Parent := ConfigAdminPage.Surface;
@@ -1352,6 +1576,7 @@ begin
   CertificatesLabel := TNewStaticText.Create(ConfigAdminPage);
   CertificatesLabel.Name := 'CertificatesLabel'
   CertificatesLabel.Caption := 'Certificates: ';
+  CertificatesLabel.Width := CertificatesLabel.Width + ScaleX(8);
   CertificatesLabel.Top := EndPointsButton.Top + EndPointsButton.Height + ScaleY(14);
   CertificatesLabel.Parent := ConfigAdminPage.Surface;
 
@@ -1535,13 +1760,27 @@ var
   Page : TWizardPage;
 begin
 
-  Page := CreateDatabaseConnWizardPage;
-  Page := CreateGatewayWizardPage(Page);
-  Page := CreateGatewaySmtpWizardPage(Page);
+  Page := PageFromID(wpInfoAfter);
+  
+  Page := CreateDatabaseConnWizardPage(Page);
+  Page.Name := 'ConfigService';
+  Page.Description := '\ConfigService\Web.Config';
+  
+  Page := CreateDatabaseConnWizardPage(Page);
+  Page.Name := 'DnsService';
+  Page.Description := '\DnsService\Web.Config';
+  
+  Page := CreateGatewayWizardPage(Page);      //Gateway part I
+  Page := CreateGatewaySmtpWizardPage(Page);  //Gateway part II
+  Page := CreateConfigConsolePage(Page);      //ConfigConsoleSettings.xml.  Almost like part III of Gateway.  It is included as part of the gateway component
+                                              //but in the future we may want to migrate the config console into its own install.
+                                              //If you wanted to install the configConsole onto a workstation then pass skipsmtpcheck as a command line parameter to the installer.
+                                              //It will ignore the port 25 check and still install.
   Page := CreateDnsResponderWizardPage(Page); 
   Page := CreateUIConfigWizardPage(Page);
 
   CreateAboutButtonAndURLLabel(WizardForm, WizardForm.CancelButton);
+  
 end;
 
 
