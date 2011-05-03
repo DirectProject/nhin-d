@@ -6,10 +6,30 @@
         Greg Meyer
         ---
 
+{1.1.4}
+
+    Changes included with release 1.1.4
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=126}126}}: Fixed issue with signing certificates not validating correctly.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=121}121}}: Fixed issue with certificate lookups not use alt subject names.
+    
+    * Fixed issue generating and reading MDN message when using Sun's dsn library. 
+
 {1.1.3}
 
     Changes included with release 1.1.3
-    
+   
     []
     
     Enhancements

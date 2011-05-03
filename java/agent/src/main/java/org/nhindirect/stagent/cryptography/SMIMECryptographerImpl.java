@@ -565,14 +565,22 @@ public class SMIMECryptographerImpl implements Cryptographer
     	    	
     	try
     	{
-	    	for (SignerInformation sigInfo : (Collection<SignerInformation>)signatureEnvelope.getSignerInfos().getSigners())
-	    	{	    		
-	    		sigInfo.verify(signerCertificate, CryptoExtensions.getJCEProviderName());
-	    	}
+	    	// there may be multiple signatures in the signed part... iterate through all the signing certificates until one
+    		// is verified with the signerCertificate
+    		for (SignerInformation sigInfo : (Collection<SignerInformation>)signatureEnvelope.getSignerInfos().getSigners())	    		
+	    		if (sigInfo.verify(signerCertificate, CryptoExtensions.getJCEProviderName()))
+	    			return; // verified... return
+	    	
+	    	// at this point the signerCertificate cannot be verified with one of the signing certificates....
+	    	throw new SignatureValidationException("Signature validation failure.");
     	}
-    	catch (Throwable e)
+    	catch (SignatureValidationException sve)
     	{
-    		throw new SignatureValidationException("Signature validation failure.");
+    		throw sve;
+    	}
+    	catch (Exception e)
+    	{
+    		throw new SignatureValidationException("Signature validation failure.", e);
     	}
     }                        
  	
