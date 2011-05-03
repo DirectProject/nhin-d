@@ -27,7 +27,9 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.mail.Address;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +38,7 @@ import org.apache.mailet.MailAddress;
 import org.apache.mailet.base.GenericMatcher;
 import org.nhindirect.gateway.smtp.SmtpAgentError;
 import org.nhindirect.gateway.smtp.SmtpAgentException;
+import org.nhindirect.stagent.NHINDAddress;
 
 /**
  * Matcher for returning recipients when the sender is local and the recipient is not local.  This is useful
@@ -80,10 +83,21 @@ public class RecipAndSenderIsNotLocal extends  GenericMatcher
 	@SuppressWarnings("unchecked")
 	@Override 
     public Collection<MailAddress> match(Mail mail) throws MessagingException 
-    {
-		LOGGER.debug("Matching mail message from: " + mail.getSender().toString());
+    {		
+		String domain = "";
 		
-    	if (!domains.contains(mail.getSender().getDomain().toUpperCase(Locale.getDefault())))
+		if (mail.getSender() != null && mail.getSender().getDomain() != null)
+			domain = mail.getSender().getDomain().toUpperCase(Locale.getDefault());
+		else
+		{
+			Address[] senderAddr = mail.getMessage().getFrom();
+			if (senderAddr != null && senderAddr.length > 0)
+			{
+				domain = NHINDAddress.getHost((InternetAddress)senderAddr[0]).toUpperCase(Locale.getDefault());
+			}							
+		}
+		
+    	if (!domains.contains(domain))
     	{
     		// this is from a remote domain... this auto qualifies all recipients
     		LOGGER.debug("Sender is remote.  Return all recipients as matching");

@@ -246,7 +246,8 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 		if (MDNNode.getNodeType() == Node.ELEMENT_NODE)
 		{
 			Element settingsNode = (Element)MDNNode;
-			boolean autoResponse = Boolean.parseBoolean(settingsNode.getAttribute("autoResponse"));
+			String autoResponseString = settingsNode.getAttribute("autoResponse");
+			boolean autoResponse = (autoResponseString == null || autoResponseString.isEmpty()) ? true : Boolean.parseBoolean(autoResponseString);
 			String prodName = settingsNode.getAttribute("productName");
 			
 			String text = null;
