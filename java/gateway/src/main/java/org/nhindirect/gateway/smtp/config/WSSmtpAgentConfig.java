@@ -685,7 +685,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		}
 		
 
-		boolean autoResponse = (autoResponseSettings == null) ? false : Boolean.parseBoolean(autoResponseSettings.getValue());
+		boolean autoResponse = (autoResponseSettings == null) ? true : Boolean.parseBoolean(autoResponseSettings.getValue());
 		String prodName = (prodNameSetting == null) ? "" : prodNameSetting.getValue();
 		String text = (textSetting == null) ? "" : textSetting.getValue();				
 		

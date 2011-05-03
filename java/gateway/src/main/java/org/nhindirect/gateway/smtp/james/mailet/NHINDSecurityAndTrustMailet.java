@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.mail.Address;
-import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -154,10 +153,21 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		}
 		
 		// get the sender
+		NHINDAddress sender;
+		if (mail.getSender() != null)
+			sender = new NHINDAddress(mail.getSender().toInternetAddress(), AddressSource.From);	
+		else
+		{
+			// try to get the sender from the message
+			Address[] senderAddr = mail.getMessage().getFrom();
+			if (senderAddr == null || senderAddr.length == 0)
+				throw new MessagingException("Failed to process message.  The sender cannot be null or empty.");
+						
+			// not the best way to do this
+			sender = new NHINDAddress((InternetAddress)senderAddr[0], AddressSource.From);	
+		}
 		
-		NHINDAddress sender = new NHINDAddress(mail.getSender().toInternetAddress(), AddressSource.From);				
-		
-		LOGGER.info("Proccessing incoming message from sender " + mail.getSender().toInternetAddress());
+		LOGGER.info("Proccessing incoming message from sender " + sender.toString());
 		MessageProcessResult result = null;
 				
 		try
