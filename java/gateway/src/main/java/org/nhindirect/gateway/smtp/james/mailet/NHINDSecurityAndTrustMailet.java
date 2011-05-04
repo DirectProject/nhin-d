@@ -153,19 +153,12 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		}
 		
 		// get the sender
-		NHINDAddress sender;
-		if (mail.getSender() != null)
-			sender = new NHINDAddress(mail.getSender().toInternetAddress(), AddressSource.From);	
-		else
-		{
-			// try to get the sender from the message
-			Address[] senderAddr = mail.getMessage().getFrom();
-			if (senderAddr == null || senderAddr.length == 0)
-				throw new MessagingException("Failed to process message.  The sender cannot be null or empty.");
+		InternetAddress senderAddr = NHINDSecurityAndTrustMailet.getSender(mail);
+		if (senderAddr == null)
+			throw new MessagingException("Failed to process message.  The sender cannot be null or empty.");
 						
 			// not the best way to do this
-			sender = new NHINDAddress((InternetAddress)senderAddr[0], AddressSource.From);	
-		}
+		NHINDAddress sender = new NHINDAddress(senderAddr, AddressSource.From);	
 		
 		LOGGER.info("Proccessing incoming message from sender " + sender.toString());
 		MessageProcessResult result = null;
@@ -326,5 +319,33 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	protected void onPostprocessMessage(Mail mail, MessageProcessResult result)
 	{
 		/* no-op */
+	}
+	
+	public static InternetAddress getSender(Mail mail) 
+	{
+		InternetAddress retVal = null;
+		
+		if (mail.getSender() != null)
+			retVal = mail.getSender().toInternetAddress();	
+		else
+		{
+			// try to get the sender from the message
+			Address[] senderAddr = null;
+			try
+			{
+				senderAddr = mail.getMessage().getFrom();
+				if (senderAddr == null || senderAddr.length == 0)
+					return null;
+			}
+			catch (MessagingException e)
+			{
+				return null;
+			}
+						
+			// not the best way to do this
+			retVal = (InternetAddress)senderAddr[0];	
+		}
+	
+		return retVal;
 	}
 }
