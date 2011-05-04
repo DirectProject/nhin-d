@@ -333,6 +333,9 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			Address[] senderAddr = null;
 			try
 			{
+				if (mail.getMessage() == null)
+					return null;
+				
 				senderAddr = mail.getMessage().getFrom();
 				if (senderAddr == null || senderAddr.length == 0)
 					return null;
