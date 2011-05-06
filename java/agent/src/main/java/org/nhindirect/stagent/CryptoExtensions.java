@@ -125,6 +125,7 @@ public class CryptoExtensions
      * @param cert The certificate to check.
      * @param subjectName The subject name to check in the alternate names.
      * @return True if the subjectName is contained in the alternate subject names.  False otherwise.
+     * @deprecated As of 1.1.5.  Use {@link #certSubjectContainsName(X509Certificate, String)}
      */
     public static boolean containsEmailAddressInSubjectAltName(X509Certificate cert, String subjectName)
     {
@@ -164,19 +165,31 @@ public class CryptoExtensions
     }	
 	
 	/**
-	 * Checks if a name is contained in a certificate's distinguished name. 
+	 * Checks if a name is contained in a certificate's DN or alt subjects. 
 	 * @param cert The certificate to check.
-	 * @param name The name to search for in the certificate's distinguished name.
-	 * @return True if the name is found in the certificates distinguished name.  False otherwise.
+	 * @param name The name to search for in the certificate.
+	 * @return True if the name is found in the certificate.  False otherwise.
 	 */
     public static boolean certSubjectContainsName(X509Certificate cert, String name)
     {
         if (name == null || name.length() == 0)
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Name cannot be null or empty.");
         }
-                
-        return cert.getSubjectDN().getName().toUpperCase(Locale.getDefault()).contains(name.toUpperCase(Locale.getDefault()));
+    	
+        if (cert == null)
+        {
+            throw new IllegalArgumentException("Certificate cannot be null.");
+        }
+        
+    	boolean searchingForEmailAddress = name.toLowerCase(Locale.getDefault()).startsWith("emailaddress=");
+        name = searchingForEmailAddress ? name.toLowerCase().replaceFirst("^emailaddress=", "") : name;    	
+
+        String address = getSubjectAddress(cert);
+        if (address == null || address.isEmpty())
+        	return false;
+    	                
+        return name.toLowerCase(Locale.getDefault()).equals(address.toLowerCase(Locale.getDefault()));
     }	
 	
     /**
@@ -184,6 +197,7 @@ public class CryptoExtensions
      * @param cert The certificate to check for the common name.
      * @param name The common name to check for.  This method automatically prefixes the name with "CN="
      * @return True if the common name is contained in the certificate.  False otherwise.
+     * @deprecated As of 1.1.5.  Use {@link #certSubjectContainsName(X509Certificate, String)}
      */
     public static boolean matchName(X509Certificate cert, String name)
     {
@@ -229,14 +243,14 @@ public class CryptoExtensions
 	            {
 	            
 	            	X509Certificate cert = (X509Certificate)certCollection.iterator().next();
-	            	if (certSubjectContainsName(cert, name) || containsEmailAddressInSubjectAltName(cert, name))
+	            	if (certSubjectContainsName(cert, name))
 	            	{
 	            		boolean exclude = false;
 	            		
 	            		// check if we need to exclude anything
 	            		if (excludeNames != null)
 	            			for (String excludeStr : excludeNames)
-	            				if (certSubjectContainsName(cert, excludeStr) || containsEmailAddressInSubjectAltName(cert, name))
+	            				if (certSubjectContainsName(cert, excludeStr))
 	            				{
 	            					exclude = true;
 	            					break;
@@ -270,7 +284,7 @@ public class CryptoExtensions
     {
     	for (X509Certificate cert : certs)
     	{
-    		if (certSubjectContainsName(cert, name) || containsEmailAddressInSubjectAltName(cert, name))
+    		if (certSubjectContainsName(cert, name))
     			return cert;
     	}
     	
