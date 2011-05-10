@@ -54,7 +54,7 @@ WizardImageStretch=Yes
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Components]
-Name: dnsresponder; Description: Install the DNS Responder; Types: dns;
+Name: dnsresponder; Description: DNS Responder; Types: dns;
 Name: dnswebservice; Description: DNS Web service; Types: config;
 Name: configwebservice; Description: Config Web services; Types: config;
 Name: configui; Description: UI Web Admin; Types: config;
@@ -1417,7 +1417,7 @@ var
   DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText: TNewEdit;
 
 begin
-    ConfigConsolePage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part I', '');
+    ConfigConsolePage := CreateCustomPage(pageBefore.ID, 'Configure Gateway Console', '');
 
     HelpButton := TNewButton.Create(ConfigConsolePage);
     HelpButton.Left := ConfigConsolePage.Surface.Width - ScaleX(20);
