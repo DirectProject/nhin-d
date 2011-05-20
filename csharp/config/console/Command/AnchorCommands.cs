@@ -14,11 +14,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 using System.ServiceModel;
-
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client;
@@ -33,7 +33,9 @@ namespace Health.Direct.Config.Console.Command
     /// Commands to manage Anchors
     /// </summary>
     public class AnchorCommands : CommandsBase<AnchorStoreClient>
-    {
+    {        
+        CertificateCommands m_certCommands;
+        
         //---------------------------------------
         //
         // Commands
@@ -44,6 +46,19 @@ namespace Health.Direct.Config.Console.Command
         {
         }
 
+        internal CertificateCommands CertCommands
+        {
+            get
+            {
+                if (m_certCommands == null)
+                {
+                    m_certCommands = GetCommand<CertificateCommands>();
+                }
+                
+                return m_certCommands;
+            }
+        }
+        
         /// <summary>
         /// Import and add an anchor
         /// </summary>
@@ -51,7 +66,7 @@ namespace Health.Direct.Config.Console.Command
         public void AnchorAdd(string[] args)
         {
             string owner = args.GetRequiredValue(0);
-            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(1, args);                        
+            CertificateFileInfo certFileInfo = CertificateFileInfo.Create(1, args);                        
             PushCerts(owner, certFileInfo.LoadCerts(),  false, certFileInfo.Status);
         }
 
@@ -62,26 +77,48 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + CertificateFileInfo.Usage;
 
         /// <summary>
-        /// Import and add an anchor
+        /// Import and add an anchor, if one does not already exist
         /// </summary>
         [Command(Name = "Anchor_Ensure", Usage = AnchorAddUsage)]
         public void AnchorEnsure(string[] args)
         {
             string owner = args.GetRequiredValue(0);
-            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(1, args);
+            CertificateFileInfo certFileInfo = CertificateFileInfo.Create(1, args);
             PushCerts(owner, certFileInfo.LoadCerts(), true, certFileInfo.Status);
-        }
-        
+        }        
         private const string AnchorEnsureUsage
             = "Import an anchor certificate from a file and push it into the config store - if not already there."
               + Constants.CRLF + "The anchor is used for both incoming & outgoing trust."
               + Constants.CRLF + "    owner options"
               + Constants.CRLF + CertificateFileInfo.Usage;
+
+        /// <summary>
+        /// Import and add an anchor
+        /// </summary>
+        [Command(Name = "Anchor_Add_Ex", Usage = AnchorAddExUsage)]
+        public void AnchorAddEx(string[] args)
+        {
+            string owner = args.GetRequiredValue(0);
+            bool forIncoming = args.GetRequiredValue<bool>(1);
+            bool forOutgoing = args.GetRequiredValue<bool>(2);
+            bool checkDupes = args.GetRequiredValue<bool>(3);
+            CertificateFileInfo certFileInfo = CertificateFileInfo.Create(4, args);
+            PushCerts(owner, certFileInfo.LoadCerts(), false, certFileInfo.Status, forIncoming, forOutgoing);
+        }
+
+        private const string AnchorAddExUsage
+            = "Import an anchor certificate from a file and push it into the config store."
+              + Constants.CRLF + "    owner forIncoming forOutgoing checkForDupes options"
+              + Constants.CRLF + " \t forIncoming: (true/false) Use anchor to verify trust of INCOMING messages"
+              + Constants.CRLF + " \t forOutgoing: (true/false) Use anchor to verify trust of OUTGOING messages"
+              + Constants.CRLF + " \t checkDupes: (true/false) Check if anchor is already installed"
+              + Constants.CRLF + CertificateFileInfo.Usage;
+        
         
         [Command(Name="Anchor_Add_Machine", Usage=AnchorAddMachineUsage)]
         public void AnchorAddMachine(string[] args)
         {
-            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(0, args);
+            CertificateFileInfo certFileInfo = CertificateFileInfo.Create(0, args);
             using(SystemX509Store store = SystemX509Store.OpenAnchorEdit())
             {
                 store.ImportKeyFile(certFileInfo.FilePath, certFileInfo.Password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
@@ -100,7 +137,7 @@ namespace Health.Direct.Config.Console.Command
         public void AnchorByIDGet(string[] args)
         {
             long anchorID = args.GetRequiredValue<int>(0);
-            CertificateGetOptions options = GetCommand<CertificateCommands>().GetOptions(args, 1);
+            CertificateGetOptions options = this.CertCommands.GetOptions(args, 1);
 
             Anchor[] anchors = Client.GetAnchors(new[] { anchorID }, options);
             this.Print(anchors);
@@ -119,7 +156,7 @@ namespace Health.Direct.Config.Console.Command
         public void AnchorsGet(string[] args)
         {
             string owner = args.GetRequiredValue(0);
-            CertificateGetOptions options = GetCommand<CertificateCommands>().GetOptions(args, 1);
+            CertificateGetOptions options = this.CertCommands.GetOptions(args, 1);
      
             Anchor[] anchors = Client.GetAnchorsForOwner(owner, options);
             this.Print(anchors);
@@ -137,10 +174,7 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Anchors_List", Usage = AnchorsListUsage)]
         public void AnchorsList(string[] args)
         {
-            CertificateGetOptions options = GetCommand<CertificateCommands>().GetOptions(args, 0);
-            //
-            // TODO: Give the ability to "more" through this list
-            //
+            CertificateGetOptions options = this.CertCommands.GetOptions(args, 0);
             foreach(Anchor anchor in Client.EnumerateAnchors(10, options))
             {
                 this.Print(anchor);
@@ -190,7 +224,7 @@ namespace Health.Direct.Config.Console.Command
         public void AnchorResolve(string[] args)
         {
             MailAddress owner = new MailAddress(args.GetRequiredValue(0));
-            CertificateGetOptions options = GetCommand<CertificateCommands>().GetOptions(args, 1);
+            CertificateGetOptions options = this.CertCommands.GetOptions(args, 1);
 
             Anchor[] anchors = Client.GetAnchorsForOwner(owner.Address, options);
             if (anchors.IsNullOrEmpty())
@@ -206,6 +240,64 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + "\t owner: Anchor owner"
               + Constants.CRLF + CertificateCommands.PrintOptionsUsage;
 
+        /// <summary>
+        /// Check if a particular anchor was installed for the given owner
+        /// </summary>
+        [Command(Name = "Anchor_Search_ByFile", Usage = AnchorSearchFileUsage)]
+        public void AnchorSearchByFile(string[] args)
+        {
+            string owner = args.GetRequiredValue(0);
+            CertificateFileInfo certFileInfo = CertificateFileInfo.Create(1, args);
+            MemoryX509Store certs = certFileInfo.LoadCerts();
+            
+            WriteLine(string.Empty);
+            
+            this.Search(
+                owner,
+                x => (certs.FirstOrDefault(y => this.CertCommands.Match(x, y)) != null)
+            );
+            
+        }
+        private const string AnchorSearchFileUsage
+            = "Search if an owner already has an anchor similar to those in the given file."
+              + Constants.CRLF + "    owner options"
+              + Constants.CRLF + "\t owner: Anchor owner"
+              + Constants.CRLF + CertificateFileInfo.Usage;
+
+        /// <summary>
+        /// Check if a particular anchor was installed for the given owner
+        /// </summary>
+        [Command(Name = "Anchor_Search_ByName", Usage = AnchorSearchName)]
+        public void AnchorSearchByName(string[] args)
+        {
+            string owner = args.GetRequiredValue(0);
+            string name = args.GetRequiredValue(1);          
+            bool exactMatch = args.GetOptionalValue(2, true);
+              
+            WriteLine(string.Empty);            
+            if (exactMatch)
+            {
+                this.Search(
+                    owner,
+                    x => this.CertCommands.Match(x, name)
+                );
+            }
+            else
+            {
+                this.Search(
+                    owner,
+                    x => this.CertCommands.MatchContains(x, name)
+                );
+            }
+        }
+        private const string AnchorSearchName
+            = "Search if an owner already has an anchor with the given distinguished name."
+              + Constants.CRLF + "    owner name [exactMatch]"
+              + Constants.CRLF + "\t owner: Anchor owner"
+              + Constants.CRLF + "\t name: distinguished name to look for"
+              + Constants.CRLF + "\t exactMatch: (Optional boolean) Do a contains search. Default: true";
+
+
         //---------------------------------------
         //
         // Implementation details
@@ -215,8 +307,13 @@ namespace Health.Direct.Config.Console.Command
         {
             this.PushCerts(owner, certs, checkForDupes, null);
         }
-
+        
         internal void PushCerts(string owner, IEnumerable<X509Certificate2> certs, bool checkForDupes, EntityStatus? status)
+        {
+            this.PushCerts(owner, certs, checkForDupes, status, true, true);
+        }
+        
+        internal void PushCerts(string owner, IEnumerable<X509Certificate2> certs, bool checkForDupes, EntityStatus? status, bool incoming, bool outgoing)
         {
             foreach (X509Certificate2 cert in certs)
             {
@@ -224,7 +321,7 @@ namespace Health.Direct.Config.Console.Command
                 {
                     if (!checkForDupes || !Client.Contains(owner, cert))
                     {
-                        Anchor anchor = new Anchor(owner, cert, true, true);
+                        Anchor anchor = new Anchor(owner, cert, incoming, outgoing);
                         if (status != null)
                         {
                             anchor.Status = status.Value;
@@ -280,8 +377,35 @@ namespace Health.Direct.Config.Console.Command
             if (cert.HasData)
             {
                 X509Certificate2 x509 = cert.ToX509Certificate();
-                GetCommand<CertificateCommands>().Print(x509);
+                this.CertCommands.Print(x509);
             }
+        }        
+        
+        void Search(string owner, Func<X509Certificate2, bool> filter)
+        {
+            CertificateGetOptions getOptions = new CertificateGetOptions() { IncludeData = true };
+            Search(Client.GetAnchorsForOwner(owner, getOptions), filter);
         }
+        
+        void Search(IEnumerable<Anchor> query, Func<X509Certificate2, bool> filter)
+        {
+            int matchCount = 0;
+            var matches = from anchor in query
+                where filter(anchor.ToX509Certificate())
+                select anchor;
+
+            foreach (Anchor match in matches)
+            {
+                ++matchCount;
+                WriteLine(string.Empty);
+                Print(match);
+                CommandUI.PrintSectionBreak();
+            }
+
+            if (matchCount == 0)
+            {
+                WriteLine("No matches");
+            }
+        }        
     }
 }

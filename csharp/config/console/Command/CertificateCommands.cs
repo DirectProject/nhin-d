@@ -21,7 +21,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 using System.ServiceModel;
 using System.Net;
-
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Common.Extensions;
@@ -55,7 +54,7 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Certificate_Add", Usage = CertificateAddUsage)]
         public void CertificateAdd(string[] args)
         {
-            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(0, args);            
+            CertificateFileInfo certFileInfo = CertificateFileInfo.Create(0, args);            
             MemoryX509Store certStore = certFileInfo.LoadCerts();
             PushCerts(certStore, false, certFileInfo.Status);
         }
@@ -69,7 +68,7 @@ namespace Health.Direct.Config.Console.Command
         [Command(Name = "Certificate_Ensure", Usage = CertificateAddUsage)]
         public void CertificateEnsure(string[] args)
         {
-            CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(0, args);
+            CertificateFileInfo certFileInfo = CertificateFileInfo.Create(0, args);
             MemoryX509Store certStore = certFileInfo.LoadCerts();
             //
             // This checks for duplicates...(using thumbprints)
@@ -89,7 +88,7 @@ namespace Health.Direct.Config.Console.Command
         {
             using (SystemX509Store store = OpenStore(args.GetRequiredValue(0)))
             {
-                CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(1, args);
+                CertificateFileInfo certFileInfo = CertificateFileInfo.Create(1, args);
                 store.ImportKeyFile(certFileInfo.FilePath, certFileInfo.Password, MachineKeyFlags);
             }
         }
@@ -102,7 +101,7 @@ namespace Health.Direct.Config.Console.Command
         {
             using (SystemX509Store store = OpenStore(args.GetRequiredValue(0)))
             {
-                CertificateFileInfo certFileInfo = CreateCertificateInfoFromArgs(1, args);
+                CertificateFileInfo certFileInfo = CertificateFileInfo.Create(1, args);
                 MemoryX509Store certs = certFileInfo.LoadCerts(MachineKeyFlags);
                 foreach(X509Certificate2 cert in certs)
                 {
@@ -375,6 +374,78 @@ namespace Health.Direct.Config.Console.Command
             "Resolve certificates for an address or domain using Dns"
             + Constants.CRLF + "   domain or address"
             + Constants.CRLF + "   server : (optional)";
+
+
+        [Command(Name = "Certificate_List_All", Usage = CertificateListAllUsage)]
+        public void CertificateListAll(string[] args)
+        {
+            string outputFile = args.GetOptionalValue(0, null);
+            int chunkSize = args.GetOptionalValue(1, 25);
+
+            CertificateGetOptions options = new CertificateGetOptions { IncludeData = true, IncludePrivateKey = false };
+            IEnumerable<Certificate> certs = Client.EnumerateCertificates(chunkSize, options);
+            foreach(Certificate cert in certs)
+            {
+                this.Print(cert);
+                CommandUI.PrintSectionBreak();
+            }
+        }
+        private const string CertificateListAllUsage
+            = "List all certificates"
+              + Constants.CRLF + "  [chunkSize]"
+              + Constants.CRLF + "\t chunkSize: (Optional) Enumeration size. Default is 25";
+
+        /// <summary>
+        /// Enumerate all certificates looking for ones matching the given file
+        /// </summary>
+        [Command(Name = "Certificate_Search_ByFile", Usage = CertificateSearchFileUsage)]
+        public void CertificateSearchByFile(string[] args)
+        {
+            CertificateFileInfo certFileInfo = CertificateFileInfo.Create(0, args);
+            MemoryX509Store certs = certFileInfo.LoadCerts();
+
+            WriteLine(string.Empty);
+
+            this.Search(
+                x => (certs.FirstOrDefault(y => this.Match(x, y)) != null)
+            );
+
+        }
+        private const string CertificateSearchFileUsage
+            = "Search for a certificate similar to those in the given file."
+              + Constants.CRLF + "Currently BRUTE FORCE: May be slow."
+              + Constants.CRLF + CertificateFileInfo.Usage;
+
+        /// <summary>
+        /// Enumerate all certificates looking for ones matching the given file
+        /// </summary>
+        [Command(Name = "Certificate_Search_ByName", Usage = CertificateSearchNameUsage)]
+        public void CertificateSearchByName(string[] args)
+        {
+            string name = args.GetRequiredValue(0);
+            bool exactMatch = args.GetOptionalValue(1, true);
+
+            WriteLine(string.Empty);
+            if (exactMatch)
+            {
+                this.Search(
+                    x => this.Match(x, name)
+                );
+            }
+            else
+            {
+                this.Search(
+                    x => this.MatchContains(x, name)
+                );
+            }
+        }
+        private const string CertificateSearchNameUsage
+            = "Search for a certificate with the given distinguished name."
+              + Constants.CRLF + "Currently BRUTE FORCE: May be slow."
+              + Constants.CRLF + "    name [exactMatch]"
+              + Constants.CRLF + "\t name: distinguished name to look for"
+              + Constants.CRLF + "\t exactMatch: (Optional boolean) Do a contains search. Default: true";
+
         
         //---------------------------------------
         //
@@ -573,6 +644,91 @@ namespace Health.Direct.Config.Console.Command
             CommandUI.Print("SerialNumber", x509.SerialNumber);
             CommandUI.Print("Issuer", x509.Issuer);
             CommandUI.Print("HasPrivateKey", x509.HasPrivateKey);
+        }
+
+        internal bool Match(X509Certificate2 x, X509Certificate2 y)
+        {
+            if (x.Thumbprint == y.Thumbprint)
+            {
+                WriteLine("Thumbprint Matched");
+                return true;
+            }
+            if (x.MatchEmailName(y.GetNameInfo(X509NameType.EmailName, false)))
+            {
+                WriteLine("Email Matched");
+                return true;
+            }
+            if (x.MatchName(y.GetNameInfo(X509NameType.SimpleName, false)))
+            {
+                WriteLine("Name Matched");
+                return true;
+            }
+            
+            return false;
+        }
+
+        internal bool Match(X509Certificate2 x, string name)
+        {
+            if (x.MatchEmailName(name))
+            {
+                WriteLine("Email Matched");
+                return true;
+            }
+            if (x.MatchName(name))
+            {
+                WriteLine("Name Matched");
+                return true;
+            }
+
+            return false;
+        }
+
+        internal bool MatchContains(X509Certificate2 x, string name)
+        {
+            bool match = false;
+
+            string xName = x.GetNameInfo(X509NameType.SimpleName, false);            
+            if (!string.IsNullOrEmpty(xName) && xName.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                WriteLine("Name Matched");
+                match = true;
+            }
+
+            xName = x.GetNameInfo(X509NameType.EmailName, false);
+            if (!string.IsNullOrEmpty(xName) && xName.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                WriteLine("Email Matched");
+                match = true;
+            }
+
+            return match;
+        }
+
+        void Search(Func<X509Certificate2, bool> filter)
+        {
+            CertificateGetOptions getOptions = new CertificateGetOptions() { IncludeData = true, IncludePrivateKey = false};
+            Search(Client.EnumerateCertificates(25, getOptions), filter);
+        }
+
+        void Search(IEnumerable<Certificate> query, Func<X509Certificate2, bool> filter)
+        {
+            int matchCount = 0;
+            var matches = from cert in query
+                          where filter(cert.ToX509Certificate())
+                          select cert;
+            
+            foreach (Certificate match in matches)
+            {
+                ++matchCount;
+                WriteLine(string.Empty);
+                Print(match);
+                CommandUI.PrintSectionBreak();
+            }
+
+            if (matchCount == 0)
+            {
+                WriteLine("No matches");
+            }
         }
     }
 }
