@@ -265,6 +265,10 @@ namespace Health.Direct.Agent.Tests
         /// Sets up standard stores for Testing
         /// WARNING: This may require elevated permissions
         /// </summary>
+
+        static MemoryX509Store s_redmondCerts;
+        static MemoryX509Store s_nhindCerts;
+        static SystemX509Store s_systemStore;
         public static void EnsureStandardMachineStores()
         {
             SystemX509Store.CreateAll();
@@ -272,14 +276,23 @@ namespace Health.Direct.Agent.Tests
             string basePath = Directory.GetCurrentDirectory();
             string redmondCertsPath = MakeCertificatesPath(basePath, "redmond");
             string nhindCertsPath = MakeCertificatesPath(basePath, "nhind");
+
+            if (s_systemStore == null)
+            {
+                s_systemStore = SystemX509Store.OpenPrivateEdit();
+                if (s_redmondCerts == null)
+                {
+                    s_redmondCerts = LoadPrivateCerts(redmondCertsPath);
+                    InstallCerts(s_systemStore, s_redmondCerts, false);
+                }
+                if (s_nhindCerts == null)
+                {
+                    s_nhindCerts = LoadPrivateCerts(nhindCertsPath);
+                    InstallCerts(s_systemStore, s_nhindCerts, false);
+                }
+            }
             
             SystemX509Store store;
-            using(store = SystemX509Store.OpenPrivateEdit())
-            {
-                InstallCerts(store, LoadPrivateCerts(redmondCertsPath));
-                InstallCerts(store, LoadPrivateCerts(nhindCertsPath));
-            }
-
             using (store = SystemX509Store.OpenExternalEdit())
             {
                 InstallCerts(store, LoadPublicCerts(redmondCertsPath));
@@ -294,13 +307,18 @@ namespace Health.Direct.Agent.Tests
                 InstallCerts(store, LoadIncomingAnchors(nhindCertsPath));
                 InstallCerts(store, LoadOutgoingAnchors(nhindCertsPath));
             }
-        }        
-                
+        }
+
         static void InstallCerts(IX509CertificateStore store, IEnumerable<X509Certificate2> certs)
+        {
+            InstallCerts(store, certs, true);
+        }
+                
+        static void InstallCerts(IX509CertificateStore store, IEnumerable<X509Certificate2> certs, bool checkDupes)
         {
             foreach(X509Certificate2 cert in certs)
             {
-                if (!store.Contains(cert))
+                if (!checkDupes || !store.Contains(cert))
                 {
                     store.Add(cert);
                 }
