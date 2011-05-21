@@ -35,7 +35,8 @@ namespace Health.Direct.Config.Console.Command
     public class AnchorCommands : CommandsBase<AnchorStoreClient>
     {        
         CertificateCommands m_certCommands;
-        
+        CertificateGetOptions m_standardGetOptions = new CertificateGetOptions() { IncludeData = true };
+
         //---------------------------------------
         //
         // Commands
@@ -202,6 +203,27 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + "    owner status"
               + Constants.CRLF + "\t owner: Anchor owner"
               + Constants.CRLF + "\t status: " + Constants.EntityStatusString;
+
+        /// <summary>
+        /// Remove an anchor
+        /// </summary>
+        [Command(Name = "Anchor_Get_ByID", Usage = AnchorGetByIDUsage)]
+        public void AnchorGetByID(string[] args)
+        {
+            long anchorID = args.GetRequiredValue<long>(0);
+            Anchor anchor = Client.GetAnchors(new long[] {anchorID}, m_standardGetOptions).FirstOrDefault();
+            if (anchor == null)
+            {
+                WriteLine("Not found");
+                return;
+            }
+            
+            Print(anchor);
+        }
+
+        private const string AnchorGetByIDUsage
+            = "Get the anchor with the given ID"
+              + Constants.CRLF + "    anchorID";
         
         /// <summary>
         /// Remove an anchor
@@ -216,6 +238,34 @@ namespace Health.Direct.Config.Console.Command
         private const string AnchorRemoveUsage
             = "Remove anchors with given ID"
               + Constants.CRLF + "    anchorID";
+
+        /// <summary>
+        /// Set the status of all anchors for an owner
+        /// </summary>
+        [Command(Name = "Anchor_Direction_Set", Usage = AnchorDirectionSetUsage)]
+        public void AnchorDirectStatusSet(string[] args)
+        {
+            long anchorID = args.GetRequiredValue<long>(0);
+            bool forIncoming = args.GetRequiredValue<bool>(1);
+            bool forOutgoing = args.GetRequiredValue<bool>(2);
+            
+            Anchor anchor = Client.GetAnchors(new long[] {anchorID}, m_standardGetOptions).FirstOrDefault();
+            if (anchor == null)
+            {
+                WriteLine("Anchor not found");
+                return;
+            }
+            
+            Client.RemoveAnchor(anchorID);
+            anchor.ForIncoming = forIncoming;
+            anchor.ForOutgoing = forOutgoing;
+            
+            Client.AddAnchor(anchor);
+        }
+        private const string AnchorDirectionSetUsage
+            = "Sets the incoming/outgoing bits on an anchor."
+              + Constants.CRLF + "WARNING: Will remove and then re-add (automatically) the anchor with the new settings."
+              + Constants.CRLF + "    anchorID forIncoming forOutgoing";
         
         /// <summary>
         /// Mirrors what the production gateway would do
@@ -383,8 +433,7 @@ namespace Health.Direct.Config.Console.Command
         
         void Search(string owner, Func<X509Certificate2, bool> filter)
         {
-            CertificateGetOptions getOptions = new CertificateGetOptions() { IncludeData = true };
-            Search(Client.GetAnchorsForOwner(owner, getOptions), filter);
+            Search(Client.GetAnchorsForOwner(owner, m_standardGetOptions), filter);
         }
         
         void Search(IEnumerable<Anchor> query, Func<X509Certificate2, bool> filter)

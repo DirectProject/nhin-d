@@ -64,9 +64,28 @@ namespace Health.Direct.Agent
         {
         }
         
-        internal OutgoingMessage(MessageEnvelope envelope)
+        /// <summary>
+        /// Create a new OutgoingMessage envelope from the given message envelope
+        /// </summary>
+        /// <param name="envelope">source envelope</param>        
+        public OutgoingMessage(MessageEnvelope envelope)
             : base(envelope)
         {
         }
+        
+        /// <summary>
+        /// Use this where the outgoing message is not 'really' a new outgoing message, but an ack or system message
+        /// that provides success/failure or other system status in response to the incoming message. 
+        /// Classic use case:
+        ///  * A sends message to B
+        ///  * B must send MDN Acks to A, because Direct requires it. 
+        ///  * But B does not want to allow any other messages to be sent to A
+        ///  
+        ///  B adds A's trust Anchor with "Incoming" enabled but "Outgoing" disabled. 
+        ///  Since the ACK is really part of the "incoming" message exchange, B could choose to use its Incoming trust
+        ///  settings for the purpose. 
+        /// 
+        /// </summary>
+        public bool UseIncomingTrustAnchors = false;
     }
 }

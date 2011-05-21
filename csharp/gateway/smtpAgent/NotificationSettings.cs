@@ -27,6 +27,7 @@ namespace Health.Direct.SmtpAgent
         
         bool m_autoResponse = false;
         bool m_alwaysAck = true;
+        bool m_useIncomingAnchorsToSend = false;
         string m_productName = DefaultText;
         
         public NotificationSettings()
@@ -99,7 +100,20 @@ namespace Health.Direct.SmtpAgent
                 m_productName = string.IsNullOrEmpty(value) ? DefaultText : value;
             }
         }
-                        
+        
+        [XmlElement]
+        public bool UseIncomingTrustAnchorsToSend
+        {
+            get
+            {
+                return m_useIncomingAnchorsToSend;
+            }
+            set
+            {
+                m_useIncomingAnchorsToSend = value;
+            }
+        }
+                    
         public void Validate()
         {
         }
