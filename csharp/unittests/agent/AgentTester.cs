@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Mail;
@@ -191,7 +192,7 @@ namespace Health.Direct.Agent.Tests
         
         public static DirectAgent CreateAgent(string domain, string certsBasePath)
         {
-            MemoryX509Store privateCerts = LoadPrivateCerts(certsBasePath);
+            MemoryX509Store privateCerts = LoadPrivateCerts(certsBasePath, false);
             MemoryX509Store publicCerts = LoadPublicCerts(certsBasePath);
             TrustAnchorResolver anchors = new TrustAnchorResolver(
                 (IX509CertificateStore) LoadIncomingAnchors(certsBasePath),
@@ -205,9 +206,14 @@ namespace Health.Direct.Agent.Tests
             return Path.Combine(basePath, Path.Combine("Certificates", agentFolder));
         }
         
-        static MemoryX509Store LoadPrivateCerts(string certsBasePath)
+        static MemoryX509Store LoadPrivateCerts(string certsBasePath, bool persist)
         {
-            return LoadCertificates(Path.Combine(certsBasePath, "Private"));
+            X509KeyStorageFlags flags = X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable;
+            if (persist)
+            {
+                flags |= X509KeyStorageFlags.PersistKeySet;
+            }
+            return LoadCertificates(Path.Combine(certsBasePath, "Private"), flags);
         }
 
         static MemoryX509Store LoadPublicCerts(string certsBasePath)
@@ -226,6 +232,11 @@ namespace Health.Direct.Agent.Tests
         }
         
         public static MemoryX509Store LoadCertificates(string folderPath)
+        {
+            return LoadCertificates(folderPath, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
+        }
+        
+        public static MemoryX509Store LoadCertificates(string folderPath, X509KeyStorageFlags flags)
         {
             if (string.IsNullOrEmpty(folderPath))
             {
@@ -249,11 +260,11 @@ namespace Health.Direct.Agent.Tests
                 switch(ext)
                 {
                     default:
-                        certStore.ImportKeyFile(file, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
+                        certStore.ImportKeyFile(file, flags);
                         break;
                     
                     case ".pfx":
-                        certStore.ImportKeyFile(file, "passw0rd!", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
+                        certStore.ImportKeyFile(file, "passw0rd!", flags);
                         break;
                 }
             } 
@@ -265,10 +276,6 @@ namespace Health.Direct.Agent.Tests
         /// Sets up standard stores for Testing
         /// WARNING: This may require elevated permissions
         /// </summary>
-
-        static MemoryX509Store s_redmondCerts;
-        static MemoryX509Store s_nhindCerts;
-        static SystemX509Store s_systemStore;
         public static void EnsureStandardMachineStores()
         {
             SystemX509Store.CreateAll();
@@ -276,21 +283,17 @@ namespace Health.Direct.Agent.Tests
             string basePath = Directory.GetCurrentDirectory();
             string redmondCertsPath = MakeCertificatesPath(basePath, "redmond");
             string nhindCertsPath = MakeCertificatesPath(basePath, "nhind");
-
-            if (s_systemStore == null)
+            
+            X509Store privateStore = CryptoUtility.OpenStoreReadWrite(SystemX509Store.PrivateCertsStoreName, StoreLocation.LocalMachine);
+            if (!DoPrivateKeysExist(privateStore, redmondCertsPath))
             {
-                s_systemStore = SystemX509Store.OpenPrivateEdit();
-                if (s_redmondCerts == null)
-                {
-                    s_redmondCerts = LoadPrivateCerts(redmondCertsPath);
-                    InstallCerts(s_systemStore, s_redmondCerts, false);
-                }
-                if (s_nhindCerts == null)
-                {
-                    s_nhindCerts = LoadPrivateCerts(nhindCertsPath);
-                    InstallCerts(s_systemStore, s_nhindCerts, false);
-                }
+                InstallPrivateKeys(privateStore, LoadPrivateCerts(redmondCertsPath, true));
             }
+            if (!DoPrivateKeysExist(privateStore, nhindCertsPath))
+            {
+                InstallPrivateKeys(privateStore, LoadPrivateCerts(nhindCertsPath, true));
+            }
+            privateStore.Close();
             
             SystemX509Store store;
             using (store = SystemX509Store.OpenExternalEdit())
@@ -311,19 +314,58 @@ namespace Health.Direct.Agent.Tests
 
         static void InstallCerts(IX509CertificateStore store, IEnumerable<X509Certificate2> certs)
         {
-            InstallCerts(store, certs, true);
-        }
-                
-        static void InstallCerts(IX509CertificateStore store, IEnumerable<X509Certificate2> certs, bool checkDupes)
-        {
-            foreach(X509Certificate2 cert in certs)
+            foreach (X509Certificate2 cert in certs)
             {
-                if (!checkDupes || !store.Contains(cert))
+                if (!store.Contains(cert))
                 {
                     store.Add(cert);
                 }
             }
         }
+        
+        static void InstallPrivateKeys(X509Store store, MemoryX509Store certs)
+        {
+            foreach (X509Certificate2 cert in certs)
+            {
+                X509Certificate2 found = store.Certificates.FindByThumbprint(cert.Thumbprint);
+                if (found != null)
+                {
+                    store.Remove(found);
+                    found.Reset();
+                }
+                store.Add(cert);
+            }
+        }
+        
+        static bool DoPrivateKeysExist(X509Store store, string path)
+        {
+            using(MemoryX509Store certs = LoadPrivateCerts(path, false))
+            {
+                foreach(X509Certificate2 cert in certs)
+                {
+                    X509Certificate2 found = store.Certificates.FindByThumbprint(cert.Thumbprint);
+                    if (found == null)
+                    {
+                        return false;
+                    }
+                    
+                    bool hasKey = false;
+                    try
+                    {
+                        hasKey = (!string.IsNullOrEmpty(found.PrivateKey.ToXmlString(true)));
+                    }
+                    catch
+                    {
+                    }                    
+                    if (!hasKey)
+                    {
+                        return false;
+                    }
+                }
+            }
+            
+            return true;
+        }                
     }
 
     /// <summary>

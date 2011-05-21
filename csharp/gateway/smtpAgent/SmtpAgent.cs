@@ -16,7 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Diagnostics;
 using System.IO;
-
 using Health.Direct.Agent;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Container;
@@ -27,6 +26,7 @@ using Health.Direct.Common.Mail;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
+using Health.Direct.Common.Mail.Notifications;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -432,7 +432,13 @@ namespace Health.Direct.SmtpAgent
         
         protected virtual MessageEnvelope ProcessOutgoing(ISmtpMessage message, MessageEnvelope envelope)
         {
-            envelope = this.SecurityAgent.ProcessOutgoing(envelope);
+            OutgoingMessage outgoing = new OutgoingMessage(envelope);
+            if (envelope.Message.IsMDN())
+            {
+                outgoing.UseIncomingTrustAnchors = this.Settings.Notifications.UseIncomingTrustAnchorsToSend;
+            }
+            
+            envelope = this.SecurityAgent.ProcessOutgoing(outgoing);
             Logger.Debug("ProcessedOutgoing");
             return envelope;
         }
@@ -574,22 +580,29 @@ namespace Health.Direct.SmtpAgent
             if (envelope.HasDomainRecipients)
             {
                 DirectAddressCollection routedRecipients = new DirectAddressCollection();                
-                m_router.Route(message, envelope, routedRecipients);
+                m_router.Route(message, envelope, routedRecipients); 
                 
                 this.SendNotifications(envelope, routedRecipients);
             }
-            
+            //
+            // Any recipients that were handled by routes are no longer in the DomainRecipients collection (removed)
+            // Smtp Server should continue process any domain recipients whose delivery were NOT handled by routes
+            //
             if (m_settings.Incoming.EnableRelay && envelope.HasDomainRecipients)
             {
+                this.SendNotifications(envelope, envelope.DomainRecipients);
                 //
                 // We only want the incoming message sent to trusted domain recipients
-                // We are not allow arbitrary relay
+                // We are not allowing arbitrary relay
                 //
                 message.SetRcptTo(envelope.DomainRecipients);
                 m_diagnostics.LogEnvelopeHeaders(message);
             }
             else
             {
+                //
+                // SMTP Server need not proceed with delivery because we already routed the message to all domain recipients
+                //
                 message.Abort();
             }
         }
