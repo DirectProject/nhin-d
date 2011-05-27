@@ -106,7 +106,7 @@ namespace Health.Direct.Common.Tests.Caching
         /// Confirms ability of code to resolve certs using the dns caching client method ResolveCERT, ensures items are in cache
         /// </summary>
         /// <param name="domain">domain name to be resolved</param>
-        [Theory]
+        [Theory(Skip = "Requires remote DNS call on port 53.")]
         [PropertyData("CertDomainNames")]
         public void ResolveCertEnsureInCache(string domain)
         {
@@ -126,7 +126,7 @@ namespace Health.Direct.Common.Tests.Caching
         /// confirms ability of code to resolve certs using the dns caching client method ResolveCERT
         /// </summary>
         /// <param name="domain">domain name to be resolved</param>
-        [Theory]
+        [Theory(Skip="Requires remote DNS call on port 53.")]
         [PropertyData("CertDomainNames")]
         public void ResolveCERTFromNameServerEnsureInCache(string domain)
         {
