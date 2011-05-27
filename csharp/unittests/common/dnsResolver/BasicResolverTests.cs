@@ -78,14 +78,14 @@ namespace Health.Direct.Common.Tests.DnsResolver
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Requires remote DNS call on port 53.")]
         [PropertyData("CertDomainNames")]
         public void TestCert(string domain)
         {
             Resolve(DnsRequest.CreateCERT(domain));
         }
 
-        [Theory]
+        [Theory(Skip = "Requires remote DNS call on port 53.")]
         [PropertyData("CertDomainNames")]
         public void ResolveCert(string domain)
         {
