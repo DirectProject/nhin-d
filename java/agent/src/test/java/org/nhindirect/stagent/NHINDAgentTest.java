@@ -199,9 +199,7 @@ public class NHINDAgentTest extends TestCase
 	{
 		/*
 		 * EncryptedMessage2
-		 */
-		
-		
+		 */		
 		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"})); 
 		String testMessage = TestUtils.readResource("EncryptedMessage2.txt");
 		MimeMessage originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
@@ -214,22 +212,6 @@ public class NHINDAgentTest extends TestCase
 		
 		assertNotNull(strippedAndVerifiesMessage);
 		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);
-		
-		/*
-		 * EncryptedMessage3
-		 */				
-		
-		testMessage = TestUtils.readResource("EncryptedMessage3.txt");
-		originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
-		
-		
-		// verify the message
-		// need a new agent because this is a different domain);
-		strippedAndVerifiesMessage = agent.processIncoming(originalMsg);
-		
-		
-		assertNotNull(strippedAndVerifiesMessage);
-		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);
 	}
 	
 	
@@ -238,48 +220,18 @@ public class NHINDAgentTest extends TestCase
 		
 	
 		// get the keystore file		
+	
+		
 		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"})); 
 		
 		String testMessage = TestUtils.readResource("EncAttachment.txt");
 		MimeMessage originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
 			
 		
+		
 		// verify the message
 		// need a new agent because this is a different domain);
 		IncomingMessage strippedAndVerifiesMessage = agent.processIncoming(originalMsg);
-		
-		
-		assertNotNull(strippedAndVerifiesMessage);
-		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);	
-				
-		/*
-		 * EncAttachment2.txt
-		 */		
-		
-		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"})); 
-		
-		testMessage = TestUtils.readResource("EncAttachment2.txt");
-		originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
-		
-		
-		// verify the message
-		strippedAndVerifiesMessage = agent.processIncoming(originalMsg);
-		
-		
-		assertNotNull(strippedAndVerifiesMessage);
-		assertTrue(strippedAndVerifiesMessage.getMessage().toString().length() > 0);	
-
-		/*
-		 * LargeEncAttachment.txt
-		 */		
-		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"})); 
-		
-		testMessage = TestUtils.readResource("LargeEncAttachment.txt");
-		originalMsg = new MimeMessage(null, new ByteArrayInputStream(testMessage.getBytes("ASCII")));
-		
-
-		// verify the message
-		strippedAndVerifiesMessage = agent.processIncoming(originalMsg);
 		
 		
 		assertNotNull(strippedAndVerifiesMessage);
