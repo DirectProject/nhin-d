@@ -222,28 +222,7 @@ namespace Health.Direct.Config.Console.Command
             = "Set the status for ALL anchors for an owner."
               + Constants.CRLF + "    owner status"
               + Constants.CRLF + "\t owner: Anchor owner"
-              + Constants.CRLF + "\t status: " + Constants.EntityStatusString;
-
-        /// <summary>
-        /// Remove an anchor
-        /// </summary>
-        [Command(Name = "Anchor_Get_ByID", Usage = AnchorGetByIDUsage)]
-        public void AnchorGetByID(string[] args)
-        {
-            long anchorID = args.GetRequiredValue<long>(0);
-            Anchor anchor = Client.GetAnchors(new long[] {anchorID}, m_standardGetOptions).FirstOrDefault();
-            if (anchor == null)
-            {
-                WriteLine("Not found");
-                return;
-            }
-            
-            Print(anchor);
-        }
-
-        private const string AnchorGetByIDUsage
-            = "Get the anchor with the given ID"
-              + Constants.CRLF + "    anchorID";
+              + Constants.CRLF + "\t status: " + Constants.EntityStatusString;        
         
         /// <summary>
         /// Remove an anchor
