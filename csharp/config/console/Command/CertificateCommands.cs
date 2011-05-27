@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Ali Emami       aliemami@microsoft.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -146,16 +147,35 @@ namespace Health.Direct.Config.Console.Command
         public void CertificateByIDGet(string[] args)
         {
             long certificateID = args.GetRequiredValue<int>(0);
-            CertificateGetOptions options = GetOptions(args, 1);
+            CertificateGetOptions options = new CertificateGetOptions()
+            {
+                IncludeData = args.GetOptionalValue(1, false),
+                IncludePrivateKey = args.GetOptionalValue(2, false)
+            };
 
-            this.Print(Client.GetCertificate(certificateID, options));
+            string outputFile = args.GetOptionalValue(3, string.Empty);
+
+            Certificate certificate = Client.GetCertificate(certificateID, options);
+            this.Print(certificate);
+
+            if (certificate == null)
+            {
+                return; 
+            }
+
+            if (!string.IsNullOrEmpty(outputFile) && certificate.HasData)
+            {
+                File.WriteAllBytes(outputFile, certificate.Data); 
+            }
         }
 
         private const string CertificateByIDGetUsage
             = "Retrieve a certificate by its id."
-              + Constants.CRLF + "    certificateID [options]"
-              + Constants.CRLF + "\t certificateID: "
-              + Constants.CRLF + PrintOptionsUsage;
+              + Constants.CRLF + "    certificateID [certData] [privatekey] [outputFile]"
+              + Constants.CRLF + "\t certificateID: the cert ID to get."
+              + Constants.CRLF + "\t certData: (True/False) Fetch certificate data"
+              + Constants.CRLF + "\t privateKey: (True/False) Include private key"
+              + Constants.CRLF + "\t outputFile: (optional) The output filename for the certificate."; 
         
         /// <summary>
         /// Get all certificates for an owner
@@ -229,9 +249,10 @@ namespace Health.Direct.Config.Console.Command
 
         private const string CertificateResolveUsage
             = "Resolves certificates for an owner - like the Smtp Gateway would."
-              + Constants.CRLF + "    owner [options]"
+              + Constants.CRLF + "    owner [certData] [privateKey]"
               + Constants.CRLF + "\t owner: Certificate owner"
-              + Constants.CRLF + PrintOptionsUsage;
+              + Constants.CRLF + "\t certData: (True/False) Fetch certificate data"
+              + Constants.CRLF + "\t privateKey: (True/False) Include private key";
         
         /// <summary>
         /// Export certs in zone file format
@@ -574,12 +595,19 @@ namespace Health.Direct.Config.Console.Command
         
         internal CertificateGetOptions GetOptions(string[] args, int firstArg)
         {
-            return new CertificateGetOptions
-                       {
-                           IncludeData = args.GetOptionalValue(firstArg, false),
-                           IncludePrivateKey = args.GetOptionalValue(firstArg + 1, false)
-                       };
-        }
+            CertificateGetOptions options = new CertificateGetOptions
+            {
+                IncludeData = args.GetOptionalValue(firstArg, false),
+                IncludePrivateKey = args.GetOptionalValue(firstArg + 1, false)
+            };            
+            
+            if (args.GetValueOrNull(firstArg + 2) != null)
+            {
+                options.Status = args.GetRequiredEnum<EntityStatus>(firstArg + 2);
+            }            
+
+            return options; 
+        }        
 
         internal const string PrintOptionsUsage
             = "\t options:"
@@ -606,6 +634,12 @@ namespace Health.Direct.Config.Console.Command
         
         void Print(Certificate cert)
         {
+            if (cert == null)
+            {
+                WriteLine("No certificate found");
+                return; 
+            }
+
             CommandUI.Print("Owner", cert.Owner);
             CommandUI.Print("Thumbprint", cert.Thumbprint); 
             CommandUI.Print("ID", cert.ID);
