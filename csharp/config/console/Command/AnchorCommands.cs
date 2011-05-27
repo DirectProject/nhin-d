@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Ali Emami       aliemami@microsoft.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -26,6 +27,7 @@ using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;
 using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
+using System.IO;
 
 namespace Health.Direct.Config.Console.Command
 {
@@ -138,17 +140,35 @@ namespace Health.Direct.Config.Console.Command
         public void AnchorByIDGet(string[] args)
         {
             long anchorID = args.GetRequiredValue<int>(0);
-            CertificateGetOptions options = this.CertCommands.GetOptions(args, 1);
+            CertificateGetOptions options = new CertificateGetOptions() {
+                IncludeData = args.GetOptionalValue(1, false), 
+                IncludePrivateKey = args.GetOptionalValue(2, false)
+            };
+
+            string outputFile = args.GetOptionalValue(3, string.Empty); 
 
             Anchor[] anchors = Client.GetAnchors(new[] { anchorID }, options);
             this.Print(anchors);
+
+            if (anchors.Length < 1)
+            {
+                return; 
+            }
+
+            Anchor anchor = anchors[0]; 
+            if (!string.IsNullOrEmpty(outputFile) && anchor.HasData)
+            {   
+                File.WriteAllBytes(outputFile, anchor.Data);
+            }
         }
 
         private const string AnchorByIDGetUsage
             = "Get an anchor by its id."
-              + Constants.CRLF + "    anchorID [options]"
-              + Constants.CRLF + CertificateCommands.PrintOptionsUsage;
-        
+              + Constants.CRLF + "    anchorID [certData] [privatekey] [outputFile]"
+              + Constants.CRLF + "\t anchorID: the anchor ID to get."
+              + Constants.CRLF + "\t certData: (True/False) Fetch certificate data"
+              + Constants.CRLF + "\t privateKey: (True/False) Include private key"
+              + Constants.CRLF + "\t outputFile: (optional) The output filename for the certificate.";         
         
         /// <summary>
         /// Get all anchors for an owner
@@ -275,6 +295,7 @@ namespace Health.Direct.Config.Console.Command
         {
             MailAddress owner = new MailAddress(args.GetRequiredValue(0));
             CertificateGetOptions options = this.CertCommands.GetOptions(args, 1);
+            options.Status = EntityStatus.Enabled;  // We only ever resolve Enabled Anchors
 
             Anchor[] anchors = Client.GetAnchorsForOwner(owner.Address, options);
             if (anchors.IsNullOrEmpty())
@@ -286,10 +307,11 @@ namespace Health.Direct.Config.Console.Command
 
         private const string AnchorResolveUsage
             = "Resolves anchors for an owner - like the Smtp Gateway would."
-              + Constants.CRLF + "    owner [options]"
+              + Constants.CRLF + "    owner [certData] [privateKey]"
               + Constants.CRLF + "\t owner: Anchor owner"
-              + Constants.CRLF + CertificateCommands.PrintOptionsUsage;
-
+              + Constants.CRLF + "\t certData: (True/False) Fetch certificate data"
+              + Constants.CRLF + "\t privateKey: (True/False) Include private key";
+              
         /// <summary>
         /// Check if a particular anchor was installed for the given owner
         /// </summary>

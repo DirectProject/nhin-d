@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Ali Emami       aliemami@microsoft.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -36,11 +37,7 @@ namespace Health.Direct.Agent
         /// <summary>
         /// A message is missing the message body.
         /// </summary>
-        MissingMessage,
-        /// <summary>
-        /// The message was expected to be a wrapped message on decryption but was not.
-        /// </summary>
-        MessageNotWrapped,
+        MissingMessage,        
         /// <summary>
         /// The message was asked to set a null or empty recipients list.
         /// </summary>
@@ -48,11 +45,7 @@ namespace Health.Direct.Agent
         /// <summary>
         /// The message was asked to set a null or missing sender.
         /// </summary>
-        NoSender,
-        /// <summary>
-        /// The signature could not be read
-        /// </summary>
-        InvalidSignature,
+        NoSender,        
         /// <summary>
         /// The encrypted message was malformed.
         /// </summary>
@@ -64,11 +57,7 @@ namespace Health.Direct.Agent
         /// <summary>
         /// The sender of this message is not trusted.
         /// </summary>
-        UntrustedSender,
-        /// <summary>
-        /// Certificates for the recipient could not be retrieved and are required.
-        /// </summary>
-        UnknownRecipient,
+        UntrustedSender,        
         /// <summary>
         /// This message has no signatures.
         /// </summary>
@@ -76,15 +65,7 @@ namespace Health.Direct.Agent
         /// <summary>
         /// The message is missing sender signatures
         /// </summary>
-        MissingSenderSignature,
-        /// <summary>
-        /// The message is missing sender certificates
-        /// </summary>
-        MissingSenderCertificate,
-        /// <summary>
-        /// The message is missing recipient certificates in the signature
-        /// </summary>
-        MissingRecipientCertificate,
+        MissingSenderSignature,                
         /// <summary>
         /// The message did not contain recipients in a domain managed by this agent
         /// </summary>
