@@ -6,14 +6,20 @@
       <xsd:import namespace="http://nhind.org/config" schemaLocation="ConfigurationService_schema1.xsd"/>
     </xsd:schema>
   </types>
+  <message name="getAddresss">
+    <part name="parameters" element="tns:getAddresss"/>
+  </message>
+  <message name="getAddresssResponse">
+    <part name="parameters" element="tns:getAddresssResponse"/>
+  </message>
+  <message name="ConfigurationServiceException">
+    <part name="fault" element="tns:ConfigurationServiceException"/>
+  </message>
   <message name="addAddress">
     <part name="parameters" element="tns:addAddress"/>
   </message>
   <message name="addAddressResponse">
     <part name="parameters" element="tns:addAddressResponse"/>
-  </message>
-  <message name="ConfigurationServiceException">
-    <part name="fault" element="tns:ConfigurationServiceException"/>
   </message>
   <message name="updateAddress">
     <part name="parameters" element="tns:updateAddress"/>
@@ -38,12 +44,6 @@
   </message>
   <message name="listAddresssResponse">
     <part name="parameters" element="tns:listAddresssResponse"/>
-  </message>
-  <message name="getAddresss">
-    <part name="parameters" element="tns:getAddresss"/>
-  </message>
-  <message name="getAddresssResponse">
-    <part name="parameters" element="tns:getAddresssResponse"/>
   </message>
   <message name="addDomain">
     <part name="parameters" element="tns:addDomain"/>
@@ -99,6 +99,24 @@
   <message name="getDomainResponse">
     <part name="parameters" element="tns:getDomainResponse"/>
   </message>
+  <message name="contains">
+    <part name="parameters" element="tns:contains"/>
+  </message>
+  <message name="containsResponse">
+    <part name="parameters" element="tns:containsResponse"/>
+  </message>
+  <message name="getCertificates">
+    <part name="parameters" element="tns:getCertificates"/>
+  </message>
+  <message name="getCertificatesResponse">
+    <part name="parameters" element="tns:getCertificatesResponse"/>
+  </message>
+  <message name="getCertificate">
+    <part name="parameters" element="tns:getCertificate"/>
+  </message>
+  <message name="getCertificateResponse">
+    <part name="parameters" element="tns:getCertificateResponse"/>
+  </message>
   <message name="addCertificates">
     <part name="parameters" element="tns:addCertificates"/>
   </message>
@@ -140,24 +158,6 @@
   </message>
   <message name="listCertificatesResponse">
     <part name="parameters" element="tns:listCertificatesResponse"/>
-  </message>
-  <message name="contains">
-    <part name="parameters" element="tns:contains"/>
-  </message>
-  <message name="containsResponse">
-    <part name="parameters" element="tns:containsResponse"/>
-  </message>
-  <message name="getCertificates">
-    <part name="parameters" element="tns:getCertificates"/>
-  </message>
-  <message name="getCertificatesResponse">
-    <part name="parameters" element="tns:getCertificatesResponse"/>
-  </message>
-  <message name="getCertificate">
-    <part name="parameters" element="tns:getCertificate"/>
-  </message>
-  <message name="getCertificateResponse">
-    <part name="parameters" element="tns:getCertificateResponse"/>
   </message>
   <message name="addAnchor">
     <part name="parameters" element="tns:addAnchor"/>
@@ -322,6 +322,11 @@
     <part name="parameters" element="tns:updateDNSResponse"/>
   </message>
   <portType name="ConfigurationService">
+    <operation name="getAddresss">
+      <input message="tns:getAddresss"/>
+      <output message="tns:getAddresssResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
     <operation name="addAddress">
       <input message="tns:addAddress"/>
       <output message="tns:addAddressResponse"/>
@@ -345,11 +350,6 @@
     <operation name="listAddresss">
       <input message="tns:listAddresss"/>
       <output message="tns:listAddresssResponse"/>
-      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
-    </operation>
-    <operation name="getAddresss">
-      <input message="tns:getAddresss"/>
-      <output message="tns:getAddresssResponse"/>
       <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
     </operation>
     <operation name="addDomain">
@@ -395,6 +395,20 @@
       <input message="tns:getDomain"/>
       <output message="tns:getDomainResponse"/>
     </operation>
+    <operation name="contains">
+      <input message="tns:contains"/>
+      <output message="tns:containsResponse"/>
+    </operation>
+    <operation name="getCertificates">
+      <input message="tns:getCertificates"/>
+      <output message="tns:getCertificatesResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getCertificate">
+      <input message="tns:getCertificate"/>
+      <output message="tns:getCertificateResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
     <operation name="addCertificates">
       <input message="tns:addCertificates"/>
       <output message="tns:addCertificatesResponse"/>
@@ -428,20 +442,6 @@
     <operation name="listCertificates">
       <input message="tns:listCertificates"/>
       <output message="tns:listCertificatesResponse"/>
-      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
-    </operation>
-    <operation name="contains">
-      <input message="tns:contains"/>
-      <output message="tns:containsResponse"/>
-    </operation>
-    <operation name="getCertificates">
-      <input message="tns:getCertificates"/>
-      <output message="tns:getCertificatesResponse"/>
-      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
-    </operation>
-    <operation name="getCertificate">
-      <input message="tns:getCertificate"/>
-      <output message="tns:getCertificateResponse"/>
       <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
     </operation>
     <operation name="addAnchor">
