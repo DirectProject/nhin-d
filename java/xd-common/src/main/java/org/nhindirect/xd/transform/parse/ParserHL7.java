@@ -24,6 +24,12 @@ public class ParserHL7 {
         siemens.put("100003", "Knapp.Julie@allscript.direct.com");
         siemens.put("100004", "McDermott.Thomas@allscript.direct.com");
         siemens.put("pknapp", "Patrick.Knapp@allscript.direct.com");
+        // new ones
+        siemens.put("822", "Barbara.Morris@allscript.direct.com");
+        siemens.put("995", "Yogi.Bear@allscripts.direct.com");
+        siemens.put("mbendon", "Mary.Brendon@allscript.direct.com");
+        siemens.put("511", "Dennis.Chagnon@allscript.direct.com");
+
     }
 
 
