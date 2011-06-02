@@ -493,4 +493,164 @@ public class DNSServer_Function_Test extends TestCase
 			}
 		}.perform();
 	}		
+	
+	
+	public void testQueryNSRecord_AssertRecordsRetrieved() throws Exception 
+	{
+		new TestPlan()
+		{
+			protected void addRecords() throws Exception
+			{
+				ArrayList<DnsRecord> recs = new ArrayList<DnsRecord>();
+				DnsRecord rec = DNSRecordUtil.createNSRecord("domain.com", "ns.domain.com");
+				recs.add(rec);
+				
+				rec = DNSRecordUtil.createNSRecord("domain.com", "ns2.domain.com");
+				recs.add(rec);
+								
+				rec = DNSRecordUtil.createNSRecord("domain2.com", "ns.domain2.com");
+				recs.add(rec);				
+				
+				proxy.addDNS(recs.toArray(new DnsRecord[recs.size()]));
+								
+			}
+			
+			protected Collection<Query> getTestQueries() throws Exception
+			{
+				Collection<Query> queries = new ArrayList<Query>();
+				queries.add(new Query("domain.com", Type.NS));
+				queries.add(new Query("domain.com", Type.A));
+				
+				return queries;
+			}
+			
+			protected void doAssertions(Collection<Record> records) throws Exception
+			{
+				assertNotNull(records);
+				assertEquals(2, records.size());
+				assertEquals("domain.com.", records.iterator().next().getName().toString());
+				
+				for (Record rec : records)
+				{
+					assertEquals(Type.NS, rec.getType());
+				}
+			}
+		}.perform();
+	}		
+	
+	public void testQueryNSRecordByA_AssertNoRecordsRetrieved() throws Exception 
+	{
+		new TestPlan()
+		{
+			protected void addRecords() throws Exception
+			{
+				ArrayList<DnsRecord> recs = new ArrayList<DnsRecord>();
+				DnsRecord rec = DNSRecordUtil.createNSRecord("domain.com", "ns.domain.com");
+				recs.add(rec);
+				
+				rec = DNSRecordUtil.createNSRecord("domain.com", "ns2.domain.com");
+				recs.add(rec);
+								
+				rec = DNSRecordUtil.createNSRecord("domain2.com", "ns.domain2.com");
+				recs.add(rec);				
+				
+				proxy.addDNS(recs.toArray(new DnsRecord[recs.size()]));
+								
+			}
+			
+			protected Collection<Query> getTestQueries() throws Exception
+			{
+				Collection<Query> queries = new ArrayList<Query>();
+				queries.add(new Query("domain.com", Type.A));
+				
+				return queries;
+			}
+			
+			protected void doAssertions(Collection<Record> records) throws Exception
+			{
+				assertNotNull(records);
+				assertEquals(0, records.size());
+			}
+		}.perform();
+	}	
+	
+	public void testQueryCNAMERecord_AssertRecordsRetrieved() throws Exception 
+	{
+		new TestPlan()
+		{
+			protected void addRecords() throws Exception
+			{
+				ArrayList<DnsRecord> recs = new ArrayList<DnsRecord>();
+				DnsRecord rec = DNSRecordUtil.createCNAMERecord("domainserver.com", "domain.com");
+				recs.add(rec);
+				
+				rec = DNSRecordUtil.createCNAMERecord("domainserver2.com", "domain.com");
+				recs.add(rec);
+								
+				rec = DNSRecordUtil.createCNAMERecord("domain2server.com", "domain2.com");
+				recs.add(rec);				
+				
+				proxy.addDNS(recs.toArray(new DnsRecord[recs.size()]));
+								
+			}
+			
+			protected Collection<Query> getTestQueries() throws Exception
+			{
+				Collection<Query> queries = new ArrayList<Query>();
+				queries.add(new Query("domainserver.com", Type.CNAME));
+				queries.add(new Query("domainserver2.com", Type.CNAME));
+				queries.add(new Query("domain.com", Type.A));
+				
+				return queries;
+			}
+			
+			protected void doAssertions(Collection<Record> records) throws Exception
+			{
+				assertNotNull(records);
+				assertEquals(2, records.size());
+				assertEquals("domainserver.com.", records.iterator().next().getName().toString());
+				
+				for (Record rec : records)
+				{
+					assertEquals(Type.CNAME, rec.getType());
+				}
+			}
+		}.perform();
+	}	
+	
+	public void testQueryCNAMERecordByA_AssertNoRecordsRetrieved() throws Exception 
+	{
+		new TestPlan()
+		{
+			protected void addRecords() throws Exception
+			{
+				ArrayList<DnsRecord> recs = new ArrayList<DnsRecord>();
+				DnsRecord rec = DNSRecordUtil.createCNAMERecord("domainserver.com", "domain.com");
+				recs.add(rec);
+				
+				rec = DNSRecordUtil.createCNAMERecord("domainserver2.com", "domain.com");
+				recs.add(rec);
+								
+				rec = DNSRecordUtil.createCNAMERecord("domain2server.com", "domain2.com");
+				recs.add(rec);				
+				
+				proxy.addDNS(recs.toArray(new DnsRecord[recs.size()]));
+								
+			}
+			
+			protected Collection<Query> getTestQueries() throws Exception
+			{
+				Collection<Query> queries = new ArrayList<Query>();
+				queries.add(new Query("domain.com", Type.A));
+				
+				return queries;
+			}
+			
+			protected void doAssertions(Collection<Record> records) throws Exception
+			{
+				assertNotNull(records);
+				assertEquals(0, records.size());
+			}
+		}.perform();
+	}		
 }

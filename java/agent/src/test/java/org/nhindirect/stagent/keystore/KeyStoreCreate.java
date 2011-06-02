@@ -55,6 +55,7 @@ public class KeyStoreCreate
 	{
 		try
 		{		
+			importCert("highlandclinic_old", "highlandclinic@securehealthemail.com.der", null);
 			importCert("user1", "user1.der", "user1key.der");
 			importCert("cacert", "cacert.der", null);
 			importCert("gm2552", "gm2552.der", "gm2552Key.der");
@@ -94,7 +95,9 @@ public class KeyStoreCreate
 		try
 		{
 			System.out.println("Importing cert with alias \"" + alias + "\"");
-						
+				
+			X509Certificate testCert = service.getByAlias(alias);
+			
 			if (service.getByAlias(alias) == null)
 			{
 				InputStream inStream = new FileInputStream(certsBasePath + certFile);
