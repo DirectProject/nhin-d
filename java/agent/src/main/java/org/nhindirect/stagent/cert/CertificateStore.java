@@ -73,14 +73,10 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
 
         for (X509Certificate cert : certs) 
         {
-            if (CryptoExtensions.containsEmailAddressInSubjectAltName(cert, subjectName)) 
+            if (CryptoExtensions.certSubjectContainsName(cert, subjectName)) 
             {
                 retVal.add(cert);
             } 
-            else if (cert.getSubjectDN().getName().toLowerCase().contains(subjectName.toLowerCase(Locale.getDefault()))) 
-            {
-                retVal.add(cert);
-            }
         }
 
         return retVal;

@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Mail;
@@ -191,7 +192,7 @@ namespace Health.Direct.Agent.Tests
         
         public static DirectAgent CreateAgent(string domain, string certsBasePath)
         {
-            MemoryX509Store privateCerts = LoadPrivateCerts(certsBasePath);
+            MemoryX509Store privateCerts = LoadPrivateCerts(certsBasePath, false);
             MemoryX509Store publicCerts = LoadPublicCerts(certsBasePath);
             TrustAnchorResolver anchors = new TrustAnchorResolver(
                 (IX509CertificateStore) LoadIncomingAnchors(certsBasePath),
@@ -205,9 +206,14 @@ namespace Health.Direct.Agent.Tests
             return Path.Combine(basePath, Path.Combine("Certificates", agentFolder));
         }
         
-        static MemoryX509Store LoadPrivateCerts(string certsBasePath)
+        static MemoryX509Store LoadPrivateCerts(string certsBasePath, bool persist)
         {
-            return LoadCertificates(Path.Combine(certsBasePath, "Private"));
+            X509KeyStorageFlags flags = X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable;
+            if (persist)
+            {
+                flags |= X509KeyStorageFlags.PersistKeySet;
+            }
+            return LoadCertificates(Path.Combine(certsBasePath, "Private"), flags);
         }
 
         static MemoryX509Store LoadPublicCerts(string certsBasePath)
@@ -226,6 +232,11 @@ namespace Health.Direct.Agent.Tests
         }
         
         public static MemoryX509Store LoadCertificates(string folderPath)
+        {
+            return LoadCertificates(folderPath, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
+        }
+        
+        public static MemoryX509Store LoadCertificates(string folderPath, X509KeyStorageFlags flags)
         {
             if (string.IsNullOrEmpty(folderPath))
             {
@@ -249,11 +260,11 @@ namespace Health.Direct.Agent.Tests
                 switch(ext)
                 {
                     default:
-                        certStore.ImportKeyFile(file, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+                        certStore.ImportKeyFile(file, flags);
                         break;
                     
                     case ".pfx":
-                        certStore.ImportKeyFile(file, "passw0rd!", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+                        certStore.ImportKeyFile(file, "passw0rd!", flags);
                         break;
                 }
             } 
@@ -273,13 +284,18 @@ namespace Health.Direct.Agent.Tests
             string redmondCertsPath = MakeCertificatesPath(basePath, "redmond");
             string nhindCertsPath = MakeCertificatesPath(basePath, "nhind");
             
-            SystemX509Store store;
-            using(store = SystemX509Store.OpenPrivateEdit())
+            X509Store privateStore = CryptoUtility.OpenStoreReadWrite(SystemX509Store.PrivateCertsStoreName, StoreLocation.LocalMachine);
+            if (!DoPrivateKeysExist(privateStore, redmondCertsPath))
             {
-                InstallCerts(store, LoadPrivateCerts(redmondCertsPath));
-                InstallCerts(store, LoadPrivateCerts(nhindCertsPath));
+                InstallPrivateKeys(privateStore, LoadPrivateCerts(redmondCertsPath, true));
             }
-
+            if (!DoPrivateKeysExist(privateStore, nhindCertsPath))
+            {
+                InstallPrivateKeys(privateStore, LoadPrivateCerts(nhindCertsPath, true));
+            }
+            privateStore.Close();
+            
+            SystemX509Store store;
             using (store = SystemX509Store.OpenExternalEdit())
             {
                 InstallCerts(store, LoadPublicCerts(redmondCertsPath));
@@ -294,11 +310,11 @@ namespace Health.Direct.Agent.Tests
                 InstallCerts(store, LoadIncomingAnchors(nhindCertsPath));
                 InstallCerts(store, LoadOutgoingAnchors(nhindCertsPath));
             }
-        }        
-                
+        }
+
         static void InstallCerts(IX509CertificateStore store, IEnumerable<X509Certificate2> certs)
         {
-            foreach(X509Certificate2 cert in certs)
+            foreach (X509Certificate2 cert in certs)
             {
                 if (!store.Contains(cert))
                 {
@@ -306,6 +322,50 @@ namespace Health.Direct.Agent.Tests
                 }
             }
         }
+        
+        static void InstallPrivateKeys(X509Store store, MemoryX509Store certs)
+        {
+            foreach (X509Certificate2 cert in certs)
+            {
+                X509Certificate2 found = store.Certificates.FindByThumbprint(cert.Thumbprint);
+                if (found != null)
+                {
+                    store.Remove(found);
+                    found.Reset();
+                }
+                store.Add(cert);
+            }
+        }
+        
+        static bool DoPrivateKeysExist(X509Store store, string path)
+        {
+            using(MemoryX509Store certs = LoadPrivateCerts(path, false))
+            {
+                foreach(X509Certificate2 cert in certs)
+                {
+                    X509Certificate2 found = store.Certificates.FindByThumbprint(cert.Thumbprint);
+                    if (found == null)
+                    {
+                        return false;
+                    }
+                    
+                    bool hasKey = false;
+                    try
+                    {
+                        hasKey = (!string.IsNullOrEmpty(found.PrivateKey.ToXmlString(true)));
+                    }
+                    catch
+                    {
+                    }                    
+                    if (!hasKey)
+                    {
+                        return false;
+                    }
+                }
+            }
+            
+            return true;
+        }                
     }
 
     /// <summary>

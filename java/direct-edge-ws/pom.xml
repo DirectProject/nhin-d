@@ -40,8 +40,8 @@
     </licenses>   
     
 	<scm>
-		<url>https://nhin-d.googlecode.com/hg/java/xd/</url>
-		<connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/direct-edge.ws
+		<url>https://nhin-d.googlecode.com/hg/java/direct-edge-ws</url>
+		<connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/direct-edge-ws
         </connection>
 	</scm>
    

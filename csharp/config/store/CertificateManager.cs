@@ -330,17 +330,6 @@ namespace Health.Direct.Config.Store
                 RemoveAll(db);
             }
         }
-        
-        X509Certificate2Collection Collect(IEnumerable<Certificate> source)
-        {
-            X509Certificate2Collection x509Coll = new X509Certificate2Collection();
-            foreach(Certificate cert in source)
-            {
-                x509Coll.Add(cert.ToX509Certificate());
-            }
-            
-            return x509Coll;
-        }
 
         public X509Certificate2Collection this[string subjectName]
         {

@@ -28,10 +28,10 @@ echo Ready to apply changes to hg
 pause
 
 if "%1" NEQ "test" (
-  hg commit --message "Advancing version number to %VERSION%..." ..\GlobalAssemblyInfo.cs .\DirectGateway.iss
+  hg commit --message "Advancing version number to %VERSION%..." ..\GlobalAssemblyInfo.cs .\Direct.iss
   hg tag --force --message "Tagging CSharp as dotnet-%VERSION%" dotnet-%VERSION%
   pushd ..\..
-  hg archive --rev dotnet-%VERSION% --type zip --exclude certs --exclude java --exclude .hg* csharp\installer\DirectGateway-%VERSION%-NET35-Source.zip
+  hg archive --rev dotnet-%VERSION% --type zip --exclude certs --exclude java --exclude .hg* csharp\installer\Direct-%VERSION%-NET35-Source.zip
   popd
 )
 

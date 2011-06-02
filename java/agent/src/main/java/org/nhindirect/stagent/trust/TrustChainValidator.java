@@ -42,6 +42,8 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.security.auth.x500.X500Principal;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.Thumbprint;
@@ -63,6 +65,8 @@ public class TrustChainValidator
 	private Collection<CertificateResolver> certResolvers;
 	
 	private int maxIssuerChainLength = DefaultMaxIssuerChainLength;
+	
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(TrustChainValidator.class);
 	
 	/**
 	 * Indicates if the TrustChainValidator has a certificate resolvers for resolving intermediates certificates.
@@ -107,7 +111,11 @@ public class TrustChainValidator
     	
     	try
     	{
-        	
+        	// check if the certificate is in the list of anchors... this is a valid trust model
+    		if (isIssuerInAnchors(anchors, certificate))
+    			return true;
+    		
+    		
     		CertPath certPath = null;
         	CertificateFactory factory = CertificateFactory.getInstance("X509");
         	
@@ -138,7 +146,7 @@ public class TrustChainValidator
     	}
     	catch (Exception e)
     	{
-    		e.printStackTrace();
+    		LOGGER.warn("Certificate " + certificate.getSubjectX500Principal().getName() + " is not trusted.", e);
     	}
     	
     	return false;    	

@@ -6,6 +6,24 @@
         Greg Meyer
         ---
 
+{1.2.2}
+
+    Changes included with release 1.2.2
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=122}122}}: Fixed issue MDN auto response not defaulting to true.
+  
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=120}120}}: Fixed issue with null pointer exception if SMTP sender is not filled out.  
+
 {1.2.1}
 
     Changes included with release 1.2.1

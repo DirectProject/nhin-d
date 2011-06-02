@@ -864,7 +864,14 @@ namespace Health.Direct.Agent
             //
             // Retrieving the sender's private certificate is requied for encryption
             //
-            message.Sender.TrustAnchors = m_trustAnchors.OutgoingAnchors.GetCertificates(message.Sender);
+            if (message.UseIncomingTrustAnchors)
+            {
+                message.Sender.TrustAnchors = m_trustAnchors.IncomingAnchors.GetCertificates(message.Sender);
+            }
+            else
+            {
+                message.Sender.TrustAnchors = m_trustAnchors.OutgoingAnchors.GetCertificates(message.Sender);
+            }
             message.Sender.Certificates = this.ResolvePrivateCerts(message.Sender, true);
             //
             // Bind each recipient's certs

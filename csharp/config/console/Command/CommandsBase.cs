@@ -73,18 +73,5 @@ namespace Health.Direct.Config.Console.Command
                 return client;
             }
         }
-
-        protected static CertificateFileInfo CreateCertificateInfoFromArgs(int firstArg, string[] args)
-        {
-            string filePath = args.GetRequiredValue(firstArg);
-            string password = args.GetOptionalValue(firstArg + 1, string.Empty);
-            if (!string.IsNullOrEmpty(password) && password.Equals("null", StringComparison.OrdinalIgnoreCase))
-            {
-                password = string.Empty;
-            }
-
-            EntityStatus status = args.GetOptionalEnum(firstArg + 2, EntityStatus.New);
-            return new CertificateFileInfo(filePath, password, status);
-        }
     }
 }

@@ -287,6 +287,44 @@ namespace Health.Direct.Common.Certificates
             return null;
         }
         
+        /// <summary>
+        /// Call Dispose or Reset on all certs in the collection - to free up system resource usage. 
+        /// </summary>
+        /// <param name="certs">Certificate collection</param>
+        /// <param name="catchExceptions">if true, will handle exceptions and keep going...</param>
+        public static void Close(this X509Certificate2Collection certs, bool catchExceptions)
+        {
+            //
+            // If the collection is disposable, use that..
+            //
+            IDisposable disposable = certs as IDisposable;
+            if (disposable != null)
+            {
+                disposable.Dispose();
+                return;
+            }            
+            //
+            // else, dispose manually
+            //
+            foreach(X509Certificate2 cert in certs)
+            {
+                try
+                {
+                    if (cert != null)
+                    {
+                        cert.Close();
+                    }
+                }
+                catch
+                {
+                    if (!catchExceptions)
+                    {
+                        throw;
+                    }
+                }
+            }
+        }
+               
         //---------------------------------------
         //
         // X509Certificate Extensions
@@ -649,5 +687,24 @@ namespace Health.Direct.Common.Certificates
 
             return null;
         }
+        
+        /// <summary>
+        /// If the certificate is disposable, disposes it.
+        /// Else calls Reset
+        /// </summary>
+        /// <param name="cert">cert to dispose</param>
+        public static void Close(this X509Certificate2 cert)
+        {
+            IDisposable disposable = cert as IDisposable;
+            if (disposable != null)
+            {
+                disposable.Dispose();
+            }
+            else
+            {
+                cert.Reset();
+            }            
+        }
+
     }
 }
