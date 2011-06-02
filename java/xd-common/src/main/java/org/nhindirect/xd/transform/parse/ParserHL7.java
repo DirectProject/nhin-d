@@ -15,23 +15,7 @@ import org.nhindirect.xd.common.DirectDocuments;
  * @author vlewis
  */
 public class ParserHL7 {
-     private static final HashMap<String, String> siemens = new HashMap<String, String>();
-    static {
-        siemens.put("07210", "Ferdinand.Vendetti@allscript.direct.com");
-        siemens.put("07311", "Mary.Ehlers@allscript.direct.com");
-        siemens.put("100001", "Eddy.Ropside@allscript.direct.com");
-        siemens.put("100002", "Joseph.Hoffman@allscript.direct.com");
-        siemens.put("100003", "Knapp.Julie@allscript.direct.com");
-        siemens.put("100004", "McDermott.Thomas@allscript.direct.com");
-        siemens.put("pknapp", "Patrick.Knapp@allscript.direct.com");
-        // new ones
-        siemens.put("822", "Barbara.Morris@allscript.direct.com");
-        siemens.put("995", "Yogi.Bear@allscripts.direct.com");
-        siemens.put("mbendon", "Mary.Brendon@allscript.direct.com");
-        siemens.put("511", "Dennis.Chagnon@allscript.direct.com");
-
-    }
-
+  
 
     public static List<String> parseRecipients(DirectDocuments documents) {
 
@@ -77,9 +61,9 @@ public class ParserHL7 {
 
          //vpl strictly test
 
-        if(siemens.containsKey(ret)){
-            ret=siemens.get(ret);
-        }
+     //   if(siemens.containsKey(ret)){
+     //       ret=siemens.get(ret);
+     //   }
        
         return ret;
     }
