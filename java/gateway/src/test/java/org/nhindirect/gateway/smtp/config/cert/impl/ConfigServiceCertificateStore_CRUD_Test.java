@@ -137,7 +137,7 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			protected void addPublicCertificates() throws Exception
 	        {
 	        	Certificate cert = new Certificate();
-	        	cert.setData(TestUtils.loadCertificate("bob.der", "").getEncoded());
+	        	cert.setData(TestUtils.loadCertificate("cernerdemos.der", "").getEncoded());
 	        	cert.setOwner("test1@example.com");	        	
 	        	proxy.addCertificates(new Certificate[] {cert});
 	        	
@@ -211,7 +211,7 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			protected void addPublicCertificates() throws Exception
 	        {
 	        	Certificate cert = new Certificate();
-	        	cert.setData(TestUtils.loadCertificate("bob.der", "").getEncoded());
+	        	cert.setData(TestUtils.loadCertificate("cernerdemos.der", "").getEncoded());
 	        	cert.setOwner("test1@example.com");	        	
 	        	proxy.addCertificates(new Certificate[] {cert});	        	        	        	
 	        }   			
@@ -237,7 +237,7 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			protected void addPublicCertificates() throws Exception
 	        {
 	        	Certificate cert = new Certificate();
-	        	cert.setData(TestUtils.loadCertificate("bob.der", "").getEncoded());
+	        	cert.setData(TestUtils.loadCertificate("cernerdemos.der", "").getEncoded());
 	        	cert.setOwner("test1@example.com");	        	
 	        	proxy.addCertificates(new Certificate[] {cert});	        	        	        	
 	        }   			
@@ -263,7 +263,7 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			protected void addPublicCertificates() throws Exception
 	        {
 	        	Certificate cert = new Certificate();
-	        	cert.setData(TestUtils.loadCertificate("bob.der", "").getEncoded());
+	        	cert.setData(TestUtils.loadCertificate("cernerdemos.der", "").getEncoded());
 	        	cert.setOwner("test1@example.com");	        	
 	        	proxy.addCertificates(new Certificate[] {cert});	
 	        	
@@ -294,7 +294,7 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			protected void addPublicCertificates() throws Exception
 	        {
 	        	Certificate cert = new Certificate();
-	        	cert.setData(TestUtils.loadCertificate("bob.der", "").getEncoded());
+	        	cert.setData(TestUtils.loadCertificate("cernerdemos.der", "").getEncoded());
 	        	cert.setOwner("example.com");	        	
 	        	proxy.addCertificates(new Certificate[] {cert});	
 	        	
@@ -325,7 +325,7 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			protected void addPublicCertificates() throws Exception
 	        {
 	        	Certificate cert = new Certificate();
-	        	cert.setData(TestUtils.loadCertificate("bob.der", "").getEncoded());
+	        	cert.setData(TestUtils.loadCertificate("cernerdemos.der", "").getEncoded());
 	        	cert.setOwner("example.com");	        	
 	        	proxy.addCertificates(new Certificate[] {cert});	
 	        	
@@ -398,7 +398,7 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			protected void addPublicCertificates() throws Exception
 	        {
 	        	Certificate cert = new Certificate();
-	        	cert.setData(TestUtils.loadCertificate("bob.der", "").getEncoded());
+	        	cert.setData(TestUtils.loadCertificate("cernerdemos.der", "").getEncoded());
 	        	cert.setOwner("test1@example.com");	        	
 	        	proxy.addCertificates(new Certificate[] {cert});	        	        	        	
 	        }   			
@@ -424,7 +424,7 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			protected void addPublicCertificates() throws Exception
 	        {
 	        	Certificate cert = new Certificate();
-	        	cert.setData(TestUtils.loadCertificate("bob.der", "").getEncoded());
+	        	cert.setData(TestUtils.loadCertificate("cernerdemos.der", "").getEncoded());
 	        	cert.setOwner("test1@example.com");	        	
 	        	proxy.addCertificates(new Certificate[] {cert});	
 	        	
@@ -455,7 +455,7 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			protected void addPublicCertificates() throws Exception
 	        {
 	        	Certificate cert = new Certificate();
-	        	cert.setData(TestUtils.loadCertificate("bob.der", "").getEncoded());
+	        	cert.setData(TestUtils.loadCertificate("cernerdemos.der", "").getEncoded());
 	        	cert.setOwner("test1@example.com");	        	
 	        	proxy.addCertificates(new Certificate[] {cert});	
 	        	
@@ -492,7 +492,7 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			protected void addPublicCertificates() throws Exception
 	        {
 	        	Certificate cert = new Certificate();
-	        	cert.setData(TestUtils.loadCertificate("bob.der", "").getEncoded());
+	        	cert.setData(TestUtils.loadCertificate("cernerdemos.der", "").getEncoded());
 	        	cert.setOwner("test1@example.com");	        	
 	        	proxy.addCertificates(new Certificate[] {cert});	
 	        	

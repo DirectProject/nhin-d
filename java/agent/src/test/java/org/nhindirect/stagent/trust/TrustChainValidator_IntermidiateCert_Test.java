@@ -189,23 +189,16 @@ public class TrustChainValidator_IntermidiateCert_Test extends TestCase
     	assertFalse(isTrusted);
     }       
     
-    public void testValidateCertAgainstSelf_NotSelfSigned_CertGenToolCerts_AssertFails() throws Exception
+    public void testValidateCertAgainstSelf_NotSelfSigned_CertGenToolCerts() throws Exception
     {
     	X509Certificate anchor = certFromData(getCertificateFileData("greg@messaging.cerner.com.p12"));
     	X509Certificate certToValidate = certFromData(getCertificateFileData("greg@messaging.cerner.com.p12"));
     	
     	TrustChainValidator validator = new TrustChainValidator();
     	
-    	boolean isTrusted = false;
-    	try
-    	{	
-    		isTrusted = validator.isTrusted(certToValidate, Arrays.asList(anchor));
-    	}
-    	catch (Exception e) 
-    	{
-    	}
+    	boolean isTrusted = validator.isTrusted(certToValidate, Arrays.asList(anchor));
     	
-    	assertFalse(isTrusted);
+    	assertTrue(isTrusted);
     }
     
     public void testValidateCertAgainstSelf_NotSelfSigned_OpenSSLCerts() throws Exception
@@ -215,16 +208,8 @@ public class TrustChainValidator_IntermidiateCert_Test extends TestCase
     	
     	TrustChainValidator validator = new TrustChainValidator();
     	
-    	boolean isTrusted = false;
-    	try
-    	{	
-    		isTrusted = validator.isTrusted(certToValidate, Arrays.asList(anchor));
-    	}
-    	catch (Exception e) 
-    	{
-    	}
-    	
-    	assertFalse(isTrusted);
+    	boolean isTrusted = validator.isTrusted(certToValidate, Arrays.asList(anchor));    	
+    	assertTrue(isTrusted);
     }        
     
     public void testValidateCertAgainstSelf_SelfSigned_OpenSSLCerts() throws Exception
