@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-
+using Health.Direct.Common.Certificates;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Config.Store;
 
@@ -303,10 +303,12 @@ namespace Health.Direct.DnsResponder.Tests
             {
                 //Console.WriteLine("checking [{0}]", path);
                 bytes = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
-                System.Security.Cryptography.X509Certificates.X509Certificate2 x509 = new System.Security.Cryptography.X509Certificates.X509Certificate2(bytes);
-                x509.PrivateKey = null;
-                return new Certificate(x509.FriendlyName
-                    , x509);
+                
+                using(DisposableX509Certificate2 x509 = new DisposableX509Certificate2(bytes))
+                {
+                    Certificate cert = new Certificate(x509.FriendlyName, x509, false);
+                    return cert;
+                }
             }
         }
     }

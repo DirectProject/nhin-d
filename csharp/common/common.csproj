@@ -68,6 +68,7 @@
     <Compile Include="Certificates\SystemX509Store.cs" />
     <Compile Include="Certificates\TrustAnchorResolver.cs" />
     <Compile Include="Certificates\UniformCertificateStore.cs" />
+    <Compile Include="Certificates\DisposableX509Certificate2.cs" />
     <Compile Include="Collections\PropertyBag.cs" />
     <Compile Include="Collections\PropertySet.cs" />
     <Compile Include="Container\ConfigurationSectionBase.cs" />

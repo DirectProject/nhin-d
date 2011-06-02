@@ -11,8 +11,8 @@
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-service/${project.version}</url>     
 	
 	<scm>
-		<url>https://nhin-d.googlecode.com/hg/java/config/config-store</url>
-		<connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/config/config-store</connection>
+		<url>https://nhin-d.googlecode.com/hg/java/config/config-service</url>
+		<connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/config/config-service</connection>
 	</scm>
 
     <developers>

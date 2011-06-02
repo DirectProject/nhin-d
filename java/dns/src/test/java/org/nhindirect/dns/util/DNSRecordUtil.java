@@ -14,6 +14,10 @@ import org.apache.commons.io.FileUtils;
 import org.nhind.config.DnsRecord;
 import org.nhindirect.config.store.DNSRecord;
 import org.nhindirect.config.store.util.DNSRecordUtils;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.NSRecord;
+import org.xbill.DNS.CNAMERecord;
+import org.xbill.DNS.Name;
 
 public class DNSRecordUtil 
 {
@@ -104,5 +108,35 @@ public class DNSRecordUtil
 		DNSRecord rec = DNSRecordUtils.createSOARecord(name, 3600L, nameServer, hostmaster, 1, 3600L, 600L, 604800L, 3600L);
 		
 		return toDnsRecord(rec);
+	}		
+	
+	public static DnsRecord createNSRecord(String name, String target) throws Exception
+	{
+		
+		if (!name.endsWith("."))
+			name = name + ".";
+		
+		if (!target.endsWith("."))
+			target = target + ".";
+		
+		NSRecord rec = new NSRecord(Name.fromString(name), DClass.IN, 86400L, Name.fromString(target));
+		
+		return toDnsRecord(DNSRecord.fromWire(rec.toWireCanonical()));
+		
+	}	
+	
+	public static DnsRecord createCNAMERecord(String name, String target) throws Exception
+	{
+		
+		if (!name.endsWith("."))
+			name = name + ".";
+		
+		if (!target.endsWith("."))
+			target = target + ".";
+		
+		CNAMERecord rec = new CNAMERecord(Name.fromString(name), DClass.IN, 86400L, Name.fromString(target));
+		
+		return toDnsRecord(DNSRecord.fromWire(rec.toWireCanonical()));
+		
 	}		
 }

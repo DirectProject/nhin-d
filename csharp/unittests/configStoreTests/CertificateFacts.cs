@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-
+using Health.Direct.Common.Certificates;
 using Xunit;
 using Xunit.Extensions;
 
@@ -241,6 +241,8 @@ namespace Health.Direct.Config.Store.Tests
 
             X509Certificate2Collection actual = Certificate.ToX509Collection(certs.ToArray());
             Assert.Equal(expected, actual);
+            
+            Assert.DoesNotThrow(() => actual.Close(true));
         }
         
         /// <summary>
@@ -271,17 +273,8 @@ namespace Health.Direct.Config.Store.Tests
         [PropertyData("TestCertificates")]
         public void ToPublicX509CertificateTest(Certificate target)
         {
-
-            X509Certificate2 certificate = target.ToX509Certificate();
-            if (certificate.HasPrivateKey)
-            {
-                certificate.PrivateKey = null;
-            }
-
-            X509Certificate2 expected = certificate; 
-            X509Certificate2 actual = target.ToPublicX509Certificate();
-            Assert.Equal(expected, actual);
-            
+            X509Certificate2 cert = target.ToX509CertificateNoKeys();
+            Assert.False(cert.HasPrivateKey);            
         }
 
         /// <summary>
@@ -318,8 +311,7 @@ namespace Health.Direct.Config.Store.Tests
         public void ExcludePrivateKeyTest(Certificate target)
         {
             target.ExcludePrivateKey();
-            Assert.False(target.ToX509Certificate().HasPrivateKey);
-           
+            Assert.False(target.ToX509Certificate().HasPrivateKey);           
         }
 
         /// <summary>

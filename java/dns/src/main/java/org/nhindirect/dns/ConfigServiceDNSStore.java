@@ -163,6 +163,8 @@ public class ConfigServiceDNSStore implements DNSStore
         	case Type.MX:
         	case Type.SOA:
         	case Type.SRV:
+        	case Type.NS:
+        	case Type.CNAME: 
         	{
         		try
         		{

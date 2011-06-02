@@ -80,6 +80,26 @@ namespace Health.Direct.Tools.Agent
             files.Write(message.GetMessageText());
         }
 
+        [Command(Name = "SmtpAgent_ProcessEndToEnd", Usage = "messageFilepath")]
+        public void ProcessEndtoEnd(string[] args)
+        {
+            IOFiles files = new IOFiles(args);
+            //
+            // Outgoing
+            //
+            CDO.Message outgoing = Extensions.LoadCDOMessageFromText(files.Read());
+            this.Agent.ProcessMessage(outgoing);
+            //
+            // Incoming
+            //
+            CDO.Message incoming = Extensions.LoadCDOMessageFromText(outgoing.GetMessageText());
+            this.Agent.ProcessMessage(incoming);
+            //
+            // Persist
+            //
+            files.Write(incoming.GetMessageText());
+        }
+
         [Command(Name = "Mail_Send", Usage = "messageFilePath server port")]
         public void SendMail(string[] args)
         {

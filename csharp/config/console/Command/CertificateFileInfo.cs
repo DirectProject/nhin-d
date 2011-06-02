@@ -13,12 +13,13 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
-
 using Health.Direct.Config.Store;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Tools;
+using Health.Direct.Config.Tools.Command;
 
 namespace Health.Direct.Config.Console.Command
 {
@@ -95,6 +96,19 @@ namespace Health.Direct.Config.Console.Command
                     certStore.ImportKeyFile(FilePath, this.Password, flags);
                     break;
             }
+        }
+
+        internal static CertificateFileInfo Create(int firstArg, string[] args)
+        {
+            string filePath = args.GetRequiredValue(firstArg);
+            string password = args.GetOptionalValue(firstArg + 1, string.Empty);
+            if (!string.IsNullOrEmpty(password) && password.Equals("null", StringComparison.OrdinalIgnoreCase))
+            {
+                password = string.Empty;
+            }
+
+            EntityStatus status = args.GetOptionalEnum(firstArg + 2, EntityStatus.New);
+            return new CertificateFileInfo(filePath, password, status);
         }
     }
 }

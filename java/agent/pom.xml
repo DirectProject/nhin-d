@@ -71,13 +71,7 @@
 	    	<groupId>commons-io</groupId>
 	    	<artifactId>commons-io</artifactId>
 	    	<version>1.4</version>
-	    </dependency>	        
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4.1</version>
-	        <scope>compile</scope>			
-		</dependency>	
+	    </dependency>	        	
 	    <dependency>
 			<groupId>org.apache.james</groupId>
 			<artifactId>apache-jsieve-mailet</artifactId>
@@ -90,6 +84,12 @@
 			<version>3.8.2</version>
 			<scope>test</scope>
 		</dependency>  
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.1</version>
+	        <scope>compile</scope>			
+		</dependency>				
 		<dependency>
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-core</artifactId>
