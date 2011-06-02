@@ -1,0 +1,98 @@
+~~ $Id$
+
+        ---
+        Release Notes
+        ---
+        Greg Meyer
+        ---
+
+{1.2.1}
+
+    Changes included with release 1.2.1
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * Auditing event and type have been reversed.
+    
+    * Added consistency of fields that are audited with MDN messages.
+    
+    * Fixed parsing of notification part messages of MDN messages.
+    
+    * Fixed private and public cert documentation in XML configuration section of doxia book.    
+
+{1.2.0}
+
+    Changes included with release 1.2.0
+    
+    []
+    
+    Enhancements
+    
+    * Added auditing of messages in the DefaultSMTPAgent.
+    
+    * Added ability to provide custom Guice modules in the security and trust agent.
+    
+    * Added new protected methods to handle rejected messages and rejected recipients. 
+
+    [] 
+     
+    Bug Fixes
+
+    * N/A
+
+{1.1.0}
+
+    Changes included with release 1.1.0
+    
+    []
+    
+    Enhancements
+    
+    * Updated MDN policy.  MDN acks can be sent even if the sender did not request one.  Controlled by gateway preference. 
+
+    [] 
+     
+    Bug Fixes
+
+    * N/A
+
+{1.0.1}
+
+    Changes included with release 1.0.1.
+	
+    []
+    
+    * Updated doxia book API reference to use 1.0 release instead of snapshots.
+    
+    * Added additional logging to James bridge.
+    
+    []
+    
+    Enhancements
+    
+    * N/A 
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=86}86}}: MDN missing subject and Final-Recipient headers.
+
+{1.0.0}
+
+    Changes included with release 1.0.0.
+
+    []
+    
+	* Initial Release 
+
+    * Requires Java SE 1.6 or greater.
+	
