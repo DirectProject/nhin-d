@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{1.1.5}
+
+    Changes included with release 1.1.5
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=146}146}}: Agent support non self signed certs as anchors.
+
 {1.1.4}
 
     Changes included with release 1.1.4
