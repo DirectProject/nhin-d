@@ -65,27 +65,32 @@ public class XDR extends DocumentRepositoryAbstract{
         try {
             resp = provideAndRegisterDocumentSet(body);
         } catch (Exception x) {
-            this.relatesTo = messageId;
-            this.action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
-            this.messageId = UUID.randomUUID().toString();
-            this.to = endpoint;
+
+            relatesTo = messageId;
+            action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
+            messageId = UUID.randomUUID().toString();
+            to = endpoint;
             setHeaderData();
             resp = new RegistryResponseType();
             resp.setStatus("urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure");
             RegistryErrorList rel = new RegistryErrorList();
             String error = x.getMessage();
+            if(error==null){
+                error=x.toString();
+            }
             rel.setHighestSeverity(error);
             List<RegistryError> rl = rel.getRegistryError();
             RegistryError re = new RegistryError();
-
-            String errorCode = "XDSRegistryError";
+            String[] mess = error.split(" ");
+            String errorCode = mess[0];
             re.setErrorCode(errorCode);
             re.setSeverity("Error");
             re.setCodeContext(error);
-            re.setLocation("XDSRepositoryService.java");
+            re.setLocation("XDR.java");
             re.setValue(error);
             rl.add(re);
             resp.setRegistryErrorList(rel);
+
         }
         return resp;
     }
