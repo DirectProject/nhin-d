@@ -156,7 +156,7 @@ public abstract class DocumentRepositoryAbstract
                 forwards = Arrays.asList((new URI(directTo).getSchemeSpecificPart()));
             else
             {
-                forwards = ParserHL7.parseRecipients(documents);
+                forwards = ParserHL7.parseDirectRecipients(documents);
                
             }
 
@@ -175,8 +175,11 @@ public abstract class DocumentRepositoryAbstract
                     replyEmail = (new URI(directFrom)).getSchemeSpecificPart();
                 else
                 {
-                    replyEmail = documents.getSubmissionSet().getAuthorPerson();
-                    replyEmail = StringUtils.splitPreserveAllTokens(replyEmail, "^")[0];
+                   // replyEmail = documents.getSubmissionSet().getAuthorPerson();
+                    replyEmail = documents.getSubmissionSet().getAuthorTelecommunication();
+
+                 //   replyEmail = StringUtils.splitPreserveAllTokens(replyEmail, "^")[0];
+                    replyEmail = ParserHL7.parseXTN(replyEmail);
                     replyEmail = StringUtils.contains(replyEmail, "@") ? replyEmail : "nhindirect@nhindirect.org";
                 }
 
