@@ -206,7 +206,7 @@
             </goals>
             <configuration>
               <outputDirectory>${project.basedir}/target/lib</outputDirectory>
-              <excludeGroupIds>javax.activation,aopalliance,ldapsdk,antlr,backport-util-concurrent,jdbm,concurrent,com.google.inject,commons-lang,commons-codec,commons-logging,junit,org.dnsjava,org.apache.jcs,org.apache.directory.server,org.apache.directory.shared,org.slf4j,org.apache.mina,commons-collections,</excludeGroupIds>
+              <excludeGroupIds>javax.activation,aopalliance,ldapsdk,antlr,backport-util-concurrent,jdbm,com.google.inject,commons-lang,junit,org.apache.directory.server,org.apache.directory.shared,org.slf4j,org.apache.mina,commons-collections,</excludeGroupIds>
             </configuration>
           </execution>
         </executions>
