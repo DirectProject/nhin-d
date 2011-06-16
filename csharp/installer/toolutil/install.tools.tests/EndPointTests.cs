@@ -24,6 +24,17 @@ namespace install.tools.tests
 {
     public class EndPointTests
     {
+        /// <summary>
+        /// This grabs the service part of the url and appends ?wsdl and requests the wsdl,
+        /// then it interogates the Location address for the expected parameter.  
+        /// So http://north.hobo.lab:6693/DnsService/RecordRetrievalService.svc?wsdl
+        /// would validates successfully when it found:
+        /// <soap:address location="http://north.hobo.lab:6693/DnsService/RecordRetrievalService.svc/Records"/>
+        /// in the wsdl.  All of our services publish the location.
+        /// Sometimes the in the wsdl the fully qualified name is no used but rather the netbios name.  
+        /// So this would pass also.
+        /// <soap:address location="http://north:6693/DnsService/RecordRetrievalService.svc/Records"/>
+        /// </summary>
         [Fact]
         public void Test()
         {
@@ -60,6 +71,26 @@ namespace install.tools.tests
             
         }
 
+        /// <summary>
+        /// This grabs the service part of the url and appends ?wsdl and requests the wsdl,
+        /// then it interogates the Location address for the expected parameter.  
+        /// So http://north.hobo.lab:6693/DnsService/RecordRetrievalService.svc?wsdl
+        /// would validates successfully when it found:
+        /// <soap:address location="http://north.hobo.lab:6693/DnsService/RecordRetrievalService.svc/Records"/>
+        /// in the wsdl.  All of our services publish the location.
+        /// Sometimes the in the wsdl the fully qualified name is no used but rather the netbios name.  
+        /// So this would pass also.
+        /// <soap:address location="http://north:6693/DnsService/RecordRetrievalService.svc/Records"/>
+        /// </summary>
+        [Fact]
+        public void TestFqdnToNetBios()
+        {
+            EndPoint endPoint = new EndPoint();
+            Assert.True(endPoint.TestWcfSoapConnection(
+                "http://engr-dir-be.engr.kryptiq.com/dnsservice/recordretrievalservice.svc/Records"));
+        }
+
+         
 
         [Fact]
         public void TestLocalhost()

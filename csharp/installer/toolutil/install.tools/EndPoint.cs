@@ -56,8 +56,7 @@ namespace Health.Direct.Install.Tools
                 reader.Close();
                 response.Close();
 
-                return results.Contains(endpoint, StringComparison.OrdinalIgnoreCase)
-                    || results.Contains(GetHostName(endpoint), StringComparison.OrdinalIgnoreCase);
+                return results.Contains(GetUrlPath(endpoint), StringComparison.OrdinalIgnoreCase);
             }
             catch
             {
@@ -89,16 +88,12 @@ namespace Health.Direct.Install.Tools
             }
         }
 
-        private string GetHostName(string endpoint)
+        private string GetUrlPath(string endpoint)
         {
-            if(endpoint.Contains("localhost", StringComparison.OrdinalIgnoreCase))
-            {
-                string fqdn = Dns.GetHostEntry("LocalHost").HostName;
-                string result = Regex.Replace(endpoint, "localhost", fqdn, RegexOptions.IgnoreCase);
-                return result;
-            }
-            return endpoint;
+           Uri uri = new Uri(endpoint);
+           return uri.PathAndQuery;
         }
+
 
         private string GetServiceAddress(string endpoint)
         {
