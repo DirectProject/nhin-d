@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<!--
+  SAMPLE CONFIG FILE
+  Compliant with schema parsed by: NHINDirect.ScriptAgent.SmtpAgentSettings 
+  Customize as per your needs
+-->
+<SmtpAgentConfig>
+  <Domain>redmond.hsgincubator.com</Domain>
+  <Log>
+    <DirectoryPath>C:\inetpub\logs</DirectoryPath>
+    <NamePrefix>gateway__${date:format=yyyyMMdd}</NamePrefix>
+    <RolloverFrequency>Day</RolloverFrequency>
+    <Level>Debug</Level>
+  </Log>
+  <InternalMessage>
+    <PickupFolder>C:\inetpub\mailroot\pickup</PickupFolder>
+    <EnableRelay>false</EnableRelay>
+  </InternalMessage>
+  <Notifications>
+    <AutoResponse>false</AutoResponse>
+    <AlwaysAck>true</AlwaysAck>
+    <Text>Message Delivery Notification</Text>
+  </Notifications>
+  <PrivateCerts>
+    <MachineResolver>
+      <Name>NHINDPrivate</Name>
+    </MachineResolver>
+  </PrivateCerts>
+  <PublicCerts>
+    <!--
+    <DnsResolver>
+      <ServerIP>127.0.0.1</ServerIP>
+      <Timeout>5000</Timeout>
+    </DnsResolver>
+    -->
+    <MachineResolver>
+      <Name>NHINDExternal</Name>
+    </MachineResolver>
+  </PublicCerts>
+  <Anchors>
+    <MachineResolver>
+      <Incoming>
+        <Name>NHINDAnchors</Name>
+      </Incoming>
+      <Outgoing>
+        <Name>NHINDAnchors</Name>
+      </Outgoing>
+    </MachineResolver>
+  </Anchors>
+  <RawMessage>
+    <CopyFolder>C:\inetpub\mailroot\raw</CopyFolder>
+  </RawMessage>
+  <BadMessage>
+    <CopyFolder>C:\inetpub\mailroot\badMail</CopyFolder>
+  </BadMessage>
+  <ProcessIncoming>
+    <CopyFolder>C:\inetpub\mailroot\incoming</CopyFolder>
+    <EnableRelay>false</EnableRelay>
+  </ProcessIncoming>
+  <ProcessOutgoing>
+    <CopyFolder>C:\inetpub\mailroot\outgoing</CopyFolder>
+    <EnableRelay>false</EnableRelay>
+  </ProcessOutgoing>
+</SmtpAgentConfig>
