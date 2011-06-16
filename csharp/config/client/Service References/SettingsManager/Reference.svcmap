@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="7b7ee45a-b971-4b68-af10-4b4f86fd86db" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <ReferenceAllAssemblies>false</ReferenceAllAssemblies>
+    <ReferencedAssemblies>
+      <ReferencedAssembly AssemblyName="Health.Direct.Common" />
+      <ReferencedAssembly AssemblyName="Health.Direct.Config.Store" />
+    </ReferencedAssemblies>
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:6692/SettingsManager.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="SettingsManager.wsdl" MetadataType="Wsdl" ID="36770f22-de89-46fb-b0a4-abdab1e00490" SourceId="1" SourceUrl="http://localhost:6692/SettingsManager.svc?wsdl" />
+    <MetadataFile FileName="SettingsManager.xsd" MetadataType="Schema" ID="5ce58f97-8718-496d-b6c5-4f6c750f5ab8" SourceId="1" SourceUrl="http://localhost:6692/SettingsManager.svc?xsd=xsd1" />
+    <MetadataFile FileName="SettingsManager.disco" MetadataType="Disco" ID="1b57883a-11c5-4e1c-915c-4e8991e867e5" SourceId="1" SourceUrl="http://localhost:6692/SettingsManager.svc?disco" />
+    <MetadataFile FileName="SettingsManager1.xsd" MetadataType="Schema" ID="895d4078-f655-4801-9b09-9a1b25a36c4e" SourceId="1" SourceUrl="http://localhost:6692/SettingsManager.svc?xsd=xsd2" />
+    <MetadataFile FileName="SettingsManager2.xsd" MetadataType="Schema" ID="1d5b733a-f49d-49c9-a024-72d6c5000a9b" SourceId="1" SourceUrl="http://localhost:6692/SettingsManager.svc?xsd=xsd3" />
+    <MetadataFile FileName="SettingsManager3.xsd" MetadataType="Schema" ID="e440ff62-a867-4afd-9a33-803427b26c32" SourceId="1" SourceUrl="http://localhost:6692/SettingsManager.svc?xsd=xsd0" />
+    <MetadataFile FileName="SettingsManager1.wsdl" MetadataType="Wsdl" ID="fabcbed2-6c58-44c8-a901-cd1f1e760baf" SourceId="1" SourceUrl="http://localhost:6692/SettingsManager.svc?wsdl=wsdl0" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>
