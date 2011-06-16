@@ -15,8 +15,9 @@ import org.nhindirect.xd.common.DirectDocuments;
  * @author vlewis
  */
 public class ParserHL7 {
-  
-
+ //    private static final HashMap<String, String> siemens = new HashMap<String, String>();
+   
+// based on old XDR stuff
     public static List<String> parseRecipients(DirectDocuments documents) {
 
         List<String> ret = new ArrayList();
@@ -31,6 +32,22 @@ public class ParserHL7 {
         }
         return ret;
     }
+
+     public static List<String> parseDirectRecipients(DirectDocuments documents) {
+
+        List<String> ret = new ArrayList();
+        for (String recipient : documents.getSubmissionSet().getIntendedRecipient()) {
+
+                String address = StringUtils.splitPreserveAllTokens(recipient, "|")[2];
+                ret.add(parseXTN(address));
+
+        }
+        return ret;
+    }
+    public static String parseXTN(String address){
+        return StringUtils.splitPreserveAllTokens(address, "^")[3];
+    }
+
     public static String getId(String recipient){
         String ret = null;
         byte[] testp = recipient.getBytes();
@@ -59,11 +76,7 @@ public class ParserHL7 {
         }
         System.out.println("about to test ret " + ret);
 
-         //vpl strictly test
-
-     //   if(siemens.containsKey(ret)){
-     //       ret=siemens.get(ret);
-     //   }
+     
        
         return ret;
     }
