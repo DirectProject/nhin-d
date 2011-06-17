@@ -160,12 +160,13 @@ public abstract class DocumentRepositoryAbstract
                
             }
 
-            messageId = UUID.randomUUID().toString();
+           // messageId = UUID.randomUUID().toString();  remove this , its is not righ,
+            //we should keep the message id of the original message for a lot of reasons vpl
             
-            // TODO patID and subsetId
-            String patId = "PATID TBD";
-            String subsetId = "SUBSETID";
-            getAuditMessageGenerator().provideAndRegisterAudit( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
+            // TODO patID and subsetId  for atn
+            String patId = messageId;
+            String subsetId = messageId;
+           
 
             // Send to SMTP endpoints
             if (getResolver().hasSmtpEndpoints(forwards)) 
@@ -194,7 +195,9 @@ public abstract class DocumentRepositoryAbstract
 
                 // Send mail
                 MailClient mailClient = getMailClient();
-                mailClient.mail(message, messageId, suffix);
+                String fileName = messageId.replaceAll("urn:uuid:", "");
+                mailClient.mail(message, fileName, suffix);
+                getAuditMessageGenerator().provideAndRegisterAudit( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
             }
 
             // Send to XD endpoints
@@ -349,18 +352,21 @@ public abstract class DocumentRepositoryAbstract
     {
         if (auditMessageGenerator == null)
         {
-            String auditMethod = getConfig().getAuditMethod();
+             if(config==null){
+                config = getConfig();
+            }
+            String auditMethod = config.getAuditMethod();
 
             if (StringUtils.equals(auditMethod, AuditMethodEnum.SYSLOG.getMethod()))
             {
-                String auditHost = getConfig().getAuditHost();
-                String auditPort = getConfig().getAuditPort();
+                String auditHost = config.getAuditHost();
+                String auditPort = config.getAuditPort();
 
                 auditMessageGenerator = new AuditMessageGenerator(auditHost, auditPort);
             }
             else if (StringUtils.equals(auditMethod, AuditMethodEnum.FILE.getMethod()))
             {
-                String fileName = getConfig().getAuditFile();
+                String fileName = config.getAuditFile();
 
                 auditMessageGenerator = new AuditMessageGenerator(fileName);
             }
@@ -377,6 +383,9 @@ public abstract class DocumentRepositoryAbstract
     {
         if (mailClient == null)
         {
+            if(config==null){
+                config = getConfig();
+            }
             String hostname = config.getMailHost();
             String username = config.getMailUser();
             String password = config.getMailPass();
@@ -400,8 +409,7 @@ public abstract class DocumentRepositoryAbstract
     
     private XdConfig getConfig()
     {
-        if (config == null)
-        {
+            XdConfig lconfig =null;
             String configService = null;
             
             try
@@ -418,7 +426,7 @@ public abstract class DocumentRepositoryAbstract
             {
                 try
                 {
-                    config = new XdConfig(configService);
+                    lconfig = new XdConfig(configService);
                 }
                 catch (Exception e)
                 {
@@ -431,9 +439,9 @@ public abstract class DocumentRepositoryAbstract
                 // TODO: define a custom exception
                 throw new RuntimeException("Configuration URL is blank");
             }
-        }
         
-        return config;
+        
+        return lconfig;
     }
     
     public void setConfig(XdConfig config)
