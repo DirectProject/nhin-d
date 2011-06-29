@@ -44,9 +44,9 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.ParseException;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.DEREncodableVector;
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.smime.SMIMECapabilitiesAttribute;
 import org.bouncycastle.asn1.smime.SMIMECapability;
 import org.bouncycastle.asn1.smime.SMIMECapabilityVector;
@@ -436,7 +436,12 @@ public class SMIMECryptographerImpl implements Cryptographer
     	}
     	catch (Throwable e)
     	{
-    		/* no-op */
+    		if (LOGGER.isDebugEnabled())
+    		{
+    			StringBuilder builder = new StringBuilder("bcmail-jdk15-146 org.bouncycastle.cms.jcajce.JceKeyTransRecipientId class not found.");
+    			builder.append("\r\n\tAttempt to fall back to bcmail-jdk15-140 org.bouncycastle.cms.RecipientId");
+    			LOGGER.debug(builder.toString());
+    		}
     	}
     	
     	if (retVal == null)
@@ -453,7 +458,7 @@ public class SMIMECryptographerImpl implements Cryptographer
     		}
         	catch (Throwable e)
         	{
-        		/* no-op */
+         		LOGGER.error("Attempt to fall back to bcmail-jdk15-140 org.bouncycastle.cms.RecipientId failed.", e);
         	}    		
     	}
     	
@@ -602,14 +607,19 @@ public class SMIMECryptographerImpl implements Cryptographer
     	try
     	{
     		/*
-    		 * 140 version
+    		 * 140 version first
     		 */
-    		Constructor<AttributeTable> constr = AttributeTable.class.getConstructor(DERObjectIdentifier.class);
+    		Constructor<AttributeTable> constr = AttributeTable.class.getConstructor(DEREncodableVector.class);
     		retVal = constr.newInstance(signedAttrs);
     	}
     	catch (Throwable t)
     	{
-    		/* no-op */
+    		if (LOGGER.isDebugEnabled())
+    		{
+    			StringBuilder builder = new StringBuilder("bcmail-jdk15-140 AttributeTable(DERObjectIdentifier) constructor could not be loaded..");
+    			builder.append("\r\n\tAttempt to use to bcmail-jdk15-146 DERObjectIdentifier(ASN1EncodableVector)");
+    			LOGGER.debug(builder.toString());
+    		}
     	}
     	
     	if (retVal == null)
@@ -624,7 +634,7 @@ public class SMIMECryptographerImpl implements Cryptographer
         	}
         	catch (Throwable t)
         	{
-        		/* no-op */
+    			LOGGER.error("Attempt to use to bcmail-jdk15-146 DERObjectIdentifier(ASN1EncodableVector constructor failed.", t);
         	}
     	}
     	
