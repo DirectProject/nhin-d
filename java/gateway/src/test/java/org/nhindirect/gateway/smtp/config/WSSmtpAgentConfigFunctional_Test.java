@@ -800,6 +800,95 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
         }.perform();
     }		
 	
+	
+	public void testMissingPostmasters() throws Exception 
+    {
+		new MultiDomainTestPlan() 
+		{
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+            	// doesn't matter
+            }
+            
+			protected void addDomains() throws Exception
+			{
+	        	Domain dom = new Domain();
+	        	dom.setDomainName("cerner.com");
+	        	proxy.addDomain(dom);
+	        	
+	        	dom = new Domain();
+	        	dom.setDomainName("securehealthemail.com");
+	        	proxy.addDomain(dom);
+			}	    
+		
+		    @Override
+	        protected void assertDomainPostmastersConfig(SmtpAgentSettings settings)
+		    {
+	            boolean cernerConfigured = false;
+	            boolean secureHealthconfigured = false;
+	            for (java.util.Map.Entry<String, DomainPostmaster> entry : settings.getDomainPostmasters().entrySet())
+	            {
+	                assertEquals(entry.getKey(), entry.getValue().getDomain().toUpperCase(Locale.getDefault()));
+	                if (entry.getKey().equalsIgnoreCase("cerner.com") && 
+	                        entry.getValue().getPostmaster().getAddress().equalsIgnoreCase("postmaster@cerner.com"))
+	                    cernerConfigured = true;
+	                else if (entry.getKey().equalsIgnoreCase("securehealthemail.com") && 
+	                        entry.getValue().getPostmaster().getAddress().equalsIgnoreCase("postmaster@securehealthemail.com"))
+	                    secureHealthconfigured = true; 
+	            }
+	            assertTrue(cernerConfigured);
+	            assertTrue(secureHealthconfigured);
+	        }
+		}.perform();
+	}	
+
+	
+	public void testEmptyPostmasters() throws Exception 
+    {
+		new MultiDomainTestPlan() 
+		{
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+            	// doesn't matter
+            }
+            
+			protected void addDomains() throws Exception
+			{
+	        	Domain dom = new Domain();
+	        	dom.setDomainName("cerner.com");
+	        	dom.setPostMasterEmail(" ");
+	        	proxy.addDomain(dom);
+	        	
+	        	
+	        	dom = new Domain();
+	        	dom.setDomainName("securehealthemail.com");
+	        	dom.setPostMasterEmail(" ");
+	        	proxy.addDomain(dom);
+			}	    
+		
+		    @Override
+	        protected void assertDomainPostmastersConfig(SmtpAgentSettings settings)
+		    {
+	            boolean cernerConfigured = false;
+	            boolean secureHealthconfigured = false;
+	            for (java.util.Map.Entry<String, DomainPostmaster> entry : settings.getDomainPostmasters().entrySet())
+	            {
+	                assertEquals(entry.getKey(), entry.getValue().getDomain().toUpperCase(Locale.getDefault()));
+	                if (entry.getKey().equalsIgnoreCase("cerner.com") && 
+	                        entry.getValue().getPostmaster().getAddress().equalsIgnoreCase("postmaster@cerner.com"))
+	                    cernerConfigured = true;
+	                else if (entry.getKey().equalsIgnoreCase("securehealthemail.com") && 
+	                        entry.getValue().getPostmaster().getAddress().equalsIgnoreCase("postmaster@securehealthemail.com"))
+	                    secureHealthconfigured = true; 
+	            }
+	            assertTrue(cernerConfigured);
+	            assertTrue(secureHealthconfigured);
+	        }
+		}.perform();
+	}	
+	
 	protected byte[] getCertificateFileData(String file) throws Exception
 	{
 		File fl = new File("src/test/resources/certs/" + file);
