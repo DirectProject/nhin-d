@@ -22,6 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp;
 
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 /**
@@ -31,6 +32,8 @@ import javax.mail.internet.InternetAddress;
  */
 public class DomainPostmaster
 {
+	private static final String DEFAULT_POSTMASTER_ACCOUNT = "postmaster";
+	
 	private String domain;
 	private InternetAddress postmaster;
 	
@@ -45,7 +48,7 @@ public class DomainPostmaster
 	
 	/**
 	 * Constructs a postmaster for a domain with a postmaster address.
-	 * @param domain The mail domain of the postmater.
+	 * @param domain The mail domain of the postmaster.
 	 * @param postmaster The postmaster's email address.
 	 */
 	public DomainPostmaster(String domain, InternetAddress postmaster)
@@ -54,7 +57,14 @@ public class DomainPostmaster
 			throw new IllegalArgumentException();
 		
 		this.domain = domain;		
-		this.postmaster = postmaster != null ? postmaster : new InternetAddress();
+		try
+		{
+			this.postmaster = postmaster != null ? postmaster : new InternetAddress(getDefaultPostmaster(domain));
+		}
+		catch (AddressException e)
+		{
+			throw new SmtpAgentException(SmtpAgentError.MissingPostmaster, "Invalid postmaster address format", e);
+		}
 	}
 
 	/**
@@ -93,5 +103,17 @@ public class DomainPostmaster
 		this.postmaster = postmaster;
 	}
 	
-	
+	/**
+	 * Gets the default postmaster address for a given domain.
+	 * @param domain  The domain to retrieve the default postmaster for.
+	 * @return The default postmaster email address.
+	 */
+	public static String getDefaultPostmaster(String domain)
+	{
+		// basic/trivial implementation for now
+		// just return back the DEFAULT_POSTMASTER_ACCOUNT with the domain
+		StringBuilder builder = new StringBuilder(DEFAULT_POSTMASTER_ACCOUNT).append("@").append(domain);
+		
+		return builder.toString();
+	}
 }
