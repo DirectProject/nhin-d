@@ -20,7 +20,8 @@ public class DomainPostmasterTest extends TestCase
 		DomainPostmaster postmaster = new DomainPostmaster("domain1", null);
 		
 		assertNotNull(postmaster.getPostmaster());
-		assertNull(postmaster.getPostmaster().toString());
+		assertNotNull(postmaster.getPostmaster().toString());
+		assertEquals("postmaster@domain1", postmaster.getPostmaster().getAddress());
 		assertEquals("domain1", postmaster.getDomain());
 	}	
 	

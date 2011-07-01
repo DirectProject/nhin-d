@@ -211,8 +211,12 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 				domains.add(dom.getDomainName());
 				try
 				{
+					String configuredAddress = dom.getPostMasterEmail();
+					configuredAddress = (configuredAddress == null || configuredAddress.trim().isEmpty()) 
+						? DomainPostmaster.getDefaultPostmaster(dom.getDomainName()) : configuredAddress;
+					
 					domainPostmasters.put(dom.getDomainName().toUpperCase(Locale.getDefault()), 
-							new DomainPostmaster(dom.getDomainName(), new InternetAddress(dom.getPostMasterEmail())));
+							new DomainPostmaster(dom.getDomainName(), new InternetAddress(configuredAddress)));
 				}
 				catch (AddressException e) {}								
 			}			

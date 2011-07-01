@@ -221,7 +221,7 @@ public class XMLSmtpAgentConfig_BuildDomains_Test extends TestCase
 		}.perform();
 	}		
 	
-	public void testMissingPostmasterName_AssertMissingPostmasterException() throws Exception 
+	public void testMissingPostmasterName_AssertDefaultPostmaster() throws Exception 
 	{
 		new TestPlan() 
 		{
@@ -232,12 +232,13 @@ public class XMLSmtpAgentConfig_BuildDomains_Test extends TestCase
 			}					
 			
 			@Override
-			protected void assertException(Exception exception) throws Exception 
+			protected void doAssertions(SmtpAgent agent) throws Exception
 			{
-				assertTrue(exception instanceof SmtpAgentException);
-				SmtpAgentException ex = (SmtpAgentException)exception;
-				assertEquals(ex.getError(), SmtpAgentError.MissingPostmaster);
+				Map<String, DomainPostmaster> postmasters = agent.getSmtpAgentSettings().getDomainPostmasters();
+				for (DomainPostmaster postmaster : postmasters.values())
+					assertTrue(postmaster.getPostmaster().getAddress().startsWith("postmaster"));
 			}			
+		
 		}.perform();
 	}		
 	
@@ -252,12 +253,12 @@ public class XMLSmtpAgentConfig_BuildDomains_Test extends TestCase
 			}					
 			
 			@Override
-			protected void assertException(Exception exception) throws Exception 
+			protected void doAssertions(SmtpAgent agent) throws Exception
 			{
-				assertTrue(exception instanceof SmtpAgentException);
-				SmtpAgentException ex = (SmtpAgentException)exception;
-				assertEquals(ex.getError(), SmtpAgentError.MissingPostmaster);
-			}			
+				Map<String, DomainPostmaster> postmasters = agent.getSmtpAgentSettings().getDomainPostmasters();
+				for (DomainPostmaster postmaster : postmasters.values())
+					assertTrue(postmaster.getPostmaster().getAddress().startsWith("postmaster"));
+			}				
 		}.perform();
 	}			
 }

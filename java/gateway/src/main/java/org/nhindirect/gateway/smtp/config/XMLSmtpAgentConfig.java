@@ -302,7 +302,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	
 					
 					if (postmasterAddr == null || postmasterAddr.trim().length() == 0)
-						throw new SmtpAgentException(SmtpAgentError.MissingPostmaster);					
+						postmasterAddr = DomainPostmaster.getDefaultPostmaster(domain);				
 					
 					domains.add(domain);
 					try
@@ -480,7 +480,6 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	/*
 	 * Build the certificate resolvers for public certificates
 	 */
-	@SuppressWarnings("unchecked")
 	private void buildPublicCertStores(Node publicCertsNode)
 	{
 		Node publicCertNode = publicCertsNode.getFirstChild();

@@ -33,10 +33,7 @@ import java.util.UUID;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.util.ByteArrayDataSource;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -489,28 +486,6 @@ public class DefaultSmtpAgent implements SmtpAgent
 			{
 				LOGGER.warn("Error retrieving header " + header + " from the message.");
 			}
-		}
-		
-		return retVal;
-	}
-	
-	/*
-	 * try to get the notification part of an multipart/report message
-	 */
-	private MimeBodyPart getNotificationPart(Message noteMessage)
-	{
-		MimeBodyPart retVal = null;
-		
-		try
-		{
-			ByteArrayDataSource dataSource = new ByteArrayDataSource(noteMessage.getRawInputStream(), noteMessage.getContentType());
-		
-			MimeMultipart dispMsg = new MimeMultipart(dataSource);
-			retVal = (MimeBodyPart)dispMsg.getBodyPart(1);
-		}
-		catch (Exception e)
-		{
-			
 		}
 		
 		return retVal;

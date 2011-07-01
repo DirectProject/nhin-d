@@ -31,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.security.cert.CertStore;
 import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.X509Certificate;
@@ -43,9 +44,9 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.ParseException;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.DEREncodableVector;
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.smime.SMIMECapabilitiesAttribute;
 import org.bouncycastle.asn1.smime.SMIMECapability;
 import org.bouncycastle.asn1.smime.SMIMECapabilityVector;
@@ -87,6 +88,9 @@ public class SMIMECryptographerImpl implements Cryptographer
 {
 
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(SMIMECryptographerImpl.class);
+	
+	// Using the BC PKCSObjectIdentifiers type is not compatible across versions of the BC library
+	private final static DERObjectIdentifier x509CertificateObjectsIdent = new DERObjectIdentifier("1.2.840.113549.1.9.22.1");
 	
     public final static SMIMECryptographerImpl Default = new SMIMECryptographerImpl();
     
@@ -384,9 +388,7 @@ public class SMIMECryptographerImpl implements Cryptographer
             
             X509CertificateEx decryptCert = decryptingCertificates.iterator().next();
             
-            RecipientId recId = new RecipientId();        	
-	        recId.setSerialNumber(decryptCert.getSerialNumber());
-	        recId.setIssuer(decryptCert.getIssuerX500Principal().getEncoded());
+            RecipientId recId = generateRecipientSelector(decryptCert);
 	
 	        RecipientInformationStore recipients = m.getRecipientInfos();
 	        RecipientInformation recipient = recipients.get(recId);	
@@ -416,6 +418,54 @@ public class SMIMECryptographerImpl implements Cryptographer
         return retEntity;
     }
 
+    /*
+     * Construct an RecipientId.  Added private function to support multiple versions of BC libraries.
+     */
+    private RecipientId generateRecipientSelector(X509Certificate decryptCert)
+    {
+    	RecipientId retVal = null;
+    	Class<RecipientId> loadClass = null;
+    	
+    	try
+    	{
+    		// support for bcmail-jdk15-146
+    		loadClass = (Class<RecipientId>)getClass().getClassLoader().loadClass("org.bouncycastle.cms.jcajce.JceKeyTransRecipientId");
+    		
+    		Constructor<RecipientId> constructor = loadClass.getConstructor(X509Certificate.class);
+    		retVal = constructor.newInstance(decryptCert);
+    	}
+    	catch (Throwable e)
+    	{
+    		if (LOGGER.isDebugEnabled())
+    		{
+    			StringBuilder builder = new StringBuilder("bcmail-jdk15-146 org.bouncycastle.cms.jcajce.JceKeyTransRecipientId class not found.");
+    			builder.append("\r\n\tAttempt to fall back to bcmail-jdk15-140 org.bouncycastle.cms.RecipientId");
+    			LOGGER.debug(builder.toString());
+    		}
+    	}
+    	
+    	if (retVal == null)
+    	{
+    		try
+    		{
+	    		// fall back to bcmail-jdk15-140 interfaces
+	    		loadClass = (Class<RecipientId>)getClass().getClassLoader().loadClass("org.bouncycastle.cms.RecipientId");
+
+	    		retVal = loadClass.newInstance();
+	    		
+	    		retVal.setSerialNumber(decryptCert.getSerialNumber());
+	    		retVal.setIssuer(decryptCert.getIssuerX500Principal().getEncoded());
+    		}
+        	catch (Throwable e)
+        	{
+         		LOGGER.error("Attempt to fall back to bcmail-jdk15-140 org.bouncycastle.cms.RecipientId failed.", e);
+        	}    		
+    	}
+    	
+    	return retVal;
+
+    }
+    
     /**
      * Signs a message with the provided certificate.
      * @param message The message that will be signed.
@@ -482,7 +532,7 @@ public class SMIMECryptographerImpl implements Cryptographer
     {    	
     	MimeMultipart retVal = null;
     	try
-   	{
+    	{
 	        MimeBodyPart signedContent = new MimeBodyPart(new ByteArrayInputStream(entity));
 	    		        
 	    	ASN1EncodableVector signedAttrs = new ASN1EncodableVector();
@@ -491,8 +541,8 @@ public class SMIMECryptographerImpl implements Cryptographer
 	    	caps.addCapability(SMIMECapability.dES_EDE3_CBC);
 	    	caps.addCapability(SMIMECapability.rC2_CBC, 128);
 	    	caps.addCapability(SMIMECapability.dES_CBC);
-	    	caps.addCapability(new DERObjectIdentifier("1.2.840.113549.1.7.1"));
-	    	caps.addCapability(PKCSObjectIdentifiers.x509Certificate);
+	    	caps.addCapability(new DERObjectIdentifier("1.2.840.113549.1.7.1"));	    	
+	    	caps.addCapability(x509CertificateObjectsIdent);
 	    	signedAttrs.add(new SMIMECapabilitiesAttribute(caps));  
 	    	
 	    	List  certList = new ArrayList();
@@ -502,7 +552,7 @@ public class SMIMECryptographerImpl implements Cryptographer
 	    		if (signer instanceof X509CertificateEx)
 	    		{	    			
 	    			generator.addSigner(((X509CertificateEx)signer).getPrivateKey(), signer,
-	    					toDigestAlgorithmOid(this.m_digestAlgorithm), new AttributeTable(signedAttrs), null);
+	    					toDigestAlgorithmOid(this.m_digestAlgorithm), createAttributeTable(signedAttrs), null);
 	    			certList.add(signer);
 	    		}
 	    	}    	  	    		    	
@@ -545,7 +595,51 @@ public class SMIMECryptographerImpl implements Cryptographer
   	
     }
     
-
+    /*
+     * Construct an attribute table.  Added private function to support multiple versions of BC libraries.
+     */
+    private AttributeTable createAttributeTable(ASN1EncodableVector signedAttrs)
+    {
+    	// Support for BC 146.... has a different constructor signature from 140
+    	
+    	AttributeTable retVal = null;
+    	
+    	try
+    	{
+    		/*
+    		 * 140 version first
+    		 */
+    		Constructor<AttributeTable> constr = AttributeTable.class.getConstructor(DEREncodableVector.class);
+    		retVal = constr.newInstance(signedAttrs);
+    	}
+    	catch (Throwable t)
+    	{
+    		if (LOGGER.isDebugEnabled())
+    		{
+    			StringBuilder builder = new StringBuilder("bcmail-jdk15-140 AttributeTable(DERObjectIdentifier) constructor could not be loaded..");
+    			builder.append("\r\n\tAttempt to use to bcmail-jdk15-146 DERObjectIdentifier(ASN1EncodableVector)");
+    			LOGGER.debug(builder.toString());
+    		}
+    	}
+    	
+    	if (retVal == null)
+    	{
+        	try
+        	{
+        		/*
+        		 * 146 version
+        		 */
+        		Constructor<AttributeTable> constr = AttributeTable.class.getConstructor(ASN1EncodableVector.class);
+        		retVal = constr.newInstance(signedAttrs);
+        	}
+        	catch (Throwable t)
+        	{
+    			LOGGER.error("Attempt to use to bcmail-jdk15-146 DERObjectIdentifier(ASN1EncodableVector constructor failed.", t);
+        	}
+    	}
+    	
+    	return retVal;
+    }
 
     //-----------------------------------------------------
     //

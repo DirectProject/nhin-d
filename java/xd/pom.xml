@@ -109,15 +109,9 @@
             <version>2.5</version>
         </dependency>
         <dependency>
-            <groupId>org.nhind</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>xd-common</artifactId>
-            <version>1.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.activation</groupId>
-                    <artifactId>activation</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -226,7 +220,7 @@
                  </configuration>
               </plugin>
            </plugins>
-        </pluginManagement>		
+        </pluginManagement>
     </build>
 
     <profiles>
@@ -276,8 +270,8 @@
 				            </goals>
 				          </execution>
 				        </executions>
-				    </plugin>   
-				    <!-- for release only                  
+				    </plugin>
+				    <!-- for release only
 		            <plugin>
 		                <groupId>org.apache.maven.plugins</groupId>
 		                <artifactId>maven-javadoc-plugin</artifactId>
@@ -302,7 +296,7 @@
 			                  <goal>jar</goal>
 			                </goals>
 			              </execution>
-			            </executions>	                 
+			            </executions>
 		            </plugin>
 			        <plugin>
 		               <groupId>org.apache.maven.plugins</groupId>
@@ -316,8 +310,8 @@
 		                     </goals>
 		                 </execution>
 		               </executions>
-		            </plugin>  
-		            -->                    
+		            </plugin>
+		            -->
                 </plugins>
             </build>
             <pluginRepositories>
@@ -438,10 +432,12 @@
             <name>Sonatype OSS Maven Release Repositor</name>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
             <uniqueVersion>false</uniqueVersion>
-         </repository>		
-        
+         </repository>
+
     </distributionManagement>
 </project>
+
+
 
 
 
