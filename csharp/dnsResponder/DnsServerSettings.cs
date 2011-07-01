@@ -5,6 +5,7 @@
  Authors:
     Umesh Madan     umeshma@microsoft.com
     Chris Lomonico  chris.lomonico@surescripts.com
+    Ali Emami       aliemami@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,7 +29,8 @@ namespace Health.Direct.DnsResponder
         public const short DefaultMaxRequestSize = 1024 * 16;
         public const byte DefaultMaxQuestionCount = 1;
         public const int DefaultTTLSeconds = 3600;
-        
+        public const DnsResolutionMode DefaultResolutionMode = DnsResolutionMode.RecordStorageService;
+
         IPEndPoint m_endpoint;
 
         string m_address = "0.0.0.0";
@@ -38,6 +40,7 @@ namespace Health.Direct.DnsResponder
         byte m_maxQuestionCount = DefaultMaxQuestionCount;
         short m_maxRequestSize = DefaultMaxRequestSize;
         int m_defaultTTL = DefaultTTLSeconds;
+        DnsResolutionMode m_resolutionMode = DefaultResolutionMode;
 
         [XmlElement]
         public string Address
@@ -96,7 +99,20 @@ namespace Health.Direct.DnsResponder
                 }
             }
         }
-        
+
+        [XmlElement]
+        public DnsResolutionMode ResolutionMode
+        {
+            get
+            {
+                return m_resolutionMode;                 
+            }
+            set
+            {
+                m_resolutionMode = value;                
+            }
+        }
+
         [XmlElement]
         [ConfigurationProperty("TcpServerSettings", IsRequired = false)]
         public SocketServerSettings TcpServerSettings

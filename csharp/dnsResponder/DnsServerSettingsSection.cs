@@ -4,6 +4,7 @@
 
  Authors:
     Chris Lomonico  chris.lomonico@surescripts.com
+    Ali Emami       aliemami@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -41,6 +42,7 @@ namespace Health.Direct.DnsResponder
             settings.MaxQuestionCount = this.MaxQuestionCount;
             settings.MaxRequestSize = this.MaxRequestSize;
             settings.DefaultTTL = this.DefaultTTL;
+            settings.ResolutionMode = this.ResolutionMode;
             settings.TcpServerSettings = this.TcpServerSettings.AsSocketServerSettings();
             settings.UdpServerSettings = this.UdpServerSettings.AsSocketServerSettings();
             return settings;
@@ -99,6 +101,20 @@ namespace Health.Direct.DnsResponder
             set
             {
                 this["DefaultTTL"] = value;
+            }
+        }
+
+        [ConfigurationProperty("ResolutionMode", DefaultValue = DnsResolutionMode.RecordStorageService, IsRequired = false)]
+        public DnsResolutionMode ResolutionMode
+        {
+            get
+            {
+
+                return (DnsResolutionMode) this["ResolutionMode"];
+            }
+            set
+            {
+                this["ResolutionMode"] = value;
             }
         }
         

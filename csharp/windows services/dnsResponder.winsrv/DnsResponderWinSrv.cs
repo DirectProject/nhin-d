@@ -5,6 +5,7 @@
  Authors:
     Chris Lomonico
     Umesh Madan     umeshma@microsoft.com
+    Ali Emami       aliemami@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -25,7 +26,7 @@ namespace Health.Direct.DnsResponder.WinSrv
     public partial class DnsResponderWinSrv : ServiceBase
     {
         private DnsServer m_dnsServer;
-        private DnsRecordStorageService m_store;
+        private IDnsStore m_store;
         Diagnostics m_diagnostics;
         
         public DnsResponderWinSrv()
@@ -51,10 +52,23 @@ namespace Health.Direct.DnsResponder.WinSrv
             m_diagnostics.ServiceInitializing();
 
             // load the settings from the related sections in app.config
-            ClientSettings recordRetrievalSettings = ClientSettingsSection.GetSection().AsClientSettings();
             DnsServerSettings dnsServerSettings = DnsServerSettingsSection.GetSection().AsDnsServerSettings();
 
-            m_store = new DnsRecordStorageService(recordRetrievalSettings);
+            if (dnsServerSettings.ResolutionMode == DnsResolutionMode.AuthoritativeResolution)
+            {
+                AuthoritativeResolutionSettings settings = 
+                    AuthoritativeResolutionSettingsSection.GetSection().AsAuthoritativeResolutionSettings(); 
+                m_store = new AuthoritativeRecordResolver(settings);
+            }
+            else if (dnsServerSettings.ResolutionMode == DnsResolutionMode.RecordStorageService)
+            {
+                ClientSettings recordRetrievalSettings = ClientSettingsSection.GetSection().AsClientSettings();
+                m_store = new DnsRecordStorageService(recordRetrievalSettings);
+            }
+            else
+            {
+                throw new System.Configuration.ConfigurationErrorsException("Unknown resolution mode"); 
+            }
 
             // create the DNS Server instance
             m_dnsServer = new DnsServer(m_store, dnsServerSettings);
@@ -63,7 +77,7 @@ namespace Health.Direct.DnsResponder.WinSrv
             //
             m_diagnostics.HookEvents(m_dnsServer);
 
-            m_diagnostics.ServiceInitializingComplete();
+            m_diagnostics.ServiceInitializingComplete(dnsServerSettings);
         }
 
         public void StartService(string[] args)

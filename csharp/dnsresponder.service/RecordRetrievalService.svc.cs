@@ -5,7 +5,8 @@
  Authors:
     Chris Lomonico      chris.lomonico@surescripts.com
     Umesh Madan         umeshma@microsoft.com
-  
+    Ali Emami           aliemami@microsoft.com  
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -23,6 +24,7 @@ using System.Text;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Config.Store;
 using Health.Direct.Common.Extensions;
+using Health.Direct.Common.DnsResolver;
 
 namespace Health.Direct.DnsResponder.Service
 {
@@ -73,8 +75,38 @@ namespace Health.Direct.DnsResponder.Service
 
         public DnsRecord[] GetMatchingDnsRecords(string domainName, Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID)
         {
-            return Store.DnsRecords.Get(domainName
-                , typeID);
+            DnsRecord[] records = Store.DnsRecords.Get(domainName, typeID);
+
+            if (!records.IsNullOrEmpty())
+            {
+                return records; 
+            }            
+
+            // For NS and SOA records, check if we own the question domain. 
+            if (typeID == DnsStandard.RecordType.SOA ||
+                typeID == DnsStandard.RecordType.NS)
+            {   
+                string owningDomain = QuestionDomainToOwnedDomain(domainName);
+
+                if (owningDomain == null)
+                {
+                    return null; 
+                }
+
+                records = Store.DnsRecords.Get(owningDomain, typeID);
+
+                // apply the question's domain before returning the records.
+                foreach (DnsRecord record in records)
+                {
+                    DnsResourceRecord newRecord = record.Deserialize();
+                    newRecord.Name = domainName;
+
+                    record.DomainName = domainName;
+                    record.RecordData = newRecord.Serialize();
+                }
+            }   
+
+            return records;
         }
 
         public Health.Direct.Config.Store.Certificate[] GetCertificatesForOwner(string domain)
@@ -156,6 +188,20 @@ namespace Health.Direct.DnsResponder.Service
             // Can't be one of ours. Do not respond
             //   
             return null;
-        }        
+        }
+
+        string QuestionDomainToOwnedDomain(string questionDomain)
+        {
+            string[] ownedDomains = Service.Current.Domains;
+            for (int i = 0; i < ownedDomains.Length; i++)
+            {
+                if (questionDomain.EndsWith(ownedDomains[i], StringComparison.OrdinalIgnoreCase))
+                {
+                    return ownedDomains[i]; 
+                }
+            }
+
+            return null;
+        }
     }
 }

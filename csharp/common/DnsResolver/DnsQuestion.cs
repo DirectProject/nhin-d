@@ -5,6 +5,7 @@
  Authors:
     Umesh Madan     umeshma@microsoft.com
     Sean Nolan      seannol@microsoft.com
+    Ali Emami       aliemami@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -15,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
 namespace Health.Direct.Common.DnsResolver
 {
     /// <summary>
@@ -76,7 +78,25 @@ namespace Health.Direct.Common.DnsResolver
             this.Type = type;
             this.Class = qClass;
         }
-        
+
+        /// <summary>
+        /// Initializes an instance from the specified question parameter. 
+        /// </summary>
+        /// <param name="question">
+        /// The question used to initialize the new question instance.
+        /// </param>
+        public DnsQuestion(DnsQuestion question)
+        {
+            if (question == null)
+            {
+                throw new ArgumentNullException("question"); 
+            }
+
+            this.Domain = question.Domain;
+            this.Type = question.Type;
+            this.Class = question.Class; 
+        }
+
         /// <summary>
         /// Gets and sets the domain name.
         /// This is actually a domain name, rather than a QNAME, despite the method name.

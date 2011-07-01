@@ -57,6 +57,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AuthoritativeRecordResolverTest.cs" />
     <Compile Include="BadClient.cs" />
     <Compile Include="BadClientTests.cs" />
     <Compile Include="BasicTest.cs" />
@@ -88,6 +89,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="metadata\Certificates\redmond.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="metadata\DnsRecords\aname.apple.com.bin">
     </None>
     <None Include="metadata\DnsRecords\aname.bing.com.bin">

@@ -57,14 +57,21 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AuthoritativeResolutionSettings.cs" />
+    <Compile Include="AuthoritativeResolutionSettingsSection.cs" />
+    <Compile Include="DnsIPEndpointElement.cs" />
+    <Compile Include="DnsIPEndpointElementCollection.cs" />
+    <Compile Include="DnsIPEndpointSettings.cs" />
     <Compile Include="DnsRecordStorageService .cs" />
     <Compile Include="DnsRecordTable.cs" />
+    <Compile Include="DnsResolutionMode.cs" />
     <Compile Include="DnsServerSettingsSection.cs" />
     <Compile Include="DnsUdpContext.cs" />
     <Compile Include="MemoryStore.cs" />
     <Compile Include="ProxyStore.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AuthoritativeRecordResolver.cs" />
     <Compile Include="SocketServer.cs" />
     <Compile Include="SocketServerSettingsElement.cs" />
     <Compile Include="SynchronizedObjectPool.cs" />

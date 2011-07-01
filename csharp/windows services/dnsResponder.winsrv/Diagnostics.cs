@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Ali Emami       aliemami@microsoft.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -48,9 +49,11 @@ namespace Health.Direct.DnsResponder.WinSrv
             this.WriteEvent("Service initializing");
         }
 
-        internal void ServiceInitializingComplete()
+        internal void ServiceInitializingComplete(DnsServerSettings settings)
         {
-            this.WriteEvent("Service initialized successfully");
+            this.WriteEvent(string.Format(
+                "Service initialized successfully. ResolutionMode={0}", 
+                settings.ResolutionMode));
         }
         
         internal void ServerStarting()

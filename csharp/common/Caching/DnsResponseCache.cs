@@ -5,6 +5,7 @@
  Authors:
     Chris Lomonico chris.lomonico@surescripts.com
     Umesh Madan umeshma@microsoft.com
+    Ali Emami   aliemami@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -93,6 +94,8 @@ namespace Health.Direct.Common.Caching
             {
                 return;
             }
+
+            response.TTLOrigin = DateTime.UtcNow; 
 
             base.Put(BuildKey(response.Question), response, ttl);
         }

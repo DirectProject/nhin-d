@@ -5,6 +5,7 @@
  Authors:
     Umesh Madan     umeshma@microsoft.com
     Sean Nolan      seannol@microsoft.com
+    Ali Emami       aliemami@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,7 +29,8 @@ namespace Health.Direct.Common.DnsResolver
         DnsResourceRecordCollection m_answerRecords;
         DnsResourceRecordCollection m_nameServerRecords;
         DnsResourceRecordCollection m_additionalRecords;
-        
+        DateTime m_ttlOrigin; 
+
         /// <summary>
         /// Creates a fresh new blank Dns response
         /// </summary>
@@ -179,7 +181,16 @@ namespace Health.Direct.Common.DnsResolver
                 }
             }
         }
-        
+
+        /// <summary>
+        /// The starting point in time for the TTL.
+        /// </summary>
+        public DateTime TTLOrigin
+        {
+            get { return m_ttlOrigin; }
+            set { m_ttlOrigin = value; }
+        }
+
         /// <summary>
         /// Initialize a response to the given request
         /// </summary>
@@ -224,7 +235,22 @@ namespace Health.Direct.Common.DnsResolver
             }
             this.UpdateAnswerCountsInHeader();
         }
-                
+
+        /// <summary>
+        /// Clone this DnsResponse.
+        /// </summary>        
+        public DnsResponse Clone()
+        {
+            DnsBuffer buffer = new DnsBuffer(DnsStandard.MaxUdpMessageLength);
+
+            this.Serialize(buffer); 
+
+            DnsResponse newResponse = new DnsResponse(buffer.CreateReader());
+            newResponse.TTLOrigin = this.TTLOrigin;
+
+            return newResponse; 
+        }
+
         /// <summary>
         /// Serialize this DnsResponse to the buffer as DNS wire format data.
         /// </summary>
@@ -342,6 +368,38 @@ namespace Health.Direct.Common.DnsResolver
             this.ClearAnswers();
         }
 
+        /// <summary>
+        /// Updates the TTL for all resource records contained in this DnsResponse 
+        /// based on the time elapsed since the response was cached.
+        /// </summary>
+        public void UpdateRecordsTTL()
+        {
+            foreach (DnsResourceRecord record in this.AllRecords)
+            {
+                if (this.TTLOrigin == DateTime.MinValue)
+                {
+                    // there is no origin/cached time for this response. Keep the TTL as is. 
+                    continue;
+                }
+
+                TimeSpan span = DateTime.UtcNow - this.TTLOrigin;
+
+                if (span < TimeSpan.Zero)
+                {
+                    span = TimeSpan.Zero;
+                }
+
+                int newTTL = (int) Math.Round((double) record.TTL - span.TotalSeconds);
+
+                if (newTTL < 0)
+                {
+                    newTTL = 0;
+                }
+
+                record.TTL = newTTL;
+            }
+        }
+        
         internal int GetMinTTL(DnsStandard.RecordType recordType)
         {
             int minTTL = int.MaxValue;          // overall min ttl
@@ -369,6 +427,6 @@ namespace Health.Direct.Common.DnsResolver
             }
 
             return (minTTLType == int.MaxValue || minTTLType < 0) ? 0 : minTTLType;
-        }
+        }        
     }
 }
