@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{1.1.6}
+
+    Changes included with release 1.1.6
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=151}151}}: Supports BouncyCastle 146 libraries correctly.
+
 {1.1.5}
 
     Changes included with release 1.1.5
