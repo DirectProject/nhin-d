@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Data.Linq;
@@ -123,8 +124,8 @@ namespace Health.Direct.Config.Store.Tests
 
             NamedBlob blobSrc = new NamedBlob(name, settingsSrc);
             m_store.Blobs.Add(blobSrc);
-            
-            using(System.IO.StreamWriter log = new System.IO.StreamWriter(@"C:\junk\linq.log"))
+            String tempPath = Path.GetTempPath();
+            using(StreamWriter log = new System.IO.StreamWriter(Path.Combine(tempPath, "linq.log")))
             {
                 log.AutoFlush = true;
                                 
