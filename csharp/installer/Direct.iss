@@ -30,7 +30,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.0.0.8
+AppVerName=Direct Project .NET Gateway 1.0.0.9
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -39,10 +39,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.0.0.8-NET35
+OutputBaseFilename=Direct-1.0.0.9-NET35
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.0.0.8
+VersionInfoVersion=1.0.0.9
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -1143,12 +1143,13 @@ begin
   DnsServiceTestLabel.Caption := 'Test DB connectivity: ';
   DnsServiceTestLabel.Top := DnsServiceEndPointLabel.Top + DnsServiceEndPointLabel.Height + ScaleY(16);
   DnsServiceTestLabel.Parent := DnsResponderPage.Surface;
-
+  DnsServiceTestLabel.Width := DnsServiceTestLabel.Width - ScaleX(4);
+  
   DnsServiceTestTextBox := TNewEdit.Create(DnsResponderPage);
   DnsServiceTestTextBox.Name := 'DnsServiceTestTextBox';
   DnsServiceTestTextBox.Top := DnsServiceTestLabel.Top;
-  DnsServiceTestTextBox.Left :=  DnsServiceTestLabel.Width + ScaleX(8);
-  DnsServiceTestTextBox.Width := DnsResponderPage.SurfaceWidth - (DnsServiceTestLabel.Left + DnsServiceTestLabel.Width);
+  DnsServiceTestTextBox.Left :=  DnsServiceTestLabel.Width + ScaleX(4);
+  DnsServiceTestTextBox.Width := DnsResponderPage.SurfaceWidth - DnsServiceTestLabel.Width - ScaleX(4);
   DnsServiceTestTextBox.Parent := DnsResponderPage.Surface;  
                                              
   DnsServiceLabel := TNewStaticText.Create(DnsResponderPage);
@@ -1218,6 +1219,7 @@ begin
     //Set Privates Certs.  Later it is placed in its page location.  Using its width to base all the texbox left positions.       
     PrivateCertsLabel := TNewStaticText.Create(GatewayAdminPage);
     PrivateCertsLabel.Caption := 'Certificate Resolver: ';
+    PrivateCertsLabel.Width := PrivateCertsLabel.Width + ScaleX(4);
 
     //Set Domain Manager
     DomainManagerLabel := TNewStaticText.Create(GatewayAdminPage);
@@ -1229,8 +1231,8 @@ begin
     DomainManagerText := TNewEdit.Create(GatewayAdminPage);
     DomainManagerText.Name := 'DomainManagerText';
     DomainManagerText.Top := DomainManagerLabel.Top;
-    DomainManagerText.Left := PrivateCertsLabel.Width + ScaleX(8);
-    DomainManagerText.Width := GatewayAdminPage.SurfaceWidth - DomainManagerLabel.Width - ScaleX(8);
+    DomainManagerText.Left := PrivateCertsLabel.Width + ScaleX(4);
+    DomainManagerText.Width := GatewayAdminPage.SurfaceWidth - PrivateCertsLabel.Width - ScaleX(4);
     DomainManagerText.Parent := GatewayAdminPage.Surface;
 
 
@@ -1321,12 +1323,13 @@ begin
     PickupLabel.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(14);
     PickupLabel.Caption := 'SMTP Message Pickup Folder: ';
     PickupLabel.Parent := GatewaySmtpAdminPage.Surface;
+    PickupLabel.Width := PickupLabel.Width + ScaleX(4);
                               
     PickupText := TNewMemo.Create(GatewaySmtpAdminPage);
     PickupText.Name := 'PickupText';
     PickupText.Top := HelpButton.Top + HelpButton.Height + ScaleY(14);
-    PickupText.Left := PickupLabel.Width + ScaleX(8);
-    PickupText.Width := GatewaySmtpAdminPage.SurfaceWidth - ScaleX(8);
+    PickupText.Left := PickupLabel.Width + ScaleX(4);
+    PickupText.Width := GatewaySmtpAdminPage.SurfaceWidth - PickupLabel.Width - ScaleX(4);
     PickupText.Height := PickupText.Height div 4;
     PickupText.WordWrap := false;
     PickupText.WantReturns := false;
@@ -1342,8 +1345,8 @@ begin
     RawMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
     RawMessageText.Name := 'RawMessageText';
     RawMessageText.Top := RawMessageLabel.Top;
-    RawMessageText.Left := PickupLabel.Width + ScaleX(8);
-    RawMessageText.Width := GatewaySmtpAdminPage.SurfaceWidth - ScaleX(8);
+    RawMessageText.Left := PickupText.Left;
+    RawMessageText.Width := PickupText.Width;
     RawMessageText.Height := RawMessageText.Height div 4;
     RawMessageText.WordWrap := false;
     RawMessageText.WantReturns := false;
@@ -1359,8 +1362,8 @@ begin
     BadMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
     BadMessageText.Name := 'BadMessageText';
     BadMessageText.Top := BadMessageLabel.Top;
-    BadMessageText.Left := PickupLabel.Width + ScaleX(8);
-    BadMessageText.Width := GatewaySmtpAdminPage.SurfaceWidth - ScaleX(8);
+    BadMessageText.Left := PickupText.Left;
+    BadMessageText.Width := PickupText.Width;
     BadMessageText.Height := BadMessageText.Height div 4;
     BadMessageText.WordWrap := false;
     BadMessageText.WantReturns := false;
@@ -1376,8 +1379,8 @@ begin
     IncommingMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
     IncommingMessageText.Name := 'IncommingMessageText';
     IncommingMessageText.Top := IncommingMessageLabel.Top;
-    IncommingMessageText.Left := PickupLabel.Width + ScaleX(8);
-    IncommingMessageText.Width := GatewaySmtpAdminPage.SurfaceWidth - ScaleX(8);
+    IncommingMessageText.Left := PickupText.Left;
+    IncommingMessageText.Width := PickupText.Width;
     IncommingMessageText.Height := IncommingMessageText.Height div 4;
     IncommingMessageText.WordWrap := false;
     IncommingMessageText.WantReturns := false;
@@ -1393,8 +1396,8 @@ begin
     OutgoingMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
     OutgoingMessageText.Name := 'OutgoingMessageText';
     OutgoingMessageText.Top := OutgoingMessageLabel.Top;
-    OutgoingMessageText.Left := PickupLabel.Width + ScaleX(8);
-    OutgoingMessageText.Width := GatewaySmtpAdminPage.SurfaceWidth - ScaleX(8);
+    OutgoingMessageText.Left := PickupText.Left;
+    OutgoingMessageText.Width := PickupText.Width;
     OutgoingMessageText.Height := OutgoingMessageText.Height div 4;
     OutgoingMessageText.WordWrap := false;
     OutgoingMessageText.WantReturns := false;
@@ -1439,6 +1442,7 @@ begin
     //Set Privates Certs.  Later it is placed in its page location.  Using its width to base all the texbox left positions.
     PrivateCertsLabel := TNewStaticText.Create(ConfigConsolePage);
     PrivateCertsLabel.Caption := 'Certificate Resolver: ';
+    PrivateCertsLabel.Width :=  PrivateCertsLabel.Width - ScaleX(4);
     
     //Set Domain Manager
     DomainManagerLabel := TNewStaticText.Create(ConfigConsolePage);
@@ -1450,8 +1454,8 @@ begin
     DomainManagerText := TNewEdit.Create(ConfigConsolePage);
     DomainManagerText.Name := 'DomainManagerText';
     DomainManagerText.Top := DomainManagerLabel.Top;
-    DomainManagerText.Left := PrivateCertsLabel.Width + ScaleX(8);
-    DomainManagerText.Width := ConfigConsolePage.SurfaceWidth - DomainManagerLabel.Width - ScaleX(8);
+    DomainManagerText.Left := PrivateCertsLabel.Width + ScaleX(4);
+    DomainManagerText.Width := ConfigConsolePage.SurfaceWidth - PrivateCertsLabel.Width - ScaleX(4);
     DomainManagerText.Parent := ConfigConsolePage.Surface;
 
 
@@ -1574,18 +1578,24 @@ begin
   EndPointsButton.OnClick := @ConfigAdminHostNameOnClick;
   EndPointsButton.Parent := ConfigAdminPage.Surface;
 
+
+  //Set AuthenticationLabel.  Later it is placed in its page location.  Using its width to base all the texbox left positions.
+  AuthenticationLabel := TNewStaticText.Create(ConfigAdminPage);
+  AuthenticationLabel.Name := 'AuthenticationLabel';
+  AuthenticationLabel.Caption := 'Authentication: ';
+  AuthenticationLabel.Width := AuthenticationLabel.Width + ScaleX(12);
+  
   CertificatesLabel := TNewStaticText.Create(ConfigAdminPage);
   CertificatesLabel.Name := 'CertificatesLabel'
   CertificatesLabel.Caption := 'Certificates: ';
-  CertificatesLabel.Width := CertificatesLabel.Width + ScaleX(8);
   CertificatesLabel.Top := EndPointsButton.Top + EndPointsButton.Height + ScaleY(14);
   CertificatesLabel.Parent := ConfigAdminPage.Surface;
 
   CertificatesUrlText := TNewEdit.Create(ConfigAdminPage);
   CertificatesUrlText.Name := 'CertificatesUrlText';
   CertificatesUrlText.Top := CertificatesLabel.Top;
-  CertificatesUrlText.Left := CertificatesLabel.Left + CertificatesLabel.Width + ScaleX(8);
-  CertificatesUrlText.Width := ConfigAdminPage.SurfaceWidth - CertificatesLabel.Width - ScaleX(8);
+  CertificatesUrlText.Left := CertificatesLabel.Left + CertificatesLabel.Width + ScaleX(12);
+  CertificatesUrlText.Width := ConfigAdminPage.SurfaceWidth - AuthenticationLabel.Width - ScaleX(4);
   CertificatesUrlText.Parent := ConfigAdminPage.Surface;
    
 
@@ -1645,9 +1655,7 @@ begin
   DnsRecordsUrlText.Parent := ConfigAdminPage.Surface;
 
 
-  AuthenticationLabel := TNewStaticText.Create(ConfigAdminPage);
-  AuthenticationLabel.Name := 'AuthenticationLabel';
-  AuthenticationLabel.Caption := 'Authentication: ';
+
   AuthenticationLabel.Top := DnsRecordsLabel.Top + DnsRecordsLabel.Height + ScaleY(14);
   AuthenticationLabel.Parent := ConfigAdminPage.Surface;
 
