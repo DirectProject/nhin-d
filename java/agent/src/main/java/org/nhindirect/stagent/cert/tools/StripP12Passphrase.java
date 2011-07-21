@@ -65,6 +65,7 @@ public class StripP12Passphrase
 	{
 		if (argv.length == 0)
 		{
+			System.err.println("Invalid number of arguments: can't have 0 arguments.");
             printUsage();
             System.exit(-1);			
 		}
