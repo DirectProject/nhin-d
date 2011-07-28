@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?> 
 <SmtpAgentConfig>
-  <Domain>Direct.North.Hobo.Lab</Domain>  
+  <Domain>DomainName</Domain>  
   <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
@@ -9,7 +9,7 @@
   </AddressManager>
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
-    <NamePrefix>redmondGateway</NamePrefix>
+    <NamePrefix>gateway</NamePrefix>
     <RolloverFrequency>Day</RolloverFrequency>
     <Level>Trace</Level>
   </Log>
@@ -18,7 +18,7 @@
     <EnableRelay>false</EnableRelay>
   </InternalMessage> 
   <Notifications>
-    <AutoResponse>false</AutoResponse>
+    <AutoResponse>true</AutoResponse>
     <AlwaysAck>true</AlwaysAck>
     <Text>Message Delivery Notification</Text>
   </Notifications>
@@ -49,6 +49,20 @@
       </ClientSettings>
     </ServiceResolver>
   </Anchors>
+  
+  <Trust>
+    <MaxIssuerChainLength>4</MaxIssuerChainLength>
+    <RevocationCheckMode>Offline</RevocationCheckMode>
+    <Timeout>10000</Timeout>
+  </Trust>
+  
+  <IncomingRoutes>
+     <Route>
+       <AddressType>SMTP</AddressType>
+       <CopyFolder></CopyFolder>
+     </Route>
+   </IncomingRoutes>
+
   <RawMessage>
     <CopyFolder>C:\inetpub\mailroot\Gateway\raw</CopyFolder>
   </RawMessage>
