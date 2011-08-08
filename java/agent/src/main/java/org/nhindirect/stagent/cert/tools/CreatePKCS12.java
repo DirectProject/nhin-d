@@ -52,6 +52,7 @@ public class CreatePKCS12
 	private static File certFile;
 	private static File keyFile;
 	private static String password;
+	private static String p12Pass = "";
 	private static File createFile;
 	
 	
@@ -113,6 +114,15 @@ public class CreatePKCS12
                 }
                 password = argv[++i];
             }
+            else if (arg.equals("-p12pass"))
+            {
+                if (i == argv.length - 1 || argv[i + 1].startsWith("-"))
+                {
+                    System.err.println("Error: Missing p12 file passphrase.");
+                    System.exit(-1);
+                }
+                p12Pass = argv[++i];
+            }    
             else if (arg.equals("-out"))
             {
                 if (i == argv.length - 1 || argv[i + 1].startsWith("-"))
@@ -208,7 +218,7 @@ public class CreatePKCS12
 
 			pkcs12File = getPKCS12OutFile(createFile);
 			outStr = new FileOutputStream(pkcs12File);
-			localKeyStore.store(outStr, array);			
+			localKeyStore.store(outStr, p12Pass.toCharArray());			
 		}
 		catch (Exception e)
 		{
@@ -283,14 +293,16 @@ public class CreatePKCS12
         use.append("Usage:\n");
         use.append("java CreatePKCS12 (options)...\n\n");
         use.append("options:\n");
-        use.append("-cert X509 File		X509 DER formatted certificate file.\n");
+        use.append("-cert    X509 File      X509 DER formatted certificate file.\n");
         use.append("\n");
-        use.append("-key  Key File		PCKS8 DER formatted private key file.\n");
+        use.append("-key     Key File       PCKS8 DER formatted private key file.\n");
         use.append("\n");
-        use.append("-pass Passwd		Optional passphrase for private key file.\n");
+        use.append("-pass    Passwd         Optional passphrase for private key file.\n");
         use.append("			Default: \"\"\n\n");
-        use.append("-out  Out File		Optional output file name.\n");
-        use.append("			Default: <CertFileName>.pkcs12\n\n");    
+        use.append("-p12pass P12 Passwd     Optional passphrase for the newly created p12 file.\n");
+        use.append("			Default: \"\"\n\n");
+        use.append("-out     Out File       Optional output file name.\n");
+        use.append("			Default: <CertFileName>.p12\n\n");    
 
         System.err.println(use);        
     }
