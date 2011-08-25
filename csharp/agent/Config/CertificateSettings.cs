@@ -38,6 +38,7 @@ namespace Health.Direct.Agent.Config
         /// </summary>
         [XmlElement("DnsResolver", typeof(DnsCertResolverSettings))]
         [XmlElement("MachineResolver", typeof(MachineCertResolverSettings))]
+        [XmlElement("PluginResolver", typeof(PluginCertResolverSettings))]
         public CertResolverSettings[] Resolvers
         {
             get;

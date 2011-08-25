@@ -108,6 +108,6 @@ namespace Health.Direct.Tools.Agent
             
             OutgoingMessage outgoing = this.Agent.ProcessOutgoing(File.ReadAllText(sourceFile));
             outgoing.Send(smtpServer);
-        }                
+        }
     }
 }

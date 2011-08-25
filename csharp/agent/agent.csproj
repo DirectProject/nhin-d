@@ -53,6 +53,8 @@
     <Compile Include="Config\CryptographerSettings.cs" />
     <Compile Include="Config\DnsCertResolverSettings.cs" />
     <Compile Include="Config\MachineCertResolverSettings.cs" />
+    <Compile Include="Config\PluginAnchorResolverSettings.cs" />
+    <Compile Include="Config\PluginCertResolverSettings.cs" />
     <Compile Include="Config\TrustAnchorSettings.cs" />
     <Compile Include="Config\TrustAnchorResolverSettings.cs" />
     <Compile Include="Config\MachineAnchorResolverSettings.cs" />

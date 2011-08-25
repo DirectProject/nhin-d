@@ -80,7 +80,10 @@ namespace Health.Direct.Tools.Agent
             }
         }
 
-        [Command(Name="Cert_Dump")]
+        const string CertDumpUsage = "Print out Certificate details"
+                                    + Constants.CRLF + "     Path to a .cer file";
+        
+        [Command(Name="Cert_Dump", Usage=CertDumpUsage)]
         public void Dump(string[] args)
         {
             string path = args.GetRequiredValue(0);

@@ -27,6 +27,7 @@ namespace Health.Direct.Agent.Config
         /// Settings for a machine-based trust anchor resolver.
         /// </summary>
         [XmlElement("MachineResolver", typeof(MachineAnchorResolverSettings))]
+        [XmlElement("PluginResolver", typeof(PluginAnchorResolverSettings))]
         public TrustAnchorResolverSettings Resolver
         {
             get;

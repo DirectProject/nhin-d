@@ -63,6 +63,15 @@ namespace Health.Direct.SmtpAgent
         }
         
         /// <summary>
+        /// If true, will NEVER look for address specific certificates
+        /// False by default.
+        /// 
+        /// Use this if you are never going to issue user specific certificates. 
+        /// This will eliminate 1 roundtrip to the Config Service for every message. 
+        /// </summary>
+        public bool AlwaysUseOrgCertificate = false;
+        
+        /// <summary>
         /// Resolve certificates for the given mail address
         /// 1. Optionally checks if the mail address exists
         /// 2. Then resolves appropriate certificates for the address
@@ -80,6 +89,11 @@ namespace Health.Direct.SmtpAgent
                 {
                     return null;
                 }
+            }
+            
+            if (this.AlwaysUseOrgCertificate)
+            {
+                return base.GetCertificatesForDomain(address.Host);
             }
             
             return base.GetCertificates(address);
