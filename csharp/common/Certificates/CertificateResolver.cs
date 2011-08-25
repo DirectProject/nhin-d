@@ -65,6 +65,18 @@ namespace Health.Direct.Common.Certificates
         }
 
         /// <summary>
+        /// If true, will NEVER look for address specific certificates
+        /// False by default.
+        /// 
+        /// Use this if you are never going to issue or store user specific certificates. 
+        /// This will eliminate 1 roundtrip for every message. 
+        /// 
+        /// You should only use this setting for your own private keys and anchors. 
+        ///
+        /// </summary>
+        public bool OrgCertificatesOnly = false;
+
+        /// <summary>
         /// Create a new certificate resolver. This constructor is used by class extenders.
         /// </summary>
         protected CertificateResolver()
@@ -86,8 +98,8 @@ namespace Health.Direct.Common.Certificates
             {
                 throw new ArgumentNullException("address");
             }
-
-            X509Certificate2Collection matches = this.GetCertificatesForDomain(address.Address);
+            
+            X509Certificate2Collection matches = !this.OrgCertificatesOnly ? this.GetCertificatesForDomain(address.Address) : null;
             if (matches.IsNullOrEmpty())
             {
                 matches = this.GetCertificatesForDomain(address.Host);

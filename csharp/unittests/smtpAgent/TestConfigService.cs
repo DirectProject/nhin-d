@@ -29,6 +29,7 @@ namespace Health.Direct.SmtpAgent.Tests
     /// This is really an integration test and will eventually be moved out of here. Incrementally placed here for now. 
     /// These tests are currently disabled in 'normal' runs - since they require the Config Service to be installed
     /// However, they are here for debugging etc
+    /// 
     /// </summary>
     public class TestConfigService
     {                
@@ -37,7 +38,7 @@ namespace Health.Direct.SmtpAgent.Tests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        */
+         */
         public void TestResolverInSecure(bool validateAddress)
         {
             this.RunTest(validateAddress, false);
@@ -77,7 +78,7 @@ namespace Health.Direct.SmtpAgent.Tests
             //
             // Should return ORG cert only
             //
-            resolver.AlwaysUseOrgCertificate = true;
+            resolver.OrgCertificatesOnly = true;
             matches = resolver.GetCertificates(new MailAddress("toby@redmond.hsgincubator.com"));
             Assert.True(!matches.IsNullOrEmpty());
             this.VerifyIsOrgCert(matches, "redmond.hsgincubator.com");
