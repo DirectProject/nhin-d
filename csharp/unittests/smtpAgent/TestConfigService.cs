@@ -13,13 +13,15 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
-
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client;
-
+using Health.Direct.Common.Certificates;
 using Xunit;
+using Xunit.Extensions;
 
 namespace Health.Direct.SmtpAgent.Tests
 {
@@ -29,33 +31,83 @@ namespace Health.Direct.SmtpAgent.Tests
     /// However, they are here for debugging etc
     /// </summary>
     public class TestConfigService
-    {
-        [Fact(Skip="Requires Config Service to be installed")]
-        //[Fact]
-        public void TestResolver()
+    {                
+        [Theory(Skip="Requires Config Service to be installed")]
+        /*
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        */
+        public void TestResolverInSecure(bool validateAddress)
         {
-            ConfigCertificateResolver resolver = new ConfigCertificateResolver(
-                new ClientSettings() {
-                                         Url = "http://localhost/ConfigService/CertificateService.svc/Certificates"
-                                     },
-                new ClientSettings() {
-                                         Url = "http://localhost/ConfigService/DomainManagerService.svc/Addresses"
-                                     }
-                );
-            
-            X509CertificateCollection matches = resolver.GetCertificates(new MailAddress("toby@redmond.hsgincubator.com"));
+            this.RunTest(validateAddress, false);
+        }
+
+        [Theory(Skip="Requires Config Service, HTTPS and Windows Security to be enabled")]
+        /*
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+         */
+        public void TestResolverSecure(bool validateAddress)
+        {
+            this.RunTest(validateAddress, false);
+        }
+        
+        void RunTest(bool validateAddress, bool secure)
+        {
+            ConfigCertificateResolver resolver = this.CreateResolver(validateAddress, secure);
+              
+            X509Certificate2Collection matches = resolver.GetCertificates(new MailAddress("toby@redmond.hsgincubator.com"));
             Assert.True(!matches.IsNullOrEmpty());
 
             matches = resolver.GetCertificates(new MailAddress("biff@nhind.hsgincubator.com"));
             Assert.True(!matches.IsNullOrEmpty());            
             //
-            // No such address. Should fail
+            // This address does not exist, but should find org cert
             //
             matches = resolver.GetCertificates(new MailAddress("toto@nhind.hsgincubator.com"));
-            Assert.True(matches.IsNullOrEmpty());
-            
+            Assert.True(!matches.IsNullOrEmpty());
+            this.VerifyIsOrgCert(matches, "nhind.hsgincubator.com");
+            //
+            // This should match NOTHING, since no org or address
+            //
             matches = resolver.GetCertificates(new MailAddress("yossarian@xyz.com"));
-            Assert.True(matches.IsNullOrEmpty());
+            Assert.True(matches.IsNullOrEmpty());            
+            //
+            // Should return ORG cert only
+            //
+            resolver.AlwaysUseOrgCertificate = true;
+            matches = resolver.GetCertificates(new MailAddress("toby@redmond.hsgincubator.com"));
+            Assert.True(!matches.IsNullOrEmpty());
+            this.VerifyIsOrgCert(matches, "redmond.hsgincubator.com");
+        }
+        
+        void VerifyIsOrgCert(X509Certificate2Collection matches, string org)
+        {
+            foreach (X509Certificate2 cert in matches)
+            {
+                Assert.True(cert.MatchEmailNameOrName(org));
+            }
+        }
+                        
+        ConfigCertificateResolver CreateResolver(bool verifyAddress, bool secure)
+        {
+            string scheme = secure ? "https://" : "http://";
+            
+            return new ConfigCertificateResolver(
+                new ClientSettings()
+                {
+                    Url = scheme + "localhost/ConfigService/CertificateService.svc/Certificates",
+                    Secure = secure
+                },
+                !verifyAddress ? null :
+                new ClientSettings()
+                {
+                    Url = scheme + "localhost/ConfigService/DomainManagerService.svc/Addresses",
+                    Secure = secure
+                }
+              );
         }
     }
 }

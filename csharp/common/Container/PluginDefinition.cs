@@ -70,7 +70,9 @@ namespace Health.Direct.Common.Container
         }
 
         /// <summary>
-        /// The .NET type that implements this plugin. Should be a qualified type name
+        /// The .NET type that implements this plugin. Should be a qualified type name in the following format:
+        ///     Assembly Name, TypeName
+        ///     Health.Direct.SmtpAgent.SmtpMessageForwarder, Health.Direct.SmtpAgent
         /// </summary>
         [XmlElement]
         public string TypeName

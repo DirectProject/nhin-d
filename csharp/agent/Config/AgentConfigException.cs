@@ -73,7 +73,23 @@ namespace Health.Direct.Agent.Config
         /// <summary>
         /// Missing the IP address for the DNS server
         /// </summary>
-        MissingDnsServerIP
+        MissingDnsServerIP,
+        /// <summary>
+        /// Plugin Resolver defined improperly
+        /// </summary>
+        MissingPluginResolverDefinition,
+        /// <summary>
+        /// No typename for plugin resolver
+        /// </summary>
+        MissingPluginResolverType,
+        /// <summary>
+        /// Plugin Anchor Resolver defined improperly
+        /// </summary>
+        MissingPluginAnchorResolverDefinition,
+        /// <summary>
+        /// No typename for Plugin Anchor resolver
+        /// </summary>
+        MissingPluginAnchorResolverType
     }
 
     /// <summary>

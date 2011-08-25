@@ -32,10 +32,22 @@ namespace Health.Direct.SmtpAgent
             get;
             set;
         }
+
+        /// <summary>
+        /// If true, will NEVER look for address specific certificates
+        /// False by default.
+        /// 
+        /// Use this if you are never going to issue user specific certificates. 
+        /// This will eliminate 1 roundtrip to the Config Service for every message. 
+        /// </summary>
+        [XmlElement]
+        public bool AlwaysUseOrgCertificate = false;
         
         public override ICertificateResolver CreateResolver()
         {
-            return new ConfigCertificateResolver(this.ClientSettings);            
+            ConfigCertificateResolver resolver = new ConfigCertificateResolver(this.ClientSettings);            
+            resolver.AlwaysUseOrgCertificate = this.AlwaysUseOrgCertificate;
+            return resolver;
         }
 
         public override void Validate()

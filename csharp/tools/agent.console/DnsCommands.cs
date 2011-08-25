@@ -52,7 +52,7 @@ namespace Health.Direct.Tools.Agent
         }
         const string SetServerUsage = 
             "Set the IP address of the dns server to use"
-        +   "    ipaddress";            
+        + Constants.CRLF + "    ipaddress";            
                         
         /// <summary>
         /// Resolves certificates for a domain or email address using Dns
