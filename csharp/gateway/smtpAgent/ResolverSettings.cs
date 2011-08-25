@@ -41,12 +41,12 @@ namespace Health.Direct.SmtpAgent
         /// This will eliminate 1 roundtrip to the Config Service for every message. 
         /// </summary>
         [XmlElement]
-        public bool AlwaysUseOrgCertificate = false;
+        public bool OrgCertificatesOnly = false;
         
         public override ICertificateResolver CreateResolver()
         {
-            ConfigCertificateResolver resolver = new ConfigCertificateResolver(this.ClientSettings);            
-            resolver.AlwaysUseOrgCertificate = this.AlwaysUseOrgCertificate;
+            ConfigCertificateResolver resolver = new ConfigCertificateResolver(this.ClientSettings);
+            resolver.OrgCertificatesOnly = this.OrgCertificatesOnly;
             return resolver;
         }
 
@@ -76,9 +76,22 @@ namespace Health.Direct.SmtpAgent
             set; 
         }
 
+        /// <summary>
+        /// If true, will NEVER look for address specific certificates
+        /// False by default.
+        /// 
+        /// Use this if you are never going to issue user specific certificates. 
+        /// This will eliminate 1 roundtrip to the Config Service for every message. 
+        /// </summary>
+        [XmlElement]
+        public bool OrgCertificatesOnly = false;
+
         public override ITrustAnchorResolver CreateResolver()
         {
-            return new ConfigAnchorResolver(this.ClientSettings, this.CacheSettings);
+            ConfigAnchorResolver resolver = new ConfigAnchorResolver(this.ClientSettings, this.CacheSettings);
+            resolver.OrgCertificatesOnly = this.OrgCertificatesOnly;
+            
+            return resolver;
         }
 
         public override void Validate()

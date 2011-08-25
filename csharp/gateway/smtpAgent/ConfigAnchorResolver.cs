@@ -29,7 +29,13 @@ namespace Health.Direct.SmtpAgent
     {
         CertificateResolver m_incomingResolver;
         CertificateResolver m_outgoingResolver;
-
+        bool m_orgCertsOnly = false;
+        
+        /// <summary>
+        /// Create a resolver that resolvers anchors from the middle tier
+        /// </summary>
+        /// <param name="clientSettings">Settings to set up WCF connections to the middle tier</param>
+        /// <param name="cacheSettings">Optional: if caching is enabled. Else null</param>
         public ConfigAnchorResolver(ClientSettings clientSettings, CacheSettings cacheSettings)
         {
             if (clientSettings == null)
@@ -44,6 +50,27 @@ namespace Health.Direct.SmtpAgent
             m_outgoingResolver = new CertificateResolver(new AnchorIndex(clientSettings, false), outgoingCacheSettings);
         }
 
+        /// <summary>
+        /// If true, will NEVER look for address specific certificates
+        /// False by default.
+        /// 
+        /// Use this if you are never going to issue or store user specific certificates. 
+        /// This will eliminate 1 roundtrip to the anchor store for every message. 
+        /// 
+        /// You should only use this setting for your own private keys and anchors. 
+        ///
+        /// </summary>
+        public bool OrgCertificatesOnly
+        {
+            get { return m_orgCertsOnly;}
+            set
+            {
+                m_incomingResolver.OrgCertificatesOnly = value;
+                m_outgoingResolver.OrgCertificatesOnly = value;
+                m_orgCertsOnly = value;
+            }
+        }
+        
         public ICertificateResolver IncomingAnchors
         {
             get 

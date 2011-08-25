@@ -19,6 +19,8 @@ using Xunit;
 using Xunit.Extensions;
 using Health.Direct.Common.Container;
 using Health.Direct.Common.Diagnostics;
+using Health.Direct.Agent.Config;
+using Health.Direct.Common.Certificates;
 
 namespace Health.Direct.SmtpAgent.Tests
 {
@@ -77,8 +79,15 @@ namespace Health.Direct.SmtpAgent.Tests
             
             Assert.DoesNotThrow(() => settings = SmtpAgentSettings.LoadSettings(Fullpath(fileName)));
             Assert.NotNull(settings);
+            
             Assert.NotNull(settings.PublicCerts);
+            this.Verify(settings.PublicCerts);
+            
             Assert.NotNull(settings.PrivateCerts);
+            this.Verify(settings.PrivateCerts);
+            
+            Assert.NotNull(settings.Anchors);
+            this.Verify(settings.Anchors);
         }
         
         public static IEnumerable<object[]> ConfigFiles
@@ -95,6 +104,66 @@ namespace Health.Direct.SmtpAgent.Tests
         {
             string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "SmtpAgentTestFiles");
             return Path.Combine(folderPath, fileName);
+        }
+        
+        void Verify(CertificateSettings settings)
+        {
+            Assert.NotNull(settings.Resolvers);
+            foreach(CertResolverSettings resolverSettings in settings.Resolvers)
+            {
+                Assert.DoesNotThrow(() => resolverSettings.Validate());
+                
+                CertServiceResolverSettings serviceResolverSettings = resolverSettings as CertServiceResolverSettings;
+                if (serviceResolverSettings != null)
+                {
+                    Assert.False(serviceResolverSettings.OrgCertificatesOnly);
+                }
+                
+                ICertificateResolver resolver = null;
+                Assert.DoesNotThrow(() => resolver = resolverSettings.CreateResolver());
+                Assert.NotNull(resolver);
+                
+                if (serviceResolverSettings != null)
+                {
+                    Assert.False(((ConfigCertificateResolver) resolver).OrgCertificatesOnly);
+                    
+                    serviceResolverSettings.OrgCertificatesOnly = true;
+                    resolver = serviceResolverSettings.CreateResolver();
+
+                    Assert.True(((ConfigCertificateResolver)resolver).OrgCertificatesOnly);
+                }
+            }
+        }
+
+        void Verify(TrustAnchorSettings settings)
+        {
+            Assert.NotNull(settings.Resolver);
+            Assert.DoesNotThrow(() => settings.Validate());
+            
+            AnchorServiceResolverSettings serviceResolverSettings = settings.Resolver as AnchorServiceResolverSettings;
+            if (serviceResolverSettings != null)
+            {
+                Assert.False(serviceResolverSettings.OrgCertificatesOnly);
+            }
+
+            ITrustAnchorResolver resolver = null;
+            Assert.DoesNotThrow(() => resolver = settings.Resolver.CreateResolver());
+            Assert.NotNull(resolver);
+            
+            if (serviceResolverSettings != null)
+            {
+                ConfigAnchorResolver serviceResolver = (ConfigAnchorResolver) resolver;
+                Assert.False(serviceResolver.OrgCertificatesOnly);
+                
+                Assert.False(((CertificateResolver) serviceResolver.IncomingAnchors).OrgCertificatesOnly);
+                Assert.False(((CertificateResolver)serviceResolver.OutgoingAnchors).OrgCertificatesOnly);
+                
+                serviceResolverSettings.OrgCertificatesOnly = true;
+                serviceResolver = (ConfigAnchorResolver) serviceResolverSettings.CreateResolver();
+
+                Assert.True(((CertificateResolver)serviceResolver.IncomingAnchors).OrgCertificatesOnly);
+                Assert.True(((CertificateResolver)serviceResolver.OutgoingAnchors).OrgCertificatesOnly);
+            }            
         }
     }
 
