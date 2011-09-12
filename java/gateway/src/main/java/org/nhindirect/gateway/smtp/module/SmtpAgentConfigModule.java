@@ -37,24 +37,24 @@ import com.google.inject.Provider;
 public class SmtpAgentConfigModule extends AbstractModule 
 {
 	private final URL configLocation;
-	private final Provider<SmtpAgentConfig> smtpAgentprovider;
+	private final Provider<SmtpAgentConfig> smtpAgentConfigProvider;
 	private final Provider<NHINDAgent> agentProvider;
 	
-	public static SmtpAgentConfigModule create(URL configLocation,  Provider<SmtpAgentConfig> smtpAgentprovider, Provider<NHINDAgent> agentProvider)
+	public static SmtpAgentConfigModule create(URL configLocation,  Provider<SmtpAgentConfig> smtpAgentConfigProvider, Provider<NHINDAgent> agentProvider)
 	{
-		return new SmtpAgentConfigModule(configLocation, smtpAgentprovider, agentProvider);
+		return new SmtpAgentConfigModule(configLocation, smtpAgentConfigProvider, agentProvider);
 	}
 	
-	private SmtpAgentConfigModule(URL configLocation, Provider<SmtpAgentConfig> smtpAgentprovider, Provider<NHINDAgent> agentProvider)
+	private SmtpAgentConfigModule(URL configLocation, Provider<SmtpAgentConfig> smtpAgentConfigProvider, Provider<NHINDAgent> agentProvider)
 	{
 		this.configLocation = configLocation;
-		this.smtpAgentprovider = smtpAgentprovider;
+		this.smtpAgentConfigProvider = smtpAgentConfigProvider;
 		this.agentProvider = agentProvider;
 	}
 	
 	protected void configure()
 	{	
-		Provider<SmtpAgentConfig> provider = smtpAgentprovider;
+		Provider<SmtpAgentConfig> provider = smtpAgentConfigProvider;
 		
 		if (provider == null)  
 		{
