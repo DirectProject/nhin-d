@@ -40,12 +40,14 @@ import org.nhindirect.gateway.smtp.MessageProcessResult;
 import org.nhindirect.gateway.smtp.SmtpAgent;
 import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.SmtpAgentFactory;
+import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.stagent.AddressSource;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 
 import com.google.inject.Module;
+import com.google.inject.Provider;
 
 /**
  * Apache James mailet for the enforcing the NHINDirect security and trust specification.  The mailed sits between
@@ -93,8 +95,8 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		try
 		{
 			Collection<Module> modules = getInitModules();
-			
-			agent = SmtpAgentFactory.createAgent(configURL, null, null, modules);
+			Provider<SmtpAgentConfig> configProvider = this.getConfigProvider();
+			agent = SmtpAgentFactory.createAgent(configURL, configProvider, null, modules);
 			
 		}
 		catch (SmtpAgentException e)
@@ -285,6 +287,15 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	 * @return A collection of Guice Modules.
 	 */
 	protected Collection<Module> getInitModules()
+	{
+		return null;
+	}
+	
+	/**
+	 * Gets a custom configuration provider.  If this is null, the system will us a default provider.
+	 * @return Gets a custom configuration provider.
+	 */
+	protected Provider<SmtpAgentConfig> getConfigProvider()
 	{
 		return null;
 	}

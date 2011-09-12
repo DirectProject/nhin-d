@@ -5,9 +5,6 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-
 import org.nhindirect.common.audit.impl.FileAuditor;
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.gateway.smtp.provider.XMLSmtpAgentConfigProvider;
