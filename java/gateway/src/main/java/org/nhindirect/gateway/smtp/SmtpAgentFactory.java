@@ -126,7 +126,7 @@ public class SmtpAgentFactory
 	/*
 	 * Creates an injector for getting SmtpAgent instances
 	 */
-	private static Injector buildAgentInjector(URL configLocation, Provider<SmtpAgentConfig> configProvider, Provider<NHINDAgent> agentProvider)
+	protected static Injector buildAgentInjector(URL configLocation, Provider<SmtpAgentConfig> configProvider, Provider<NHINDAgent> agentProvider)
 	{
 		Injector configInjector = Guice.createInjector(SmtpAgentConfigModule.create(configLocation, configProvider, agentProvider));
 		
