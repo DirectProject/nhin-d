@@ -63,18 +63,18 @@ import com.google.inject.Provider;
 
 public class WSSmtpAgentConfig implements SmtpAgentConfig 
 {
-	private static final String STORE_TYPE_WS = "WS";
-	private static final String STORE_TYPE_LDAP = "LDAP";
-	private static final String STORE_TYPE_KEYSTORE = "keystore";
-	private static final String STORE_TYPE_DNS = "DNS";
+	protected static final String STORE_TYPE_WS = "WS";
+	protected static final String STORE_TYPE_LDAP = "LDAP";
+	protected static final String STORE_TYPE_KEYSTORE = "keystore";
+	protected static final String STORE_TYPE_DNS = "DNS";
 	
-	private static final String ANCHOR_RES_TYPE_UNIFORM = "uniform";
-	private static final String ANCHOR_RES_TYPE_MULTIDOMAIN = "multidomain";
+	protected static final String ANCHOR_RES_TYPE_UNIFORM = "uniform";
+	protected static final String ANCHOR_RES_TYPE_MULTIDOMAIN = "multidomain";
 	
-	private static final String MESSAGE_SETTING_RAW = "Raw";
-	private static final String MESSAGE_SETTING_INCOMING = "Incoming";
-	private static final String MESSAGE_SETTING_OUTGOING = "Outgoing";
-	private static final String MESSAGE_SETTING_BAD = "Bad";
+	protected static final String MESSAGE_SETTING_RAW = "Raw";
+	protected static final String MESSAGE_SETTING_INCOMING = "Incoming";
+	protected static final String MESSAGE_SETTING_OUTGOING = "Outgoing";
+	protected static final String MESSAGE_SETTING_BAD = "Bad";
 	
 	protected Collection<String> domains;
 	protected Map<String, DomainPostmaster> domainPostmasters;
@@ -82,25 +82,25 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 
 	
 	@Inject(optional=true)
-	private Provider<SmtpAgent> smtpAgentProvider;
+	protected Provider<SmtpAgent> smtpAgentProvider;
 
 	@Inject
-	private Provider<NHINDAgent> agentProvider;
+	protected Provider<NHINDAgent> agentProvider;
 	
 	protected Module certAnchorModule;
 	protected Module publicCertModule;
 	protected Module privateCertModule;
 	
-	private RawMessageSettings rawSettings;
-	private ProcessIncomingSettings incomingSettings;
-	private ProcessOutgoingSettings outgoingSettings;
-	private ProcessBadMessageSettings badSettings;
-	private NotificationProducer notificationProducer;	
-	private Collection<Provider<CertificateResolver>> resolverProviders;
+	protected RawMessageSettings rawSettings;
+	protected ProcessIncomingSettings incomingSettings;
+	protected ProcessOutgoingSettings outgoingSettings;
+	protected ProcessBadMessageSettings badSettings;
+	protected NotificationProducer notificationProducer;	
+	protected Collection<Provider<CertificateResolver>> resolverProviders;
 	
-	private final ConfigurationServiceProxy cfService;
+	protected final ConfigurationServiceProxy cfService;
 	
-	private X509Certificate certFromData(byte[] data) throws SmtpAgentException
+	protected X509Certificate certFromData(byte[] data) throws SmtpAgentException
 	{
 		ByteArrayInputStream bais = new ByteArrayInputStream(data);
 		X509Certificate cert = null;
@@ -144,7 +144,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		return buildAgentInjector();
 	}	
 	
-	private Injector buildAgentInjector()
+	protected Injector buildAgentInjector()
 	{
 		// build the domain list and trust anchors
 		buildDomains();
@@ -186,7 +186,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	
 	}
 	
-	private void buildDomains()
+	protected void buildDomains()
 	{
 		domains = new ArrayList<String>();
 		domainPostmasters = new HashMap<String, DomainPostmaster>();
@@ -339,7 +339,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		certAnchorModule = TrustAnchorModule.create(provider);		
 	}
 	
-	private void getAnchorsFromNonWS(Map<String, Collection<X509Certificate>> incomingAnchors, 
+	protected void getAnchorsFromNonWS(Map<String, Collection<X509Certificate>> incomingAnchors, 
 			Map<String, Collection<X509Certificate>> outgoingAnchors, String storeType)
 	{		
 		
@@ -533,7 +533,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	 * Build the certificate resolver for public certificates
 	 */
 	@SuppressWarnings("unchecked")
-	private void buildPublicCertStore()
+	protected void buildPublicCertStore()
 	{
 		Provider<CertificateResolver> resolverProvider = null;
 		
@@ -672,7 +672,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 
 	}	
 	
-	private void buildMDNSettings()
+	protected void buildMDNSettings()
 	{
 		Setting autoResponseSettings;
 		Setting prodNameSetting;
@@ -697,7 +697,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 
 	}	
 	
-	private void buildMessageSettings(String type)
+	protected void buildMessageSettings(String type)
 	{
 		Setting folderSettings;
 		try
