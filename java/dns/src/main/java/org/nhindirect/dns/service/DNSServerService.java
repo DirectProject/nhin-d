@@ -30,20 +30,25 @@ import org.nhindirect.dns.DNSException;
 import org.nhindirect.dns.DNSServer;
 import org.nhindirect.dns.DNSServerFactory;
 import org.nhindirect.dns.DNSServerSettings;
-import org.nhindirect.dns.TCPServer;
+import org.nhindirect.dns.DNSStore;
+import org.nhindirect.dns.provider.AbstractConfigDNSStoreProvider;
 import org.nhindirect.dns.provider.BasicDNSServerSettingsProvider;
 
+import com.google.inject.Provider;
+
 /**
- * Service wrapper that instantiates   and configures the DNS server.
+ * Service wrapper that instantiates and configures the DNS server.
  * @author Greg Meyer
  *
  * @since 1.0
  */
 public class DNSServerService 
 {
-	private static final Log LOGGER = LogFactory.getFactory().getInstance(TCPServer.class);
+	protected static final String DNS_STORE_PROVIDER_VAR = "org.nhindirect.dns.DNSStoreProviderClass";
 	
-	private final DNSServer server;
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(DNSServerService.class);
+	
+	protected final DNSServer server;
 	
 	/**
 	 * Creates the service wrapper with the location of the configuration service and server settings.
@@ -59,7 +64,10 @@ public class DNSServerService
 		
 		
 		BasicDNSServerSettingsProvider settingsProv = new BasicDNSServerSettingsProvider(settings.getBindAddress(), settings.getPort());
-		server = DNSServerFactory.createDNSServer(configLocation, null, settingsProv);
+		
+		Provider<DNSStore> dnsStoreProvider = getDNSStoreProvider(configLocation);
+		
+		server = DNSServerFactory.createDNSServer(configLocation, dnsStoreProvider, settingsProv);
 		
 		LOGGER.info("DNS Server created.  Starting server.");
 		server.start();
@@ -77,6 +85,52 @@ public class DNSServerService
 		    	
 		    }
 		});
+	}
+	
+	/**
+	 * Creates a {@link Provider<DNSStore>} instance based on the system property
+	 * org.nhindirect.dns.DNSStoreProviderClass.  This property is the fully qualified class name
+	 * of the provider.  If the provider extends the {@link AbstractConfigDNSStoreProvider} class, then the configuration service
+	 * location will be passed at construction time.
+	 * @param configLocation The URL of the configuration service.
+	 * @return A constructed instance of a provider.  If the system cannot locate the Provider class specified by the
+	 * org.nhindirect.dns.DNSStoreProviderClass system property of if the property does not exist, the method
+	 * will return null.
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	protected Provider<DNSStore> getDNSStoreProvider(URL configLocation)
+	{
+		Provider<DNSStore> retVal = null;
+		
+		// get the system property
+		String className = System.getProperty(DNS_STORE_PROVIDER_VAR);
+		if (className != null && !className.isEmpty())
+		{
+			try
+			{
+				Class<?> loadedClazz = DNSServerService.class.getClassLoader().loadClass(className);
+				
+				if (AbstractConfigDNSStoreProvider.class.isAssignableFrom(loadedClazz))
+				{
+					// this provider takes a URL for the constructor
+					retVal = (Provider<DNSStore>)loadedClazz.getConstructor(URL.class).newInstance(configLocation);
+				}
+				else
+					retVal = (Provider<DNSStore>)loadedClazz.newInstance();
+				
+				LOGGER.info("Loaded Provider<DNSStore> class " + className + " for creating the DNSStore");
+			}
+			catch(Throwable e)
+			{
+				LOGGER.error("Could not load or construct instance of Provider<DNSStore> class " + className + "  A default " +
+						"provider will be used." , e);
+			}
+		}
+		else
+			LOGGER.info("A DNSStore provider class was not set.  A default provider will be used.");	
+		
+		return retVal;
 	}
 	
 	/**
