@@ -20,7 +20,6 @@ import java.net.URL;
 import org.nhindirect.dns.ConfigServiceDNSStore;
 import org.nhindirect.dns.DNSStore;
 
-import com.google.inject.Provider;
 
 /**
  * Guice provider for creating {@link ConfigServiceDNSStore} instances.
@@ -28,9 +27,8 @@ import com.google.inject.Provider;
  *
  * @since 1.0
  */
-public class ConfigServiceDNSStoreProvider implements Provider<DNSStore>
+public class ConfigServiceDNSStoreProvider extends AbstractConfigDNSStoreProvider
 {
-	private final URL configServiceURL;
 	
 	/**
 	 * Provider constructor.
@@ -38,7 +36,7 @@ public class ConfigServiceDNSStoreProvider implements Provider<DNSStore>
 	 */
 	public ConfigServiceDNSStoreProvider(URL configServiceURL)
 	{
-		this.configServiceURL = configServiceURL;
+		super(configServiceURL);
 	}
 	
 	/**
