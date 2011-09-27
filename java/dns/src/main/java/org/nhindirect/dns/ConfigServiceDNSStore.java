@@ -64,12 +64,12 @@ import com.google.inject.Inject;
 public class ConfigServiceDNSStore implements DNSStore 
 {
 	
-	private static final String DEFAULT_JCE_PROVIDER_STRING = "BC";
-	private static final String JCE_PROVIDER_STRING_SYS_PARAM = "org.nhindirect.dns.JCEProviderName";	
+	protected static final String DEFAULT_JCE_PROVIDER_STRING = "BC";
+	protected static final String JCE_PROVIDER_STRING_SYS_PARAM = "org.nhindirect.dns.JCEProviderName";	
 	
-	private static final Log LOGGER = LogFactory.getFactory().getInstance(ConfigServiceDNSStore.class);
+	protected static final Log LOGGER = LogFactory.getFactory().getInstance(ConfigServiceDNSStore.class);
 	
-	private Map<String, Record> soaRecords = null;
+	protected Map<String, Record> soaRecords = null;
 	
 	/**
 	 * Gets the configured JCE crypto provider string for crypto operations.  This is configured using the
@@ -382,7 +382,7 @@ public class ConfigServiceDNSStore implements DNSStore
 	 * It's possible we could be getting data from a p12 file which contains the private key.  This methods
 	 * ensures that both p12 and X509 formats are decoded properly and only public certificates are returned.
 	 */
-    private X509Certificate dataToCert(byte[] data) throws DNSException 
+	protected X509Certificate dataToCert(byte[] data) throws DNSException 
     {
     	ByteArrayInputStream bais = null;
     	X509Certificate retVal = null;
@@ -455,7 +455,7 @@ public class ConfigServiceDNSStore implements DNSStore
      * Look for SOA records corresponding to the request
      * TODO: Add cache coherency to SOA records?
      */
-    private synchronized Record checkForSoaRecord(String questionName)
+	protected synchronized Record checkForSoaRecord(String questionName)
     {
 		if (!questionName.endsWith("."))
 			questionName += ".";
