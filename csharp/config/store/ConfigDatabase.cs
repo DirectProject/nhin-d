@@ -13,6 +13,7 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Data.Linq;
@@ -23,6 +24,8 @@ namespace Health.Direct.Config.Store
     [Database(Name="DirectConfig")]
     public class ConfigDatabase : DataContext
     {
+        static MappingSource s_mappingSource = new AttributeMappingSource();
+        
         Table<Certificate> m_certs;
         Table<Administrator> m_administrators;
         Table<Anchor> m_anchors;
@@ -35,7 +38,7 @@ namespace Health.Direct.Config.Store
         DbTransaction m_transaction;
                           
         public ConfigDatabase(string connectString)
-            : base(connectString)
+            : base(connectString, s_mappingSource)
         {
         }
 
@@ -172,7 +175,13 @@ namespace Health.Direct.Config.Store
         {
             if (m_transaction != null)
             {
-                m_transaction.Rollback();
+                try
+                {
+                    m_transaction.Rollback();
+                }
+                catch
+                {
+                }
                 m_transaction = null;
                 if (!disposing)
                 {
@@ -180,10 +189,10 @@ namespace Health.Direct.Config.Store
                 }
             }
         }
-
+        
         protected override void Dispose(bool disposing)
         {
-            this.Rollback(disposing);            
+            this.Rollback(disposing);         
             base.Dispose(disposing);
         }
     }

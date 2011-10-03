@@ -249,5 +249,6 @@ namespace Health.Direct.Config.Store
         ForeignKeyViolation = 547,
         UniqueConstraintViolation = 2601,
         DuplicatePrimaryKey = 2627,
+        Deadlock = 1205
     }
 }
