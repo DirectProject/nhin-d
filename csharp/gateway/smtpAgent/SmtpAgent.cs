@@ -346,6 +346,7 @@ namespace Health.Direct.SmtpAgent
             // OUTGOING:
             //  Non-Encrypted messages from within the domain are treated as OUTGOING.
             //  Encrypted messages from within the domain are OPTIONALLY treated as Incoming
+            //    - Only if InternalRelay is enabled
             // INCOMING:
             //  All messages sent by sources OUTSIDE the domain are ALWAYS treated as INCOMING
             //
@@ -356,8 +357,12 @@ namespace Health.Direct.SmtpAgent
             if (isSenderInDomain)
             {
                 isOutgoing = true;
-                if (m_settings.AllowInternalRelay && SMIMEStandard.IsEncrypted(envelope.Message))
+                if (SMIMEStandard.IsEncrypted(envelope.Message))
                 {
+                    if (!m_settings.AllowInternalRelay)
+                    {
+                        throw new SmtpAgentException(SmtpAgentError.InternalRelayDisabled);
+                    }
                     isOutgoing = false;
                 }
             }
