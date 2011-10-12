@@ -51,7 +51,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(TestMessage)));
                         
             m_agent.Settings.InternalMessage.EnableRelay = false;
-            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(TestMessage)));
+            Assert.Throws<SmtpAgentException>(() => RunEndToEndTest(this.LoadMessage(TestMessage)));
         }
 
         [Fact]
@@ -142,6 +142,41 @@ Yo. Wassup?";
 
             m_agent.Settings.MaxIncomingDomainRecipients = 5;
             Assert.DoesNotThrow(() => m_agent.SecurityAgent.ProcessIncoming(outgoing));
+        }
+        
+        public const string InternalRelayMessage =
+        @"To: toby@nhind.hsgincubator.com
+From: toby@nhind.hsgincubator.com
+MIME-Version: 1.0
+Subject: Simple Text Message
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?";
+        
+        [Fact]
+        public void InternalRelayFail()
+        {
+            m_agent.Settings.InternalMessage.EnableRelay = false;
+            SmtpAgentError error = SmtpAgentError.Unknown;
+            try
+            {
+                this.RunEndToEndTest(this.LoadMessage(InternalRelayMessage));
+            }
+            catch(SmtpAgentException ex)
+            {
+                error = ex.Error;
+            }
+            
+            Assert.Equal(SmtpAgentError.InternalRelayDisabled, error);
+        }
+
+        [Fact]
+        public void InternalRelaySuccess()
+        {
+            m_agent.Settings.InternalMessage.EnableRelay = true;
+            Assert.DoesNotThrow(() => this.RunEndToEndTest(this.LoadMessage(InternalRelayMessage)));
         }
     }
 }

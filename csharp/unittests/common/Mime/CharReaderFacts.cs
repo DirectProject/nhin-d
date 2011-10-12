@@ -115,5 +115,33 @@ namespace Health.Direct.Common.Tests.Mime
             Assert.Equal("abc", reader.GetSegment(0, 2).ToString());
             Assert.Equal("123", reader.GetSegment(4, 6).ToString());
         }
+        
+        [Theory]
+        [InlineData("pqr\\:xyz:123")]
+        [InlineData("abc\"quoted:\"pqr:123")]
+        [InlineData("abc\"quoted:\"\\:pqr:123")]
+        [InlineData("abc\"quo\\:ted:\"\\:pqr:123")]
+        [InlineData("\"quoted:\"pqr:123")]
+        [InlineData("pqr:123")]
+        [InlineData("\"quoted:\"pqr\"quoted:foo:bar\":123")]
+        [InlineData(":123")]
+        public void ParseQuotedSuccess(string source)
+        {
+            CharReader reader = new CharReader(source);
+            Assert.True(reader.ReadTo(':', true, '"'));
+            Assert.Equal("123", reader.GetRemainder().ToString());
+        }
+
+        [Theory]
+        [InlineData("abc\"quoted")]
+        [InlineData("abc\"quoted:\"pqr123")]
+        [InlineData("pqr123")]
+        [InlineData("\"quoted:\"pqr\"quoted:foo:bar\"123")]
+        [InlineData("pqr\\:123")]
+        public void ParseQuotedFail(string source)
+        {
+            CharReader reader = new CharReader(source);
+            Assert.False(reader.ReadTo(':', true, '"'));
+        }
     }
 }

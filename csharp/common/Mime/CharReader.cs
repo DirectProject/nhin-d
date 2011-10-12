@@ -20,7 +20,7 @@ namespace Health.Direct.Common.Mime
     /// <summary>
     /// CharReader tokenizes a text buffer, the <see cref="Read"/> method returns a single
     /// char at a time and returns back the <see cref="EOF"/> token when the end of the buffer
-    /// is reached. The <see cref="ReadTo"/> method will consume characters and optionally ignore
+    /// is reached. The ReadTo method will consume characters and optionally ignore
     /// any escape sequence in the buffer. The escape character is defined as <see cref="MimeStandard.Escape"/>.
     /// 
     /// CharReader is a struct for perfomance reasons. Don't change without consulting the author(s) :)
@@ -85,6 +85,15 @@ namespace Health.Direct.Common.Mime
         }
         
         /// <summary>
+        /// The maximum position (last character) that the reader will scan until
+        /// When Position >= MaxPosition, IsDone is true
+        /// </summary>
+        public int MaxPosition
+        {
+            get { return m_maxPosition;}
+        }
+        
+        /// <summary>
         /// Returns true if the current <see cref="Position"/> has passed the end of the buffer.
         /// </summary>
         public bool IsDone
@@ -127,7 +136,48 @@ namespace Health.Direct.Common.Mime
             
             return false;
         }
-        
+
+        /// <summary>
+        /// Read up the specified character, or to the end, skippng escaped characters.
+        /// </summary>
+        /// <param name="chTo">The character to read to</param>
+        /// <param name="ignoreEscape">Indicates if the reader should skip escape characters</param>
+        /// <param name="quoteChar">Skip any sub-strings enclosed by this character</param>
+        /// <returns><c>true</c> if the character was found, <c>false</c> if not, and reader is at end</returns>
+        public bool ReadTo(char chTo, bool ignoreEscape, char quoteChar)
+        {
+            char ch;
+            bool escaped = false;
+            while ((ch = Read()) != EOF)
+            {
+                if (escaped)
+                {
+                    escaped = false;
+                    continue;
+                }
+                
+                if (ch == MimeStandard.Escape && ignoreEscape)
+                {
+                    escaped = true;
+                    continue;
+                }
+                
+                if (ch == quoteChar)
+                {
+                    if (!ReadTo(quoteChar, ignoreEscape))
+                    {
+                        break;
+                    }
+                }                
+                else if (ch == chTo)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Returns the specified part of the reader's buffer as a <see cref="StringSegment"/>.
         /// </summary>
@@ -137,6 +187,15 @@ namespace Health.Direct.Common.Mime
         public StringSegment GetSegment(int startIndex, int endIndex)
         {
             return new StringSegment(m_source, startIndex, endIndex);
+        }
+        
+        /// <summary>
+        /// Get the remaining segment - starting at Position
+        /// </summary>
+        /// <returns></returns>
+        public StringSegment GetRemainder()
+        {
+            return new StringSegment(m_source, m_position, m_maxPosition - 1);
         }
     }
 }

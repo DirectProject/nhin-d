@@ -23,6 +23,10 @@ namespace Health.Direct.Common.Mail
     public class MailStandard : MimeStandard
     {
         /// <summary>
+        /// Character used to enclose quoted strings
+        /// </summary>
+        public const char DQUOTE = '"';
+        /// <summary>
         /// Header values for common RFC822/5322 Headers
         /// </summary>
         public class Headers

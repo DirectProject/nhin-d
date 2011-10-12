@@ -52,7 +52,11 @@ namespace Health.Direct.SmtpAgent
         /// <summary>
         /// plugin routes not correct set up
         /// </summary>
-        InvalidPluginRoute
+        InvalidPluginRoute,
+        /// <summary>
+        /// An Encrypted Message came from WITHIN the domain... and internal relay was disabled
+        /// </summary>
+        InternalRelayDisabled
     }
 
     public class SmtpAgentException : DirectException<SmtpAgentError>

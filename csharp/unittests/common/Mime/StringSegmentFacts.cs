@@ -292,5 +292,21 @@ namespace Health.Direct.Common.Tests.Mime
         {
             Assert.Equal(expectedCount, StringSegment.Split(value, ',').Count());
         }
+
+        [Theory]
+        [InlineData(2, "pqr\\:xyz:123")]
+        [InlineData(2, "abc\"quoted:\"pqr:123")]
+        [InlineData(2, "abc\"quoted:\"\\:pqr:123")]
+        [InlineData(2, "abc\"quo\\:ted:\"\\:pqr:123")]
+        [InlineData(2, "\"quoted:\"pqr:123")]
+        [InlineData(2, "pqr:123")]
+        [InlineData(2, "\"quoted:\"pqr\"quoted:foo:bar\":123")]
+        [InlineData(2, ":123")]
+        [InlineData(4, "abc\"quoted:\"pqr:123\"quoted:\":456:32")]
+        [InlineData(2, "abcde\\:fgh:123\\:536")]
+        public void SplitWithQuotes(int expectedCount, string value)
+        {
+            Assert.Equal(expectedCount, StringSegment.Split(value, ':', '"').Count());
+        }
     }
 }

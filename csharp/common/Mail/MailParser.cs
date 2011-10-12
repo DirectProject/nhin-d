@@ -263,7 +263,7 @@ namespace Health.Direct.Common.Mail
                 throw new ArgumentNullException("collection");
             }
 
-            foreach (StringSegment part in MimeSerializer.Default.SplitHeaderValue(headerValue, MailStandard.MailAddressSeparator))
+            foreach (StringSegment part in ParseAddressSegments(headerValue, MailStandard.MailAddressSeparator))
             {
                 if (!part.IsEmpty)
                 {
@@ -301,7 +301,7 @@ namespace Health.Direct.Common.Mail
             recipients = recipients.Replace("SMTP:", string.Empty);
 
             TCollection collection = new TCollection();
-            foreach (StringSegment part in MimeSerializer.Default.SplitHeaderValue(recipients, ';'))
+            foreach (StringSegment part in ParseAddressSegments(recipients, ';'))
             {
                 if (!part.IsEmpty)
                 {
@@ -310,6 +310,11 @@ namespace Health.Direct.Common.Mail
             }
             
             return collection;
+        }
+
+        static IEnumerable<StringSegment> ParseAddressSegments(string recipients, char separator)
+        {
+            return StringSegment.Split(recipients, separator, MailStandard.DQUOTE);
         }
     }
 }

@@ -326,6 +326,18 @@ namespace Health.Direct.Common.Mime
         }
 
         /// <summary>
+        /// Splits the supplied string by <paramref name="separator"/>, returning an enumeration of <see cref="StringSegment"/> instances for each header subpart.
+        /// </summary>
+        /// <param name="source">String to split.</param>
+        /// <param name="separator">The value separator to split on.</param>
+        /// <param name="quoteChar">Skip over sections enclosed by this character</param>
+        /// <returns>An enumeration of <see cref="StringSegment"/> instances, one for each parsed part.</returns>
+        public static IEnumerable<StringSegment> Split(string source, char separator, char quoteChar)
+        {
+            return Split(new StringSegment(source), separator, quoteChar);
+        }
+
+        /// <summary>
         /// Splits the supplied <see cref="StringSegment"/> by <paramref name="separator"/>, returning an enumeration of <see cref="StringSegment"/> instances for each header subpart.
         /// </summary>
         /// <param name="source">Segment to split.</param>
@@ -358,6 +370,31 @@ namespace Health.Direct.Common.Mime
             int startAt = source.StartIndex;
             CharReader reader = new CharReader(source);
             while (reader.ReadTo(separator, true))
+            {
+                yield return new StringSegment(source.Source, startAt, reader.Position - 1); // STRUCTS - fast
+                startAt = reader.Position + 1;
+            }
+
+            StringSegment last = new StringSegment(source.Source, startAt, reader.Position);
+            if (!last.IsEmpty)
+            {
+                yield return last;
+            }
+        }
+        
+        /// <summary>
+        /// Same as Split above, except automatically consumes quoted sections
+        /// </summary>
+        internal static IEnumerable<StringSegment> Split(StringSegment source, char separator, char quoteChar)
+        {
+            if (source.IsNull || source.IsEmpty)
+            {
+                yield break;
+            }
+
+            int startAt = source.StartIndex;
+            CharReader reader = new CharReader(source);
+            while (reader.ReadTo(separator, true, quoteChar))
             {
                 yield return new StringSegment(source.Source, startAt, reader.Position - 1); // STRUCTS - fast
                 startAt = reader.Position + 1;
