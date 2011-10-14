@@ -203,6 +203,10 @@ namespace Health.Direct.Common.DnsResolver
                 case DnsStandard.RecordType.CERT:
                     this.Print((CertRecord) record);                                       
                     break;
+                
+                case DnsStandard.RecordType.SRV:
+                    this.Print((SRVRecord) record);
+                    break;
             }
         }
         
@@ -319,6 +323,18 @@ namespace Health.Direct.Common.DnsResolver
             this.Print(ptr.Domain);
         }
 
+        /// <summary>
+        /// Prints an SRV RR
+        /// </summary>
+        /// <param name="srv">the RR to print</param>
+        public void Print(SRVRecord srv)
+        {
+            this.Print("Priority", srv.Priority);
+            this.Print("Weight", srv.Weight);
+            this.Print("Port", srv.Port);
+            this.Print("Target", srv.Target);
+        }
+        
         void Print<T>(string name, T value)
         {
             this.Print(name, value.ToString());
@@ -337,6 +353,11 @@ namespace Health.Direct.Common.DnsResolver
         void Print(string name, string value)
         {
             m_writer.WriteLine("{0} = {1}", name, value);
+        }
+
+        void Print(string name, ushort value)
+        {
+            this.Print(name, value.ToString());
         }
 
         void Print(string message)

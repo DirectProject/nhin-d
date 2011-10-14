@@ -16,9 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Net;
+using System.Net.Sockets;
 using Health.Direct.Common.DnsResolver;
-
 using Xunit;
 using Xunit.Extensions;
 
@@ -94,6 +94,60 @@ namespace Health.Direct.DnsResponder.Tests
             Assert.True(!response.IsSuccess);
         }
         
+        [Fact]
+        public void TestTypeA()
+        {
+            this.TestType<AddressRecord>(DnsStandard.RecordType.ANAME, "localhost", r => r.IPAddress.ToString() == "127.0.0.1");
+        }
+
+        [Fact]
+        public void TestTypeSRV()
+        {
+            this.TestType<SRVRecord>(DnsStandard.RecordType.SRV, "foo.com", r => (r.Port == 353 && r.Weight == 20 && r.Target == "x.y.z.com"));
+        }
+
+        [Fact]
+        public void TestTypeTXT()
+        {
+            this.TestType<TextRecord>(DnsStandard.RecordType.TXT, "goo.com", r => r.HasStrings && r.Strings.Count == 3);
+        }
+
+        [Fact]
+        public void TestTypeMX()
+        {
+            this.TestType<MXRecord>(DnsStandard.RecordType.MX, "goo.com", r => r.Exchange == "foo.bar.xyz");
+        }
+        
+        void TestType<T>(DnsStandard.RecordType recordType, string domain, Func<T,bool> verify)
+            where T : DnsResourceRecord
+        {
+            bool threw = false;
+            try
+            {
+                using (Socket socket = TestServer.Default.CreateTCPSocket())
+                {
+                    TestTCPClient client = new TestTCPClient(socket);
+                    DnsRequest request = new DnsRequest(recordType, domain);
+                    client.Send(request);
+
+                    DnsResourceRecord record = client.Receive();
+                    Assert.True(record.Type == recordType);
+                    Assert.True(record.Name.Equals(request.Question.Domain, StringComparison.OrdinalIgnoreCase));
+                    
+                    T rr = null;
+                    
+                    Assert.DoesNotThrow(() => rr = (T) record);
+                    Assert.True(verify(rr));
+                }
+            }
+            catch
+            {
+                threw = true;
+            }
+            
+            Assert.False(threw);
+        }
+                
         [Theory]
         [InlineData(UseUdp)]
         [InlineData(UseTcp)]

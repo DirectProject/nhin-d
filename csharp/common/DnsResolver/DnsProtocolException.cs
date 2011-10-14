@@ -142,7 +142,11 @@ namespace Health.Direct.Common.DnsResolver
         /// <summary>
         /// Invalid response message
         /// </summary>
-        InvalidResponse
+        InvalidResponse,
+        /// <summary>
+        /// Invalid SRV record
+        /// </summary>
+        InvalidSRVRecord
     }
 
     /// <summary>

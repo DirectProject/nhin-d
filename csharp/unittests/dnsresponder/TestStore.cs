@@ -92,7 +92,7 @@ namespace Health.Direct.DnsResponder.Tests
                        );
             }
         }
-    
+        
         public static void AddTestRecords(DnsRecordTable store)
         {
             // Addresses
@@ -102,6 +102,14 @@ namespace Health.Direct.DnsResponder.Tests
             store.Add(new AddressRecord("bar.com", "192.168.0.1"));
             store.Add(new AddressRecord("goo.com", "192.167.0.1"));
             store.Add(new AddressRecord("goo.com", "192.167.0.2"));
+            store.Add(new AddressRecord("localhost", "127.0.0.1"));
+            
+            const string BigString = "0123456789abcdefghijklmnop";
+            TextRecord txt = new TextRecord("goo.com", new string[] { BigString, "One_" + BigString, "Two_" + BigString});
+            store.Add(txt);
+            
+            store.Add(new SRVRecord("foo.com", 20, 353, "x.y.z.com"));            
+            store.Add(new MXRecord("goo.com", "foo.bar.xyz"));
         }
     }
     

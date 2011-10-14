@@ -880,11 +880,21 @@ namespace Health.Direct.Common.DnsResolver
                     //
                     // Now receive the real response
                     //
-                    m_responseBuffer.Count = tcpSocket.Receive(m_responseBuffer.Buffer, responseSize, SocketFlags.None);
-                    if (m_responseBuffer.Count != responseSize)
+                    int countRead = 0;
+                    while (countRead < responseSize)
+                    {
+                        int countReceived = 0;
+                        if ((countReceived = tcpSocket.Receive(m_responseBuffer.Buffer, countRead, responseSize - countRead, SocketFlags.None)) <= 0)
+                        {
+                            break;
+                        }
+                        countRead += countReceived;
+                    }
+                    if (countRead != responseSize)
                     {
                         throw new DnsProtocolException(DnsProtocolError.Failed);
-                    }                
+                    }
+                    m_responseBuffer.Count = countRead;
                 }
                 finally
                 {

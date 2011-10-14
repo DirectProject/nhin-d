@@ -129,6 +129,7 @@
     <Compile Include="DnsResolver\PtrRecord.cs" />
     <Compile Include="DnsResolver\RawRecord.cs" />
     <Compile Include="DnsResolver\SOARecord.cs" />
+    <Compile Include="DnsResolver\SRVRecord.cs" />
     <Compile Include="DnsResolver\TextRecord.cs" />
     <Compile Include="Dns\DnsClientWithCache.cs" />
     <Compile Include="Container\IDependencyResolver.cs" />

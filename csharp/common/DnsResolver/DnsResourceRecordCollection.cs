@@ -134,6 +134,17 @@ namespace Health.Direct.Common.DnsResolver
         }
         
         /// <summary>
+        /// Provides an enumeration of contained SRV RRs
+        /// </summary>
+        public IEnumerable<SRVRecord> SRV
+        {
+            get 
+            { 
+                return this.Enumerate<SRVRecord>(DnsStandard.RecordType.SRV);
+            }
+        }
+        
+        /// <summary>
         /// Provides an enumeration of records of the specified type.
         /// </summary>
         /// <typeparam name="T">The RR type</typeparam>
