@@ -32,7 +32,6 @@ namespace Health.Direct.DnsResponder.Tests
             DnsStandard.RecordType.MAILA,
             DnsStandard.RecordType.MB,
             DnsStandard.RecordType.PTR,
-            DnsStandard.RecordType.SRV,
             DnsStandard.RecordType.WKS
         };
         
@@ -97,6 +96,14 @@ namespace Health.Direct.DnsResponder.Tests
         public BadTcpClient CreateBadTcpClient()
         {
             return new BadTcpClient(this.Server.Settings.Address, this.Server.Settings.Port);
+        }
+        
+        public Socket CreateTCPSocket()
+        {
+            DnsServerSettings settings = this.Server.Settings;
+            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            socket.Connect(settings.Address, settings.Port);        
+            return socket;
         }
         
         void TCPServer_Error(Exception ex)

@@ -83,7 +83,17 @@ namespace Health.Direct.DnsResponder
                 throw new ArgumentNullException();
             }
 
-            int countRead = this.Socket.Receive(buffer, count, SocketFlags.None);
+            int countRead = 0;
+            while (countRead < count)
+            {
+                int countReceived = 0;
+                if ((countReceived = this.Socket.Receive(buffer, countRead, count - countRead, SocketFlags.None)) <= 0)
+                {
+                    break;
+                }
+                countRead += countReceived;
+            }
+
             return (countRead == count);
         }       
     }

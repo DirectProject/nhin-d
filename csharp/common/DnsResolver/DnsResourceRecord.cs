@@ -313,6 +313,10 @@ namespace Health.Direct.Common.DnsResolver
                 case DnsStandard.RecordType.CERT:
                     record = new CertRecord();
                     break;
+                
+                case DnsStandard.RecordType.SRV:
+                    record = new SRVRecord();
+                    break;
             }
             
             return record;
