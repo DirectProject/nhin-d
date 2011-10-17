@@ -64,7 +64,7 @@ public class LDAPCertificateStore extends CertificateStore implements
 	private CertificateStore localStoreDelegate;
 	private JCS cache;
 	private CertStoreCachePolicy cachePolicy;
-	private LdapCertUtilImpl ldapCertUtil;
+	private LdapCertUtil ldapCertUtil;
 
 	/**
 	 * Constructs a service using the machines local DNS server configuration and a default key store implementation for
@@ -84,6 +84,13 @@ public class LDAPCertificateStore extends CertificateStore implements
 	 */
 	@Inject 
 	public LDAPCertificateStore(LdapCertUtilImpl ldapCertUtil, 
+			CertificateStore bootstrapStore, CertStoreCachePolicy policy)
+	{
+
+		this((LdapCertUtil)ldapCertUtil, bootstrapStore, policy);
+	}	
+	
+	public LDAPCertificateStore(LdapCertUtil ldapCertUtil, 
 			CertificateStore bootstrapStore, CertStoreCachePolicy policy)
 	{
 		
