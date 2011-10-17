@@ -29,25 +29,27 @@ import java.security.cert.CRL;
 import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.DERObject;
+import org.bouncycastle.asn1.x509.CRLDistPoint;
+import org.bouncycastle.asn1.x509.DistributionPoint;
+import org.bouncycastle.asn1.x509.X509Extensions;
+import org.bouncycastle.jce.provider.AnnotatedException;
 import org.nhindirect.stagent.DefaultNHINDAgent;
+import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.RevocationManager;
-
-import sun.security.x509.CRLDistributionPointsExtension;
-import sun.security.x509.DistributionPoint;
-import sun.security.x509.GeneralName;
-import sun.security.x509.X509CRLImpl;
-import sun.security.x509.X509CertImpl;
 
 /**
  * Utility class for handling the storage and lookup of certificate revocation
@@ -69,11 +71,11 @@ public class CRLRevocationManager implements RevocationManager {
     private static CertificateFactory certificateFactory;
    
     // TODO: convert to JCS cache
-    private static Map<String, X509CRLImpl> cache;
+    private static Map<String, X509CRL> cache;
     
     static 
     {
-        cache = new HashMap<String, X509CRLImpl>();
+        cache = new HashMap<String, X509CRL>();
         
         try 
         {
@@ -118,27 +120,34 @@ public class CRLRevocationManager implements RevocationManager {
             return;
               
         try {
+        	
+        	CRLDistPoint distPoints = CRLDistPoint.getInstance(getExtensionValue(certificate,
+                    		X509Extensions.CRLDistributionPoints.getId()));
             // Add CRL distribution point(s)
-            X509CertImpl certificateImpl = new X509CertImpl(certificate.getEncoded());
-            CRLDistributionPointsExtension crlDistributionPointsExtension = certificateImpl.getCRLDistributionPointsExtension();
+            //X509CertImpl certificateImpl = new X509CertImpl(certificate.getEncoded());
+            //CRLDistributionPointsExtension crlDistributionPointsExtension = certificateImpl.getCRLDistributionPointsExtension();
     
-            if (crlDistributionPointsExtension != null) 
+            if (distPoints != null) 
             {
-                for (DistributionPoint distributionPoint : (List<DistributionPoint>) crlDistributionPointsExtension.get(CRLDistributionPointsExtension.POINTS)) 
-                {
-                    for (GeneralName generalName : distributionPoint.getFullName().names()) 
-                    {
-                        String generalNameString = generalName.toString();
+            	 
+                //for (DistributionPoint distributionPoint : (List<DistributionPoint>) crlDistributionPointsExtension.get(CRLDistributionPointsExtension.POINTS)) 
+                for (DistributionPoint distPoint : distPoints.getDistributionPoints())
+            	{
+                	String distPointURL = distPoint.getDistributionPoint().getName().toString();
+                    //for (GeneralName generalName : distributionPoint.getFullName().names()) 
+                    //{
+                    ///    String generalNameString = generalName.toString();
 
-                        if (generalNameString.startsWith("URIName: ")) 
-                        {
-                            String crlURLString = getNameString(generalNameString);
-                         
-                            X509CRLImpl crlImpl = getCrlFromUri(crlURLString);
+                    if (distPointURL.startsWith("General")) 
+                    {
+                           distPointURL = getNameString(distPointURL);
+                    }     
+
+                	X509CRL crlImpl = getCrlFromUri(distPointURL);
                             if (crlImpl != null)
                                 crlCollection.add(crlImpl);
-                        }
-                    }
+                        //}
+                    //}
                 }
             } 
         }
@@ -176,14 +185,15 @@ public class CRLRevocationManager implements RevocationManager {
      * @return an X509CRLImpl object representing the CRL.
      * @throws Exception
      */
-    private X509CRLImpl getCrlFromUri(String crlUrlString)
+    private X509CRL getCrlFromUri(String crlUrlString)
     {
         if (crlUrlString == null || crlUrlString.trim().length() == 0)
             return null;
             
         synchronized(cache) 
         { 
-            X509CRLImpl crlImpl = cache.get(crlUrlString);
+        	
+            X509CRL crlImpl = cache.get(crlUrlString);
             
             if (crlImpl != null && crlImpl.getNextUpdate().before(new Date())) 
             {
@@ -202,7 +212,7 @@ public class CRLRevocationManager implements RevocationManager {
                     
                     try 
                     {
-                        crlImpl = (X509CRLImpl) certificateFactory.generateCRL(crlInputStream);
+                        crlImpl = (X509CRL)certificateFactory.generateCRL(crlInputStream);
                     } 
                     finally 
                     {
@@ -231,6 +241,46 @@ public class CRLRevocationManager implements RevocationManager {
      */
     protected String getNameString(String generalNameString) 
     {
-        return generalNameString.substring(9);
+    	generalNameString = generalNameString.trim();
+    	int index = generalNameString.indexOf("http");
+    	if (index > -1)
+    		generalNameString = generalNameString.substring(index);
+    	
+    	return generalNameString;
     }
+    
+    protected static DERObject getExtensionValue(
+            java.security.cert.X509Extension    ext,
+            String                              oid)
+            throws AnnotatedException
+        {
+            byte[]  bytes = ext.getExtensionValue(oid);
+            if (bytes == null)
+            {
+                return null;
+            }
+
+            return getObject(oid, bytes);
+        }
+        
+    private static DERObject getObject(
+            String oid,
+            byte[] ext)
+            throws AnnotatedException
+    {
+        try
+        {
+            ASN1InputStream aIn = new ASN1InputStream(ext);
+            ASN1OctetString octs = (ASN1OctetString)aIn.readObject();
+
+            aIn = new ASN1InputStream(octs.getOctets());
+            return aIn.readObject();
+        }
+        catch (Exception e)
+        {
+            throw new NHINDException("exception processing extension " + oid, e);
+        }
+    }
+    
+    
 }
