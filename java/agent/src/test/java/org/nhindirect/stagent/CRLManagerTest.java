@@ -35,7 +35,7 @@ public class CRLManagerTest extends TestCase
             @Override
             protected String getNameString(String generalNameString) 
             {
-                String s = generalNameString.substring(9);
+                String s = super.getNameString(generalNameString);
                 return s.replace("http://JUNIT", "file://" + workingDir);
             }
         };

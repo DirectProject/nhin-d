@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -53,7 +52,7 @@ import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 
 
-public class LdapCertUtilImpl {
+public class LdapCertUtilImpl implements LdapCertUtil{
 	
 	private LdapEnvironment ldapEnvironment;
 	
