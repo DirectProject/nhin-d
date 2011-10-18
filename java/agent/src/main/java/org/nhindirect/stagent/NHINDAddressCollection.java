@@ -25,6 +25,7 @@ package org.nhindirect.stagent;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import org.nhindirect.stagent.mail.MailStandard;
@@ -239,10 +240,19 @@ public class NHINDAddressCollection extends ArrayList<NHINDAddress>
 	    	String addressString = index > -1 ? addressesLine.substring(index + 1) : addressesLine;
 	    	
 	    	// split out the address using the standard delimiter
-	    	String[] addresses = addressString.split(String.valueOf(MailStandard.MailAddressSeparator));
+	    	//String[] addresses = addressString.split(String.valueOf(MailStandard.MailAddressSeparator));
+	    	InternetAddress[] addresses = null;
+	    	try
+	    	{
+	    		addresses = InternetAddress.parseHeader(addressString, true);
+	    	}
+	    	catch (AddressException e)
+	    	{
+	    		throw new NHINDException("Invalid email address format.", e);
+	    	}
 	    	
-	    	for (String addr : addresses)
-	    		retVal.add(new NHINDAddress(addr.trim(), source));
+	    	for (InternetAddress addr : addresses)
+	    		retVal.add(new NHINDAddress(addr.getAddress(), source));
     	}    	
     	return retVal;
     }

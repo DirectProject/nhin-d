@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{1.2}
+
+    Changes included with release 1.1.6
+    
+    []
+    
+    Enhancements
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=166}166}}: Public LDAP resolver.
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=165}165}}: Error parsing addresses with display names.
+
 {1.1.6}
 
     Changes included with release 1.1.6
