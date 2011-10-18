@@ -37,6 +37,7 @@ public class PublicCertStoreModule extends AbstractModule
 {
 	private final Collection<Provider<CertificateResolver>> storeProvider;
 	
+    @SuppressWarnings("unchecked")
 	public static PublicCertStoreModule create(Provider<CertificateResolver> storeProvider)
 	{
 		return new PublicCertStoreModule(Arrays.asList(storeProvider));
@@ -52,6 +53,7 @@ public class PublicCertStoreModule extends AbstractModule
 		this.storeProvider = storeProvider;
 	}
 	
+    @SuppressWarnings("unchecked")
 	public PublicCertStoreModule (Provider<CertificateResolver> storeProvider)
 	{
 		this(Arrays.asList(storeProvider));

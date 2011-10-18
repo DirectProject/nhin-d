@@ -43,6 +43,7 @@ public class DefaultNHINDAgentProvider implements Provider<NHINDAgent>
 	private Provider<CertificateResolver> privateCerts;
 	private Provider<TrustAnchorResolver> trustResolver;
 	
+    @SuppressWarnings("unchecked")
 	public DefaultNHINDAgentProvider(Collection<String> domains, Provider<CertificateResolver> publicCerts,
 			Provider<CertificateResolver> privateCerts, Provider<TrustAnchorResolver> trustResolver)
 	{

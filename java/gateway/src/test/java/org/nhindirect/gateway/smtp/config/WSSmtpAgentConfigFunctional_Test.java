@@ -256,6 +256,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             removeFile("WSPrivCacheStore");
             removeFile("PublicStoreKeyFile");
             removeFile("WSPublicCacheStore");
+            removeFile("PublicLDAPCacheStore");
         }
         
         protected void removeFile(String filename){
@@ -888,6 +889,202 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
 	        }
 		}.perform();
 	}	
+	
+	public void testOutboundOnlyAnchors_keyStoreAnchor() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+
+            protected void addSettings() throws Exception
+            {
+            	proxy.addSetting("AnchorStoreType", "keystore");
+            	proxy.addSetting("AnchorResolverType", "multidomain");
+            	proxy.addSetting("AnchorKeyStoreFile", "src/test/resources/keystores/internalKeystore");
+            	proxy.addSetting("AnchorKeyStoreFilePass", "h3||0 wor|d");
+            	proxy.addSetting("AnchorKeyStorePrivKeyPass", "pKpa$$wd");
+            	
+            	proxy.addSetting("cerner.comOutgoingAnchorAliases", "cacert");
+            	proxy.addSetting("securehealthemail.comOutgoingAnchorAliases", "secureHealthEmailCACert");            	
+            }
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+            	// doesn't matter
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+            	DefaultNHINDAgent nAgent = ((DefaultNHINDAgent)agent.getAgent());
+
+            	
+            	
+            	CertificateResolver trustResl = nAgent.getTrustAnchors().getIncomingAnchors();
+            	assertTrue(trustResl instanceof TrustAnchorCertificateStore);
+            	
+            	// assert 0 incoming anchors
+            	Collection<X509Certificate> anchors = trustResl.getCertificates(new InternetAddress("test@cerner.com"));
+            	assertNotNull(anchors);
+            	assertEquals(0, anchors.size());
+            	
+            	anchors = trustResl.getCertificates(new InternetAddress("test@securehealthemail.com"));
+            	assertNotNull(anchors);
+            	assertEquals(0, anchors.size());       
+            	
+            	
+            	
+            	trustResl = nAgent.getTrustAnchors().getOutgoingAnchors();
+            	assertTrue(trustResl instanceof TrustAnchorCertificateStore);
+            	
+            	// get the outgoing trust anchor for cerner.com
+            	anchors = trustResl.getCertificates(new InternetAddress("test@cerner.com"));
+            	assertNotNull(anchors);
+            	assertEquals(1, anchors.size());
+            	
+            	// get the outgoing trust anchor for securehealthemail.com
+            	anchors = trustResl.getCertificates(new InternetAddress("test@securehealthemail.com"));
+            	assertNotNull(anchors);
+            	assertEquals(1, anchors.size());    
+            	
+            }
+        }.perform();
+    }
+	
+	public void testOutboundOnlyAnchors_LDAPAnchor() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+
+            protected void addSettings() throws Exception
+            {
+            	proxy.addSetting("AnchorStoreType", "LDAP");
+            	proxy.addSetting("AnchorResolverType", "multidomain");
+            	proxy.addSetting("TrustAnchorLDAPUrl", "ldap://localhost:" + configuration.getLdapPort());
+            	proxy.addSetting("TrustAnchorLDAPSearchBase", "cn=lookupTest");
+            	proxy.addSetting("TrustAnchorLDAPSearchAttr", "email");
+            	proxy.addSetting("TrustAnchorLDAPCertAttr", "privKeyStore");
+            	proxy.addSetting("TrustAnchorLDAPCertFormat", "X509");
+            	
+            	
+            	proxy.addSetting("cerner.comOutgoingAnchorAliases", "cerner.com");
+            	proxy.addSetting("securehealthemail.comOutgoingAnchorAliases", "securehealthemail.com");
+            }
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+                addCertificatesToLdap(new String[]{"/cacert.der"}, "cerner.com"); 
+                addCertificatesToLdap(new String[]{"/cacert.der"}, "securehealthemail.com"); 
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+            	DefaultNHINDAgent nAgent = ((DefaultNHINDAgent)agent.getAgent());
+            	CertificateResolver privResl = nAgent.getPrivateCertResolver();
+            	assertTrue(privResl instanceof ConfigServiceCertificateStore);
+            	
+            	
+            	CertificateResolver trustResl = nAgent.getTrustAnchors().getIncomingAnchors();
+            	assertTrue(trustResl instanceof TrustAnchorCertificateStore);
+            	
+            	// assert 0 incoming anchors
+            	Collection<X509Certificate> anchors = trustResl.getCertificates(new InternetAddress("test@cerner.com"));
+            	assertNotNull(anchors);
+            	assertEquals(0, anchors.size());
+            	
+            	anchors = trustResl.getCertificates(new InternetAddress("test@securehealthemail.com"));
+            	assertNotNull(anchors);
+            	assertEquals(0, anchors.size());          
+            	
+            	
+            	
+            	trustResl = nAgent.getTrustAnchors().getOutgoingAnchors();
+            	assertTrue(trustResl instanceof TrustAnchorCertificateStore);
+            	
+            	// get the outgoing trust anchor for cerner.com
+            	anchors = trustResl.getCertificates(new InternetAddress("test@cerner.com"));
+            	assertNotNull(anchors);
+            	assertEquals(1, anchors.size());
+            	
+            	// get the outgoing trust anchor for securehealthemail.com
+            	anchors = trustResl.getCertificates(new InternetAddress("test@securehealthemail.com"));
+            	assertNotNull(anchors);
+            	assertEquals(1, anchors.size());                	
+            	
+            }
+        }.perform();
+    }		
+	
+	public void testOutboundOnlyAnchors_WSStoreAnchor() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+            	// doesn't matter
+            }
+            
+            @Override
+            protected void addTrustAnchors() throws Exception
+            {
+            	Vector<Anchor> vec = new Vector<Anchor>();
+            	
+            	Anchor anchor = new Anchor();
+            	anchor.setData(getCertificateFileData("cacert.der"));
+            	anchor.setOwner("cerner.com");
+            	anchor.setIncoming(false);
+            	anchor.setOutgoing(true);
+            	vec.add(anchor);
+            	
+            	anchor = new Anchor();
+            	anchor.setData(getCertificateFileData("cacert.der"));
+            	anchor.setOwner("securehealthemail.com");
+            	anchor.setIncoming(false);
+            	anchor.setOutgoing(true);
+            	vec.add(anchor);
+            	
+            	proxy.addAnchor(vec.toArray(new Anchor[vec.size()]));
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+            	DefaultNHINDAgent nAgent = ((DefaultNHINDAgent)agent.getAgent());
+
+            	CertificateResolver trustResl = nAgent.getTrustAnchors().getIncomingAnchors();
+            	assertTrue(trustResl instanceof TrustAnchorCertificateStore);
+            	
+            	// assert 0 incoming anchors
+            	Collection<X509Certificate> anchors = trustResl.getCertificates(new InternetAddress("test@cerner.com"));
+            	assertNotNull(anchors);
+            	assertEquals(0, anchors.size());
+            	
+            	anchors = trustResl.getCertificates(new InternetAddress("test@securehealthemail.com"));
+            	assertNotNull(anchors);
+            	assertEquals(0, anchors.size());       
+            	
+            	
+            	
+            	trustResl = nAgent.getTrustAnchors().getOutgoingAnchors();
+            	assertTrue(trustResl instanceof TrustAnchorCertificateStore);
+            	
+            	// get the outgoing trust anchor for cerner.com
+            	anchors = trustResl.getCertificates(new InternetAddress("test@cerner.com"));
+            	assertNotNull(anchors);
+            	assertEquals(1, anchors.size());
+            	
+            	// get the outgoing trust anchor for securehealthemail.com
+            	anchors = trustResl.getCertificates(new InternetAddress("test@securehealthemail.com"));
+            	assertNotNull(anchors);
+            	assertEquals(1, anchors.size());    
+            	
+            }
+        }.perform();
+    }
 	
 	protected byte[] getCertificateFileData(String file) throws Exception
 	{

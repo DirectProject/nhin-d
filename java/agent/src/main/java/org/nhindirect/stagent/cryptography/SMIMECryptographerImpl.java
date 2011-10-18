@@ -545,7 +545,7 @@ public class SMIMECryptographerImpl implements Cryptographer
 	    	caps.addCapability(x509CertificateObjectsIdent);
 	    	signedAttrs.add(new SMIMECapabilitiesAttribute(caps));  
 	    	
-	    	List  certList = new ArrayList();
+	    	List<X509Certificate>  certList = new ArrayList<X509Certificate>();
 	    	CMSSignedDataGenerator generator = new CMSSignedDataGenerator();
 	    	for (X509Certificate signer : signingCertificates)
 	    	{

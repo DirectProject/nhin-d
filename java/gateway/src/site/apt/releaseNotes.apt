@@ -22,7 +22,9 @@
      
     Bug Fixes
 
-    * NA
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=163}163}}: James gateway will not start with outbound only anchor
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=155}155}}: Anchors not being applied correctly for incoming and outgoing.
 
 {1.2.2}
 

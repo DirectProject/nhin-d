@@ -41,7 +41,6 @@ import org.nhindirect.stagent.parser.EntitySerializer;
  * @author Umesh Madan
  *
  */
-@SuppressWarnings("unchecked")
 public class Message extends MimeMessage 
 {    
     /**
@@ -90,11 +89,12 @@ public class Message extends MimeMessage
     /*
      * Utility function for retrieving raw headers.... raw headers information will be vital for proper message wrapping
      */
+    @SuppressWarnings("unchecked")
     private String getRawHeaderLine(String headerName)
     {
     	try
     	{    	
-	    	Enumeration headers = this.getMatchingHeaderLines(new String[] {headerName});
+	    	Enumeration<String> headers = this.getMatchingHeaderLines(new String[] {headerName});
 	    	
 	    	if (headers != null && headers.hasMoreElements())
 	    		return (String)headers.nextElement();
@@ -174,6 +174,7 @@ public class Message extends MimeMessage
 	 * Gets a copy of this message without any non-mime headers.
 	 * @returns A copy of this message without any non-mime headers.
 	 */
+    @SuppressWarnings("unchecked")
     public MimeEntity extractMimeEntity()
     {
     	MimeEntity retVal = null;
@@ -184,10 +185,10 @@ public class Message extends MimeMessage
     		
 	        if (this.headers.getAllHeaders().hasMoreElements())
 	        {
-	        	Enumeration hEnum = this.headers.getAllHeaders();
+	        	Enumeration<javax.mail.Header> hEnum = this.headers.getAllHeaders();
 	        	while (hEnum.hasMoreElements())
 	        	{
-	        		javax.mail.Header hdr = (javax.mail.Header)hEnum.nextElement();
+	        		javax.mail.Header hdr = hEnum.nextElement();
 	        		if (MimeStandard.startsWith(hdr.getName(), MimeStandard.HeaderPrefix))
 	        			headers.addHeader(hdr.getName(), hdr.getValue());
 	        	}

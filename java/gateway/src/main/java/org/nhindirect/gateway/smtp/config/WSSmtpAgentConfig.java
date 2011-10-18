@@ -311,11 +311,14 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			throw new SmtpAgentException(SmtpAgentError.InvalidConfigurationFormat, "WebService error getting anchor resolver type: " + e.getMessage(), e);
 		}		
 		
-		if (incomingAnchors.size() == 0)
-			throw new SmtpAgentException(SmtpAgentError.InvalidTrustAnchorSettings, "No incoming trust anchors defined.");
+		if (incomingAnchors.size() == 0 && outgoingAnchors.size() == 0)
+			throw new SmtpAgentException(SmtpAgentError.InvalidTrustAnchorSettings, "No trust anchors defined.");
 		
 		if (setting == null || setting.getValue() == null || setting.getValue().isEmpty())
-			resolverType = ANCHOR_RES_TYPE_UNIFORM; // default to unifor
+		{
+			// multi domain should be the default... uniform really only makes sense for dev purposes
+			resolverType = ANCHOR_RES_TYPE_MULTIDOMAIN; 		
+		}
 		else
 			resolverType = setting.getValue();
 		
@@ -325,12 +328,13 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		{
 			// this is uniform... doesn't really matter what we use for incoming or outgoing because in theory they should be
 			// the same... just get the first collection in the incoming map
-			provider = new UniformTrustAnchorResolverProvider(incomingAnchors.values().iterator().next());
+			if (incomingAnchors.size() > 0)
+				provider = new UniformTrustAnchorResolverProvider(incomingAnchors.values().iterator().next());
+			else 
+				provider = new UniformTrustAnchorResolverProvider(outgoingAnchors.values().iterator().next());
 		}
 		else if (resolverType.equalsIgnoreCase(ANCHOR_RES_TYPE_MULTIDOMAIN))
 		{
-			if (outgoingAnchors.size() == 0)
-				throw new SmtpAgentException(SmtpAgentError.InvalidTrustAnchorSettings, "No outgoing trust anchors defined.");
 			provider = new MultiDomainTrustAnchorResolverProvider(incomingAnchors, outgoingAnchors);
 		}
 		else
@@ -388,36 +392,42 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 					(pass == null) ? "DefaultFilePass" : pass.getValue(), (privKeyPass == null) ? "DefaultKeyPass" : privKeyPass.getValue());
 			
 			// get incoming anchors
-			for (Setting setting : incomingAliasSettings)				
+			if (incomingAliasSettings != null)
 			{
-				Collection<X509Certificate> certs = new ArrayList<X509Certificate>();				
-				String aliases[] = setting.getValue().split(",");
-				for (String alias : aliases)
+				for (Setting setting : incomingAliasSettings)				
 				{
-					X509Certificate cert = store.getByAlias(alias);
-					if (cert != null)
+					Collection<X509Certificate> certs = new ArrayList<X509Certificate>();				
+					String aliases[] = setting.getValue().split(",");
+					for (String alias : aliases)
 					{
-						certs.add(cert);
-					}
-				}				
-				incomingAnchors.put(setting.getName().substring(0, setting.getName().lastIndexOf("IncomingAnchorAliases")), certs);
+						X509Certificate cert = store.getByAlias(alias);
+						if (cert != null)
+						{
+							certs.add(cert);
+						}
+					}				
+					incomingAnchors.put(setting.getName().substring(0, setting.getName().lastIndexOf("IncomingAnchorAliases")), certs);
+				}
 			}
-						
+			
 			// get outgoing anchors
-			for (Setting setting : outgoingAliasSettings)				
+			if (outgoingAliasSettings != null)
 			{
-				Collection<X509Certificate> certs = new ArrayList<X509Certificate>();
-				String aliases[] = setting.getValue().split(",");
-				for (String alias : aliases)
+				for (Setting setting : outgoingAliasSettings)				
 				{
-					X509Certificate cert = store.getByAlias(alias);
-					if (cert != null)
+					Collection<X509Certificate> certs = new ArrayList<X509Certificate>();
+					String aliases[] = setting.getValue().split(",");
+					for (String alias : aliases)
 					{
-						certs.add(cert);
-					}
-				}				
-				outgoingAnchors.put(setting.getName().substring(0, setting.getName().lastIndexOf("OutgoingAnchorAliases")), certs);
-			}			
+						X509Certificate cert = store.getByAlias(alias);
+						if (cert != null)
+						{
+							certs.add(cert);
+						}
+					}				
+					outgoingAnchors.put(setting.getName().substring(0, setting.getName().lastIndexOf("OutgoingAnchorAliases")), certs);
+				}
+			}
 		}	
 		else if (storeType.equalsIgnoreCase(STORE_TYPE_LDAP))
 		{	
@@ -425,32 +435,38 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			
 			LDAPCertificateStore ldapCertificateStore = (LDAPCertificateStore) buildLdapCertificateStoreProvider("TrustAnchor", "LDAPTrustAnchorStore").get();
 		    // get incoming anchors
-            for (Setting setting : incomingAliasSettings)
+            if (incomingAliasSettings != null)
             {
-                Collection<X509Certificate> certs = new ArrayList<X509Certificate>();      
-                String aliases[] = setting.getValue().split(",");
-                for (String alias : aliases)
-                {
-                    //TODO what if 2nd entry has no certs? Fail?
-                    //each alias could have multiple certificates
-                    certs.addAll(ldapCertificateStore.getCertificates(alias));                    
-                }             
-                incomingAnchors.put(setting.getName().substring(0, setting.getName().lastIndexOf("IncomingAnchorAliases")), certs);
-            }
-                        
+				for (Setting setting : incomingAliasSettings)
+	            {
+	                Collection<X509Certificate> certs = new ArrayList<X509Certificate>();      
+	                String aliases[] = setting.getValue().split(",");
+	                for (String alias : aliases)
+	                {
+	                    //TODO what if 2nd entry has no certs? Fail?
+	                    //each alias could have multiple certificates
+	                    certs.addAll(ldapCertificateStore.getCertificates(alias));                    
+	                }             
+	                incomingAnchors.put(setting.getName().substring(0, setting.getName().lastIndexOf("IncomingAnchorAliases")), certs);
+	            }
+            }          
+            
             // get outgoing anchors
-            for (Setting setting : outgoingAliasSettings)
+            if (outgoingAliasSettings != null)
             {
-                Collection<X509Certificate> certs = new ArrayList<X509Certificate>();      
-                String aliases[] = setting.getValue().split(",");
-                for (String alias : aliases)
-                {
-                    //TODO what if 2nd entry has no certs? Fail?
-                    //each alias could have multiple certificates
-                    certs.addAll(ldapCertificateStore.getCertificates(alias));                    
-                }             
-                outgoingAnchors.put(setting.getName().substring(0, setting.getName().lastIndexOf("OutgoingAnchorAliases")), certs);
-            }       
+	            for (Setting setting : outgoingAliasSettings)
+	            {
+	                Collection<X509Certificate> certs = new ArrayList<X509Certificate>();      
+	                String aliases[] = setting.getValue().split(",");
+	                for (String alias : aliases)
+	                {
+	                    //TODO what if 2nd entry has no certs? Fail?
+	                    //each alias could have multiple certificates
+	                    certs.addAll(ldapCertificateStore.getCertificates(alias));                    
+	                }             
+	                outgoingAnchors.put(setting.getName().substring(0, setting.getName().lastIndexOf("OutgoingAnchorAliases")), certs);
+	            }   
+            }
 		}
 		
 	}
