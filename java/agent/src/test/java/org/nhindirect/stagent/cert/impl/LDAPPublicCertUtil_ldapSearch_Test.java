@@ -4,14 +4,17 @@ package org.nhindirect.stagent.cert.impl;
 import java.io.File;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
+import javax.naming.directory.InitialDirContext;
 
 
 import org.apache.commons.codec.binary.Base64;
@@ -101,13 +104,21 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 			{	
 				createLdapEntries();
 				
-				SRVRecord srvRecord = new SRVRecord(new Name("_ldap._tcp.example.com."), DClass.IN, 3600, 0, 1, port, new Name("localhost."));
-				when(mockLookup.run()).thenReturn(new Record[] {srvRecord});
+				SRVRecord[] srvRecords = getSRVRecords();
+				
+				when(mockLookup.run()).thenReturn(srvRecords);
 			}
 			catch (Throwable t)
 			{
 				throw new RuntimeException(t);
 			}
+		}
+		
+		protected SRVRecord[] getSRVRecords() throws Exception
+		{
+			SRVRecord srvRecord = new SRVRecord(new Name("_ldap._tcp.example.com."), DClass.IN, 3600, 0, 1, port, new Name("localhost."));
+			
+			return new SRVRecord[] {srvRecord};
 		}
 		
 		@Override
@@ -303,6 +314,151 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 				assertNotNull(certs);
 				assertEquals(0, certs.size());
 
+			}
+
+		}.perform();
+	}
+	
+	public void testLDAPSearch_getSingleCert_noSRVRecords_assertCertNotFound() throws Exception
+	{
+		new TestPlan()
+		{
+			protected SRVRecord[] getSRVRecords() throws Exception
+			{				
+				return null;
+			}
+			
+			@Override
+			protected String getSubjectToSearch() throws Exception
+			{
+				return "dummy.com";
+			}
+			
+			@Override
+			protected void doAssertions(Collection<X509Certificate> certs) throws Exception
+			{
+				assertNotNull(certs);
+				assertEquals(0, certs.size());
+
+			}
+
+		}.perform();
+	}
+	
+	public void testLDAPSearch_getSingleCert_noBaseDNs_assertCertNotFound() throws Exception
+	{
+		new TestPlan()
+		{
+			@Override
+			protected void performInner() throws Exception
+			{
+				String subjectToSearch = getSubjectToSearch();
+				
+				LdapPublicCertUtilImpl impl = new LdapPublicCertUtilImpl()
+				{
+					protected List<String> getBaseNamingContexts(InitialDirContext ctx)
+					{
+						return Collections.emptyList();
+					}
+				};
+				
+				Collection<X509Certificate> certs = impl.ldapSearch(subjectToSearch);
+				
+				doAssertions(certs);
+			}
+			
+			
+			@Override
+			protected String getSubjectToSearch() throws Exception
+			{
+				return "dummy.com";
+			}
+			
+			@Override
+			protected void doAssertions(Collection<X509Certificate> certs) throws Exception
+			{
+				assertNotNull(certs);
+				assertEquals(0, certs.size());
+
+			}
+
+		}.perform();
+	}
+	
+	public void testLDAPSearch_getSingleCert_multipleSRVRecords_assertCertFound() throws Exception
+	{
+		new TestPlan()
+		{
+			X509Certificate checkCert = TestUtils.loadCertificate("gm2552.der");
+			
+			protected SRVRecord[] getSRVRecords() throws Exception
+			{
+				SRVRecord srvRecord1 = new SRVRecord(new Name("_ldap._tcp.example.com."), DClass.IN, 3600, 0, 1, port-1, new Name("localhost."));
+				SRVRecord srvRecord2 = new SRVRecord(new Name("_ldap._tcp.example.com."), DClass.IN, 3600, 0, 1, port, new Name("localhost."));
+
+				
+				return new SRVRecord[] {srvRecord1, srvRecord2};
+			}
+			
+			@Override
+			protected String getSubjectToSearch() throws Exception
+			{
+				return "gm2552@cerner.com";
+			}
+			
+			@Override
+			protected void doAssertions(Collection<X509Certificate> certs) throws Exception
+			{
+				assertNotNull(certs);
+				assertEquals(1, certs.size());
+				assertEquals(checkCert, certs.iterator().next());
+			}
+
+		}.perform();
+	}
+	
+	public void testLDAPSearch_exceptionInSearch_assertExeption() throws Exception
+	{
+		new TestPlan()
+		{
+			X509Certificate checkCert = TestUtils.loadCertificate("gm2552.der");
+			
+			@Override
+			protected void performInner() throws Exception
+			{
+				String subjectToSearch = getSubjectToSearch();
+				
+				LdapPublicCertUtilImpl impl = new LdapPublicCertUtilImpl()
+				{
+					protected List<String> getBaseNamingContexts(InitialDirContext ctx)
+					{
+						throw new RuntimeException();
+					}
+				};
+				
+				Collection<X509Certificate> certs = impl.ldapSearch(subjectToSearch);
+				
+				doAssertions(certs);
+			}
+			
+			@Override
+			protected String getSubjectToSearch() throws Exception
+			{
+				return "gm2552@cerner.com";
+			}
+			
+			@Override
+			protected void assertException(Exception exception) throws Exception 
+			{
+				// default case should not throw an exception
+				assertNotNull(exception);
+				//assertTrue(exception instanceof NHINDException);
+			}
+			
+			@Override
+			protected void doAssertions(Collection<X509Certificate> certs) throws Exception
+			{
+				
 			}
 
 		}.perform();
