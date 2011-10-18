@@ -35,59 +35,76 @@ namespace Health.Direct.DnsResponder.Tests
         public TestTCPClient(Socket socket)
         {
             m_socket = socket;
-            this.SendChunk = 64;
-            this.ReceiveChunk = 64;
+            m_socket.NoDelay = true;
+            m_socket.DontFragment = false;
+            this.SendChunk = 8;
+            this.ReceiveChunk = 8;
         }
         
         public int SendChunk;
         public int ReceiveChunk;
-        
-        public void Send(DnsRequest request)
-        {
-            DnsBuffer requestBuffer = new DnsBuffer();
-            request.Serialize(requestBuffer);
-            //
-            // Send size first
-            //
-            this.SendLength((ushort) requestBuffer.Count);
-                        
-            int sendChunk = requestBuffer.Count;
-            if (this.SendChunk > 0)
-            {
-                sendChunk = Math.Min(this.SendChunk, requestBuffer.Count / 2 );
-            }
-            
-            int countSent = 0;
-            while (countSent < requestBuffer.Count)
-            {
-                int countToSend = Math.Min(sendChunk, requestBuffer.Count - countSent);
-                countSent += m_socket.Send(requestBuffer.Buffer, countSent, countToSend, SocketFlags.None);
-            }
-            
-            Assert.True(countSent == requestBuffer.Count);
-        }
 
         public DnsResourceRecord Receive()
         {
+            DnsBuffer responseBuffer = this.ReceiveBuffer();            
+            DnsResponse response = new DnsResponse(responseBuffer.CreateReader());
+            Assert.True(response.AnswerRecords.Count != 0);
+            return response.AnswerRecords[0];
+        }
+        
+        public DnsRequest ReceiveRequest()
+        {
+            DnsBuffer responseBuffer = this.ReceiveBuffer();
+            DnsRequest request = new DnsRequest(responseBuffer.CreateReader());
+            Assert.True(!string.IsNullOrEmpty(request.Question.Domain));
+            return request;
+        }
+        
+        public ushort ReceiveLength()
+        {
+            DnsBuffer lengthBuffer = new DnsBuffer(2);
+            lengthBuffer.Count = m_socket.Receive(lengthBuffer.Buffer, 2, SocketFlags.None);
+            DnsBufferReader reader = lengthBuffer.CreateReader();
+            return reader.ReadUShort();
+        }
+
+        public DnsBuffer ReceiveBuffer()
+        {
             ushort length = this.ReceiveLength();
-            
-            DnsBuffer responseBuffer = new DnsBuffer(length);
+            DnsBuffer buffer = this.ReceiveBuffer(length);
+            Assert.True(buffer.Count == length);
+            return buffer;
+        }
+                
+        public DnsBuffer ReceiveBuffer(ushort length)
+        {
+            DnsBuffer buffer = new DnsBuffer(length);
             int countRead = 0;
-            while (responseBuffer.Count < length)
+            while (buffer.Count < length)
             {
-                countRead = m_socket.Receive(responseBuffer.Buffer, responseBuffer.Count, Math.Min(this.ReceiveChunk, length - responseBuffer.Count), SocketFlags.None);
+                countRead = m_socket.Receive(buffer.Buffer, buffer.Count, Math.Min(this.ReceiveChunk, length - buffer.Count), SocketFlags.None);
                 if (countRead <= 0)
                 {
                     break;
                 }
-                responseBuffer.Count += countRead;
+                buffer.Count += countRead;
             }
             
-            Assert.True(responseBuffer.Count == length);
-            
-            DnsResponse response = new DnsResponse(responseBuffer.CreateReader());
-            Assert.True(response.AnswerRecords.Count != 0);
-            return response.AnswerRecords[0];
+            return buffer;
+        }
+
+        public void Send(DnsRequest request)
+        {
+            DnsBuffer requestBuffer = new DnsBuffer();
+            request.Serialize(requestBuffer);
+            this.SendBuffer(requestBuffer);
+        }
+        
+        public void Send(DnsResponse response)
+        {
+            DnsBuffer buffer = new DnsBuffer();
+            response.Serialize(buffer);
+            this.SendBuffer(buffer);
         }
         
         public void SendLength(ushort count)
@@ -96,13 +113,26 @@ namespace Health.Direct.DnsResponder.Tests
             lengthBuffer.AddUshort(count);
             m_socket.Send(lengthBuffer.Buffer, lengthBuffer.Count, SocketFlags.None);
         }
-
-        public ushort ReceiveLength()
+    
+        public void SendBuffer(DnsBuffer buffer)        
         {
-            DnsBuffer lengthBuffer = new DnsBuffer(2);
-            lengthBuffer.Count = m_socket.Receive(lengthBuffer.Buffer, 2, SocketFlags.None);
-            DnsBufferReader reader = lengthBuffer.CreateReader();
-            return reader.ReadUShort();
+            // Send size first
+            this.SendLength((ushort)buffer.Count);
+
+            int sendChunk = buffer.Count;
+            if (this.SendChunk > 0)
+            {
+                sendChunk = Math.Min(this.SendChunk, buffer.Count / 2);
+            }
+
+            int countSent = 0;
+            while (countSent < buffer.Count)
+            {
+                int countToSend = Math.Min(sendChunk, buffer.Count - countSent);
+                countSent += m_socket.Send(buffer.Buffer, countSent, countToSend, SocketFlags.None);
+            }
+
+            Assert.True(countSent == buffer.Count);
         }
     }
 }

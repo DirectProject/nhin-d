@@ -113,6 +113,20 @@ namespace Health.Direct.DnsResponder.Tests
         }
 
         [Fact]
+        public void TestBigRecord()
+        {
+            // Test with a fake client
+            this.TestType<TextRecord>(DnsStandard.RecordType.TXT, "bigrecord.com", r => r.HasStrings && r.Strings.Count == 128);
+            // Test with the real client
+            using (DnsClient client = TestServer.Default.CreateClient())
+            {
+                TextRecord[] records = null;                
+                Assert.DoesNotThrow(() => records = client.ResolveTXT("bigrecord.com").ToArray());
+                Assert.True(records != null && records.Length == 1 && records[0].Strings.Count == 128);
+            }
+        }
+
+        [Fact]
         public void TestTypeMX()
         {
             this.TestType<MXRecord>(DnsStandard.RecordType.MX, "goo.com", r => r.Exchange == "foo.bar.xyz");
@@ -196,6 +210,32 @@ namespace Health.Direct.DnsResponder.Tests
             else
             {
                 TestServer.Default.AreMaxTcpAcceptsOutstanding();
+            }
+        }
+        
+        [Fact]
+        public void TestNoNagle()
+        {
+            // test using a server with Nagle turned off
+            using(FakeServer server = new FakeServer(TestStore.Default.Store, 53535))
+            {
+                server.Start();
+                using(DnsClient client = new DnsClient("127.0.0.1", 53535))
+                {
+                    client.UseUDPFirst = false;
+                    client.Timeout = TimeSpan.FromSeconds(10);
+                    
+                    server.BeginAccept();
+                    Assert.True(client.ResolveA("foo.com").Count() == 3);                    
+                    
+                    TextRecord[] txtRecords = null;
+                    
+                    server.BeginAccept();
+                    
+                    Assert.DoesNotThrow(() => txtRecords = client.ResolveTXT("bigrecord.com").ToArray());
+                    Assert.True(txtRecords != null && txtRecords.Length == 1);
+                    Assert.True(txtRecords[0].Strings.Count == 128);
+                }
             }
         }
     }
