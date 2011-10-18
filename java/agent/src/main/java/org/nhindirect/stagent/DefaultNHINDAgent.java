@@ -567,7 +567,7 @@ public class DefaultNHINDAgent implements NHINDAgent
         	InternetHeaders headers = new InternetHeaders();
         	
         	// remove all mime headers
-        	Enumeration eHeaders = message.getMessage().getAllHeaders();
+        	Enumeration<Header> eHeaders = message.getMessage().getAllHeaders();
         	while (eHeaders.hasMoreElements())
         	{
         		Header hdr = (Header)eHeaders.nextElement();
@@ -907,10 +907,10 @@ public class DefaultNHINDAgent implements NHINDAgent
 	            //
 	            
 	            InternetHeaders headers = new InternetHeaders();
-	            Enumeration eHeaders = message.getMessage().getAllHeaders();
+	            Enumeration<Header> eHeaders = message.getMessage().getAllHeaders();
 	            while (eHeaders.hasMoreElements())
 	            {
-	            	Header hdr = (Header)eHeaders.nextElement();
+	            	Header hdr = eHeaders.nextElement();
 	            	headers.setHeader(hdr.getName(), hdr.getValue());
 	            }    
 	              
@@ -929,10 +929,10 @@ public class DefaultNHINDAgent implements NHINDAgent
 	        {      	
 	            
 	            InternetHeaders headers = new InternetHeaders();
-	            Enumeration eHeaders = message.getMessage().getAllHeaders();
+	            Enumeration<Header> eHeaders = message.getMessage().getAllHeaders();
 	            while (eHeaders.hasMoreElements())
 	            {
-	            	Header hdr = (Header)eHeaders.nextElement();
+	            	Header hdr = eHeaders.nextElement();
 	            	headers.setHeader(hdr.getName(), hdr.getValue());
 	            }    
 	              

@@ -28,7 +28,6 @@ import java.util.Collection;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
-import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.trust.TrustEnforcementStatus;
 
 import java.security.cert.X509Certificate;

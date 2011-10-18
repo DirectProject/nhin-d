@@ -228,7 +228,7 @@ public class CryptoExtensions
             throw new IllegalArgumentException();
         }
 
-        Collection retVal = null;
+        Collection<SignerCertPair> retVal = null;
         
         try
         {
@@ -271,7 +271,11 @@ public class CryptoExtensions
         {
         	
         }
-        return retVal == null ? Collections.emptyList() : retVal;
+        
+        if (retVal == null)
+        	return Collections.emptyList();
+        
+        return retVal;
     }
 
     /**

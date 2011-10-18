@@ -164,7 +164,7 @@ class LeafCertGenDialog extends JDialog
 			// make sure the email is a valid email address
 			try
 			{
-				InternetAddress testAddress = new InternetAddress(emailField.getText());
+				new InternetAddress(emailField.getText());
 			}
 			catch (AddressException e)
 			{

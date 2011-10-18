@@ -54,7 +54,7 @@ import org.apache.mailet.base.mail.MimeMultipartReport;
  */
 public class Notification
 {   
-	private static Class dsnClass;
+	private static Class<?> dsnClass;
 	private static Method getHeaders;
 	
 	private static final String DefaultExplanation = "Your message was successfully processed.";

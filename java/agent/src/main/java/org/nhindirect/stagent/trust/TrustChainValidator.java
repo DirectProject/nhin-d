@@ -22,6 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.trust;
 
+import java.security.Security;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
 import java.security.cert.Certificate;
@@ -47,6 +48,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.Thumbprint;
+import org.nhindirect.stagent.cert.impl.CRLRevocationManager;
 
 /**
  * Validates the trust chain of a certificate with a set of anchors.  If a certificate resolver is present, the validator will search
@@ -67,6 +69,12 @@ public class TrustChainValidator
 	private int maxIssuerChainLength = DefaultMaxIssuerChainLength;
 	
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(TrustChainValidator.class);
+	
+	static
+	{
+		// use OCSP when available
+		Security.setProperty("ocsp.enable", "true");
+	}
 	
 	/**
 	 * Indicates if the TrustChainValidator has a certificate resolvers for resolving intermediates certificates.
@@ -136,7 +144,12 @@ public class TrustChainValidator
         		trustAnchorSet.add(new TrustAnchor(archor, null));
         	
             PKIXParameters params = new PKIXParameters(trustAnchorSet); 
-            params.setRevocationEnabled(false); // NHIND Revocations are handled using CertificateStore.getCertificate
+            
+        	// JCE will only allow OSCP checking when revocation checking is enabled
+        	// however some implementations will fail if revocation checking is turned on, but the CRL
+        	// extension does not exist. for compatibility reasons, only turn this on if CRL extension points are defined
+	        params.setRevocationEnabled(CRLRevocationManager.isCRLDispPointDefined(certificate));
+            
         	certPath = factory.generateCertPath(certs);
         	CertPathValidator pathValidator = CertPathValidator.getInstance("PKIX", CryptoExtensions.getJCEProviderName());    		
     		

@@ -26,7 +26,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 
 import javax.mail.internet.InternetAddress;
 

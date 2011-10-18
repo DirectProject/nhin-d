@@ -102,6 +102,8 @@ public class TrustModel
                       
         // 
         // For each domain recipient, find at least one valid sender signature that the recipient trusts
+        // the default value of the trust status is false, so only change the status if a trusted
+        // certificate is found
         //        
         NHINDAddressCollection recipients = message.getDomainRecipients();
         for (NHINDAddress recipient : recipients)
@@ -124,6 +126,8 @@ public class TrustModel
 	                		: TrustEnforcementStatus.Success_ThumbprintMismatch);
 	        	}
         	}
+        		
+        		
         }
     }
     

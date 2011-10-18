@@ -113,7 +113,6 @@ public class CRLRevocationManager implements RevocationManager {
      *            The certificate from which to extract and fetch CRLs.
      * @throws CRLException
      */
-    @SuppressWarnings("unchecked")
     private void loadCRLs(X509Certificate certificate)
     {
         if (certificate == null)
@@ -123,20 +122,14 @@ public class CRLRevocationManager implements RevocationManager {
         	
         	CRLDistPoint distPoints = CRLDistPoint.getInstance(getExtensionValue(certificate,
                     		X509Extensions.CRLDistributionPoints.getId()));
-            // Add CRL distribution point(s)
-            //X509CertImpl certificateImpl = new X509CertImpl(certificate.getEncoded());
-            //CRLDistributionPointsExtension crlDistributionPointsExtension = certificateImpl.getCRLDistributionPointsExtension();
-    
+            
+        	// Add CRL distribution point(s)
             if (distPoints != null) 
             {
             	 
-                //for (DistributionPoint distributionPoint : (List<DistributionPoint>) crlDistributionPointsExtension.get(CRLDistributionPointsExtension.POINTS)) 
                 for (DistributionPoint distPoint : distPoints.getDistributionPoints())
             	{
                 	String distPointURL = distPoint.getDistributionPoint().getName().toString();
-                    //for (GeneralName generalName : distributionPoint.getFullName().names()) 
-                    //{
-                    ///    String generalNameString = generalName.toString();
 
                     if (distPointURL.startsWith("General")) 
                     {
@@ -146,8 +139,6 @@ public class CRLRevocationManager implements RevocationManager {
                 	X509CRL crlImpl = getCrlFromUri(distPointURL);
                             if (crlImpl != null)
                                 crlCollection.add(crlImpl);
-                        //}
-                    //}
                 }
             } 
         }
@@ -158,11 +149,9 @@ public class CRLRevocationManager implements RevocationManager {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.nhindirect.stagent.cert.RevocationManager#isRevoked(java.security.cert.X509Certificate)
-     */
+	/**
+	 * {@inheritDoc}
+	 */
     @Override
     public boolean isRevoked(X509Certificate certificate)
     {
@@ -282,5 +271,20 @@ public class CRLRevocationManager implements RevocationManager {
         }
     }
     
+    public static boolean isCRLDispPointDefined(X509Certificate cert)
+    {
+    	boolean retVal = false;
+    	try
+    	{
+    		CRLDistPoint distPoints = CRLDistPoint.getInstance(getExtensionValue(cert,
+        		X509Extensions.CRLDistributionPoints.getId()));
+    		
+    		if (distPoints != null && distPoints.getDistributionPoints() != null && distPoints.getDistributionPoints().length > 0)
+    			retVal = true;
+    	}
+    	catch (Exception e){/*no-op */ }
+    	
+    	return retVal;
+    }	
     
 }
