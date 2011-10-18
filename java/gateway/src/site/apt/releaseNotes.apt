@@ -6,6 +6,24 @@
         Greg Meyer
         ---
 
+{1.3}
+
+    Changes included with release 1.1.6
+    
+    []
+    
+    Enhancements
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=166}166}}: Public LDAP resolver.  Public resolver configuration now uses DNS and LDAP as the default configuration.
+    
+    * Configuration classes now use protected methods and variables to support overriding.
+
+    [] 
+     
+    Bug Fixes
+
+    * NA
+
 {1.2.2}
 
     Changes included with release 1.2.2

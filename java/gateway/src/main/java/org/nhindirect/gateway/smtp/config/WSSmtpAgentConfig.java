@@ -47,6 +47,7 @@ import org.nhindirect.stagent.cert.impl.LdapStoreConfiguration;
 import org.nhindirect.stagent.cert.impl.provider.DNSCertStoreProvider;
 import org.nhindirect.stagent.cert.impl.provider.KeyStoreCertificateStoreProvider;
 import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
+import org.nhindirect.stagent.cert.impl.provider.PublicLdapCertificateStoreProvider;
 import org.nhindirect.stagent.module.AgentModule;
 import org.nhindirect.stagent.module.PrivateCertStoreModule;
 import org.nhindirect.stagent.module.PublicCertStoreModule;
@@ -65,6 +66,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 {
 	protected static final String STORE_TYPE_WS = "WS";
 	protected static final String STORE_TYPE_LDAP = "LDAP";
+	protected static final String STORE_TYPE_PUBLIC_LDAP = "PublicLDAP";
 	protected static final String STORE_TYPE_KEYSTORE = "keystore";
 	protected static final String STORE_TYPE_DNS = "DNS";
 	
@@ -549,7 +551,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		}		
 		
 		if (setting == null || setting.getValue() == null || setting.getValue().isEmpty())
-			storeTypes = STORE_TYPE_DNS; // default to DNS
+			storeTypes = STORE_TYPE_DNS + "," + STORE_TYPE_PUBLIC_LDAP; // default to DNS
 		else
 			storeTypes = setting.getValue();
 		
@@ -593,7 +595,16 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			{
 				resolverProvider = new ConfigServiceCertificateStoreProvider(cfService, 
 						new KeyStoreCertificateStore(new File("WSPublicCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DefaultCertStoreCachePolicy());
+
 			}
+			/*
+			 * Public LDAP resolver
+			 */
+			else if (storeType.equalsIgnoreCase(STORE_TYPE_PUBLIC_LDAP))
+			{
+				resolverProvider = new PublicLdapCertificateStoreProvider(new KeyStoreCertificateStore(new File("PublicLDAPCacheStore"), "DefaultFilePass", "DefaultKeyPass"), 
+						new DefaultCertStoreCachePolicy());
+			}			
 			/*
 			 * Default to DNS with a default cache policy
 			 */

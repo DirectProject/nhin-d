@@ -203,6 +203,12 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 		
 	}
 	
+	/**
+	 * Creates the LDAP directory context from an SRV lookup name.
+	 * @param lookupName The SRV record name used to discover the LDAP services.
+	 * @return And InitialDirContext object that is connected to a discoverd LDAP service.
+	 * @throws Exception
+	 */
 	protected InitialDirContext getDirContext(String lookupName) throws Exception
 	{
 	
