@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Net.Sockets;
 using System.Threading;
+using System.Net;
 using Health.Direct.Common.DnsResolver;
 using Xunit;
 using Xunit.Extensions;
@@ -197,5 +198,75 @@ namespace Health.Direct.DnsResponder.Tests
         {
             Assert.True(this.IsConnectionBalanced);
         }
+    }
+    
+    public class FakeServer : IDisposable
+    {
+        TcpListener m_listener;
+        AsyncCallback m_callback;        
+        IDnsStore m_store;
+
+        public FakeServer(IDnsStore store, int port)
+        {
+            m_store = store;
+            m_listener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
+            m_callback = this.HandleRequest;
+        }
+                
+        public void Start()
+        {
+            m_listener.Start();
+        }
+        
+        public void BeginAccept()
+        {
+            m_listener.BeginAcceptSocket(this.HandleRequest, this);
+        }
+        
+        void HandleRequest(IAsyncResult result)
+        {
+            try
+            {
+                using(Socket socket = m_listener.EndAcceptSocket(result))
+                {
+                    TestTCPClient client = new TestTCPClient(socket); // Chunk sends
+                    DnsRequest request = client.ReceiveRequest();
+                    DnsResponse response = null;
+                    try
+                    {
+                        response = m_store.Get(request);
+                        if (response == null)
+                        {
+                            response = new DnsResponse(request);
+                            response.Header.ResponseCode = DnsStandard.ResponseCode.NameError;
+                        }
+                    }
+                    catch
+                    {
+                        response = new DnsResponse(request);
+                        response.Header.ResponseCode = DnsStandard.ResponseCode.NameError;
+                    }
+                    
+                    if (response != null)
+                    {
+                        client.Send(response);
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+
+
+        public void Dispose()
+        {
+            if (m_listener != null)
+            {
+                m_listener.Stop();
+                m_listener = null;
+            }
+        }
+
     }
 }

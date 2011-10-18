@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Health.Direct.Common.DnsResolver;
@@ -103,10 +104,24 @@ namespace Health.Direct.DnsResponder.Tests
             store.Add(new AddressRecord("goo.com", "192.167.0.1"));
             store.Add(new AddressRecord("goo.com", "192.167.0.2"));
             store.Add(new AddressRecord("localhost", "127.0.0.1"));
+            store.Add(new AddressRecord("bigrecord.com", "1.2.3.4"));
             
             const string BigString = "0123456789abcdefghijklmnop";
             TextRecord txt = new TextRecord("goo.com", new string[] { BigString, "One_" + BigString, "Two_" + BigString});
             store.Add(txt);
+            
+            StringBuilder builder = new StringBuilder(64);
+            for (int i = 0; i < 64; ++i)
+            {
+                builder.Append('a');
+            }
+            string bigTextString = builder.ToString();
+            string[] textStrings = new string[128];
+            for (int i = 0; i < textStrings.Length; ++i)
+            {
+                textStrings[i] = bigTextString;
+            }
+            store.Add(new TextRecord("bigrecord.com", textStrings)); 
             
             store.Add(new SRVRecord("foo.com", 20, 353, "x.y.z.com"));            
             store.Add(new MXRecord("goo.com", "foo.bar.xyz"));
