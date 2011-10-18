@@ -120,26 +120,11 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 		final String lookupName = LDAP_SRV_PREFIX + domainName;
 		
 		InitialDirContext ctx = null;
-		
 		try
 		{
-			// try the configured servers first
-			Lookup lu = LookupFactory.getFactory().getInstance(new Name(lookupName), Type.SRV);
-			lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]),2, 3)); // default retries is 3, limit to 2
-			
-			final Record[] retRecords = lu.run();
-			if (retRecords != null && retRecords.length > 0) {
-				
-				String ldapURL = createLDAPUrl(retRecords);
-				
-				final Hashtable<String, String> env = new Hashtable<String, String>();
-				env.put(Context.INITIAL_CONTEXT_FACTORY, LDAP_FACTORY);
-				env.put(Context.PROVIDER_URL, ldapURL);
-				env.put(Context.SECURITY_AUTHENTICATION, "none");
-				env.put(LDAP_TIMEOUT, DEFAULT_LDAP_TIMEOUT);
-				
-				ctx =  new InitialDirContext(env);
-				
+	        ctx =  getDirContext(lookupName);
+			if (ctx != null)
+			{
 				// discover the naming contexts
 				List<String> dNs = getBaseNamingContexts(ctx);
 				
@@ -216,6 +201,32 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 		
 		return retVal;
 		
+	}
+	
+	protected InitialDirContext getDirContext(String lookupName) throws Exception
+	{
+	
+		// try the configured servers first
+		InitialDirContext ctx = null;
+		
+		Lookup lu = LookupFactory.getFactory().getInstance(new Name(lookupName), Type.SRV);
+		lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]),2, 3)); // default retries is 3, limit to 2
+		
+		final Record[] retRecords = lu.run();
+		if (retRecords != null && retRecords.length > 0) {
+			
+			String ldapURL = createLDAPUrl(retRecords);
+			
+			final Hashtable<String, String> env = new Hashtable<String, String>();
+			env.put(Context.INITIAL_CONTEXT_FACTORY, LDAP_FACTORY);
+			env.put(Context.PROVIDER_URL, ldapURL);
+			env.put(Context.SECURITY_AUTHENTICATION, "none");
+			env.put(LDAP_TIMEOUT, DEFAULT_LDAP_TIMEOUT);
+			
+			ctx =  new InitialDirContext(env);
+		}
+		
+		return ctx;
 	}
 	
 	/**
