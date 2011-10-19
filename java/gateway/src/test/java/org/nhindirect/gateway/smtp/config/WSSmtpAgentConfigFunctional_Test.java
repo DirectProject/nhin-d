@@ -1,6 +1,12 @@
 package org.nhindirect.gateway.smtp.config;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.ByteArrayInputStream;
+import org.nhindirect.stagent.cert.impl.util.Lookup;
+import org.nhindirect.stagent.cert.impl.util.LookupFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +21,7 @@ import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
@@ -51,6 +58,10 @@ import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
 import org.nhindirect.stagent.cert.impl.TrustAnchorCertificateStore;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.SRVRecord;
 
 import com.google.inject.Injector;
 
@@ -59,7 +70,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
 	private static final String certBasePath = "src/test/resources/certs/";
 	
 	private ConfigurationServiceProxy proxy;	
-
+	private Lookup mockLookup;
 	
 	static
 	{
@@ -101,6 +112,38 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
         Set<MutablePartitionConfiguration> pcfgs = new HashSet<MutablePartitionConfiguration>();
         pcfgs.add( pcfg );
 
+        //
+        //
+        //
+        // add the lookupTestPublic
+        //
+        //
+	    pcfg = new MutablePartitionConfiguration();
+	    pcfg.setName( "lookupTestPublic" );
+	    pcfg.setSuffix( "cn=lookupTestPublic" );
+
+        // Create some indices
+        indexedAttrs = new HashSet<String>();
+        indexedAttrs.add( "objectClass" );
+        indexedAttrs.add( "cn" );
+        pcfg.setIndexedAttributes( indexedAttrs );
+	 
+        // Create a first entry associated to the partition
+        attrs = new BasicAttributes( true );
+
+        // First, the objectClass attribute
+        attr = new BasicAttribute( "objectClass" );
+        attr.add( "top" );
+        attrs.put( attr );
+        
+        // Associate this entry to the partition
+        pcfg.setContextEntry( attrs );
+
+        // As we can create more than one partition, we must store
+        // each created partition in a Set before initialization
+        pcfgs.add( pcfg );
+ 
+        
         configuration.setContextPartitionConfigurations( pcfgs );
         
 		this.configuration.setWorkingDirectory(new File("LDAP-TEST"));
@@ -123,6 +166,12 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
 		
 		importLdif(stream);
 		
+		// setup the mock DNS SRV adapter
+		mockLookup = mock(Lookup.class);
+		LookupFactory.getFactory().addOverrideImplementation(mockLookup);
+		SRVRecord srvRecord = new SRVRecord(new Name("_ldap._tcp.example.com."), DClass.IN, 3600, 0, 1, port, new Name("localhost."));
+		when(mockLookup.run()).thenReturn(new Record[] {srvRecord});
+		
 		// create the web service and proxy
 		ConfigServiceRunner.startConfigService();
 		
@@ -134,6 +183,8 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
      */
     public void tearDown() throws Exception
     {
+
+    	LookupFactory.getFactory().removeOverrideImplementation();
         super.tearDown();  // will automatically take down the LDAP server
         
     }
@@ -382,6 +433,30 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
         new MultiDomainTestPlan() 
         {                     
 
+        	@Override
+            protected void addPublicCertificates() throws Exception
+            {
+    			Entry entry = new Entry();
+    			entry.addAttribute("objectClass", "organizationalUnit");
+    			entry.addAttribute("objectClass", "top");
+    			entry.addAttribute("objectClass", "iNetOrgPerson");
+    			entry.addAttribute("mail", "gm2552@cerner.com");
+
+                ByteArrayInputStream bais = new ByteArrayInputStream(loadCertificateData("cacert.der"));
+
+                X509Certificate cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(bais);    
+
+    			// Apache DS cannot support ;binary for user ceritificates.... must be BASE64 encoded
+    			Base64 base64 = new Base64();
+    		    String certificateValue =  new String(base64.encode(cert.getEncoded()));
+    			entry.addAttribute("userSMIMECertificate", certificateValue);
+    			entry.addAttribute("ou", "gm2552");
+    			entry.addAttribute("cn", "Greg Meyer");
+    			entry.addAttribute("sn", "");
+    			
+    			rootDSE.createSubcontext("ou=gm2552, cn=lookupTestPublic", entry.getAttributes());
+            }
+        	
             @Override
             protected void addPrivateCertificates() throws Exception {
             	// we can add more than one
@@ -430,7 +505,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	assertEquals(3, certs.size());
             	
             	// again for cache
-            	certs = privResl.getCertificates(new InternetAddress("bogus@cerner.com"));
+            	certs= privResl.getCertificates(new InternetAddress("bogus@cerner.com"));
             	assertNotNull(certs);
             	assertEquals(3, certs.size());     
             	
@@ -442,7 +517,23 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	// again for cache
             	certs = privResl.getCertificates(new InternetAddress("cerner.com"));
             	assertNotNull(certs);
-            	assertEquals(3, certs.size());              	
+            	assertEquals(3, certs.size());      
+            	
+            	// assert we have the proper ldap resolvers
+            	Collection<CertificateResolver> resolvers = nAgent.getPublicCertResolvers();
+            	assertNotNull(resolvers);
+            	assertEquals(2, resolvers.size());
+            	Iterator<CertificateResolver> iter = resolvers.iterator();
+            	
+ 
+            	CertificateResolver ldapPublicStore;
+            	assertTrue(iter.next() instanceof DNSCertificateStore);
+            	assertTrue((ldapPublicStore = iter.next()) instanceof LDAPCertificateStore);
+            	
+               	// test public ldap
+            	certs = ldapPublicStore.getCertificates(new InternetAddress("gm2552@cerner.com"));
+              	assertNotNull(certs);
+            	assertEquals(1, certs.size());  
             }
         }.perform();
     }	
