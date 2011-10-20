@@ -57,6 +57,7 @@ import org.nhindirect.stagent.CryptoExtensions;
  * @author Greg Meyer
  *
  */
+///CLOVER:OFF
 class CertGenerator 
 {
 	private static final String PBE_WITH_MD5_AND_DES_CBC_OID  = "1.2.840.113549.1.5.3";
@@ -317,3 +318,4 @@ class CertGenerator
 			fields.setSignerKey(key);
 	}
 }
+///CLOVER:ON

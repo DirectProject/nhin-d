@@ -45,7 +45,7 @@ import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.io.FileUtils;
 import org.nhindirect.stagent.CryptoExtensions;
-
+///CLOVER:OFF
 public class CreatePKCS12 
 {
 
@@ -308,3 +308,4 @@ public class CreatePKCS12
     }
 	
 }
+///CLOVER:ON

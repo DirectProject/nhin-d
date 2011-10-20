@@ -35,6 +35,7 @@ import javax.swing.JFrame;
  * @author Greg Meyer
  *
  */
+///CLOVER:OFF
 public class DirectProjectCertGenerator extends JFrame
 {
 	static final long serialVersionUID = 7357116822589862967L;
@@ -74,3 +75,4 @@ public class DirectProjectCertGenerator extends JFrame
 		getContentPane().add(certAuth);
 	}
 }
+///CLOVER:ON

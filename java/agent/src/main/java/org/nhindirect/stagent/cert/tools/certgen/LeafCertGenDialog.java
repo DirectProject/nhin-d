@@ -43,6 +43,7 @@ import org.nhindirect.stagent.cert.tools.CreatePKCS12;
  * @author Greg Meyer
  *
  */
+///CLOVER:OFF
 class LeafCertGenDialog extends JDialog 
 { 
 	static final long serialVersionUID = -4500679031509430866L;	
@@ -259,3 +260,4 @@ class LeafCertGenDialog extends JDialog
 		}		
 	}
 }
+///CLOVER:ON

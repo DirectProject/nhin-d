@@ -45,5 +45,20 @@
         </section>                                               
       </sections>
     </chapter> 
+    <chapter>
+      <id>tools</id>
+      <title>Tools</title>
+      <sections>
+        <section>
+          <id>dev-tool-intro</id>     
+        </section>         
+        <section>
+          <id>dev-cert-gen</id>     
+        </section>  
+        <section>
+          <id>dev-dns-dumper</id>     
+        </section>                                                       
+      </sections>
+    </chapter>     
   </chapters>
 </book>
