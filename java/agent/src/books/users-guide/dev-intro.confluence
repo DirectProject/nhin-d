@@ -4,4 +4,6 @@ This chapters describes the security and trust architecture and how to consume t
 
 * [Agent Architecture|./dev-arch.html]
 
+* [Certificate Generation|./dev-cert-gen.html]
+
 

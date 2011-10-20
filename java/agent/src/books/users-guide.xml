@@ -39,7 +39,10 @@
         </section>  
         <section>
           <id>dev-maillib</id>     
-        </section>                                        
+        </section>   
+        <section>
+          <id>dev-cert-gen</id>     
+        </section>                                               
       </sections>
     </chapter> 
   </chapters>
