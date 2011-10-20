@@ -32,6 +32,7 @@ import java.util.Map;
  * @author Greg Meyer
  *
  */
+///CLOVER:OFF
 class CertCreateFields 
 {
 	private Map<String, Object> attributes;
@@ -121,3 +122,4 @@ class CertCreateFields
 	}
 	
 }
+///CLOVER:ON

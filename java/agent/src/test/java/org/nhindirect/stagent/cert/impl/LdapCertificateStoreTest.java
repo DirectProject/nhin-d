@@ -1,5 +1,8 @@
 package org.nhindirect.stagent.cert.impl;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,6 +13,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.mail.internet.InternetAddress;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
@@ -23,8 +27,17 @@ import org.apache.directory.server.unit.AbstractServerTest;
 import org.apache.directory.shared.ldap.ldif.Entry;
 import org.nhindirect.ldap.LDAPResearchTest;
 import org.nhindirect.ldap.PrivkeySchema;
+import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
+import org.nhindirect.stagent.cert.impl.provider.PublicLdapCertificateStoreProvider;
+import org.nhindirect.stagent.cert.impl.util.Lookup;
+import org.nhindirect.stagent.cert.impl.util.LookupFactory;
+import org.nhindirect.stagent.utils.TestUtils;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.SRVRecord;
 
 /**
  * Testcase using an embedded Apache Directory Server.
@@ -34,6 +47,8 @@ import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
 
 public class LdapCertificateStoreTest extends AbstractServerTest
 {
+	private Lookup mockLookup;
+	
 	/**
      * Initialize the server.
      */
@@ -66,6 +81,33 @@ public class LdapCertificateStoreTest extends AbstractServerTest
         Set<MutablePartitionConfiguration> pcfgs = new HashSet<MutablePartitionConfiguration>();
         pcfgs.add( pcfg );
 
+        // Create the public LDAP partition
+	    pcfg = new MutablePartitionConfiguration();
+	    pcfg.setName( "lookupTestPublic" );
+	    pcfg.setSuffix( "cn=lookupTestPublic" );
+
+        // Create some indices
+        indexedAttrs = new HashSet<String>();
+        indexedAttrs.add( "objectClass" );
+        indexedAttrs.add( "cn" );
+        pcfg.setIndexedAttributes( indexedAttrs );
+	 
+        // Create a first entry associated to the partition
+        attrs = new BasicAttributes( true );
+
+        // First, the objectClass attribute
+        attr = new BasicAttribute( "objectClass" );
+        attr.add( "top" );
+        attrs.put( attr );
+        
+        // Associate this entry to the partition
+        pcfg.setContextEntry( attrs );
+
+        // As we can create more than one partition, we must store
+        // each created partition in a Set before initialization
+        pcfgs.add( pcfg );
+	        
+        
         configuration.setContextPartitionConfigurations( pcfgs );
         
 		this.configuration.setWorkingDirectory(new File("LDAP-TEST"));
@@ -91,9 +133,15 @@ public class LdapCertificateStoreTest extends AbstractServerTest
 			throw new IOException("Failed to load ldif file");
 		
 		importLdif(stream);
+		
+		
+		mockLookup = mock(Lookup.class);
+		LookupFactory.getFactory().addOverrideImplementation(mockLookup);
+		SRVRecord srvRecord = new SRVRecord(new Name("_ldap._tcp.example.com."), DClass.IN, 3600, 0, 1, port, new Name("localhost."));
+		when(mockLookup.run()).thenReturn(new Record[] {srvRecord});
 	}
 	
-	protected void addCertificatesToLdap(String[] filename) throws NamingException {
+	protected void addCertificatesToLdap(String[] filename) throws Exception {
 		Entry entry = new Entry();
 		entry.addAttribute("objectClass", "organizationalUnit");
 		entry.addAttribute("objectClass", "top");
@@ -122,8 +170,55 @@ public class LdapCertificateStoreTest extends AbstractServerTest
 		
 		entry.addAttribute("ou", "gm2552");
 		rootDSE.createSubcontext("ou=gm2552, ou=privKeys, ou=cerner, ou=com, cn=lookupTest", entry.getAttributes());
+		
+
 	}
 
+	public void addStockPublicLDAPCertificats() throws Exception
+	{
+		// add public LDAP entries
+		
+		// add a user level cert
+		Entry entry = new Entry();
+		entry.addAttribute("objectClass", "organizationalUnit");
+		entry.addAttribute("objectClass", "top");
+		entry.addAttribute("objectClass", "iNetOrgPerson");
+		entry.addAttribute("mail", "user@testdomain.com");
+
+		X509Certificate cert = TestUtils.loadCertificate("cert-a.der");
+
+		// Apache DS cannot support ;binary for user ceritificates.... must be BASE64 encoded
+		Base64 base64 = new Base64();
+	    String certificateValue =  new String(base64.encode(cert.getEncoded()));
+		entry.addAttribute("userSMIMECertificate", certificateValue);
+		entry.addAttribute("ou", "user");
+		entry.addAttribute("cn", "Test User");
+		entry.addAttribute("sn", "");
+		
+		rootDSE.createSubcontext("ou=user, cn=lookupTestPublic", entry.getAttributes());
+		
+		// add a domain level cert
+		entry = new Entry();
+		entry.addAttribute("objectClass", "organizationalUnit");
+		entry.addAttribute("objectClass", "top");
+		entry.addAttribute("objectClass", "iNetOrgPerson");
+		entry.addAttribute("mail", "testdomain.com");
+
+		cert = TestUtils.loadCertificate("cert-b.der");
+
+		// Apache DS cannot support ;binary for user ceritificates.... must be BASE64 encoded
+		base64 = new Base64();
+	    certificateValue =  new String(base64.encode(cert.getEncoded()));
+		entry.addAttribute("userSMIMECertificate", certificateValue);
+		entry.addAttribute("ou", "testdomain.com");
+		entry.addAttribute("cn", "Test Domain");
+		entry.addAttribute("sn", "");
+		
+		rootDSE.createSubcontext("ou=testdomain.com, cn=lookupTestPublic", entry.getAttributes());
+		
+
+	}
+	
     public void testLdapSearch_X509Certificate() throws Exception
 	{
     	addCertificatesToLdap(new String[]{"certs/bob.der"});
@@ -198,12 +293,48 @@ public class LdapCertificateStoreTest extends AbstractServerTest
 		assertTrue(cert.getSubjectX500Principal().toString().contains("gm2552@securehealthemail.com"));
 	}
 
+    public void testPublicLdapSearch_userLevelCert_assertCertExists() throws Exception
+	{
+    	addStockPublicLDAPCertificats();
+    	
+		PublicLdapCertificateStoreProvider provider = new PublicLdapCertificateStoreProvider(null, null);
+		CertificateResolver resolver = provider.get();
+    	Collection<X509Certificate> certs = resolver.getCertificates(new InternetAddress("user@testdomain.com"));
+		assertEquals(1, certs.size());
+		X509Certificate cert = certs.iterator().next();
+		assertTrue(cert.getSubjectX500Principal().toString().contains("moe@direct.fnhubapp01.qa.medplus.com"));
+	}
 
+    public void testPublicLdapSearch_orgLevelCert_assertCertExists() throws Exception
+	{
+    	addStockPublicLDAPCertificats();
+    	
+		PublicLdapCertificateStoreProvider provider = new PublicLdapCertificateStoreProvider(null, null);
+		CertificateResolver resolver = provider.get();
+    	Collection<X509Certificate> certs = resolver.getCertificates(new InternetAddress("testdomain.com"));
+		assertEquals(1, certs.size());
+		X509Certificate cert = certs.iterator().next();
+		assertTrue(cert.getSubjectX500Principal().toString().contains("direct.fnhubapp01.qa.medplus.com"));
+	}
+    
+    public void testPublicLdapSearch_requestUserLevelCert_fallbackToOrgLevelCert_assertCertExists() throws Exception
+	{
+    	addStockPublicLDAPCertificats();
+    	
+		PublicLdapCertificateStoreProvider provider = new PublicLdapCertificateStoreProvider(null, null);
+		CertificateResolver resolver = provider.get();
+    	Collection<X509Certificate> certs = resolver.getCertificates(new InternetAddress("bogus_user@testdomain.com"));
+		assertEquals(1, certs.size());
+		X509Certificate cert = certs.iterator().next();
+		assertTrue(cert.getSubjectX500Principal().toString().contains("direct.fnhubapp01.qa.medplus.com"));
+	}
+    
     /**
      * Shutdown the server.
      */
     public void tearDown() throws Exception
     {
+		LookupFactory.getFactory().removeOverrideImplementation();
         super.tearDown();
     }
 }

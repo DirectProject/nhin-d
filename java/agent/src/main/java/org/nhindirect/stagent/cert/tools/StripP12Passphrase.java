@@ -21,6 +21,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.cert.tools;
 
+///CLOVER:OFF
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -316,3 +317,4 @@ public class StripP12Passphrase
         System.err.println(use);        
     }
 }
+///CLOVER:ON

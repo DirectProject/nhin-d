@@ -10,7 +10,7 @@ import javax.mail.internet.InternetAddress;
 import org.apache.commons.io.FileUtils;
 import org.nhindirect.stagent.cert.impl.DNSCertificateStore;
 
-
+///CLOVER:OFF
 public class DNSCertDumper 
 {
 	public static void main(String[] args)
@@ -156,3 +156,4 @@ public class DNSCertDumper
         System.err.println(use);        
     }	
 }
+///CLOVER:ON

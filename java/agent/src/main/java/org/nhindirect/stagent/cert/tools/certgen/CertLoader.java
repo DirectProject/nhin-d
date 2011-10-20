@@ -49,6 +49,7 @@ import org.nhindirect.stagent.CryptoExtensions;
  * @author Greg Meyer
  *
  */
+///CLOVER:OFF
 class CertLoader 
 {
     static
@@ -129,3 +130,4 @@ class CertLoader
 		return FileUtils.readFileToByteArray(file);
 	}	
 }
+///CLOVER:ON

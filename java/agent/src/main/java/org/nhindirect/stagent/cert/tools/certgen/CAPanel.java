@@ -56,6 +56,7 @@ import javax.swing.border.SoftBevelBorder;
  * @author Greg Meyer
  *
  */
+///CLOVER:OFF
 class CAPanel extends JPanel 
 {
 	static final long serialVersionUID = -92734291206052662L;
@@ -873,3 +874,4 @@ class CAPanel extends JPanel
 		}			
 	}	
 }
+///CLOVER:ON
