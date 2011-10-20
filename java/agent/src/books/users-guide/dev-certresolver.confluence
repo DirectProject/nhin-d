@@ -1,8 +1,8 @@
 h1. Certificate Resolvers
 
-The agent utilizes X509 certificates for encryption and signature purposes.  Certificates are required in theory for every destination (sometime referred to in the Direct Project as a universal address).  The Direct Project network is made up a series of HISPs with each HISP containing one or more destinations.  A HISP maintains certificates for all if it's destinations and must obtain public certificates for destinations owned by other HISPs.  The obvious looming question is how does the agent obtain certificates for local and remote destinations.
+The agent utilizes X509 certificates for encryption and signature purposes.  Certificates are required for every destination (sometime referred to in the Direct Project as a universal address).  The Direct Project network is made up a series of HISPs with each HISP containing one or more destinations.  A HISP maintains certificates for all if it's destinations and must obtain public certificates for destinations owned by other HISPs.  The obvious looming question is how does the agent obtain certificates for local and remote destinations.
 
-Certificates are obtained by the agent using the [CertificateResolver|http://api.nhindirect.org/java/site/agent/1.1/apidocs/org/nhindirect/stagent/cert/CertificateResolver.html] interface.  
+Certificates are obtained by the agent using the [CertificateResolver|http://api.nhindirect.org/java/site/agent/1.2-SNAPSHOT/apidocs/org/nhindirect/stagent/cert/CertificateResolver.html] interface.  
 
 {code}
 package org.nhindirect.stagent.cert;
@@ -22,23 +22,27 @@ Now lets set some context with a couple of definitions:
 
 The [DefaultNHINDAgent|./dev-nhindagent.html#DefaultNHINDAgent] requires two CertificteResolver instances: one for private certificates (local destinations) and one for public certificates (remote destinations).  In many cases (if not most), the private and public resolver may use completely different implementations.  In any case, the private resolver must be able to retrieve certificates from a medium that has access to the certificates' private keys.
 
+The default agent supports multiple simultaneous resolvers for public certificate resolution.  Multiple public resolvers are configured by passing a collection of resolvers to the agents constructor.  The agent uses each resolver in the order they are obtained by the collection's Iterator.  The agent only iterates through the resolvers until at least one certificate is found; at that point iteration stops.
+
 The agent library provides the following resolver implementations:
 
 * *KeyStore* - Uses a Java keystore file to obtain certificates.  The keystore may contain both public and private certificates.
 * *DNS* - Uses DNS cert records to obtain public certificates.
-* *LDAP* - Uses an LDAP server to obtain certificates.   The keystore may contain both public and private certificates. 
-* *Memory* - TDB
+* *LDAP* - Uses an LDAP server to obtain certificates from a configured LDAP location and schema.  Generally this server holds private certificates, however, server may contain both public and private certificates. 
+* *Public LDAP* - Dynamically discovers public LDAP servers based on the address domain and obtains public certificates using the iNetOrgPerson schema and anonymous binding.
 
 h2. Domain Level Certificates
 
-Domain or organization level certificates are a configuration option that allows a domain to use one certificate for multiple destinations within a domain.  Generally each destination/address has its own certificate with each certificate containing the email address in the CN or EMAIL field of the certificate's subject.  Example:
+Domain or organization level certificates are a configuration option that allows a domain to use one certificate for multiple destinations within a domain.  
+
+For user level certificate, each destination/address has its own certificate with each certificate containing the email address in the subjectAltName extension or legacy EMAIL field of the certificate's DN.  Example:
 
 * _Address:_ user1@cerner.com
 * _Certificate Subject:_ EMAILADDRESS=user1@cerner.com, CN=user1, O=Cerner, ST=Missouri, C=US
 
 In this case the getCertificates() method of the CertificateResolver would return the certificate specific to the address user1@cerner.com.  
 
-For domain level certificates, the CN or EMAIL field only contains the domain name.  Example:
+For domain level certificates, the subjectAltName extension or legacy EMAIL field only contains the domain name.  Example:
 
 * _Address:_ biff@nhind.hsgincubator.com
 * _Certificate Subject:_ EMAILADDRESS=nhind.hsgincubator.com, CN=nhind.hsgincubator.com, OU=Incubator, O=HSG, L=Redmond, ST=WA, C=US
@@ -135,14 +139,27 @@ Certificate resolvers that use cache policies implement the [CacheableCertStore|
 
 h2. LDAPCertificateStore
 
-The LDAPCertificateStore is a generic LDAP based name resolution implementation to obtain public and private certificates from an LDAP server.  The LDAPCertificateStore provides the following constructors:
+The LDAPCertificateStore implements two variants based on the LdapCertUtil implementation that is passed in the constructors:
+
+The LDAPCertificateStore provides the following constructors:
 
 {code}
 public LDAPCertificateStore()
 
 public LDAPCertificateStore(LdapCertUtilImpl ldapCertUtil, 
 			CertificateStore bootstrapStore, CertStoreCachePolicy policy)
+			
+public LDAPCertificateStore(LdapCertUtil ldapCertUtil, 
+			CertificateStore bootstrapStore, CertStoreCachePolicy policy)
+
+public LDAPCertificateStore()
 {code}
+
+*NOTE* The first constructor is a remnant of an older version of the certificate store and is maintained for passivity and compatibility reasons.
+
+h3. Genereric/Private LDAP
+
+If the LdapCertUtilImpl implementation is provided, the LDAPCertificateStore takes on the role of a generic LDAP based resolution implementation to obtain public and private certificates from an LDAP server.  
 
 Similar the other certificate stores, the default constructor creates an uninitialized store.  However, the LDAPCertificateStore does not have setter methods for LDAP configuration information (making it immutable).  You should use the second constructor to initialize the store.
 
@@ -212,3 +229,13 @@ The remaining parameters are used for certificate searching in the LDAP server.
   .
   .	
 {code}
+
+h3. Public LDAP
+
+If the LdapPublicCertUtilImpl implementation is provided, the LDAPCertificateStore takes on the role of a public LDAP certificate resolver.  This implementation is much easier to configure as all discovery of servers and base DNs are dynamic.  However, this implementation provides a completely different purpose than the previous implementation.  The public LDAP resolver standardizes the way certificates are discovered using LDAP much the same way the DNS resolvers standardizes DNS discovery.  The public LDAP resolver discovers certificates using the following steps:
+
+# Discovers the location of the LDAP server(s) using DNS SRV records.  The format of the DNS SRV name is _ldap._tcp.<address domain name>.  The returned SRV records contain the LDAP server(s) host name and port.
+# Connects the LDAP server using anonymous bind.
+# Discovers the base DNs (naming contexts).
+# Performs a query on each base DNs using the mail attribute of the iNetOrgPerson schema.
+# Returns each certificate in the userSMIMECertificate attribute of the iNetOrgPerson schema.  Certificates are expected to be in binary format as defined by [RFC2798|http://www.ietf.org/rfc/rfc2798.txt]

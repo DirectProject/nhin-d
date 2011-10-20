@@ -959,7 +959,7 @@ public class DefaultNHINDAgent implements NHINDAgent
             certs = this.privateCertResolver.getCertificates(address);
             if (certs == null && required)
             {
-                throw new AgentException(AgentError.UnknownRecipient);
+                throw new AgentException(AgentError.UntrustedSender);
             }
         }
         catch (Exception ex)

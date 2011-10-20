@@ -1,6 +1,6 @@
 h1. NHINDAgent
 
-The NHINDAgent is the main interface in the agent module and orchestrates logic among its internal components to implement the security and trust agent specification.  Its objective is to process incoming and outgoing messages according to the rules in the specification.
+The NHINDAgent is the main interface in the agent module and orchestrates logic among its internal components to implement the security and trust agent specification.  Its objective is to process incoming and outgoing messages according to the rules of the specification.
 
 {code}
 package org.nhindirect.stagent;
@@ -31,17 +31,17 @@ public interface NHINDAgent
 }
 {code}
 
-The interface provides multiple signatures for processing inbound and outbound messages depending on what message format is available to the caller.  Note that agent does not provide logic to discern if a message is incoming or outgoing; it is the responsibility of the caller to make this assertion.  This is because the semantics of incoming and outgoing are dependent on the runtime environment and protocol stack that the agent is executing in, and  the agent is intended to be a generic black box. 
+The interface provides multiple signatures for processing inbound and outbound messages depending on what message format is available to the caller.  Note that agent does not provide logic to discern if a message is incoming or outgoing; it is the responsibility of the caller to make this assertion.  This is because the semantics of incoming and outgoing are dependent on the runtime environment and protocol stack that the agent is executing in. 
 
 h2.  ProcessOutgoing
 
 The ProcessOutgoing method and its variants accept a message that needs to be signed and encrypted according to the security and trust specification.  All variants result in the same output: an OutgoingMessage that contains the singed and encrypted version of the original message.  To produce the final outgoing message, the method uses the following high level algorithm.
 
-# If the message is presented in raw text format or as a MimeMessage, the message is placed in a MessageEnvelope and the recipients and sender are parsed.  *NOTE*:  The sender and recipients are obtained from the TO and FROM routing headers.  If the caller has access to other headers that may supersede the TO and FROM routing headers (ex. RCPT TO SMTP header) , then the caller should use a variant that allows the TO and FROM headers to be overridden.
-# The message is placed in a message wrapper whose content is the original message including all of the original message's headers and a content type of _message/rfc822_.  Only the routing headers and id of the original message are moved copied to the message wrapper's header.  This is necessary to protect potentially sensitive information that may be in the original message's headers such as the subject.  See the _Message Wrapping_ section of the security and trust agent [specification|http://nhindirect.org/Content+Security+for+Simple+Health+Transport] for full details.
-# Enforces the trust model ensuring that all recipients have valid certificates and that the sender is allowed to send to each recipient according to the trust policy.  Recipients that are not trusted are placed in the rejectedRecipients attributes of the returned OutgoingMessage.  If there are not trusted recipients, then an exception is thrown at this stage with an error code of NoTrustedRecipients.
-# The message is signed using a detached signature with the senders private key(s).  The result is a multipart MIME where the first part is the message wrapper and the second part is a base64 encoded signature block (content type _application/pkcs7-signature; name=smime.p7s; smime-type=signed-data_).
-# The message is encrypted using a random symmetric key and the symmetric key is encrypted using each recipients public key.  The resulting message is base64 encoded message with a content type of _application/pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"_.
+# If the message is presented in raw text format or as a MimeMessage, the message is wrapped in a MessageEnvelope and the recipients and sender are parsed.  *NOTE*:  The sender and recipients are obtained from the TO and FROM routing headers.  If the caller has access to other headers that may supersede the TO and FROM routing headers (ex. RCPT TO SMTP header) , then the caller should use a variant that allows the TO and FROM headers to be overridden.
+# The message is placed in a message wrapper whose content is the original message including all of the original message's headers and a content type of _message/rfc822_.  Only the routing headers and required messages headers of the original message are copied to the message wrapper's headers.  This is necessary to protect potentially sensitive information that may be in the original message's headers such as the subject.  See the _Message Wrapping_ section of the security and trust agent [specification|http://wiki.directproject.org/Applicability+Statement+for+Secure+Health+Transport] for full details.
+# Enforces the trust model ensuring that all recipients have valid certificates and that the sender is allowed to send to each recipient according to the trust policy.  Recipients that are not trusted are placed in the rejectedRecipients attributes of the returned OutgoingMessage.  If there are no trusted recipients, then an exception is thrown with an error code of NoTrustedRecipients.
+# The message is signed using a detached signature with the senders certificate(s) and private key(s).  The result is a multipart MIME where the first part is the wrapped message and the second part is a base64 encoded signature block (content type _application/pkcs7-signature; name=smime.p7s; smime-type=signed-data_).
+# The message is encrypted using a random symmetric key and the symmetric key is encrypted using each recipients' public key.  The resulting message is base64 encoded message with a content type of _application/pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"_.
 
 The final encrypted message can be retrieved from the OutgoingMessage using the getMessage() method.
 
@@ -50,18 +50,18 @@ h2.  ProcessIncoming
 The ProcessIncomoing method and its variants accept a message that needs to be decrypted and have the signature verified according to the security and trust specification.  All variants result in the same output: an IncomingMessage that contains the sender's original message.  To produce the final incoming message, the method uses the following high level algorithm.
 
 # If the message is presented in raw text format or as a MimeMessage, the message is placed in a MessageEnvelope and the recipients and sender are parsed.  *NOTE*:  The sender and recipients are obtained from the TO and FROM routing headers.  If the caller has access to other headers that may supersede the TO and FROM routing headers (ex. RCPT TO SMTP header) , then the caller should use a variant that allows the TO and FROM headers to be overridden.
-# Categorizes the recipients list and ensures that valid recipients in the agent's domain exist in the recipient list.  If there are no recipients in the message that belong to the agent's domain, then an exception is thrown at this stage with an error code of NoTrustedRecipients.
+# Categorizes the recipients list and ensures that valid recipients in the agent's domain exist in the recipient list.  If there are no recipients in the message that belong to the agent's domain, then an exception is thrown with an error code of NoTrustedRecipients.
 # Obtains valid public certificates for the sender and private keys for the recipients.
 # Decrypts the message using the private certificates of the recipients and the encrypted symmetric key.  It practice, only one valid private key is necessary because the message is encrypted using only one symmetric key.  As long as the agent can retrieve the symmetric key, the message can be successfully decrypted.   Trust of each recipient is validate in a later stage.  The result of the decryption stage is a multipart MIME with the original wrapped message and a detached signature.
 # Unwraps the original message from the message wrapper located in the first part of the multipart MIME from the previous step.
 # The message signature is validated using the senders public certificate(s).
-# Enforces the trust model by ensuring that sender has a valid trust anchor for each recipient.  If the sender is not trusted by any recipients, then an exception is thrown at this stage with an error code of NoTrustedRecipients.
+# Enforces the trust model by ensuring that sender has a valid trust anchor for each recipient.  If the sender is not trusted by any recipients, then an exception is thrown with an error code of NoTrustedRecipients.
 
 The final decrypted message can be retrieved from the IncomingMessage using the getMessage() method.
 
 h2. Message Wrapping
 
-To protect potentially sensitive information from being exposed as the message travels across the network backbone, the original message (including all headers) is placed in a message wrapper with a content type of _message/rfc822_.  Only routing information and id are copied to the message wrapper's header.  The following examples shows an original message and the message placed in a message wrapper.
+To protect potentially sensitive information from being exposed as the message travels across the network backbone, the original message (including all headers) is placed in a message wrapper with a content type of _message/rfc822_.  Only routing information and required headers are copied to the message wrapper's header.  The following examples shows an original message and the message placed in a message wrapper.
 
 *Original Message*
 {code}
@@ -165,7 +165,7 @@ In some cases, a HISP may be hosting multiple domains.  To support this hosting 
 
 h2. DefaultNHINDAgent
 
-The DefaultNHINDAgent is exactly what its class name states; it is the default implementation of the NHINDAgent interface.  It includes multiple constructors depending on the consumer's needs.  *NOTE*: The last constructor signature is decorated with Guice specific annotations for dependency injection.
+The DefaultNHINDAgent is exactly what its name implies; it is the default implementation of the NHINDAgent interface.  It includes multiple constructors depending on the consumer's needs.  *NOTE*: The last constructor signature is decorated with Guice specific annotations for dependency injection.
 
 {code}
 package org.nhindirect.stagent;
@@ -211,7 +211,7 @@ The agent library contains a Guice provider for the DefaultNHINDAgent that can b
      Collection<String> domains = new ArrayList<String>();
      domains.add("example.com");
      
-     // private certs are stored in a keystore for this ecample
+     // private certs are stored in a keystore for this example
      Provider<CertificateResolver> privateCerts = new KeyStoreCertificateStoreProvider("certStoreFile", "password", "password");
      
      // get the trust anchors from the private keystore for this example
@@ -236,9 +236,9 @@ The agent library contains a Guice provider for the DefaultNHINDAgent that can b
 
 h3. Limitations
 
-*Single Resolver Instances*
+*Single Resolver Consfiguration*
 
-The default agent does not allow for different resolver instances per domain.  One and only one resolver instance can be used for the public and private resolver parameters respectively.  
+The default agent does not allow for different resolver configurations per domain.  One and only one resolver configuration can be used for the public and private resolver parameters respectively.  
 
 
 h2. Message Encryption Stage Representation
