@@ -63,6 +63,7 @@ public class CertificateDaoImpl implements CertificateDao
      * @see org.nhindirect.config.store.dao.CertificateDao#load(java.lang.String, java.lang.String)
      */
     @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
     public Certificate load(String owner, String thumbprint) 
     {
         if (log.isDebugEnabled())
@@ -110,6 +111,7 @@ public class CertificateDaoImpl implements CertificateDao
      * @see org.nhindirect.config.store.dao.CertificateDao#list(java.util.List)
      */
     @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
     public List<Certificate> list(List<Long> idList) 
     {
         if (log.isDebugEnabled())
@@ -153,6 +155,7 @@ public class CertificateDaoImpl implements CertificateDao
      * @see org.nhindirect.config.store.dao.CertificateDao#list(java.lang.String)
      */
     @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
     public List<Certificate> list(String owner) 
     {
         if (log.isDebugEnabled())
@@ -261,6 +264,7 @@ public class CertificateDaoImpl implements CertificateDao
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#setStatus(java.util.List, org.nhindirect.config.store.EntityStatus)
      */
+    @Transactional(readOnly = false)
     public void setStatus(List<Long> certificateIDs, EntityStatus status) 
     {
         if (log.isDebugEnabled())
@@ -318,8 +322,6 @@ public class CertificateDaoImpl implements CertificateDao
 
         if (idList != null && idList.size() > 0)
         {
-	
-	
 	        StringBuffer ids = new StringBuffer("(");
 	        for (Long id : idList) 
 	        {

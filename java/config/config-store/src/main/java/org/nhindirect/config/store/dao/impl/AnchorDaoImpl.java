@@ -64,6 +64,7 @@ public class AnchorDaoImpl implements AnchorDao {
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#load(java.lang.String)
      */
+    @Transactional(readOnly = true)
     public Anchor load(String owner) 
     {
     	// not sure what this will accomplish...  multiple anchors are always possible for an owner
@@ -81,7 +82,8 @@ public class AnchorDaoImpl implements AnchorDao {
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#listAll()
      */
-    @SuppressWarnings("unchecked")    
+    @SuppressWarnings("unchecked")   
+    @Transactional(readOnly = true)
     public List<Anchor> listAll() 
     {
         if (log.isDebugEnabled())
@@ -110,6 +112,7 @@ public class AnchorDaoImpl implements AnchorDao {
      * @see org.nhindirect.config.store.dao.AnchorDao#list(java.util.List)
      */
     @SuppressWarnings("unchecked")    
+    @Transactional(readOnly = true)
     public List<Anchor> list(List<String> owners) 
     {
         if (log.isDebugEnabled())
@@ -210,6 +213,7 @@ public class AnchorDaoImpl implements AnchorDao {
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#save(org.nhindirect.config.store.Anchor)
      */
+    @Transactional(readOnly = false)
     public void save(Anchor anchor) 
     {
     	if (anchor != null)
@@ -225,13 +229,20 @@ public class AnchorDaoImpl implements AnchorDao {
      * 
      * @see org.nhindirect.config.store.dao.AnchorDao#save(java.util.List)
      */
+    @Transactional(readOnly = false)
     public void save(List<Anchor> anchorList) 
     {
-        // TODO Auto-generated method stub
-
+        if (anchorList != null && anchorList.size() > 0)
+        {
+            for (Anchor anchor : anchorList)
+            {
+                save(anchor);
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")    
+    @Transactional(readOnly = true)
     public List<Anchor> listByIds(List<Long> anchorIds)
     {
         if (log.isDebugEnabled())
