@@ -3,9 +3,6 @@ package org.nhindirect.stagent.mail;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.UUID;
-
-import javax.mail.internet.MimeMessage;
-
 import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.NHINDStandard;
 import org.nhindirect.stagent.OutgoingMessage;

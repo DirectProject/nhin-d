@@ -6,7 +6,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.Key;
@@ -25,7 +24,6 @@ import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.NHINDAgentTest;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.X509CertificateEx;
-import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.testmodules.AgentTestModule;
 
 import com.google.inject.Guice;
@@ -126,9 +124,6 @@ public class TestUtils
 		
 		String internalKeystoreFile = path + "src/test/resources/keystores/internalKeystore";		
 		
-		KeyStoreCertificateStore service = new KeyStoreCertificateStore(internalKeystoreFile, 
-				internalStorePassword, pkPassword);
-		
 		X509Certificate caCert = TestUtils.getExternalCert("cacert");
 		X509Certificate externCaCert = TestUtils.getExternalCert("externCaCert");
 		X509Certificate secureHealthEmailCACert = TestUtils.getExternalCert("secureHealthEmailCACert");
@@ -158,30 +153,27 @@ public class TestUtils
 		BufferedInputStream imgStream = new BufferedInputStream(NHINDAgentTest.class.getResourceAsStream(_rec));
 				
 		ByteArrayOutputStream ouStream = new ByteArrayOutputStream();
-		if (imgStream != null) 
+
+		byte buf[] = new byte[BUF_SIZE];
+		
+		while ((count = imgStream.read(buf)) > -1)
 		{
-			byte buf[] = new byte[BUF_SIZE];
-			
-			while ((count = imgStream.read(buf)) > -1)
-			{
-				ouStream.write(buf, 0, count);
-			}
-			
-			try 
-			{
-				imgStream.close();
-			} 
-			catch (IOException ieo) 
-			{
-				throw ieo;
-			}
-			catch (Exception e)
-			{
-				throw e;
-			}					
+			ouStream.write(buf, 0, count);
+		}
+		
+		try 
+		{
+			imgStream.close();
 		} 
-		else
-			throw new IOException("Failed to open resource " + _rec);
+		catch (IOException ieo) 
+		{
+			throw ieo;
+		}
+		catch (Exception e)
+		{
+			throw e;
+		}					
+
 
 		return new String(ouStream.toByteArray());		
 	}

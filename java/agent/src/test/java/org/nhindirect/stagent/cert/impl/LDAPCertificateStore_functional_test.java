@@ -26,7 +26,6 @@ import org.nhindirect.ldap.LDAPResearchTest;
 import org.nhindirect.ldap.PrivkeySchema;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.utils.BaseTestPlan;
-import org.nhindirect.stagent.utils.TestUtils;
 
 public class LDAPCertificateStore_functional_test extends AbstractServerTest 
 {

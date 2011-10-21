@@ -128,7 +128,7 @@ public class DefaultMessageSignatureImpl_CheckThumbprint_Test extends TestCase {
 			caps.addCapability(PKCSObjectIdentifiers.x509Certificate);
 			signedAttrs.add(new SMIMECapabilitiesAttribute(caps));
 
-			List certList = new ArrayList();
+			List<X509Certificate> certList = new ArrayList<X509Certificate>();
 
 			gen.addSigner(internalCert.getPrivateKey(), internalCert,
 					SMIMESignedGenerator.DIGEST_SHA1, new AttributeTable(

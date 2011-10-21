@@ -25,30 +25,27 @@ public class MailSender
 		BufferedInputStream imgStream = new BufferedInputStream(NHINDAgentTest.class.getResourceAsStream(_rec));
 				
 		ByteArrayOutputStream ouStream = new ByteArrayOutputStream();
-		if (imgStream != null) 
+
+		byte buf[] = new byte[BUF_SIZE];
+		
+		while ((count = imgStream.read(buf)) > -1)
 		{
-			byte buf[] = new byte[BUF_SIZE];
-			
-			while ((count = imgStream.read(buf)) > -1)
-			{
-				ouStream.write(buf, 0, count);
-			}
-			
-			try 
-			{
-				imgStream.close();
-			} 
-			catch (IOException ieo) 
-			{
-				throw ieo;
-			}
-			catch (Exception e)
-			{
-				throw e;
-			}					
+			ouStream.write(buf, 0, count);
+		}
+		
+		try 
+		{
+			imgStream.close();
 		} 
-		else
-			throw new IOException("Failed to open resource " + _rec);
+		catch (IOException ieo) 
+		{
+			throw ieo;
+		}
+		catch (Exception e)
+		{
+			throw e;
+		}					
+
 
 		return new String(ouStream.toByteArray());		
 	}	

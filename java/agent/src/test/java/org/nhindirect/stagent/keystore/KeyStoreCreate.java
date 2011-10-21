@@ -96,8 +96,6 @@ public class KeyStoreCreate
 		{
 			System.out.println("Importing cert with alias \"" + alias + "\"");
 				
-			X509Certificate testCert = service.getByAlias(alias);
-			
 			if (service.getByAlias(alias) == null)
 			{
 				InputStream inStream = new FileInputStream(certsBasePath + certFile);

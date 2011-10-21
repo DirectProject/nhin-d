@@ -95,7 +95,7 @@ public class LDAPCertificateStore_GetCertificates_Test extends TestCase {
 
 		protected Collection<X509Certificate> ldapSearch_Internal(
 				String subjectName) {
-			theLdapSearch = new ArrayList();
+			theLdapSearch = new ArrayList<X509Certificate>();
 			return theLdapSearch;
 		}
 
@@ -117,7 +117,7 @@ public class LDAPCertificateStore_GetCertificates_Test extends TestCase {
 
 		protected Collection<X509Certificate> getCertificates_Internal(
 				String subjectName) {
-			theGetCertificates = new ArrayList();
+			theGetCertificates = new ArrayList<X509Certificate>();
 			return theGetCertificates;
 		}
 
@@ -188,7 +188,7 @@ public class LDAPCertificateStore_GetCertificates_Test extends TestCase {
 			
 			protected Collection<X509Certificate> ldapSearch_Internal(
 					String subjectName) {
-				theLdapSearch = new ArrayList();
+				theLdapSearch = new ArrayList<X509Certificate>();
 				try {
 					X509CertificateEx internalCert = TestUtils.getInternalCert("user1");
 					theLdapSearch.add(internalCert);
@@ -221,7 +221,7 @@ public class LDAPCertificateStore_GetCertificates_Test extends TestCase {
 			
 			protected Collection<X509Certificate> ldapSearch_Internal(
 					String subjectName) {
-				theLdapSearch = new ArrayList();
+				theLdapSearch = new ArrayList<X509Certificate>();
 				try {
 					X509CertificateEx internalCert = TestUtils.getInternalCert("user1");
 					theLdapSearch.add(internalCert);
@@ -259,7 +259,7 @@ public class LDAPCertificateStore_GetCertificates_Test extends TestCase {
 			
 			protected Collection<X509Certificate> ldapSearch_Internal(
 					String subjectName) {
-				theLdapSearch = new ArrayList();
+				theLdapSearch = new ArrayList<X509Certificate>();
 				return theLdapSearch;
 			}
 			
@@ -297,7 +297,7 @@ public class LDAPCertificateStore_GetCertificates_Test extends TestCase {
 			
 			protected Collection<X509Certificate> ldapSearch_Internal(
 					String subjectName) {
-				theLdapSearch = new ArrayList();
+				theLdapSearch = new ArrayList<X509Certificate>();
 				try {
 					X509CertificateEx internalCert = TestUtils.getInternalCert("user1");
 					theLdapSearch.add(internalCert);
@@ -330,13 +330,13 @@ public class LDAPCertificateStore_GetCertificates_Test extends TestCase {
 			return theGetCache;
 		}
 		
-		protected Object theGet;
+		protected List<X509Certificate> theGet;
 		protected int getCalls=0;
 		protected Object get_Internal(Object name){
-			theGet = new ArrayList();
+			theGet = new ArrayList<X509Certificate>();
 			try {
 				X509CertificateEx internalCert = TestUtils.getInternalCert("user1");
-				((List)theGet).add(internalCert);
+				theGet.add(internalCert);
 			} catch (Exception e) {
 				e.printStackTrace();
 				fail();
@@ -382,7 +382,7 @@ public class LDAPCertificateStore_GetCertificates_Test extends TestCase {
 		protected Object theGet;
 		protected int getCalls=0;
 		protected Object get_Internal(Object name){
-			theGet = new ArrayList();
+			theGet = new ArrayList<X509Certificate>();
 			return theGet;
 		}
 		
@@ -416,7 +416,7 @@ public class LDAPCertificateStore_GetCertificates_Test extends TestCase {
 			
 			protected Collection<X509Certificate> ldapSearch_Internal(
 					String subjectName) {
-				theLdapSearch = new ArrayList();
+				theLdapSearch = new ArrayList<X509Certificate>();
 				try {
 					X509CertificateEx internalCert = TestUtils.getInternalCert("user1");
 					theLdapSearch.add(internalCert);
@@ -456,7 +456,7 @@ public class LDAPCertificateStore_GetCertificates_Test extends TestCase {
 			
 			protected Collection<X509Certificate> ldapSearch_Internal(
 					String subjectName) {
-				theLdapSearch = new ArrayList();
+				theLdapSearch = new ArrayList<X509Certificate>();
 				try {
 					X509CertificateEx internalCert = TestUtils.getInternalCert("user1");
 					theLdapSearch.add(internalCert);
@@ -500,7 +500,7 @@ public class LDAPCertificateStore_GetCertificates_Test extends TestCase {
 			
 			protected Collection<X509Certificate> ldapSearch_Internal(
 					String subjectName) {
-				theLdapSearch = new ArrayList();
+				theLdapSearch = new ArrayList<X509Certificate>();
 				try {
 					X509CertificateEx internalCert = TestUtils.getInternalCert("user1");
 					theLdapSearch.add(internalCert);

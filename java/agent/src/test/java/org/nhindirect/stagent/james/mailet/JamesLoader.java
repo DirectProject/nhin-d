@@ -12,11 +12,7 @@ public class JamesLoader
 	{
 	       try
 	        {
-	    	   
-	    	    String property = System.getProperty("java.ext.dirs");
-	    	   
-	    	    
-	    	    
+	      
 				File fl = new File("testfile");
 				int idx = fl.getAbsolutePath().lastIndexOf("testfile");
 				
@@ -25,32 +21,6 @@ public class JamesLoader
 				String phoenixHome = path + "src/test/resources/james-server/";			
 
 			    ArrayList<URL> classLoaderURLList = new ArrayList<URL>();
-
-				/*	
-				File phoenixLibFile = new File(phoenixHome + "lib");
-				File[] subFileList = phoenixLibFile.listFiles();
-				for (File subFile : subFileList)
-				{
-					if (subFile.getName().endsWith(".jar"))
-						classLoaderURLList.add(subFile.toURL());
-				}
-
-				phoenixLibFile = new File(phoenixHome + "tools/lib");
-				subFileList = phoenixLibFile.listFiles();
-				for (File subFile : subFileList)
-				{
-					if (subFile.getName().endsWith(".jar"))
-						classLoaderURLList.add(subFile.toURL());
-				}
-
-				phoenixLibFile = new File(phoenixHome + "bin/lib");
-				subFileList = phoenixLibFile.listFiles();
-				for (File subFile : subFileList)
-				{
-					if (subFile.getName().endsWith(".jar"))
-						classLoaderURLList.add(subFile.toURL());
-				}				
-*/				
 
 	            System.setProperty( "phoenix.home", phoenixHome);
 
