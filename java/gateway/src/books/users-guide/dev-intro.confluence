@@ -4,5 +4,4 @@ This chapters describes the protocol bridge architecture and how to write a prot
 
 * [Bridge Architecture|./dev-arch.html]
 * [Writing A Bridge|./dev-write.html]
-* [Apache James Dev Environment Setup|./dev-setup.html]
 

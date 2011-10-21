@@ -1,5 +1,7 @@
 h1. SMTP Agent XML Configuration
 
+WARNING: XML Configuration has been deprecated
+
 XML configuration for the SMTP protocol consists of an XML file that sets parameters for both the SMTP agent and the security and trust agent.  Below is a sample configuration file.
 
 {code}
