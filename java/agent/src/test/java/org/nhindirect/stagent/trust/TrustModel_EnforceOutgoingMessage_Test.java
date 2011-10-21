@@ -48,7 +48,7 @@ public class TrustModel_EnforceOutgoingMessage_Test extends TestCase {
 		protected Collection<X509Certificate> findTrustedCerts_Internal(
 				Collection<X509Certificate> certs,
 				Collection<X509Certificate> anchors) {
-			theFindTrustedCerts = new ArrayList();
+			theFindTrustedCerts = new ArrayList<X509Certificate>();
 			return theFindTrustedCerts;
 		}
 
