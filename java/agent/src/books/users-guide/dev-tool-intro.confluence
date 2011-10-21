@@ -13,3 +13,5 @@ mvn clean install
 * [Certificate Generation|./dev-cert-gen.html]
 
 * [DNS Certificate Dumper|./dev-dns-dumper.html]
+
+* [LDAP Certificate Dumper|./dev-ldap-dumper.html]
