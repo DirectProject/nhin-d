@@ -292,7 +292,7 @@ public class TrustModel_EnforceIncomingMessage_Test extends TestCase {
 		protected Collection<X509Certificate> theGetTrustAnchors;
 		protected int getTrustAnchorsCalls=0;
 		protected Collection<X509Certificate> getTrustAnchors_Internal(){
-		  theGetTrustAnchors=new ArrayList();
+		  theGetTrustAnchors=new ArrayList<X509Certificate>();
 		  return theGetTrustAnchors;
 		}
 		
@@ -333,7 +333,7 @@ public class TrustModel_EnforceIncomingMessage_Test extends TestCase {
 			caps.addCapability(PKCSObjectIdentifiers.x509Certificate);
 			signedAttrs.add(new SMIMECapabilitiesAttribute(caps));
 
-			List certList = new ArrayList();
+			List<X509Certificate> certList = new ArrayList<X509Certificate>();
 
 			gen.addSigner(internalCert.getPrivateKey(), internalCert,
 					SMIMESignedGenerator.DIGEST_SHA1, new AttributeTable(
