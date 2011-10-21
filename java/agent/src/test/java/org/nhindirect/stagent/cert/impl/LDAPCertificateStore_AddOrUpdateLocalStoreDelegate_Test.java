@@ -34,7 +34,7 @@ public class LDAPCertificateStore_AddOrUpdateLocalStoreDelegate_Test extends
 		protected Collection<X509Certificate> theCreateRetVal;
 
 		protected Collection<X509Certificate> createRetVal() throws Exception {
-			theCreateRetVal = new ArrayList();
+			theCreateRetVal = new ArrayList<X509Certificate>();
 			return theCreateRetVal;
 		}
 

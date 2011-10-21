@@ -31,7 +31,7 @@ public class PrivkeyAttributeTypeProducer extends AbstractBootstrapProducer
     public void produce( BootstrapRegistries registries, ProducerCallback cb )
         throws NamingException
     {
-        ArrayList names = new ArrayList();
+        ArrayList<String> names = new ArrayList<String>();
         BootstrapAttributeType attributeType;
 
         

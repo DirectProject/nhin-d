@@ -31,7 +31,7 @@ public class PrivkeyObjectClassProducer extends AbstractBootstrapProducer
     public void produce( BootstrapRegistries registries, ProducerCallback cb )
         throws NamingException
     {
-        ArrayList array = new ArrayList();
+        ArrayList<String> array = new ArrayList<String>();
         BootstrapObjectClass objectClass;
 
         

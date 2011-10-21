@@ -13,7 +13,6 @@ import javax.mail.Header;
 import javax.mail.internet.MimeMessage;
 
 import org.nhindirect.stagent.DefaultNHINDAgent;
-import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.mail.MimeStandard;
@@ -76,19 +75,11 @@ public class NHINDAgentTest extends TestCase
 		while ((count = inStream.read(buffer)) > -1)
 			oStream.write(buffer, 0, count);
 		
-		String originalPart = new String(oStream.toByteArray(), "ASCII");
-		
 		oStream = new ByteArrayOutputStream();
 		count = 0;
 		inStream = processedMsg.getInputStream();
 		while ((count = inStream.read(buffer)) > -1)
-			oStream.write(buffer, 0, count);
-		
-		String processedPart = new String(oStream.toByteArray(), "ASCII");
-		
-		
-		//assertTrue(processedPart.compareTo(originalPart) == 0);
-		
+			oStream.write(buffer, 0, count);		
 		
 		// now do a large message with some attachments
 		agent =  TestUtils.getStockAgent(Arrays.asList(new String[]{"securehealthemail.com"})); 
@@ -98,9 +89,7 @@ public class NHINDAgentTest extends TestCase
 
 		
 		SMIMEenvMessage = agent.processOutgoing(testMessage);
-		
-		//FileOutputStream ouStream = new FileOutputStream(new File("large.eml"));
-		//ouStream.write(SMIMEenvMessage.getBytes());
+	
 		
 		assertNotNull(SMIMEenvMessage);
 		assertTrue(SMIMEenvMessage.getMessage().toString().length() > 0);
@@ -131,17 +120,11 @@ public class NHINDAgentTest extends TestCase
 		while ((count = inStream.read(buffer)) > -1)
 			oStream.write(buffer, 0, count);
 		
-		originalPart = new String(oStream.toByteArray(), "ASCII");
-		
 		oStream = new ByteArrayOutputStream();
 		count = 0;
 		inStream = processedMsg.getInputStream();
 		while ((count = inStream.read(buffer)) > -1)
 			oStream.write(buffer, 0, count);
-		
-		processedPart = new String(oStream.toByteArray(), "ASCII");
-		
-		
 		
 		// do an MDN response message
 		
@@ -181,16 +164,13 @@ public class NHINDAgentTest extends TestCase
 		inStream = originalMsg.getInputStream();
 		while ((count = inStream.read(buffer)) > -1)
 			oStream.write(buffer, 0, count);
-		
-		originalPart = new String(oStream.toByteArray(), "ASCII");
+
 		
 		oStream = new ByteArrayOutputStream();
 		count = 0;
 		inStream = processedMsg.getInputStream();
 		while ((count = inStream.read(buffer)) > -1)
 			oStream.write(buffer, 0, count);
-		
-		processedPart = new String(oStream.toByteArray(), "ASCII");
 				
 	}
 	
@@ -278,15 +258,11 @@ public class NHINDAgentTest extends TestCase
 		while ((count = inStream.read(buffer)) > -1)
 			oStream.write(buffer, 0, count);
 		
-		String originalPart = new String(oStream.toByteArray(), "ASCII");
-		
 		oStream = new ByteArrayOutputStream();
 		count = 0;
 		inStream = processedMsg.getInputStream();
 		while ((count = inStream.read(buffer)) > -1)
 			oStream.write(buffer, 0, count);
-		
-		String processedPart = new String(oStream.toByteArray(), "ASCII");
 		
 	}
 	
