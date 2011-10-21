@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.mail.internet.InternetAddress;
-import javax.naming.NamingException;
+
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
@@ -187,10 +187,7 @@ public class LdapCertificateStoreTest extends AbstractServerTest
 
 		X509Certificate cert = TestUtils.loadCertificate("cert-a.der");
 
-		// Apache DS cannot support ;binary for user ceritificates.... must be BASE64 encoded
-		Base64 base64 = new Base64();
-	    String certificateValue =  new String(base64.encode(cert.getEncoded()));
-		entry.addAttribute("userSMIMECertificate", certificateValue);
+		entry.addAttribute("userSMIMECertificate", cert.getEncoded());
 		entry.addAttribute("ou", "user");
 		entry.addAttribute("cn", "Test User");
 		entry.addAttribute("sn", "");
@@ -206,10 +203,8 @@ public class LdapCertificateStoreTest extends AbstractServerTest
 
 		cert = TestUtils.loadCertificate("cert-b.der");
 
-		// Apache DS cannot support ;binary for user ceritificates.... must be BASE64 encoded
-		base64 = new Base64();
-	    certificateValue =  new String(base64.encode(cert.getEncoded()));
-		entry.addAttribute("userSMIMECertificate", certificateValue);
+
+		entry.addAttribute("userSMIMECertificate", cert.getEncoded());
 		entry.addAttribute("ou", "testdomain.com");
 		entry.addAttribute("cn", "Test Domain");
 		entry.addAttribute("sn", "");

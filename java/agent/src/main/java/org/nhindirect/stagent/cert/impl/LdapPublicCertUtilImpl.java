@@ -43,7 +43,6 @@ import javax.naming.directory.SearchResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bouncycastle.util.encoders.Base64;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.impl.util.Lookup;
 import org.nhindirect.stagent.cert.impl.util.LookupFactory;
@@ -159,15 +158,8 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 											
 											Object obj = allValues.nextElement();
 										
-											if (obj instanceof byte[])
-												rawCert = (byte[]) obj;
-											else {
-												
-												// for non binary... this is technically a violation of the
-												// iNetOrgPerson RFC, but some LDAP server do not seem to properly
-												// support the userSMIMECertificate attribute as binary
-												rawCert = Base64.decode(obj.toString());
-											}
+											rawCert = (byte[]) obj;
+	
 											
 											final CertificateFactory cf = CertificateFactory.getInstance("X.509");
 											final ByteArrayInputStream inputStream = new ByteArrayInputStream(rawCert);
@@ -228,6 +220,7 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 			env.put(Context.PROVIDER_URL, ldapURL);
 			env.put(Context.SECURITY_AUTHENTICATION, "none");
 			env.put(LDAP_TIMEOUT, DEFAULT_LDAP_TIMEOUT);
+			env.put("java.naming.ldap.attributes.binary", "userSMIMECertificate, usersmimecertificate");
 			
 			ctx =  new InitialDirContext(env);
 		}

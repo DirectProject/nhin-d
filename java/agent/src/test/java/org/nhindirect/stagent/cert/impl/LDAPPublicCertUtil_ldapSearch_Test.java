@@ -16,8 +16,6 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.InitialDirContext;
 
-
-import org.apache.commons.codec.binary.Base64;
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
 import org.apache.directory.server.core.schema.bootstrap.AbstractBootstrapSchema;
 import org.apache.directory.server.unit.AbstractServerTest;
@@ -28,7 +26,6 @@ import org.nhindirect.stagent.utils.BaseTestPlan;
 import org.nhindirect.stagent.utils.TestUtils;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Name;
-import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
 
 
@@ -143,11 +140,7 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 			entry.addAttribute("mail", "gm2552@cerner.com");
 
 			X509Certificate cert = TestUtils.loadCertificate("gm2552.der");
-
-			// Apache DS cannot support ;binary for user ceritificates.... must be BASE64 encoded
-			Base64 base64 = new Base64();
-		    String certificateValue =  new String(base64.encode(cert.getEncoded()));
-			entry.addAttribute("userSMIMECertificate", certificateValue);
+			entry.addAttribute("userSMIMECertificate", cert.getEncoded());
 			entry.addAttribute("ou", "gm2552");
 			entry.addAttribute("cn", "Greg Meyer");
 			entry.addAttribute("sn", "");
@@ -213,10 +206,7 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 
 				X509Certificate cert = TestUtils.loadCertificate("gm2552.der");
 
-				// Apache DS cannot support ;binary for user ceritificates.... must be BASE64 encoded
-				Base64 base64 = new Base64();
-			    String certificateValue =  new String(base64.encode(cert.getEncoded()));
-				entry.addAttribute("userSMIMECertificate", certificateValue);
+				entry.addAttribute("userSMIMECertificate", cert.getEncoded());
 				entry.addAttribute("ou", "gm2552");
 				entry.addAttribute("cn", "Greg Meyer");
 				entry.addAttribute("sn", "");
@@ -258,15 +248,9 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 				entry.addAttribute("objectClass", "iNetOrgPerson");
 				entry.addAttribute("mail", "cerner.com");
 
-				
-				// Apache DS cannot support ;binary for user ceritificates.... must be BASE64 encoded
-				Base64 base64 = new Base64();
-			    String certificateValue =  new String(base64.encode(check1Cert.getEncoded()));
-				entry.addAttribute("userSMIMECertificate", certificateValue);
-				
-				base64 = new Base64();
-			    certificateValue =  new String(base64.encode(check2Cert.getEncoded()));
-				entry.putAttribute("userSMIMECertificate", certificateValue);
+				entry.addAttribute("userSMIMECertificate", check1Cert.getEncoded());
+
+				entry.putAttribute("userSMIMECertificate", check2Cert.getEncoded());
 				
 				entry.addAttribute("ou", "gm2552");
 				entry.addAttribute("cn", "Greg Meyer");
@@ -299,9 +283,7 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 	public void testLDAPSearch_getSingleCert_assertCertNotFound() throws Exception
 	{
 		new TestPlan()
-		{
-			X509Certificate checkCert = TestUtils.loadCertificate("gm2552.der");
-			
+		{	
 			@Override
 			protected String getSubjectToSearch() throws Exception
 			{
