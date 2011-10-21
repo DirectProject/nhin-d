@@ -57,7 +57,10 @@
         </section>  
         <section>
           <id>dev-dns-dumper</id>     
-        </section>                                                       
+        </section>   
+        <section>
+          <id>dev-ldap-dumper</id>     
+        </section>                                                             
       </sections>
     </chapter>     
   </chapters>
