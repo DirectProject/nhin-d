@@ -447,9 +447,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
                 X509Certificate cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(bais);    
 
     			// Apache DS cannot support ;binary for user ceritificates.... must be BASE64 encoded
-    			Base64 base64 = new Base64();
-    		    String certificateValue =  new String(base64.encode(cert.getEncoded()));
-    			entry.addAttribute("userSMIMECertificate", certificateValue);
+    			entry.addAttribute("userSMIMECertificate", cert.getEncoded());
     			entry.addAttribute("ou", "gm2552");
     			entry.addAttribute("cn", "Greg Meyer");
     			entry.addAttribute("sn", "");
