@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project name="NHIN Direct Config Service" resourceRoot="${projectDir}" soapui-version="3.0.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="DomainServiceWSServiceSoapBinding" type="wsdl" bindingName="{http://ws.service.config.nhindirect.org/}DomainServiceWSServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8080/config-service/DomainService?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8080/config-service/DomainService?wsdl"><con:part><con:url>http://localhost:8080/config-service/DomainService?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="DomainServiceWSService" targetNamespace="http://ws.service.config.nhindirect.org/" xmlns:ns1="http://nhind.org/config" xmlns:ns2="http://cxf.apache.org/bindings/xformat" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://ws.service.config.nhindirect.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:import location="http://localhost:8080/config-service/DomainService?wsdl=DomainService.wsdl" namespace="http://nhind.org/config"></wsdl:import>
+  <wsdl:binding name="DomainServiceWSServiceSoapBinding" type="ns1:DomainService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getDomains">
+      <soap:operation soapAction="urn:GetDomains" style="document"/>
+      <wsdl:input name="getDomains">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getDomainsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listDomains">
+      <soap:operation soapAction="urn:listDomains" style="document"/>
+      <wsdl:input name="listDomains">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="listDomainsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="updateDomain">
+      <soap:operation soapAction="urn:UpdateDomain" style="document"/>
+      <wsdl:input name="updateDomain">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="updateDomainResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="addDomain">
+      <soap:operation soapAction="urn:AddDomain" style="document"/>
+      <wsdl:input name="addDomain">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="addDomainResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="removeDomain">
+      <soap:operation soapAction="urn:RemoveDomain" style="document"/>
+      <wsdl:input name="removeDomain">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="removeDomainResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="searchDomain">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="searchDomain">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="searchDomainResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getDomainCount">
+      <soap:operation soapAction="urn:GetDomainCount" style="document"/>
+      <wsdl:input name="getDomainCount">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getDomainCountResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="DomainServiceWSService">
+    <wsdl:port binding="tns:DomainServiceWSServiceSoapBinding" name="DomainServiceWSPort">
+      <soap:address location="http://localhost:8080/config-service/DomainService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost:8080/config-service/DomainService?wsdl=DomainService.wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="DomainService" targetNamespace="http://nhind.org/config" xmlns:ns1="http://nhind.org/config" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+    <xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://nhind.org/config" xmlns:tns="http://nhind.org/config" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="addDomain" type="tns:addDomain"/>
+      <xs:element name="addDomainResponse" type="tns:addDomainResponse"/>
+      <xs:element name="getDomainCount" type="tns:getDomainCount"/>
+      <xs:element name="getDomainCountResponse" type="tns:getDomainCountResponse"/>
+      <xs:element name="getDomains" type="tns:getDomains"/>
+      <xs:element name="getDomainsResponse" type="tns:getDomainsResponse"/>
+      <xs:element name="listDomains" type="tns:listDomains"/>
+      <xs:element name="listDomainsResponse" type="tns:listDomainsResponse"/>
+      <xs:element name="removeDomain" type="tns:removeDomain"/>
+      <xs:element name="removeDomainResponse" type="tns:removeDomainResponse"/>
+      <xs:element name="searchDomain" type="tns:searchDomain"/>
+      <xs:element name="searchDomainResponse" type="tns:searchDomainResponse"/>
+      <xs:element name="updateDomain" type="tns:updateDomain"/>
+      <xs:element name="updateDomainResponse" type="tns:updateDomainResponse"/>
+      <xs:complexType name="getDomains">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="names" type="xs:string"/>
+          <xs:element minOccurs="0" name="status" type="tns:entityStatus"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getDomainsResponse">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:domain"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="domain">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="addresses" nillable="true" type="tns:address"/>
+          <xs:element minOccurs="0" name="createTime" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="domainName" type="xs:string"/>
+          <xs:element name="id" type="xs:long"/>
+          <xs:element minOccurs="0" name="postMasterEmail" type="tns:address"/>
+          <xs:element minOccurs="0" name="status" type="tns:entityStatus"/>
+          <xs:element minOccurs="0" name="updateTime" type="xs:dateTime"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="address">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="createTime" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="displayName" type="xs:string"/>
+          <xs:element minOccurs="0" name="domain" type="tns:domain"/>
+          <xs:element minOccurs="0" name="emailAddress" type="xs:string"/>
+          <xs:element name="id" type="xs:long"/>
+          <xs:element minOccurs="0" name="status" type="tns:entityStatus"/>
+          <xs:element minOccurs="0" name="type" type="xs:string"/>
+          <xs:element minOccurs="0" name="updateTime" type="xs:dateTime"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="updateDomain">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="domain" type="tns:domain"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="updateDomainResponse">
+        <xs:sequence/>
+      </xs:complexType>
+      <xs:complexType name="listDomains">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="names" type="xs:string"/>
+          <xs:element name="maxCount" type="xs:int"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="listDomainsResponse">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:domain"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addDomain">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="domain" type="tns:domain"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="addDomainResponse">
+        <xs:sequence/>
+      </xs:complexType>
+      <xs:complexType name="removeDomain">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="name" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="removeDomainResponse">
+        <xs:sequence/>
+      </xs:complexType>
+      <xs:complexType name="searchDomain">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="name" type="xs:string"/>
+          <xs:element minOccurs="0" name="status" type="tns:entityStatus"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="searchDomainResponse">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:domain"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="getDomainCount">
+        <xs:sequence/>
+      </xs:complexType>
+      <xs:complexType name="getDomainCountResponse">
+        <xs:sequence>
+          <xs:element name="return" type="xs:int"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="entityStatus">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="NEW"/>
+          <xs:enumeration value="ENABLED"/>
+          <xs:enumeration value="DISABLED"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="ConfigurationServiceException" type="tns:ConfigurationServiceException"/>
+      <xs:complexType name="ConfigurationServiceException">
+        <xs:sequence/>
+      </xs:complexType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="removeDomain">
+    <wsdl:part element="ns1:removeDomain" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ConfigurationServiceException">
+    <wsdl:part element="ns1:ConfigurationServiceException" name="ConfigurationServiceException"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getDomainCount">
+    <wsdl:part element="ns1:getDomainCount" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="searchDomain">
+    <wsdl:part element="ns1:searchDomain" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getDomains">
+    <wsdl:part element="ns1:getDomains" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="removeDomainResponse">
+    <wsdl:part element="ns1:removeDomainResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getDomainCountResponse">
+    <wsdl:part element="ns1:getDomainCountResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addDomain">
+    <wsdl:part element="ns1:addDomain" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addDomainResponse">
+    <wsdl:part element="ns1:addDomainResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateDomainResponse">
+    <wsdl:part element="ns1:updateDomainResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="searchDomainResponse">
+    <wsdl:part element="ns1:searchDomainResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getDomainsResponse">
+    <wsdl:part element="ns1:getDomainsResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateDomain">
+    <wsdl:part element="ns1:updateDomain" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listDomains">
+    <wsdl:part element="ns1:listDomains" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listDomainsResponse">
+    <wsdl:part element="ns1:listDomainsResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="DomainService">
+    <wsdl:operation name="getDomains">
+      <wsdl:input message="ns1:getDomains" name="getDomains"></wsdl:input>
+      <wsdl:output message="ns1:getDomainsResponse" name="getDomainsResponse"></wsdl:output>
+      <wsdl:fault message="ns1:ConfigurationServiceException" name="ConfigurationServiceException"></wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="updateDomain">
+      <wsdl:input message="ns1:updateDomain" name="updateDomain"></wsdl:input>
+      <wsdl:output message="ns1:updateDomainResponse" name="updateDomainResponse"></wsdl:output>
+      <wsdl:fault message="ns1:ConfigurationServiceException" name="ConfigurationServiceException"></wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listDomains">
+      <wsdl:input message="ns1:listDomains" name="listDomains"></wsdl:input>
+      <wsdl:output message="ns1:listDomainsResponse" name="listDomainsResponse"></wsdl:output>
+      <wsdl:fault message="ns1:ConfigurationServiceException" name="ConfigurationServiceException"></wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="addDomain">
+      <wsdl:input message="ns1:addDomain" name="addDomain"></wsdl:input>
+      <wsdl:output message="ns1:addDomainResponse" name="addDomainResponse"></wsdl:output>
+      <wsdl:fault message="ns1:ConfigurationServiceException" name="ConfigurationServiceException"></wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="removeDomain">
+      <wsdl:input message="ns1:removeDomain" name="removeDomain"></wsdl:input>
+      <wsdl:output message="ns1:removeDomainResponse" name="removeDomainResponse"></wsdl:output>
+      <wsdl:fault message="ns1:ConfigurationServiceException" name="ConfigurationServiceException"></wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="searchDomain">
+      <wsdl:input message="ns1:searchDomain" name="searchDomain"></wsdl:input>
+      <wsdl:output message="ns1:searchDomainResponse" name="searchDomainResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getDomainCount">
+      <wsdl:input message="ns1:getDomainCount" name="getDomainCount"></wsdl:input>
+      <wsdl:output message="ns1:getDomainCountResponse" name="getDomainCountResponse"></wsdl:output>
+      <wsdl:fault message="ns1:ConfigurationServiceException" name="ConfigurationServiceException"></wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:endpoint>http://perimac:8088/mockDomainServiceWSServiceSoapBinding</con:endpoint></con:endpoints><con:operation isOneWay="false" action="urn:AddDomain" name="addDomain" bindingOperationName="addDomain" type="Request-Response" outputName="addDomainResponse" inputName="addDomain" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:addDomain>
+         <!--Optional:-->
+         <domain>
+            <domainName>health.testdomain.com</domainName>\
+            <status>NEW</status>
+         </domain>
+      </con:addDomain>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:AddDomain"/><con:wsrmConfig version="1.2"/></con:call><con:call name="Request 2"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:addDomain>
+         <!--Optional:-->
+         <domain>
+            <domainName>health.newdomain.com</domainName>
+            <status>ENABLED</status>
+         </domain>
+      </con:addDomain>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:AddDomain"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="urn:GetDomainCount" name="getDomainCount" bindingOperationName="getDomainCount" type="Request-Response" outputName="getDomainCountResponse" inputName="getDomainCount" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:getDomainCount/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:GetDomainCount"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="urn:GetDomains" name="getDomains" bindingOperationName="getDomains" type="Request-Response" outputName="getDomainsResponse" inputName="getDomains" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:getDomains>
+         <!--Zero or more repetitions:-->
+         <names>health.testdomain.com</names>
+         <!--Optional:-->
+         <status>?</status>
+      </con:getDomains>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:GetDomains"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="urn:listDomains" name="listDomains" bindingOperationName="listDomains" type="Request-Response" outputName="listDomainsResponse" inputName="listDomains" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:listDomains>
+         <!--Optional:-->
+         <names>?</names>
+         <maxCount>?</maxCount>
+      </con:listDomains>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:ListDomains"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="urn:RemoveDomain" name="removeDomain" bindingOperationName="removeDomain" type="Request-Response" outputName="removeDomainResponse" inputName="removeDomain" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:removeDomain>
+         <!--Optional:-->
+         <name>?</name>
+      </con:removeDomain>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:RemoveDomain"/></con:call></con:operation><con:operation isOneWay="false" action="urn:UpdateDomain" name="updateDomain" bindingOperationName="updateDomain" type="Request-Response" outputName="updateDomainResponse" inputName="updateDomain" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:updateDomain>
+         <!--Optional:-->
+         <domain>
+            <!--Zero or more repetitions:-->
+            <addresses>
+               <displayName>Tommy Test</displayName>
+               <emailAddress>ttest@health.testdomain.com</emailAddress>
+               <domain>
+		 <id>930</id>
+	       </domain>
+               <status>ENABLED</status>
+            </addresses>
+            <addresses>
+               <displayName>David Doctor</displayName>
+               <emailAddress>david.doctort@health.testdomain.com</emailAddress>
+               <domain>
+		 <id>930</id>
+	       </domain>
+               <status>ENABLED</status>
+            </addresses>
+            <!- Now the updates to the domain attributes -->
+            <domainName>health.testdomain.com</domainName>
+            <id>930</id>
+            <createTime>2010-09-18T18:12:06.717-04:00</createTime>
+            <updateTime>2010-09-18T18:12:06.717-04:00</updateTime>
+            <postMasterEmail>
+               <displayName>Postmaster</displayName>
+               <domain>
+	       <id>930</id>
+               </domain>
+               <emailAddress>postmaster@health.testdomain.com</emailAddress>
+               <status>ENABLED</status>
+               <updateTime>?</updateTime>
+            </postMasterEmail>
+            <status>ENABLED</status>
+         </domain>
+      </con:updateDomain>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:UpdateDomain"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="" name="searchDomain" bindingOperationName="searchDomain" type="Request-Response" outputName="searchDomainResponse" inputName="searchDomain" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:searchDomain>
+      </con:searchDomain>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ws.service.config.nhindirect.org/DomainService/searchDomain"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:testSuite name="DomainServiceWSServiceSoapBinding TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="addDomain TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="addDomain"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DomainServiceWSServiceSoapBinding</con:interface><con:operation>addDomain</con:operation><con:request name="addDomain" outgoingWss="" incomingWss="" wssPasswordType=""><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:addDomain>
+         <!--Optional:-->
+         <domain>
+            <!--Zero or more repetitions:-->
+            <addresses>
+               <!--Optional:-->
+               <createTime>?</createTime>
+               <!--Optional:-->
+               <displayName>?</displayName>
+               <!--Optional:-->
+               <domain/>
+               <!--Optional:-->
+               <emailAddress>?</emailAddress>
+               <id>?</id>
+               <!--Optional:-->
+               <status>?</status>
+               <!--Optional:-->
+               <type>?</type>
+               <!--Optional:-->
+               <updateTime>?</updateTime>
+            </addresses>
+            <!--Optional:-->
+            <createTime>?</createTime>
+            <!--Optional:-->
+            <domainName>?</domainName>
+            <id>?</id>
+            <!--Optional:-->
+            <postMasterEmail>
+               <!--Optional:-->
+               <createTime>?</createTime>
+               <!--Optional:-->
+               <displayName>?</displayName>
+               <!--Optional:-->
+               <domain/>
+               <!--Optional:-->
+               <emailAddress>?</emailAddress>
+               <id>?</id>
+               <!--Optional:-->
+               <status>?</status>
+               <!--Optional:-->
+               <type>?</type>
+               <!--Optional:-->
+               <updateTime>?</updateTime>
+            </postMasterEmail>
+            <!--Optional:-->
+            <status>?</status>
+            <!--Optional:-->
+            <updateTime>?</updateTime>
+         </domain>
+      </con:addDomain>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:AddDomain"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getDomainCount TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getDomainCount"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DomainServiceWSServiceSoapBinding</con:interface><con:operation>getDomainCount</con:operation><con:request name="getDomainCount" outgoingWss="" incomingWss="" wssPasswordType=""><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:getDomainCount/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:GetDomainCount"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="getDomains TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="getDomains"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DomainServiceWSServiceSoapBinding</con:interface><con:operation>getDomains</con:operation><con:request name="getDomains" outgoingWss="" incomingWss="" wssPasswordType=""><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:getDomains>
+         <!--Zero or more repetitions:-->
+         <names>?</names>
+         <!--Optional:-->
+         <status>?</status>
+      </con:getDomains>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:GetDomains"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="ListDomains TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="ListDomains"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DomainServiceWSServiceSoapBinding</con:interface><con:operation>listDomains</con:operation><con:request name="ListDomains" outgoingWss="" incomingWss="" wssPasswordType=""><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:listDomains>
+         <!--Optional:-->
+         <names>?</names>
+         <maxCount>?</maxCount>
+      </con:listDomains>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:ListDomains"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="removeDomain TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="removeDomain"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DomainServiceWSServiceSoapBinding</con:interface><con:operation>removeDomain</con:operation><con:request name="removeDomain" outgoingWss="" incomingWss="" wssPasswordType=""><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:removeDomain>
+         <!--Optional:-->
+         <name>?</name>
+      </con:removeDomain>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:RemoveDomain"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="updateDomain TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="updateDomain"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DomainServiceWSServiceSoapBinding</con:interface><con:operation>updateDomain</con:operation><con:request name="updateDomain" outgoingWss="" incomingWss="" wssPasswordType=""><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/config-service/DomainService</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:updateDomain>
+         <!--Optional:-->
+         <domain>
+            <!--Zero or more repetitions:-->
+            <addresses>
+               <!--Optional:-->
+               <createTime>?</createTime>
+               <!--Optional:-->
+               <displayName>?</displayName>
+               <!--Optional:-->
+               <domain/>
+               <!--Optional:-->
+               <emailAddress>?</emailAddress>
+               <id>?</id>
+               <!--Optional:-->
+               <status>?</status>
+               <!--Optional:-->
+               <type>?</type>
+               <!--Optional:-->
+               <updateTime>?</updateTime>
+            </addresses>
+            <!--Optional:-->
+            <createTime>?</createTime>
+            <!--Optional:-->
+            <domainName>?</domainName>
+            <id>?</id>
+            <!--Optional:-->
+            <postMasterEmail>
+               <!--Optional:-->
+               <createTime>?</createTime>
+               <!--Optional:-->
+               <displayName>?</displayName>
+               <!--Optional:-->
+               <domain/>
+               <!--Optional:-->
+               <emailAddress>?</emailAddress>
+               <id>?</id>
+               <!--Optional:-->
+               <status>?</status>
+               <!--Optional:-->
+               <type>?</type>
+               <!--Optional:-->
+               <updateTime>?</updateTime>
+            </postMasterEmail>
+            <!--Optional:-->
+            <status>?</status>
+            <!--Optional:-->
+            <updateTime>?</updateTime>
+         </domain>
+      </con:updateDomain>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:UpdateDomain"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:mockService port="8088" path="/mockDomainServiceWSServiceSoapBinding" host="perimac" name="DomainServiceWSServiceSoapBinding MockService"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:mockOperation name="addDomain" interface="DomainServiceWSServiceSoapBinding" operation="addDomain"><con:settings/><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:defaultResponse>Response 1</con:defaultResponse><con:response name="Response 1" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:addDomainResponse/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:AddDomain"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="getDomainCount" interface="DomainServiceWSServiceSoapBinding" operation="getDomainCount"><con:settings/><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:defaultResponse>Response 1</con:defaultResponse><con:response name="Response 1" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:getDomainCountResponse>
+         <return>?</return>
+      </con:getDomainCountResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:GetDomainCount"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="getDomains" interface="DomainServiceWSServiceSoapBinding" operation="getDomains"><con:settings/><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:defaultResponse>Response 1</con:defaultResponse><con:response name="Response 1" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:getDomainsResponse>
+         <!--Zero or more repetitions:-->
+         <return>
+            <!--Optional:-->
+            <createTime>?</createTime>
+            <!--Optional:-->
+            <domainName>?</domainName>
+            <id>?</id>
+            <!--Optional:-->
+            <postmasterEmailAddressId>?</postmasterEmailAddressId>
+            <!--Optional:-->
+            <status>?</status>
+            <!--Optional:-->
+            <updateTime>?</updateTime>
+         </return>
+      </con:getDomainsResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:GetDomains"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="ListDomains" interface="DomainServiceWSServiceSoapBinding" operation="listDomains"><con:settings/><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:defaultResponse>Response 1</con:defaultResponse><con:response name="Response 1" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:ListDomainsResponse>
+         <!--Zero or more repetitions:-->
+         <return>
+            <!--Optional:-->
+            <createTime>?</createTime>
+            <!--Optional:-->
+            <domainName>?</domainName>
+            <id>?</id>
+            <!--Optional:-->
+            <postmasterEmailAddressId>?</postmasterEmailAddressId>
+            <!--Optional:-->
+            <status>?</status>
+            <!--Optional:-->
+            <updateTime>?</updateTime>
+         </return>
+      </con:ListDomainsResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:ListDomains"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="removeDomain" interface="DomainServiceWSServiceSoapBinding" operation="removeDomain"><con:settings/><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:defaultResponse>Response 1</con:defaultResponse><con:response name="Response 1" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:removeDomainResponse/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:RemoveDomain"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="updateDomain" interface="DomainServiceWSServiceSoapBinding" operation="updateDomain"><con:settings/><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:defaultResponse>Response 1</con:defaultResponse><con:response name="Response 1" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:con="http://nhind.org/config">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <con:updateDomainResponse/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:UpdateDomain"/></con:response><con:dispatchConfig/></con:mockOperation><con:properties/></con:mockService><con:properties/><con:wssContainer/></con:soapui-project>
