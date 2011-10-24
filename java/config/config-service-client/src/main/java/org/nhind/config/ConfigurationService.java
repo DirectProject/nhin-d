@@ -19,6 +19,7 @@ public interface ConfigurationService extends java.rmi.Remote {
     public org.nhind.config.DnsRecord[] getDNSByNameAndType(java.lang.String name, int type) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public void setCertificateStatusForOwner(java.lang.String owner, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public void removeDNS(org.nhind.config.DnsRecord[] records) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
+    public void removeDomainById(java.lang.Long id) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public org.nhind.config.DnsRecord[] getDNSByName(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public org.nhind.config.Anchor[] getOutgoingAnchors(java.lang.String owner, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public void removeDNSByRecordIds(java.lang.Long[] recordIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
@@ -45,7 +46,6 @@ public interface ConfigurationService extends java.rmi.Remote {
     public void removeAddress(java.lang.String emailAddress) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public void updateSetting(java.lang.String name, java.lang.String value) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public void removeDomain(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
-    public void removeDomainById(java.lang.Long id) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public org.nhind.config.Certificate[] getCertificates(long[] certificateIds, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public org.nhind.config.Address[] getAddresss(java.lang.String[] emailAddress, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public org.nhind.config.Anchor[] getIncomingAnchors(java.lang.String owner, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
