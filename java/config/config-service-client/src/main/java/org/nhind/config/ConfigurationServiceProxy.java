@@ -110,6 +110,12 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     configurationService.removeDNS(records);
   }
   
+  public void removeDomainById(java.lang.Long id) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.removeDomainById(id);
+  }
+  
   public org.nhind.config.DnsRecord[] getDNSByName(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
@@ -260,17 +266,11 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     configurationService.updateSetting(name, value);
   }
   
-  public void removeDomain(java.lang.String domain) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+  public void removeDomain(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
-    configurationService.removeDomain(domain);
+    configurationService.removeDomain(name);
   }
-  
-  public void removeDomainById(java.lang.Long domainId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
-      if (configurationService == null)
-        _initConfigurationServiceProxy();
-      configurationService.removeDomainById(domainId);
-    }
   
   public org.nhind.config.Certificate[] getCertificates(long[] certificateIds, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)

@@ -56,13 +56,7 @@
     <Timeout>10000</Timeout>
   </Trust>
   
-  <IncomingRoutes>
-     <Route>
-       <AddressType>SMTP</AddressType>
-       <CopyFolder></CopyFolder>
-     </Route>
-   </IncomingRoutes>
-
+  
   <RawMessage>
     <CopyFolder>C:\inetpub\mailroot\Gateway\raw</CopyFolder>
   </RawMessage>

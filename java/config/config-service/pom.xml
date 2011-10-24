@@ -45,7 +45,32 @@
 		<system>Google Code</system>
 		<url>http://code.google.com/p/nhin-d/issues/list</url>
 	</issueManagement>
+	<repositories>
+		<repository>
+			<id>Cerner External</id>
+			<name>Cerner External Repository</name>
+			<url>http://repo.release.cerner.corp/external/repo/</url>
+		</repository>
+	</repositories>	
 	<dependencies>
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-java-commercial</artifactId>
+			<scope>runtime</scope>
+			<version>5.1.15-bin</version>
+		</dependency>	
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc5_g</artifactId>
+			<scope>runtime</scope>
+			<version>11.2.0.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ucp</artifactId>
+			<version>11.2.0.1.0</version>
+			<scope>runtime</scope>
+		</dependency>	
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>

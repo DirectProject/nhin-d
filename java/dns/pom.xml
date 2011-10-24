@@ -187,6 +187,7 @@
 			</execution>
 		</executions>
 		<configuration>
+			<fork>true</fork>
 			<optimize>true</optimize>
 			<showDeprecation>true</showDeprecation>
 			<encoding>UTF-8</encoding>
