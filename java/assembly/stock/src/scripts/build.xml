@@ -108,7 +108,7 @@
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xd-common.dir" value="${install.root.dir}/../xd-common"></property>	
 	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.2.jar"></property>
-	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-1.3-SNAPSHOT.jar"></property>
+	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-1.3.jar"></property>
 	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.0.jar"></property>	
 	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.0.jar"></property>
 	<property name="lib.xd-common" value="${install.root.dir}/lib/xd-common-1.0.jar"></property>
