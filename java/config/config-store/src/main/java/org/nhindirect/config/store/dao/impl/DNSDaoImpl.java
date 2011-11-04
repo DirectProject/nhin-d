@@ -106,6 +106,7 @@ public class DNSDaoImpl implements DNSDao
      * {@inheritDoc}}
      */
 	@Override
+    @Transactional(readOnly = true)	
 	public int count() 
 	{
         if (log.isDebugEnabled())
@@ -124,6 +125,7 @@ public class DNSDaoImpl implements DNSDao
      */
 	@Override
     @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)	
 	public Collection<DNSRecord> get(int type) 
 	{
         if (log.isDebugEnabled())
@@ -176,6 +178,7 @@ public class DNSDaoImpl implements DNSDao
      */	
 	@Override
     @SuppressWarnings("unchecked")	
+    @Transactional(readOnly = true)	
 	public Collection<DNSRecord> get(long[] recordIds) 
 	{
         if (log.isDebugEnabled())
@@ -217,6 +220,7 @@ public class DNSDaoImpl implements DNSDao
      */	
 	@Override
     @SuppressWarnings("unchecked")	
+    @Transactional(readOnly = true)	
 	public Collection<DNSRecord> get(String name, int type) 
 	{
         if (log.isDebugEnabled())

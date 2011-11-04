@@ -112,6 +112,7 @@ public class SettingDaoImpl implements SettingDao
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")    
+    @Transactional(readOnly = true)    
 	public Collection<Setting> getAll() 
 	{
         if (log.isDebugEnabled())
@@ -138,6 +139,7 @@ public class SettingDaoImpl implements SettingDao
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked") 
+    @Transactional(readOnly = true)    
 	public Collection<Setting> getByNames(Collection<String> names) 
 	{
         if (log.isDebugEnabled())
