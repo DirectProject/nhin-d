@@ -68,7 +68,7 @@ public class Setting
      * 
      * @return the value of the setting.
      */
-    @Column(name = "value")
+    @Column(name = "value", length=4096)
     public String getValue() {
         return value;
     }

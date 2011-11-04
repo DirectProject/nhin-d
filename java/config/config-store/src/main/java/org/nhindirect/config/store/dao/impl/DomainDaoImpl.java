@@ -401,6 +401,7 @@ public class DomainDaoImpl implements DomainDao {
      * @see org.nhindirect.config.store.dao.DomainDao#searchDomain(java.lang.String, org.nhindirect.config.store.EntityStatus)
      */
     @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
     public List<Domain> searchDomain(String name, EntityStatus status) {
         if (log.isDebugEnabled())
             log.debug("Enter");
@@ -447,6 +448,7 @@ public class DomainDaoImpl implements DomainDao {
      * 
      * @see org.nhindirect.config.store.dao.DomainDao#getDomain(java.lang.Long)
      */
+    @Transactional(readOnly = true)    
     public Domain getDomain(Long id) {
         if (log.isDebugEnabled())
             log.debug("Enter");
