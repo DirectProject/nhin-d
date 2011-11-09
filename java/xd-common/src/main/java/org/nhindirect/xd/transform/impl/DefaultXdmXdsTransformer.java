@@ -25,7 +25,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.nhindirect.xd.transform.impl;
 
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
@@ -68,11 +67,10 @@ import org.nhindirect.xd.transform.util.type.MimeType;
  * 
  * @author vlewis
  */
-public class DefaultXdmXdsTransformer implements XdmXdsTransformer
-{
-    private static final String XDM_FILENAME_DATA = "DOCUMENT.xml";
-    private static final String XDM_FILENAME_METADATA = "METADATA.xml";
+public class DefaultXdmXdsTransformer implements XdmXdsTransformer {
 
+    private static String XDM_FILENAME_DATA = "DOCUMENT.xml";
+    private static final String XDM_FILENAME_METADATA = "METADATA.xml";
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultXdmXdsTransformer.class);
 
     /*
@@ -81,37 +79,36 @@ public class DefaultXdmXdsTransformer implements XdmXdsTransformer
      * @see org.nhindirect.transform.XdmXdsTransformer#transform(java.io.File)
      */
     @Override
-    public ProvideAndRegisterDocumentSetRequestType transform(File file) throws TransformationException
-    {
+    public ProvideAndRegisterDocumentSetRequestType transform(File file) throws TransformationException {
         LOGGER.trace("Begin transformation of XDM to XDS (file)");
 
         String docId = null;
         ZipFile zipFile = null;
+        String docName = getDocName(file);
+        if (docName != null) {
+            XDM_FILENAME_DATA = docName;
+        }
 
         ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
 
-        try
-        {
+        try {
             zipFile = new ZipFile(file, ZipFile.OPEN_READ);
 
             Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
             ZipEntry zipEntry = null;
 
             // load the ZIP archive into memory
-            while (zipEntries.hasMoreElements())
-            {
-                LOGGER.trace("Processing a ZipEntry");
+            while (zipEntries.hasMoreElements()) {
+
 
                 zipEntry = zipEntries.nextElement();
                 String zname = zipEntry.getName();
-
-                if (!zipEntry.isDirectory())
-                {
+                LOGGER.trace("Processing a ZipEntry " + zname);
+                if (!zipEntry.isDirectory()) {
                     String subsetDirspec = getSubmissionSetDirspec(zipEntry.getName());
 
                     // Read metadata
-                    if (matchName(zname, subsetDirspec, XDM_FILENAME_METADATA))
-                    {
+                    if (matchName(zname, subsetDirspec, XDM_FILENAME_METADATA)) {
                         ByteArrayOutputStream byteArrayOutputStream = readData(zipFile, zipEntry);
 
                         SubmitObjectsRequest submitObjectRequest = (SubmitObjectsRequest) XmlUtils.unmarshal(
@@ -119,11 +116,10 @@ public class DefaultXdmXdsTransformer implements XdmXdsTransformer
                                 oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
 
                         prsr.setSubmitObjectsRequest(submitObjectRequest);
+
                         docId = getDocId(submitObjectRequest);
-                    }
-                    // Read data
-                    else if (matchName(zname, subsetDirspec, XDM_FILENAME_DATA))
-                    {
+                    } // Read data
+                    else if (matchName(zname, subsetDirspec, XDM_FILENAME_DATA)) {
                         ByteArrayOutputStream byteArrayOutputStream = readData(zipFile, zipEntry);
 
                         DataSource source = new ByteArrayDataSource(byteArrayOutputStream.toByteArray(),
@@ -139,20 +135,71 @@ public class DefaultXdmXdsTransformer implements XdmXdsTransformer
                     }
                 }
 
-                if (!prsr.getDocument().isEmpty())
+                if (!prsr.getDocument().isEmpty()) {
                     ((Document) prsr.getDocument().get(0)).setId(zname);
+                }
             }
 
             zipFile.close();
-        }
-        catch (Exception e)
-        {
-            if (LOGGER.isErrorEnabled())
+        } catch (Exception e) {
+            if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("Unable to complete transformation.", e);
+            }
             throw new TransformationException("Unable to complete transformation.", e);
         }
 
         return prsr;
+    }
+
+    public String getDocName(File file) throws TransformationException {
+        LOGGER.trace("Begin transformation of XDM to XDS (file)");
+
+
+        ZipFile zipFile = null;
+        String objectId = null;
+
+        ProvideAndRegisterDocumentSetRequestType prsr = new ProvideAndRegisterDocumentSetRequestType();
+
+        try {
+            zipFile = new ZipFile(file, ZipFile.OPEN_READ);
+
+            Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
+            ZipEntry zipEntry = null;
+
+            // load the ZIP archive into memory
+            while (zipEntries.hasMoreElements()) {
+
+
+                zipEntry = zipEntries.nextElement();
+                String zname = zipEntry.getName();
+                LOGGER.trace("Processing a ZipEntry " + zname);
+                if (!zipEntry.isDirectory()) {
+                    String subsetDirspec = getSubmissionSetDirspec(zipEntry.getName());
+
+                    // Read metadata
+                    if (matchName(zname, subsetDirspec, XDM_FILENAME_METADATA)) {
+                        ByteArrayOutputStream byteArrayOutputStream = readData(zipFile, zipEntry);
+
+                        SubmitObjectsRequest submitObjectRequest = (SubmitObjectsRequest) XmlUtils.unmarshal(
+                                byteArrayOutputStream.toString(),
+                                oasis.names.tc.ebxml_regrep.xsd.lcm._3.ObjectFactory.class);
+
+                        prsr.setSubmitObjectsRequest(submitObjectRequest);
+                        objectId = getDocName(submitObjectRequest);
+                    } // Read data
+
+                }
+
+            }
+            zipFile.close();
+        } catch (Exception e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("Unable to complete getObjectId.", e);
+            }
+            throw new TransformationException("Unable to complete getObjectId.", e);
+        }
+
+        return objectId;
     }
 
     /*
@@ -163,21 +210,18 @@ public class DefaultXdmXdsTransformer implements XdmXdsTransformer
      * .DataHandler)
      */
     @Override
-    public ProvideAndRegisterDocumentSetRequestType transform(DataHandler dataHandler) throws TransformationException
-    {
+    public ProvideAndRegisterDocumentSetRequestType transform(DataHandler dataHandler) throws TransformationException {
         LOGGER.trace("Begin transformation of XDM to XDS (datahandler)");
 
         File file = null;
 
-        try
-        {
+        try {
             // Create a temporary work file
             file = fileFromDataHandler(dataHandler);
-        }
-        catch (Exception e)
-        {
-            if (LOGGER.isErrorEnabled())
+        } catch (Exception e) {
+            if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("Error creating temporary work file, unable to complete transformation.", e);
+            }
             throw new TransformationException("Error creating temporary work file, unable to complete transformation.",
                     e);
         }
@@ -186,15 +230,14 @@ public class DefaultXdmXdsTransformer implements XdmXdsTransformer
 
         boolean delete = file.delete();
 
-        if (delete)
-        {
-            if (LOGGER.isTraceEnabled())
+        if (delete) {
+            if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("Deleted temporary work file " + file.getAbsolutePath());
-        }
-        else
-        {
-            if (LOGGER.isWarnEnabled())
+            }
+        } else {
+            if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn("Unable to delete temporary work file " + file.getAbsolutePath());
+            }
         }
 
         return request;
@@ -208,28 +251,61 @@ public class DefaultXdmXdsTransformer implements XdmXdsTransformer
      *            document ID.
      * @return a document ID.
      */
-    protected String getDocId(SubmitObjectsRequest submitObjectRequest)
-    {
-        if (submitObjectRequest == null)
+    protected String getDocId(SubmitObjectsRequest submitObjectRequest) {
+        if (submitObjectRequest == null) {
             throw new IllegalArgumentException("SubmitObjectRequest must not be null.");
+        }
 
         String ret = null;
 
         RegistryObjectListType rol = submitObjectRequest.getRegistryObjectList();
         List<JAXBElement<? extends IdentifiableType>> extensible = rol.getIdentifiable();
 
-        for (JAXBElement<? extends IdentifiableType> elem : extensible)
-        {
+        for (JAXBElement<? extends IdentifiableType> elem : extensible) {
             String type = elem.getDeclaredType().getName();
             Object value = elem.getValue();
 
-            if (StringUtils.equals(type, "oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType"))
-            {
+            if (StringUtils.equals(type, "oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType")) {
                 ret = getDocId((ExtrinsicObjectType) value);
             }
 
-            if (LOGGER.isTraceEnabled())
+            if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace(type + " " + value.toString());
+            }
+        }
+
+        return ret;
+    }
+
+    protected String getDocName(SubmitObjectsRequest submitObjectRequest) {
+        if (submitObjectRequest == null) {
+            throw new IllegalArgumentException("SubmitObjectRequest must not be null.");
+        }
+
+        String ret = null;
+
+        RegistryObjectListType rol = submitObjectRequest.getRegistryObjectList();
+        List<JAXBElement<? extends IdentifiableType>> extensible = rol.getIdentifiable();
+
+        for (JAXBElement<? extends IdentifiableType> elem : extensible) {
+            String type = elem.getDeclaredType().getName();
+            Object value = elem.getValue();
+
+            if (StringUtils.equals(type, "oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType")) {
+                String obId = ((ExtrinsicObjectType) value).getId();
+                String mimeType = ((ExtrinsicObjectType) value).getMimeType();
+                String suffix = "xml";
+                if (mimeType.indexOf("xml") >= 0) {
+                    suffix = "xml";
+                } else if (mimeType.indexOf("pdf") >= 0) {
+                    suffix = "pdf";
+                }
+                ret = obId + "." + suffix;
+
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace(type + " " + value.toString());
+                }
+            }
         }
 
         return ret;
@@ -243,17 +319,15 @@ public class DefaultXdmXdsTransformer implements XdmXdsTransformer
      *            document ID.
      * @return a document ID.
      */
-    protected String getDocId(ExtrinsicObjectType extrinsicObjectType)
-    {
-        if (extrinsicObjectType == null)
+    protected String getDocId(ExtrinsicObjectType extrinsicObjectType) {
+        if (extrinsicObjectType == null) {
             throw new IllegalArgumentException("ExtrinsicObjectType must not be null");
+        }
 
         String ret = null;
 
-        for (ExternalIdentifierType eit : extrinsicObjectType.getExternalIdentifier())
-        {
-            if (StringUtils.equals(eit.getIdentificationScheme(), "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab"))
-            {
+        for (ExternalIdentifierType eit : extrinsicObjectType.getExternalIdentifier()) {
+            if (StringUtils.equals(eit.getIdentificationScheme(), "urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab")) {
                 ret = eit.getValue();
             }
         }
@@ -269,13 +343,23 @@ public class DefaultXdmXdsTransformer implements XdmXdsTransformer
      *            The ZIP entry name.
      * @return the name of the folder.
      */
-    protected String getSubmissionSetDirspec(String zipEntryName)
-    {
-        if (zipEntryName == null)
+    protected String getSubmissionSetDirspec(String zipEntryName) {
+        if (zipEntryName == null) {
             return null;
+        }
+        String ret = "";
+        zipEntryName = zipEntryName.replaceAll("\\\\", "/");
+        String[] components = zipEntryName.split("/");
+        for (int i = 0; i < components.length - 1; i++) {
+            ret += (components[i] + "/");
+        }
+        if (ret.length() == 0) {
+            return "";
+        }
+        ret = ret.substring(0, ret.length() - 1);
 
-        String[] components = zipEntryName.split("\\\\");
-        return components[0];
+
+        return ret;
     }
 
     /**
@@ -289,16 +373,11 @@ public class DefaultXdmXdsTransformer implements XdmXdsTransformer
      *            The subset file name.
      * @return true if the names match, false otherwise.
      */
-    protected boolean matchName(String zname, String subsetDirspec, String subsetFilespec)
-    {
-        String zipFilespec = subsetDirspec + "\\" + subsetFilespec.replace('/', '\\');
+    protected boolean matchName(String zname, String subsetDirspec, String subsetFilespec) {
+        zname = zname.replaceAll("\\\\", "/");
+        String zipFilespec = subsetDirspec + "/" + subsetFilespec;
         boolean ret = StringUtils.equals(zname, zipFilespec);
 
-        if (!ret)
-        {
-            zipFilespec = zipFilespec.replace('\\', '/');
-            ret = StringUtils.equals(zname, zipFilespec);
-        }
 
         return ret;
     }
@@ -313,23 +392,22 @@ public class DefaultXdmXdsTransformer implements XdmXdsTransformer
      * @return a ByteArrayOutputStream representing the data.
      * @throws IOException
      */
-    protected ByteArrayOutputStream readData(ZipFile zipFile, ZipEntry zipEntry) throws IOException
-    {
+    protected ByteArrayOutputStream readData(ZipFile zipFile, ZipEntry zipEntry) throws IOException {
         InputStream in = zipFile.getInputStream(zipEntry);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         int bytesRead = 0;
         byte[] buffer = new byte[2048];
 
-        while ((bytesRead = in.read(buffer)) != -1)
-        {
+        while ((bytesRead = in.read(buffer)) != -1) {
             baos.write(buffer, 0, bytesRead);
         }
 
         in.close();
 
-        if (LOGGER.isTraceEnabled())
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Data read: " + baos.toString());
+        }
 
         return baos;
     }
@@ -342,48 +420,44 @@ public class DefaultXdmXdsTransformer implements XdmXdsTransformer
      * @return a File object created from the DataHandler object.
      * @throws Exception
      */
-    protected File fileFromDataHandler(DataHandler dh) throws Exception
-    {
+    protected File fileFromDataHandler(DataHandler dh) throws Exception {
         File f = null;
         OutputStream out = null;
         InputStream inputStream = null;
 
         final String fileName = "xdmail-" + UUID.randomUUID().toString() + ".zip";
 
-        try
-        {
+        try {
             f = new File(fileName);
             inputStream = dh.getInputStream();
             out = new FileOutputStream(f);
             byte buf[] = new byte[1024];
             int len;
-            while ((len = inputStream.read(buf)) > 0)
-            {
+            while ((len = inputStream.read(buf)) > 0) {
                 out.write(buf, 0, len);
             }
-        }
-        catch (FileNotFoundException e)
-        {
-            if (LOGGER.isErrorEnabled())
+        } catch (FileNotFoundException e) {
+            if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("File not found - " + fileName, e);
+            }
             throw e;
-        }
-        catch (IOException e)
-        {
-            if (LOGGER.isErrorEnabled())
+        } catch (IOException e) {
+            if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("Exception thrown while trying to read file from DataHandler object", e);
+            }
             throw e;
-        }
-        finally
-        {
-            if (inputStream != null)
+        } finally {
+            if (inputStream != null) {
                 inputStream.close();
-            if (out != null)
+            }
+            if (out != null) {
                 out.close();
+            }
         }
 
-        if (LOGGER.isTraceEnabled())
+        if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Created temporary work file " + f.getAbsolutePath());
+        }
 
         return f;
     }

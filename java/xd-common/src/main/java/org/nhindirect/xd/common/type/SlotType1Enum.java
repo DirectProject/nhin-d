@@ -53,7 +53,8 @@ public enum SlotType1Enum
     INTENDED_RECIPIENT("intendedRecipient"),
     SUBMISSION_SET_STATUS("SubmissionSetStatus"),
     HASH("hash"),
-    SIZE("size");
+    SIZE("size"),
+    URI("URI");
 
     private String name;
 

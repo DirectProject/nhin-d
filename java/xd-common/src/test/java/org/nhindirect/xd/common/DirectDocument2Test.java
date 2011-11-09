@@ -737,6 +737,21 @@ public class DirectDocument2Test extends TestCase
 
         assertEquals("Output does not match expected", value, metadata.getHash());
     }
+        public void testURI() throws Exception
+    {
+        DirectDocument2 document = new DirectDocument2();
+        DirectDocument2.Metadata metadata = document.getMetadata();
+
+        String value = "input";
+        metadata.setURI(value);
+
+        ExtrinsicObjectType eot = metadata.generateExtrinsicObjectType();
+
+        metadata = new DirectDocument2.Metadata();
+        metadata.setValues(eot);
+
+        assertEquals("Output does not match expected", value, metadata.getURI());
+    }
 
     /**
      * Test size.
@@ -797,6 +812,7 @@ public class DirectDocument2Test extends TestCase
         metadata.setUniqueId("27");
         metadata.setHash("28");
         metadata.setSize(Long.valueOf("29"));
+        metadata.setURI("30");
 
         metadata.setSubmissionSetStatus("42");
 
