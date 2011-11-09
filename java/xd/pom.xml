@@ -111,7 +111,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>xd-common</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.1</version>
         </dependency>
     </dependencies>
 
