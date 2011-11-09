@@ -137,7 +137,7 @@ public class DefaultXdmXdsTransformerTest extends TestCase
 
         input = "123";
         output = transformer.getSubmissionSetDirspec(input);
-        assertEquals("Output does not match expected", "123", output);
+        assertEquals("Output does not match expected", "", output);
 
         input = "123\\456";
         output = transformer.getSubmissionSetDirspec(input);
@@ -145,7 +145,7 @@ public class DefaultXdmXdsTransformerTest extends TestCase
 
         input = "123\\456\\789";
         output = transformer.getSubmissionSetDirspec(input);
-        assertEquals("Output does not match expected", "123", output);
+        assertEquals("Output does not match expected", "123/456", output);
 
         input = "";
         output = transformer.getSubmissionSetDirspec(input);

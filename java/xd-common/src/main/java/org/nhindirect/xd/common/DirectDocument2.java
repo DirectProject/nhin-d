@@ -195,6 +195,8 @@ public class DirectDocument2
 
         private String submissionSetStatus;
 
+        private String uri;
+
         /**
          * Default constructor.
          */
@@ -251,6 +253,7 @@ public class DirectDocument2
 
             eot.setId(id);
             eot.setMimeType(mimeType);
+
             eot.setObjectType(ExtrinsicObjectTypeEnum.DOC.getObjectType());
             
             List<SlotType1> slots = eot.getSlot();
@@ -262,6 +265,7 @@ public class DirectDocument2
             addSlot(slots, makeSlot(SlotType1Enum.SOURCE_PATIENT_INFO, sourcePatient));
             addSlot(slots, makeSlot(SlotType1Enum.HASH, hash));
             addSlot(slots, makeSlot(SlotType1Enum.SIZE, size == null ? null : String.valueOf(size)));
+            addSlot(slots, makeSlot(SlotType1Enum.URI, uri == null ? null : uri));
 
             eot.setName(makeInternationalStringType(classCode_localized));
             eot.setDescription(makeInternationalStringType(description));
@@ -552,6 +556,11 @@ public class DirectDocument2
                 {
                     if (slotNotEmpty(slot))
                         hash = slot.getValueList().getValue().get(0);
+                }
+                else if (SlotType1Enum.URI.matches(slot.getName()))
+                {
+                    if (slotNotEmpty(slot))
+                        uri = slot.getValueList().getValue().get(0);
                 }
                 else if (SlotType1Enum.SIZE.matches(slot.getName()))
                 {
@@ -1323,6 +1332,25 @@ public class DirectDocument2
                 LOGGER.warn("Replacing existing size with new value");
             
             this.size = size;
+        }
+         /**
+         * @return the hash
+         */
+        public String getURI()
+        {
+            return uri;
+        }
+
+        /**
+         * @param hash
+         *            the hash to set
+         */
+        public void setURI(String uri)
+        {
+            if (StringUtils.isNotEmpty(this.uri) && !StringUtils.equalsIgnoreCase(this.uri, uri))
+                LOGGER.warn("Replacing existing value with new value");
+
+            this.uri = uri;
         }
     }
     

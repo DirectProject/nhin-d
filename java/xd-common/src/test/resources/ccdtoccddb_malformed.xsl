@@ -13,9 +13,9 @@
                 <MAIN_FACILITY_NAME>MY VERY OWN RHIO</MAIN_FACILITY_NAME>
             </FACILITY>
 
-            <xsl:for-each select="$var1_instance/n:ClinicalDocument/n:recordTarget">
+            <xsl:for-each_ select="$var1_instance/n:ClinicalDocument/n:recordTarget">
                 <PATIENT>
-                    <xsl:for-each_ select="n:patientRole/n:id">
+                    <xsl:for-each select="n:patientRole/n:id">
                         <xsl:variable name="var16_id" select="."/>
                         <xsl:if test="$var16_id/@root">
                             <FACILITY_ID>

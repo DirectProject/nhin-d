@@ -30,7 +30,7 @@ public class XdmPackage {
     @Deprecated
     private static final String SUFFIX = ".xml";
     private static final int BUFFER = 2048;
-    private static final String XDM_SUB_FOLDER = "SUBSET01/";
+    private static final String XDM_SUB_FOLDER = "IHE_XDM/SUBSET01";
     private static final String XDM_METADATA_FILE = "METADATA.xml";
     private static final Log LOGGER = LogFactory.getFactory().getInstance(XdmPackage.class);
 
@@ -64,7 +64,12 @@ public class XdmPackage {
 
             for (DirectDocument2 document : documents.getDocuments()) {
                 if (document.getData() != null) {
-                    addEntry(zipOutputStream, document.getData(), XDM_SUB_FOLDER + document.getMetadata().getId() + getSuffix(document.getMetadata().getMimeType()));
+                    String fileName = document.getMetadata().getId() ;
+                    fileName = fileName.replace("urn:uuid:", "");
+                    fileName = fileName + getSuffix(document.getMetadata().getMimeType());
+                  
+                    document.getMetadata().setURI(fileName);
+                    addEntry(zipOutputStream, document.getData(), XDM_SUB_FOLDER + fileName );
                 }
             }
 
@@ -233,7 +238,8 @@ public class XdmPackage {
                 String subsetDirspec = getSubmissionSetDirspec(zipEntry.getName());
 
                 // Read data
-                if (StringUtils.contains(subsetDirspec, StringUtils.remove(XDM_SUB_FOLDER, "/"))
+              //  if (StringUtils.contains(subsetDirspec, StringUtils.remove(XDM_SUB_FOLDER, "/"))
+                if (StringUtils.contains(subsetDirspec,XDM_SUB_FOLDER)
                         && !StringUtils.contains(zname, ".xsl") && !StringUtils.contains(zname, XDM_METADATA_FILE)) {
                     ByteArrayOutputStream byteArrayOutputStream = readData(zipFile, zipEntry);
 
@@ -261,6 +267,26 @@ public class XdmPackage {
         return xdmPackage;
     }
 
+        protected static String getSubmissionSetDirspec(String zipEntryName) {
+        if (zipEntryName == null) {
+            return null;
+        }
+        String ret = "";
+        zipEntryName = zipEntryName.replaceAll("\\\\", "/");
+        String[] components = zipEntryName.split("/");
+        for (int i = 0; i < components.length - 1; i++) {
+            ret += (components[i] + "/");
+        }
+        if (ret.length() == 0) {
+            return "";
+        }
+        ret = ret.substring(0, ret.length() - 1);
+
+
+        return ret;
+    }
+    
+    
     /**
      * Given a full ZipEntry filespec, extracts the name of the folder (if
      * present) under the IHE_XDM root specified by IHE XDM.
@@ -269,7 +295,7 @@ public class XdmPackage {
      *            The ZIP entry name.
      * @return the name of the folder.
      */
-    private static String getSubmissionSetDirspec(String zipEntryName) {
+ /*   private static String getSubmissionSetDirspec(String zipEntryName) {
         if (zipEntryName == null) {
             return null;
         }
@@ -277,7 +303,16 @@ public class XdmPackage {
         String[] components = StringUtils.split(zipEntryName, "\\/");
         return components[0];
     }
+*/
+   protected static  boolean matchName(String zname, String subsetDirspec, String subsetFilespec) {
+        zname = zname.replaceAll("\\\\", "/");
+        String zipFilespec = subsetDirspec + "/" + subsetFilespec;
+        boolean ret = StringUtils.equals(zname, zipFilespec);
 
+
+        return ret;
+    }     
+      
     /**
      * Determine whether a filename matches the subset directory and file name.
      * 
@@ -289,7 +324,7 @@ public class XdmPackage {
      *            The subset file name.
      * @return true if the names match, false otherwise.
      */
-    private static boolean matchName(String zname, String subsetDirspec, String subsetFilespec) {
+  /*  private static boolean matchName(String zname, String subsetDirspec, String subsetFilespec) {
         String zipFilespec = subsetDirspec + "\\" + subsetFilespec.replace('/', '\\');
         boolean ret = StringUtils.equalsIgnoreCase(zname, zipFilespec);
 
@@ -299,7 +334,7 @@ public class XdmPackage {
         }
 
         return ret;
-    }
+    }*/
 
     /**
      * Read data the data of a zipEntry within a zipFile.
