@@ -75,7 +75,7 @@ public class KeyStoreCertificateStore_GetCertificates_Test extends TestCase
 			@Override
 			protected String getSubjectToSearch()
 			{
-				return "AlAnderson@hospitalA.direct.visionshareinc.com";
+				return "test.email.com";
 			}
 			
 			@Override

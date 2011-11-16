@@ -229,7 +229,7 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         		cert.checkValidity(new GregorianCalendar().getTime());
         		
         		// Search CRLs to determine if this certificate has been revoked
-        		RevocationManager revocationManager = new CRLRevocationManager();
+        		RevocationManager revocationManager = CRLRevocationManager.getInstance();
         		if (!revocationManager.isRevoked(cert))
                     filteredCerts.add(cert);
         	} 

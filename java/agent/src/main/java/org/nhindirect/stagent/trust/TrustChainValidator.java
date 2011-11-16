@@ -23,11 +23,14 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.stagent.trust;
 
 import java.security.Security;
+import java.security.cert.CRL;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
+import java.security.cert.CertStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
+import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.PKIXParameters;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
@@ -149,6 +152,14 @@ public class TrustChainValidator
         	// however some implementations will fail if revocation checking is turned on, but the CRL
         	// extension does not exist. for compatibility reasons, only turn this on if CRL extension points are defined
 	        params.setRevocationEnabled(CRLRevocationManager.isCRLDispPointDefined(certificate));
+	        {
+	        	// populate the CRL store from the revocation manager
+	        	CRLRevocationManager mgr = CRLRevocationManager.getInstance();
+	        	Set<CRL> crls = mgr.getCRLCollection();
+	        	
+	        	CertStore crlStore = CertStore.getInstance("Collection", new CollectionCertStoreParameters(crls), CryptoExtensions.getJCEProviderName()); 
+	        	params.addCertStore(crlStore);
+	        }
             
         	certPath = factory.generateCertPath(certs);
         	CertPathValidator pathValidator = CertPathValidator.getInstance("PKIX", CryptoExtensions.getJCEProviderName());    		

@@ -6,6 +6,23 @@
         Greg Meyer
         ---
 
+
+{1.2.1}
+
+    Changes included with release 1.2.1
+    
+    []
+    
+    Enhancements
+    
+    * NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed cert path validation checking error where the validation object was not being provided the Set of CRLs to check against when the CRL distribution point extension was set on the certificate.
+
 {1.2}
 
     Changes included with release 1.2
