@@ -73,6 +73,8 @@ public class CRLRevocationManager implements RevocationManager {
     // TODO: convert to JCS cache
     private static Map<String, X509CRL> cache;
     
+    protected static final CRLRevocationManager INSTANCE;
+    
     static 
     {
         cache = new HashMap<String, X509CRL>();
@@ -84,6 +86,13 @@ public class CRLRevocationManager implements RevocationManager {
         catch (CertificateException e) {
             e.printStackTrace();
         }
+        
+        INSTANCE = new CRLRevocationManager();
+    }
+    
+    public static CRLRevocationManager getInstance()
+    {
+    	return INSTANCE;
     }
     
     /**
@@ -99,7 +108,7 @@ public class CRLRevocationManager implements RevocationManager {
      * 
      * @return a read-only set of CRL objects.
      */
-    private Set<CRL> getCRLCollection() 
+    public synchronized Set<CRL> getCRLCollection() 
     {
         return Collections.unmodifiableSet(crlCollection);
     }
@@ -153,7 +162,7 @@ public class CRLRevocationManager implements RevocationManager {
 	 * {@inheritDoc}
 	 */
     @Override
-    public boolean isRevoked(X509Certificate certificate)
+    public synchronized boolean isRevoked(X509Certificate certificate)
     {
         loadCRLs(certificate);
 
