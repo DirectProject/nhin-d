@@ -76,15 +76,6 @@
         <soap:fault name="ConfigurationServiceException" use="literal"/>
       </fault>
     </operation>
-    <operation name="getDomain">
-      <soap:operation soapAction="urn:GetDomain"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-    </operation>
     <operation name="addDomain">
       <soap:operation soapAction="urn:AddDomain"/>
       <input>
@@ -171,6 +162,15 @@
     </operation>
     <operation name="searchDomain">
       <soap:operation soapAction="urn:SearchDomain"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getDomain">
+      <soap:operation soapAction="urn:GetDomain"/>
       <input>
         <soap:body use="literal"/>
       </input>
