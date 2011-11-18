@@ -9,11 +9,11 @@
     <publishDate position="right" format="E M-dd-yyyy HH:mm" />   
     <body>
         <menu name="Documents">
-            <item name="Release Notes" href="releaseNotes.html" />           
+            <item name="Release Notes" href="releaseNotes.html" />    
+            <item name="Users Guide" href="users-guide/"/>       
         </menu>
         <menu name="External Links">
         	<item name="The Direct Project Wiki" href="http://nhindirect.org" />
-        	<item name="Java RI Bare Metal" href="http://wiki.directproject.org/Bare+Metal+Project" />
         </menu>
         ${reports}
     </body>
