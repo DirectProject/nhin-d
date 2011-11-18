@@ -6,6 +6,28 @@
         Greg Meyer
         ---
    
+{1.3}
+
+    Changes included with release 1.3
+    
+    []
+    
+    Enhancements/Bug Fixes
+    
+    * Configuration Service 1.2.1
+    
+    * DNS version 1.2
+    
+    * Gateway Version 1.3
+    
+    * Agent Version 1.2.1
+    
+    * XD Version 1.0.1
+    
+    * Bare Metal documentation moved to Doxia book in users guide
+    
+    * Assembly includes agent tools including certificate generator
+   
 {1.2}
 
     Changes included with release 1.2

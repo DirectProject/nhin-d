@@ -15,8 +15,8 @@
                The stock deployment is an Java assembly based on the Java Reference Implementation 
                <a href="http://wiki.directproject.org/Bare+Metal+Project">Bare Metal</a> project.  It consists of 
                pre-assembled and partly configured instances of core reference implementation components.  Instructions
-               for installing and configuring the stock assembly are available on the Direct Project wiki's Bare Metal 
-               <a href="http://wiki.directproject.org/Bare+Metal+Project+-+Java+%28HISP+only%29">HISP Only page</a>. 
+               for installing and configuring the stock assembly are available in the 
+               <a href="users-guide/index.html">users guide</a>. 
             </p>
             <p>
                The Java Reference Implementation and Bare Metal projects are not intended to be full blown, production ready
