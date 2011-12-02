@@ -61,10 +61,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "admin.console", "..\tools\a
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnsResponder.service", "..\dnsresponder.service\dnsResponder.service.csproj", "{553844CD-E4C3-46B3-85D4-20719095672E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resolverPlugins", "..\ResolverPlugin\resolverPlugins.csproj", "{3B166914-A175-4248-B281-EA16AFCFD550}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resolverPlugins.tests", "..\resolverPlugins.tests\resolverPlugins.tests.csproj", "{2C902B34-80A5-4529-A054-6322C736AEA8}"
+EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = hvdirect.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -428,6 +429,30 @@ Global
 		{553844CD-E4C3-46B3-85D4-20719095672E}.Release|Win32.Build.0 = Release|Any CPU
 		{553844CD-E4C3-46B3-85D4-20719095672E}.Release|x64.ActiveCfg = Release|Any CPU
 		{553844CD-E4C3-46B3-85D4-20719095672E}.Release|x64.Build.0 = Release|Any CPU
+		{3B166914-A175-4248-B281-EA16AFCFD550}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B166914-A175-4248-B281-EA16AFCFD550}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B166914-A175-4248-B281-EA16AFCFD550}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3B166914-A175-4248-B281-EA16AFCFD550}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3B166914-A175-4248-B281-EA16AFCFD550}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{3B166914-A175-4248-B281-EA16AFCFD550}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3B166914-A175-4248-B281-EA16AFCFD550}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B166914-A175-4248-B281-EA16AFCFD550}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B166914-A175-4248-B281-EA16AFCFD550}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3B166914-A175-4248-B281-EA16AFCFD550}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3B166914-A175-4248-B281-EA16AFCFD550}.Release|Win32.ActiveCfg = Release|Any CPU
+		{3B166914-A175-4248-B281-EA16AFCFD550}.Release|x64.ActiveCfg = Release|Any CPU
+		{2C902B34-80A5-4529-A054-6322C736AEA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C902B34-80A5-4529-A054-6322C736AEA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C902B34-80A5-4529-A054-6322C736AEA8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2C902B34-80A5-4529-A054-6322C736AEA8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2C902B34-80A5-4529-A054-6322C736AEA8}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{2C902B34-80A5-4529-A054-6322C736AEA8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2C902B34-80A5-4529-A054-6322C736AEA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C902B34-80A5-4529-A054-6322C736AEA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C902B34-80A5-4529-A054-6322C736AEA8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2C902B34-80A5-4529-A054-6322C736AEA8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2C902B34-80A5-4529-A054-6322C736AEA8}.Release|Win32.ActiveCfg = Release|Any CPU
+		{2C902B34-80A5-4529-A054-6322C736AEA8}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
