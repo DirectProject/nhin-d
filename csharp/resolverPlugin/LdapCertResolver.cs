@@ -3,7 +3,6 @@
  All rights reserved.
 
  Authors:
-    Umesh Madan     umeshma@microsoft.com
     Jon Renolds     jrenolds68@gmail.com
     Joseph Shook    jshook@kryptiq.com
  

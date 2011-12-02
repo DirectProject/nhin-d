@@ -863,38 +863,21 @@ namespace Health.Direct.Common.DnsResolver
                     
                     tcpSocket.Send(m_lengthBuffer.Buffer, m_lengthBuffer.Count, SocketFlags.None);
                     tcpSocket.Send(m_requestBuffer.Buffer, m_requestBuffer.Count, SocketFlags.None);
-
                     //
                     // First, receive the response message length
                     //
                     m_lengthBuffer.Clear();
-                    m_lengthBuffer.Count = tcpSocket.Receive(m_lengthBuffer.Buffer, m_lengthBuffer.Capacity, SocketFlags.None);
-                    if (m_lengthBuffer.Count == 0)
-                    {
-                        throw new DnsProtocolException(DnsProtocolError.Failed);
-                    }
-                    
+                    m_lengthBuffer.Count = this.ReadTcp(tcpSocket, m_lengthBuffer.Buffer, m_lengthBuffer.Capacity);
+                    //
+                    // Read length of the response to come
+                    //
                     DnsBufferReader reader = m_lengthBuffer.CreateReader();
                     ushort responseSize = reader.ReadUShort();
                     m_responseBuffer.ReserveCapacity(responseSize);
                     //
                     // Now receive the real response
                     //
-                    int countRead = 0;
-                    while (countRead < responseSize)
-                    {
-                        int countReceived = 0;
-                        if ((countReceived = tcpSocket.Receive(m_responseBuffer.Buffer, countRead, responseSize - countRead, SocketFlags.None)) <= 0)
-                        {
-                            break;
-                        }
-                        countRead += countReceived;
-                    }
-                    if (countRead != responseSize)
-                    {
-                        throw new DnsProtocolException(DnsProtocolError.Failed);
-                    }
-                    m_responseBuffer.Count = countRead;
+                    m_responseBuffer.Count = this.ReadTcp(tcpSocket, m_responseBuffer.Buffer, responseSize);
                 }
                 finally
                 {
@@ -902,7 +885,26 @@ namespace Health.Direct.Common.DnsResolver
                 }
             }
         }
-                
+
+        int ReadTcp(Socket tcpSocket, byte[] buffer, int countToRead)
+        {
+            int countRead = 0;
+            while (countRead < countToRead)
+            {
+                int countReceived = 0;
+                if ((countReceived = tcpSocket.Receive(buffer, countRead, countToRead - countRead, SocketFlags.None)) <= 0)
+                {
+                    break;
+                }
+                countRead += countReceived;
+            }
+            if (countRead != countToRead)
+            {
+                throw new DnsProtocolException(DnsProtocolError.Failed);
+            }            
+            return countRead;
+        }
+                        
         void NotifyError(Exception ex)
         {
             if (this.Error != null)
