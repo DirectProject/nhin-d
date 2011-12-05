@@ -16,7 +16,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -37,30 +40,52 @@ namespace Health.Direct.Install.Tools
     [ClassInterface(ClassInterfaceType.None)]
     public class Smtp : ISmtp
     {
-
+        
         public bool TestConnection(string host, int port)
+        {
+            if (TestNicInterfaceConnection(host, port))
+            {
+                return true;
+            }
+                      
+            IPHostEntry ipHostEntry = Dns.GetHostEntry(Dns.GetHostName());
+            return ipHostEntry.AddressList.Any(ip => TestNicInterfaceConnection(ip.ToString(), port));
+        }
+
+        private static bool TestNicInterfaceConnection(string host, int port)
         {
             IPHostEntry hostEntry = Dns.GetHostEntry(host);
             IPEndPoint smtpServer = new IPEndPoint(hostEntry.AddressList.IpV4(0), port);
             using (Socket tcpSocket = new Socket(smtpServer.AddressFamily, SocketType.Stream, ProtocolType.Tcp))
             {
-                tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, 7000);
-                tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 7000);
-                
-                tcpSocket.Connect(smtpServer);
-                if (!CheckResponse(tcpSocket, 220)) //220 response is success
-                {
-                    return false;
-                }
+                tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, 5000);
+                tcpSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 5000);
 
-                // send HELO and test the response for code 250 = proper response
-                SendData(tcpSocket, string.Format("HELO {0}\r\n", Dns.GetHostName()));
-                if (!CheckResponse(tcpSocket, 250))
+                try
                 {
-                    return false;
+                    tcpSocket.Connect(smtpServer);
+                    if (!CheckResponse(tcpSocket, 220)) //220 response is success
+                    {
+                        return false;
+                    }
+
+                    // send HELO and test the response for code 250 = proper response
+                    SendData(tcpSocket, string.Format("HELO {0}\r\n", Dns.GetHostName()));
+                    if (!CheckResponse(tcpSocket, 250))
+                    {
+                        return false;
+                    }
+
+                    return true;
                 }
-                
-                return true;
+                    catch
+                    {
+                    }
+                finally
+                {
+                    //Need a logger injected.
+                }
+                return false;
             }
         }
 
@@ -72,8 +97,14 @@ namespace Health.Direct.Install.Tools
 
         private static bool CheckResponse(Socket socket, int expectedCode)
         {
+            var sw = new Stopwatch();
+            sw.Start();
             while (socket.Available == 0)
             {
+                if(sw.ElapsedMilliseconds > 1000)
+                {
+                    return false;
+                }
                 System.Threading.Thread.Sleep(100);
             }
             byte[] responseArray = new byte[1024];

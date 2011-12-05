@@ -34,7 +34,7 @@ namespace Health.Direct.Install.Tools.tests
         {
             Smtp smtp = new Smtp();
             //DirectGateway.South.Hobo.Lab 192.168.137.144
-            bool success = smtp.TestConnection("192.168.137.147", 25);
+            bool success = smtp.TestConnection("10.110.3.242", 25);
             Assert.True(success);
         }
     }
