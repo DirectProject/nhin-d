@@ -95,3 +95,7 @@ glob:csharp/config/service/ve-7A85.tmp
 glob:csharp/config/service/ve-8472.tmp
 glob:DirectGateway-*-NET35-Source.zip
 glob:*_ReSharper*
+glob:csharp/installer/configui/*.*
+glob:csharp/installer/configui/Config
+glob:csharp/installer/configui/Content/
+glob:csharp/installer/configui/**
