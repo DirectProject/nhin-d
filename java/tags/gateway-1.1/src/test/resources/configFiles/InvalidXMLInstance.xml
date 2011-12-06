@@ -1,0 +1,30 @@
+<SmtpAgentConfig>
+
+      <AnchorStore type="Uniform" storeType="KeyStore" file="KeyStore" filePass="h3||0 wor|d" privKeyPass="pKpa$$wd"/>    
+      <Dom
+      e="secureHealthEmailCACert"/>
+            <Anchor name="msanchor"/>
+            <Anchor name="cernerDemosCaCert"/>      
+         </IncomingTrustAnchors>  
+         <OutgoingTrustAnchors> 
+            <Anchor name="cacert"/>
+            <Anchor name="externCaCert"/>
+            <Anchor name="secureHealthEmailCACert"/>
+            <Anchor name="msanchor"/>
+            <Anchor name="cernerDemosCaCert"/>      
+         
+      </Domain> 
+      <Domain name="securehealthemail.com" postmaster="postmaster">    
+         <IncomingTrustAnchors> 
+            <Anchor name="cacert"/>
+            <Anchor name="externCaCert"/>
+            <Anchor name="secureHealthEmailCACert"/>
+            <Anchor name="msanchor"/>
+            <Anchor name="cernerDemosCaCert"/>      
+         </IncomingTrustAnchors>  
+         <OutgoingTrustAnchors> 
+            <Anchor name="cacert"/>
+            <Anchor name="externCaCert"/>
+            <Anchor name="secureHealthEmailCACert"/>
+            <Anchor name="msanchor"/>
+         
