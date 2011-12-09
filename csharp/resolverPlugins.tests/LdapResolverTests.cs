@@ -56,7 +56,8 @@ namespace Health.Direct.ResolverPlugins.Tests
                         <Definition>
                             <TypeName>Health.Direct.ResolverPlugins.LdapCertResolverProxy, Health.Direct.ResolverPlugins</TypeName>
                             <Settings> 
-                               <ServerIP>184.72.234.183</ServerIP>
+                                <!--<ServerIP>10.110.1.11</ServerIP>--> <!-- Windows Dns Server -->
+                                <!--<ServerIP>184.72.234.183</ServerIP>-->
                             </Settings>
                         </Definition>
                     </PluginResolver>
@@ -80,7 +81,8 @@ namespace Health.Direct.ResolverPlugins.Tests
             ";
 
 
-            public const string FailDnsTcp = @"
+        public const string FailDnsTcp =
+            @"
             <AgentSettings>
                 <Domain>exampledomain.com</Domain>   
                 <PrivateCerts>
@@ -98,38 +100,21 @@ namespace Health.Direct.ResolverPlugins.Tests
                       <ServerIP>184.72.234.183</ServerIP>
                       <Timeout>5000</Timeout>
                     </DnsResolver>
+
+                <!--
                     <PluginResolver>
                         <Definition>
                             <TypeName>Health.Direct.ResolverPlugins.LdapCertResolverProxy, Health.Direct.ResolverPlugins</TypeName>
                             <Settings> 
                                <ServerIP>184.72.234.183</ServerIP>
                             </Settings>
-                        </Definition>
-                    </PluginResolver>
-                </PublicCerts> 
-                <Anchors>
-                    <PluginResolver>
-                        <Definition>
-                            <TypeName>Health.Direct.Agent.Tests.MachineAnchorResolverProxy, Health.Direct.Agent.Tests</TypeName>
-                            <Settings>
-                                <Incoming>
-                                    <Name>NHINDAnchors</Name>
-                                </Incoming>
-                                <Outgoing>
-                                    <Name>NHINDAnchors</Name>
-                                </Outgoing>
-                            </Settings>
-                        </Definition>
-                    </PluginResolver>
-                </Anchors>        
-            </AgentSettings>
-        ";
-
+                        </Definition>";
+             
 
         #endregion
 
 
-        [Theory(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
+        [Theory]//(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
         [InlineData("direct.securehealthemail.com")]
         public void TestLdapCertResolverPlugin(string subject)
         {
@@ -160,21 +145,7 @@ namespace Health.Direct.ResolverPlugins.Tests
             Assert.True(certs.Count > 0);
         }
 
-        [Theory(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
-        [InlineData("gm2552@direct.securehealthemail.com")]
-        public void TestFailDnsTcp(string subject)
-        {
-            AgentSettings settings = AgentSettings.Load(FailDnsTcp);
-            DirectAgent agent = settings.CreateAgent();
-
-            ICertificateResolver pluginResolver = agent.PublicCertResolver;
-            Assert.NotNull(pluginResolver);
-
-
-            X509Certificate2Collection certs = pluginResolver.GetCertificates(new MailAddress(subject));
-            Assert.NotNull(certs);
-            Assert.True(certs.Count > 0);
-        }
+       
 
 
         ICertificateResolver LocateChild<T>(ICertificateResolver resolver)

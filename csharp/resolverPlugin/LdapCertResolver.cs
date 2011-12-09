@@ -314,7 +314,7 @@ namespace Health.Direct.ResolverPlugins
                 var response = client.Resolve(request);
 
 
-                if (response != null && response.HasNameServerRecords)
+                if (response != null && response.HasAnswerRecords)
                 {
                     // create the LDAP client
                     // try each record until we get one that connects
