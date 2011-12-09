@@ -244,6 +244,7 @@ namespace Health.Direct.ResolverPlugins
                     }
                     catch (Exception ldapEx)
                     {
+                        NotifyException(ldapEx);
                     }
                 }
 
@@ -347,7 +348,7 @@ namespace Health.Direct.ResolverPlugins
             return retVal;
         }
 
-        protected DnsClient CreateDnsClient()
+        DnsClient CreateDnsClient()
         {
             DnsClient client = (m_cacheEnabled) ? new DnsClientWithCache(m_dnsServerIp) : new DnsClient(m_dnsServerIp);
             if (Timeout.Ticks > 0)
@@ -360,8 +361,8 @@ namespace Health.Direct.ResolverPlugins
 
             return client;
         }
-
-        protected void NotifyException(Exception ex)
+         
+        void NotifyException(Exception ex)
         {
             Action<ICertificateResolver, Exception> errorHandler = Error;
             if (errorHandler != null)
