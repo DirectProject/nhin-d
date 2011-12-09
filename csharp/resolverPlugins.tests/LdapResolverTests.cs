@@ -81,36 +81,6 @@ namespace Health.Direct.ResolverPlugins.Tests
             ";
 
 
-        public const string FailDnsTcp =
-            @"
-            <AgentSettings>
-                <Domain>exampledomain.com</Domain>   
-                <PrivateCerts>
-                    <PluginResolver>
-                        <Definition>
-                            <TypeName>Health.Direct.Agent.Tests.MachineResolverProxy, Health.Direct.Agent.Tests</TypeName>
-                            <Settings>
-                                <Name>NHINDPrivate</Name>
-                            </Settings>
-                        </Definition>
-                    </PluginResolver>
-                </PrivateCerts>             
-                <PublicCerts>
-                    <DnsResolver>
-                      <ServerIP>184.72.234.183</ServerIP>
-                      <Timeout>5000</Timeout>
-                    </DnsResolver>
-
-                <!--
-                    <PluginResolver>
-                        <Definition>
-                            <TypeName>Health.Direct.ResolverPlugins.LdapCertResolverProxy, Health.Direct.ResolverPlugins</TypeName>
-                            <Settings> 
-                               <ServerIP>184.72.234.183</ServerIP>
-                            </Settings>
-                        </Definition>";
-             
-
         #endregion
 
 
@@ -129,7 +99,7 @@ namespace Health.Direct.ResolverPlugins.Tests
             Assert.True(certs.Count > 0);
         }
 
-        [Theory(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
+        [Theory]//(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
         [InlineData("gm2552@direct.securehealthemail.com")]
         public void TestDnsFallbackToLdapCertResolverPlugin(string subject)
         {

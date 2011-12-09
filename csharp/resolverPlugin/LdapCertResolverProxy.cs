@@ -51,6 +51,11 @@ namespace Health.Direct.ResolverPlugins
 
         #region IPlugin Members
 
+        /// <summary>
+        /// Plugin Resolver factory method.
+        /// Set injected settings and load actual resolver. 
+        /// </summary>
+        /// <param name="pluginDef"></param>
         public void Init(PluginDefinition pluginDef)
         {
             var settings = pluginDef.DeserializeSettings<LdapCertResolverSettings>();
