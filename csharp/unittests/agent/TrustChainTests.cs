@@ -86,6 +86,18 @@ namespace Health.Direct.Agent.Tests
             }
         }
         
+        [Fact]
+        public void TestDnsAltName()
+        {
+            MemoryX509Store dnsCerts = TestCertificates.LoadCertificateFolder("Dns");
+            foreach(X509Certificate2 dnsCert in dnsCerts)
+            {
+                string dnsName = dnsCert.GetNameInfo(X509NameType.DnsName, false);
+                Assert.True(dnsCert.MatchDnsName(dnsName));
+                Assert.True(dnsCert.MatchDnsOrEmailOrName(dnsName));
+            }
+        }
+        
         TrustChainValidator CreateValidator()
         {
             TrustChainValidator validator = new TrustChainValidator();

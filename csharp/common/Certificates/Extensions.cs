@@ -371,6 +371,27 @@ namespace Health.Direct.Common.Certificates
             }
             return string.Equals(distinguishedName, name, StringComparison.OrdinalIgnoreCase);
         }
+
+        /// <summary>
+        /// Tests the supplied certificate against a <c>DNS</c> value
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <param name="name">The <c>DNS</c> value to test</param>
+        /// <returns><c>true</c> if the certificate matches by DNS domain, <c>false</c> otherwise.</returns>
+        public static bool MatchDnsName(this X509Certificate2 cert, string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("value was null or empty", "name");
+            }
+
+            string distinguishedName = cert.GetNameInfo(X509NameType.DnsName, false);
+            if (string.IsNullOrEmpty(distinguishedName))
+            {
+                return false;
+            }
+            return string.Equals(distinguishedName, name, StringComparison.OrdinalIgnoreCase);
+        }
         
         /// <summary>
         /// Matches a certificate by either subject name or email.
@@ -381,6 +402,17 @@ namespace Health.Direct.Common.Certificates
         public static bool MatchEmailNameOrName(this X509Certificate2 cert, string name)
         {
             return (cert.MatchEmailName(name) || cert.MatchName(name));
+        }
+
+        /// <summary>
+        /// Matches a certificate by either subject name, email, or dns name
+        /// </summary>
+        /// <param name="cert">The certificate to test</param>
+        /// <param name="name">The subject name or email address to test</param>
+        /// <returns><c>true</c> if the certificate matches by email or subject name, <c>false</c> otherwise.</returns>
+        public static bool MatchDnsOrEmailOrName(this X509Certificate2 cert, string name)
+        {
+            return (cert.MatchDnsName(name) || cert.MatchEmailName(name) || cert.MatchName(name));
         }
 
         /// <summary>
