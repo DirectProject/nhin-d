@@ -186,7 +186,7 @@ namespace Health.Direct.Agent
                 match = signer.Certificate.MatchEmailNameOrName(sender.Address);
                 if (!match)
                 {
-                    match = signer.Certificate.MatchEmailNameOrName(sender.Host);
+                    match = signer.Certificate.MatchDnsOrEmailOrName(sender.Host);
                     isOrgCertificate = match;
                 }
                 

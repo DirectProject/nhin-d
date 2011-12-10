@@ -82,6 +82,9 @@
     <None Include="Certificates\Chain\root.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Certificates\Dns\SubjectAltDnsName.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Certificates\nhind\IncomingAnchors\cernerCA.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
