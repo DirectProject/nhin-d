@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    Jon Renolds     jrenolds68@gmail.com
+    Greg Meyer      gm2552@cerner.com
     Joseph Shook    jshook@kryptiq.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
